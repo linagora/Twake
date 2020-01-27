@@ -16,7 +16,9 @@ class WebTestCaseExtended extends WebTestCase
     var $client;
 
 
-    public function setUp(){
+    public function __construct()
+    {
+        error_reporting(E_ERROR | E_PARSE);
       # Warning:
       \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
       # notice, strict:

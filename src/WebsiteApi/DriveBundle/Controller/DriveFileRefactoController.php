@@ -23,7 +23,7 @@ class DriveFileRefactoController extends Controller
             "type" => "DriveFile",
             "object_id" => $object["id"],
             "edition" => true
-        ), Array("token" => $options["public_access_token"]));
+        ));
         if (!$acces) {
             return new JsonResponse(Array("error" => "access_denied"));
         }
@@ -40,11 +40,19 @@ class DriveFileRefactoController extends Controller
         $options = $request->request->get("options");
         $object = $request->request->get("object");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => isset($object["id"]) ? $object["id"] : $object["parent_id"], //Ability to add element to parent, or to edit current element
-            "edition" => true
-        ), Array("token" => $options["public_access_token"]));
+        if (@$object["parent_id"] || @$object["id"]) {
+            $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
+                "type" => "DriveFile",
+                "object_id" => (isset($object["id"]) && $object["id"]) ? $object["id"] : $object["parent_id"], //Ability to add element to parent, or to edit current element
+                "edition" => true
+            ), Array("token" => $options["public_access_token"]));
+        } else {
+            $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
+                "type" => "Workspace",
+                "object_id" => $object["workspace_id"],
+                "edition" => false
+            ));
+        }
         if (!$acces) {
             return new JsonResponse(Array("error" => "access_denied"));
         }
@@ -96,7 +104,7 @@ class DriveFileRefactoController extends Controller
 
         $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
-            "object_id" => $options["directory_id"],
+            "object_id" => $options["directory_id"] ?: $options["id"],
             "workspace_id" => $options["workspace_id"]
         ), Array("token" => $options["public_access_token"]));
         if (!$acces) {

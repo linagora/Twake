@@ -30,7 +30,8 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            die("ERROR with find");
+            error_log("ERROR with find");
+            $a = null;
         }
         return $a;
     }
@@ -49,7 +50,8 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            die("ERROR with findOneBy");
+            error_log("ERROR with findOneBy");
+            $a = null;
         }
         return $a;
     }
@@ -121,7 +123,8 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            die("ERROR with findBy");
+            error_log("ERROR with findBy");
+            $a = [];
         }
         return $a;
     }
@@ -249,7 +252,8 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            die("ERROR with findBy");
+            error_log("ERROR with findBy");
+            $a = [];
         }
         return $a;
     }

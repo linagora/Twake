@@ -140,6 +140,9 @@ class ManagerAdapter
 
     public function remove($object)
     {
+        if (!$object) {
+            return;
+        }
         if (method_exists($object, "getEsIndexed")) {
             //This is a searchable object
             $this->es_removes[$object->getId() . ""] = $object;

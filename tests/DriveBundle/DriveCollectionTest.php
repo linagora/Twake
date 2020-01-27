@@ -70,19 +70,12 @@ class DriveCollectionTest extends WebTestCaseExtended
         ));
         $idtofind_parent = $result["data"]["object"]["id"];
 
-
         $this->assertEquals($workspace_id, $result["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent " . json_encode($result));
         $this->assertEquals($root_id,$result["data"]["object"]["parent_id"],"Wrong parent id for file create with a parent");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$result["data"]["object"]["front_id"], "Wrong front id for file create with a parent");
         $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file create with a parent");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
         $this->assertEquals($user1_id,$result["data"]["object"]["last_user"], "Wrong last user for file create with a parent");
-
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
-        $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
-        $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
-
 
         $added_parent = $result["data"]["object"]["added"];
         $modified_parent = $result["data"]["object"]["modified"];
@@ -98,45 +91,26 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
 
-        //test sur le versionning de ce fichier
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
-        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
-        $this->assertEquals($idtofind_parent,$version->getFileId(), "Wrong file id for the version");
-        $this->assertEquals("identifier",$version->getData()["identifier"], "Wrong identifier");
-        $this->assertEquals("chunk",$version->getData()["upload_mode"], "Upload_mode should be chunk it is not");
-        $this->assertEquals(1,$version->getData()["nb_chunk"], "Wrong chunk number");
-        $this->assertEquals($user1_id,$version->getUserId(), "Wrong user creator for the version");
-
-        $this->getDoctrine()->remove($version);
-        $this->getDoctrine()->flush();
-
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
         // ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE SANS SPECIFIER UN PARENT
 
-        $object = Array("workspace_id" => $workspace_id, "trash" => false, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
+        $object = Array("parent_id" => $root_id, "trash" => false, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest-randomothername", "is_directory" => false);
         $options = Array();
         $result = $this->doPost("/ajax/drive/save", Array(
             "object" => $object,
-            "options" => $options,
-            "upload_data" => $upload_data
+            "options" => $options
         ));
         $idtofind_root = $result["data"]["object"]["id"];
 
         $this->assertEquals($workspace_id,$result["data"]["object"]["workspace_id"], "Wrong workspace id for file create without a parent");
         $this->assertEquals($root_id,$result["data"]["object"]["parent_id"], "Wrong parent id for file create without a parent");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$result["data"]["object"]["front_id"], "Wrong front id for file create without a parent" );
-        $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file create without a parent");
+        $this->assertEquals("filefortest-randomothername", $result["data"]["object"]["name"], "Wrong name for file create without a parent");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create without a parent");
         $this->assertEquals($user1_id,$result["data"]["object"]["last_user"], "Wrong last user for file create without a parent");
-        $this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for file create without a parent");
-
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
-        $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
-        $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
         $added = $result["data"]["object"]["added"];
         $modified = $result["data"]["object"]["modified"];
@@ -149,31 +123,18 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($workspace_id,$fileordirectory->getWorkspaceId()."", "Wrong workspace id for file create without a parent in database");
         $this->assertEquals($root_id,$fileordirectory->getParentId()."", "Wrong parent id for file create without a parent in database");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$fileordirectory->getFrontId()."", "Wrong front id for file create without a parent in database");
-        $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
-
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_root));
-        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
-        $this->assertEquals($idtofind_root,$version->getFileId(), "Wrong file id for the version");
-        $this->assertEquals("identifier",$version->getData()["identifier"], "Wrong identifier");
-        $this->assertEquals("chunk",$version->getData()["upload_mode"], "Upload_mode should be chunk it is not");
-        $this->assertEquals(1,$version->getData()["nb_chunk"], "Wrong chunk number");
-        $this->assertEquals($user1_id,$version->getUserId(), "Wrong user creator for the version");
-
-        $this->getDoctrine()->remove($version);
-        $this->getDoctrine()->flush();
 
 
 // =================================================================================================================================================
 // =================================================================================================================================================
         // ON CREE UN FICHIER DETACHED
 
-        $object = Array("workspace_id" => $workspace_id, "trash" => false, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
+        $object = Array("workspace_id" => $workspace_id, "trash" => false, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest-randomothername2", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/save", Array(
             "object" => $object,
-            "options" => $options,
-            "upload_data" => $upload_data
+            "options" => $options
 
         ));
         $idtofind_detached = $result["data"]["object"]["id"];
@@ -182,10 +143,9 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("detached",$result["data"]["object"]["parent_id"], "Wrong parent id for file create detached");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$result["data"]["object"]["front_id"], "Wrong front id for file create detached" );
         $this->assertEquals(true,$result["data"]["object"]["detached"], "Wrong detached bool for file create without a parent detached" );
-        $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file create detached");
+        $this->assertEquals("filefortest-randomothername2", $result["data"]["object"]["name"], "Wrong name for file create detached");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create detached");
         $this->assertEquals($user1_id,$result["data"]["object"]["last_user"], "Wrong last user for file create detached");
-        $this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for file create detached");
 
         /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
@@ -205,16 +165,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("detached",$fileordirectory->getParentId()."", "Wrong parent id for file create without a parent in database");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$fileordirectory->getFrontId()."", "Wrong front id for file create without a parent in database");
         $this->assertEquals(true,$fileordirectory->getDetachedFile(), "Wrong detached bool for file create without a parent detached in database" );
-        $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
-
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_detached));
-        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
-        $this->assertEquals($idtofind_detached,$version->getFileId(), "Wrong file id for the version");
-        $this->assertEquals($user1_id,$version->getUserId(), "Wrong user creator for the version");
-
-        $this->getDoctrine()->remove($version);
-        $this->getDoctrine()->flush();
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -232,7 +183,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($root_id,$result["data"]["object"]["parent_id"], "Wrong parent id for file reatached");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$result["data"]["object"]["front_id"], "Wrong front id for file reatached" );
         $this->assertEquals(false,$result["data"]["object"]["detached"], "Wrong detached bool for file reatached" );
-        $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file reatached");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
 
         //error_log(print_r(json_decode($result->getContent(),true),true));
@@ -247,7 +197,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($root_id,$fileordirectory->getParentId()."", "Wrong parent id for file reatached");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$fileordirectory->getFrontId()."", "Wrong front id for file reatached");
         $this->assertEquals(false,$fileordirectory->getDetachedFile(), "Wrong detached bool for file reatached" );
-        $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create reatached");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
 
 // =================================================================================================================================================
@@ -347,7 +296,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($idtofind_folder,$result["data"]["object"]["parent_id"], "Wrong parent id for file reatached");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$result["data"]["object"]["front_id"], "Wrong front id for file reatached" );
         $this->assertEquals(false,$result["data"]["object"]["detached"], "Wrong detached bool for file reatached" );
-        $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file reatached");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
 
         $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
@@ -439,7 +387,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $options = Array();
         $result = $this->doPost("/ajax/drive/remove", Array(
             "object" => $object,
-            "optionss" => $options
+            "options" => $options
         ));
 
         $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
@@ -490,7 +438,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $options = Array();
         $result = $this->doPost("/ajax/drive/remove", Array(
             "object" => $object,
-            "optionss" => $options
+            "options" => $options
         ));
 
         $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
@@ -500,27 +448,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file trash");
         $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");*/
-
-// =================================================================================================================================================
-// =================================================================================================================================================
-
-        //ON RECUPERE UN FICHIER A L AIDE DE LA METHODE GET
-
-        $options = Array("id" => $root_id);
-        $result = $this->doPost("/ajax/drive/get", Array(
-            "options" => $options
-        ));
-        $this->assertEquals($root_id,$result["data"]["id"], "Wrong file found or null");
-
-// =================================================================================================================================================
-// =================================================================================================================================================
-        //ON RECUPERE LA RACINE D UN WORKSPACE A L AIDE DE LA METHODE GET
-
-        $options = Array("workspace_id" => $workspace_id);
-        $result = $this->doPost("/ajax/drive/get", Array(
-            "options" => $options
-        ));
-        $this->assertEquals($root_id,$result["data"]["id"], "The file is not the root of the workspace");
 
 // =================================================================================================================================================
 // =================================================================================================================================================

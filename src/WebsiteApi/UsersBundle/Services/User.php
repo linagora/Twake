@@ -257,6 +257,7 @@ class User
 
                     $encoder = $factory->getEncoder($user);
                     $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+                    $user->setMailVerified(true);
 
                     $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
                     $this->token_storage->setToken($token);

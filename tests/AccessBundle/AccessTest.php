@@ -212,7 +212,7 @@ class AccessTest extends WebTestCaseExtended
         ));
         $idtofind_parent = $result["data"]["object"]["id"];
 
-        $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
+        $object = Array("workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
@@ -345,7 +345,7 @@ class AccessTest extends WebTestCaseExtended
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-        $this->assertEquals(false,$result["data"], "User 1 have access to detached file , he should not");
+        $this->assertEquals(true, $result["data"], "User 1 doesnt have access to detached file , he should");
 
         $result = $this->doPost("/ajax/core/workspaceaccess", Array(
             "workspace_id" => $workspace1_id,
@@ -585,7 +585,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,$result["data"], "User 3 have access to detached file , he should not");
+        $this->assertEquals(true, $result["data"], "User 3 doesnt have access to detached file , he should");
 
 
 //// =================================================================================================================================================

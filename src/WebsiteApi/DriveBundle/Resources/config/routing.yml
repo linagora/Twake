@@ -10,6 +10,9 @@ drive_save:
 drive_get_a_file:
     path:     /find
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:find }
+drive_remove_file:
+    path:     /remove
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:remove }
 
 
 #Drive v1.2
