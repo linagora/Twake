@@ -18,9 +18,9 @@ class AccessManager
             $current_user_id = $current_user_id->getId();
         }
 
-        $type = $data["type"];
-        $edition = $data["edition"]; //TODO test if we have edition access (everybodyhas edition acess for now)
-        $id = $data["object_id"];
+        $type = @$data["type"];
+        $edition = @$data["edition"]; //TODO test if we have edition access (everybodyhas edition acess for now)
+        $id = @$data["object_id"];
 
 
         //FONCTION POUR SAVOIR SI UN UTILISATEUR A ACCES A QUELQUE CHOSE

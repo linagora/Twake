@@ -72,7 +72,7 @@ services:
     node-exporter:
         image: prom/node-exporter
         ports:
-            - 9100:9120
+            - 9120:9120
 
 networks:
   esnet:

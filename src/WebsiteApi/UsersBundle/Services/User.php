@@ -214,6 +214,8 @@ class User
 
             $code = $verificationNumberMail->getCode();
 
+            error_log("recover code: " . $code);
+
             $this->twake_mailer->send($mail, "requestPassword", Array(
                 "_language" => $user ? $user->getLanguage() : "en",
                 "code" => $code,
@@ -512,6 +514,8 @@ class User
         $verificationNumberMail = new VerificationNumberMail($mail);
         $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
+
+        error_log("sign in code: " . $code);
 
         $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
