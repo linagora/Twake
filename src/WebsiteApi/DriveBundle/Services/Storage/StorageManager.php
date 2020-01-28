@@ -22,6 +22,7 @@ class StorageManager
         $this->root = $root;
         $this->preview = $preview;
         $this->doctrine = $doctrine;
+        $this->local = $local;
     }
 
     public function BindAdapter()
@@ -32,7 +33,7 @@ class StorageManager
         } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
             return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
         }
-        return new Adapter_Local($local, $this->preview, $this->doctrine);
+        return new Adapter_Local($this->local, $this->preview, $this->doctrine);
 
     }
 

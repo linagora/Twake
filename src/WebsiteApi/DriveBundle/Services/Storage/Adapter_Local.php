@@ -77,9 +77,9 @@ class Adapter_Local implements AdapterInterface
                                 // Upload data.
                                 $pre_path = $this->preview_root . "/" . "public/uploads/previews/" . $file->getPath() . ".png";
                                 $this->verifyPath($pre_path);
-                                $pre_public_path = $this->pre_public_path . "/" . "public/uploads/previews/" . $file->getPath() . ".png";
                                 rename($previewpath . ".png", $pre_path);
 
+                                $pre_public_path = $this->pre_public_path . "/" . "public/uploads/previews/" . $file->getPath() . ".png";
                                 $file->setPreviewLink($pre_public_path . "");
                                 $file->setPreviewHasBeenGenerated(true);
                                 $file->setHasPreview(true);
@@ -96,7 +96,7 @@ class Adapter_Local implements AdapterInterface
 
                         } else {
                             $res = false;
-                            error_log("FILE NOT GENERATED !" . $e->getMessage());
+                            error_log("FILE NOT GENERATED !");
                         }
 
                     } catch (\Exception $e) {
@@ -125,7 +125,7 @@ class Adapter_Local implements AdapterInterface
 
         try {
 
-            $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+            $file_path = $this->root . "/" . "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
             $this->verifyPath($file_path);
             error_log($chunkFile);
             if (file_exists($chunkFile)) {
@@ -145,11 +145,8 @@ class Adapter_Local implements AdapterInterface
         try {
 
             $file_path = $this->root . "/" . "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
-            $stream = fopen($file_path, 'r');
 
-            $tmp_upload = "/tmp/" . date("U") . $uploadState->getWorkspaceId() . $uploadState->getIdentifier();
-            file_put_contents($tmp_upload, $stream->getContents());
-            $decodedPath = $this->decode($tmp_upload, $param_bag);
+            $decodedPath = $this->decode($file_path, $param_bag);
 
             if ($destination == "stream") {
                 if ($stream = fopen($decodedPath, 'r')) {
