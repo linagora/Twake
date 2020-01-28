@@ -43,11 +43,6 @@ twake_globalsearch:
     prefix:   /ajax/globalsearch/
     methods: [POST]
 
-twake_driveupload:
-    resource: "@TwakeDriveUploadBundle/Resources/config/routing.yml"
-    prefix:   /ajax/driveupload/
-    methods: [POST,GET]
-
 twake_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
@@ -67,7 +62,7 @@ twake_marketplace:
 
 twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
-    prefix:   ajax/drive/
+    prefix:   ajax/
     methods: [POST, GET]
 
 twake_tasks:

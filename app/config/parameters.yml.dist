@@ -67,3 +67,11 @@ parameters:
             credentials:
                 key: 1234567890
                 secret: 1234567890
+
+
+    local:
+        storage:
+            use: true
+            location: drive/
+            preview_location: web/public/
+            preview_public_path: /public/

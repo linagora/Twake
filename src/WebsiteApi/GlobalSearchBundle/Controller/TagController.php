@@ -63,7 +63,7 @@ class TagController extends Controller
 //            //If object[_once_new_version] is set a new version is added
 //            $res = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $current_user_id);
 //        } else {
-//            $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, Array());
+//            $res = $this->get("app.drive")->save($object, $options, $current_user_id, Array());
 //        }
 
         $res = $this->get("globalsearch.tag")->save($object, $options, $current_user_id, Array());

@@ -25,13 +25,13 @@ class DriveCollectionTest extends WebTestCaseExtended
         $workspace_id = $workspace->getId()."";
 
         // ON RECUPERE LA RACINE DE CE NOUVEAU WORKSPACE
-        $root =  $this->get("app.drive_refacto")->getRootEntity($workspace_id);
+        $root = $this->get("app.drive")->getRootEntity($workspace_id);
         $root_id = $root->getId()."";
         //error_log(print_r("root id: " . $root_id,true));
 
 
         //ON RECUPERE LA CORBEILLE DE CE NOUVEAU WORKSPACE
-        $trash = $this->get("app.drive_refacto")->getTrashEntity($workspace_id);
+        $trash = $this->get("app.drive")->getTrashEntity($workspace_id);
         $trash_id = $trash->getId()."";
         //error_log(print_r("trash id: " .$trash_id,true));
 

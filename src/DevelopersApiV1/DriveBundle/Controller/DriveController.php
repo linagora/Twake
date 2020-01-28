@@ -36,7 +36,7 @@ class DriveController extends Controller
                 //If object[_once_new_version] is set a new version is added
                 $object = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $user);
             } else {
-                $object = $this->get("app.drive_refacto")->save($object, $options, $user, $upload_data);
+                $object = $this->get("app.drive")->save($object, $options, $user, $upload_data);
             }
         } catch (\Exception $e) {
             $object = false;
@@ -76,7 +76,7 @@ class DriveController extends Controller
         $options = Array("application_id" => $application->getId());
         $object = $request->request->get("object", null);
 
-        $res = $this->get("app.drive_refacto")->remove($object, $options, null);
+        $res = $this->get("app.drive")->remove($object, $options, null);
         if (!$res) {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         } else {
@@ -118,7 +118,7 @@ class DriveController extends Controller
         }
 
         if ($workspace_id && $element_id) {
-            $object = $this->get("app.drive_refacto")->find(
+            $object = $this->get("app.drive")->find(
                 Array("workspace_id" => $workspace_id, "element_id" => $element_id), $user);
         } else {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
@@ -142,7 +142,7 @@ class DriveController extends Controller
         $directory_id = $request->request->get("directory_id", null);
 
         if ($workspace_id && $directory_id) {
-            $objects = $this->get("app.drive_refacto")->get(
+            $objects = $this->get("app.drive")->get(
                 Array("workspace_id" => $workspace_id, "directory_id" => $directory_id, "trash" => false), null);
         } else {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
@@ -170,8 +170,7 @@ class DriveController extends Controller
         $workspace_id = $request->request->get("workspace_id", null);
         $fileId = $request->request->get("file_id", null);
 
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-        @$response = $this->get('driveupload.download')->download($workspace_id, $fileId, true, null, $fileSystem);
+        @$response = $this->get('driveupload.download')->download($workspace_id, $fileId, true, null);
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 

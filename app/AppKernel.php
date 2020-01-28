@@ -37,7 +37,6 @@ class AppKernel extends Kernel
             new WebsiteApi\MarketBundle\TwakeMarketBundle(),
             new WebsiteApi\DriveBundle\TwakeDriveBundle(),
             new WebsiteApi\GlobalSearchBundle\TwakeGlobalSearchBundle(),
-            new WebsiteApi\DriveUploadBundle\TwakeDriveUploadBundle(),
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\TasksBundle\TwakeTasksBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),

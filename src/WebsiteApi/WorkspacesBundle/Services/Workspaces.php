@@ -32,10 +32,9 @@ class Workspaces implements WorkspacesInterface
     var $workspacesActivities;
     var $calendarEventService;
     var $calendarService;
-    var $driveAdapteService;
     var $workspaces_service;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $calendarService, $calendarEventService, $driveAdapteService, $workspaces_service)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $calendarService, $calendarEventService, $workspaces_service)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -50,7 +49,6 @@ class Workspaces implements WorkspacesInterface
         $this->translate = $translate;
         $this->calendarService = $calendarService;
         $this->calendarEventService = $calendarEventService;
-        $this->driveAdapteService = $driveAdapteService;
         $this->workspaces_service = $workspaces_service;
     }
 

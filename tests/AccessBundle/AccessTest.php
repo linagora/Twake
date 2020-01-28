@@ -200,7 +200,7 @@ class AccessTest extends WebTestCaseExtended
 //// =================================================================================================================================================
 
         // ON RECUPERE LA RACINE DE CE NOUVEAU WORKSPACE ET ON CREE DEUX FICHIER
-        $root =  $this->get("app.drive_refacto")->getRootEntity($workspace1_id);
+        $root = $this->get("app.drive")->getRootEntity($workspace1_id);
         $root_id = $root->getId()."";
 
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
