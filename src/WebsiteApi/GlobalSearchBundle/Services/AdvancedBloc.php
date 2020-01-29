@@ -3,8 +3,6 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
-use WebsiteApi\CoreBundle\Services\StringCleaner;
-
 class AdvancedBloc
 {
     private $doctrine;
@@ -20,9 +18,19 @@ class AdvancedBloc
 
     }
 
+    public function AdvancedBloc($current_user_id, $options, $channels)
+    {
+
+        $this->globalresult = Array();
+
+        $this->SearchInBloc($current_user_id, $options, $channels);
+
+        return $this->globalresult;
+    }
+
     public function SearchInBloc($current_user_id, $options, $channels)
     {
-        
+
         $channel_acces = Array();
         if (!$channels && !is_array($channels)) {
             $channels_member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => false, "user_id" => $current_user_id));
@@ -56,16 +64,6 @@ class AdvancedBloc
             $this->globalresult = $messages;
         }
 
-    }
-
-    public function AdvancedBloc($current_user_id, $options, $channels)
-    {
-
-        $this->globalresult = Array();
-
-        $this->SearchInBloc($current_user_id, $options, $channels);
-
-        return $this->globalresult;
     }
 
 }

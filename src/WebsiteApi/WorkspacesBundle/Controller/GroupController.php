@@ -16,19 +16,6 @@ class GroupController extends Controller
 {
 
 
-    public function getUploader()
-    {
-        $aws = $this->getParameter('aws');
-        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
-            return $this->get("app.aws_uploader");
-        }
-        $openstack = $this->getParameter('openstack');
-        if (isset($openstack["use"]) && $openstack["use"]) {
-            return $this->get("app.openstack_uploader");
-        }
-        return $this->get("app.uploader");
-    }
-
     public function changeNameAction(Request $request)
     {
         $response = Array("errors" => Array(), "data" => Array());
@@ -78,6 +65,19 @@ class GroupController extends Controller
 
         return new JsonResponse($data);
 
+    }
+
+    public function getUploader()
+    {
+        $aws = $this->getParameter('aws');
+        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+            return $this->get("app.aws_uploader");
+        }
+        $openstack = $this->getParameter('openstack');
+        if (isset($openstack["use"]) && $openstack["use"]) {
+            return $this->get("app.openstack_uploader");
+        }
+        return $this->get("app.uploader");
     }
 
     public function getUsersAction(Request $request)

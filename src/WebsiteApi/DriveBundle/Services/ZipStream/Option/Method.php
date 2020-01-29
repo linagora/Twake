@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace WebsiteApi\DriveBundle\Services\ZipStream\Option;
 
-use WebsiteApi\DriveBundle\Services\ZipStream\Option\Enum;
-
 /**
  * Methods enum
  *

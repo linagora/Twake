@@ -34,14 +34,6 @@ class PDOPinger implements PeriodicInterface
         $this->timeout = 20;
     }
 
-    /**
-     * @param int|float $timeout
-     */
-    public function setTimeout($timeout)
-    {
-        $this->timeout = $timeout;
-    }
-
     public function tick()
     {
         if (null === $this->pdo) {
@@ -69,5 +61,13 @@ class PDOPinger implements PeriodicInterface
     public function getTimeout()
     {
         return $this->timeout;
+    }
+
+    /**
+     * @param int|float $timeout
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
     }
 }

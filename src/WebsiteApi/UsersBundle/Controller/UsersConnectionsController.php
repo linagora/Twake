@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class UsersConnectionsController extends Controller
 {
@@ -27,13 +25,6 @@ class UsersConnectionsController extends Controller
     {
         $this->loginAction($request);
         return $this->redirect($this->getParameter("SERVER_NAME"));
-    }
-
-    public function mobileRedirectAction(Request $request)
-    {
-        $response = new Response();
-        $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
-        return $response;
     }
 
     public function loginAction(Request $request)
@@ -71,6 +62,13 @@ class UsersConnectionsController extends Controller
 
         return $response;
 
+    }
+
+    public function mobileRedirectAction(Request $request)
+    {
+        $response = new Response();
+        $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
+        return $response;
     }
 
     public function isLoggedAction(Request $request)

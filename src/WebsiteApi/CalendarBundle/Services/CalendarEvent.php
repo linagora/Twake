@@ -4,9 +4,9 @@ namespace WebsiteApi\CalendarBundle\Services;
 
 
 use WebsiteApi\CalendarBundle\Entity\Event;
+use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 use WebsiteApi\CalendarBundle\Entity\EventNotification;
 use WebsiteApi\CalendarBundle\Entity\EventUser;
-use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class CalendarEvent
@@ -200,6 +200,159 @@ class CalendarEvent
         }
 
         return $event->getAsArray();
+    }
+
+    public function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
+    {
+        $sort_key = $event->getSortKey();
+
+        $participants = $participants ? $participants : [];
+
+        $updated_participants = $this->formatArrayInput($participants, ["user_id_or_mail"]);
+        $current_participants = $event->getParticipants();
+        $updated_participants_fixed = $current_participants;
+
+        $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
+        error_log("get diff" . json_encode($get_diff));
+        if (count($get_diff["del"]) > 0 || $replace_all) {
+            $users_in_event = $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $event->getId()));
+            foreach ($users_in_event as $user) {
+                if ($this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
+                    //Remove old participants
+                    $this->doctrine->remove($user);
+
+                    //Remove from array fixed
+                    foreach ($updated_participants_fixed as $i => $v) {
+                        if ($v["user_id_or_mail"] == $user->getUserIdOrMail()) {
+                            unset($updated_participants_fixed[$i]);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        foreach (($replace_all ? $updated_participants : $get_diff["add"]) as $participant) {
+            foreach ($sort_key as $sort_date) {
+
+                $fixed_participant = $participant;
+
+                //Remove from array fixed
+                if (filter_var($participant["user_id_or_mail"], FILTER_VALIDATE_EMAIL)) {
+                    //Mail given
+                    $mail = trim(strtolower($participant["user_id_or_mail"]));
+                    $mail_entity = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));
+                    if ($mail_entity) {
+                        $fixed_participant["user_id_or_mail"] = $mail_entity->getUser()->getId();
+                    }
+                } else if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                    //User id given
+                    $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                    if (!$user) {
+                        continue;
+                    }
+                    $mail = $user->getEmail();
+                } else {
+                    continue;
+                }
+
+                $fixed_participant["email"] = $mail;
+                $participant = $fixed_participant;
+
+                $user = new EventUser($participant["user_id_or_mail"], $event->getId(), $sort_date);
+                $user->setEmail($mail);
+                $this->doctrine->persist($user);
+
+                $updated_participants_fixed[] = $participant;
+
+            }
+        }
+
+        $_updated_participants_fixed = [];
+        foreach ($updated_participants_fixed as $v) {
+            $_updated_participants_fixed[] = $v;
+        }
+        $updated_participants_fixed = $_updated_participants_fixed;
+        $event->setParticipants($updated_participants_fixed);
+        $this->doctrine->persist($event);
+
+        $this->doctrine->flush();
+    }
+
+    //TODO Not the best to send update email every time, change it to a worker waiting 30 minutes at least
+
+    public function formatArrayInput($array, $id_keys = [])
+    {
+        $updated_array = [];
+        $unicity = [];
+        foreach ($array as $element) {
+
+            $tmp = false;
+
+            if (is_array($element)) {
+                $all_ok = true;
+                foreach ($id_keys as $id_key) {
+                    if (!isset($element[$id_key])) {
+                        $all_ok = false;
+                    }
+                }
+                if ($all_ok) {
+                    $tmp = $element;
+                }
+            } else {
+                $tmp = Array();
+                $tmp[$id_key] = $element;
+            }
+
+            if ($tmp !== false) {
+                $uniq_key = "";
+                foreach ($id_keys as $id_key) {
+                    $uniq_key .= "_" . $tmp[$id_key];
+                }
+                if (!in_array($uniq_key, $unicity)) {
+                    $unicity[] = $uniq_key;
+                    $updated_array[] = $tmp;
+                }
+            }
+
+        }
+        return $updated_array;
+    }
+
+    public function getArrayDiffUsingKeys($new_array, $old_array, $keys)
+    {
+        $remove = [];
+        $add = [];
+        foreach ($new_array as $new_el) {
+            if (!$this->inArrayUsingKeys($old_array, $new_el, $keys)) {
+                $add[] = $new_el;
+            }
+        }
+        foreach ($old_array as $old_el) {
+            if (!$this->inArrayUsingKeys($new_array, $old_el, $keys)) {
+                $remove[] = $old_el;
+            }
+        }
+        return Array("del" => $remove, "add" => $add);
+    }
+
+    public function inArrayUsingKeys($array, $element, $keys)
+    {
+        $in = false;
+        foreach ($array as $el) {
+            $same = true;
+            foreach ($keys as $key) {
+                if ($el[$key] != $element[$key]) {
+                    $same = false;
+                    break;
+                }
+            }
+            if ($same) {
+                $in = true;
+                break;
+            }
+        }
+        return $in;
     }
 
     public function save($object, $options, $current_user)
@@ -432,92 +585,6 @@ class CalendarEvent
         return $event->getAsArray();
     }
 
-    //TODO Not the best to send update email every time, change it to a worker waiting 30 minutes at least
-    public function hasRealChange($old_event, $new_event)
-    {
-        return ($old_event["from"] != $new_event["from"] || $old_event["to"] != $new_event["to"]
-            || strlen(str_replace(" ", "", $old_event["title"] . "")) - strlen(trim($new_event["title"] . "")) > 10
-            || strlen(str_replace(" ", "", $old_event["location"] . "")) - strlen(trim($new_event["location"] . "")) > 10
-            || strlen(str_replace(" ", "", $old_event["description"] . "")) - strlen(trim($new_event["description"] . "")) > 10);
-    }
-
-    public function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
-    {
-        $sort_key = $event->getSortKey();
-
-        $participants = $participants ? $participants : [];
-
-        $updated_participants = $this->formatArrayInput($participants, ["user_id_or_mail"]);
-        $current_participants = $event->getParticipants();
-        $updated_participants_fixed = $current_participants;
-
-        $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
-        error_log("get diff" . json_encode($get_diff));
-        if (count($get_diff["del"]) > 0 || $replace_all) {
-            $users_in_event = $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $event->getId()));
-            foreach ($users_in_event as $user) {
-                if ($this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
-                    //Remove old participants
-                    $this->doctrine->remove($user);
-
-                    //Remove from array fixed
-                    foreach ($updated_participants_fixed as $i => $v) {
-                        if ($v["user_id_or_mail"] == $user->getUserIdOrMail()) {
-                            unset($updated_participants_fixed[$i]);
-                        }
-                    }
-
-                }
-            }
-        }
-
-        foreach (($replace_all ? $updated_participants : $get_diff["add"]) as $participant) {
-            foreach ($sort_key as $sort_date) {
-
-                $fixed_participant = $participant;
-
-                //Remove from array fixed
-                if (filter_var($participant["user_id_or_mail"], FILTER_VALIDATE_EMAIL)) {
-                    //Mail given
-                    $mail = trim(strtolower($participant["user_id_or_mail"]));
-                    $mail_entity = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));
-                    if ($mail_entity) {
-                        $fixed_participant["user_id_or_mail"] = $mail_entity->getUser()->getId();
-                    }
-                } else if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
-                    //User id given
-                    $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
-                    if (!$user) {
-                        continue;
-                    }
-                    $mail = $user->getEmail();
-                } else {
-                    continue;
-                }
-
-                $fixed_participant["email"] = $mail;
-                $participant = $fixed_participant;
-
-                $user = new EventUser($participant["user_id_or_mail"], $event->getId(), $sort_date);
-                $user->setEmail($mail);
-                $this->doctrine->persist($user);
-
-                $updated_participants_fixed[] = $participant;
-
-            }
-        }
-
-        $_updated_participants_fixed = [];
-        foreach ($updated_participants_fixed as $v) {
-            $_updated_participants_fixed[] = $v;
-        }
-        $updated_participants_fixed = $_updated_participants_fixed;
-        $event->setParticipants($updated_participants_fixed);
-        $this->doctrine->persist($event);
-
-        $this->doctrine->flush();
-    }
-
     public function updateCalendars(Event $event, $calendars = Array(), $replace_all = false)
     {
         $sort_key = $event->getSortKey();
@@ -583,79 +650,12 @@ class CalendarEvent
 
     }
 
-    public function getArrayDiffUsingKeys($new_array, $old_array, $keys)
+    public function hasRealChange($old_event, $new_event)
     {
-        $remove = [];
-        $add = [];
-        foreach ($new_array as $new_el) {
-            if (!$this->inArrayUsingKeys($old_array, $new_el, $keys)) {
-                $add[] = $new_el;
-            }
-        }
-        foreach ($old_array as $old_el) {
-            if (!$this->inArrayUsingKeys($new_array, $old_el, $keys)) {
-                $remove[] = $old_el;
-            }
-        }
-        return Array("del" => $remove, "add" => $add);
-    }
-
-    public function inArrayUsingKeys($array, $element, $keys)
-    {
-        $in = false;
-        foreach ($array as $el) {
-            $same = true;
-            foreach ($keys as $key) {
-                if ($el[$key] != $element[$key]) {
-                    $same = false;
-                    break;
-                }
-            }
-            if ($same) {
-                $in = true;
-                break;
-            }
-        }
-        return $in;
-    }
-
-
-    public function formatArrayInput($array, $id_keys = [])
-    {
-        $updated_array = [];
-        $unicity = [];
-        foreach ($array as $element) {
-
-            $tmp = false;
-
-            if (is_array($element)) {
-                $all_ok = true;
-                foreach ($id_keys as $id_key) {
-                    if (!isset($element[$id_key])) {
-                        $all_ok = false;
-                    }
-                }
-                if ($all_ok) {
-                    $tmp = $element;
-                }
-            } else {
-                $tmp = Array();
-                $tmp[$id_key] = $element;
-            }
-
-            if ($tmp !== false) {
-                $uniq_key = "";
-                foreach ($id_keys as $id_key) {
-                    $uniq_key .= "_" . $tmp[$id_key];
-                }
-                if (!in_array($uniq_key, $unicity)) {
-                    $unicity[] = $uniq_key;
-                    $updated_array[] = $tmp;
-                }
-            }
-
-        }
-        return $updated_array;
+        return ($old_event["from"] != $new_event["from"] || $old_event["to"] != $new_event["to"]
+            || strlen(str_replace(" ", "", $old_event["title"] . "")) - strlen(trim($new_event["title"] . "")) > 10
+            || strlen(str_replace(" ", "", $old_event["location"] . "")) - strlen(trim($new_event["location"] . "")) > 10
+            || strlen(str_replace(" ", "", $old_event["description"] . "")) - strlen(trim($new_event["description"] . "")) > 10);
     }
 
     public function checkReminders()

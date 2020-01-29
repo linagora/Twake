@@ -85,43 +85,6 @@ class ImagesModifiers
         $this->max_dimension = $md;
     }
 
-
-    private function autorotate(\Imagick $image)
-    {
-        switch ($image->getImageOrientation()) {
-            case \Imagick::ORIENTATION_TOPLEFT:
-                break;
-            case \Imagick::ORIENTATION_TOPRIGHT:
-                $image->flopImage();
-                break;
-            case \Imagick::ORIENTATION_BOTTOMRIGHT:
-                $image->rotateImage("#000", 180);
-                break;
-            case \Imagick::ORIENTATION_BOTTOMLEFT:
-                $image->flopImage();
-                $image->rotateImage("#000", 180);
-                break;
-            case \Imagick::ORIENTATION_LEFTTOP:
-                $image->flopImage();
-                $image->rotateImage("#000", -90);
-                break;
-            case \Imagick::ORIENTATION_RIGHTTOP:
-                $image->rotateImage("#000", 90);
-                break;
-            case \Imagick::ORIENTATION_RIGHTBOTTOM:
-                $image->flopImage();
-                $image->rotateImage("#000", 90);
-                break;
-            case \Imagick::ORIENTATION_LEFTBOTTOM:
-                $image->rotateImage("#000", -90);
-                break;
-            default: // Invalid orientation
-                break;
-        }
-        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
-        return $image;
-    }
-
     /**
      * Draw/create thumbnail image
      *
@@ -223,21 +186,40 @@ class ImagesModifiers
         imagedestroy($img_new);
     }
 
-
-    /***
-     * ROTATIONS (IOS)
-     * @param $path
-     * @param $deg
-     */
-
-
-    function rotate($path, $deg)
+    private function autorotate(\Imagick $image)
     {
-        if (exif_imagetype($path) == IMAGETYPE_JPEG) {
-            $source = imagecreatefromjpeg($path);
-            $rotate = imagerotate($source, $deg, 0);
-            imagejpeg($rotate, $path);
+        switch ($image->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPLEFT:
+                break;
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $image->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $image->flopImage();
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $image->flopImage();
+                $image->rotateImage("#000", -90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $image->flopImage();
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $image->rotateImage("#000", -90);
+                break;
+            default: // Invalid orientation
+                break;
         }
+        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+        return $image;
     }
 
     function improve($path)
@@ -267,6 +249,22 @@ class ImagesModifiers
         }
 
 
+    }
+
+    /***
+     * ROTATIONS (IOS)
+     * @param $path
+     * @param $deg
+     */
+
+
+    function rotate($path, $deg)
+    {
+        if (exif_imagetype($path) == IMAGETYPE_JPEG) {
+            $source = imagecreatefromjpeg($path);
+            $rotate = imagerotate($source, $deg, 0);
+            imagejpeg($rotate, $path);
+        }
     }
 
 }

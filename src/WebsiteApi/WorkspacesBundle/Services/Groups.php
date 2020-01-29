@@ -3,11 +3,11 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
 use WebsiteApi\WorkspacesBundle\Model\GroupsInterface;
-use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
-class Groups implements GroupsInterface
+class Groups
 {
 
     private $doctrine;
@@ -66,6 +66,29 @@ class Groups implements GroupsInterface
 
         return $group;
 
+    }
+
+    public function init($group)
+    {
+        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+
+        $groupApps = $groupAppRepository->findBy(Array("group" => $group));
+
+        $listApps = $appRepository->findBy(Array("is_default" => true));
+
+        if (count($groupApps) != 0) {
+            return false;
+        } else {
+            foreach ($listApps as $app) {
+                $groupapp = new GroupApp($group, $app->getId());
+                $groupapp->setWorkspaceDefault(true);
+                $this->doctrine->persist($groupapp);
+            }
+            $this->doctrine->flush();
+            return true;
+        }
+        return true;
     }
 
     public function changeData($groupId, $name, $currentUserId = null)
@@ -181,7 +204,6 @@ class Groups implements GroupsInterface
         return false;
     }
 
-
     public function changeLogo($groupId, $logo, $currentUserId = null, $uploader = null)
     {
         if ($currentUserId != null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")) {
@@ -206,29 +228,6 @@ class Groups implements GroupsInterface
         }
 
         return false;
-    }
-
-    public function init($group)
-    {
-        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-
-        $groupApps = $groupAppRepository->findBy(Array("group" => $group));
-
-        $listApps = $appRepository->findBy(Array("is_default" => true));
-
-        if (count($groupApps) != 0) {
-            return false;
-        } else {
-            foreach ($listApps as $app) {
-                $groupapp = new GroupApp($group, $app->getId());
-                $groupapp->setWorkspaceDefault(true);
-                $this->doctrine->persist($groupapp);
-            }
-            $this->doctrine->flush();
-            return true;
-        }
-        return true;
     }
 
     public function remove($group)

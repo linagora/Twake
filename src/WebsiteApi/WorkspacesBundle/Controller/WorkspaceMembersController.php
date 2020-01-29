@@ -9,8 +9,6 @@
 namespace WebsiteApi\WorkspacesBundle\Controller;
 
 use PHPUnit\Util\Json;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

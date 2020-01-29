@@ -2,12 +2,9 @@
 
 namespace WebsiteApi\MarketBundle\Services;
 
+use WebsiteApi\MarketBundle\Entity\AccessToken;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\ApplicationResource;
-use WebsiteApi\MarketBundle\Entity\AccessToken;
-use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
-use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
-use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
 class ApplicationApi
 {
@@ -31,16 +28,6 @@ class ApplicationApi
 
         return $entity->getToken();
 
-    }
-
-
-    /**
-     * @param $app_id
-     * @return Application
-     */
-    public function get($app_id)
-    {
-        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $app_id));
     }
 
     /**
@@ -105,51 +92,13 @@ class ApplicationApi
 
     }
 
-    public function hasPrivilege($app_id, $group_id, $privileges = [], $group_app = null)
+    /**
+     * @param $app_id
+     * @return Application
+     */
+    public function get($app_id)
     {
-        $app = $this->get($app_id);
-        $group_app = $group_app ? $group_app : $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
-
-        if (!$group_app || !$app) {
-            return false;
-        }
-
-        if (count($privileges) == 0) {
-            return true;
-        }
-
-        $accepted_privileges = $group_app->getPrivileges();
-
-        $ok = true;
-        foreach ($privileges as $privilege) {
-            if (!in_array($privilege, $accepted_privileges)) {
-                $ok = false;
-            }
-        }
-        if ($ok) {
-            return true;
-        }
-
-        $app_privileges = $app->getPrivileges();
-
-        $ok = true;
-        foreach ($privileges as $privilege) {
-            if (!in_array($privilege, $app_privileges)) {
-                $ok = false;
-            }
-        }
-        if (!$ok) {
-            return false;
-        }
-
-        //This app is developed by the group
-        if ($group_id == $app->getGroupId()) {
-            return true;
-        }
-
-        //TODO send an email to the group managers to update the app because it was not updated with latest privileges
-
-        return false;
+        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $app_id));
     }
 
     public function hasCapability($app_id, $group_id, $capabilities = [], $group_app = null)
@@ -199,6 +148,53 @@ class ApplicationApi
         return false;
     }
 
+    public function hasPrivilege($app_id, $group_id, $privileges = [], $group_app = null)
+    {
+        $app = $this->get($app_id);
+        $group_app = $group_app ? $group_app : $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
+
+        if (!$group_app || !$app) {
+            return false;
+        }
+
+        if (count($privileges) == 0) {
+            return true;
+        }
+
+        $accepted_privileges = $group_app->getPrivileges();
+
+        $ok = true;
+        foreach ($privileges as $privilege) {
+            if (!in_array($privilege, $accepted_privileges)) {
+                $ok = false;
+            }
+        }
+        if ($ok) {
+            return true;
+        }
+
+        $app_privileges = $app->getPrivileges();
+
+        $ok = true;
+        foreach ($privileges as $privilege) {
+            if (!in_array($privilege, $app_privileges)) {
+                $ok = false;
+            }
+        }
+        if (!$ok) {
+            return false;
+        }
+
+        //This app is developed by the group
+        if ($group_id == $app->getGroupId()) {
+            return true;
+        }
+
+        //TODO send an email to the group managers to update the app because it was not updated with latest privileges
+
+        return false;
+    }
+
     public function hasResource($app_id, $workspace_id, $resource_type, $resource_id)
     {
     }
@@ -214,6 +210,69 @@ class ApplicationApi
         if ($this->curl_rcx) {
             $this->curl_rcx->execute();
         }
+    }
+
+    public function getResources($workspace_id, $resource_type, $resource_id)
+    {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
+        $list = $repo->findBy(Array("resource_id" => $resource_id));
+        $final_list = [];
+        foreach ($list as $el) {
+            if ($el->getWorkspaceId() == $workspace_id) {
+                $final_list[] = $el;
+            }
+        }
+        return $final_list;
+    }
+
+    public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
+    {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("id" => $app_id));
+
+        if (!$app) {
+            return false;
+        }
+
+        $repo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $repo->findOneBy(Array("id" => $workspace_id));
+
+        if (!$workspace) {
+            return false;
+        }
+
+        $current_user = null;
+        if ($current_user_id) {
+            $repo = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $current_user = $repo->findOneBy(Array("id" => $current_user_id));
+        }
+
+        //Verify we do not have this resource
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
+        $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
+
+        foreach ($candidates as $candidate) {
+            if ($candidate->getResourceId() == $resource_id) { //No necessity to verufy type as uuid are universaly unique
+                return true;
+            }
+        }
+
+        $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
+        $resource->setApplicationHooks($app->getHooks());
+        $this->doctrine->persist($resource);
+        $this->doctrine->flush();
+
+        $this->notifyApp($app_id, "resource", "add", Array(
+            "workspace" => $workspace,
+            "resource" => Array(
+                "id" => $resource_id,
+                "type" => $resource_type
+            ),
+            "user" => $current_user
+        ));
+
+        return true;
+
     }
 
     public function notifyApp($app_id, $type, $event, $data)
@@ -278,69 +337,6 @@ class ApplicationApi
         } catch (\Exception $e) {
             //Timeout exceeded maybe
         }
-
-        return true;
-
-    }
-
-    public function getResources($workspace_id, $resource_type, $resource_id)
-    {
-        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
-        $list = $repo->findBy(Array("resource_id" => $resource_id));
-        $final_list = [];
-        foreach ($list as $el) {
-            if ($el->getWorkspaceId() == $workspace_id) {
-                $final_list[] = $el;
-            }
-        }
-        return $final_list;
-    }
-
-    public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
-    {
-        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $app = $repo->findOneBy(Array("id" => $app_id));
-
-        if (!$app) {
-            return false;
-        }
-
-        $repo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $repo->findOneBy(Array("id" => $workspace_id));
-
-        if (!$workspace) {
-            return false;
-        }
-
-        $current_user = null;
-        if ($current_user_id) {
-            $repo = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $current_user = $repo->findOneBy(Array("id" => $current_user_id));
-        }
-
-        //Verify we do not have this resource
-        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
-        $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
-
-        foreach ($candidates as $candidate) {
-            if ($candidate->getResourceId() == $resource_id) { //No necessity to verufy type as uuid are universaly unique
-                return true;
-            }
-        }
-
-        $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
-        $resource->setApplicationHooks($app->getHooks());
-        $this->doctrine->persist($resource);
-        $this->doctrine->flush();
-
-        $this->notifyApp($app_id, "resource", "add", Array(
-            "workspace" => $workspace,
-            "resource" => Array(
-                "id" => $resource_id,
-                "type" => $resource_type
-            ),
-            "user" => $current_user
-        ));
 
         return true;
 

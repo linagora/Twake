@@ -5,12 +5,10 @@ namespace WebsiteApi\NotificationsBundle\Services;
 
 use Emojione\Client;
 use Emojione\Ruleset;
-use phpDocumentor\Reflection\Types\Array_;
-use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
-use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 use WebsiteApi\NotificationsBundle\Entity\PushNotificationQueue;
+use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
@@ -19,7 +17,7 @@ use WebsiteApi\UsersBundle\Entity\User;
  *
  * Gestion des notifications
  */
-class Notifications implements NotificationsInterface
+class Notifications
 {
 
     var $doctrine;
@@ -276,6 +274,121 @@ class Notifications implements NotificationsInterface
 
     }
 
+    /**
+     * @param $user User
+     */
+    private function addMailReminder($user)
+    {
+
+        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
+        $this->doctrine->persist($user);
+
+        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if (!$reminder) {
+            $reminder = new MailNotificationQueue($user->getId());
+            $this->doctrine->persist($reminder);
+        }
+
+        $this->doctrine->flush();
+
+    }
+
+    public function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
+    {
+
+        $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
+        $devices = $devicesRepo->findBy(Array("user" => $user));
+
+        $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
+
+        $count = count($devices);
+        for ($i = 0; $i < $count; $i++) {
+            $device = $devices[$i];
+
+            $token = $device->getValue();
+
+            $this->pushDeviceInternal($device->getType(), $token,
+                substr($text, 0, 100) . (strlen($title) > 100 ? "..." : ""),
+                substr($title, 0, 50) . (strlen($title) > 50 ? "..." : ""),
+                $badge,
+                $data,
+                $doPush
+            );
+
+
+        }
+    }
+
+    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data, $doPush = true)
+    {
+
+        if (strlen($deviceId) < 32) { //False device
+            return;
+        }
+
+        $data = Array(
+            "message" => $message,
+            "title" => $title,
+            "data" => json_encode($_data),
+            "badge" => $badge,
+            "device_id" => $deviceId,
+            "type" => $type
+        );
+
+        try {
+            $element = new PushNotificationQueue($data);
+            $this->doctrine->persist($element);
+            if ($doPush) {
+                $this->doctrine->flush();
+            }
+        } catch (\Exception $exception) {
+            error_log("ERROR in pushDeviceInternal");
+        }
+    }
+
+    public function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
+    {
+
+        $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
+        $devices = $devicesRepo->findBy(Array("user" => $user));
+
+        $count = count($devices);
+        for ($i = 0; $i < $count; $i++) {
+            $device = $devices[$i];
+
+            $token = $device->getValue();
+
+            $this->pushDeviceInternal($device->getType(), $token,
+                null,
+                null,
+                $badge,
+                $data,
+                $doPush
+            );
+
+
+        }
+    }
+
+
+    /* Private */
+
+    public function sendMail($application, $workspace, $user, $text)
+    {
+
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
+
+        $this->mailer->send($user->getEmail(), "notification", Array(
+            "_language" => $user ? $user->getLanguage() : "en",
+            "application_name" => ($application) ? $application->getName() : "Twake",
+            "workspace_name" => ($workspace) ? $workspace->getName() : "Account",
+            "username" => $user->getUsername(),
+            "text" => $text
+        ));
+    }
+
     public function deleteAll($application, $workspace, $user, $code = null, $force = false)
     {
 
@@ -383,138 +496,6 @@ class Notifications implements NotificationsInterface
 
     }
 
-    public function get($options, $current_user)
-    {
-        return $this->getAll($current_user);
-    }
-
-    public function getAll($user)
-    {
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-        $notifs = $nRepo->findBy(Array("user" => $user), Array(), 30); //Limit number of results
-
-        return $notifs;
-    }
-
-
-    /* Private */
-    public function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
-    {
-
-        $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
-        $devices = $devicesRepo->findBy(Array("user" => $user));
-
-        $count = count($devices);
-        for ($i = 0; $i < $count; $i++) {
-            $device = $devices[$i];
-
-            $token = $device->getValue();
-
-            $this->pushDeviceInternal($device->getType(), $token,
-                null,
-                null,
-                $badge,
-                $data,
-                $doPush
-            );
-
-
-        }
-    }
-
-    public function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
-    {
-
-        $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
-        $devices = $devicesRepo->findBy(Array("user" => $user));
-
-        $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
-        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
-
-        $count = count($devices);
-        for ($i = 0; $i < $count; $i++) {
-            $device = $devices[$i];
-
-            $token = $device->getValue();
-
-            $this->pushDeviceInternal($device->getType(), $token,
-                substr($text, 0, 100) . (strlen($title) > 100 ? "..." : ""),
-                substr($title, 0, 50) . (strlen($title) > 50 ? "..." : ""),
-                $badge,
-                $data,
-                $doPush
-            );
-
-
-        }
-    }
-
-    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data, $doPush = true)
-    {
-
-        if (strlen($deviceId) < 32) { //False device
-            return;
-        }
-
-        $data = Array(
-            "message" => $message,
-            "title" => $title,
-            "data" => json_encode($_data),
-            "badge" => $badge,
-            "device_id" => $deviceId,
-            "type" => $type
-        );
-
-        try {
-            $element = new PushNotificationQueue($data);
-            $this->doctrine->persist($element);
-            if ($doPush) {
-                $this->doctrine->flush();
-            }
-        } catch (\Exception $exception) {
-            error_log("ERROR in pushDeviceInternal");
-        }
-    }
-
-    public function sendMail($application, $workspace, $user, $text)
-    {
-
-        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
-
-        $this->mailer->send($user->getEmail(), "notification", Array(
-            "_language" => $user ? $user->getLanguage() : "en",
-            "application_name" => ($application) ? $application->getName() : "Twake",
-            "workspace_name" => ($workspace) ? $workspace->getName() : "Account",
-            "username" => $user->getUsername(),
-            "text" => $text
-        ));
-    }
-
-    public function sendCustomMail($mail, $template, $data = Array(), $files = Array())
-    {
-        $this->mailer->send($mail, $template, $data, $files);
-    }
-
-    /**
-     * @param $user User
-     */
-    private function addMailReminder($user)
-    {
-
-        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
-        $this->doctrine->persist($user);
-
-        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
-        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
-        if (!$reminder) {
-            $reminder = new MailNotificationQueue($user->getId());
-            $this->doctrine->persist($reminder);
-        }
-
-        $this->doctrine->flush();
-
-    }
-
     /**
      * @param $user User
      */
@@ -540,6 +521,24 @@ class Notifications implements NotificationsInterface
             $this->doctrine->flush();
         }
 
+    }
+
+    public function get($options, $current_user)
+    {
+        return $this->getAll($current_user);
+    }
+
+    public function getAll($user)
+    {
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notifs = $nRepo->findBy(Array("user" => $user), Array(), 30); //Limit number of results
+
+        return $notifs;
+    }
+
+    public function sendCustomMail($mail, $template, $data = Array(), $files = Array())
+    {
+        $this->mailer->send($mail, $template, $data, $files);
     }
 
     public function deleteAllExceptMessages($user, $force = false)

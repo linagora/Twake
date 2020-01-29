@@ -2,18 +2,18 @@
 
 namespace WebsiteApi\CoreBundle\Command;
 
+use Cassandra;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
-use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Input\InputOption;
-use Cassandra;
 
 class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 {
@@ -26,29 +26,6 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             ->addOption('complete', null, InputOption::VALUE_NONE, 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.')
             ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Dumps the generated SQL statements to the screen (does not execute them).')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Causes the generated SQL statements to be physically executed against your database.');
-    }
-
-    private function convertType($type)
-    {
-        $conversionFor = Array(
-            "string" => "text",
-            "twake_text" => "text",
-            "twake_string" => "text",
-            "twake_timeuuid" => "timeuuid",
-            "array" => "text",
-            "twake_boolean" => "tinyint",
-            "boolean" => "tinyint",
-            "text" => "text",
-            "twake_float" => "float",
-            "integer" => "int",
-            "bigint" => "bigint",
-            "twake_bigint" => "bigint",
-            "twake_counter" => "counter",
-            "decimal" => "decimal",
-            "twake_datetime" => "timestamp",
-            "blob" => "blob"
-        );
-        return isset($conversionFor[$type]) ? $conversionFor[$type] : "ERROR";
     }
 
     /**
@@ -373,6 +350,29 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
         error_log("Indexes = " . count($viable_indexes));
         error_log("Ignored cols = " . $ignored_cols);
 
+    }
+
+    private function convertType($type)
+    {
+        $conversionFor = Array(
+            "string" => "text",
+            "twake_text" => "text",
+            "twake_string" => "text",
+            "twake_timeuuid" => "timeuuid",
+            "array" => "text",
+            "twake_boolean" => "tinyint",
+            "boolean" => "tinyint",
+            "text" => "text",
+            "twake_float" => "float",
+            "integer" => "int",
+            "bigint" => "bigint",
+            "twake_bigint" => "bigint",
+            "twake_counter" => "counter",
+            "decimal" => "decimal",
+            "twake_datetime" => "timestamp",
+            "blob" => "blob"
+        );
+        return isset($conversionFor[$type]) ? $conversionFor[$type] : "ERROR";
     }
 
 }

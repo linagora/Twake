@@ -3,8 +3,8 @@
 
 namespace WebsiteApi\DriveBundle\Services\OldFileSystem;
 
-use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 
 class Adapter_AWS_DriveFileSystem
 {
@@ -45,11 +45,6 @@ class Adapter_AWS_DriveFileSystem
         $this->aws_s3_client = new S3Client($options);
     }
 
-    public function getRoot()
-    {
-        return dirname($this->root) . "/" . "drive" . "/";
-    }
-
     public function decode($path, $key, $mode = null)
     {
 
@@ -80,6 +75,11 @@ class Adapter_AWS_DriveFileSystem
         }
 
         return false;
+    }
+
+    public function getRoot()
+    {
+        return dirname($this->root) . "/" . "drive" . "/";
     }
 
     public function verifyPath($path)

@@ -2,9 +2,6 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
-use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
-use WebsiteApi\DiscussionBundle\Entity\Message;
-
 class Pagination
 
 {

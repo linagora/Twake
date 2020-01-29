@@ -97,28 +97,6 @@ class BoardBoard
         return $ret;
     }
 
-    public function remove($object, $options, $current_user = null)
-    {
-        $id = $object["id"];
-
-        if (!$this->hasAccess($object, $current_user)) {
-            return false;
-        }
-
-        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $id));
-        if (!$board) {
-            return false;
-        }
-
-        $this->doctrine->getRepository("TwakeTasksBundle:Task")->removeBy(Array("board_id" => $id));
-        $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->removeBy(Array("board_id" => $id));
-
-        $this->doctrine->remove($board);
-        $this->doctrine->flush();
-
-        return $object;
-    }
-
     public function save($object, $options, $current_user)
     {
 
@@ -210,6 +188,28 @@ class BoardBoard
             $this->doctrine->flush();
         }
 
+    }
+
+    public function remove($object, $options, $current_user = null)
+    {
+        $id = $object["id"];
+
+        if (!$this->hasAccess($object, $current_user)) {
+            return false;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $id));
+        if (!$board) {
+            return false;
+        }
+
+        $this->doctrine->getRepository("TwakeTasksBundle:Task")->removeBy(Array("board_id" => $id));
+        $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->removeBy(Array("board_id" => $id));
+
+        $this->doctrine->remove($board);
+        $this->doctrine->flush();
+
+        return $object;
     }
 
 }

@@ -5,7 +5,6 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Services\MessageSystem;
 
 
 class DiscussionController extends Controller

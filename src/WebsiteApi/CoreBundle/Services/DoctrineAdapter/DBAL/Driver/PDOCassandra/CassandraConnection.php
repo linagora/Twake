@@ -67,6 +67,14 @@ class PDOStatementAdapter
     {
     }
 
+    public function fetchColumn($position)
+    {
+        $res = $this->data->current();
+        $this->data->next();
+        $res = $res[array_keys($res)[$position]];
+        return $this->stripslashesCell($res);
+    }
+
     protected function stripslashesCell($obj = "")
     {
         if (is_string($obj)) {
@@ -75,23 +83,18 @@ class PDOStatementAdapter
         return $obj;
     }
 
-    protected function stripslashesRow($obj = Array())
+    public function fetchAll($fetch_style, $fetch_argument = null, $ctor_args = array())
     {
-        if (!is_array($obj)) {
-            return $obj;
-        }
-        foreach ($obj as $key => $value) {
-            $obj[$key] = $this->stripslashesCell($value);
-        }
-        return $obj;
-    }
+        $res = Array();
 
-    public function fetchColumn($position)
-    {
-        $res = $this->data->current();
-        $this->data->next();
-        $res = $res[array_keys($res)[$position]];
-        return $this->stripslashesCell($res);
+        while ($row) {
+            $row = $this->fetch();
+            if ($row) {
+                $res[] = $row;
+            }
+        }
+
+        return $res;
     }
 
     public function fetch()
@@ -109,18 +112,15 @@ class PDOStatementAdapter
         return $this->stripslashesRow($res);
     }
 
-    public function fetchAll($fetch_style, $fetch_argument = null, $ctor_args = array())
+    protected function stripslashesRow($obj = Array())
     {
-        $res = Array();
-
-        while ($row) {
-            $row = $this->fetch();
-            if ($row) {
-                $res[] = $row;
-            }
+        if (!is_array($obj)) {
+            return $obj;
         }
-
-        return $res;
+        foreach ($obj as $key => $value) {
+            $obj[$key] = $this->stripslashesCell($value);
+        }
+        return $obj;
     }
 
     public function rowCount()
@@ -339,6 +339,49 @@ class CassandraConnection
     }
 
     /**
+     * Cassandra does not support table alias. Let's remove them
+     * @param string $sql
+     * @return string $sql
+     */
+    private function removeTableAlias($sql)
+    {
+        //clean up extra space
+        $sql = trim(preg_replace('/\s+/', ' ', $sql));
+        $arrSplitByFROM = explode('FROM ', $sql, 2);
+        if (count($arrSplitByFROM) >= 2) {
+            $arrSplit4TableAlias = explode(' ', trim($arrSplitByFROM[1]), 3);
+            if (count($arrSplit4TableAlias) >= 2
+                && strtoupper($arrSplit4TableAlias[1]) != 'WHERE') {
+                //replace table alias and merge stuff
+                $alias = $arrSplit4TableAlias[1];
+                $arrSplit4TableAlias[1] = '';
+                $arrSplitByFROM[0] = str_replace($alias . '.', '', $arrSplitByFROM[0]);
+                $arrSplitByFROM[1] = implode(' ', $arrSplit4TableAlias);
+                $arrSplitByFROM[1] = str_replace($alias . '.', '', $arrSplitByFROM[1]);
+                return implode('FROM ', $arrSplitByFROM);
+            }
+
+        }
+        return $sql;
+    }
+
+    /**
+     * For COUNT(), Cassandra only allows two formats: COUNT(1) and COUNT(*)
+     * @param string $sql
+     * @return string $sql
+     */
+    private function normalizeCount($sql)
+    {
+        $sql = trim(preg_replace('/COUNT\(.*\)/i', 'COUNT(1)', $sql));
+        return $sql;
+    }
+
+    public function exec($cql, $pdoStatement = null)
+    {
+        return $this->query($cql, $pdoStatement);
+    }
+
+    /**
      * {@inheritdoc}non-PHPdoc)
      */
     public function query($cql = null, $pdoStatement = null)
@@ -408,49 +451,6 @@ class CassandraConnection
             return $pdo;
 
         }
-    }
-
-    public function exec($cql, $pdoStatement = null)
-    {
-        return $this->query($cql, $pdoStatement);
-    }
-
-    /**
-     * For COUNT(), Cassandra only allows two formats: COUNT(1) and COUNT(*)
-     * @param string $sql
-     * @return string $sql
-     */
-    private function normalizeCount($sql)
-    {
-        $sql = trim(preg_replace('/COUNT\(.*\)/i', 'COUNT(1)', $sql));
-        return $sql;
-    }
-
-    /**
-     * Cassandra does not support table alias. Let's remove them
-     * @param string $sql
-     * @return string $sql
-     */
-    private function removeTableAlias($sql)
-    {
-        //clean up extra space
-        $sql = trim(preg_replace('/\s+/', ' ', $sql));
-        $arrSplitByFROM = explode('FROM ', $sql, 2);
-        if (count($arrSplitByFROM) >= 2) {
-            $arrSplit4TableAlias = explode(' ', trim($arrSplitByFROM[1]), 3);
-            if (count($arrSplit4TableAlias) >= 2
-                && strtoupper($arrSplit4TableAlias[1]) != 'WHERE') {
-                //replace table alias and merge stuff
-                $alias = $arrSplit4TableAlias[1];
-                $arrSplit4TableAlias[1] = '';
-                $arrSplitByFROM[0] = str_replace($alias . '.', '', $arrSplitByFROM[0]);
-                $arrSplitByFROM[1] = implode(' ', $arrSplit4TableAlias);
-                $arrSplitByFROM[1] = str_replace($alias . '.', '', $arrSplitByFROM[1]);
-                return implode('FROM ', $arrSplitByFROM);
-            }
-
-        }
-        return $sql;
     }
 
     private function removeCQLUnallowedKeys($sql)

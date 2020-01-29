@@ -2,25 +2,23 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
-use \DateTime;
+use DateTime;
 use WebsiteApi\WorkspacesBundle\Model\PricingPlanInterface;
 
-class PricingPlan implements PricingPlanInterface
+class PricingPlan
 {
 
-    private $doctrine;
-    private $groupPeriod;
     var $newApps = Array('all' => Array(), 'notall' => Array());
-
-    var $none_cost_percentage = 0; //none cost 0%
-    var $partial_cost_percentage = 0.5; //partial cost 50%
-    var $total_cost_percentage = 1; //total cost 100%
-    var $none = 1;
-    var $partial = 10;
+    var $none_cost_percentage = 0;
+    var $partial_cost_percentage = 0.5;
+    var $total_cost_percentage = 1; //none cost 0%
+    var $none = 1; //partial cost 50%
+    var $partial = 10; //total cost 100%
     var $month_length = 20;
-    var $min_paid_users_percentage = 0.01; //min cost is 1%
+    var $min_paid_users_percentage = 0.01;
     var $nbDays;
-
+    private $doctrine; //min cost is 1%
+    private $groupPeriod;
 
     public function __construct($doctrine, $groupperiodservice)
     {
@@ -60,21 +58,6 @@ class PricingPlan implements PricingPlanInterface
         $this->doctrine->flush();
     }
 
-    public function getMinimalPricing()
-    {
-        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-        $plans = $planRepository->findBy(Array());
-        $plan = null;
-        foreach ($plans as $_plan) {
-            if ($_plan->getLabel() != "private") {
-                if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
-                    $plan = $_plan;
-                }
-            }
-        }
-        return $plan;
-    }
-
     public function getLimitations($groupId)
     {
 
@@ -93,6 +76,21 @@ class PricingPlan implements PricingPlanInterface
         }
 
         return $pricing;
+    }
+
+    public function getMinimalPricing()
+    {
+        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $plans = $planRepository->findBy(Array());
+        $plan = null;
+        foreach ($plans as $_plan) {
+            if ($_plan->getLabel() != "private") {
+                if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
+                    $plan = $_plan;
+                }
+            }
+        }
+        return $plan;
     }
 
     public function getLimitation($groupId, $key, $default)

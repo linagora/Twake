@@ -2,7 +2,7 @@
 
 namespace WebsiteApi\DriveBundle\Services\Storage\Encryption;
 
-use \Exception;
+use Exception;
 
 /**
  * Please see https://www.aescrypt.com/aes_file_format.html
@@ -63,82 +63,6 @@ class AESCryptFileLib
         return $filename;
     }
 
-    public function readExtensionBlocks($source_file)
-    {
-        //Check we can read the source file
-        $this->checkSourceExistsAndReadable($source_file);
-
-        //Attempt to parse and return the extension blocks only
-        //Open the file
-        $source_fh = fopen($source_file, "rb");
-        if ($source_fh === false) {
-            throw new AESCryptFileAccessException("Cannot open file for reading: " . $source_file);
-        }
-
-        $this->readChunk($source_fh, 3, "file header", NULL, "AES");
-        $version_chunk = $this->readChunk($source_fh, 1, "version byte", "C");
-        $extension_blocks = array();
-        if (bin2hex($version_chunk) === dechex(ord("0"))) {
-            //This file uses version 0 of the standard
-            //Extension blocks dont exist in this versions spec
-            $extension_blocks = NULL;
-        } else if (bin2hex($version_chunk) === dechex(ord("1"))) {
-            //This file uses version 1 of the standard
-            //Extension blocks dont exist in this versions spec
-            $extension_blocks = NULL;
-        } else if (bin2hex($version_chunk) === dechex(ord("2"))) {
-
-            //This file uses version 2 of the standard (The latest standard at the time of writing)
-            $this->readChunk($source_fh, 1, "reserved byte", "C", 0);
-            $eb_index = 0;
-            while (true) {
-                //Read ext length
-                $ext_length = $this->readChunk($source_fh, 2, "extension length", "n");
-                if ($ext_length == 0) {
-                    break;
-                } else {
-                    $ext_content = $this->readChunk($source_fh, $ext_length, "extension content");
-
-                    //Find the first NULL splitter character
-                    $null_index = self::bin_strpos($ext_content, "\x00");
-                    if ($null_index === false) {
-                        throw new AESCryptCorruptedFileException("Extension block data at index {$eb_index} has no null splitter byte: " . $source_file);
-                    }
-
-                    $identifier = self::bin_substr($ext_content, 0, $null_index);
-                    $contents = self::bin_substr($ext_content, $null_index + 1);
-
-                    if ($identifier != "") {
-                        $extension_blocks[$eb_index] = array(
-                            "identifier" => $identifier,
-                            "contents" => $contents
-                        );
-                        $eb_index++;
-                    }
-                }
-            }
-        } else {
-            throw new AESCryptCorruptedFileException("Unknown version: " . bin2hex($version_chunk));
-        }
-        return $extension_blocks;
-    }
-
-    public function decryptFile($source_file, $passphrase, $dest_file = NULL)
-    {
-        //Check we can read the source file
-        $this->checkSourceExistsAndReadable($source_file);
-
-        //Check whether the passphrase is correct before decrypting the keys and validating with HMAC1
-        //If it is, attempt to decrypt the file using these keys and write to destination file
-        $dest_fh = $this->doDecryptFile($source_file, $passphrase, $dest_file);
-
-        //Return encrypted file location
-        $meta_data = stream_get_meta_data($dest_fh);
-        fclose($dest_fh);
-        $filename = realpath($meta_data["uri"]);
-        return $filename;
-    }
-
     private function checkSourceExistsAndReadable($source_file)
     {
         //Source file must exist
@@ -150,83 +74,6 @@ class AESCryptFileLib
         if (!is_readable($source_file)) {
             throw new AESCryptFileAccessException("Cannot read: " . $source_file);
         }
-    }
-
-    private function openDestinationFile($source_file, $dest_file, $encrypting = true)
-    {
-
-        //Please use checkSourceExistsAndReadable on the source before running this function as we assume it exists here
-        $source_info = pathinfo($source_file);
-
-        if ($dest_file === NULL) {
-            if (!$encrypting) {
-                //We are decrypting without a known destination file
-                //We should check for a double extension in the file name e.g. (filename.docx.aes)
-                //Actually, we just check it ends with .aes and strip off the rest
-                if (preg_match("/^(.+)\." . self::ENCRYPTED_FILE_EXTENSION . "$/i", $source_info['basename'], $matches)) {
-                    //Yes, source is an .aes file
-                    //We remove the .aes part and use a destination file in the same source directory
-                    $dest_file = $source_info['dirname'] . DIRECTORY_SEPARATOR . $matches[1];
-                } else {
-                    throw new AESCryptCannotInferDestinationException($source_file);
-                }
-
-            } else {
-                //We are encrypting, use .aes as destination file extension
-                $dest_file = $source_file . "." . self::ENCRYPTED_FILE_EXTENSION;
-            }
-        }
-
-        if ($this->use_dynamic_filenaming) {
-            //Try others until it doesnt exist
-            $dest_info = pathinfo($dest_file);
-
-            $duplicate_id = 1;
-            while (file_exists($dest_file)) {
-                //Check the destination file doesn't exist (We never overwrite)
-                $dest_file = $dest_info['dirname'] . DIRECTORY_SEPARATOR . $dest_info['filename'] . "({$duplicate_id})." . $dest_info['extension'];
-                $duplicate_id++;
-            }
-        } else {
-            if (file_exists($dest_file)) {
-                throw new AESCryptFileExistsException($dest_file);
-            }
-        }
-
-        //Now that we found a non existing file, attempt to open it for writing
-        $dest_fh = fopen($dest_file, "xb");
-        if ($dest_fh === false) {
-            throw new AESCryptFileAccessException("Cannot create for writing:" . $dest_file);
-        }
-
-        return $dest_fh;
-    }
-
-    private function readChunk($source_fh, $num_bytes, $chunk_name, $unpack_format = NULL, $expected_value = NULL)
-    {
-        $read_data = fread($source_fh, $num_bytes);
-        if ($read_data === false) {
-            throw new AESCryptFileAccessException("Could not read chunk " . $chunk_name . " of " . $num_bytes . " bytes");
-        }
-
-        if (self::bin_strlen($read_data) != $num_bytes) {
-            throw new AESCryptCorruptedFileException("Could not read chunk " . $chunk_name . " of " . $num_bytes . " bytes, only found " . self::bin_strlen($read_data) . " bytes");
-        }
-
-        if ($unpack_format !== NULL) {
-            $read_data = unpack($unpack_format, $read_data);
-            if (is_array($read_data)) {
-                $read_data = $read_data[1];
-            }
-        }
-
-
-        if ($expected_value !== NULL) {
-            if ($read_data !== $expected_value) {
-                throw new AESCryptCorruptedFileException("The chunk " . $chunk_name . " was expected to be " . bin2hex($expected_value) . " but found " . bin2hex($read_data));
-            }
-        }
-        return $read_data;
     }
 
     private function checkExtensionData($ext_data)
@@ -365,6 +212,254 @@ class AESCryptFileLib
         $this->debug("ENCRYPTION", "Complete");
 
         return $dest_fh;
+    }
+
+    private function debug($name, $msg)
+    {
+        if ($this->debugging) {
+            echo "<br/>";
+            echo $name . " - " . $msg;
+            echo "<br/>";
+        }
+    }
+
+    private function getBinaryExtensionData($ext_data)
+    {
+        $this->checkExtensionData($ext_data);
+
+        if ($ext_data === NULL) {
+            $ext_data = array();
+        }
+
+        $output = "";
+        foreach ($ext_data as $ext) {
+            $ident = $ext['identifier'];
+            $contents = $ext['contents'];
+            $data = $ident . pack("C", 0) . $contents;
+            $output .= pack("n", self::bin_strlen($data));
+            $output .= $data;
+        }
+
+        //Also insert a 128 byte container
+        $data = str_repeat(pack("C", 0), 128);
+        $output .= pack("n", self::bin_strlen($data));
+        $output .= $data;
+
+        //2 finishing NULL bytes to signify end of extensions
+        $output .= pack("C", 0);
+        $output .= pack("C", 0);
+        return $output;
+    }
+
+    public static function bin_strlen($string)
+    {
+        if (function_exists('mb_strlen')) {
+            return mb_strlen($string, '8bit');
+        } else {
+            return strlen($string);
+        }
+    }
+
+    private function createKeyUsingIVAndPassphrase($iv, $passphrase)
+    {
+        //Start with the IV padded to 32 bytes
+        $aes_key = str_pad($iv, 32, hex2bin("00"));
+        $iterations = 8192;
+        for ($i = 0; $i < $iterations; $i++) {
+            $hash = hash_init("sha256");
+            hash_update($hash, $aes_key);
+            hash_update($hash, $passphrase);
+            $aes_key = hash_final($hash, true);
+        }
+        return $aes_key;
+    }
+
+    private function openDestinationFile($source_file, $dest_file, $encrypting = true)
+    {
+
+        //Please use checkSourceExistsAndReadable on the source before running this function as we assume it exists here
+        $source_info = pathinfo($source_file);
+
+        if ($dest_file === NULL) {
+            if (!$encrypting) {
+                //We are decrypting without a known destination file
+                //We should check for a double extension in the file name e.g. (filename.docx.aes)
+                //Actually, we just check it ends with .aes and strip off the rest
+                if (preg_match("/^(.+)\." . self::ENCRYPTED_FILE_EXTENSION . "$/i", $source_info['basename'], $matches)) {
+                    //Yes, source is an .aes file
+                    //We remove the .aes part and use a destination file in the same source directory
+                    $dest_file = $source_info['dirname'] . DIRECTORY_SEPARATOR . $matches[1];
+                } else {
+                    throw new AESCryptCannotInferDestinationException($source_file);
+                }
+
+            } else {
+                //We are encrypting, use .aes as destination file extension
+                $dest_file = $source_file . "." . self::ENCRYPTED_FILE_EXTENSION;
+            }
+        }
+
+        if ($this->use_dynamic_filenaming) {
+            //Try others until it doesnt exist
+            $dest_info = pathinfo($dest_file);
+
+            $duplicate_id = 1;
+            while (file_exists($dest_file)) {
+                //Check the destination file doesn't exist (We never overwrite)
+                $dest_file = $dest_info['dirname'] . DIRECTORY_SEPARATOR . $dest_info['filename'] . "({$duplicate_id})." . $dest_info['extension'];
+                $duplicate_id++;
+            }
+        } else {
+            if (file_exists($dest_file)) {
+                throw new AESCryptFileExistsException($dest_file);
+            }
+        }
+
+        //Now that we found a non existing file, attempt to open it for writing
+        $dest_fh = fopen($dest_file, "xb");
+        if ($dest_fh === false) {
+            throw new AESCryptFileAccessException("Cannot create for writing:" . $dest_file);
+        }
+
+        return $dest_fh;
+    }
+
+    //Converts the given extension data in to binary data
+
+    public function readExtensionBlocks($source_file)
+    {
+        //Check we can read the source file
+        $this->checkSourceExistsAndReadable($source_file);
+
+        //Attempt to parse and return the extension blocks only
+        //Open the file
+        $source_fh = fopen($source_file, "rb");
+        if ($source_fh === false) {
+            throw new AESCryptFileAccessException("Cannot open file for reading: " . $source_file);
+        }
+
+        $this->readChunk($source_fh, 3, "file header", NULL, "AES");
+        $version_chunk = $this->readChunk($source_fh, 1, "version byte", "C");
+        $extension_blocks = array();
+        if (bin2hex($version_chunk) === dechex(ord("0"))) {
+            //This file uses version 0 of the standard
+            //Extension blocks dont exist in this versions spec
+            $extension_blocks = NULL;
+        } else if (bin2hex($version_chunk) === dechex(ord("1"))) {
+            //This file uses version 1 of the standard
+            //Extension blocks dont exist in this versions spec
+            $extension_blocks = NULL;
+        } else if (bin2hex($version_chunk) === dechex(ord("2"))) {
+
+            //This file uses version 2 of the standard (The latest standard at the time of writing)
+            $this->readChunk($source_fh, 1, "reserved byte", "C", 0);
+            $eb_index = 0;
+            while (true) {
+                //Read ext length
+                $ext_length = $this->readChunk($source_fh, 2, "extension length", "n");
+                if ($ext_length == 0) {
+                    break;
+                } else {
+                    $ext_content = $this->readChunk($source_fh, $ext_length, "extension content");
+
+                    //Find the first NULL splitter character
+                    $null_index = self::bin_strpos($ext_content, "\x00");
+                    if ($null_index === false) {
+                        throw new AESCryptCorruptedFileException("Extension block data at index {$eb_index} has no null splitter byte: " . $source_file);
+                    }
+
+                    $identifier = self::bin_substr($ext_content, 0, $null_index);
+                    $contents = self::bin_substr($ext_content, $null_index + 1);
+
+                    if ($identifier != "") {
+                        $extension_blocks[$eb_index] = array(
+                            "identifier" => $identifier,
+                            "contents" => $contents
+                        );
+                        $eb_index++;
+                    }
+                }
+            }
+        } else {
+            throw new AESCryptCorruptedFileException("Unknown version: " . bin2hex($version_chunk));
+        }
+        return $extension_blocks;
+    }
+
+    //This is sha256 by standard and should always returns 256bits (32 bytes) of hash data
+    //Looking at the java implementation, it seems we should iterate the hasing 8192 times
+
+    private function readChunk($source_fh, $num_bytes, $chunk_name, $unpack_format = NULL, $expected_value = NULL)
+    {
+        $read_data = fread($source_fh, $num_bytes);
+        if ($read_data === false) {
+            throw new AESCryptFileAccessException("Could not read chunk " . $chunk_name . " of " . $num_bytes . " bytes");
+        }
+
+        if (self::bin_strlen($read_data) != $num_bytes) {
+            throw new AESCryptCorruptedFileException("Could not read chunk " . $chunk_name . " of " . $num_bytes . " bytes, only found " . self::bin_strlen($read_data) . " bytes");
+        }
+
+        if ($unpack_format !== NULL) {
+            $read_data = unpack($unpack_format, $read_data);
+            if (is_array($read_data)) {
+                $read_data = $read_data[1];
+            }
+        }
+
+
+        if ($expected_value !== NULL) {
+            if ($read_data !== $expected_value) {
+                throw new AESCryptCorruptedFileException("The chunk " . $chunk_name . " was expected to be " . bin2hex($expected_value) . " but found " . bin2hex($read_data));
+            }
+        }
+        return $read_data;
+    }
+
+    public static function bin_strpos($haystack, $needle, $offset = 0)
+    {
+        if (function_exists('mb_strpos')) {
+            return mb_strpos($haystack, $needle, $offset, '8bit');
+        } else {
+            return strpos($haystack, $needle, $offset);
+        }
+    }
+
+    public static function bin_substr($string, $start, $length = NULL)
+    {
+        if (function_exists('mb_substr')) {
+            return mb_substr($string, $start, $length, '8bit');
+        } else {
+            return substr($string, $start, $length);
+        }
+    }
+
+    //http://php.net/manual/en/mbstring.overload.php
+    //String functions which may be overloaded are: mail, strlen, strpos, strrpos, substr,
+    //strtolower, strtoupper, stripos, strripos, strstr, stristr, strrchr,
+    //substr_count, ereg, eregi, ereg_replace, eregi_replace, split
+    //
+    //Since we use some of these str_ php functions to manipulate binary data,
+    //to prevent accidental multibyte string functions thinking binary data is a
+    //multibyte string and breaking the engine, we use the 8bit mode
+    //with the mb_ equivalents if they exist.
+
+    //Functions we use and so must wrap: strlen, strpos, substr
+
+    public function decryptFile($source_file, $passphrase, $dest_file = NULL)
+    {
+        //Check we can read the source file
+        $this->checkSourceExistsAndReadable($source_file);
+
+        //Check whether the passphrase is correct before decrypting the keys and validating with HMAC1
+        //If it is, attempt to decrypt the file using these keys and write to destination file
+        $dest_fh = $this->doDecryptFile($source_file, $passphrase, $dest_file);
+
+        //Return encrypted file location
+        $meta_data = stream_get_meta_data($dest_fh);
+        fclose($dest_fh);
+        $filename = realpath($meta_data["uri"]);
+        return $filename;
     }
 
     private function doDecryptFile($source_file, $passphrase, $dest_file)
@@ -519,51 +614,6 @@ class AESCryptFileLib
         throw new \Exception("Not implemented");
     }
 
-    //Converts the given extension data in to binary data
-    private function getBinaryExtensionData($ext_data)
-    {
-        $this->checkExtensionData($ext_data);
-
-        if ($ext_data === NULL) {
-            $ext_data = array();
-        }
-
-        $output = "";
-        foreach ($ext_data as $ext) {
-            $ident = $ext['identifier'];
-            $contents = $ext['contents'];
-            $data = $ident . pack("C", 0) . $contents;
-            $output .= pack("n", self::bin_strlen($data));
-            $output .= $data;
-        }
-
-        //Also insert a 128 byte container
-        $data = str_repeat(pack("C", 0), 128);
-        $output .= pack("n", self::bin_strlen($data));
-        $output .= $data;
-
-        //2 finishing NULL bytes to signify end of extensions
-        $output .= pack("C", 0);
-        $output .= pack("C", 0);
-        return $output;
-    }
-
-    //This is sha256 by standard and should always returns 256bits (32 bytes) of hash data
-    //Looking at the java implementation, it seems we should iterate the hasing 8192 times
-    private function createKeyUsingIVAndPassphrase($iv, $passphrase)
-    {
-        //Start with the IV padded to 32 bytes
-        $aes_key = str_pad($iv, 32, hex2bin("00"));
-        $iterations = 8192;
-        for ($i = 0; $i < $iterations; $i++) {
-            $hash = hash_init("sha256");
-            hash_update($hash, $aes_key);
-            hash_update($hash, $passphrase);
-            $aes_key = hash_final($hash, true);
-        }
-        return $aes_key;
-    }
-
     private function validateHMAC($key, $data, $hash, $name)
     {
         $calculated = hash_hmac("sha256", $data, $key, true);
@@ -576,54 +626,6 @@ class AESCryptFileLib
             } else {
                 throw new AESCryptCorruptedFileException("{$name} failed to validate integrity of encrypted data.  The file is corrupted and should not be trusted.");
             }
-        }
-    }
-
-    private function debug($name, $msg)
-    {
-        if ($this->debugging) {
-            echo "<br/>";
-            echo $name . " - " . $msg;
-            echo "<br/>";
-        }
-    }
-
-    //http://php.net/manual/en/mbstring.overload.php
-    //String functions which may be overloaded are: mail, strlen, strpos, strrpos, substr,
-    //strtolower, strtoupper, stripos, strripos, strstr, stristr, strrchr,
-    //substr_count, ereg, eregi, ereg_replace, eregi_replace, split
-    //
-    //Since we use some of these str_ php functions to manipulate binary data,
-    //to prevent accidental multibyte string functions thinking binary data is a
-    //multibyte string and breaking the engine, we use the 8bit mode
-    //with the mb_ equivalents if they exist.
-
-    //Functions we use and so must wrap: strlen, strpos, substr
-
-    public static function bin_strlen($string)
-    {
-        if (function_exists('mb_strlen')) {
-            return mb_strlen($string, '8bit');
-        } else {
-            return strlen($string);
-        }
-    }
-
-    public static function bin_strpos($haystack, $needle, $offset = 0)
-    {
-        if (function_exists('mb_strpos')) {
-            return mb_strpos($haystack, $needle, $offset, '8bit');
-        } else {
-            return strpos($haystack, $needle, $offset);
-        }
-    }
-
-    public static function bin_substr($string, $start, $length = NULL)
-    {
-        if (function_exists('mb_substr')) {
-            return mb_substr($string, $start, $length, '8bit');
-        } else {
-            return substr($string, $start, $length);
         }
     }
 

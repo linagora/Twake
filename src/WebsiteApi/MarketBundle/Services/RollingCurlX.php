@@ -12,13 +12,15 @@ namespace WebsiteApi\MarketBundle\Services;
 
 class RollingCurlX
 {
-    private $_curl_version;
-    private $_maxConcurrent = 0; //max. number of simultaneous connections allowed
-    private $_options = []; //shared cURL options
-    private $_headers = []; //shared cURL request headers
-    private $_callback = NULL; //default callback
-    private $_timeout = 5000; //all requests must be completed by this time
-    public $requests = []; //request_queue
+    public $requests = [];
+    private $_curl_version; //max. number of simultaneous connections allowed
+    private $_maxConcurrent = 0; //shared cURL options
+    private $_options = []; //shared cURL request headers
+    private $_headers = []; //default callback
+    private $_callback = NULL; //all requests must be completed by this time
+    private $_timeout = 5000; //request_queue
+    private $curle_msgs = [CURLE_OK => 'OK', CURLE_UNSUPPORTED_PROTOCOL => 'UNSUPPORTED_PROTOCOL', CURLE_FAILED_INIT => 'FAILED_INIT', CURLE_URL_MALFORMAT => 'URL_MALFORMAT', CURLE_URL_MALFORMAT_USER => 'URL_MALFORMAT_USER', CURLE_COULDNT_RESOLVE_PROXY => 'COULDNT_RESOLVE_PROXY', CURLE_COULDNT_RESOLVE_HOST => 'COULDNT_RESOLVE_HOST', CURLE_COULDNT_CONNECT => 'COULDNT_CONNECT', CURLE_FTP_WEIRD_SERVER_REPLY => 'FTP_WEIRD_SERVER_REPLY', CURLE_FTP_ACCESS_DENIED => 'FTP_ACCESS_DENIED', CURLE_FTP_USER_PASSWORD_INCORRECT => 'FTP_USER_PASSWORD_INCORRECT', CURLE_FTP_WEIRD_PASS_REPLY => 'FTP_WEIRD_PASS_REPLY', CURLE_FTP_WEIRD_USER_REPLY => 'FTP_WEIRD_USER_REPLY', CURLE_FTP_WEIRD_PASV_REPLY => 'FTP_WEIRD_PASV_REPLY', CURLE_FTP_WEIRD_227_FORMAT => 'FTP_WEIRD_227_FORMAT', CURLE_FTP_CANT_GET_HOST => 'FTP_CANT_GET_HOST', CURLE_FTP_CANT_RECONNECT => 'FTP_CANT_RECONNECT', CURLE_FTP_COULDNT_SET_BINARY => 'FTP_COULDNT_SET_BINARY', CURLE_PARTIAL_FILE => 'PARTIAL_FILE', CURLE_FTP_COULDNT_RETR_FILE => 'FTP_COULDNT_RETR_FILE', CURLE_FTP_WRITE_ERROR => 'FTP_WRITE_ERROR', CURLE_FTP_QUOTE_ERROR => 'FTP_QUOTE_ERROR', CURLE_HTTP_NOT_FOUND => 'HTTP_NOT_FOUND', CURLE_WRITE_ERROR => 'WRITE_ERROR', CURLE_MALFORMAT_USER => 'MALFORMAT_USER', CURLE_FTP_COULDNT_STOR_FILE => 'FTP_COULDNT_STOR_FILE', CURLE_READ_ERROR => 'READ_ERROR', CURLE_OUT_OF_MEMORY => 'OUT_OF_MEMORY', CURLE_OPERATION_TIMEOUTED => 'OPERATION_TIMEOUTED', CURLE_FTP_COULDNT_SET_ASCII => 'FTP_COULDNT_SET_ASCII', CURLE_FTP_PORT_FAILED => 'FTP_PORT_FAILED', CURLE_FTP_COULDNT_USE_REST => 'FTP_COULDNT_USE_REST', CURLE_FTP_COULDNT_GET_SIZE => 'FTP_COULDNT_GET_SIZE', CURLE_HTTP_RANGE_ERROR => 'HTTP_RANGE_ERROR', CURLE_HTTP_POST_ERROR => 'HTTP_POST_ERROR', CURLE_SSL_CONNECT_ERROR => 'SSL_CONNECT_ERROR', CURLE_FTP_BAD_DOWNLOAD_RESUME => 'FTP_BAD_DOWNLOAD_RESUME', CURLE_FILE_COULDNT_READ_FILE => 'FILE_COULDNT_READ_FILE', CURLE_LDAP_CANNOT_BIND => 'LDAP_CANNOT_BIND', CURLE_LDAP_SEARCH_FAILED => 'LDAP_SEARCH_FAILED', CURLE_LIBRARY_NOT_FOUND => 'LIBRARY_NOT_FOUND', CURLE_FUNCTION_NOT_FOUND => 'FUNCTION_NOT_FOUND', CURLE_ABORTED_BY_CALLBACK => 'ABORTED_BY_CALLBACK', CURLE_BAD_FUNCTION_ARGUMENT => 'BAD_FUNCTION_ARGUMENT', CURLE_BAD_CALLING_ORDER => 'BAD_CALLING_ORDER', CURLE_HTTP_PORT_FAILED => 'HTTP_PORT_FAILED', CURLE_BAD_PASSWORD_ENTERED => 'BAD_PASSWORD_ENTERED', CURLE_TOO_MANY_REDIRECTS => 'TOO_MANY_REDIRECTS', CURLE_UNKNOWN_TELNET_OPTION => 'UNKNOWN_TELNET_OPTION', CURLE_TELNET_OPTION_SYNTAX => 'TELNET_OPTION_SYNTAX', CURLE_OBSOLETE => 'OBSOLETE', CURLE_SSL_PEER_CERTIFICATE => 'SSL_PEER_CERTIFICATE', CURLE_GOT_NOTHING => 'GOT_NOTHING', CURLE_SSL_ENGINE_NOTFOUND => 'SSL_ENGINE_NOTFOUND', CURLE_SSL_ENGINE_SETFAILED => 'SSL_ENGINE_SETFAILED', CURLE_SEND_ERROR => 'SEND_ERROR', CURLE_RECV_ERROR => 'RECV_ERROR', CURLE_SHARE_IN_USE => 'SHARE_IN_USE', CURLE_SSL_CERTPROBLEM => 'SSL_CERTPROBLEM', CURLE_SSL_CIPHER => 'SSL_CIPHER', CURLE_SSL_CACERT => 'SSL_CACERT', CURLE_BAD_CONTENT_ENCODING => 'BAD_CONTENT_ENCODING', CURLE_LDAP_INVALID_URL => 'LDAP_INVALID_URL', CURLE_FILESIZE_EXCEEDED => 'FILESIZE_EXCEEDED', CURLE_FTP_SSL_FAILED => 'FTP_SSL_FAILED', CURLE_SSH => 'SSH'
+    ];
 
     function __construct($max_concurrent = 10)
     {
@@ -50,6 +52,8 @@ class RollingCurlX
         $this->_callback = $callback;
     }
 
+    //Add a request to the request queue
+
     public function setTimeout($timeout)
     { //in milliseconds
         if ($timeout > 0) {
@@ -57,7 +61,8 @@ class RollingCurlX
         }
     }
 
-    //Add a request to the request queue
+    //Reset request queue
+
     public function addRequest(
         $url,
         $post_data = NULL,
@@ -78,26 +83,6 @@ class RollingCurlX
         return count($this->requests) - 1; //return request number/index
     }
 
-    //Reset request queue
-    public function reset()
-    {
-        $this->requests = [];
-    }
-
-    private function normalize_headers(array $headers)
-    {
-        $normalized = [];
-        foreach ($headers as $key => $header) {
-            if (is_string($key)) {
-                $normal = "$key: $header";
-            } else {
-                $header;
-            }
-            $normalized = [];
-        }
-    }
-
-    //Execute the request queue
     public function execute()
     {
         //the request map that maps the request queue to request curl handles
@@ -137,7 +122,34 @@ class RollingCurlX
         curl_multi_close($multi_handle);
     }
 
+    //Execute the request queue
+
+    private function init_request($request_num, $multi_handle, &$requests_map)
+    {
+        $request =& $this->requests[$request_num];
+        $this->addTimer($request);
+        $ch = curl_init();
+        $options = $this->buildOptions($request);
+        $request['options_set'] = $options; //merged options
+        $opts_set = curl_setopt_array($ch, $options);
+        if (!$opts_set) {
+            echo 'options not set';
+            exit;
+        }
+        curl_multi_add_handle($multi_handle, $ch);
+        //add curl handle of a new request to the request map
+        $ch_hash = (string)$ch;
+        $requests_map[$ch_hash] = $request_num;
+    }
+
     //Build individual cURL options for a request
+
+    private function addTimer(array &$request)
+    { //adds timer object to request
+        $request['timer'] = microtime(true); //start time
+        $request['time'] = false; //default if not overridden by time later
+    }
+
     private function buildOptions(array $request)
     {
         $url = $request['url'];
@@ -172,24 +184,6 @@ class RollingCurlX
             $options[CURLOPT_POSTFIELDS] = is_array($post_data) ? http_build_query($post_data) : $post_data;
         }
         return $options;
-    }
-
-    private function init_request($request_num, $multi_handle, &$requests_map)
-    {
-        $request =& $this->requests[$request_num];
-        $this->addTimer($request);
-        $ch = curl_init();
-        $options = $this->buildOptions($request);
-        $request['options_set'] = $options; //merged options
-        $opts_set = curl_setopt_array($ch, $options);
-        if (!$opts_set) {
-            echo 'options not set';
-            exit;
-        }
-        curl_multi_add_handle($multi_handle, $ch);
-        //add curl handle of a new request to the request map
-        $ch_hash = (string)$ch;
-        $requests_map[$ch_hash] = $request_num;
     }
 
     private function process_request($completed, $multi_handle, array &$requests_map)
@@ -227,6 +221,32 @@ class RollingCurlX
         $request = NULL; //free up memory now just incase response was large
     }
 
+    private function stopTimer(array &$request)
+    {
+        $elapsed = microtime(true) - $request['timer'];
+        $request['time'] = $elapsed;
+        unset($request['timer']);
+        return $elapsed;
+    }
+
+    public function reset()
+    {
+        $this->requests = [];
+    }
+
+    private function normalize_headers(array $headers)
+    {
+        $normalized = [];
+        foreach ($headers as $key => $header) {
+            if (is_string($key)) {
+                $normal = "$key: $header";
+            } else {
+                $header;
+            }
+            $normalized = [];
+        }
+    }
+
     private function check_for_timeouts($mh)
     { //DO NOT USE!!! Not implemented yet.
         $now = microtime(true);
@@ -240,21 +260,4 @@ class RollingCurlX
             }
         }
     }
-
-    private function addTimer(array &$request)
-    { //adds timer object to request
-        $request['timer'] = microtime(true); //start time
-        $request['time'] = false; //default if not overridden by time later
-    }
-
-    private function stopTimer(array &$request)
-    {
-        $elapsed = microtime(true) - $request['timer'];
-        $request['time'] = $elapsed;
-        unset($request['timer']);
-        return $elapsed;
-    }
-
-    private $curle_msgs = [CURLE_OK => 'OK', CURLE_UNSUPPORTED_PROTOCOL => 'UNSUPPORTED_PROTOCOL', CURLE_FAILED_INIT => 'FAILED_INIT', CURLE_URL_MALFORMAT => 'URL_MALFORMAT', CURLE_URL_MALFORMAT_USER => 'URL_MALFORMAT_USER', CURLE_COULDNT_RESOLVE_PROXY => 'COULDNT_RESOLVE_PROXY', CURLE_COULDNT_RESOLVE_HOST => 'COULDNT_RESOLVE_HOST', CURLE_COULDNT_CONNECT => 'COULDNT_CONNECT', CURLE_FTP_WEIRD_SERVER_REPLY => 'FTP_WEIRD_SERVER_REPLY', CURLE_FTP_ACCESS_DENIED => 'FTP_ACCESS_DENIED', CURLE_FTP_USER_PASSWORD_INCORRECT => 'FTP_USER_PASSWORD_INCORRECT', CURLE_FTP_WEIRD_PASS_REPLY => 'FTP_WEIRD_PASS_REPLY', CURLE_FTP_WEIRD_USER_REPLY => 'FTP_WEIRD_USER_REPLY', CURLE_FTP_WEIRD_PASV_REPLY => 'FTP_WEIRD_PASV_REPLY', CURLE_FTP_WEIRD_227_FORMAT => 'FTP_WEIRD_227_FORMAT', CURLE_FTP_CANT_GET_HOST => 'FTP_CANT_GET_HOST', CURLE_FTP_CANT_RECONNECT => 'FTP_CANT_RECONNECT', CURLE_FTP_COULDNT_SET_BINARY => 'FTP_COULDNT_SET_BINARY', CURLE_PARTIAL_FILE => 'PARTIAL_FILE', CURLE_FTP_COULDNT_RETR_FILE => 'FTP_COULDNT_RETR_FILE', CURLE_FTP_WRITE_ERROR => 'FTP_WRITE_ERROR', CURLE_FTP_QUOTE_ERROR => 'FTP_QUOTE_ERROR', CURLE_HTTP_NOT_FOUND => 'HTTP_NOT_FOUND', CURLE_WRITE_ERROR => 'WRITE_ERROR', CURLE_MALFORMAT_USER => 'MALFORMAT_USER', CURLE_FTP_COULDNT_STOR_FILE => 'FTP_COULDNT_STOR_FILE', CURLE_READ_ERROR => 'READ_ERROR', CURLE_OUT_OF_MEMORY => 'OUT_OF_MEMORY', CURLE_OPERATION_TIMEOUTED => 'OPERATION_TIMEOUTED', CURLE_FTP_COULDNT_SET_ASCII => 'FTP_COULDNT_SET_ASCII', CURLE_FTP_PORT_FAILED => 'FTP_PORT_FAILED', CURLE_FTP_COULDNT_USE_REST => 'FTP_COULDNT_USE_REST', CURLE_FTP_COULDNT_GET_SIZE => 'FTP_COULDNT_GET_SIZE', CURLE_HTTP_RANGE_ERROR => 'HTTP_RANGE_ERROR', CURLE_HTTP_POST_ERROR => 'HTTP_POST_ERROR', CURLE_SSL_CONNECT_ERROR => 'SSL_CONNECT_ERROR', CURLE_FTP_BAD_DOWNLOAD_RESUME => 'FTP_BAD_DOWNLOAD_RESUME', CURLE_FILE_COULDNT_READ_FILE => 'FILE_COULDNT_READ_FILE', CURLE_LDAP_CANNOT_BIND => 'LDAP_CANNOT_BIND', CURLE_LDAP_SEARCH_FAILED => 'LDAP_SEARCH_FAILED', CURLE_LIBRARY_NOT_FOUND => 'LIBRARY_NOT_FOUND', CURLE_FUNCTION_NOT_FOUND => 'FUNCTION_NOT_FOUND', CURLE_ABORTED_BY_CALLBACK => 'ABORTED_BY_CALLBACK', CURLE_BAD_FUNCTION_ARGUMENT => 'BAD_FUNCTION_ARGUMENT', CURLE_BAD_CALLING_ORDER => 'BAD_CALLING_ORDER', CURLE_HTTP_PORT_FAILED => 'HTTP_PORT_FAILED', CURLE_BAD_PASSWORD_ENTERED => 'BAD_PASSWORD_ENTERED', CURLE_TOO_MANY_REDIRECTS => 'TOO_MANY_REDIRECTS', CURLE_UNKNOWN_TELNET_OPTION => 'UNKNOWN_TELNET_OPTION', CURLE_TELNET_OPTION_SYNTAX => 'TELNET_OPTION_SYNTAX', CURLE_OBSOLETE => 'OBSOLETE', CURLE_SSL_PEER_CERTIFICATE => 'SSL_PEER_CERTIFICATE', CURLE_GOT_NOTHING => 'GOT_NOTHING', CURLE_SSL_ENGINE_NOTFOUND => 'SSL_ENGINE_NOTFOUND', CURLE_SSL_ENGINE_SETFAILED => 'SSL_ENGINE_SETFAILED', CURLE_SEND_ERROR => 'SEND_ERROR', CURLE_RECV_ERROR => 'RECV_ERROR', CURLE_SHARE_IN_USE => 'SHARE_IN_USE', CURLE_SSL_CERTPROBLEM => 'SSL_CERTPROBLEM', CURLE_SSL_CIPHER => 'SSL_CIPHER', CURLE_SSL_CACERT => 'SSL_CACERT', CURLE_BAD_CONTENT_ENCODING => 'BAD_CONTENT_ENCODING', CURLE_LDAP_INVALID_URL => 'LDAP_INVALID_URL', CURLE_FILESIZE_EXCEEDED => 'FILESIZE_EXCEEDED', CURLE_FTP_SSL_FAILED => 'FTP_SSL_FAILED', CURLE_SSH => 'SSH'
-    ];
 }

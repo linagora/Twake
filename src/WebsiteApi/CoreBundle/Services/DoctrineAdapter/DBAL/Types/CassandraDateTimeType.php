@@ -19,10 +19,9 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Platforms\CassandraPlatform;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\ConversionException;
+use Doctrine\DBAL\Types\DateTimeType;
 
 /**
  * Type that maps an SQL DATETIME/TIMESTAMP to a PHP DateTime object.
@@ -31,22 +30,6 @@ use Doctrine\DBAL\Types\ConversionException;
  */
 class CassandraDateTimeType extends DateTimeType
 {
-
-    /**
-     * @param $str
-     * @return bool|string
-     */
-    public function getDateStringFromHex($str)
-    {
-        if (is_numeric("" . $str)) {
-            $time = intval("" . $str) / 1000;
-            return date('Y-m-d H:i:s', $time);
-        } else {
-            $date = unpack('H*', $str);
-            $time = hexdec($date[1]) / 1000;
-            return date('Y-m-d H:i:s', $time);
-        }
-    }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -64,6 +47,22 @@ class CassandraDateTimeType extends DateTimeType
         }
 
         return $val;
+    }
+
+    /**
+     * @param $str
+     * @return bool|string
+     */
+    public function getDateStringFromHex($str)
+    {
+        if (is_numeric("" . $str)) {
+            $time = intval("" . $str) / 1000;
+            return date('Y-m-d H:i:s', $time);
+        } else {
+            $date = unpack('H*', $str);
+            $time = hexdec($date[1]) / 1000;
+            return date('Y-m-d H:i:s', $time);
+        }
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)

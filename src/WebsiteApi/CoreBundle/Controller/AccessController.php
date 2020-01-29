@@ -5,10 +5,6 @@ namespace WebsiteApi\CoreBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel;
 
 class AccessController extends Controller
 {
@@ -25,14 +21,10 @@ class AccessController extends Controller
         } else {
             $current_user_id = $current_user->getId();
         }
-        //$current_user_id= $current_user->getId();
-        //$data = Array("type" => "Workspace", "object_id" => "0f34eff8-48af-11e9-9dd1-0242ac120005");
-        //$data = Array("type" => "Channel", "object_id" => "test");
 
         $acces = $this->get('app.accessmanager')->has_access($current_user_id, $data, $options);
         $data = Array("data" => $acces);
 
-        //return new Response("Hello !");
         return new JsonResponse($data);
     }
 

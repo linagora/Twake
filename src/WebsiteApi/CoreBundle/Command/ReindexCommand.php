@@ -4,8 +4,6 @@ namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -69,6 +67,18 @@ class ReindexCommand extends ContainerAwareCommand
 
     }
 
+    private function indexChannel($channel, $manager)
+    {
+
+        $messages = $manager->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("channel_id" => $channel->getId()));
+        foreach ($messages as $message) {
+            $this->getContainer()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
+        }
+
+        return count($messages);
+
+    }
+
     private function indexRepository($repository, $options = Array())
     {
         $manager = $this->getContainer()->get('app.twake_doctrine');
@@ -80,18 +90,6 @@ class ReindexCommand extends ContainerAwareCommand
         foreach ($items as $item) {
             $manager->es_put($item, $item->getEsType());
         }
-
-    }
-
-    private function indexChannel($channel, $manager)
-    {
-
-        $messages = $manager->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("channel_id" => $channel->getId()));
-        foreach ($messages as $message) {
-            $this->getContainer()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
-        }
-
-        return count($messages);
 
     }
 }

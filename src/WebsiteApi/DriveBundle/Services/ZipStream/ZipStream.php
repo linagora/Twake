@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WebsiteApi\DriveBundle\Services\ZipStream;
 
-use WebsiteApi\DriveBundle\Services\ZipStream\StreamInterface;
 use WebsiteApi\DriveBundle\Services\ZipStream\Exception\OverflowException;
 use WebsiteApi\DriveBundle\Services\ZipStream\Option\Archive as ArchiveOptions;
 use WebsiteApi\DriveBundle\Services\ZipStream\Option\File as FileOptions;
@@ -217,29 +216,6 @@ class ZipStream
     }
 
     /**
-     * Send string, sending HTTP headers if necessary.
-     * Flush output after write if configure option is set.
-     *
-     * @param String $str
-     * @return void
-     */
-    public function send(string $str): void
-    {
-        if ($this->need_headers) {
-            $this->sendHttpHeaders();
-        }
-        $this->need_headers = false;
-
-        fwrite($this->opt->getOutputStream(), $str);
-
-        if ($this->opt->isFlushOutput()) {
-            flush();
-            ob_flush();
-        }
-    }
-
-
-    /**
      * addFileFromPath
      *
      * Add a file at path to the archive.
@@ -405,6 +381,61 @@ class ZipStream
     }
 
     /**
+     * Send string, sending HTTP headers if necessary.
+     * Flush output after write if configure option is set.
+     *
+     * @param String $str
+     * @return void
+     */
+    public function send(string $str): void
+    {
+        if ($this->need_headers) {
+            $this->sendHttpHeaders();
+        }
+        $this->need_headers = false;
+
+        fwrite($this->opt->getOutputStream(), $str);
+
+        if ($this->opt->isFlushOutput()) {
+            flush();
+            ob_flush();
+        }
+    }
+
+    /**
+     * Send HTTP headers for this stream.
+     *
+     * @return void
+     */
+    protected function sendHttpHeaders(): void
+    {
+        // grab content disposition
+        $disposition = $this->opt->getContentDisposition();
+
+        if ($this->output_name) {
+            // Various different browsers dislike various characters here. Strip them all for safety.
+            $safe_output = trim(str_replace(['"', "'", '\\', ';', "\n", "\r"], '', $this->output_name));
+
+            // Check if we need to UTF-8 encode the filename
+            $urlencoded = rawurlencode($safe_output);
+            $disposition .= "; filename*=UTF-8''{$urlencoded}";
+        }
+
+        $headers = array(
+            'Content-Type' => $this->opt->getContentType(),
+            'Content-Disposition' => $disposition,
+            'Pragma' => 'public',
+            'Cache-Control' => 'public, must-revalidate',
+            'Content-Transfer-Encoding' => 'binary'
+        );
+
+        $call = $this->opt->getHttpHeaderCallback();
+        foreach ($headers as $key => $val) {
+            $call("$key: $val");
+        }
+    }
+
+    /**
      * Send ZIP64 CDR EOF (Central Directory Record End-of-File) record.
      *
      * @return void
@@ -469,39 +500,6 @@ class ZipStream
 
         // build output string from header and compressed data
         return pack(...$args);
-    }
-
-    /**
-     * Send HTTP headers for this stream.
-     *
-     * @return void
-     */
-    protected function sendHttpHeaders(): void
-    {
-        // grab content disposition
-        $disposition = $this->opt->getContentDisposition();
-
-        if ($this->output_name) {
-            // Various different browsers dislike various characters here. Strip them all for safety.
-            $safe_output = trim(str_replace(['"', "'", '\\', ';', "\n", "\r"], '', $this->output_name));
-
-            // Check if we need to UTF-8 encode the filename
-            $urlencoded = rawurlencode($safe_output);
-            $disposition .= "; filename*=UTF-8''{$urlencoded}";
-        }
-
-        $headers = array(
-            'Content-Type' => $this->opt->getContentType(),
-            'Content-Disposition' => $disposition,
-            'Pragma' => 'public',
-            'Cache-Control' => 'public, must-revalidate',
-            'Content-Transfer-Encoding' => 'binary'
-        );
-
-        $call = $this->opt->getHttpHeaderCallback();
-        foreach ($headers as $key => $val) {
-            $call("$key: $val");
-        }
     }
 
     /**

@@ -3,10 +3,7 @@
 
 namespace WebsiteApi\ChannelsBundle\Services;
 
-use Exception;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
-use WebsiteApi\CoreBundle\Services\StringCleaner;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class DirectMessagesSystem extends ChannelSystemAbstract
 {

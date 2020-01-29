@@ -3,10 +3,8 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
-use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\_old_CalendarBundle\Entity\Calendar;
 use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
-use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
@@ -15,9 +13,14 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 
 
-class Workspaces implements WorkspacesInterface
+class Workspaces
 {
 
+    /* @var WorkspacesActivities $workspacesActivities */
+    var $workspacesActivities;
+    var $calendarEventService;
+    var $calendarService;
+    var $workspaces_service;
     private $wls;
     private $wms;
     private $gms;
@@ -28,11 +31,6 @@ class Workspaces implements WorkspacesInterface
     private $string_cleaner;
     private $pusher;
     private $translate;
-    /* @var WorkspacesActivities $workspacesActivities */
-    var $workspacesActivities;
-    var $calendarEventService;
-    var $calendarService;
-    var $workspaces_service;
 
     public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $calendarService, $calendarEventService, $workspaces_service)
     {
@@ -182,6 +180,40 @@ class Workspaces implements WorkspacesInterface
 
         return $workspace;
 
+    }
+
+    public function init(Workspace $workspace)
+    {
+        $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $grouppaceapps = $groupappsRepository->findBy(Array("group" => $workspace->getGroup()));
+
+        $workspaceappRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceapps = $workspaceappRepository->findBy(Array("workspace" => $workspace));
+
+        if (count($grouppaceapps) != 0 && count($workspaceapps) == 0) {
+
+            foreach ($grouppaceapps as $ga) {
+                if ($ga->getWorkspaceDefault()) {
+
+                    $this->workspaces_service->enableApp($workspace->getId(), $ga->getAppId());
+
+                }
+            }
+
+            $this->doctrine->flush();
+        }
+
+        if ($workspace->getMemberCount() == 0) {
+
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace));
+            $workspace->setMemberCount(count($members));
+            $this->doctrine->persist($workspace);
+
+            $this->doctrine->flush();
+        }
+
+        //Déjà initialisé
+        return false;
     }
 
     public function duplicate($original_workspace_id, $name, $config, $currentUserId = null)
@@ -534,41 +566,6 @@ class Workspaces implements WorkspacesInterface
         }
 
     }
-
-    public function init(Workspace $workspace)
-    {
-        $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-        $grouppaceapps = $groupappsRepository->findBy(Array("group" => $workspace->getGroup()));
-
-        $workspaceappRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-        $workspaceapps = $workspaceappRepository->findBy(Array("workspace" => $workspace));
-
-        if (count($grouppaceapps) != 0 && count($workspaceapps) == 0) {
-
-            foreach ($grouppaceapps as $ga) {
-                if ($ga->getWorkspaceDefault()) {
-
-                    $this->workspaces_service->enableApp($workspace->getId(), $ga->getAppId());
-
-                }
-            }
-
-            $this->doctrine->flush();
-        }
-
-        if ($workspace->getMemberCount() == 0) {
-
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace));
-            $workspace->setMemberCount(count($members));
-            $this->doctrine->persist($workspace);
-
-            $this->doctrine->flush();
-        }
-
-        //Déjà initialisé
-        return false;
-    }
-
 
     public function archive($groupId, $workspaceId, $currentUserId = null)
     {

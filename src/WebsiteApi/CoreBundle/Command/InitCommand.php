@@ -3,20 +3,15 @@
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\UploadBundle\Entity\File;
-use Symfony\Component\Console\Helper\ProgressBar;
 use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 /**

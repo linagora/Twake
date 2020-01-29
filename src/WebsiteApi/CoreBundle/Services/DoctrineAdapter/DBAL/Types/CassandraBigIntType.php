@@ -19,7 +19,7 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use \Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\BigIntType;
 
 class CassandraBigIntType extends BigIntType
 {

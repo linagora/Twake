@@ -2,16 +2,6 @@
 
 namespace WebsiteApi\UsersBundle\Services;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-use WebsiteApi\CoreBundle\Services\Translate;
-use WebsiteApi\UsersBundle\Entity\Device;
-use WebsiteApi\UsersBundle\Entity\Mail;
-use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
-use WebsiteApi\UsersBundle\Model\UserInterface;
-
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
  */

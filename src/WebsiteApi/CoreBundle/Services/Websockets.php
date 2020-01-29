@@ -2,7 +2,6 @@
 
 namespace WebsiteApi\CoreBundle\Services;
 
-use Swift_Signers_DKIMSigner;
 use WebsiteApi\CoreBundle\Entity\WebsocketsRoute;
 
 /**

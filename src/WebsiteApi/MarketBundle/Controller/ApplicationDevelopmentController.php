@@ -3,11 +3,9 @@
 namespace WebsiteApi\MarketBundle\Controller;
 
 use DevelopersApi\UsersBundle\Entity\Token;
-use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use WebsiteApi\MarketBundle\Entity\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 class ApplicationDevelopmentController extends Controller
 {

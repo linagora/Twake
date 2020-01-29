@@ -3,7 +3,6 @@
 namespace DevelopersApiV1\CoreBundle\Services;
 
 
-use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\HttpFoundation\Request;
 
 class CheckService

@@ -3,12 +3,8 @@
 
 namespace WebsiteApi\ChannelsBundle\Services;
 
-use Exception;
-use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
-use WebsiteApi\CoreBundle\Services\StringCleaner;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChannelsNotificationsSystem extends ChannelSystemAbstract
 {
@@ -98,6 +94,45 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
     }
 
+    public function addNotificationOnWorkspace($workspace_id, $user, $flush = true)
+    {
+
+        if (!$workspace_id) {
+            return false;
+        }
+
+        //TODO also check all links of this channel when implemented
+        if ($workspace_id) {
+
+            $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+
+            if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
+                $workspaceUser->setHasNotifications(true);
+                $this->doctrine->persist($workspaceUser);
+                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspace()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+
+                $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $user));
+
+                if ($groupUser && !$groupUser->getHasNotifications()) {
+                    $groupUser->setHasNotifications(true);
+                    $this->doctrine->persist($groupUser);
+                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace()->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+                }
+
+            }
+
+        }
+
+        if ($flush) {
+            $this->doctrine->flush();
+        }
+
+        return true;
+
+    }
+
     public function unread($channel, $user)
     {
 
@@ -173,45 +208,6 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         $this->doctrine->persist($member);
         $this->doctrine->flush();
-
-        return true;
-
-    }
-
-    public function addNotificationOnWorkspace($workspace_id, $user, $flush = true)
-    {
-
-        if (!$workspace_id) {
-            return false;
-        }
-
-        //TODO also check all links of this channel when implemented
-        if ($workspace_id) {
-
-            $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
-
-            if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
-                $workspaceUser->setHasNotifications(true);
-                $this->doctrine->persist($workspaceUser);
-                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspace()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
-
-                $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-                $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $user));
-
-                if ($groupUser && !$groupUser->getHasNotifications()) {
-                    $groupUser->setHasNotifications(true);
-                    $this->doctrine->persist($groupUser);
-                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace()->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
-                }
-
-            }
-
-        }
-
-        if ($flush) {
-            $this->doctrine->flush();
-        }
 
         return true;
 

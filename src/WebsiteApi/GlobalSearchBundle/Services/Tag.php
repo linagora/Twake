@@ -21,11 +21,6 @@ Class Tag
         return true;
     }
 
-    public function hasAccess($data, $current_user = null, $drive_element = null)
-    {
-        return true;
-    }
-
     public function get($options, $current_user)
     {
 
@@ -53,6 +48,11 @@ Class Tag
 
         return $list;
 
+    }
+
+    public function hasAccess($data, $current_user = null, $drive_element = null)
+    {
+        return true;
     }
 
     public function remove($object, $options, $current_user = null, $return_entity = false)

@@ -2,9 +2,9 @@
 
 namespace WebsiteApi\UsersBundle\Services;
 
-use Symfony\Component\Security\Http\RememberMe\TokenBasedRememberMeServices;
 use FOS\UserBundle\Security\EmailUserProvider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Http\RememberMe\TokenBasedRememberMeServices;
 
 class RememberMe
 {

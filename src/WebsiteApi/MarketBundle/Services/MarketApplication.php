@@ -4,8 +4,6 @@ namespace WebsiteApi\MarketBundle\Services;
 
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
-use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
-use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
 class MarketApplication
 {

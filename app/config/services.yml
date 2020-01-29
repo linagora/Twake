@@ -18,21 +18,9 @@ services:
     app.string_cleaner:
         class: WebsiteApi\CoreBundle\Services\StringCleaner
 
-    #app.contacts:
-    #    class: WebsiteApi\UsersBundle\Services\Contacts
-    #    arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
-
-    #app.deleteUser:
-    #    class: WebsiteApi\UsersBundle\Services\deleteUser
-    #    arguments: ["@app.twake_doctrine"]
-
     app.updateGroup:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@app.pusher']
-
-    app.command_executor:
-                class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
-                arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker',"@app.notifications"]
 
     app.before_render:
             class: WebsiteApi\CoreBundle\Services\BeforeRender

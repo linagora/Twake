@@ -20,7 +20,7 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\BigIntType;
 
 class CassandraCounterType extends BigIntType
 {

@@ -16,14 +16,31 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceActivity;
 
 class WorkspacesActivities
 {
-    private $doctrine;
     /* @var MarketApplication $applicationManager */
     var $applicationManager;
+    private $doctrine;
 
     public function __construct($doctrine, $applicationManager)
     {
         $this->doctrine = $doctrine;
         $this->applicationManager = $applicationManager;
+    }
+
+    public static function cmpResumed($a, $b)
+    {
+        return $b["date"] - $a["date"];
+    }
+
+    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectrepository = null, $objectid = null)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
+        $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
+
+        $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
+
+        $this->doctrine->persist($workspaceActivity);
+        $this->doctrine->flush();
     }
 
     private function convertToEntity($var, $repository)
@@ -45,18 +62,6 @@ class WorkspacesActivities
         }
         return $r;
 
-    }
-
-    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectrepository = null, $objectid = null)
-    {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
-        $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
-        $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
-
-        $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
-
-        $this->doctrine->persist($workspaceActivity);
-        $this->doctrine->flush();
     }
 
     public function getRecordByWorkspace($workspace)
@@ -149,10 +154,5 @@ class WorkspacesActivities
         usort($resumed, "self::cmpResumed");
 
         return $resumed;
-    }
-
-    public static function cmpResumed($a, $b)
-    {
-        return $b["date"] - $a["date"];
     }
 }

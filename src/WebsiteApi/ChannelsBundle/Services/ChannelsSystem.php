@@ -3,10 +3,8 @@
 
 namespace WebsiteApi\ChannelsBundle\Services;
 
-use Exception;
-use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 
 class ChannelsSystem extends ChannelSystemAbstract
 {
@@ -21,13 +19,6 @@ class ChannelsSystem extends ChannelSystemAbstract
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        //TODO
-        return true;
-    }
-
-    public function hasAccess($data, $current_user = null)
-    {
-        //$workspace = $data["workspace_id"];
         //TODO
         return true;
     }
@@ -60,6 +51,13 @@ class ChannelsSystem extends ChannelSystemAbstract
         };
 
         return $result;
+    }
+
+    public function hasAccess($data, $current_user = null)
+    {
+        //$workspace = $data["workspace_id"];
+        //TODO
+        return true;
     }
 
     public function remove($object, $options, $current_user = null)

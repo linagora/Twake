@@ -4,13 +4,12 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\ClosedGroupPeriod;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
+use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance;
 use WebsiteApi\WorkspacesBundle\Model\GroupPeriodInterface;
-use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
-class GroupPeriods implements GroupPeriodInterface
+class GroupPeriods
 {
 
     private $doctrine;

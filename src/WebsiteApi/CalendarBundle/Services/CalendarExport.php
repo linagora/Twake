@@ -3,11 +3,9 @@
 
 namespace WebsiteApi\CalendarBundle\Services;
 
-use ICal\ICal;
+use Eluceo\iCal\Component;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use \Eluceo\iCal\Component;
-use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\ExportToken;
 
 class CalendarExport

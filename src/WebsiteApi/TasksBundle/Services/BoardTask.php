@@ -3,12 +3,12 @@
 namespace WebsiteApi\TasksBundle\Services;
 
 
+use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 use WebsiteApi\TasksBundle\Entity\Board;
 use WebsiteApi\TasksBundle\Entity\Task;
+use WebsiteApi\TasksBundle\Entity\TaskBoard;
 use WebsiteApi\TasksBundle\Entity\TaskNotification;
 use WebsiteApi\TasksBundle\Entity\TaskUser;
-use WebsiteApi\TasksBundle\Entity\TaskBoard;
-use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class BoardTask
 {
@@ -256,6 +256,140 @@ class BoardTask
         return $task->getAsArray();
     }
 
+    private function updateNotifications(Task $task, $notifications = Array(), $replace_all = false)
+    {
+
+        $notifications = $notifications ? $notifications : [];
+
+        $has_before = true;
+        if (!$task->getBefore() || $task->getBefore() < date("U")) {
+            $has_before = false;
+            $notifications = Array();
+        }
+
+        $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);
+        $current_notifications = $task->getNotifications();
+        $task->setNotifications($updated_notifications);
+        $this->doctrine->persist($task);
+
+        if ($task->getBefore() > 0 && $replace_all) {
+            //Add deadline
+            $updated_notifications[] = Array(
+                "delay" => 0,
+                "mode" => "push"
+            );
+        }
+
+        if ($task->getStartTime() > 0 && $task->getStartTime() > date("U") && $replace_all) {
+            //Add start time as notification
+            $updated_notifications[] = Array(
+                "delay" => $has_before ? ($task->getBefore() - $task->getStartTime()) : ($task->getStartTime()),
+                "mode" => "push"
+            );
+        }
+
+        $get_diff = $this->getArrayDiffUsingKeys($updated_notifications, $current_notifications, ["delay", "mode"]);
+
+        if (count($get_diff["del"]) > 0 || $replace_all) {
+            $notifications_in_task = $this->doctrine->getRepository("TwakeTasksBundle:TaskNotification")->findBy(Array("task_id" => $task->getId()));
+            foreach ($notifications_in_task as $notification) {
+                if ($replace_all || !$this->inArrayUsingKeys($get_diff["del"], ["delay" => $notification->getDelay(), "mode" => $notification->getMode()], ["mode", "delay"]) || $replace_all) {
+                    //Remove old notifications
+                    $this->doctrine->remove($notification);
+                }
+            }
+        }
+
+        foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
+            if ($has_before) {
+                $notification_date = $task->getBefore() - $notification["delay"];
+                $delay = $notification["delay"];
+            } else {
+                $notification_date = $notification["delay"];
+                $delay = "0";
+            }
+            $notification = new TaskNotification($task->getId(), $delay, $notification_date, $notification["mode"]);
+            $this->doctrine->persist($notification);
+        }
+
+        $this->doctrine->flush();
+
+    }
+
+    private function formatArrayInput($array, $id_keys = [])
+    {
+        $updated_array = [];
+        $unicity = [];
+        foreach ($array as $element) {
+
+            $tmp = false;
+
+            if (is_array($element)) {
+                $all_ok = true;
+                foreach ($id_keys as $id_key) {
+                    if (!isset($element[$id_key])) {
+                        $all_ok = false;
+                    }
+                }
+                if ($all_ok) {
+                    $tmp = $element;
+                }
+            } else {
+                $tmp = Array();
+                $tmp[$id_key] = $element;
+            }
+
+            if ($tmp !== false) {
+                $uniq_key = "";
+                foreach ($id_keys as $id_key) {
+                    $uniq_key .= "_" . $tmp[$id_key];
+                }
+                if (!in_array($uniq_key, $unicity)) {
+                    $unicity[] = $uniq_key;
+                    $updated_array[] = $tmp;
+                }
+            }
+
+        }
+        return $updated_array;
+    }
+
+    private function getArrayDiffUsingKeys($new_array, $old_array, $keys)
+    {
+        $remove = [];
+        $add = [];
+        foreach ($new_array as $new_el) {
+            if (!$this->inArrayUsingKeys($old_array, $new_el, $keys)) {
+                $add[] = $new_el;
+            }
+        }
+        foreach ($old_array as $old_el) {
+            if (!$this->inArrayUsingKeys($new_array, $old_el, $keys)) {
+                $remove[] = $old_el;
+            }
+        }
+        return Array("del" => $remove, "add" => $add);
+    }
+
+    private function inArrayUsingKeys($array, $element, $keys)
+    {
+        $in = false;
+        foreach ($array as $el) {
+            $same = true;
+            foreach ($keys as $key) {
+                if ($el[$key] != $element[$key]) {
+                    $same = false;
+                    break;
+                }
+            }
+            if ($same) {
+                $in = true;
+                break;
+            }
+        }
+        return $in;
+    }
+
     private function updateParticipants(Task $task, $participants = Array())
     {
 
@@ -331,66 +465,6 @@ class BoardTask
         $this->doctrine->flush();
     }
 
-    private function updateNotifications(Task $task, $notifications = Array(), $replace_all = false)
-    {
-
-        $notifications = $notifications ? $notifications : [];
-
-        $has_before = true;
-        if (!$task->getBefore() || $task->getBefore() < date("U")) {
-            $has_before = false;
-            $notifications = Array();
-        }
-
-        $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);
-        $current_notifications = $task->getNotifications();
-        $task->setNotifications($updated_notifications);
-        $this->doctrine->persist($task);
-
-        if ($task->getBefore() > 0 && $replace_all) {
-            //Add deadline
-            $updated_notifications[] = Array(
-                "delay" => 0,
-                "mode" => "push"
-            );
-        }
-
-        if ($task->getStartTime() > 0 && $task->getStartTime() > date("U") && $replace_all) {
-            //Add start time as notification
-            $updated_notifications[] = Array(
-                "delay" => $has_before ? ($task->getBefore() - $task->getStartTime()) : ($task->getStartTime()),
-                "mode" => "push"
-            );
-        }
-
-        $get_diff = $this->getArrayDiffUsingKeys($updated_notifications, $current_notifications, ["delay", "mode"]);
-
-        if (count($get_diff["del"]) > 0 || $replace_all) {
-            $notifications_in_task = $this->doctrine->getRepository("TwakeTasksBundle:TaskNotification")->findBy(Array("task_id" => $task->getId()));
-            foreach ($notifications_in_task as $notification) {
-                if ($replace_all || !$this->inArrayUsingKeys($get_diff["del"], ["delay" => $notification->getDelay(), "mode" => $notification->getMode()], ["mode", "delay"]) || $replace_all) {
-                    //Remove old notifications
-                    $this->doctrine->remove($notification);
-                }
-            }
-        }
-
-        foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
-            if ($has_before) {
-                $notification_date = $task->getBefore() - $notification["delay"];
-                $delay = $notification["delay"];
-            } else {
-                $notification_date = $notification["delay"];
-                $delay = "0";
-            }
-            $notification = new TaskNotification($task->getId(), $delay, $notification_date, $notification["mode"]);
-            $this->doctrine->persist($notification);
-        }
-
-        $this->doctrine->flush();
-
-    }
-
     public function updateAttachements(Task $task, $attachements = Array())
     {
         $oldAttachements = $task->getAttachements() ? $task->getAttachements() : Array();
@@ -452,81 +526,6 @@ class BoardTask
         }
         return false;
     }
-
-    private function getArrayDiffUsingKeys($new_array, $old_array, $keys)
-    {
-        $remove = [];
-        $add = [];
-        foreach ($new_array as $new_el) {
-            if (!$this->inArrayUsingKeys($old_array, $new_el, $keys)) {
-                $add[] = $new_el;
-            }
-        }
-        foreach ($old_array as $old_el) {
-            if (!$this->inArrayUsingKeys($new_array, $old_el, $keys)) {
-                $remove[] = $old_el;
-            }
-        }
-        return Array("del" => $remove, "add" => $add);
-    }
-
-    private function inArrayUsingKeys($array, $element, $keys)
-    {
-        $in = false;
-        foreach ($array as $el) {
-            $same = true;
-            foreach ($keys as $key) {
-                if ($el[$key] != $element[$key]) {
-                    $same = false;
-                    break;
-                }
-            }
-            if ($same) {
-                $in = true;
-                break;
-            }
-        }
-        return $in;
-    }
-
-    private function formatArrayInput($array, $id_keys = [])
-    {
-        $updated_array = [];
-        $unicity = [];
-        foreach ($array as $element) {
-
-            $tmp = false;
-
-            if (is_array($element)) {
-                $all_ok = true;
-                foreach ($id_keys as $id_key) {
-                    if (!isset($element[$id_key])) {
-                        $all_ok = false;
-                    }
-                }
-                if ($all_ok) {
-                    $tmp = $element;
-                }
-            } else {
-                $tmp = Array();
-                $tmp[$id_key] = $element;
-            }
-
-            if ($tmp !== false) {
-                $uniq_key = "";
-                foreach ($id_keys as $id_key) {
-                    $uniq_key .= "_" . $tmp[$id_key];
-                }
-                if (!in_array($uniq_key, $unicity)) {
-                    $unicity[] = $uniq_key;
-                    $updated_array[] = $tmp;
-                }
-            }
-
-        }
-        return $updated_array;
-    }
-
 
     public function checkReminders()
     {

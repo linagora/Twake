@@ -2,10 +2,10 @@
 
 namespace WebsiteApi\DriveBundle\Services\Storage;
 
-use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
-use WebsiteApi\DriveBundle\Entity\UploadState;
+use Aws\S3\S3Client;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
+use WebsiteApi\DriveBundle\Entity\UploadState;
 
 class Adapter_AWS implements AdapterInterface
 {

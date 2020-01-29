@@ -24,19 +24,6 @@ class DrivePreview
         $this->img_width = 300;
     }
 
-    public function isImage($ext)
-    {
-        return (
-            $ext === 'png' ||
-            $ext === 'jpg' ||
-            $ext === 'jpeg' ||
-            $ext === 'gif' ||
-            $ext === 'svg' ||
-            $ext === 'tiff'
-        );
-    }
-
-    /* Do not generate preview for files larger than 50Mo */
     public function generatePreview($filename, $file, $path, $ext, $entity = null)
     {
         try {
@@ -116,40 +103,84 @@ class DrivePreview
         return false;
     }
 
-    private function autorotate(\Imagick $image)
+    /* Do not generate preview for files larger than 50Mo */
+
+    public function isImage($ext)
     {
-        switch ($image->getImageOrientation()) {
-            case \Imagick::ORIENTATION_TOPLEFT:
-                break;
-            case \Imagick::ORIENTATION_TOPRIGHT:
-                $image->flopImage();
-                break;
-            case \Imagick::ORIENTATION_BOTTOMRIGHT:
-                $image->rotateImage("#000", 180);
-                break;
-            case \Imagick::ORIENTATION_BOTTOMLEFT:
-                $image->flopImage();
-                $image->rotateImage("#000", 180);
-                break;
-            case \Imagick::ORIENTATION_LEFTTOP:
-                $image->flopImage();
-                $image->rotateImage("#000", -90);
-                break;
-            case \Imagick::ORIENTATION_RIGHTTOP:
-                $image->rotateImage("#000", 90);
-                break;
-            case \Imagick::ORIENTATION_RIGHTBOTTOM:
-                $image->flopImage();
-                $image->rotateImage("#000", 90);
-                break;
-            case \Imagick::ORIENTATION_LEFTBOTTOM:
-                $image->rotateImage("#000", -90);
-                break;
-            default: // Invalid orientation
-                break;
+        return (
+            $ext === 'png' ||
+            $ext === 'jpg' ||
+            $ext === 'jpeg' ||
+            $ext === 'gif' ||
+            $ext === 'svg' ||
+            $ext === 'tiff'
+        );
+    }
+
+    public function generateImagePreview($filename, $file, $path, $entity = null, $isText = false, $isOffice = false)
+    {
+        $filepath = $path . "/" . $filename;
+        $width = $this->img_width;
+        $height = $this->img_height;
+        $im = new \Imagick();
+
+
+        if ($isText) {
+            $im->readimage($file . "[0]");
+            $this->set_keyword($file, $entity);
+        } elseif ($isOffice) {
+            $file = $this->convertToPDF($file, $entity);
+            if ($file) {
+                $im->readimage($file . "[0]");
+                $this->set_keyword($file, $entity);
+            }
+        } else {
+            $im->readimage($file);
         }
-        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
-        return $image;
+
+
+        $im = $this->autorotate($im);
+        $im->setBackgroundColor(new \ImagickPixel('transparent'));
+        $geo = $im->getImageGeometry();
+
+        $min_size = min((int)($geo['width']), (int)($geo['height']));
+
+        if ($min_size > $this->img_width) {
+            $ox = 0;
+            $oy = (int)(($geo['height'] - $min_size) / 2);
+            if ($min_size == (int)($geo['height'])) {
+                $ox = (int)(($geo['width'] - $min_size) / 2);
+                $oy = 0;
+            }
+            $im->cropImage($min_size, $min_size, $ox, $oy);
+        }
+
+        // get the current image dimensions
+        $im->ThumbnailImage($width, $height, true);
+
+        /*
+                $canvas = new \Imagick();
+                $canvas->newImage($width, $height, 'white', 'png');
+                $canvas->setBackgroundColor(new \ImagickPixel('transparent'));
+                $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
+                $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
+                $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
+
+                $im = $canvas;
+        */
+
+        // thumbnail the image
+
+
+        $im->setImageFormat('png');
+        $im->writeImage($filepath . '.png');
+        $im->clear();
+        $im->destroy();
+
+        if ($isOffice) {
+            unlink($file);
+        }
+
     }
 
     public function set_keyword($file, $entity)
@@ -236,72 +267,6 @@ END;
 
     }
 
-    public function generateImagePreview($filename, $file, $path, $entity = null, $isText = false, $isOffice = false)
-    {
-        $filepath = $path . "/" . $filename;
-        $width = $this->img_width;
-        $height = $this->img_height;
-        $im = new \Imagick();
-
-
-        if ($isText) {
-            $im->readimage($file . "[0]");
-            $this->set_keyword($file, $entity);
-        } elseif ($isOffice) {
-            $file = $this->convertToPDF($file, $entity);
-            if ($file) {
-                $im->readimage($file . "[0]");
-                $this->set_keyword($file, $entity);
-            }
-        } else {
-            $im->readimage($file);
-        }
-
-
-        $im = $this->autorotate($im);
-        $im->setBackgroundColor(new \ImagickPixel('transparent'));
-        $geo = $im->getImageGeometry();
-
-        $min_size = min((int)($geo['width']), (int)($geo['height']));
-
-        if ($min_size > $this->img_width) {
-            $ox = 0;
-            $oy = (int)(($geo['height'] - $min_size) / 2);
-            if ($min_size == (int)($geo['height'])) {
-                $ox = (int)(($geo['width'] - $min_size) / 2);
-                $oy = 0;
-            }
-            $im->cropImage($min_size, $min_size, $ox, $oy);
-        }
-
-        // get the current image dimensions
-        $im->ThumbnailImage($width, $height, true);
-
-        /*
-                $canvas = new \Imagick();
-                $canvas->newImage($width, $height, 'white', 'png');
-                $canvas->setBackgroundColor(new \ImagickPixel('transparent'));
-                $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
-                $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
-                $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
-
-                $im = $canvas;
-        */
-
-        // thumbnail the image
-
-
-        $im->setImageFormat('png');
-        $im->writeImage($filepath . '.png');
-        $im->clear();
-        $im->destroy();
-
-        if ($isOffice) {
-            unlink($file);
-        }
-
-    }
-
     public function convertToPDF($filepath, $entity)
     {
         putenv("PATH=/sbin:/bin:/usr/sbin:/usr/bin");
@@ -322,6 +287,42 @@ END;
             return false;
         }
         return $filepath;
+    }
+
+    private function autorotate(\Imagick $image)
+    {
+        switch ($image->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPLEFT:
+                break;
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $image->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $image->flopImage();
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $image->flopImage();
+                $image->rotateImage("#000", -90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $image->flopImage();
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $image->rotateImage("#000", -90);
+                break;
+            default: // Invalid orientation
+                break;
+        }
+        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+        return $image;
     }
 
 }

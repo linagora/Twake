@@ -2,8 +2,6 @@
 
 namespace WebsiteApi\MarketBundle\Repository;
 
-use http\Env\Request;
-
 /**
  * DataTokenRepository
  *

@@ -15,24 +15,6 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 class CassandraPlatform extends AbstractPlatform
 {
     /**
-     * Adds Cassandra-specific LIMIT clause to the query
-     * No support for offset. Pagination must be implemented in-app
-     * Restrict record limit to 1000 if not specified (Cassandra's default limit is 1000)
-     *
-     * @param string $query
-     * @param int|null $limit
-     * @param int|null $offset
-     * @return string
-     */
-    protected function doModifyLimitQuery($query, $limit, $offset)
-    {
-        if ($limit !== null) {
-            $query .= ' LIMIT ' . $limit;
-        }
-        return $query;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function supportsLimitOffset()
@@ -138,23 +120,6 @@ class CassandraPlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    protected function getVarcharTypeDeclarationSQLSnippet($length, $fixed)
-    {
-        return 'varchar';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getReservedKeywordsClass()
-    {
-        return 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Platforms\Keywords\CassandraKeywords';
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function getBlobTypeDeclarationSQL(array $field)
     {
         return 'blob';
@@ -211,24 +176,6 @@ class CassandraPlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
-    {
-        $queryFields = $this->getColumnDeclarationListSQL($columns);
-
-        // attach all primary keys
-        if (isset($options['primary']) && !empty($options['primary'])) {
-            $keyColumns = array_unique(array_values($options['primary']));
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
-        }
-
-        $query = 'CREATE TABLE ' . $tableName . ' (' . $queryFields . ') ';
-        $sql[] = $query;
-        return $sql;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getDropIndexSQL($index, $table = null)
     {
         return 'DROP INDEX IF EXISTS ' . $index;
@@ -245,6 +192,14 @@ class CassandraPlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
+    {
+        return '';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getBigIntTypeDeclarationSQL(array $field)
     {
         return 'bigint' . $this->_getCommonIntegerTypeDeclarationSQL($field);
@@ -256,14 +211,6 @@ class CassandraPlatform extends AbstractPlatform
     public function getSmallIntTypeDeclarationSQL(array $field)
     {
         return 'int' . $this->_getCommonIntegerTypeDeclarationSQL($field);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
-    {
-        return '';
     }
 
     /**
@@ -300,6 +247,87 @@ class CassandraPlatform extends AbstractPlatform
 
     /**
      * {@inheritDoc}
+     */
+    public function getColumnDeclarationSQL($name, array $field)
+    {
+        if (isset($field['columnDefinition'])) {
+            $columnDef = $this->getCustomTypeDeclarationSQL($field);
+        } else {
+            $default = $this->getDefaultValueDeclarationSQL($field);
+            $check = (isset($field['check']) && $field['check']) ?
+                ' ' . $field['check'] : '';
+
+            /** @var \Doctrine\DBAL\Types\Type $type */
+            $type = $field['type'];
+            $typeDecl = $type->getSqlDeclaration($field, $this);
+            $columnDef = $typeDecl;
+        }
+
+        return $name . ' ' . $columnDef;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getVarcharMaxLength()
+    {
+        return 65535;
+    }
+
+    /**
+     * Adds Cassandra-specific LIMIT clause to the query
+     * No support for offset. Pagination must be implemented in-app
+     * Restrict record limit to 1000 if not specified (Cassandra's default limit is 1000)
+     *
+     * @param string $query
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return string
+     */
+    protected function doModifyLimitQuery($query, $limit, $offset)
+    {
+        if ($limit !== null) {
+            $query .= ' LIMIT ' . $limit;
+        }
+        return $query;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getVarcharTypeDeclarationSQLSnippet($length, $fixed)
+    {
+        return 'varchar';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getReservedKeywordsClass()
+    {
+        return 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Platforms\Keywords\CassandraKeywords';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
+    {
+        $queryFields = $this->getColumnDeclarationListSQL($columns);
+
+        // attach all primary keys
+        if (isset($options['primary']) && !empty($options['primary'])) {
+            $keyColumns = array_unique(array_values($options['primary']));
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
+        }
+
+        $query = 'CREATE TABLE ' . $tableName . ' (' . $queryFields . ') ';
+        $sql[] = $query;
+        return $sql;
+    }
+
+    /**
+     * {@inheritDoc}
      * ref. http://doctrine-orm.readthedocs.org/en/latest/reference/basic-mapping.html
      */
     protected function initializeDoctrineTypeMappings()
@@ -326,35 +354,6 @@ class CassandraPlatform extends AbstractPlatform
             'varchar' => 'string',
             'varint' => 'bigint'
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getColumnDeclarationSQL($name, array $field)
-    {
-        if (isset($field['columnDefinition'])) {
-            $columnDef = $this->getCustomTypeDeclarationSQL($field);
-        } else {
-            $default = $this->getDefaultValueDeclarationSQL($field);
-            $check = (isset($field['check']) && $field['check']) ?
-                ' ' . $field['check'] : '';
-
-            /** @var \Doctrine\DBAL\Types\Type $type */
-            $type = $field['type'];
-            $typeDecl = $type->getSqlDeclaration($field, $this);
-            $columnDef = $typeDecl;
-        }
-
-        return $name . ' ' . $columnDef;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getVarcharMaxLength()
-    {
-        return 65535;
     }
 
 }

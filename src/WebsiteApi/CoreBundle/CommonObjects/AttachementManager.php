@@ -64,62 +64,6 @@ class AttachementManager
         $this->doctrine->flush();
     }
 
-    public function removeAttachementsFromEntity($object)
-    {
-        $attachementsToRemove = $object->getAttachements();
-        foreach ($attachementsToRemove as $attachement) {
-            error_log("remove attachement" . json_encode($attachement));
-            $this->removeAttachementFromEntity($object, $attachement);
-        }
-    }
-
-    private function removeAttachementFromEntity($object, $attachement)
-    {
-        $type = $this->getTypeFromClass($object);
-        $attachedRepo = $this->getAttachementRepository($attachement["type"]);
-        $entityAttached = $attachedRepo->findOneBy(Array("id" => $attachement["id"]));
-        $attachmentInEntityAttached = $entityAttached->getAttachements();
-        foreach ($attachmentInEntityAttached as $index => $attac) {
-            error_log("try " . $attac["id"] . " == " . $object->getId() . ",   " . $attac["type"] . " == " . $type);
-            if ($attac["id"] == $object->getId() && $attac["type"] == $type) {
-                error_log("remove  passive" . json_encode($attac));
-                unset($attachmentInEntityAttached[$index]);
-                $entityAttached->setAttachements($attachmentInEntityAttached);
-                $this->doctrine->persist($entityAttached);
-                $data = Array(
-                    "client_id" => "system",
-                    "action" => "save",
-                    "object_type" => "",
-                    "object" => $entityAttached->getAsArray()
-                );
-                $this->ws->push($this->getRoutePush($entityAttached), $data);
-                break;
-            }
-        }
-    }
-
-    private function getRoutePush($entity)
-    {
-        if (get_class($entity) == "WebsiteApi\TasksBundle\Entity\Task") {
-            return "board_tasks/" . $entity->getBoardId();
-        } elseif (get_class($entity) == "WebsiteApi\DriveBundle\Entity\DriveFile") {
-            return "drive/" . $entity->getWorkspaceId() . "/" . $entity->getParentId();
-        } elseif (get_class($entity) == "WebsiteApi\CalendarBundle\Entity\Event") {
-            return "calendar_events/" . $entity->getWorkspaceId();
-        }
-        return "";
-    }
-
-    private function getAttachmentName($entity)
-    {
-        if (get_class($entity) == "WebsiteApi\TasksBundle\Entity\Task") {
-            return $entity->getTitle();
-        } elseif (get_class($entity) == "WebsiteApi\DriveBundle\Entity\DriveFile" || get_class($entity) == "WebsiteApi\CalendarBundle\Entity\Event") {
-            return $entity->getName();
-        }
-        return "";
-    }
-
     private function getTypeFromClass($entity)
     {
         if (get_class($entity) == "WebsiteApi\TasksBundle\Entity\Task") {
@@ -130,18 +74,6 @@ class AttachementManager
             return "event";
         }
         return "";
-    }
-
-    private function getAttachementRepository($type)
-    {
-        if ($type == "file") {
-            return $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        } elseif ($type == "task") {
-            return $this->doctrine->getRepository("TwakeTasksBundle:Task");
-        } elseif ($type == "event") {
-            return $this->doctrine->getRepository("TwakeCalendarBundle:Event");
-        }
-        return false;
     }
 
     private function getArrayDiffUsingKeys($new_array, $old_array, $keys)
@@ -178,6 +110,74 @@ class AttachementManager
             }
         }
         return $in;
+    }
+
+    private function removeAttachementFromEntity($object, $attachement)
+    {
+        $type = $this->getTypeFromClass($object);
+        $attachedRepo = $this->getAttachementRepository($attachement["type"]);
+        $entityAttached = $attachedRepo->findOneBy(Array("id" => $attachement["id"]));
+        $attachmentInEntityAttached = $entityAttached->getAttachements();
+        foreach ($attachmentInEntityAttached as $index => $attac) {
+            error_log("try " . $attac["id"] . " == " . $object->getId() . ",   " . $attac["type"] . " == " . $type);
+            if ($attac["id"] == $object->getId() && $attac["type"] == $type) {
+                error_log("remove  passive" . json_encode($attac));
+                unset($attachmentInEntityAttached[$index]);
+                $entityAttached->setAttachements($attachmentInEntityAttached);
+                $this->doctrine->persist($entityAttached);
+                $data = Array(
+                    "client_id" => "system",
+                    "action" => "save",
+                    "object_type" => "",
+                    "object" => $entityAttached->getAsArray()
+                );
+                $this->ws->push($this->getRoutePush($entityAttached), $data);
+                break;
+            }
+        }
+    }
+
+    private function getAttachementRepository($type)
+    {
+        if ($type == "file") {
+            return $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        } elseif ($type == "task") {
+            return $this->doctrine->getRepository("TwakeTasksBundle:Task");
+        } elseif ($type == "event") {
+            return $this->doctrine->getRepository("TwakeCalendarBundle:Event");
+        }
+        return false;
+    }
+
+    private function getRoutePush($entity)
+    {
+        if (get_class($entity) == "WebsiteApi\TasksBundle\Entity\Task") {
+            return "board_tasks/" . $entity->getBoardId();
+        } elseif (get_class($entity) == "WebsiteApi\DriveBundle\Entity\DriveFile") {
+            return "drive/" . $entity->getWorkspaceId() . "/" . $entity->getParentId();
+        } elseif (get_class($entity) == "WebsiteApi\CalendarBundle\Entity\Event") {
+            return "calendar_events/" . $entity->getWorkspaceId();
+        }
+        return "";
+    }
+
+    private function getAttachmentName($entity)
+    {
+        if (get_class($entity) == "WebsiteApi\TasksBundle\Entity\Task") {
+            return $entity->getTitle();
+        } elseif (get_class($entity) == "WebsiteApi\DriveBundle\Entity\DriveFile" || get_class($entity) == "WebsiteApi\CalendarBundle\Entity\Event") {
+            return $entity->getName();
+        }
+        return "";
+    }
+
+    public function removeAttachementsFromEntity($object)
+    {
+        $attachementsToRemove = $object->getAttachements();
+        foreach ($attachementsToRemove as $attachement) {
+            error_log("remove attachement" . json_encode($attachement));
+            $this->removeAttachementFromEntity($object, $attachement);
+        }
     }
 
 }

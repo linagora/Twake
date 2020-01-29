@@ -2,8 +2,6 @@
 
 namespace WebsiteApi\DriveBundle\Services\Storage\Encryption;
 
-use WebsiteApi\DriveBundle\Services\Storage\Encryption\AES256Implementation;
-
 class MCryptAES256Implementation implements AES256Implementation
 {
     const BLOCK_SIZE = 16; // 128 bits

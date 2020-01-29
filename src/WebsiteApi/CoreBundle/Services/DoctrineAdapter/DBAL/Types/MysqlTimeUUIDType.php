@@ -19,12 +19,10 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
-use InvalidArgumentException;
-use Ramsey\Uuid\Codec\OrderedTimeCodec;
-use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Ramsey\Uuid\UuidFactory;
+use Doctrine\DBAL\Types\ConversionException;
+use InvalidArgumentException;
+use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use Ramsey\Uuid\UuidInterface;
 
 class MysqlTimeUUIDType extends UuidBinaryOrderedTimeType

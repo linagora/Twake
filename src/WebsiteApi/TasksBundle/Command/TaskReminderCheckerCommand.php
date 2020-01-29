@@ -5,10 +5,6 @@ namespace WebsiteApi\TasksBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use \DateTime;
-use WebsiteApi\MarketBundle\Entity\Application;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
 
 class TaskReminderCheckerCommand extends ContainerAwareCommand

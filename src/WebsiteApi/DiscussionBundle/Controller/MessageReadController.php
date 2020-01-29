@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\DiscussionBundle\Entity\StreamMember;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 
 class MessageReadController extends Controller

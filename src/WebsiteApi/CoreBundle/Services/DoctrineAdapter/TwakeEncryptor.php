@@ -3,11 +3,6 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
 use Reprovinci\DoctrineEncrypt\Encryptors\EncryptorInterface;
-use Reprovinci\DoctrineEncrypt\Subscribers\DoctrineEncryptSubscriber;
-use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\DriverManager;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Repository\DefaultRepositoryFactory;
-use Doctrine\ORM\Tools\Setup;
 
 class TwakeEncryptor implements EncryptorInterface
 {

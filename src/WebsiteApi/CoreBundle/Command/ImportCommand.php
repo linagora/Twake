@@ -2,15 +2,12 @@
 
 namespace WebsiteApi\CoreBundle\Command;
 
-use mageekguy\atoum\asserters\error;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\Event;
-use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
 use WebsiteApi\DiscussionBundle\Entity\Message;
@@ -27,11 +24,8 @@ use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-
-use DateTime;
 
 class ImportCommand extends ContainerAwareCommand
 {
@@ -42,17 +36,17 @@ class ImportCommand extends ContainerAwareCommand
 
     var $newApps = Array('all' => Array(), 'notall' => Array());
 
+    public static function cmpMessage($a, $b)
+    {
+        return $a["creation_date"] - $b["creation_date"];
+    }
+
     protected function configure()
     {
         $this
             ->setName("twake:import_group")
             ->setDescription("Command to import a group from old Twake");
         //->addArgument('tarname', InputArgument::REQUIRED, 'Which tar do you want to import');
-    }
-
-    public static function cmpMessage($a, $b)
-    {
-        return $a["creation_date"] - $b["creation_date"];
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -4,10 +4,6 @@
 namespace AdministrationApi\GroupBundle\Services;
 
 
-use WebsiteApi\UsersBundle\Entity\Mail;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-
 class AdministrationGroup
 {
 

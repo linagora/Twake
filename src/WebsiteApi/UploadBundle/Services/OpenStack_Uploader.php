@@ -3,12 +3,12 @@
 
 namespace WebsiteApi\UploadBundle\Services;
 
-use OpenStack\OpenStack;
-use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Stream;
 use OpenStack\Common\Transport\Utils as TransportUtils;
 use OpenStack\Identity\v2\Service;
+use OpenStack\OpenStack;
 
 class OpenStack_Uploader extends Uploader
 {

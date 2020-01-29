@@ -40,6 +40,14 @@ class ESUtils
         return $tmp;
     }
 
+    static function simplifyInArray($data)
+    {
+
+        $sc = new StringCleaner();
+        return $sc->simplifyInArray($data);
+
+    }
+
     static function createMatchPhrase($value, $parameter_name, &$must_list = NULL)
     {
 
@@ -261,14 +269,6 @@ class ESUtils
         }
 
         return $tmp;
-    }
-
-    static function simplifyInArray($data)
-    {
-
-        $sc = new StringCleaner();
-        return $sc->simplifyInArray($data);
-
     }
 
 }

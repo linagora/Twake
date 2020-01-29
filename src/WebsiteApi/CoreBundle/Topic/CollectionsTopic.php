@@ -1,11 +1,11 @@
 <?php
 namespace WebsiteApi\CoreBundle\Topic;
 
+use Gos\Bundle\WebSocketBundle\Router\WampRequest;
+use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
-use Gos\Bundle\WebSocketBundle\Router\WampRequest;
-use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 
 class CollectionsTopic implements TopicInterface, PushableTopicInterface
 {

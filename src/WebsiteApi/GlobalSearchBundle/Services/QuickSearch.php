@@ -5,9 +5,6 @@ namespace WebsiteApi\GlobalSearchBundle\Services;
 #test22
 
 use WebsiteApi\CoreBundle\Services\StringCleaner;
-use WebsiteApi\GlobalSearchBundle\Entity\SearchHistory;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class QuickSearch
 {
@@ -43,19 +40,20 @@ class QuickSearch
         $this->memberservice = $memberservice;
     }
 
-    public function SearchInWorkspace($words, $workspaces, $current_user_id)
-    {
-        $channels = $this->channelservice->search($words, $workspaces, $current_user_id); // search channel in a workspace
-        foreach ($channels as $channel) {
-            if (in_array($current_user_id, $channel[0]["members"]) || in_array($current_user_id, $channel[0]["ext_members"])) {
-                if (isset($this->workspace_prio) && $this->workspace_prio == $channel[0]["original_workspace"]) {
-                    $this->priochannelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" => $workspaces[$channel[0]["original_workspace"]]);
-                } else {
-                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" => $workspaces[$channel[0]["original_workspace"]]);
-                }
-                //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
-            }
+    private static function cmpfile($file1, $file2)
+    { //permet d'obtenir la list des fichier par liste de pertinence
+        if ($file1["score"] == $file2["score"]) {
+            return 0;
         }
+        return ($file1["score"] > $file2["score"]) ? -1 : 1;
+    }
+
+    private static function cmpchannel($channel1, $channel2)
+    { //permet d'obtenir la list des fichier par liste de pertinence
+        if ($channel1["channel"]["last_activity"] == $channel2["channel"]["last_activity"]) {
+            return 0;
+        }
+        return ($channel1["channel"]["last_activity"] > $channel2["channel"]["last_activity"]) ? -1 : 1;
     }
 
     public function AddAllChannels($workspace)
@@ -74,51 +72,6 @@ class QuickSearch
             }
         }
     }
-
-    public function SearchFile($current_user_id, $words, $workspaces)
-    {
-
-        $options = Array();
-        $options["title"] = join(" ", $words);
-        
-        $files = $this->fileservice->AdvancedFile($current_user_id, $options, $workspaces);
-        foreach ($files["results"] as $file) {
-            if (isset($this->workspace_prio) && $this->workspace_prio == $file["file"]["workspace_id"]) {
-                $this->priofileresult[] = $file;
-            } else {
-                $this->fileresult[] = $file;
-            }
-            //$this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
-        }
-    }
-
-    public function SearchPrivateChannel($words, $name, $current_user_id)
-    {
-        $words[] = $name;
-        $channels = $this->channelservice->searchprivate($words, $current_user_id); // search channel in a workspace
-        foreach ($channels as $channel) {
-            $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1]);
-            //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
-        }
-
-    }
-
-    private static function cmpfile($file1, $file2)
-    { //permet d'obtenir la list des fichier par liste de pertinence
-        if ($file1["score"] == $file2["score"]) {
-            return 0;
-        }
-        return ($file1["score"] > $file2["score"]) ? -1 : 1;
-    }
-
-    private static function cmpchannel($channel1, $channel2)
-    { //permet d'obtenir la list des fichier par liste de pertinence
-        if ($channel1["channel"]["last_activity"] == $channel2["channel"]["last_activity"]) {
-            return 0;
-        }
-        return ($channel1["channel"]["last_activity"] > $channel2["channel"]["last_activity"]) ? -1 : 1;
-    }
-
 
     public function QuickSearch($current_user_id, $words, $group_id = null, $workspace_prio = null)
     {
@@ -199,6 +152,49 @@ class QuickSearch
 //        $this->doctrine->flush();
 
         return $this->globalresult;
+    }
+
+    public function SearchFile($current_user_id, $words, $workspaces)
+    {
+
+        $options = Array();
+        $options["title"] = join(" ", $words);
+
+        $files = $this->fileservice->AdvancedFile($current_user_id, $options, $workspaces);
+        foreach ($files["results"] as $file) {
+            if (isset($this->workspace_prio) && $this->workspace_prio == $file["file"]["workspace_id"]) {
+                $this->priofileresult[] = $file;
+            } else {
+                $this->fileresult[] = $file;
+            }
+            //$this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
+        }
+    }
+
+    public function SearchInWorkspace($words, $workspaces, $current_user_id)
+    {
+        $channels = $this->channelservice->search($words, $workspaces, $current_user_id); // search channel in a workspace
+        foreach ($channels as $channel) {
+            if (in_array($current_user_id, $channel[0]["members"]) || in_array($current_user_id, $channel[0]["ext_members"])) {
+                if (isset($this->workspace_prio) && $this->workspace_prio == $channel[0]["original_workspace"]) {
+                    $this->priochannelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" => $workspaces[$channel[0]["original_workspace"]]);
+                } else {
+                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" => $workspaces[$channel[0]["original_workspace"]]);
+                }
+                //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
+            }
+        }
+    }
+
+    public function SearchPrivateChannel($words, $name, $current_user_id)
+    {
+        $words[] = $name;
+        $channels = $this->channelservice->searchprivate($words, $current_user_id); // search channel in a workspace
+        foreach ($channels as $channel) {
+            $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1]);
+            //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
+        }
+
     }
 
 }

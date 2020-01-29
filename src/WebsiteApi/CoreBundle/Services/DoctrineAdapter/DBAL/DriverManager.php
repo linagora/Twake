@@ -186,46 +186,6 @@ final class DriverManager
     }
 
     /**
-     * Returns the list of supported drivers.
-     *
-     * @return array
-     */
-    public static function getAvailableDrivers()
-    {
-        return array_keys(self::$_driverMap);
-    }
-
-    /**
-     * Checks the list of parameters.
-     *
-     * @param array $params The list of parameters.
-     *
-     * @return void
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    private static function _checkParams(array $params)
-    {
-        // check existence of mandatory parameters
-
-        // driver
-        if (!isset($params['driver']) && !isset($params['driverClass'])) {
-            throw DBALException::driverRequired();
-        }
-
-        // check validity of parameters
-
-        // driver
-        if (isset($params['driver']) && !isset(self::$_driverMap[$params['driver']])) {
-            throw DBALException::unknownDriver($params['driver'], array_keys(self::$_driverMap));
-        }
-
-        if (isset($params['driverClass']) && !in_array('Doctrine\DBAL\Driver', class_implements($params['driverClass'], true))) {
-            throw DBALException::invalidDriverClass($params['driverClass']);
-        }
-    }
-
-    /**
      * Extracts parts from a database URL, if present, and returns an
      * updated list of parameters.
      *
@@ -285,5 +245,45 @@ final class DriverManager
         }
 
         return $params;
+    }
+
+    /**
+     * Checks the list of parameters.
+     *
+     * @param array $params The list of parameters.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private static function _checkParams(array $params)
+    {
+        // check existence of mandatory parameters
+
+        // driver
+        if (!isset($params['driver']) && !isset($params['driverClass'])) {
+            throw DBALException::driverRequired();
+        }
+
+        // check validity of parameters
+
+        // driver
+        if (isset($params['driver']) && !isset(self::$_driverMap[$params['driver']])) {
+            throw DBALException::unknownDriver($params['driver'], array_keys(self::$_driverMap));
+        }
+
+        if (isset($params['driverClass']) && !in_array('Doctrine\DBAL\Driver', class_implements($params['driverClass'], true))) {
+            throw DBALException::invalidDriverClass($params['driverClass']);
+        }
+    }
+
+    /**
+     * Returns the list of supported drivers.
+     *
+     * @return array
+     */
+    public static function getAvailableDrivers()
+    {
+        return array_keys(self::$_driverMap);
     }
 }

@@ -5,7 +5,6 @@ namespace WebsiteApi\NotificationsBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class NotificationQueueCommand extends ContainerAwareCommand
 {

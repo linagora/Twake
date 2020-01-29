@@ -60,11 +60,6 @@ class CollectorRegistry
         $this->addCollector(new ResponseTimeCollector());
     }
 
-    public function setAppCode($code)
-    {
-        $this->appCode = $code;
-    }
-
     /**
      * Add a collector to the registry
      *
@@ -73,6 +68,11 @@ class CollectorRegistry
     public function addCollector(AbstractCollector $collector)
     {
         $this->collectors[] = $collector;
+    }
+
+    public function setAppCode($code)
+    {
+        $this->appCode = $code;
     }
 
     /**

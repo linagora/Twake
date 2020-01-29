@@ -19,8 +19,6 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\TwakeTextType;
-
 class MysqlTextType extends TwakeTextType
 {
 

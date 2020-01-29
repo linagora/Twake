@@ -3,11 +3,11 @@
 
 namespace WebsiteApi\DriveBundle\Services\OldFileSystem;
 
-use OpenStack\OpenStack;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use OpenStack\Common\Transport\Utils as TransportUtils;
 use OpenStack\Identity\v2\Service;
+use OpenStack\OpenStack;
 
 class Adapter_OpenStack_DriveFileSystem
 {
@@ -57,11 +57,6 @@ class Adapter_OpenStack_DriveFileSystem
 
     }
 
-    public function getRoot()
-    {
-        return dirname($this->root) . "/" . "drive" . "/";
-    }
-
     public function decode($path, $key, $mode = null)
     {
 
@@ -92,6 +87,11 @@ class Adapter_OpenStack_DriveFileSystem
         }
 
         return false;
+    }
+
+    public function getRoot()
+    {
+        return dirname($this->root) . "/" . "drive" . "/";
     }
 
     public function verifyPath($path)

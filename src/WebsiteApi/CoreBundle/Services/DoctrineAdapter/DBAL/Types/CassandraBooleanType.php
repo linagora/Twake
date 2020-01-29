@@ -20,7 +20,7 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\BooleanType;
+use Doctrine\DBAL\Types\BooleanType;
 
 class CassandraBooleanType extends BooleanType
 {

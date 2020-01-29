@@ -19,8 +19,7 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\FloatType;
 
 class CassandraFloatType extends FloatType
 {

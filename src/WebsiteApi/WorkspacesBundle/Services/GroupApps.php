@@ -4,7 +4,7 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Model\GroupAppsInterface;
 
-class GroupApps implements GroupAppsInterface
+class GroupApps
 {
     private $doctrine;
     private $gms;
@@ -63,34 +63,6 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function setWorkspaceDefault($groupId, $appid, $boolean, $currentUserId = null)
-    {
-        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $group = $groupRepository->find($groupId);
-
-        if ($group == null) {
-            return false;
-        }
-
-        if ($currentUserId == null
-            || $this->gms->hasPrivileges(
-                $this->gms->getLevel($groupId, $currentUserId),
-                "MANAGE_APPS"
-            )
-        ) {
-            //Group apps
-            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app_id" => $appid));
-
-            $groupapp->setWorkspaceDefault($boolean);
-            $this->doctrine->persist($groupapp);
-            $this->doctrine->flush();
-
-            return true;
-        }
-        return false;
-    }
-
     public function removeApplication($groupId, $appid, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -131,7 +103,36 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
+    public function setWorkspaceDefault($groupId, $appid, $boolean, $currentUserId = null)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        if ($group == null) {
+            return false;
+        }
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
+                "MANAGE_APPS"
+            )
+        ) {
+            //Group apps
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app_id" => $appid));
+
+            $groupapp->setWorkspaceDefault($boolean);
+            $this->doctrine->persist($groupapp);
+            $this->doctrine->flush();
+
+            return true;
+        }
+        return false;
+    }
+
     //OLD CODE ?
+
     public function useApp($groupId, $workspaceId, $userId, $appid)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");

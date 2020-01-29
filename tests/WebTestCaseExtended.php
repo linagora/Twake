@@ -23,6 +23,7 @@ class WebTestCaseExtended extends WebTestCase
       \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
       # notice, strict:
       \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
+        define("TESTENV", true);
     }
 
     protected function getDoctrine()

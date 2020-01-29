@@ -3,14 +3,6 @@
 
 namespace WebsiteApi\CoreBundle\Services;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use WebsiteApi\CoreBundle\Entity\ZMQQueue;
 use WebsiteApi\CoreBundle\Services\RememberMe;
 
@@ -47,22 +39,6 @@ class ZMQPusher
         $this->doctrine->flush();
     }
 
-    public function checkQueue()
-    {
-
-        $jobs = $this->doctrine->getRepository("TwakeCoreBundle:ZMQQueue")->findBy(Array(), Array(), 5000);
-
-        foreach ($jobs as $job) {
-            $this->doctrine->remove($job);
-            $this->doctrine->flush();
-        }
-
-        foreach ($jobs as $job) {
-            $this->pushForReal($job->getData(), $job->getRoute());
-        }
-
-    }
-
     public function pushForReal($data, $route)
     {
 
@@ -88,6 +64,22 @@ class ZMQPusher
             $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
             $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
             $this->connection->send($data);
+        }
+
+    }
+
+    public function checkQueue()
+    {
+
+        $jobs = $this->doctrine->getRepository("TwakeCoreBundle:ZMQQueue")->findBy(Array(), Array(), 5000);
+
+        foreach ($jobs as $job) {
+            $this->doctrine->remove($job);
+            $this->doctrine->flush();
+        }
+
+        foreach ($jobs as $job) {
+            $this->pushForReal($job->getData(), $job->getRoute());
         }
 
     }

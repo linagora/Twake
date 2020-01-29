@@ -10,7 +10,6 @@ use WebsiteApi\CoreBundle\Services\Translate;
 use WebsiteApi\UsersBundle\Entity\Device;
 use WebsiteApi\UsersBundle\Entity\Mail;
 use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
-use WebsiteApi\UsersBundle\Model\UserInterface;
 
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
@@ -18,6 +17,8 @@ use WebsiteApi\UsersBundle\Model\UserInterface;
 class User
 {
 
+    /* @var Translate $translate */
+    var $translate;
     private $em;
     private $pusher;
     private $encoder_factory;
@@ -34,8 +35,6 @@ class User
     private $pricing_plan;
     private $restClient;
     private $circle;
-    /* @var Translate $translate */
-    var $translate;
     private $standalone;
     private $licenceKey;
 
@@ -214,7 +213,9 @@ class User
 
             $code = $verificationNumberMail->getCode();
 
-            error_log("recover code: " . $code);
+            if (!defined("TESTENV")) {
+                error_log("recover code: " . $code);
+            }
 
             $this->twake_mailer->send($mail, "requestPassword", Array(
                 "_language" => $user ? $user->getLanguage() : "en",
@@ -278,6 +279,39 @@ class User
         return false;
     }
 
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $recaptcha, $language, $origin = "", $force = false)
+    {
+        $mail = $this->string_cleaner->simplifyMail($mail);
+        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+
+        $avaible = $this->getAvaibleMailPseudo($mail, $pseudo);
+        if (is_bool($avaible) && !$avaible) {
+            return $avaible;
+        }
+        if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        if (!($force || $this->testRecaptcha($recaptcha))) {
+            return false;
+        }
+
+        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false, false);
+        $user = $this->verifyMail($mail, $token, "", true);
+        if ($user == null || $user == false) {
+            return false;
+        }
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setPhone($phone);
+        $user->setLanguage($language);
+        $user->setCreationDate(new \DateTime());
+        $user->setOrigin($origin);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $user;
+    }
+
     public function getAvaibleMailPseudo($mail, $pseudo)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
@@ -313,34 +347,6 @@ class User
         return $retour;
     }
 
-    public function verifyReCaptchaAction($recaptcha, $client_ip)
-    {
-
-        if ($recaptcha == "phone_app_no_verification") {
-            return true;
-        }
-
-        //[REMOVE_ONPREMISE]
-
-        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-
-        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-            . $secret
-            . "&response=" . $recaptcha
-            . "&remoteip=" . $client_ip;
-
-        $decode = json_decode(file_get_contents($api_url), true);
-
-        if (isset($decode["success"])) {
-            return true;
-        }
-
-        //[/REMOVE_ONPREMISE]
-
-        return false;
-
-    }
-
     public function testRecaptcha($recaptcha)
     {
         if ($this->standalone) {
@@ -367,108 +373,31 @@ class User
 
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $recaptcha, $language, $origin = "", $force = false)
-    {
-        $mail = $this->string_cleaner->simplifyMail($mail);
-        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
-
-        $avaible = $this->getAvaibleMailPseudo($mail, $pseudo);
-        if (is_bool($avaible) && !$avaible) {
-            return $avaible;
-        }
-        if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            return false;
-        }
-        if (!($force || $this->testRecaptcha($recaptcha))) {
-            return false;
-        }
-
-        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false, false);
-        $user = $this->verifyMail($mail, $token, "", true);
-        if ($user == null || $user == false) {
-            return false;
-        }
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setPhone($phone);
-        $user->setLanguage($language);
-        $user->setCreationDate(new \DateTime());
-        $user->setOrigin($origin);
-        $this->em->persist($user);
-        $this->em->flush();
-
-        return $user;
-    }
-
-    public function createCompanyUser($mail, $fullname, $password, $language, $workspace_id, $current_user_id)
+    public function verifyReCaptchaAction($recaptcha, $client_ip)
     {
 
-        $pseudo = explode("@", $mail)[0] . "_" . date("U");
-        $firstname = explode(" ", $fullname)[0];
-        $lastname = explode(" ", $fullname . " ")[1];
-        $override_key = $workspace_id . "_" . $current_user_id;
-
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-        if ($user != null) {
-            if ($user->getMailVerified() || $user->getMailVerificationOverride() != $override_key) {
-                return ["error" => "mailalreadytaken"];
-            } else if (!$user->getMailVerified() && $user->getMailVerificationOverride() == $override_key) {
-
-                $user->setSalt(bin2hex(random_bytes(40)));
-                $factory = $this->encoder_factory;
-                $encoder = $factory->getEncoder($user);
-                $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
-                $user->setUsername($pseudo);
-
-                $this->em->persist($user);
-                $this->em->flush();
-
-                $this->verifyMail($mail, "", "", true);
-
-                $user->setMailVerified(false);
-                $this->em->persist($user);
-                $this->em->flush();
-
-                return true;
-
-            } else {
-                return ["error" => "mailalreadytaken"];
-            }
-        }
-        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-        $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
-        if ($mailExists != null) {
-            return ["error" => "mailalreadytaken"];
-        }
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-        if ($user != null && $user->getMailVerified()) {
-            return ["error" => "usernamealreadytaken"];
+        if ($recaptcha == "phone_app_no_verification") {
+            return true;
         }
 
-        $user = new \WebsiteApi\UsersBundle\Entity\User();
-        $user->setSalt(bin2hex(random_bytes(40)));
-        $factory = $this->encoder_factory;
-        $encoder = $factory->getEncoder($user);
-        $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
-        $user->setUsername($pseudo);
-        $user->setEmail($mail);
-        $user->setFirstName($firstname);
-        $user->setLastName($lastname);
-        $user->setPhone("");
-        $user->setLanguage($language ? $language : "en");
-        $user->setMailVerificationOverride($override_key);
-        $this->em->persist($user);
-        $this->em->flush();
+        //[REMOVE_ONPREMISE]
 
-        $this->verifyMail($mail, "", "", true);
+        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
 
-        $user->setMailVerified(false);
-        $this->em->persist($user);
-        $this->em->flush();
+        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
+            . $secret
+            . "&response=" . $recaptcha
+            . "&remoteip=" . $client_ip;
 
-        return true;
+        $decode = json_decode(file_get_contents($api_url), true);
+
+        if (isset($decode["success"])) {
+            return true;
+        }
+
+        //[/REMOVE_ONPREMISE]
+
+        return false;
 
     }
 
@@ -516,7 +445,9 @@ class User
         $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
 
-        error_log("sign in code: " . $code);
+        if (!defined("TESTENV")) {
+            error_log("sign in code: " . $code);
+        }
 
         $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
@@ -648,6 +579,78 @@ class User
             return true;
         }
         return false;
+    }
+
+    public function createCompanyUser($mail, $fullname, $password, $language, $workspace_id, $current_user_id)
+    {
+
+        $pseudo = explode("@", $mail)[0] . "_" . date("U");
+        $firstname = explode(" ", $fullname)[0];
+        $lastname = explode(" ", $fullname . " ")[1];
+        $override_key = $workspace_id . "_" . $current_user_id;
+
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
+        if ($user != null) {
+            if ($user->getMailVerified() || $user->getMailVerificationOverride() != $override_key) {
+                return ["error" => "mailalreadytaken"];
+            } else if (!$user->getMailVerified() && $user->getMailVerificationOverride() == $override_key) {
+
+                $user->setSalt(bin2hex(random_bytes(40)));
+                $factory = $this->encoder_factory;
+                $encoder = $factory->getEncoder($user);
+                $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+                $user->setUsername($pseudo);
+
+                $this->em->persist($user);
+                $this->em->flush();
+
+                $this->verifyMail($mail, "", "", true);
+
+                $user->setMailVerified(false);
+                $this->em->persist($user);
+                $this->em->flush();
+
+                return true;
+
+            } else {
+                return ["error" => "mailalreadytaken"];
+            }
+        }
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
+        if ($mailExists != null) {
+            return ["error" => "mailalreadytaken"];
+        }
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
+        if ($user != null && $user->getMailVerified()) {
+            return ["error" => "usernamealreadytaken"];
+        }
+
+        $user = new \WebsiteApi\UsersBundle\Entity\User();
+        $user->setSalt(bin2hex(random_bytes(40)));
+        $factory = $this->encoder_factory;
+        $encoder = $factory->getEncoder($user);
+        $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+        $user->setUsername($pseudo);
+        $user->setEmail($mail);
+        $user->setFirstName($firstname);
+        $user->setLastName($lastname);
+        $user->setPhone("");
+        $user->setLanguage($language ? $language : "en");
+        $user->setMailVerificationOverride($override_key);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->verifyMail($mail, "", "", true);
+
+        $user->setMailVerified(false);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return true;
+
     }
 
     public function checkPassword($userId, $password)
@@ -1104,15 +1107,6 @@ class User
         }
     }
 
-    private function removeLinkedToUserRows($entity, $user, $col = "user")
-    {
-        $repo = $this->em->getRepository($entity);
-        $toRemove = $repo->findBy(Array($col => $user));
-        foreach ($toRemove as $r) {
-            $this->em->remove($r);
-        }
-    }
-
     public function removeUserByUsername($username)
     {
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -1138,6 +1132,15 @@ class User
 
         return true;
 
+    }
+
+    private function removeLinkedToUserRows($entity, $user, $col = "user")
+    {
+        $repo = $this->em->getRepository($entity);
+        $toRemove = $repo->findBy(Array($col => $user));
+        foreach ($toRemove as $r) {
+            $this->em->remove($r);
+        }
     }
 
 }

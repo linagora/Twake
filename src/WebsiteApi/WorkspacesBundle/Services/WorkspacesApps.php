@@ -5,13 +5,11 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesAppsInterface;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 
-class WorkspacesApps implements WorkspacesAppsInterface
+class WorkspacesApps
 {
 
     private $wls;
@@ -79,6 +77,71 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
         return false;
 
+    }
+
+    public function disableApp($workspaceId, $applicationId, $currentUserId = null)
+    {
+        $current_user_id = $currentUserId;
+
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $appRepository->findOneBy(Array("id" => $applicationId));
+
+        if ($workspace == null || $app == null) {
+            return false;
+        }
+
+        if ($currentUserId == null
+            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
+
+            if ($workspace->getUser() != null
+                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
+            ) {
+                //cant disable in Private ws apps
+                return false;
+            }
+
+            //Search WorkspaceApp targeting the app
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
+
+
+            $groupapp->setWorkspacesCount($groupapp->getWorkspacesCount() - 1);
+
+            $app->setInstallCount($app->getInstallCount() - 1);
+            $this->doctrine->persist($app);
+
+            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
+
+            if ($groupapp->getWorkspacesCount() <= 0) {
+                $this->doctrine->remove($groupapp);
+            }
+
+            $this->doctrine->remove($workspaceapp);
+            $this->doctrine->flush();
+
+            //Remove resource access to workspace
+            $this->application_api->removeResource($app->getId(), $workspace->getId(), "workspace", $workspace->getId(), $current_user_id);
+
+            $workspace_app = $groupapp->getAsArray();
+            $workspace_app["workspace_id"] = $workspace->getId();
+            $workspace_app["app"] = $app->getAsArray();
+
+            $datatopush = Array(
+                "type" => "remove",
+                "workspace_app" => $workspace_app
+            );
+            $this->pusher->push($datatopush, "workspace_apps/" . $workspace->getId());
+
+            $this->channel_system->removeApplicationChannel($app, $workspace);
+
+            return true;
+        }
+
+        return false;
     }
 
     public function forceApplication($groupId, $appid, $currentUserId = null)
@@ -184,71 +247,6 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $this->pusher->push($datatopush, "workspace_apps/" . $workspace->getId());
 
             $this->channel_system->getApplicationChannel($app, $workspace);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function disableApp($workspaceId, $applicationId, $currentUserId = null)
-    {
-        $current_user_id = $currentUserId;
-
-        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
-
-        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $app = $appRepository->findOneBy(Array("id" => $applicationId));
-
-        if ($workspace == null || $app == null) {
-            return false;
-        }
-
-        if ($currentUserId == null
-            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
-
-            if ($workspace->getUser() != null
-                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-            ) {
-                //cant disable in Private ws apps
-                return false;
-            }
-
-            //Search WorkspaceApp targeting the app
-            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
-
-
-            $groupapp->setWorkspacesCount($groupapp->getWorkspacesCount() - 1);
-
-            $app->setInstallCount($app->getInstallCount() - 1);
-            $this->doctrine->persist($app);
-
-            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
-
-            if ($groupapp->getWorkspacesCount() <= 0) {
-                $this->doctrine->remove($groupapp);
-            }
-
-            $this->doctrine->remove($workspaceapp);
-            $this->doctrine->flush();
-
-            //Remove resource access to workspace
-            $this->application_api->removeResource($app->getId(), $workspace->getId(), "workspace", $workspace->getId(), $current_user_id);
-
-            $workspace_app = $groupapp->getAsArray();
-            $workspace_app["workspace_id"] = $workspace->getId();
-            $workspace_app["app"] = $app->getAsArray();
-
-            $datatopush = Array(
-                "type" => "remove",
-                "workspace_app" => $workspace_app
-            );
-            $this->pusher->push($datatopush, "workspace_apps/" . $workspace->getId());
-
-            $this->channel_system->removeApplicationChannel($app, $workspace);
 
             return true;
         }

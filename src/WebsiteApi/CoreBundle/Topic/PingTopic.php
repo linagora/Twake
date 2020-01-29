@@ -2,9 +2,9 @@
 
 namespace WebsiteApi\CoreBundle\Topic;
 
-use Ratchet\ConnectionInterface;
-use Gos\Bundle\WebSocketBundle\RPC\RpcInterface;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
+use Gos\Bundle\WebSocketBundle\RPC\RpcInterface;
+use Ratchet\ConnectionInterface;
 
 class PingTopic implements RpcInterface
 {

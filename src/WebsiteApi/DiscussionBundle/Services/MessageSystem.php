@@ -3,18 +3,13 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Call;
-use WebsiteApi\DiscussionBundle\Entity\Message;
-use WebsiteApi\CoreBundle\Services\StringCleaner;
-use WebsiteApi\DiscussionBundle\Entity\MessageLike;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
+use WebsiteApi\DiscussionBundle\Entity\Message;
+use WebsiteApi\DiscussionBundle\Entity\MessageLike;
 use WebsiteApi\DiscussionBundle\Entity\MessageReaction;
-use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
-use WebsiteApi\MarketBundle\Entity\Application;
-use WebsiteApi\UsersBundle\Entity\User;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
+use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
 
 class MessageSystem
 {
@@ -31,22 +26,6 @@ class MessageSystem
     public function init($route, $data, $current_user = null)
     {
         //TODO
-        return true;
-    }
-
-    public function hasAccess($data, $current_user = null, $message = null)
-    {
-        //Verify message access
-        if ($message) {
-            if ($current_user && $message->getSender() && $message->getSender()->getId() != $current_user->getId()) {
-                return false; //Not my message
-            }
-        }
-
-        //TODO verify channel access
-        $channel_id = $data["channel_id"];
-        //TODO
-
         return true;
     }
 
@@ -114,6 +93,22 @@ class MessageSystem
         return $messages;
     }
 
+    public function hasAccess($data, $current_user = null, $message = null)
+    {
+        //Verify message access
+        if ($message) {
+            if ($current_user && $message->getSender() && $message->getSender()->getId() != $current_user->getId()) {
+                return false; //Not my message
+            }
+        }
+
+        //TODO verify channel access
+        $channel_id = $data["channel_id"];
+        //TODO
+
+        return true;
+    }
+
     public function remove($object, $options, $current_user = null)
     {
         $channel_id = $object["channel_id"];
@@ -161,6 +156,31 @@ class MessageSystem
         $this->deleteInBloc($message);
 
         return $array_before_delete;
+
+    }
+
+    public function deleteInBloc($message)
+    {
+
+        $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+
+        if (!$bloc) {
+            return false;
+        }
+
+        try {
+            $bloc->removeMessage($message->getId());
+
+            $this->em->persist($bloc);
+            $this->em->flush();
+
+            if ($bloc->getLock() == true) {
+                $this->em->es_put($bloc, $bloc->getEsType());
+            }
+
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
 
     }
 
@@ -479,6 +499,67 @@ class MessageSystem
         return $array;
     }
 
+    private function share($message)
+    {
+
+        if (!$message) {
+            return;
+        }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $message->getAsArray()
+        );
+        $this->websockets_service->push("messages/" . $message->getChannelId(), $event);
+
+    }
+
+    private function moveMessageToNewParent(Message $messageA, $messageB, $flush = true)
+    {
+
+        if (!$messageA->getParentMessageId() && !$messageB || $messageB && $messageA->getParentMessageId() == $messageB->getId()) {
+            return;
+        }
+
+        $this->em->remove($messageA);
+        $this->em->flush();
+
+        $new_parent_message_id = $messageB ? $messageB->getId() : "";
+
+        $messageA->setParentMessageId($new_parent_message_id);
+
+        if ($messageA->getResponsesCount() > 0) {
+            $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
+
+            //Move all children to the same parent message id
+            $others = $message_repo->findBy(Array("channel_id" => $messageA->getChannelId(), "parent_message_id" => $messageA->getId()));
+
+            foreach ($others as $message) {
+                $this->moveMessageToNewParent($message, $messageB, false);
+            }
+
+        }
+
+        if ($messageB) {
+            $messageB->setResponsesCount($messageB->getResponsesCount() + 1);
+        }
+
+        $messageA->setResponsesCount(0);
+        $this->em->persist($messageA);
+
+        $this->share($messageA);
+
+        if ($flush) {
+            $this->share($messageB);
+            $this->em->flush();
+        }
+
+        return $messageA;
+
+    }
+
     public function indexMessage($message, $workspace_id, $channel_id)
     {
         if (!$workspace_id) {
@@ -537,93 +618,6 @@ class MessageSystem
         } catch (\Exception $e) {
             error_log($e->getMessage());
         }
-
-    }
-
-
-    public function deleteInBloc($message)
-    {
-
-        $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-
-        if (!$bloc) {
-            return false;
-        }
-
-        try {
-            $bloc->removeMessage($message->getId());
-
-            $this->em->persist($bloc);
-            $this->em->flush();
-
-            if ($bloc->getLock() == true) {
-                $this->em->es_put($bloc, $bloc->getEsType());
-            }
-
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
-
-    }
-
-    private function moveMessageToNewParent(Message $messageA, $messageB, $flush = true)
-    {
-
-        if (!$messageA->getParentMessageId() && !$messageB || $messageB && $messageA->getParentMessageId() == $messageB->getId()) {
-            return;
-        }
-
-        $this->em->remove($messageA);
-        $this->em->flush();
-
-        $new_parent_message_id = $messageB ? $messageB->getId() : "";
-
-        $messageA->setParentMessageId($new_parent_message_id);
-
-        if ($messageA->getResponsesCount() > 0) {
-            $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
-
-            //Move all children to the same parent message id
-            $others = $message_repo->findBy(Array("channel_id" => $messageA->getChannelId(), "parent_message_id" => $messageA->getId()));
-
-            foreach ($others as $message) {
-                $this->moveMessageToNewParent($message, $messageB, false);
-            }
-
-        }
-
-        if ($messageB) {
-            $messageB->setResponsesCount($messageB->getResponsesCount() + 1);
-        }
-
-        $messageA->setResponsesCount(0);
-        $this->em->persist($messageA);
-
-        $this->share($messageA);
-
-        if ($flush) {
-            $this->share($messageB);
-            $this->em->flush();
-        }
-
-        return $messageA;
-
-    }
-
-    private function share($message)
-    {
-
-        if (!$message) {
-            return;
-        }
-
-        $event = Array(
-            "client_id" => "system",
-            "action" => "save",
-            "object_type" => "",
-            "object" => $message->getAsArray()
-        );
-        $this->websockets_service->push("messages/" . $message->getChannelId(), $event);
 
     }
 

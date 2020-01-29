@@ -8,12 +8,10 @@
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
 
-use phpDocumentor\Reflection\Types\Array_;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
-use WebsiteApi\WorkspacesBundle\Model\WorkspaceLevelsInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use WebsiteApi\WorkspacesBundle\Model\WorkspaceLevelsInterface;
 
 
 class WorkspaceLevelsController extends Controller

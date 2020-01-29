@@ -2,15 +2,13 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
-use Reprovinci\DoctrineEncrypt\Subscribers\DoctrineEncryptSubscriber;
-use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\DriverManager;
+use DateTime;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
-use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
-use DateTime;
-
+use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\DriverManager;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 
 class ManagerAdapter
@@ -41,6 +39,11 @@ class ManagerAdapter
             define("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED", true);
             error_log("INFO: Installation configured without elastic search");
         }
+    }
+
+    public function clear()
+    {
+        return $this->getEntityManager()->clear();
     }
 
     public function getEntityManager()
@@ -95,20 +98,15 @@ class ManagerAdapter
         return $this->manager;
     }
 
-    public function getManager()
-    {
-        return $this->getEntityManager();
-    }
-
-    public function clear()
-    {
-        return $this->getEntityManager()->clear();
-    }
-
     /** !Caution! : thin ttl will be used on the first insert in the next flush ! */
     public function useTTLOnFirstInsert($ttl)
     {
         $this->getManager()->getConnection()->getWrappedConnection()->useTTLOnFirstInsert($ttl);
+    }
+
+    public function getManager()
+    {
+        return $this->getEntityManager();
     }
 
     public function flush()
@@ -138,120 +136,26 @@ class ManagerAdapter
         return $a;
     }
 
-    public function remove($object)
+    public function es_remove($entity, $index, $server = "twake")
     {
-        if (!$object) {
+
+        if (!$this->es_server) {
             return;
         }
-        if (method_exists($object, "getEsIndexed")) {
-            //This is a searchable object
-            $this->es_removes[$object->getId() . ""] = $object;
-            unset($this->es_updates[$object->getId() . ""]);
-        }
-        return $this->getEntityManager()->remove($object);
-    }
 
-    public function getReference($ent, $id)
-    {
-        $res = null;
+        if (is_array($entity)) {
+            $id = $entity["id"];
+        } else {
+            $id = $entity->getId();
+        }
+
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
+
         try {
-            $res = $this->getEntityManager()->getReference($ent, $id);
+            $this->circle->delete($route, array(CURLOPT_CONNECTTIMEOUT => 1));
         } catch (\Exception $e) {
-            error_log($e);
-            die("ERROR with persist");
+            error_log("Unable to delete on ElasticSearch.");
         }
-
-        return $res;
-    }
-
-    public function merge($object)
-    {
-        $res = null;
-        try {
-            $res = $this->getEntityManager()->merge($object);
-        } catch (\Exception $e) {
-            error_log($e);
-            die("ERROR with persist");
-        }
-
-        return $res;
-    }
-
-    public function persist($object)
-    {
-
-        if (!$this->generator) {
-            $this->generator = new UuidOrderedTimeGenerator();
-        }
-        if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
-            $object->setId($this->generator->generate($this->getEntityManager(), $object));
-        }
-
-
-        if (method_exists($object, "getEsIndexed")) {
-            //This is a searchable object
-            if (method_exists($object, "getLock()")) {
-                if ($object->getLock() == true) {
-                    $this->es_updates[$object->getId() . ""] = $object;
-                    unset($this->es_removes[$object->getId() . ""]);
-                    $object->setEsIndexed(true);
-                }
-            } else {
-                if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                    $this->es_updates[$object->getId() . ""] = $object;
-                    unset($this->es_removes[$object->getId() . ""]);
-                    $object->setEsIndexed(true);
-                }
-            }
-        }
-
-        $res = null;
-        try {
-            $res = $this->getEntityManager()->persist($object);
-        } catch (\Exception $e) {
-            error_log($e);
-            die("ERROR with persist");
-        }
-
-        return $res;
-
-    }
-
-    public function getRepository($name)
-    {
-        $metadata = $this->doctrine_manager->getClassMetadata($name);
-        $name = $metadata->getName();
-        $em = $this->getEntityManager();
-        $factory = new DefaultRepositoryFactory($em, $name);
-        return $factory->getRepository($em, $name);
-    }
-
-    public function createQueryBuilder($qb = null)
-    {
-        return $this->getEntityManager()->createQueryBuilder($qb);
-    }
-
-
-    /* Elastic Search */
-
-    //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
-
-    public function update_ES_keyword($keywords, $word)
-    {
-
-
-        $keywords[] = Array(
-            "keyword" => $word,
-            "score" => 1.1
-        );
-        return $keywords;
-    }
-
-    function validateDate($date, $format = 'Y-m-d')
-    {
-        $d = DateTime::createFromFormat($format, $date);
-        // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
-        return $d && $d->format($format) === $date;
     }
 
     public function es_put($entity, $index, $server = "twake")
@@ -306,28 +210,112 @@ class ManagerAdapter
 
     }
 
-    public function es_remove($entity, $index, $server = "twake")
+    public function update_ES_keyword($keywords, $word)
     {
 
-        if (!$this->es_server) {
-            return;
-        }
 
-        if (is_array($entity)) {
-            $id = $entity["id"];
-        } else {
-            $id = $entity->getId();
-        }
-
-        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
-
-        try {
-            $this->circle->delete($route, array(CURLOPT_CONNECTTIMEOUT => 1));
-        } catch (\Exception $e) {
-            error_log("Unable to delete on ElasticSearch.");
-        }
+        $keywords[] = Array(
+            "keyword" => $word,
+            "score" => 1.1
+        );
+        return $keywords;
     }
 
+    public function remove($object)
+    {
+        if (!$object) {
+            return;
+        }
+        if (method_exists($object, "getEsIndexed")) {
+            //This is a searchable object
+            $this->es_removes[$object->getId() . ""] = $object;
+            unset($this->es_updates[$object->getId() . ""]);
+        }
+        return $this->getEntityManager()->remove($object);
+    }
+
+    public function getReference($ent, $id)
+    {
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->getReference($ent, $id);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
+    }
+
+    public function merge($object)
+    {
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->merge($object);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
+    }
+
+
+    /* Elastic Search */
+
+    //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
+
+    public function persist($object)
+    {
+
+        if (!$this->generator) {
+            $this->generator = new UuidOrderedTimeGenerator();
+        }
+        if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
+            $object->setId($this->generator->generate($this->getEntityManager(), $object));
+        }
+
+
+        if (method_exists($object, "getEsIndexed")) {
+            //This is a searchable object
+            if (method_exists($object, "getLock()")) {
+                if ($object->getLock() == true) {
+                    $this->es_updates[$object->getId() . ""] = $object;
+                    unset($this->es_removes[$object->getId() . ""]);
+                    $object->setEsIndexed(true);
+                }
+            } else {
+                if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
+                    $this->es_updates[$object->getId() . ""] = $object;
+                    unset($this->es_removes[$object->getId() . ""]);
+                    $object->setEsIndexed(true);
+                }
+            }
+        }
+
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->persist($object);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
+
+    }
+
+    public function createQueryBuilder($qb = null)
+    {
+        return $this->getEntityManager()->createQueryBuilder($qb);
+    }
+
+    function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+        return $d && $d->format($format) === $date;
+    }
 
     public function es_search($options = Array(), $index = null, $server = "twake")
     {
@@ -429,6 +417,15 @@ class ManagerAdapter
         }
         return $result;
 
+    }
+
+    public function getRepository($name)
+    {
+        $metadata = $this->doctrine_manager->getClassMetadata($name);
+        $name = $metadata->getName();
+        $em = $this->getEntityManager();
+        $factory = new DefaultRepositoryFactory($em, $name);
+        return $factory->getRepository($em, $name);
     }
 
 

@@ -5,11 +5,7 @@ namespace WebsiteApi\DriveBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use \DateTime;
 use WebsiteApi\DriveBundle\Services\DriveFileSystemOld;
-use WebsiteApi\MarketBundle\Entity\Application;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
 
 class DrivePreviewCommand extends ContainerAwareCommand
@@ -37,19 +33,6 @@ class DrivePreviewCommand extends ContainerAwareCommand
         $this->storagemanager = $services->get("driveupload.storemanager");
 
         $this->autoGenPreview($services);
-    }
-
-    public function checkLocalFileForPreview(DriveFile $file)
-    {
-        $tmppath = null;
-        $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
-        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
-            if ($uploadstate && $uploadstate->getHasPreview()) {
-                $tmppath = $this->drive_previews_tmp_folder . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
-            }
-        }
-        return $tmppath;
     }
 
     public function autoGenPreview()
@@ -94,6 +77,19 @@ class DrivePreviewCommand extends ContainerAwareCommand
             $time_elapsed_secs = microtime(true) - $start;
         }
         return true;
+    }
+
+    public function checkLocalFileForPreview(DriveFile $file)
+    {
+        $tmppath = null;
+        $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
+        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
+            if ($uploadstate && $uploadstate->getHasPreview()) {
+                $tmppath = $this->drive_previews_tmp_folder . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
+            }
+        }
+        return $tmppath;
     }
 
 }

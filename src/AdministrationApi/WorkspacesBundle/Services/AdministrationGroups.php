@@ -60,6 +60,21 @@ class AdministrationGroups
         return $this->list_group ?: null;
     }
 
+    public function getGroupMembers($group)
+    {
+        $membersRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        $members_tab = $membersRepository->findBy(Array("group" => $group));
+
+        $members = Array();
+
+        foreach ($members_tab as $member) {
+            $members[] = $member->getUser()->getAsArray();
+        }
+
+        return $members;
+    }
+
     public function getOneGroup($group_id)
     {
 
@@ -88,21 +103,6 @@ class AdministrationGroups
             }
         }
         return $rep;
-    }
-
-    public function getGroupMembers($group)
-    {
-        $membersRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
-
-        $members_tab = $membersRepository->findBy(Array("group" => $group));
-
-        $members = Array();
-
-        foreach ($members_tab as $member) {
-            $members[] = $member->getUser()->getAsArray();
-        }
-
-        return $members;
     }
 
     public function getGroupApps($group)

@@ -6,7 +6,7 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspaceLevelsInterface;
 
-class WorkspaceLevels implements WorkspaceLevelsInterface
+class WorkspaceLevels
 {
 
     private $doctrine;
@@ -18,21 +18,31 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $this->pusher = $pusher;
     }
 
-
-    private function convertToEntity($var, $repository)
+    public function getLevel($workspaceId, $userId, $currentUserId = null)
     {
-        if (is_string($var)) {
-            $var = $var; // Cassandra id do nothing
+        if ($currentUserId == null
+            || $currentUserId == $userId
+            || $this->can($workspaceId, $currentUserId, "")
+        ) {
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+
+            $user = $userRepository->find($userId);
+            $workspace = $workspaceRepository->find($workspaceId);
+            $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
+
+            if (!$link) {
+                return null; //No level because no member
+            }
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
+
+            return $level;
+
         }
 
-        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
-            return $this->doctrine->getRepository($repository)->find($var);
-        } else if (is_object($var)) {
-            return $var;
-        } else {
-            return null;
-        }
-
+        return null; //Cant look this info
     }
 
     public function can($workspaceId, $userId, $action)
@@ -95,31 +105,20 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
     }
 
-    public function getLevel($workspaceId, $userId, $currentUserId = null)
+    private function convertToEntity($var, $repository)
     {
-        if ($currentUserId == null
-            || $currentUserId == $userId
-            || $this->can($workspaceId, $currentUserId, "")
-        ) {
-
-            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-
-            $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
-            $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
-
-            if (!$link) {
-                return null; //No level because no member
-            }
-            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
-
-            return $level;
-
+        if (is_string($var)) {
+            $var = $var; // Cassandra id do nothing
         }
 
-        return null; //Cant look this info
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
     }
 
     public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId = null)

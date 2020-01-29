@@ -55,6 +55,21 @@ class AdministrationUsers
         return $this->list_user ?: null;
     }
 
+    public function getUserMails($user)
+    {
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+
+        $mails_tab = $mailsRepository->findBy(Array("user" => $user));
+
+        $mails = array();
+
+        foreach ($mails_tab as $mail) {
+            $mails[] = $mail->getMail();
+        }
+
+        return $mails;
+    }
+
     public function getOneUser($user_id)
     {
         try {
@@ -97,21 +112,6 @@ class AdministrationUsers
         }
 
         return $workspaces;
-    }
-
-    public function getUserMails($user)
-    {
-        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-
-        $mails_tab = $mailsRepository->findBy(Array("user" => $user));
-
-        $mails = array();
-
-        foreach ($mails_tab as $mail) {
-            $mails[] = $mail->getMail();
-        }
-
-        return $mails;
     }
 
     public function getUserGroups($user)

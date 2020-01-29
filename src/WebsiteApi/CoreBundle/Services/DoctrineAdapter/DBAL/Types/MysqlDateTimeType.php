@@ -19,10 +19,7 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Platforms\CassandraPlatform;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateTimeType;
-use Doctrine\DBAL\Types\ConversionException;
 
 /**
  * Type that maps an SQL DATETIME/TIMESTAMP to a PHP DateTime object.

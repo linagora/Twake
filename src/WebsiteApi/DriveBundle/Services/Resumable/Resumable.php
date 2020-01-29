@@ -3,26 +3,20 @@
 namespace WebsiteApi\DriveBundle\Services\Resumable;
 
 use Cake\Filesystem\File;
-use Cake\Filesystem\Folder;
-use WebsiteApi\DriveBundle\Entity\UploadState;
-
-use WebsiteApi\DriveBundle\Services\DriveFile;
-
-
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
+use Monolog\Logger;
+use WebsiteApi\DriveBundle\Entity\UploadState;
+use WebsiteApi\DriveBundle\Services\DriveFile;
 use WebsiteApi\DriveBundle\Services\Storage\EncryptionBag;
-use WebsiteApi\DriveBundle\Services\ZipStream\Option\Archive;
-use WebsiteApi\DriveBundle\Services\ZipStream\TwakeFileStream;
-use WebsiteApi\DriveBundle\Services\ZipStream\ZipStream;
+
 
 class Resumable
 {
+    const WITHOUT_EXTENSION = true;
     public $debug = false;
     public $tempFolder = 'tmp';
-    public $uploadFolder = 'test/files/uploads';
     // for testing
+    public $uploadFolder = 'test/files/uploads';
     public $deleteTmpFolder = true;
     protected $request;
     protected $response;
@@ -50,8 +44,6 @@ class Resumable
     protected $previews;
     protected $parameter_drive_salt;
 
-    const WITHOUT_EXTENSION = true;
-
     public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $parameter_drive_salt)
     {
         $this->doctrine = $doctrine;
@@ -73,15 +65,6 @@ class Resumable
     }
 
     // sets original filename and extenstion, blah blah
-    public function preProcess()
-    {
-        if (!empty($this->resumableParams())) {
-            if (!empty($this->request->file())) {
-                $this->extension = $this->findExtension($this->resumableParam('filename'));
-                $this->originalFilename = $this->resumableParam('filename');
-            }
-        }
-    }
 
     public function process($current_user)
     {
@@ -96,100 +79,13 @@ class Resumable
         }
     }
 
-    /**
-     * Get isUploadComplete
-     *
-     * @return boolean
-     */
-    public function isUploadComplete()
+    public function resumableParams()
     {
-        return $this->isUploadComplete;
-    }
-
-    /**
-     * Set final filename.
-     *
-     * @param string Final filename
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-        return $this;
-    }
-
-    /**
-     * Get final filename.
-     *
-     * @return string Final filename
-     */
-    public function getFilename()
-    {
-        return $this->filename;
-    }
-
-    /**
-     * Get final filename.
-     *
-     * @return string Final filename
-     */
-    public function getOriginalFilename($withoutExtension = false)
-    {
-        if ($withoutExtension === static::WITHOUT_EXTENSION) {
-            return $this->removeExtension($this->originalFilename);
+        if ($this->request->is('get')) {
+            return $this->request->data('get');
         }
-        return $this->originalFilename;
-    }
-
-    /**
-     * Get final filapath.
-     *
-     * @return string Final filename
-     */
-    public function getFilepath()
-    {
-        return $this->filepath;
-    }
-
-    /**
-     * Get final extension.
-     *
-     * @return string Final extension name
-     */
-    public function getExtension()
-    {
-        return $this->extension;
-    }
-
-    public function createObject($workspace_id, $filename, $extension, $user_id)
-    {
-
-        $identifier = $workspace_id . date("U") . bin2hex(random_bytes(20));
-
-        $this->current_user_id = $user_id;
-
-        $chunklist = Array();
-        $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
-        $new_key = bin2hex(random_bytes(20));
-        $uploadstate->setEncryptionKey($new_key);
-        $uploadstate->setUserId($user_id);
-        $this->doctrine->persist($uploadstate);
-        $this->doctrine->flush();
-
-        return $identifier;
-    }
-
-    public function handleTestChunk()
-    {
-
-        $identifier = $this->resumableParam($this->resumableOption['identifier']);
-        $filename = $this->resumableParam($this->resumableOption['filename']);
-        $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
-
-
-        if (!$this->isChunkUploaded($identifier, $filename, $chunkNumber)) {
-            return $this->response->header(204);
-        } else {
-            return $this->response->header(200);
+        if ($this->request->is('post')) {
+            return $this->request->data('post');
         }
     }
 
@@ -298,6 +194,15 @@ class Resumable
         return true;
     }
 
+    private function resumableParam($shortName)
+    {
+        $resumableParams = $this->resumableParams();
+        if (!isset($resumableParams['resumable' . ucfirst($shortName)])) {
+            return null;
+        }
+        return $resumableParams['resumable' . ucfirst($shortName)];
+    }
+
     public function isChunkUploaded($identifier, $filename, $chunkNumber)
     {
         $part = explode("_", $filename)[0];
@@ -314,22 +219,16 @@ class Resumable
         return $file->exists();
     }
 
-//    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
-//    {
-//        if ($chunkSize <= 0) {
-//            return false;
-//        }
-//        $numOfChunks = intval($totalSize / $chunkSize) + ($totalSize % $chunkSize == 0 ? 0 : 1);
-//        //$numOfChunks= intval($totalSize / $chunkSize) ;
-//        for ($i = 1; $i < $numOfChunks; $i++) {
-//            if (!$this->isChunkUploaded($identifier, $filename, $i)) {
-//                return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
+    public function tmpChunkDir()
+    {
+        //$tmpChunkDir = $this->tempFolder . DIRECTORY_SEPARATOR . $identifier;
+        $tmpChunkDir = $this->tempFolder;
+        //error_log($tmpChunkDir);
+        if (!file_exists($tmpChunkDir)) {
+            mkdir($tmpChunkDir);
+        }
+        return $tmpChunkDir;
+    }
 
     public function moveUploadedFile($file, $destFile)
     {
@@ -349,6 +248,140 @@ class Resumable
         return false;
     }
 
+    public function handleTestChunk()
+    {
+
+        $identifier = $this->resumableParam($this->resumableOption['identifier']);
+        $filename = $this->resumableParam($this->resumableOption['filename']);
+        $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
+
+
+        if (!$this->isChunkUploaded($identifier, $filename, $chunkNumber)) {
+            return $this->response->header(204);
+        } else {
+            return $this->response->header(200);
+        }
+    }
+
+    /**
+     * Get isUploadComplete
+     *
+     * @return boolean
+     */
+    public function isUploadComplete()
+    {
+        return $this->isUploadComplete;
+    }
+
+    /**
+     * Get final filename.
+     *
+     * @return string Final filename
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * Set final filename.
+     *
+     * @param string Final filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+        return $this;
+    }
+
+//    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
+//    {
+//        if ($chunkSize <= 0) {
+//            return false;
+//        }
+//        $numOfChunks = intval($totalSize / $chunkSize) + ($totalSize % $chunkSize == 0 ? 0 : 1);
+//        //$numOfChunks= intval($totalSize / $chunkSize) ;
+//        for ($i = 1; $i < $numOfChunks; $i++) {
+//            if (!$this->isChunkUploaded($identifier, $filename, $i)) {
+//                return false;
+//            }
+//        }
+//
+//        return true;
+//    }
+
+    /**
+     * Get final filename.
+     *
+     * @return string Final filename
+     */
+    public function getOriginalFilename($withoutExtension = false)
+    {
+        if ($withoutExtension === static::WITHOUT_EXTENSION) {
+            return $this->removeExtension($this->originalFilename);
+        }
+        return $this->originalFilename;
+    }
+
+    private function removeExtension($filename)
+    {
+        $parts = explode('.', basename($filename));
+        $ext = end($parts); // get extension
+        // remove extension from filename if any
+        return str_replace(sprintf('.%s', $ext), '', $filename);
+    }
+
+    /**
+     * Get final filapath.
+     *
+     * @return string Final filename
+     */
+    public function getFilepath()
+    {
+        return $this->filepath;
+    }
+
+    /**
+     * Get final extension.
+     *
+     * @return string Final extension name
+     */
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    public function createObject($workspace_id, $filename, $extension, $user_id)
+    {
+
+        $identifier = $workspace_id . date("U") . bin2hex(random_bytes(20));
+
+        $this->current_user_id = $user_id;
+
+        $chunklist = Array();
+        $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
+        $new_key = bin2hex(random_bytes(20));
+        $uploadstate->setEncryptionKey($new_key);
+        $uploadstate->setUserId($user_id);
+        $this->doctrine->persist($uploadstate);
+        $this->doctrine->flush();
+
+        return $identifier;
+    }
+
+    /**
+     * Makes sure the orginal extension never gets overriden by user defined filename.
+     *
+     * @param string User defined filename
+     * @param string Original filename
+     * @return string Filename that always has an extension from the original file
+     */
+//    private function createSafeFilename($filename, $originalFilename)
+//    {
+//        $filename = $this->removeExtension($filename);
+//        $extension = $this->findExtension($originalFilename);
+//        return sprintf('%s.%s', $filename, $extension);
+//    }
     public function tmpChunkFilename($filename, $chunkNumber)
     {
         return $filename . '.' . str_pad($chunkNumber, 4, 0, STR_PAD_LEFT);
@@ -359,6 +392,67 @@ class Resumable
         $this->setRequest($request);
         $this->setResponse($response);
         $this->preProcess();
+    }
+
+    public function setRequest($request)
+    {
+        $this->request = $request;
+    }
+
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
+    public function preProcess()
+    {
+        if (!empty($this->resumableParams())) {
+            if (!empty($this->request->file())) {
+                $this->extension = $this->findExtension($this->resumableParam('filename'));
+                $this->originalFilename = $this->resumableParam('filename');
+            }
+        }
+    }
+
+    private function findExtension($filename)
+    {
+        $parts = explode('.', basename($filename));
+        return end($parts);
+    }
+
+
+    public function getExclusiveFileHandle($name)
+    {
+        // if the file exists, fopen() will raise a warning
+        $previous_error_level = error_reporting();
+        error_reporting(E_ERROR);
+        $handle = fopen($name, 'a');
+        error_reporting($previous_error_level);
+        return $handle;
+    }
+
+    public function removeFromStorage($data)
+    {
+
+        if ($data["upload_mode"] == "chunk") {
+
+            $identifier = $data["identifier"];
+            $chunkNumber = $data["nb_chunk"];
+
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+
+            for ($i = 1; $i <= $chunkNumber; $i++) {
+                $this->storagemanager->getAdapter()->remove($uploadstate, $i);
+            }
+
+            $this->doctrine->remove($uploadstate);
+            $this->doctrine->flush();
+
+            return true;
+
+        }
+
+        return false;
     }
 
     /**
@@ -384,114 +478,11 @@ class Resumable
 //        }
     }
 
-    /**
-     * Makes sure the orginal extension never gets overriden by user defined filename.
-     *
-     * @param string User defined filename
-     * @param string Original filename
-     * @return string Filename that always has an extension from the original file
-     */
-//    private function createSafeFilename($filename, $originalFilename)
-//    {
-//        $filename = $this->removeExtension($filename);
-//        $extension = $this->findExtension($originalFilename);
-//        return sprintf('%s.%s', $filename, $extension);
-//    }
-
-    public function getExclusiveFileHandle($name)
-    {
-        // if the file exists, fopen() will raise a warning
-        $previous_error_level = error_reporting();
-        error_reporting(E_ERROR);
-        $handle = fopen($name, 'a');
-        error_reporting($previous_error_level);
-        return $handle;
-    }
-
-    private function resumableParam($shortName)
-    {
-        $resumableParams = $this->resumableParams();
-        if (!isset($resumableParams['resumable' . ucfirst($shortName)])) {
-            return null;
-        }
-        return $resumableParams['resumable' . ucfirst($shortName)];
-    }
-
-    public function resumableParams()
-    {
-        if ($this->request->is('get')) {
-            return $this->request->data('get');
-        }
-        if ($this->request->is('post')) {
-            return $this->request->data('post');
-        }
-    }
-
-    public function tmpChunkDir()
-    {
-        //$tmpChunkDir = $this->tempFolder . DIRECTORY_SEPARATOR . $identifier;
-        $tmpChunkDir = $this->tempFolder;
-        //error_log($tmpChunkDir);
-        if (!file_exists($tmpChunkDir)) {
-            mkdir($tmpChunkDir);
-        }
-        return $tmpChunkDir;
-    }
-
-    public function setRequest($request)
-    {
-        $this->request = $request;
-    }
-
-    public function setResponse($response)
-    {
-        $this->response = $response;
-    }
-
     private function log($msg, $ctx = array())
     {
         if ($this->debug) {
             $this->log->addDebug($msg, $ctx);
         }
-    }
-
-    private function findExtension($filename)
-    {
-        $parts = explode('.', basename($filename));
-        return end($parts);
-    }
-
-    private function removeExtension($filename)
-    {
-        $parts = explode('.', basename($filename));
-        $ext = end($parts); // get extension
-        // remove extension from filename if any
-        return str_replace(sprintf('.%s', $ext), '', $filename);
-    }
-
-
-    public function removeFromStorage($data)
-    {
-
-        if ($data["upload_mode"] == "chunk") {
-
-            $identifier = $data["identifier"];
-            $chunkNumber = $data["nb_chunk"];
-
-            $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-
-            for ($i = 1; $i <= $chunkNumber; $i++) {
-                $this->storagemanager->getAdapter()->remove($uploadstate, $i);
-            }
-
-            $this->doctrine->remove($uploadstate);
-            $this->doctrine->flush();
-
-            return true;
-
-        }
-
-        return false;
     }
 
 }

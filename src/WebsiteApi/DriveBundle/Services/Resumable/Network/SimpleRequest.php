@@ -2,8 +2,6 @@
 
 namespace WebsiteApi\DriveBundle\Services\Resumable\Network;
 
-use Symfony\Component\HttpFoundation\Request;
-
 class SimpleRequest
 {
     public $symfonyrequest;

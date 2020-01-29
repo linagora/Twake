@@ -2,7 +2,6 @@
 
 namespace WebsiteApi\CoreBundle\Services\Monitoring;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
@@ -37,6 +36,17 @@ class MonitoringCollectionSubscriber implements EventSubscriberInterface
         $this->dataRegistry->setAppCode("twake-core");
         $this->dataRegistry->init();
 
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::RESPONSE => array('onKernelResponse', -100),
+            KernelEvents::TERMINATE => array('onKernelTerminate', -1024),
+        );
     }
 
     /**
@@ -87,16 +97,5 @@ class MonitoringCollectionSubscriber implements EventSubscriberInterface
             error_log('Save prometheus metrics error');
             error_log((string)$e);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::RESPONSE => array('onKernelResponse', -100),
-            KernelEvents::TERMINATE => array('onKernelTerminate', -1024),
-        );
     }
 }

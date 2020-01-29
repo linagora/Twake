@@ -4,22 +4,16 @@ namespace WebsiteApi\DriveBundle\Services\Storage;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
-use OpenStack\Common\Transport\Utils as TransportUtils;
-
-use OpenStack\OpenStack;
-
-use WebsiteApi\DriveBundle\Entity\DriveFile;
-use WebsiteApi\DriveBundle\Services\Storage\Encryption\AESCryptFileLib;
-use WebsiteApi\DriveBundle\Services\Storage\Encryption\OpenSSLCryptLib;
-use WebsiteApi\DriveBundle\Services\Storage\Encryption\MCryptAES256Implementation;
 use GuzzleHttp\Psr7\Stream;
-
+use OpenStack\Common\Transport\Utils as TransportUtils;
 use OpenStack\Identity\v2\Service;
+use OpenStack\OpenStack;
+use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\UploadState;
+use WebsiteApi\DriveBundle\Services\Storage\Encryption\AESCryptFileLib;
+use WebsiteApi\DriveBundle\Services\Storage\Encryption\MCryptAES256Implementation;
+use WebsiteApi\DriveBundle\Services\Storage\Encryption\OpenSSLCryptLib;
 use WebsiteApi\DriveBundle\Services\ZipStream\Exception;
-use WebsiteApi\DriveBundle\Services\ZipStream\File;
-use WebsiteApi\DriveBundle\Services\ZipStream\Option\File as FileOptions;
-use WebsiteApi\DriveBundle\Services\ZipStream\TwakeFileStream;
 
 class Adapter_OpenStack implements AdapterInterface
 {
@@ -191,6 +185,34 @@ class Adapter_OpenStack implements AdapterInterface
         }
     }
 
+    private function encode($chunkFile, $param_bag)
+    {
+        //error_log(print_r($chunkFile,true));
+
+        $key = $param_bag->getKey();
+        if ($param_bag->getMode() == "AES") {
+            $mcrypt = new MCryptAES256Implementation();
+            $lib = new AESCryptFileLib($mcrypt);
+        }
+        if ($param_bag->getMode() == "OpenSSL") {
+            $lib = new OpenSSLCryptLib();
+        }
+        if ($param_bag->getMode() == "OpenSSL-2") {
+            $lib = new OpenSSLCryptLib();
+            $key = $param_bag->getMode() . $this->parameter_drive_salt . $param_bag->getKey();
+        }
+
+        $pathTemp = $chunkFile . ".encrypt";
+
+
+        //rename($path, $pathTemp);
+
+        $finalpath = $lib->encryptFile($chunkFile, $key, $pathTemp);
+        //error_log(print_r($finalpath,true));
+        @unlink($chunkFile);
+
+        return $finalpath;
+    }
 
     public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix = null)
     {
@@ -232,36 +254,6 @@ class Adapter_OpenStack implements AdapterInterface
 
         return false;
     }
-
-    private function encode($chunkFile, $param_bag)
-    {
-        //error_log(print_r($chunkFile,true));
-
-        $key = $param_bag->getKey();
-        if ($param_bag->getMode() == "AES") {
-            $mcrypt = new MCryptAES256Implementation();
-            $lib = new AESCryptFileLib($mcrypt);
-        }
-        if ($param_bag->getMode() == "OpenSSL") {
-            $lib = new OpenSSLCryptLib();
-        }
-        if ($param_bag->getMode() == "OpenSSL-2") {
-            $lib = new OpenSSLCryptLib();
-            $key = $param_bag->getMode() . $this->parameter_drive_salt . $param_bag->getKey();
-        }
-
-        $pathTemp = $chunkFile . ".encrypt";
-
-
-        //rename($path, $pathTemp);
-
-        $finalpath = $lib->encryptFile($chunkFile, $key, $pathTemp);
-        //error_log(print_r($finalpath,true));
-        @unlink($chunkFile);
-
-        return $finalpath;
-    }
-
 
     protected function decode($chunkFile, $param_bag)
     {

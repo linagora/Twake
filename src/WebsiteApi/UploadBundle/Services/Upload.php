@@ -25,35 +25,6 @@ class Upload
         $this->imagesModifiers = $imagesModifiers;
     }
 
-    private function getAsArraySizes($sizes)
-    {
-        $res = Array();
-
-        $reallimit_sizes = Array(64, 128, 256, 512, 1000000000000);
-        foreach (str_split(decbin($sizes)) as $i => $s) {
-            if ($s == 1) {
-                $res[] = $reallimit_sizes[$s];
-            }
-        }
-
-        return $res;
-    }
-
-    public function verifyContext(&$upload_status, $file, $context)
-    {
-        if (filesize($file['tmp_name']) > $context['max_size']) {
-            $upload_status["status"] = "error";
-            $upload_status["errors"][] = "max_size_exeeded";
-        }
-
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if (isset($context["allowed_ext"]) && !in_array($ext, $context["allowed_ext"])) {
-            $upload_status["status"] = "error";
-            $upload_status["errors"][] = "ext_not_allowed_" . $ext;
-        }
-
-    }
-
     public function upload($file, $path, $context)
     {
 
@@ -146,6 +117,20 @@ class Upload
 
     }
 
+    public function verifyContext(&$upload_status, $file, $context)
+    {
+        if (filesize($file['tmp_name']) > $context['max_size']) {
+            $upload_status["status"] = "error";
+            $upload_status["errors"][] = "max_size_exeeded";
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (isset($context["allowed_ext"]) && !in_array($ext, $context["allowed_ext"])) {
+            $upload_status["status"] = "error";
+            $upload_status["errors"][] = "ext_not_allowed_" . $ext;
+        }
+
+    }
 
     public function addThumbnail($original, $size, $path)
     {
@@ -158,6 +143,20 @@ class Upload
         $this->imagesModifiers->setMax_dimension($size);
         $this->imagesModifiers->draw($original, $path);
 
+    }
+
+    private function getAsArraySizes($sizes)
+    {
+        $res = Array();
+
+        $reallimit_sizes = Array(64, 128, 256, 512, 1000000000000);
+        foreach (str_split(decbin($sizes)) as $i => $s) {
+            if ($s == 1) {
+                $res[] = $reallimit_sizes[$s];
+            }
+        }
+
+        return $res;
     }
 
 }

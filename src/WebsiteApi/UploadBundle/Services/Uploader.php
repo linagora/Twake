@@ -3,8 +3,6 @@
 namespace WebsiteApi\UploadBundle\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use WebsiteApi\UploadBundle\Entity\File;
 
 class Uploader extends Controller
@@ -50,60 +48,6 @@ class Uploader extends Controller
         return $res;
 
     }
-
-    public function getContexts()
-    {
-        return Array(
-            "prfl" => Array(
-                "is_img" => 1,
-                "max_size" => 2000000, //2mo
-                "sizes" => 31, //All !
-                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
-            ),
-            "covr" => Array(
-                "is_img" => 1,
-                "max_size" => 3000000, //3mo
-                "min_width" => 900,
-                "min_height" => 230,
-                "sizes" => 31, //All !
-                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
-            ),
-            "wslogo" => Array(
-                "is_img" => 1,
-                "max_size" => 2000000, //2mo
-                "min_width" => 100,
-                "min_height" => 100,
-                "sizes" => 31, //All !
-                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
-            ),
-            "grouplogo" => Array(
-                "is_img" => 1,
-                "max_size" => 2000000, //2mo
-                "min_width" => 100,
-                "min_height" => 100,
-                "sizes" => 31, //All !
-                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
-            ),
-            "wswall" => Array(
-                "is_img" => 1,
-                "max_size" => 4000000, //2mo
-                "min_width" => 0,
-                "min_height" => 0,
-                "sizes" => 31, //All !
-                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
-            ),
-            "msg" => Array(
-                "is_img" => 0,
-                "max_size" => 10000000, //10mo
-                "sizes" => 31
-            ),
-            "status" => Array(
-                "is_img" => 0,
-                "max_size" => 3000000, //3mo
-            )
-        );
-    }
-
 
     /**
      * Upload file into disk and add it to bdd (using context != drive)
@@ -164,6 +108,64 @@ class Uploader extends Controller
 
     }
 
+    public function getContexts()
+    {
+        return Array(
+            "prfl" => Array(
+                "is_img" => 1,
+                "max_size" => 2000000, //2mo
+                "sizes" => 31, //All !
+                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
+            ),
+            "covr" => Array(
+                "is_img" => 1,
+                "max_size" => 3000000, //3mo
+                "min_width" => 900,
+                "min_height" => 230,
+                "sizes" => 31, //All !
+                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
+            ),
+            "wslogo" => Array(
+                "is_img" => 1,
+                "max_size" => 2000000, //2mo
+                "min_width" => 100,
+                "min_height" => 100,
+                "sizes" => 31, //All !
+                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
+            ),
+            "grouplogo" => Array(
+                "is_img" => 1,
+                "max_size" => 2000000, //2mo
+                "min_width" => 100,
+                "min_height" => 100,
+                "sizes" => 31, //All !
+                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
+            ),
+            "wswall" => Array(
+                "is_img" => 1,
+                "max_size" => 4000000, //2mo
+                "min_width" => 0,
+                "min_height" => 0,
+                "sizes" => 31, //All !
+                "allowed_ext" => Array("png", "jpg", "jpeg", "gif", "tiff")
+            ),
+            "msg" => Array(
+                "is_img" => 0,
+                "max_size" => 10000000, //10mo
+                "sizes" => 31
+            ),
+            "status" => Array(
+                "is_img" => 0,
+                "max_size" => 3000000, //3mo
+            )
+        );
+    }
+
+    private function getExtension($filename)
+    {
+        return pathinfo($filename, PATHINFO_EXTENSION);
+    }
+
     public function upload($realfile, $file, $context)
     {
         $contexts = $this->getContexts();
@@ -182,11 +184,6 @@ class Uploader extends Controller
         }
 
         return $upload_status;
-    }
-
-    private function getExtension($filename)
-    {
-        return pathinfo($filename, PATHINFO_EXTENSION);
     }
 
     public function removeFile($file, $flush = true)

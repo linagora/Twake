@@ -6,13 +6,10 @@ use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Model\GroupManagersInterface;
 
 
-class GroupManagers implements GroupManagersInterface
+class GroupManagers
 {
 
     var $doctrine;
-    private $twake_mailer;
-    private $pusher;
-
     var $privileges = Array(
         0 => Array("VIEW_USERS"),
         1 => Array("VIEW_USERS",
@@ -39,12 +36,44 @@ class GroupManagers implements GroupManagersInterface
             "MANAGE_APPS",
             "MANAGE_DATA")
     );
+    private $twake_mailer;
+    private $pusher;
 
     public function __construct($doctrine, $twake_mailer, $pusher)
     {
         $this->doctrine = $doctrine;
         $this->twake_mailer = $twake_mailer;
         $this->pusher = $pusher;
+    }
+
+    public function changeLevel($groupId, $userId, $level, $currentUserId = null)
+    {
+        $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        if ($currentUserId == null
+            || $this->hasPrivileges(
+                $this->getLevel($groupId, $currentUserId),
+                "MANAGE_MANAGERS"
+            )
+        ) {
+
+            $user = $userRepository->find($userId);
+            $group = $groupRepository->find($groupId);
+            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
+
+            if ($manager) {
+                $manager->setLevel($level);
+                $this->doctrine->persist($manager);
+                $this->doctrine->flush();
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
 
     public function hasPrivileges($level, $privilege)
@@ -91,36 +120,6 @@ class GroupManagers implements GroupManagersInterface
 
         return $manager->getLevel();
 
-
-    }
-
-    public function changeLevel($groupId, $userId, $level, $currentUserId = null)
-    {
-        $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-
-        if ($currentUserId == null
-            || $this->hasPrivileges(
-                $this->getLevel($groupId, $currentUserId),
-                "MANAGE_MANAGERS"
-            )
-        ) {
-
-            $user = $userRepository->find($userId);
-            $group = $groupRepository->find($groupId);
-            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
-
-            if ($manager) {
-                $manager->setLevel($level);
-                $this->doctrine->persist($manager);
-                $this->doctrine->flush();
-                return true;
-            }
-
-        }
-
-        return false;
 
     }
 

@@ -4,6 +4,19 @@ namespace WebsiteApi\CoreBundle\Services;
 
 class StringCleaner
 {
+    public function simplifyInArray($data)
+    {
+        if (is_string($data)) {
+            return strtolower($this->removeSpecialChars(strtolower($data)));
+        }
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->simplifyInArray($value);
+            }
+        }
+        return $data;
+    }
+
     public function removeSpecialChars($str)
     {
 
@@ -41,19 +54,6 @@ END;
         $str = preg_replace('#Ý#', 'Y', $str);
 
         return $str;
-    }
-
-    public function simplifyInArray($data)
-    {
-        if (is_string($data)) {
-            return strtolower($this->removeSpecialChars(strtolower($data)));
-        }
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $data[$key] = $this->simplifyInArray($value);
-            }
-        }
-        return $data;
     }
 
     public function simplify($str)

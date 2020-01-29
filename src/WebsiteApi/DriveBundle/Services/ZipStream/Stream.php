@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WebsiteApi\DriveBundle\Services\ZipStream;
 
-use WebsiteApi\DriveBundle\Services\ZipStream\StreamInterface;
 use RuntimeException;
 
 /**

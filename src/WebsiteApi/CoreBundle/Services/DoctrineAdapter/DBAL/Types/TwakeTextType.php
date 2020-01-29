@@ -20,7 +20,7 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\StringType;
 
 class TwakeTextType extends StringType
 {

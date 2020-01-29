@@ -3,8 +3,8 @@
 
 namespace WebsiteApi\CoreBundle\Extensions;
 
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\Lexer;
 
 /**
  * "MATCH_AGAINST" "(" {StateFieldPathExpression ","}* InParameter {Literal}? ")"

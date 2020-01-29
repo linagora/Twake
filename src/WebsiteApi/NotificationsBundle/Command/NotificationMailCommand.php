@@ -2,13 +2,12 @@
 
 namespace WebsiteApi\NotificationsBundle\Command;
 
+use Emojione\Client;
+use Emojione\Ruleset;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
-use Emojione\Client;
-use Emojione\Ruleset;
 use WebsiteApi\NotificationsBundle\Entity\UserNotificationStatus;
 use WebsiteApi\UsersBundle\Entity\User;
 

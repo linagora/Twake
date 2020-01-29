@@ -2,10 +2,6 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
-use Tests\UsersBundle\Error200Test;
-use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
-use WebsiteApi\DiscussionBundle\Entity\Message;
-
 class Blocmessage
 
 {
@@ -15,123 +11,6 @@ class Blocmessage
     public function __construct($doctrine)
     {
         $this->doctrine = $doctrine;
-    }
-
-    public function verif_valid($message_bdd, $message_array, $options)
-    {
-
-        $final_words = Array();
-        if (isset($options["words"])) {
-            foreach ($options["words"] as $word) {
-                $final_words[] = strtolower($word);
-            }
-        }
-
-        $valid = true;
-
-        foreach ($final_words as $word) {
-            if ($word) {
-                if ($valid && isset($message_array["content"]) && strpos(strtolower($message_array["content"]), strtolower($word)) !== false) {
-                } else {
-                    $valid = false;
-                }
-            }
-        }
-
-        if ($valid && isset($options["sender"])) {
-            if ($message_array["sender"] . "" != $options["sender"]) {
-                $valid = false;
-            }
-        }
-        if ($valid && isset($options["date_before"]) && (
-                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() >
-                intval($options["date_before"])
-            )
-        ) {
-            $valid = false;
-        }
-        if ($valid && isset($options["date_after"]) && (
-                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() <
-                intval($options["date_after"])
-            )) {
-            $valid = false;
-        }
-
-        if ($valid && isset($options["pinned"]) && $message_array["pinned"] != $options["pinned"]) {
-            $valid = false;
-        }
-
-        if ($valid && isset($options["application_id"]) && ($message_array["application_id"] != $options["application_id"])) {
-            $valid = false;
-        }
-
-        if ($valid && isset($options["tags"])) {
-            $tags = $message_array["tags"];
-            if (!$message_array["tags"]) {
-                $message_array["tags"] = Array();
-            }
-            $tags_search = true;
-            $i = 0;
-            if (isset($tags)) {
-                while ($tags_search && $i < count($options["tags"])) {
-                    $trouve = false;
-                    foreach ($message_array["tags"] as $tag) {
-                        if ($tag == $options["tags"][$i]) {
-                            $trouve = true;
-                            break;
-                        }
-                    }
-                    if ($trouve == false) {
-                        $tags_search = false;
-                    }
-                    $i++;
-                }
-            } else {
-                $valid = false;
-            }
-            if (!$tags_search) {
-                $valid = false;
-            }
-        }
-
-        if ($valid && isset($options["mentions"])) {
-            if (!array_intersect($options["mentions"], $message_array["mentions"]) == $options["mentions"]) {
-                $valid = false;
-            }
-        }
-
-        if ($valid && isset($options["reactions"])) {
-            $react_search = true;
-            $i = 0;
-            // on parcours toute les reactions saisites
-            $reaction = $message_array["reactions"];
-            if (!$reaction) {
-                $reaction = Array();
-            }
-            if (isset($reaction)) {
-                while ($react_search && $i < count($options["reactions"])) {
-                    $trouve = false;
-                    foreach (array_keys($message_array["reactions"]) as $reaction) {
-                        if (strpos(strtolower($reaction), strtolower($options["reactions"][$i])) !== false) {
-                            $trouve = true;
-                            break;
-                        }
-                    }
-                    if ($trouve == false) {
-                        $react_search = false;
-                    }
-                    $i++;
-                }
-            } else {
-                $valid = false;
-            }
-            if (!$react_search) {
-                $valid = false;
-            }
-        }
-
-        return $valid;
-
     }
 
     public function search($options, $channels)
@@ -307,6 +186,123 @@ class Blocmessage
 
 
         return $list_messages;
+
+    }
+
+    public function verif_valid($message_bdd, $message_array, $options)
+    {
+
+        $final_words = Array();
+        if (isset($options["words"])) {
+            foreach ($options["words"] as $word) {
+                $final_words[] = strtolower($word);
+            }
+        }
+
+        $valid = true;
+
+        foreach ($final_words as $word) {
+            if ($word) {
+                if ($valid && isset($message_array["content"]) && strpos(strtolower($message_array["content"]), strtolower($word)) !== false) {
+                } else {
+                    $valid = false;
+                }
+            }
+        }
+
+        if ($valid && isset($options["sender"])) {
+            if ($message_array["sender"] . "" != $options["sender"]) {
+                $valid = false;
+            }
+        }
+        if ($valid && isset($options["date_before"]) && (
+                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() >
+                intval($options["date_before"])
+            )
+        ) {
+            $valid = false;
+        }
+        if ($valid && isset($options["date_after"]) && (
+                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() <
+                intval($options["date_after"])
+            )) {
+            $valid = false;
+        }
+
+        if ($valid && isset($options["pinned"]) && $message_array["pinned"] != $options["pinned"]) {
+            $valid = false;
+        }
+
+        if ($valid && isset($options["application_id"]) && ($message_array["application_id"] != $options["application_id"])) {
+            $valid = false;
+        }
+
+        if ($valid && isset($options["tags"])) {
+            $tags = $message_array["tags"];
+            if (!$message_array["tags"]) {
+                $message_array["tags"] = Array();
+            }
+            $tags_search = true;
+            $i = 0;
+            if (isset($tags)) {
+                while ($tags_search && $i < count($options["tags"])) {
+                    $trouve = false;
+                    foreach ($message_array["tags"] as $tag) {
+                        if ($tag == $options["tags"][$i]) {
+                            $trouve = true;
+                            break;
+                        }
+                    }
+                    if ($trouve == false) {
+                        $tags_search = false;
+                    }
+                    $i++;
+                }
+            } else {
+                $valid = false;
+            }
+            if (!$tags_search) {
+                $valid = false;
+            }
+        }
+
+        if ($valid && isset($options["mentions"])) {
+            if (!array_intersect($options["mentions"], $message_array["mentions"]) == $options["mentions"]) {
+                $valid = false;
+            }
+        }
+
+        if ($valid && isset($options["reactions"])) {
+            $react_search = true;
+            $i = 0;
+            // on parcours toute les reactions saisites
+            $reaction = $message_array["reactions"];
+            if (!$reaction) {
+                $reaction = Array();
+            }
+            if (isset($reaction)) {
+                while ($react_search && $i < count($options["reactions"])) {
+                    $trouve = false;
+                    foreach (array_keys($message_array["reactions"]) as $reaction) {
+                        if (strpos(strtolower($reaction), strtolower($options["reactions"][$i])) !== false) {
+                            $trouve = true;
+                            break;
+                        }
+                    }
+                    if ($trouve == false) {
+                        $react_search = false;
+                    }
+                    $i++;
+                }
+            } else {
+                $valid = false;
+            }
+            if (!$react_search) {
+                $valid = false;
+            }
+        }
+
+        return $valid;
 
     }
 

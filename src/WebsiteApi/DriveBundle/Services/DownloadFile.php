@@ -5,11 +5,9 @@ namespace WebsiteApi\DriveBundle\Services;
 
 use http\Client\Response;
 use WebsiteApi\DriveBundle\Services\Storage\EncryptionBag;
-use WebsiteApi\DriveBundle\Services\ZipStream\Stream;
+use WebsiteApi\DriveBundle\Services\ZipStream\Option\Archive;
 use WebsiteApi\DriveBundle\Services\ZipStream\TwakeFileStream;
 use WebsiteApi\DriveBundle\Services\ZipStream\ZipStream;
-use WebsiteApi\DriveBundle\Services\ZipStream\Option\Archive;
-use WebsiteApi\DriveBundle\Services\ZipStream\Option\Method;
 
 
 class DownloadFile
@@ -32,80 +30,71 @@ class DownloadFile
         $this->oldFileSystem = $oldFileSystem->getFileSystem();
     }
 
-
-    public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
+    public function download($workspace_id, $files_ids, $download, $versionId)
     {
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
-        if (isset($uploadstate)) {
-            if (isset($zip_prefix) && isset($zip)) {
-                $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
-                $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
-            } else {
-                for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-                    $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+
+        //TODO verify access to this file
+
+        if (!is_array($files_ids)) {
+            $files_ids = [$files_ids];
+        }
+
+        $zip_archive = null;
+        $zip = false;
+
+        //TODO reimplement oldFileSystem for retrocompatibility
+        $this->oldFileSystem = null;
+
+        $this->download = $download;
+        $this->versionId = $versionId;
+        $this->workspace_id = $workspace_id;
+        $name = null;
+
+        if (count($files_ids) > 1) {
+            $zip = true;
+            $name = "Document.zip";
+        } elseif (count($files_ids) == 1) {
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $files_ids[0]));
+            if ($file->getIsDirectory()) {
+                $name = $file->getName() . ".zip";
+                $zip = true;
+                $files_ids = Array();
+                $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
+                foreach ($files_son as $son) {
+                    $files_ids[] = $son->getId() . "";
                 }
             }
+        }
+
+        if (isset($zip) && $zip) {
+            //plusieurs fichiers ou un dossier, on fait un zip
+            # enable output of HTTP headers
+            $options = new Archive();
+            $options->setSendHttpHeaders(true);
+            $options->setZeroHeader(true);
+            $options->setEnableZip64(false);
+
+            # create a new zipstream object
+            $zip_archive = new ZipStream($name, $options);
+            //error_log(print_r($files_ids,true));
+            $this->downloadList($files_ids, $zip_archive, "/");
+
         } else {
-            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $identifier));
-            $url = $file->getUrl();
-            if (isset($url)) {
-                //on ajoute un fichier url dans le zip
-                $zip->addFile("google.url", "[InternetShortcut]" . "\r\n" . "URL=" . $url);
-            }
+            //téléchargement classique
+            $this->downloadList($files_ids);
         }
-    }
 
 
-    public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
-    {
-        $oldFileSystem = $this->oldFileSystem;
-        if (!$version && !$file->getUrl()) {
-            error_log("no version found");
-            return false;
-        }
-        if (!$version && $file->getUrl()) {
-            $url = $file->getUrl();
-            if (isset($url)) {
-                //on ajoute un fichier url dans le zip
-                $zip->addFile($file->getName() . ".url", "[InternetShortcut]" . "\n" . "URL=" . $url);
-            }
-            return true;
-        }
-        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $this->downloadFile($version->getData()["identifier"], $file->getName(), $zip, $zip_prefix);
-            return true;
-        } else {
-            if ($oldFileSystem) {
-                $completePath = $oldFileSystem->getRoot() . $file->getPath();
+        if (isset($zip) && $zip) {
+            //on ajoute un fichier url dans le zip
 
-                //START - Woodpecker files import !
-                $test_old_version = explode("/previews/", $file->getPreviewLink());
-                if (count($test_old_version) == 2) {
-                    $test_old_version = explode("/", $test_old_version[1]);
-                    if ($test_old_version[0] == "detached") {
-                        $test_old_version[0] = $test_old_version[1];
-                    }
-                    if (intval($test_old_version[0]) . "" == $test_old_version[0]) {
-                        $completePath = $oldFileSystem->getRoot() . str_replace(Array("https://s3.eu-west-3.amazonaws.com/twake.eu-west-3/public/uploads/previews/", ".png"), "", $file->getPreviewLink());
-                    }
-                }
-                //END - Woodpecker files import !
-
-                $completePath = $oldFileSystem->decode($completePath, $version->getKey(), $version->getMode());
-                $fp = fopen($completePath, "r");
-                ob_clean();
-                flush();
-                while (!feof($fp)) {
-                    $buff = fread($fp, 1024);
-                    print $buff;
-                }
-                //Delete decoded file
-                @unlink($completePath);
-                return true;
-            }
+            # finish the zip stream
+            $zip_archive->finish();
         }
-        return false;
+
+        die();
+        return true;
+
     }
 
     public function downloadList($files, &$zip = null, $zip_prefix = null)
@@ -219,70 +208,77 @@ class DownloadFile
         }
     }
 
-    public function download($workspace_id, $files_ids, $download, $versionId)
+    public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
     {
-
-        //TODO verify access to this file
-
-        if (!is_array($files_ids)) {
-            $files_ids = [$files_ids];
+        $oldFileSystem = $this->oldFileSystem;
+        if (!$version && !$file->getUrl()) {
+            error_log("no version found");
+            return false;
         }
+        if (!$version && $file->getUrl()) {
+            $url = $file->getUrl();
+            if (isset($url)) {
+                //on ajoute un fichier url dans le zip
+                $zip->addFile($file->getName() . ".url", "[InternetShortcut]" . "\n" . "URL=" . $url);
+            }
+            return true;
+        }
+        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
+            $this->downloadFile($version->getData()["identifier"], $file->getName(), $zip, $zip_prefix);
+            return true;
+        } else {
+            if ($oldFileSystem) {
+                $completePath = $oldFileSystem->getRoot() . $file->getPath();
 
-        $zip_archive = null;
-        $zip = false;
-
-        //TODO reimplement oldFileSystem for retrocompatibility
-        $this->oldFileSystem = null;
-
-        $this->download = $download;
-        $this->versionId = $versionId;
-        $this->workspace_id = $workspace_id;
-        $name = null;
-
-        if (count($files_ids) > 1) {
-            $zip = true;
-            $name = "Document.zip";
-        } elseif (count($files_ids) == 1) {
-            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $files_ids[0]));
-            if ($file->getIsDirectory()) {
-                $name = $file->getName() . ".zip";
-                $zip = true;
-                $files_ids = Array();
-                $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
-                foreach ($files_son as $son) {
-                    $files_ids[] = $son->getId() . "";
+                //START - Woodpecker files import !
+                $test_old_version = explode("/previews/", $file->getPreviewLink());
+                if (count($test_old_version) == 2) {
+                    $test_old_version = explode("/", $test_old_version[1]);
+                    if ($test_old_version[0] == "detached") {
+                        $test_old_version[0] = $test_old_version[1];
+                    }
+                    if (intval($test_old_version[0]) . "" == $test_old_version[0]) {
+                        $completePath = $oldFileSystem->getRoot() . str_replace(Array("https://s3.eu-west-3.amazonaws.com/twake.eu-west-3/public/uploads/previews/", ".png"), "", $file->getPreviewLink());
+                    }
                 }
+                //END - Woodpecker files import !
+
+                $completePath = $oldFileSystem->decode($completePath, $version->getKey(), $version->getMode());
+                $fp = fopen($completePath, "r");
+                ob_clean();
+                flush();
+                while (!feof($fp)) {
+                    $buff = fread($fp, 1024);
+                    print $buff;
+                }
+                //Delete decoded file
+                @unlink($completePath);
+                return true;
             }
         }
+        return false;
+    }
 
-        if (isset($zip) && $zip) {
-            //plusieurs fichiers ou un dossier, on fait un zip
-            # enable output of HTTP headers
-            $options = new Archive();
-            $options->setSendHttpHeaders(true);
-            $options->setZeroHeader(true);
-            $options->setEnableZip64(false);
-
-            # create a new zipstream object
-            $zip_archive = new ZipStream($name, $options);
-            //error_log(print_r($files_ids,true));
-            $this->downloadList($files_ids, $zip_archive, "/");
-
+    public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
+    {
+        $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
+        if (isset($uploadstate)) {
+            if (isset($zip_prefix) && isset($zip)) {
+                $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
+                $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
+            } else {
+                for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
+                    $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+                }
+            }
         } else {
-            //téléchargement classique
-            $this->downloadList($files_ids);
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $identifier));
+            $url = $file->getUrl();
+            if (isset($url)) {
+                //on ajoute un fichier url dans le zip
+                $zip->addFile("google.url", "[InternetShortcut]" . "\r\n" . "URL=" . $url);
+            }
         }
-
-
-        if (isset($zip) && $zip) {
-            //on ajoute un fichier url dans le zip
-
-            # finish the zip stream
-            $zip_archive->finish();
-        }
-
-        die();
-        return true;
-
     }
 }

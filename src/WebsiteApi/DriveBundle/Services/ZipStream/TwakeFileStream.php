@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace WebsiteApi\DriveBundle\Services\ZipStream;
 
 use RuntimeException;
-use WebsiteApi\DriveBundle\Services\Storage\AdapterInterface;
 
 //class TwakeFileStream extends Stream
 class TwakeFileStream implements StreamInterface
@@ -34,6 +33,22 @@ class TwakeFileStream implements StreamInterface
         $this->close();
     }
 
+    public function close()
+    {
+        if (is_resource($this->stream)) {
+            fclose($this->stream);
+        }
+        $this->detach();
+
+    }
+
+    public function detach()
+    {
+        $result = $this->stream;
+        $this->stream = null;
+        return $result;
+    }
+
     public function __toString()
     {
 
@@ -49,20 +64,33 @@ class TwakeFileStream implements StreamInterface
 
     }
 
-    public function close()
+    public function seek($offset, $whence = SEEK_SET)
     {
-        if (is_resource($this->stream)) {
-            fclose($this->stream);
+        if (!$this->stream) {
+            return;
         }
-        $this->detach();
+        if (!$this->isSeekable()) {
+            throw new RuntimeException;
+        }
+        if (fseek($this->stream, $offset, $whence) !== 0) {
+            throw new RuntimeException;
+        }
 
     }
 
-    public function detach()
+    public function isSeekable()
     {
-        $result = $this->stream;
-        $this->stream = null;
-        return $result;
+        return (bool)$this->getMetadata('seekable');
+
+    }
+
+    public function getMetadata($key = null)
+    {
+        if (!$this->stream) {
+            return Array();
+        }
+        $metadata = stream_get_meta_data($this->stream);
+        return $key !== null ? @$metadata[$key] : $metadata;
     }
 
     public function getSize()
@@ -88,26 +116,6 @@ class TwakeFileStream implements StreamInterface
 
     }
 
-    public function isSeekable()
-    {
-        return (bool)$this->getMetadata('seekable');
-
-    }
-
-    public function seek($offset, $whence = SEEK_SET)
-    {
-        if (!$this->stream) {
-            return;
-        }
-        if (!$this->isSeekable()) {
-            throw new RuntimeException;
-        }
-        if (fseek($this->stream, $offset, $whence) !== 0) {
-            throw new RuntimeException;
-        }
-
-    }
-
     public function rewind()
     {
         if (!$this->stream) {
@@ -129,11 +137,6 @@ class TwakeFileStream implements StreamInterface
         return false;
     }
 
-    public function isReadable()
-    {
-        return true;
-    }
-
     public function getContents()
     {
         if (!$this->stream) {
@@ -147,6 +150,11 @@ class TwakeFileStream implements StreamInterface
             throw new RuntimeException;
         }
         return $result;
+    }
+
+    public function isReadable()
+    {
+        return true;
     }
 
     public function read($length)
@@ -196,21 +204,11 @@ class TwakeFileStream implements StreamInterface
         return $retour;
     }
 
-
     public function eof()
     {
         if (!$this->stream) {
             return true;
         }
         return feof($this->stream);
-    }
-
-    public function getMetadata($key = null)
-    {
-        if (!$this->stream) {
-            return Array();
-        }
-        $metadata = stream_get_meta_data($this->stream);
-        return $key !== null ? @$metadata[$key] : $metadata;
     }
 }

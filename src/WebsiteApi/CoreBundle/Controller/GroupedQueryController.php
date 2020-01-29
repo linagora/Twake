@@ -2,14 +2,9 @@
 
 namespace WebsiteApi\CoreBundle\Controller;
 
-use RMS\PushNotificationsBundle\Message\iOSMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel;
 
 class GroupedQueryController extends Controller
 {

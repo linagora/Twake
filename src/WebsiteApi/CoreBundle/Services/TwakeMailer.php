@@ -67,25 +67,6 @@ class TwakeMailer
 
     }
 
-    public function sendHtmlViaRemote($mail, $html, $attachments = Array())
-    {
-        $final_attachments = [];
-        foreach ($attachments as $attachment) {
-            if ($attachment["type"] == "raw") {
-                $final_attachments[] = $attachment;
-            }
-        }
-
-        $masterServer = "https://app.twakeapp.com/api/remote";
-        $data = Array(
-            "licenceKey" => $this->licenceKey,
-            "mail" => $mail,
-            "html" => $html,
-            "attachments" => $final_attachments
-        );
-        $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-    }
-
     public function sendHtml($mail, $html, $attachments = Array())
     {
         //[REMOVE_ONPREMISE]
@@ -142,6 +123,13 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
 
     }
 
+    private function html2title($html)
+    {
+        $a = explode("<title>", $html, 2)[1];
+        $a = explode("<", $a, 2)[0];
+        return $a;
+    }
+
     private function html2txt($html)
     {
         $html = explode("</head>", $html);
@@ -153,11 +141,23 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
         return $html;
     }
 
-    private function html2title($html)
+    public function sendHtmlViaRemote($mail, $html, $attachments = Array())
     {
-        $a = explode("<title>", $html, 2)[1];
-        $a = explode("<", $a, 2)[0];
-        return $a;
+        $final_attachments = [];
+        foreach ($attachments as $attachment) {
+            if ($attachment["type"] == "raw") {
+                $final_attachments[] = $attachment;
+            }
+        }
+
+        $masterServer = "https://app.twakeapp.com/api/remote";
+        $data = Array(
+            "licenceKey" => $this->licenceKey,
+            "mail" => $mail,
+            "html" => $html,
+            "attachments" => $final_attachments
+        );
+        $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
     }
 
 }

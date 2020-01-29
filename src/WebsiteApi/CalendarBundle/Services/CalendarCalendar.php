@@ -55,27 +55,6 @@ class CalendarCalendar
         return $ret;
     }
 
-    public function remove($object, $options, $current_user = null)
-    {
-        $id = $object["id"];
-
-        if (!$this->hasAccess($object, $current_user)) {
-            return false;
-        }
-
-        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id));
-        if (!$calendar) {
-            return false;
-        }
-
-        $this->doctrine->remove($calendar);
-        $this->doctrine->flush();
-
-        $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->removeBy(Array("workspace_id" => $calendar->getWorkspaceId(), "calendar_id" => $id));
-
-        return $object;
-    }
-
     public function save($object, $options, $current_user)
     {
 
@@ -163,5 +142,26 @@ class CalendarCalendar
             $this->doctrine->flush();
         }
 
+    }
+
+    public function remove($object, $options, $current_user = null)
+    {
+        $id = $object["id"];
+
+        if (!$this->hasAccess($object, $current_user)) {
+            return false;
+        }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id));
+        if (!$calendar) {
+            return false;
+        }
+
+        $this->doctrine->remove($calendar);
+        $this->doctrine->flush();
+
+        $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->removeBy(Array("workspace_id" => $calendar->getWorkspaceId(), "calendar_id" => $id));
+
+        return $object;
     }
 }

@@ -2,10 +2,6 @@
 
 namespace WebsiteApi\DriveBundle\Services\Storage;
 
-use WebsiteApi\DriveBundle\Services\Storage\Adapter_AWS;
-use WebsiteApi\DriveBundle\Services\Storage\Adapter_OpenStack;
-use WebsiteApi\DriveBundle\Services\Storage\Adapter_Local;
-
 class StorageManager
 {
 
@@ -23,18 +19,6 @@ class StorageManager
         $this->preview = $preview;
         $this->doctrine = $doctrine;
         $this->local = $local;
-    }
-
-    public function BindAdapter()
-    {
-
-        if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
-            return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
-        } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
-            return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
-        }
-        return new Adapter_Local($this->local, $this->preview, $this->doctrine);
-
     }
 
     /**
@@ -70,6 +54,18 @@ class StorageManager
     public function setAdapter($adapter)
     {
         $this->adapter = $adapter;
+    }
+
+    public function BindAdapter()
+    {
+
+        if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
+            return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
+        } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
+            return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
+        }
+        return new Adapter_Local($this->local, $this->preview, $this->doctrine);
+
     }
 
 

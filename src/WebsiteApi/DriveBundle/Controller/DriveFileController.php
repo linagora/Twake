@@ -4,12 +4,8 @@ namespace WebsiteApi\DriveBundle\Controller;
 
 use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class DriveFileController extends Controller
 {
