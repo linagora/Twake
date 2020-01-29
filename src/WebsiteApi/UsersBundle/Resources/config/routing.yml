@@ -44,48 +44,6 @@ twake_set_is_new:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:setIsNew }
 
-# Contacts
-
-twake_contact_add:
-    path:     /contacts/add
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:add }
-
-twake_contact_remove:
-    path:     /contacts/remove
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:remove }
-
-twake_contact_get:
-    path:     /contacts/get
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:get }
-
-twake_contact_getAll:
-    path:     /contacts/getAll
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:getAll }
-
-twake_contact_getAllRequests:
-    path:     /contacts/getAllRequests
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequests }
-
-twake_contact_getAllRequestsFromMe:
-    path:     /contacts/getAllRequestsFromMe
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequestsFromMe }
-
-twake_contact_searchByUsername:
-    path:     /contacts/search
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:searchByUsername }
-
-twake_contact_searchUsersBuyUsername:
-    path:     /contacts/search/users
-    methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:Contacts:searchUsersByUsername }
-
 # Account
 
 twake_user_account_setbasic:

@@ -12,30 +12,6 @@ services:
         class: WebsiteApi\UsersBundle\Services\User
         arguments: ["@app.twake_doctrine", "@app.pusher", "@security.encoder_factory", "@security.authorization_checker", "@security.token_storage", "@app.core_remember_me_manager", "@event_dispatcher", "@request_stack", "@app.twake_mailer", "@app.string_cleaner", "@app.workspace_members","@app.groups","@app.workspaces","@app.pricing_plan","@circle.restclient","@app.translate", "%STANDALONE%", "%LICENCE_KEY%","@circle.restclient",]
 
-    app.contacts:
-        class: WebsiteApi\UsersBundle\Services\Contacts
-        arguments: ["@app.twake_doctrine", "@app.notifications"]
-
-    app.token_service:
-        class: WebsiteApi\UsersBundle\Services\TokenService
-        arguments: ["@app.twake_doctrine"]
-
     app.user_updates:
         class: WebsiteApi\UsersBundle\Services\Updates
         arguments: []
-
-    users.topic:
-        class: WebsiteApi\UsersBundle\Topic\UsersTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    ping.rpc:
-        class: WebsiteApi\UsersBundle\Topic\PingTopic
-        tags:
-            - { name: gos_web_socket.rpc }
-
-    sharing_view.topic:
-        class: WebsiteApi\UsersBundle\Topic\SharingViewTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: ["@gos_web_socket.websocket.client_manipulator"]

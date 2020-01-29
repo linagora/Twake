@@ -1,14 +1,17 @@
 services:
 
     app.twake_mailer:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\TwakeMailer
         arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%", "%STANDALONE%", "%LICENCE_KEY%", "@circle.restclient"]
 
     app.pusher:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
         arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.twake_doctrine"]
 
     app.translate:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\Translate
         arguments: []
 
@@ -17,6 +20,7 @@ services:
         arguments: ["@doctrine.orm.entity_manager", "%ELASTIC_SERVER%", "@circle.restclient", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
 
     app.websockets:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\Websockets
         arguments: ["@app.twake_doctrine", "@app.pusher"]
 
@@ -24,6 +28,11 @@ services:
         class: WebsiteApi\CoreBundle\Topic\CollectionsTopic
         tags:
             - { name: gos_web_socket.topic }
+
+    ping.rpc:
+        class: WebsiteApi\UsersBundle\Topic\PingTopic
+        tags:
+            - { name: gos_web_socket.rpc }
 
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger
@@ -42,22 +51,26 @@ services:
     #ACCESS MANAGER
 
     app.accessmanager:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\AccessManager
         arguments: ["@app.twake_doctrine", "@app.workspace_members"]
 
     #EXPORT AND IMPORT VERSION
 
     app.exportversion:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\ExportManager
         arguments: ["@app.twake_doctrine"]
 
     #MONITORING
 
     app.monitoring_collector_registry:
+        lazy: true
         class: WebsiteApi\CoreBundle\Services\Monitoring\CollectorRegistry
         arguments: ["twake-core", '@TweedeGolf\PrometheusClient\CollectorRegistry']
 
     app.monitoring_event_listener:
+        lazy: true
         arguments: ["@app.monitoring_collector_registry"]
         class: WebsiteApi\CoreBundle\Services\Monitoring\MonitoringCollectionSubscriber
         tags:

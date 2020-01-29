@@ -1,9 +1,5 @@
 services:
 
-  globalsearch.messagebloc:
-    class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
-    arguments: ["@app.twake_doctrine"]
-
   globalsearch.quicksearch:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
     arguments: ["@app.twake_doctrine", "@app.users", "@app.workspaces", "@app.channels.channels_system", "@globalsearch.advancedfile", "@app.workspace_members", "@globalsearch.messagebloc"]
@@ -23,6 +19,10 @@ services:
   globalsearch.advancedevent:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedEvent
     arguments: ["@app.twake_doctrine", "@app.workspaces"]
+
+  globalsearch.messagebloc:
+    class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
+    arguments: ["@app.twake_doctrine"]
 
   globalsearch.reindex:
     class: WebsiteApi\GlobalSearchBundle\Services\Reindex

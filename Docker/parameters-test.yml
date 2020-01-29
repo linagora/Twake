@@ -63,5 +63,12 @@ parameters:
                 key: 1234567890
                 secret: 1234567890
 
+    local:
+        storage:
+            use: false
+            location: ../drive/
+            preview_location: ../web/medias/
+            preview_public_path: /medias/
+
     previews:
          path: "previews"

@@ -27,12 +27,14 @@ class WebsocketsController extends Controller
 
         $final_result = [];
 
+        $wss = $this->get("app.websockets");
+
         foreach ($multiple as $item) {
             $route = $item["collection_id"];
             $data = $item["options"];
 
             try {
-                $result = $this->get("app.websockets")->init($route, $data, $this);
+                $result = $wss->init($route, $data, $this);
                 if ($result) {
                     $final_result[] = Array(
                         "data" => Array(

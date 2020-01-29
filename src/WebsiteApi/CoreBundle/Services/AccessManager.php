@@ -9,6 +9,7 @@ class AccessManager
     {
         $this->doctrine = $doctrine;
         $this->memberservice = $memberservice;
+
     }
 
     public function has_access($current_user_id, $data, $options = null)

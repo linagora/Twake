@@ -39,28 +39,3 @@ services:
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
         arguments: ["@app.twake_doctrine", "@app.workspace_levels","@app.group_managers","@app.pusher", "@app.channels.channels_system", "@app.applications_api"]
-
-    groups.topic:
-        class: WebsiteApi\WorkspacesBundle\Topic\GroupsTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    workspaces.topic:
-        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    workspaces_users.topic:
-        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesUsersTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    workspaces_apps.topic:
-        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesAppsTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    workspaces_of_user.topic:
-        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesOfUserTopic
-        tags:
-            - { name: gos_web_socket.topic }

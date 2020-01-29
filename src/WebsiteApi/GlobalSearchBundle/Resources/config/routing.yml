@@ -1,11 +1,3 @@
-#globalsearch_file:
-#  path:       /file
-#  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:ES }
-
-#globalsearch_message:
-#  path:       /message
-#  defaults: { _controller: TwakeGlobalSearchBundle:Message:ESMessage }
-
 globalsearch_quicksearch:
   path:       /quicksearch
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:QuickSearch }
@@ -25,19 +17,6 @@ globalsearch_advancedtask:
 globalsearch_advancedevent:
   path:       /advancedevent
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedEvent}
-
-#globalsearch_testindex:
-#  path:       /testindex
-#  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:TestIndex }
-
-#globalsearch_reindex:
-#  path:       /reindex
-#  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Reindex }
-#
-#globalsearch_mapping:
-#  path:       /mapping
-#  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Mapping }
-
 
 globalsearch_tag_get:
     path:     /tags/get
