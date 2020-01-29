@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\UsersBundle\Topic;
+namespace WebsiteApi\CoreBundle\Topic;
 
 use Ratchet\ConnectionInterface;
 use Gos\Bundle\WebSocketBundle\RPC\RpcInterface;

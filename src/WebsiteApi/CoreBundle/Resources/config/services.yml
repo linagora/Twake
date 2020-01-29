@@ -30,7 +30,7 @@ services:
             - { name: gos_web_socket.topic }
 
     ping.rpc:
-        class: WebsiteApi\UsersBundle\Topic\PingTopic
+        class: WebsiteApi\CoreBundle\Topic\PingTopic
         tags:
             - { name: gos_web_socket.rpc }
 

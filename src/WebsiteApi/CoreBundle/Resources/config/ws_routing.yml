@@ -7,7 +7,63 @@ ping_rpc:
             pattern: "[a-z_]+" #accept all valid regex, don't put delimiters !
 
 collections_topic:
-    channel: "{id}"
+    channel: collections/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+notifications_topic:
+    channel: notifications/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+workspace_users_topic:
+    channel: workspace_users/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+workspaces_of_user_topic:
+    channel: workspaces_of_user/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+workspace_topic:
+    channel: workspace/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+workspace_apps_topic:
+    channel: workspace_apps/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+group_topic:
+    channel: group/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: ".+"
+
+users_topic:
+    channel: users/{id}
     handler:
         callback: 'collections.topic'
     requirements:

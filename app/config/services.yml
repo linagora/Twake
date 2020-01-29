@@ -45,16 +45,6 @@ services:
             arguments: ["@app.twake_doctrine"]
     #[/REMOVE_ONPREMISE]
 
-
-    #################################################################################
-    ###################### Topic
-    #################################################################################
-    #infosNotification.topic:
-    #    class: WebsiteApi\UsersBundle\Topic\NotificationTopic
-    #    tags:
-    #        - { name: gos_web_socket.topic }
-    #    arguments : ["@app.twake_doctrine","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
-
     #################################################################################
     ###################### System
     #################################################################################
