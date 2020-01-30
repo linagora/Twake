@@ -14,19 +14,52 @@ use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
 class MessageSystem
 {
 
-    function __construct($entity_manager, $applications_api, $websockets_service, $message_notifications_center_service)
+    function __construct($entity_manager, $applications_api, $websockets_service, $message_notifications_center_service, $access_manager)
     {
         $this->em = $entity_manager;
         $this->applications_api = $applications_api;
         $this->websockets_service = $websockets_service;
         $this->message_notifications_center_service = $message_notifications_center_service;
+        $this->access_manager = $access_manager;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        //TODO
-        return true;
+        $route = explode("/", $route);
+        $channel_id = isset($route[1]) ? $route[1] : null;
+
+        if (!$channel_id) {
+            return false;
+        }
+
+        return $this->hasAccess([
+            "channel_id" => $channel_id
+        ], $current_user);
+    }
+
+    public function hasAccess($data, $current_user = null, $message = null)
+    {
+        if ($current_user === null) {
+            return true;
+        }
+        if (!is_string($current_user)) {
+            $current_user = $current_user->getId();
+        }
+
+        //Verify message access
+        if ($message) {
+            if ($current_user && $message->getSender() && $message->getSender()->getId() != $current_user) {
+                return false; //Not my message
+            }
+        }
+
+        $channel_id = $data["channel_id"];
+        return $this->access_manager->has_access($current_user, [
+            "type" => "Channel",
+            "edition" => true,
+            "object_id" => $channel_id
+        ]);
     }
 
     public function get($options, $current_user)
@@ -91,22 +124,6 @@ class MessageSystem
         $this->message_notifications_center_service->read($channel, $current_user);
 
         return $messages;
-    }
-
-    public function hasAccess($data, $current_user = null, $message = null)
-    {
-        //Verify message access
-        if ($message) {
-            if ($current_user && $message->getSender() && $message->getSender()->getId() != $current_user->getId()) {
-                return false; //Not my message
-            }
-        }
-
-        //TODO verify channel access
-        $channel_id = $data["channel_id"];
-        //TODO
-
-        return true;
     }
 
     public function remove($object, $options, $current_user = null)

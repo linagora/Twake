@@ -21,14 +21,14 @@ class ChannelsSystem extends ChannelSystemAbstract
     public function init($route, $data, $current_user = null)
     {
         $route = explode("/", $route);
-        $channel_id = $route[1];
+        $workspace_id = isset($route[2]) ? $route[2] : null;
 
         if (!$channel_id) {
             return false;
         }
 
         return $this->hasAccess([
-            "id" => $channel_id
+            "workspace_id" => $workspace_id
         ], $current_user);
     }
 
