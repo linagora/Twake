@@ -29,7 +29,7 @@ class Message extends FrontObject
     private $channel_id;
 
     /**
-     * @ORM\Column(name="parent_message_id", type="twake_text")
+     * @ORM\Column(name="parent_message_id", type="twake_no_salt_text")
      * @ORM\Id
      */
     private $parent_message_id = "";
@@ -51,7 +51,7 @@ class Message extends FrontObject
     private $sender = null;
 
     /**
-     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
+     * @ORM\Column(name="application_id", type="twake_no_salt_text", nullable=true)
      */
     private $application_id = null;
 

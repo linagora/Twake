@@ -40,7 +40,7 @@ class Board extends FrontObject
     private $emoji;
 
     /**
-     * @ORM\Column(name="group_name", type="twake_text", nullable=true)
+     * @ORM\Column(name="group_name", type="twake_no_salt_text", nullable=true)
      */
     private $group_name;
 

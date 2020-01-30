@@ -12,7 +12,6 @@ class TwakeEncryptor implements EncryptorInterface
      */
     public function encrypt($data)
     {
-        // TODO: Implement encrypt() method.
         return $data;
     }
 
@@ -21,7 +20,6 @@ class TwakeEncryptor implements EncryptorInterface
      */
     public function decrypt($data)
     {
-        // TODO: Implement decrypt() method.
         return $data;
     }
 }

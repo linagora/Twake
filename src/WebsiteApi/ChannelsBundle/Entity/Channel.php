@@ -42,7 +42,7 @@ class Channel extends SearchableObject
     private $name = "";
 
     /**
-     * @ORM\Column(name="channel_group_name", type="twake_text", nullable=true)
+     * @ORM\Column(name="channel_group_name", type="twake_no_salt_text", nullable=true)
      */
     private $channel_group_name = "";
 
@@ -52,7 +52,7 @@ class Channel extends SearchableObject
     private $description = "";
 
     /**
-     * @ORM\Column(name="external_access_token", type="twake_text", nullable=true)
+     * @ORM\Column(name="external_access_token", type="twake_no_salt_text", nullable=true)
      */
     private $external_access_token = null;
 
@@ -78,22 +78,22 @@ class Channel extends SearchableObject
     private $application = 0;
 
     /**
-     * @ORM\Column(name="app_id", type="twake_text")
+     * @ORM\Column(name="app_id", type="twake_no_salt_text")
      */
     private $app_id = "";
 
     /**
-     * @ORM\Column(name="app_group_id", type="twake_text")
+     * @ORM\Column(name="app_group_id", type="twake_no_salt_text")
      */
     private $app_group_id = "";
 
     /**
-     * @ORM\Column(name="app_bot_identifier", type="twake_text")
+     * @ORM\Column(name="app_bot_identifier", type="twake_no_salt_text")
      */
     private $app_bot_identifier = "";
 
     /**
-     * @ORM\Column(name="original_workspace_id", type="twake_text")
+     * @ORM\Column(name="original_workspace_id", type="twake_no_salt_text")
      * @ORM\Id
      */
     private $original_workspace_id = "";

@@ -21,7 +21,7 @@ class WorkspaceLevel
     protected $id;
 
     /**
-     * @ORM\Column(name="label", type="twake_text")
+     * @ORM\Column(name="label", type="twake_no_salt_text")
      * @Encrypted
      */
     protected $label;

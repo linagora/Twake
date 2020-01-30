@@ -27,13 +27,13 @@ class Workspace extends SearchableObject
     private $id;
 
     /**
-     * @ORM\Column(name="name", type="twake_text", nullable=true)
+     * @ORM\Column(name="name", type="twake_no_salt_text", nullable=true)
      * @Encrypted
      */
     private $name;
 
     /**
-     * @ORM\Column(name="uniquename", type="twake_text", nullable=true)
+     * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
      * @Encrypted
      */
     private $uniquename;

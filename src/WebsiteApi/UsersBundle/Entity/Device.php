@@ -43,7 +43,7 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="twake_text", nullable=true)
+     * @ORM\Column(name="value", type="twake_no_salt_text", nullable=true)
      * @Encrypted
      */
     private $value = "";

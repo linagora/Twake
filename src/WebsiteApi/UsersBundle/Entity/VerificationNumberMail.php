@@ -26,7 +26,7 @@ class VerificationNumberMail
     /**
      * @var string
      *
-     * @ORM\Column(name="mail", type="twake_text")
+     * @ORM\Column(name="mail", type="twake_no_salt_text")
      * @Encrypted
      */
     private $mail;

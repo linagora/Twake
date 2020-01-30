@@ -42,7 +42,7 @@ class Event extends SearchableObject
     private $all_day = false;
 
     /**
-     * @ORM\Column(name="type", type="twake_text")
+     * @ORM\Column(name="type", type="twake_no_salt_text")
      */
     private $type = "event";
 
@@ -77,7 +77,7 @@ class Event extends SearchableObject
     private $available = false;
 
     /**
-     * @ORM\Column(name="owner", type="twake_text")
+     * @ORM\Column(name="owner", type="twake_no_salt_text")
      */
     private $owner;
 

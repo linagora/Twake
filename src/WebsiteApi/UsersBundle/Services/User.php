@@ -1117,10 +1117,7 @@ class User
         }
 
         $this->removeLinkedToUserRows("TwakeUsersBundle:Device", $user, "user");
-        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "from");
-        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "to");
         $this->removeLinkedToUserRows("TwakeUsersBundle:Mail", $user, "user");
-        $this->removeLinkedToUserRows("TwakeUsersBundle:Token", $user, "user");
         $this->removeLinkedToUserRows("TwakeUsersBundle:UserStats", $user, "user");
 
         $this->removeLinkedToUserRows("TwakeWorkspacesBundle:WorkspaceUser", $user, "user");

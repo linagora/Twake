@@ -23,17 +23,17 @@ class UploadState
     protected $id;
 
     /**
-     * @ORM\Column(name ="identifier", type="twake_text")
+     * @ORM\Column(name ="identifier", type="twake_no_salt_text")
      */
     protected $identifier;
 
     /**
-     * @ORM\Column(name ="user_id", type="twake_text")
+     * @ORM\Column(name ="user_id", type="twake_no_salt_text")
      */
     protected $user_id;
 
     /**
-     * @ORM\Column(name ="workspace_id", type="twake_text")
+     * @ORM\Column(name ="workspace_id", type="twake_no_salt_text")
      */
     protected $workspace_id;
 
@@ -43,7 +43,7 @@ class UploadState
     protected $filename;
 
     /**
-     * @ORM\Column(name ="extension", type="twake_text")
+     * @ORM\Column(name ="extension", type="twake_no_salt_text")
      */
     protected $extension;
 

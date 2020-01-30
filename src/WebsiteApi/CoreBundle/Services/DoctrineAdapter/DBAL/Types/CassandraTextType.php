@@ -19,7 +19,9 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 class CassandraTextType extends TwakeTextType
 {
-
+    protected $searchable = false;
 }

@@ -185,7 +185,7 @@ class DriveFile extends SearchableObject
     private $acces_info;
 
     /**
-     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
+     * @ORM\Column(name="application_id", type="twake_no_salt_text", nullable=true)
      */
     private $application_id = null;
 
@@ -200,7 +200,7 @@ class DriveFile extends SearchableObject
     private $hidden_data = "{}";
 
     /**
-     * @ORM\Column(name="last_user", type="twake_text", nullable=true)
+     * @ORM\Column(name="last_user", type="twake_no_salt_text", nullable=true)
      * @Encrypted
      */
     private $last_user;

@@ -21,7 +21,7 @@ namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
-class MysqlTextType extends TwakeTextType
+class MysqlSearchableTextType extends TwakeTextType
 {
-    protected $searchable = false;
+    protected $searchable = true;
 }

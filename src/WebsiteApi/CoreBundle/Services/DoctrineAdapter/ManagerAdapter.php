@@ -74,6 +74,7 @@ class ManagerAdapter
                 'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
                 'twake_timeuuid' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TimeUUIDType',
                 'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType',
+                'twake_no_salt_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'SearchableTextType',
                 'twake_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TextType',
                 'twake_string' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'StringType',
                 'twake_bigint' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BigIntType',
@@ -83,6 +84,9 @@ class ManagerAdapter
 
         $encryptedStringType = Type::getType('twake_text');
         $encryptedStringType->setEncryptionKey(pack("H*", $this->database_configuration["encryption_key"]));
+
+        $searchableEncryptedStringType = Type::getType('twake_no_salt_text');
+        $searchableEncryptedStringType->setEncryptionKey(pack("H*", $this->database_configuration["encryption_key"]));
 
         $entityManager = EntityManager::create($conn, $config);
 

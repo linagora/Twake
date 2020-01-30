@@ -22,7 +22,7 @@ class AccessToken
     private $id;
 
     /**
-     * @ORM\Column(name="atoken", type="twake_text")
+     * @ORM\Column(name="atoken", type="twake_no_salt_text")
      */
     private $atoken;
 

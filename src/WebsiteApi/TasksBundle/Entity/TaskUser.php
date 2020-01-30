@@ -33,7 +33,7 @@ class TaskUser
     private $task_id;
 
     /**
-     * @ORM\Column(name="email", type="twake_text")
+     * @ORM\Column(name="email", type="twake_no_salt_text")
      */
     private $email = "";
 

@@ -29,6 +29,7 @@ class TwakeTextType extends StringType
      * @var string
      */
     private $secretKey;
+    protected $searchable = false;
 
     /**
      * Initialization of encryptor
@@ -44,14 +45,17 @@ class TwakeTextType extends StringType
     {
         if (substr($original_data, 0, 10) == "encrypted_") {
             $data = substr($original_data, 10);
-            $data = base64_decode($data);
+            $data = explode("_", $data);
+            $salt = isset($data[1]) ? $data[1] : "";
+            $iv = isset($data[2]) ? base64_decode($data[2]) : $this->iv;
+            $data = base64_decode($data[0]);
             try {
                 $data = openssl_decrypt(
                     $data,
                     "AES-256-CBC",
-                    $this->secretKey,
+                    $this->secretKey . $salt,
                     true,
-                    $this->iv
+                    $iv
                 );
             } catch (\Exception $e) {
                 $data = $original_data;
@@ -69,18 +73,25 @@ class TwakeTextType extends StringType
             return $data;
         }
 
+        if ($this->searchable) {
+            $iv = $this->iv;
+            $salt = "";
+        } else {
+            $iv = openssl_random_pseudo_bytes(16);
+            $salt = bin2hex(openssl_random_pseudo_bytes(16));
+        }
 
         return "encrypted_" . trim(
                 base64_encode(
                     openssl_encrypt(
                         $data,
                         "AES-256-CBC",
-                        $this->secretKey,
+                        $this->secretKey . $salt,
                         true,
-                        $this->iv
+                        $iv
                     )
                 )
-            );
+            ) . "_" . $salt . "_" . base64_encode($iv);
 
     }
 

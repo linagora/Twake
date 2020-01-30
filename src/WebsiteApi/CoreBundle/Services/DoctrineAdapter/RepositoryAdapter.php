@@ -165,7 +165,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                 }
                 if (isset($this->getClassMetadata()->fieldMappings)) {
                     foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
-                        if ($data["type"] == "twake_text") {
+                        if ($data["type"] == "twake_no_salt_text") {
                             $mapping_twake_text[] = $field;
                         }
                         if ($data["type"] == "twake_timeuuid") {
@@ -187,7 +187,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         }
                     } else if (in_array($filter, $mapping_twake_text)) {
                         /** \Doctrine\DBAL\Types\Type @var $encryptedStringType */
-                        $encryptedStringType = Type::getType('twake_text');
+                        $encryptedStringType = Type::getType('twake_no_salt_text');
                         $encrypted = $encryptedStringType->convertToDatabaseValue($value, $this->_em->getConnection()->getDatabasePlatform());
                         $qb = $qb->setParameter($filter . "_param", $encrypted);
                     } else {

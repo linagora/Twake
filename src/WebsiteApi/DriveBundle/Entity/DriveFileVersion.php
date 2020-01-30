@@ -27,12 +27,12 @@ class DriveFileVersion
     private $file_id;
 
     /**
-     * @ORM\Column(name="creator_id", type="twake_text")
+     * @ORM\Column(name="creator_id", type="twake_no_salt_text")
      */
     private $creator_id;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      * @Encrypted
      */
     private $realname;
@@ -44,7 +44,7 @@ class DriveFileVersion
     private $key;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      * @Encrypted
      */
     private $mode = "OpenSSL-2";

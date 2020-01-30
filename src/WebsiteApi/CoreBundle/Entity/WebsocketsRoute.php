@@ -32,7 +32,7 @@ class WebsocketsRoute
     private $route;
 
     /**
-     * @ORM\Column(name="route_random_endpoint", type="twake_text", length=2000)
+     * @ORM\Column(name="route_random_endpoint", type="twake_no_salt_text", length=2000)
      */
     private $route_random_endpoint;
 

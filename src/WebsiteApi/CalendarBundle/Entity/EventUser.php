@@ -39,12 +39,12 @@ class EventUser
     private $event_id;
 
     /**
-     * @ORM\Column(name="email", type="twake_text")
+     * @ORM\Column(name="email", type="twake_no_salt_text")
      */
     private $email = "";
 
     /**
-     * @ORM\Column(name="accept_status", type="twake_text")
+     * @ORM\Column(name="accept_status", type="twake_no_salt_text")
      */
     private $accept_status = "pending";
 

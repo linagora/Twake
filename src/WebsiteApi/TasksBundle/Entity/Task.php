@@ -62,7 +62,7 @@ class Task extends SearchableObject
     private $description = "";
 
     /**
-     * @ORM\Column(name="owner", type="twake_text")
+     * @ORM\Column(name="owner", type="twake_no_salt_text")
      */
     private $owner;
 

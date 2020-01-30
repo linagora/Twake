@@ -36,7 +36,7 @@ class ApplicationResource
     protected $application_id;
 
     /**
-     * @ORM\Column(name="resource_type", type="twake_text")
+     * @ORM\Column(name="resource_type", type="twake_no_salt_text")
      */
     protected $resource_type; //directory, channel, workspace, group
 

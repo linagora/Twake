@@ -22,7 +22,7 @@ class MailNotificationQueue
     private $id;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      */
     private $user_id;
 

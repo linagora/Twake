@@ -39,7 +39,7 @@ class TaskNotification
     private $delay;
 
     /**
-     * @ORM\Column(name="mode", type="twake_text")
+     * @ORM\Column(name="mode", type="twake_no_salt_text")
      */
     private $mode;
 

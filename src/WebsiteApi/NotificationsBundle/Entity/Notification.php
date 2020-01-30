@@ -22,18 +22,18 @@ class Notification
     private $id;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      * @ORM\Id
      */
     private $application_id;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      */
     private $channel_id;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(type="twake_no_salt_text")
      * @ORM\Id
      */
     private $workspace_id;
@@ -45,12 +45,12 @@ class Notification
     private $user;
 
     /**
-     * @ORM\Column(type="twake_text", nullable=true)
+     * @ORM\Column(type="twake_no_salt_text", nullable=true)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="twake_text", nullable=true)
+     * @ORM\Column(type="twake_no_salt_text", nullable=true)
      */
     private $shortcut;
 

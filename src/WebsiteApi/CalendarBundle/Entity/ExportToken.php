@@ -37,7 +37,7 @@ class ExportToken
     private $calendars;
 
     /**
-     * @ORM\Column(name="user_token", type="twake_text")
+     * @ORM\Column(name="user_token", type="twake_no_salt_text")
      */
     private $user_token;
 

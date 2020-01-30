@@ -39,7 +39,7 @@ class Application extends SearchableObject
     protected $is_default;
 
     /**
-     * @ORM\Column(name="app_group_name", type="twake_text")
+     * @ORM\Column(name="app_group_name", type="twake_no_salt_text")
      * @ORM\Id
      */
     protected $app_group_name;
@@ -50,7 +50,7 @@ class Application extends SearchableObject
     protected $name;
 
     /**
-     * @ORM\Column(name="simple_name", type="twake_text")
+     * @ORM\Column(name="simple_name", type="twake_no_salt_text")
      */
     protected $simple_name;
 
