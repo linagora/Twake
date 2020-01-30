@@ -9,8 +9,9 @@ use WebsiteApi\DiscussionBundle\Entity\Channel;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi, $workspaceMembers)
+    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi, $workspaceMembers, $access_manager)
     {
+        $this->access_manager = $access_manager;
         $this->messages_service = $messages_service;
         $this->websockets_service = $websockets_service;
         parent::__construct($entity_manager, $applicationsApi, $workspaceMembers);
@@ -19,8 +20,38 @@ class ChannelsSystem extends ChannelSystemAbstract
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        //TODO
-        return true;
+        $route = explode("/", $route);
+        $channel_id = $route[1];
+
+        if (!$channel_id) {
+            return false;
+        }
+
+        return $this->hasAccess([
+            "id" => $channel_id
+        ], $current_user);
+    }
+
+    public function hasAccess($data, $current_user = null)
+    {
+        if ($current_user === null) {
+            return true;
+        }
+        if (!is_string($current_user)) {
+            $current_user = $current_user->getId();
+        }
+        if (empty($data["id"])) {
+            return $this->access_manager->has_access($current_user, [
+                "type" => "Workspace",
+                "edition" => false,
+                "object_id" => $data["workspace_id"] ?: $data["original_workspace"]
+            ]);
+        }
+        return $this->access_manager->has_access($current_user, [
+            "type" => "Channel",
+            "edition" => true,
+            "object_id" => $data["id"]
+        ]);
     }
 
     public function get($options, $current_user)
@@ -53,18 +84,9 @@ class ChannelsSystem extends ChannelSystemAbstract
         return $result;
     }
 
-    public function hasAccess($data, $current_user = null)
-    {
-        //$workspace = $data["workspace_id"];
-        //TODO
-        return true;
-    }
-
     public function remove($object, $options, $current_user = null)
     {
-        $options["workspace_id"] = $object["original_workspace"];
-        $options["group_id"] = $object["original_group"];
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
 
@@ -73,9 +95,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
     public function save($object, $options, $current_user)
     {
-        $options["workspace_id"] = $object["original_workspace"];
-        $options["group_id"] = $object["original_group"];
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
 
