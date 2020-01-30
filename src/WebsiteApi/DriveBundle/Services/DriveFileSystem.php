@@ -58,6 +58,9 @@ class DriveFileSystem
 
     public function hasAccess($data, $current_user = null)
     {
+        if ($current_user === null) {
+            return true;
+        }
         if (!is_string($current_user)) {
             $current_user = $current_user->getId();
         }
