@@ -8,7 +8,7 @@ services:
     app.drive:
       lazy: true
       class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-      arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets"]
+      arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets", "@app.accessmanager"]
 
     driveupload.storemanager:
       lazy: true

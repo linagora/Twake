@@ -11,12 +11,13 @@ use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 class DriveFileSystem
 {
 
-    function __construct($entity_manager, $application_api, $ws)
+    function __construct($entity_manager, $application_api, $ws, $access_manager)
     {
         $this->em = $entity_manager;
         $this->applications_api = $application_api;
         $this->drive_resumable = false;
         $this->ws = $ws;
+        $this->access_manager = $access_manager;
         $this->attachementManager = new AttachementManager($this->em, $this->ws);
 
         $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");
@@ -30,8 +31,42 @@ class DriveFileSystem
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        //TODO
-        return true;
+        $route = explode("/", $route);
+
+        if (count($route) < 3) {
+            return false;
+        }
+
+        $workspace_id = $route[1];
+        $document_id = $route[2];
+
+        if (!$workspace_id || (!empty($data["get_options"]["workspace_id"]) && $workspace_id != $data["get_options"]["workspace_id"])) {
+            return false;
+        }
+
+        if (!$document_id || $document_id == "undefined") {
+            $document_id = $this->getRootEntity($workspace_id)->getId();
+        }
+
+        return $this->hasAccess([
+            "id" => $document_id,
+            "workspace_id" => $workspace_id,
+            "public_access_token" => $data["get_options"]["public_access_token"]
+        ], $current_user);
+
+    }
+
+    public function hasAccess($data, $current_user = null)
+    {
+        if (!is_string($current_user)) {
+            $current_user = $current_user->getId();
+        }
+        return $this->access_manager->has_access($current_user, Array(
+            "type" => "DriveFile",
+            "edition" => true,
+            "object_id" => empty($data["id"]) ? $data["parent_id"] : $data["id"],
+            "workspace_id" => $data["workspace_id"]
+        ), ["token" => $data["public_access_token"]]);
     }
 
     public function get($options, $current_user)
@@ -64,21 +99,12 @@ class DriveFileSystem
 
     }
 
-    public function hasAccess($data, $current_user = null, $drive_element = null)
-    {
-        return true;
-    }
-
     public function listDirectory($workspaceId, $directoryId, $trash = false)
     {
 
         if (!$workspaceId) {
             return false;
         }
-
-        /*if (!$this->isWorkspaceAllowed($workspaceId, $directoryId)) {
-            return false;
-        }*/
 
         $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
         $root = $this->getRootEntity($workspaceId);
@@ -231,7 +257,7 @@ class DriveFileSystem
 
     public function remove($object, $options, $current_user = null, $return_entity = false)
     {
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
         if (isset($object["id"])) { // on recoit un identifiant donc on supprime un drive file
@@ -419,7 +445,7 @@ class DriveFileSystem
     public function save($object, $options, $current_user = null, $upload_data = Array(), $return_entity = false)
     {
 
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
 

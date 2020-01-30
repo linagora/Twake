@@ -15,15 +15,6 @@ class DriveFileController extends Controller
         $options = $request->request->get("options");
         $object = $request->request->get("object");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => $object["id"],
-            "edition" => true
-        ));
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
-
         $res = $this->get("app.drive")->remove($object, $options, $this->getUser());
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
@@ -36,30 +27,13 @@ class DriveFileController extends Controller
         $options = $request->request->get("options");
         $object = $request->request->get("object");
 
-        if (@$object["parent_id"] || @$object["id"]) {
-            $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-                "type" => "DriveFile",
-                "object_id" => (isset($object["id"]) && $object["id"]) ? $object["id"] : $object["parent_id"], //Ability to add element to parent, or to edit current element
-                "edition" => true
-            ), Array("token" => $options["public_access_token"]));
-        } else {
-            $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-                "type" => "Workspace",
-                "object_id" => $object["workspace_id"],
-                "edition" => false
-            ));
-        }
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
-
         $file_uploaded = null;
         if (isset($_FILES["file"])) {
             $options = json_decode($options, true);
             $object = json_decode($object, true);
             $file_uploaded = $_FILES["file"];
         } else {
-            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
+            $file_uploaded = isset($object["file_url"]) ? $object["file_url"] : $request->request->get("file_url");
         }
 
         $current_user = $this->getUser();
@@ -98,15 +72,6 @@ class DriveFileController extends Controller
     {
         $options = $request->request->get("options");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => $options["directory_id"] ?: $options["id"],
-            "workspace_id" => $options["workspace_id"]
-        ), Array("token" => $options["public_access_token"]));
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
-
         $objects = $this->get("app.drive")->get($options, $this->getUser());
 
         if ($objects === false) {
@@ -118,15 +83,6 @@ class DriveFileController extends Controller
     public function findAction(Request $request)
     {
         $options = $request->request->get("options");
-
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => $options["element_id"],
-            "workspace_id" => $options["workspace_id"],
-        ), Array("token" => $options["public_access_token"]));
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
 
         $object = $this->get("app.drive")->find($options, $this->getUser());
 
@@ -142,14 +98,6 @@ class DriveFileController extends Controller
 
         $file_id = $request->request->get("file_id");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => $file_id
-        ), Array());
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
-
         $is_editable = $request->request->get("is_editable");
         $publicaccess = $request->request->get("public_access");
         $authorized_members = $request->request->get("authorized_members");
@@ -164,14 +112,6 @@ class DriveFileController extends Controller
     public function reset_file_accessAction(Request $request)
     {
         $file_id = $request->request->get("file_id");
-
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
-            "type" => "DriveFile",
-            "object_id" => $file_id
-        ), Array());
-        if (!$acces) {
-            return new JsonResponse(Array("error" => "access_denied"));
-        }
 
         $publicaccess = $this->get('app.drive')->reset_file_access($file_id, $this->getUser());
         $data = Array("data" => $publicaccess);

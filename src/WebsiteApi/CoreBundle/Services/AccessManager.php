@@ -67,8 +67,8 @@ class AccessManager
             } else {
                 return false;
             }
-        } else if ($type == "DriveFile") { //pensez au parent id tous ca tous ca et a detached
-
+        } else if ($type == "DriveFile") { //Read parent id and detached from file to get access
+            
             if ($id == "root" || $id == "trash" || $id == "") {
                 if (!$data["workspace_id"]) {
                     return false;
@@ -81,12 +81,13 @@ class AccessManager
             }
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
 
-            if (isset($df)) {
+            if ($df) {
+
                 $df = $df->getAsArray();
                 $workspace_id = $df["workspace_id"];
 
                 // Public access token
-                if (isset($df["acces_info"]["token"]) && isset($options["token"]) && $df["acces_info"]["token"] != $options["token"]) {
+                if (!empty($df["acces_info"]["token"]) && !empty($options["token"]) && $df["acces_info"]["token"] != $options["token"]) {
                     return false;
                 }
                 if (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] == "" && isset($options["token"]) && $options["token"] == "") {
