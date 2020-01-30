@@ -72,7 +72,7 @@ class TwakeTextType extends StringType
         if (!$data) {
             return $data;
         }
-
+        
         if ($this->searchable) {
             $iv = $this->iv;
             $salt = "";
@@ -81,7 +81,7 @@ class TwakeTextType extends StringType
             $salt = bin2hex(openssl_random_pseudo_bytes(16));
         }
 
-        return "encrypted_" . trim(
+        $encoded = "encrypted_" . trim(
                 base64_encode(
                     openssl_encrypt(
                         $data,
@@ -91,7 +91,13 @@ class TwakeTextType extends StringType
                         $iv
                     )
                 )
-            ) . "_" . $salt . "_" . base64_encode($iv);
+            );
+
+        if (!$this->searchable) {
+            $encoded .= "_" . $salt . "_" . base64_encode($iv);
+        }
+
+        return $encoded;
 
     }
 
