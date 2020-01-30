@@ -9,16 +9,40 @@ Class Tag
 
     private $em;
 
-    function __construct($entity_manager)
+    function __construct($entity_manager, $access_manager)
     {
         $this->em = $entity_manager;
-
+        $this->access_manager = $access_manager;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        return true;
+        $route = explode("/", $route);
+        $workspace_id = $route[1];
+
+        if (!$workspace_id) {
+            return false;
+        }
+
+        return $this->hasAccess([
+            "workspace_id" => $workspace_id
+        ], $current_user);
+    }
+
+    public function hasAccess($data, $current_user = null)
+    {
+        if ($current_user === null) {
+            return true;
+        }
+        if (!is_string($current_user)) {
+            $current_user = $current_user->getId();
+        }
+        return $this->access_manager->has_access($current_user, [
+            "type" => "Workspace",
+            "edition" => false,
+            "object_id" => $data["workspace_id"]
+        ]);
     }
 
     public function get($options, $current_user)
@@ -50,14 +74,9 @@ Class Tag
 
     }
 
-    public function hasAccess($data, $current_user = null, $drive_element = null)
-    {
-        return true;
-    }
-
     public function remove($object, $options, $current_user = null, $return_entity = false)
     {
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
 
@@ -80,7 +99,7 @@ Class Tag
 
     public function save($object, $options, $current_user = null, $return_entity = false)
     {
-        if (!$this->hasAccess($options, $current_user)) {
+        if (!$this->hasAccess($object, $current_user)) {
             return false;
         }
 

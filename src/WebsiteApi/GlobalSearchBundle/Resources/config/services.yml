@@ -37,4 +37,4 @@ services:
 
   globalsearch.tag:
       class: WebsiteApi\GlobalSearchBundle\Services\Tag
-      arguments: ["@app.twake_doctrine"]
+      arguments: ["@app.twake_doctrine", "@app.accessmanager"]
