@@ -19,7 +19,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
 
         $services = $this->getApplication()->getKernel()->getContainer();
         $em = $services->get('app.twake_doctrine');
-        $circle = $services->get("circle.restclient");
+        $circle = $services->get("twake.restclient");
         $key = $this->getContainer()->getParameter('LICENCE_KEY');
         $server = $this->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
         $notifRepo = $em->getRepository("TwakeNotificationsBundle:PushNotificationQueue");

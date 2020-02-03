@@ -35,7 +35,7 @@ class ConnectionsUsingCASController extends Controller
         //var_dump($cas_ticket_verification_url);
         //die();
 
-        $response = $this->get("circle.restclient")->get($cas_ticket_verification_url);
+        $response = $this->get("twake.restclient")->get($cas_ticket_verification_url);
         $response = $response->getContent();
         if (strpos($response, "<cas:") !== false) {
             $result = Array();

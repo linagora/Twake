@@ -47,7 +47,7 @@ class DailyCommand extends ContainerAwareCommand
         $data = Array(
             "licenceKey" => $licenceKey
         );
-        $result = $services->get("circle.restclient")->post($licenceServer . "/verify", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+        $result = $services->get("twake.restclient")->post($licenceServer . "/verify", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
         $result = json_decode($result->getContent(), true);
 
         if ($result["status"] != "valid") {
@@ -103,7 +103,7 @@ class DailyCommand extends ContainerAwareCommand
                 "licenceKey" => $licenceKey,
                 "report" => $report
             );
-            $result = $services->get("circle.restclient")->post($licenceServer . "/report", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 600));
+            $result = $services->get("twake.restclient")->post($licenceServer . "/report", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 600));
 
         }
 

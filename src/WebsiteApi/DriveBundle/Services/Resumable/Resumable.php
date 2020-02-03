@@ -106,8 +106,7 @@ class Resumable
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
 
             $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-            $key = $uploadstate->getEncryptionKey();
-            $param_bag = new EncryptionBag($key, $this->parameter_drive_salt, "OpenSSL-2");
+            $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $uploadstate->getEncryptionSalt(), $uploadstate->getEncryptionMode());
 
             if ($this->current_user_id != $uploadstate->getUserId()) {
                 return false;
@@ -362,6 +361,8 @@ class Resumable
         $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
         $new_key = bin2hex(random_bytes(20));
         $uploadstate->setEncryptionKey($new_key);
+        $uploadstate->setEncryptionSalt("");
+        $uploadstate->setEncryptionMode("OpenSSL-2");
         $uploadstate->setUserId($user_id);
         $this->doctrine->persist($uploadstate);
         $this->doctrine->flush();

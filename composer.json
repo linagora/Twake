@@ -51,7 +51,6 @@
       "emojione/emojione": "3.1",
       "twakeapp/prometheus-bundle": "dev-master",
       "spatie/pdf-to-text": "*",
-      "ci/restclientbundle": "^2.0",
       "sentry/sentry-symfony": "^3.0",
       "symfony/proxy-manager-bridge": "^4.4"
     },

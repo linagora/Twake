@@ -3,7 +3,12 @@ services:
     app.twake_mailer:
         lazy: true
         class: WebsiteApi\CoreBundle\Services\TwakeMailer
-        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%", "%STANDALONE%", "%LICENCE_KEY%", "@circle.restclient"]
+        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%", "%STANDALONE%", "%LICENCE_KEY%", "@twake.restclient"]
+
+    twake.restclient:
+        lazy: true
+        class: WebsiteApi\CoreBundle\Services\TwakeRestClient
+        arguments: []
 
     app.pusher:
         lazy: true
@@ -17,7 +22,7 @@ services:
 
     app.twake_doctrine:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
-        arguments: ["@doctrine.orm.entity_manager", "%ELASTIC_SERVER%", "@circle.restclient", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
+        arguments: ["@doctrine.orm.entity_manager", "%ELASTIC_SERVER%", "@twake.restclient", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
 
     app.websockets:
         lazy: true

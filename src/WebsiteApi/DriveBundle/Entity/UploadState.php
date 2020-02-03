@@ -72,6 +72,16 @@ class UploadState
      */
     protected $encryption_key;
 
+    /**
+     * @ORM\Column(name ="encryption_mode", type="twake_text", nullable=true)
+     */
+    protected $encryption_mode;
+
+    /**
+     * @ORM\Column(name ="encryption_salt", type="twake_text", nullable=true)
+     */
+    protected $encryption_salt;
+
     public function __construct($workspace_id, $identifier, $filename, $extension, $chunklist)
     {
         $this->workspace_id = $workspace_id;
@@ -154,6 +164,38 @@ class UploadState
     public function setEncryptionKey($encryption_key)
     {
         $this->encryption_key = $encryption_key;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEncryptionMode()
+    {
+        return $this->encryption_mode;
+    }
+
+    /**
+     * @param mixed $encryption_mode
+     */
+    public function setEncryptionMode($encryption_mode): void
+    {
+        $this->encryption_mode = $encryption_mode;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEncryptionSalt()
+    {
+        return $this->encryption_salt;
+    }
+
+    /**
+     * @param mixed $encryption_salt
+     */
+    public function setEncryptionSalt($encryption_salt): void
+    {
+        $this->encryption_salt = $encryption_salt;
     }
 
     /**

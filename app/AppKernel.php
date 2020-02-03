@@ -22,7 +22,6 @@ class AppKernel extends Kernel
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
 	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
             new \Aws\Symfony\AwsBundle(),
-            new Circle\RestClientBundle\CircleRestClientBundle(),
             new TweedeGolf\PrometheusBundle\TweedeGolfPrometheusBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),

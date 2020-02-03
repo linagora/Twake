@@ -262,7 +262,12 @@ class DownloadFile
     public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
     {
         $uploadstate = $this->doctrine->getRepository("TwakeDriveBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
+        if ($uploadstate->getEncryptionMode() == "OpenSSL-2") {
+            $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $uploadstate->getEncryptionSalt(), $uploadstate->getEncryptionMode());
+        } else {
+            //Old resumable with drive salt
+            $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
+        }
         if (isset($uploadstate)) {
             if (isset($zip_prefix) && isset($zip)) {
                 $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
