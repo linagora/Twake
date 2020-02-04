@@ -116,8 +116,6 @@ fabric.properties
 /web/css/
 /web/js/
 
-### Dev ###
-/docker-data/*
 
 ### Twake specific ###
 /build/
@@ -132,3 +130,9 @@ fabric.properties
 /tests/code_coverage/
 /web/detached/*
 /drive/*
+/web/drive/*
+/web/medias/public/uploads/*
+/web/detached/
+/drive/
+/web/drive/
+/web/medias/public/uploads/
