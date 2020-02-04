@@ -29,8 +29,7 @@ services:
         image: twake-websockets
         build: Docker/twake-websockets
         volumes:
-            - ./cron:/cron
-            - ./:/twake-core:cached
+            - ./WebsocketsServer:/WebsocketsServer
         depends_on:
             - scylladb
         restart: "always"
