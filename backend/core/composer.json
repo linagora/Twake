@@ -16,6 +16,8 @@
         "phpunit/phpunit": "5.7",
         "aws/aws-sdk-php-symfony": "~2.0",
         "php-opencloud/openstack": "^3.0",
-        "emojione/emojione": "3.1"
+        "emojione/emojione": "3.1",
+        "swiftmailer/swiftmailer": "^6.2",
+        "twig/twig": "^2.12"
     }
 }

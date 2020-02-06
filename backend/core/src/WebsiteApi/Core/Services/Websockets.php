@@ -3,11 +3,11 @@
 namespace WebsiteApi\Core\Services;
 
 use App\App;
-use WebsiteApi\CoreBundle\Entity\WebsocketsRoute;
+use WebsiteApi\Core\Entity\WebsocketsRoute;
 
 /**
  * Class TwakeMailer
- * @package WebsiteApi\CoreBundle\Services
+ * @package WebsiteApi\Core\Services
  *
  * This class send mail with twake default template
  */
@@ -19,8 +19,6 @@ class Websockets
 
     public function __construct(App $app)
     {
-        $doctrine = $app->getServices()->get("app.doctrine");
-        $pusher = $app->getServices()->get("app.pusher");
 
         //Register services to call for init websocekts and verify user has access
         $this->services_for_type = Array(
@@ -39,8 +37,8 @@ class Websockets
             "updates" => "app.user_updates"
         );
 
-        $this->doctrine = $doctrine;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function init($route, $data, $controller = null)

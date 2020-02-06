@@ -11,14 +11,17 @@ require_once __DIR__ . "/Common/Routing.php";
 require_once __DIR__ . "/Common/Container.php";
 require_once __DIR__ . "/Common/Services.php";
 require_once __DIR__ . "/Common/Configuration.php";
+require_once __DIR__ . "/Common/Providers.php";
 
 require_once __DIR__ . "/Configuration/Bundles.php";
 require_once __DIR__ . "/Configuration/Configuration.php";
 require_once __DIR__ . "/Configuration/Parameters.php";
+require_once __DIR__ . "/Configuration/Providers.php";
 
 use Common\Routing;
 use Common\Container;
 use Common\Services;
+use Common\Providers;
 use Configuration\Bundles;
 use Configuration\Configuration;
 use Configuration\Parameters;
@@ -27,6 +30,8 @@ class App
 {
 
     private $app_root_dir = "";
+
+    private $silex_app = null;
 
     /** @var Routing */
     private $routing_service = null;
@@ -37,15 +42,20 @@ class App
     /** @var Services */
     private $services_service = null;
 
+    /** @var Providers */
+    private $providers_service = null;
+
     public function __construct($silex_app)
     {
         $bundles = (new Bundles())->getBundles();
         $bundles_instances = [];
 
         $this->app_root_dir = realpath(__DIR__ . "/../");
+        $this->silex_app = $silex_app;
         $this->routing_service = new Routing($this, $silex_app);
         $this->container_service = new Container($this);
         $this->services_service = new Services($this);
+        $this->providers_service = new Providers($this, new \Configuration\Providers());
 
         // Import configuration
         $this->container_service->import(new Configuration(), "configuration");
@@ -84,6 +94,16 @@ class App
     public function getServices()
     {
         return $this->services_service;
+    }
+
+    public function getProviders()
+    {
+        return $this->providers_service;
+    }
+
+    public function getSilexApp()
+    {
+        return $this->silex_app;
     }
 
     public function getAppRootDir()

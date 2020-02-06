@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Container;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Maxime Steinhausser <maxime.steinhausser@gmail.com>
  */
-class ContainerControllerResolver extends ControllerResolver
+class ContainerControllerResolver extends BaseControllerResolver
 {
     protected $container;
 
