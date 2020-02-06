@@ -1,13 +1,13 @@
 <?php
 
-namespace WebsiteApi\Core\Services;
+namespace Twake\Core\Services;
 
 use App\App;
-use WebsiteApi\Core\Entity\WebsocketsRoute;
+use Twake\Core\Entity\WebsocketsRoute;
 
 /**
  * Class TwakeMailer
- * @package WebsiteApi\Core\Services
+ * @package Twake\Core\Services
  *
  * This class send mail with twake default template
  */
@@ -44,7 +44,7 @@ class Websockets
     public function init($route, $data, $controller = null)
     {
 
-        $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
+        $routes = $this->doctrine->getRepository("TwakeCore:WebsocketsRoute");
         $route_entity = $routes->findOneBy(Array("route" => $route));
 
         $new = false;
@@ -133,7 +133,7 @@ class Websockets
         }
 
         if (!$route_entity) {
-            $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
+            $routes = $this->doctrine->getRepository("TwakeCore:WebsocketsRoute");
             $route_entity = $routes->findOneBy(Array("route" => $route));
         }
 

@@ -110,4 +110,9 @@ class App
     {
         return $this->app_root_dir;
     }
+
+    public function run()
+    {
+        $this->silex_app->run();
+    }
 }

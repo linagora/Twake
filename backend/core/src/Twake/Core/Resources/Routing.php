@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\Core\Resources;
+namespace Twake\Core\Resources;
 
 use Common\BaseRouting;
 

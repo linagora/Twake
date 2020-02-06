@@ -7,7 +7,7 @@ use Common\BaseBundles;
 class Bundles extends BaseBundles
 {
     protected $bundles = [
-        "WebsiteApi/Core"
+        "Twake/Core"
     ];
 
 }

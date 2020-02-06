@@ -21,6 +21,13 @@ class Providers
             "register" => "Silex\Provider\TwigServiceProvider",
             "parameters" => "twig_parameters",
         ],
+        "doctrine" => [
+            "services" => [
+                "db"
+            ],
+            "register" => "Silex\Provider\DoctrineServiceProvider",
+            "parameters" => "db_parameters",
+        ],
     ];
 
 }

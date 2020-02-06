@@ -28,7 +28,6 @@ class Providers
 
             //Each provider expose multiple services
             foreach ($provider_config["services"] as $service) {
-                $provider_config["group_name"] = $name;
                 $this->services[$service] = $provider_config;
             }
 
@@ -42,10 +41,10 @@ class Providers
             return $this->service_instances[$key];
         }
 
-        $service_register_name = $services[$key]["register"];
+        $service_register_name = $this->services[$key]["register"];
         if (!$this->silex_registered_services[$service_register_name]) {
-            $this->app->getSilexApp()->register(new $service_register_name());
-            $this->silex_registered_services[$service_register_name] = true;
+
+            $options = [];
 
             if (isset($services[$key]["parameters"])) {
                 $parameters_key = $services[$key]["parameters"];
@@ -53,6 +52,7 @@ class Providers
                 foreach ($parameters as $key => $parameter) {
                     $this->app->getSilexApp()[$key] = $parameter;
                 }
+                $options = array_merge($options, $parameters);
             }
 
             if (isset($services[$key]["configuration"])) {
@@ -61,7 +61,12 @@ class Providers
                 foreach ($parameters as $key => $parameter) {
                     $this->app->getSilexApp()[$key] = $parameter;
                 }
+                $options = array_merge($options, $parameters);
             }
+
+            $this->app->getSilexApp()->register(new $service_register_name(), $options);
+            $this->silex_registered_services[$service_register_name] = true;
+
 
         }
 
