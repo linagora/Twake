@@ -72,7 +72,7 @@ class ZMQPusher
     public function checkQueue()
     {
 
-        $jobs = $this->doctrine->getRepository("TwakeCore:ZMQQueue")->findBy(Array(), Array(), 5000);
+        $jobs = $this->doctrine->getRepository("Twake\Core:ZMQQueue")->findBy(Array(), Array(), 5000);
 
         foreach ($jobs as $job) {
             $this->doctrine->remove($job);

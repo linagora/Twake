@@ -43,7 +43,7 @@ class ExportCommand extends ContainerAwareCommand
         //PARTIE CONCERNANT LE GROUP
         $upper_path = getcwd();
 
-        $group = $manager->getRepository("TwakeWorkspaces:Group")->findOneBy(Array("name" => $group_name));
+        $group = $manager->getRepository("Twake\Workspaces:Group")->findOneBy(Array("name" => $group_name));
         $group_id = $group->getId();
 
         //ON CREER LES DIFFERENTS DOSSIER A LA RACINE DU DOSSIER D EXPORTATION
@@ -136,7 +136,7 @@ class ExportCommand extends ContainerAwareCommand
                         $logo64 = "";
                     }
 
-                    $mails = $manager->getRepository("TwakeUsers:Mail")->findBy(Array("user" => $user_array["id"]));
+                    $mails = $manager->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user_array["id"]));
                     $secondarymail = Array();
                     foreach ($mails as $mail) {
                         $secondarymail[] = $mail->getMail();
@@ -235,7 +235,7 @@ class ExportCommand extends ContainerAwareCommand
 // =================================================================================================================================================
 
             //PARTIE SUR LES CHANNELS ET LES MESSAGES D UN WORKSPACE DANS LES SOUS DOSSIER CHANNEL ET MESSAGE
-            $channels = $$manager->getRepository("TwakeChannels:Channel")->findBy(Array("direct" => false, "original_workspace_id" => $wp["id"]));
+            $channels = $$manager->getRepository("Twake\Channels:Channel")->findBy(Array("direct" => false, "original_workspace_id" => $wp["id"]));
             chdir("ws_" . $wp["id"] . "");
             mkdir("channels");
             chdir("channels");
@@ -259,7 +259,7 @@ class ExportCommand extends ContainerAwareCommand
                         fclose($handle_channel_file);
 
                         //ON RECUPERE LES MESSAGES DU CHANNEL
-                        $messages_tmp = $this->doctrine->getRepository("TwakeDiscussion:Message")->findBy(Array("channel_id" => $channel["id"]));
+                        $messages_tmp = $this->doctrine->getRepository("Twake\Discussion:Message")->findBy(Array("channel_id" => $channel["id"]));
                         $messages = Array();
                         foreach ($messages_tmp as $message) {
 
@@ -293,16 +293,16 @@ class ExportCommand extends ContainerAwareCommand
             chdir("..");
             mkdir("calendars");
             chdir("calendars");
-            $calendars = $manager->getRepository("TwakeCalendar:Calendar")->findBy(Array("workspace_id" => $wp["id"]));
+            $calendars = $manager->getRepository("Twake\Calendar:Calendar")->findBy(Array("workspace_id" => $wp["id"]));
             $calendar = Array();
             foreach ($calendars as $c) {
                 $c = $c->getAsArray();
                 $calendar_file = "calendar_" . $c["id"] . ".json";
                 $handle_calendar_file = fopen($calendar_file, 'w') or die('Cannot open file:  ' . $calendar_file);
                 $events = Array();
-                $eventcalendar = $manager->getRepository("TwakeCalendar:EventCalendar")->findBy(Array("calendar_id" => $c["id"]));
+                $eventcalendar = $manager->getRepository("Twake\Calendar:EventCalendar")->findBy(Array("calendar_id" => $c["id"]));
                 foreach ($eventcalendar as $ec) {
-                    $event = $manager->getRepository("TwakeCalendar:Event")->findOneBy(Array("id" => $ec->getEventId()));
+                    $event = $manager->getRepository("Twake\Calendar:Event")->findOneBy(Array("id" => $ec->getEventId()));
                     $events[] = Array(
                         "date" => $ec->getSortDate(),
                         "event" => Array(
@@ -335,12 +335,12 @@ class ExportCommand extends ContainerAwareCommand
             chdir("..");
             mkdir("drive_files");
             chdir("drive_files");
-            $files = $manager->getRepository("TwakeDrive:DriveFile")->findBy(Array("workspace_id" => $wp["id"]));
+            $files = $manager->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $wp["id"]));
             foreach ($files as $file) {
                 $path = $file->getPath();
                 $version_array = Array();
                 $file = $file->getAsArray();
-                $version = $manager->getRepository("TwakeDrive:DriveFileVersion")->findBy(Array("file_id" => $file["id"]));
+                $version = $manager->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $file["id"]));
                 foreach ($version as $v) {
                     $v = $v->getAsArray();
                     //ar_dump("file id in version: " . $file["id"]);

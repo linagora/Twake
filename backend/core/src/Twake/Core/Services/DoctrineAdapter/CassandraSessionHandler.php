@@ -79,7 +79,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function destroy($sessionId)
     {
-        $repo = $this->doctrineAdapter->getRepository("TwakeCore:Sessions");
+        $repo = $this->doctrineAdapter->getRepository("Twake\Core:Sessions");
         $result = $repo->find($sessionId);
 
         if ($result) {
@@ -102,7 +102,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-        $session = $this->doctrineAdapter->getRepository("TwakeCore:Sessions")->find($sessionId);
+        $session = $this->doctrineAdapter->getRepository("Twake\Core:Sessions")->find($sessionId);
         if (!$session) {
             $session = new Sessions();
         }
@@ -121,7 +121,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function read($sessionId)
     {
-        $repo = $this->doctrineAdapter->getRepository("TwakeCore:Sessions");
+        $repo = $this->doctrineAdapter->getRepository("Twake\Core:Sessions");
         $result = $repo->find($sessionId);
 
         if ($result) {

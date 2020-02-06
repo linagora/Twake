@@ -45,19 +45,19 @@ class GroupedQuery extends BaseController
     private function routeToControllerName($routename)
     {
         if ($routename == "/ajax/core/collections/init") {
-            return "TwakeCore:Websockets:init";
+            return "Twake\Core:Websockets:init";
         }
         if ($routename == "/ajax/notifications/get") {
-            return "TwakeNotifications:Default:get";
+            return "Twake\Notifications:Default:get";
         }
         if ($routename == "/ajax/channels/get") {
-            return "TwakeChannels:Channels:get";
+            return "Twake\Channels:Channels:get";
         }
         if ($routename == "/ajax/channels/direct_messages/get") {
-            return "TwakeChannels:DirectMessages:get";
+            return "Twake\Channels:DirectMessages:get";
         }
         if ($routename == "/ajax/discussion/get") {
-            return "TwakeDiscussion:Discussion:get";
+            return "Twake\Discussion:Discussion:get";
         }
     }
 

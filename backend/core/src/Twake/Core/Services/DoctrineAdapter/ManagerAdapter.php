@@ -99,8 +99,6 @@ class ManagerAdapter
 
         $this->manager = $entityManager;
 
-        $this->autoloadEntities();
-
         return $this->manager;
     }
 
@@ -118,6 +116,16 @@ class ManagerAdapter
         }
     }
 
+    private function loadEntity($name)
+    {
+        $name = explode(":", $name);
+        $entity_bundle_name_space = $name[0];
+        $entity_name = $name[1];
+        $real_name_space = $entity_bundle_name_space . "\\Entity";
+        require_once $this->app->getAppRootDir() . "/src/" . str_replace("\\", "/", $real_name_space) . "/" . $entity_name . ".php";
+        $this->getEntityManager()->getConfiguration()->addEntityNamespace($entity_bundle_name_space, $real_name_space);
+    }
+
     private function autoloadEntities($dir = null)
     {
         if ($dir == null) {
@@ -127,7 +135,6 @@ class ManagerAdapter
         foreach (glob($dir . "/*") as $bundle) {
             if (is_dir($bundle) && $bundle[0] != ".") {
                 if (file_exists($bundle . "/Entity")) {
-
 
                     foreach (glob($bundle . "/Entity/*.php") as $entity) {
 
@@ -472,6 +479,9 @@ class ManagerAdapter
 
     public function getRepository($name)
     {
+
+        $this->loadEntity($name);
+
         try {
             $metadata = $this->getEntityManager()->getClassMetadata($name);
         } catch (\Exception $e) {

@@ -25,7 +25,7 @@ class DbStressTestCommand extends ContainerAwareCommand
         $services = $this->getApplication()->getKernel()->getContainer();
         $manager = $services->get('app.twake_doctrine');
 
-        $workspace = $manager->getRepository("TwakeWorkspaces:Workspace")->findOneBy(Array());
+        $workspace = $manager->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array());
 
         $time = microtime(true);
         $d = date("U");
@@ -35,7 +35,7 @@ class DbStressTestCommand extends ContainerAwareCommand
             $mail = $pseudo . "@twakeapp.com";
             $user = $services->get("app.user")->subscribeInfo($mail, $password, $pseudo, "", "", "", "", "fr", "stress_test", true);
 
-            $levelRepository = $manager->getRepository("TwakeWorkspaces:WorkspaceLevel");
+            $levelRepository = $manager->getRepository("Twake\Workspaces:WorkspaceLevel");
             $level = $levelRepository->findOneBy(Array("workspace" => $workspace));
             $member = new WorkspaceUser($workspace, $user, $level->getId());
             $manager->persist($member);

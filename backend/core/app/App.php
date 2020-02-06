@@ -25,6 +25,7 @@ use Common\Providers;
 use Configuration\Bundles;
 use Configuration\Configuration;
 use Configuration\Parameters;
+use Symfony\Component\HttpFoundation\Response;
 
 class App
 {

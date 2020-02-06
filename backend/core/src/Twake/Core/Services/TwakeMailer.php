@@ -35,7 +35,7 @@ class TwakeMailer
         $this->circle = $app->getServices()->get("twake.restclient");
     }
 
-    public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "TwakeCore:Mail")
+    public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Twake\Core:Mail")
     {
 
         $data["mail"] = $mail;

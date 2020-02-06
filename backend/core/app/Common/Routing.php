@@ -4,6 +4,7 @@ namespace Common;
 
 use App\App;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class Routing
 {
@@ -34,17 +35,17 @@ class Routing
     }
 
     //Allow any origin and set cookies in json response
-    private function beforeRender($response)
+    private function beforeRender(Response $response)
     {
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
-            $response->headers->set('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']);
+            $response->headers->set('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN'], true);
         }
-        $response->headers->set('Access-Control-Allow-Headers', ' Content-Type, *');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST');
-        $response->headers->set('Access-Control-Max-Age', '600');
+        $response->headers->set('Access-Control-Allow-Headers', ' Content-Type, *', true);
+        $response->headers->set('Access-Control-Allow-Credentials', 'true', true);
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST', true);
+        $response->headers->set('Access-Control-Max-Age', '600', true);
         $length = strlen($response->getContent());
-        $response->headers->set('x-decompressed-content-length', $length);
+        $response->headers->set('x-decompressed-content-length', $length, true);
 
         @$content = json_decode($response->getContent(), 1);
 

@@ -7,7 +7,8 @@ use Common\BaseBundles;
 class Bundles extends BaseBundles
 {
     protected $bundles = [
-        "Twake/Core"
+        "Twake/Core",
+        "Twake/Users"
     ];
 
 }

@@ -41,7 +41,7 @@ class AccessManager
                 return false;
             }
         } else if ($type == "Channel") {
-            $channel = $this->doctrine->getRepository("TwakeChannels:Channel")->findOneBy(Array("id" => $id));
+            $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $id));
             if (isset($channel)) {
                 $channel = $channel->getAsArray();
                 $workspace_id = $channel["original_workspace"];
@@ -57,7 +57,7 @@ class AccessManager
                 return false;
             }
         } else if ($type == "Message") {
-            $message = $this->doctrine->getRepository("TwakeDiscussion:Message")->findOneBy(Array("id" => $id));
+            $message = $this->doctrine->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $id));
             if (isset($message)) {
                 $message = $message->getAsArray();
                 $channel_id = $message["channel_id"];
@@ -80,7 +80,7 @@ class AccessManager
             if (!$id) {
                 return false;
             }
-            $df = $this->doctrine->getRepository("TwakeDrive:DriveFile")->findOneBy(Array("id" => $id));
+            $df = $this->doctrine->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $id));
 
             if ($df) {
 
@@ -135,7 +135,7 @@ class AccessManager
             return false;
 
         } else if ($type == "Calendar") { //pensez au parent id tous ca tous ca et a detached
-            $calendar = $this->doctrine->getRepository("TwakeCalendar:Calendar")->findOneBy(Array("id" => $id));
+            $calendar = $this->doctrine->getRepository("Twake\Calendar:Calendar")->findOneBy(Array("id" => $id));
             if (isset($calendar)) {
                 $calendar = $calendar->getAsArray();
                 $workspace_id = $calendar["workspace_id"];
@@ -153,7 +153,7 @@ class AccessManager
 
     public function user_has_workspace_access($current_user_id, $workspace_id)
     {
-        $wp = $this->doctrine->getRepository("TwakeWorkspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
+        $wp = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
         $members = $wp->getMembers();
         $access = false;
         foreach ($members as $member) {

@@ -147,13 +147,13 @@ class ImportCommand extends ContainerAwareCommand
             $contents = json_decode(fread($handle_group, filesize($group_file)), true);
             fclose($handle_group);
 
-            $group = $manager->getRepository("TwakeWorkspaces:Group")->findOneBy(Array("name" => $contents["name"] . "_itw"));
+            $group = $manager->getRepository("Twake\Workspaces:Group")->findOneBy(Array("name" => $contents["name"] . "_itw"));
 
             if (!$group) {
 
                 $group = new Group($contents["name"] . "_itw");
                 $group->setDisplayName($contents["display_name"]);
-                $group->setPricingPlan($manager->getRepository("TwakeWorkspaces:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
+                $group->setPricingPlan($manager->getRepository("Twake\Workspaces:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
 
                 $logo = $contents["logo"];
                 if ($logo !== '') {
@@ -173,7 +173,7 @@ class ImportCommand extends ContainerAwareCommand
 
         }
 
-        $appRepository = $manager->getRepository("TwakeMarket:Application");
+        $appRepository = $manager->getRepository("Twake\Market:Application");
         $list_default_apps = $appRepository->findBy(Array("is_default" => true));
         $groupapp_apps = [];
         foreach ($list_default_apps as $app) {
@@ -200,15 +200,15 @@ class ImportCommand extends ContainerAwareCommand
             $username = trim($user["username"]);
 
             // on regarde si le compte du user existe déjà avec son mail
-            $new_user = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("emailcanonical" => $mail));
+            $new_user = $manager->getRepository("Twake\Users:User")->findOneBy(Array("emailcanonical" => $mail));
             if (!$new_user) {
-                $other_new_users_mails = $manager->getRepository("TwakeUsers:Mail")->findOneBy(Array("mail" => $mail));
+                $other_new_users_mails = $manager->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => $mail));
                 if ($other_new_users_mails) {
                     $new_user = $other_new_users_mails->getUser();
                 }
             }
             if (!$new_user) {
-                $new_user = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("usernamecanonical" => $username));
+                $new_user = $manager->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => $username));
             }
 
             if (!isset($new_user)) {
@@ -234,7 +234,7 @@ class ImportCommand extends ContainerAwareCommand
 
                 //creation des emails secondaire
                 foreach ($user["secondary_email"] as $mail) {
-                    $mail_to_find = $manager->getRepository("TwakeUsers:Mail")->findOneBy(Array("mail" => $mail));
+                    $mail_to_find = $manager->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => $mail));
                     if (!isset($mail_to_find)) {
                         $mail_bdd = new Mail();
                         $mail_bdd->setMail($mail);
@@ -266,7 +266,7 @@ class ImportCommand extends ContainerAwareCommand
                 foreach ($contents as $user) {
                     if (array_key_exists($user["user_id"], $this->match_table["user"])) {
                         $new_id = $this->match_table["user"][$user["user_id"]];
-                        $user_bdd = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("id" => $new_id));
+                        $user_bdd = $manager->getRepository("Twake\Users:User")->findOneBy(Array("id" => $new_id));
                         $groupuser = new GroupUser($group, $user_bdd);
                         $groupuser->setExterne($user["externe"]);
                         $groupuser->setLevel($user["level"]);
@@ -339,7 +339,7 @@ class ImportCommand extends ContainerAwareCommand
                         foreach ($contents as $user) {
                             if (array_key_exists($user["user_id"], $this->match_table["user"])) {
                                 $new_id = $this->match_table["user"][$user["user_id"]];
-                                $user_bdd = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("id" => $new_id));
+                                $user_bdd = $manager->getRepository("Twake\Users:User")->findOneBy(Array("id" => $new_id));
                                 $workspaceuser = new WorkspaceUser($workspace_bdd, $user_bdd, $level_none_id);
                                 if ($user["admin"]) {
                                     $workspaceuser->setLevelId($level_admin_id);
@@ -364,7 +364,7 @@ class ImportCommand extends ContainerAwareCommand
                 //PARTIE SUR LA CREATION DE TOUT LES DRIVE FILES
                 if (file_exists("drive_files")) {
 
-                    $root_directory = $manager->getRepository("TwakeDrive:DriveFile")
+                    $root_directory = $manager->getRepository("Twake\Drive:DriveFile")
                         ->findOneBy(Array("workspace_id" => $workspace_id . "", "isintrash" => false, "parent_id" => ""));
                     if (!$root_directory) {
                         $root_directory = new DriveFile($workspace_id . "", "", true);
@@ -595,7 +595,7 @@ class ImportCommand extends ContainerAwareCommand
                                 }
                                 if ($message["sender"] != null) {
                                     if (array_key_exists($message["sender"], $this->match_table["user"])) {
-                                        $user = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
+                                        $user = $manager->getRepository("Twake\Users:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
                                         $message_bdd->setSender($user);
                                     }
                                 }
@@ -851,7 +851,7 @@ class ImportCommand extends ContainerAwareCommand
                         $false_current_user->setId($member_list_id[0]);
 
                         $res = $services->get("app.channels.direct_messages_system")->save(Array("members" => $member_list_id), Array(), $false_current_user);
-                        $channel_bdd = $manager->getRepository("TwakeChannels:Channel")->findOneBy(Array("id" => $res["id"]));
+                        $channel_bdd = $manager->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $res["id"]));
                         $channel_bdd_id = $channel_bdd->getId();
 
                         usort($channel["message"], "self::cmpMessage");
@@ -914,7 +914,7 @@ class ImportCommand extends ContainerAwareCommand
                             }
                             if ($message["sender"] != null) {
                                 if (array_key_exists($message["sender"], $this->match_table["user"])) {
-                                    $user = $manager->getRepository("TwakeUsers:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
+                                    $user = $manager->getRepository("Twake\Users:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
                                     $message_bdd->setSender($user);
                                 }
                             }

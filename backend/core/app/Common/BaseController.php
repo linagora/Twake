@@ -28,4 +28,10 @@ abstract class BaseController
         return $this->app->getServices()->get($key);
     }
 
+    protected function getUser()
+    {
+        //TODO retrieve current user
+        return null;
+    }
+
 }

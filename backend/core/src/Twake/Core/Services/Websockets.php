@@ -44,7 +44,7 @@ class Websockets
     public function init($route, $data, $controller = null)
     {
 
-        $routes = $this->doctrine->getRepository("TwakeCore:WebsocketsRoute");
+        $routes = $this->doctrine->getRepository("Twake\Core:WebsocketsRoute");
         $route_entity = $routes->findOneBy(Array("route" => $route));
 
         $new = false;
@@ -133,7 +133,7 @@ class Websockets
         }
 
         if (!$route_entity) {
-            $routes = $this->doctrine->getRepository("TwakeCore:WebsocketsRoute");
+            $routes = $this->doctrine->getRepository("Twake\Core:WebsocketsRoute");
             $route_entity = $routes->findOneBy(Array("route" => $route));
         }
 

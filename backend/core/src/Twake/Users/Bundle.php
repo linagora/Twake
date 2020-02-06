@@ -1,15 +1,12 @@
 <?php
 
-namespace Twake\Core;
+namespace Twake\Users;
 
 require_once __DIR__ . "/Resources/Routing.php";
 require_once __DIR__ . "/Resources/Services.php";
 
-require_once __DIR__ . "/Entity/FrontObject.php";
-require_once __DIR__ . "/Entity/SearchableObject.php";
-
-use Twake\Core\Resources\Routing;
-use Twake\Core\Resources\Services;
+use Twake\Users\Resources\Routing;
+use Twake\Users\Resources\Services;
 use Common\BaseBundle;
 
 class Bundle extends BaseBundle

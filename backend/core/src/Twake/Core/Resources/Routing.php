@@ -7,6 +7,8 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
+    protected $routing_prefix = "ajax/core/";
+
     protected $routes = [
         "version" => ["handler" => "Version:getVersion", "methods" => ["GET"]],
         "grouped_query" => ["handler" => "GroupedQuery:query", "methods" => ["POST"]],

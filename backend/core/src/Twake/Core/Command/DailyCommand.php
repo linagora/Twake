@@ -69,13 +69,13 @@ class DailyCommand extends ContainerAwareCommand
             );
 
             /** @var Application[] $apps */
-            $apps = $manager->getRepository("TwakeMarket:Application")->findBy(Array());
+            $apps = $manager->getRepository("Twake\Market:Application")->findBy(Array());
             foreach ($apps as $app) {
                 $report["apps"][] = $app->getAsArray();
             }
 
             /** @var Group[] $groups */
-            $groups = $manager->getRepository("TwakeWorkspaces:Group")->findBy(Array());
+            $groups = $manager->getRepository("Twake\Workspaces:Group")->findBy(Array());
             foreach ($groups as $group) {
                 $report["groups"][$group->getId() . ""] = Array(
                     "name" => $group->getDisplayName(),
@@ -84,11 +84,11 @@ class DailyCommand extends ContainerAwareCommand
                     "usage" => Array()
                 );
 
-                $workspaces = $manager->getRepository("TwakeWorkspaces:Workspace")->findBy(Array("group" => $group, "is_deleted" => 0));
+                $workspaces = $manager->getRepository("Twake\Workspaces:Workspace")->findBy(Array("group" => $group, "is_deleted" => 0));
                 $report["groups"][$group->getId() . ""]["workspaces"] = count($workspaces);
 
                 /** @var GroupPeriod $group_period */
-                $group_period = $manager->getRepository("TwakeWorkspaces:GroupPeriod")->findOneBy(Array("group" => $group));
+                $group_period = $manager->getRepository("Twake\Workspaces:GroupPeriod")->findOneBy(Array("group" => $group));
                 if ($group_period) {
                     $report["groups"][$group->getId() . ""]["usage"] = Array(
                         "apps_usage" => $group_period->getAppsUsagePeriod(),
