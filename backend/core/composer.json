@@ -1,91 +1,21 @@
 {
-    "name": "twake/twake_core",
-    "license": "proprietary",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "": "src/"
-        },
-        "classmap": [
-            "app/AppKernel.php",
-            "app/AppCache.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "require": {
-      "php": ">=7.1",
-      "symfony/symfony": "3.1.*",
-      "doctrine/orm": "^2.5",
-      "doctrine/doctrine-bundle": "^1.6",
-      "doctrine/doctrine-cache-bundle": "^1.2",
-      "symfony/swiftmailer-bundle": "^2.3",
-      "symfony/monolog-bundle": "~2.11.3",
-      "symfony/polyfill-apcu": "^1.0",
-      "sensio/distribution-bundle": "^5.0",
-      "sensio/framework-extra-bundle": "^3.0.2",
-      "friendsofsymfony/user-bundle": "dev-master",
-      "symfony/assetic-bundle": "^2.8",
-      "patchwork/jsqueeze": "~1.0",
-      "gos/web-socket-bundle": "^1.8",
-      "qandidate/symfony-json-request-transformer": "^1.2",
-      "nelmio/api-doc-bundle": "^2.13",
-      "react/zmq": "^0.3.0",
-      "krlove/async-service-call-bundle": "^1.0",
-      "richsage/rms-push-notifications-bundle": "^0.2.3",
-      "google/apiclient": "^2.0",
-      "eluceo/ical": "^0.14.0",
-      "johngrogg/ics-parser": "^2",
-      "aws/aws-sdk-php-symfony": "~2.0",
-      "maennchen/zipstream-php": "^0.5.1",
-      "onurb/doctrine-yuml-bundle": "~1.0",
-      "phpunit/phpunit": "5.7",
-      "m6web/cassandra-bundle": "~1.1.0",
-      "ramsey/uuid-doctrine": "^1.5",
-      "reprovinci/doctrine-encrypt": "~3.0",
-      "php-opencloud/openstack": "^3.0",
-      "atoum/atoum": "^3.3",
-      "emojione/emojione": "3.1",
-      "twakeapp/prometheus-bundle": "dev-master",
-      "spatie/pdf-to-text": "*",
-      "sentry/sentry-symfony": "^3.0",
-      "symfony/proxy-manager-bridge": "^4.4"
-    },
-    "require-dev": {
-        "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^4.0"
-    },
-    "scripts": {
-        "symfony-scripts": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
-        ],
-        "post-install-cmd": [
-            "@symfony-scripts"
-        ],
-        "post-update-cmd": [
-            "@symfony-scripts"
-        ]
-    },
-    "extra": {
-        "symfony-app-dir": "app",
-        "symfony-bin-dir": "bin",
-        "symfony-var-dir": "var",
-        "symfony-web-dir": "web",
-        "symfony-tests-dir": "tests",
-        "symfony-assets-install": "relative",
-        "branch-alias": null
-    },
-    "repositories": [
+    "name": "twake/twake-core",
+    "authors": [
         {
-            "type": "vcs",
-            "url": "https://github.com/TwakeApp/prometheus-bundle"
+            "name": "Romaric Mourgues",
+            "email": "romaric.mourgues@twakeapp.com"
         }
-    ]
+    ],
+    "require": {
+        "php": ">=7.1",
+        "silex/silex": "^2.0",
+        "doctrine/orm": "^2.5",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-cache-bundle": "^1.2",
+        "react/zmq": "^0.3.0",
+        "phpunit/phpunit": "5.7",
+        "aws/aws-sdk-php-symfony": "~2.0",
+        "php-opencloud/openstack": "^3.0",
+        "emojione/emojione": "3.1"
+    }
 }

@@ -1,0 +1,27 @@
+language: php
+
+sudo: false
+
+env:
+    global:
+        - SYMFONY_DEPRECATIONS_HELPER=weak
+        - SYMFONY_PHPUNIT_DIR=$HOME/.symfony-phpunit
+
+cache:
+    directories:
+      - $HOME/.composer/cache/files
+      - $HOME/.symfony-phpunit
+
+before_install:
+    - phpenv config-rm xdebug.ini
+    - composer update --no-suggest
+
+install:
+    - ./vendor/bin/simple-phpunit install
+
+script: ./vendor/bin/simple-phpunit
+
+matrix:
+    include:
+        - php: 7.1
+        - php: 7.2
