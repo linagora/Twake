@@ -67,6 +67,9 @@ return array(
     'Doctrine\\Bundle\\DoctrineCacheBundle\\' => array($vendorDir . '/doctrine/doctrine-cache-bundle'),
     'Doctrine\\Bundle\\DoctrineBundle\\' => array($vendorDir . '/doctrine/doctrine-bundle'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
+    'Common\\' => array($baseDir . '/app/Common'),
     'Aws\\Symfony\\' => array($vendorDir . '/aws/aws-sdk-php-symfony/src'),
     'Aws\\' => array($vendorDir . '/aws/aws-sdk-php/src'),
+    'App\\' => array($baseDir . '/app'),
+    '' => array($baseDir . '/src'),
 );

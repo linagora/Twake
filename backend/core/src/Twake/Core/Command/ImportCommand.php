@@ -504,7 +504,7 @@ class ImportCommand extends ContainerAwareCommand
                                 $channel_bdd->setDirect(false);
                                 $channel_bdd->setDescription($contents["description"]);
                                 $channel_bdd->setOriginalWorkspaceId($workspace_id);
-                                $channel_bdd->setOriginalGroup($group);
+                                $channel_bdd->setOriginalGroupId($group->getId());
                                 $member_list = Array();
                                 foreach ($contents["members"] as $channel_member) {
                                     if (array_key_exists($channel_member["id"], $this->match_table["user"])) {

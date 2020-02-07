@@ -22,5 +22,12 @@
         "doctrine/dbal": "~2.2",
         "knplabs/console-service-provider": "^2.2",
         "ramsey/uuid-doctrine": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/",
+            "Common\\": "app/Common",
+            "App\\": "app/"
+        }
     }
 }

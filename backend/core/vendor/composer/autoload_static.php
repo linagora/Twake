@@ -123,10 +123,15 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Doctrine\\Bundle\\DoctrineBundle\\' => 31,
                 'DeepCopy\\' => 9,
             ),
+        'C' =>
+            array(
+                'Common\\' => 7,
+            ),
         'A' =>
             array(
                 'Aws\\Symfony\\' => 12,
                 'Aws\\' => 4,
+                'App\\' => 4,
             ),
     );
 
@@ -380,6 +385,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
             ),
+        'Common\\' =>
+            array(
+                0 => __DIR__ . '/../..' . '/app/Common',
+            ),
         'Aws\\Symfony\\' =>
             array(
                 0 => __DIR__ . '/..' . '/aws/aws-sdk-php-symfony/src',
@@ -388,6 +397,14 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/aws/aws-sdk-php/src',
             ),
+        'App\\' =>
+            array(
+                0 => __DIR__ . '/../..' . '/app',
+            ),
+    );
+
+    public static $fallbackDirsPsr4 = array(
+        0 => __DIR__ . '/../..' . '/src',
     );
 
     public static $prefixesPsr0 = array(
@@ -893,6 +910,7 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50::$fallbackDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50::$prefixesPsr0;
             $loader->classMap = ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50::$classMap;
 

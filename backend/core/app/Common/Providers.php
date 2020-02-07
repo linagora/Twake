@@ -41,6 +41,11 @@ class Providers
             return $this->service_instances[$key];
         }
 
+        if (!isset($this->services[$key])) {
+            error_log($key . " service was not found");
+            return null;
+        }
+
         $service_register_name = $this->services[$key]["register"];
         if (!$this->silex_registered_services[$service_register_name]) {
 

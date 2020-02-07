@@ -229,7 +229,7 @@ class MappingCommand extends ContainerAwareCommand
         error_log($url . $mapping_suffix);
 
         try {
-            $this->getContainer()->get("twake.restclient")->put("http://" . $url, "");
+            $this->getContainer()->get("app.restclient")->put("http://" . $url, "");
         } catch (\Exception $e) {
 
         }

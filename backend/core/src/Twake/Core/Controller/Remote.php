@@ -25,7 +25,7 @@ class Remote extends BaseController
                 "remoteLicenceKey" => $remoteLicenceKey,
                 "remoteIp" => $remoteIp
             );
-            $result = $this->get("twake.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+            $result = $this->get("app.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {
@@ -61,7 +61,7 @@ class Remote extends BaseController
                 "remoteLicenceKey" => $remoteLicenceKey,
                 "remoteIp" => $remoteIp
             );
-            $result = $this->get("twake.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+            $result = $this->get("app.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {
@@ -97,7 +97,7 @@ class Remote extends BaseController
                 "remoteLicenceKey" => $remoteLicenceKey,
                 "remoteIp" => $remoteIp
             );
-            $result = $this->get("twake.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+            $result = $this->get("app.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {

@@ -34,7 +34,7 @@ class ManagerAdapter
         $this->dev_mode = $app->getContainer()->getParameter("db.dev"); // If false no entity generation
         $this->manager = null;
 
-        $this->circle = $app->getServices()->get("twake.restclient");
+        $this->circle = $app->getServices()->get("app.restclient");
         $this->es_server = $app->getContainer()->getParameter("ELASTIC_SERVER");
         $this->es_updates = Array();
         $this->es_removes = Array();
@@ -58,17 +58,29 @@ class ManagerAdapter
             return $this->manager;
         }
 
-        $this->autoload();
-
         if ($this->database_configuration["driver"] == "pdo_mysql") {
             $driver_type = "Mysql";
         } else {
             $driver_type = "Cassandra";
         }
 
-        $paths = array(__DIR__ . "/../../../");
+        $paths = array($this->app->getAppRootDir());
         $isDevMode = $this->dev_mode;
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
+
+        $config->setProxyDir($this->app->getAppRootDir() . '/cache/Doctrine/Proxies');
+
+        if ($isDevMode) {
+            $cache = new \Doctrine\Common\Cache\ArrayCache;
+            $config->setAutoGenerateProxyClasses(true);
+        } else {
+            $cache = new \Doctrine\Common\Cache\ApcuCache;
+            $config->setAutoGenerateProxyClasses(false);
+        }
+
+        $config->setMetadataCacheImpl($cache);
+        $config->setQueryCacheImpl($cache);
+
         $conn = DriverManager::getConnection(Array(
             'driver' => $this->database_configuration["driver"],
             'host' => $this->database_configuration["host"],
@@ -100,60 +112,6 @@ class ManagerAdapter
         $this->manager = $entityManager;
 
         return $this->manager;
-    }
-
-    private function autoload($dir = null)
-    {
-        if ($dir == null) {
-            $dir = __DIR__;
-        }
-        foreach (glob($dir . "/*") as $filename) {
-            if (substr($filename, -4) == ".php") {
-                require_once($filename);
-            } else if (is_dir($filename) && $filename[0] != ".") {
-                $this->autoload($filename);
-            }
-        }
-    }
-
-    private function loadEntity($name)
-    {
-        $name = explode(":", $name);
-        $entity_bundle_name_space = $name[0];
-        $entity_name = $name[1];
-        $real_name_space = $entity_bundle_name_space . "\\Entity";
-        require_once $this->app->getAppRootDir() . "/src/" . str_replace("\\", "/", $real_name_space) . "/" . $entity_name . ".php";
-        $this->getEntityManager()->getConfiguration()->addEntityNamespace($entity_bundle_name_space, $real_name_space);
-    }
-
-    private function autoloadEntities($dir = null)
-    {
-        if ($dir == null) {
-            $dir = $this->app->getAppRootDir() . "/src";
-        }
-        //Define all entities namespaces
-        foreach (glob($dir . "/*") as $bundle) {
-            if (is_dir($bundle) && $bundle[0] != ".") {
-                if (file_exists($bundle . "/Entity")) {
-
-                    foreach (glob($bundle . "/Entity/*.php") as $entity) {
-
-                        require_once $entity;
-
-                        $namespace = explode($this->app->getAppRootDir() . "/src/", $entity);
-                        $namespace = explode("/Entity/", $namespace[1])[0];
-                        $namespace = str_replace("/", "\\", $namespace) . "\Entity";
-
-                        $reduced_name = explode("\\", $namespace);
-                        $reduced_name = $reduced_name[0] . $reduced_name[1];
-                        $this->getEntityManager()->getConfiguration()->addEntityNamespace($reduced_name, $namespace);
-                    }
-
-                } else {
-                    $this->autoloadEntities($bundle);
-                }
-            }
-        }
     }
 
     /** !Caution! : thin ttl will be used on the first insert in the next flush ! */
@@ -477,10 +435,18 @@ class ManagerAdapter
 
     }
 
+    private function registerEntity($name)
+    {
+        $name = explode(":", $name);
+        $entity_bundle_name_space = $name[0];
+        $real_name_space = $entity_bundle_name_space . "\\Entity";
+        $this->getEntityManager()->getConfiguration()->addEntityNamespace($entity_bundle_name_space, $real_name_space);
+    }
+
     public function getRepository($name)
     {
 
-        $this->loadEntity($name);
+        $this->registerEntity($name);
 
         try {
             $metadata = $this->getEntityManager()->getClassMetadata($name);

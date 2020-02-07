@@ -26,13 +26,13 @@ class TwakeMailer
     public function __construct(App $app)
     {
         $this->mailer = $app->getProviders()->get("mailer");
-        $this->templating = $app->getProviders()->get("templating");
+        $this->templating = $app->getProviders()->get("twig");
         $this->mailfrom = $app->getContainer()->getParameter("MAIL_FROM");
         $this->twakeurl = $app->getContainer()->getParameter("SERVER_NAME");
         $this->twakeaddress = $app->getContainer()->getParameter("TWAKE_ADDRESS");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
-        $this->circle = $app->getServices()->get("twake.restclient");
+        $this->circle = $app->getServices()->get("app.restclient");
     }
 
     public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Twake\Core:Mail")
