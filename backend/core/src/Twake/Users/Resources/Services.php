@@ -12,7 +12,8 @@ class Services extends BaseServices
         "app.core_remember_me_manager" => "RememberMe",
         "app.users" => "Users",
         "app.user" => "User",
-        "app.user_updates" => "Updates"
+        "app.user_updates" => "Updates",
+        "app.user_provider" => "UserProvider"
     ];
 
 }

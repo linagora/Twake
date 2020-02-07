@@ -33,6 +33,7 @@ class Providers
                 "security.encoder_factory"
             ],
             "register" => "Silex\Provider\SecurityServiceProvider",
+            "parameters" => "security",
         ],
     ];
 

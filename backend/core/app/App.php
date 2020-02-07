@@ -25,6 +25,7 @@ use Common\Providers;
 use Configuration\Bundles;
 use Configuration\Configuration;
 use Configuration\Parameters;
+use Twake\Core\Services\DoctrineAdapter\CassandraSessionHandler;
 
 class App
 {
@@ -47,6 +48,7 @@ class App
 
     public function __construct($silex_app)
     {
+
         $bundles = (new Bundles())->getBundles();
         $bundles_instances = [];
 
@@ -58,8 +60,8 @@ class App
         $this->providers_service = new Providers($this, new \Configuration\Providers());
 
         // Import configuration
-        $this->container_service->import(new Configuration(), "configuration");
-        $this->container_service->import(new Parameters(), "parameters");
+        $this->container_service->import(new Configuration($this), "configuration");
+        $this->container_service->import(new Parameters($this), "parameters");
 
         // Require and instanciate all defined bundles
         foreach ($bundles as $bundle) {

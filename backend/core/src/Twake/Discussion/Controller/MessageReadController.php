@@ -18,9 +18,7 @@ class MessageReadController extends BaseController
             'data' => Array()
         );
 
-        $securityContext = $this->get('security.authorization_checker');
-
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if (!$this->getUser()) {
             $data['errors'][] = "notconnected";
         } else {
             if ($request->request->get("stream_id") != null) {
@@ -42,9 +40,7 @@ class MessageReadController extends BaseController
             'data' => Array()
         );
 
-        $securityContext = $this->get('security.authorization_checker');
-
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if (!$this->getUser()) {
             $data['errors'][] = "notconnected";
         } else {
             $user = $this->getUser();

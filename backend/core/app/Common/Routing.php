@@ -18,19 +18,34 @@ class Routing
     {
         $this->app = $app;
         $this->silex_app = $silex_app;
+
+        $silex_app->before(function (Request $request) {
+            if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+                $data = json_decode($request->getContent(), true);
+                $request->request->replace(is_array($data) ? $data : array());
+            }
+        });
     }
 
     public function get($route, $callback)
     {
         $this->silex_app->get($route, function () use ($callback) {
-            return $this->beforeRender($callback());
+            try {
+                return $this->beforeRender($callback());
+            } catch (\Exception $e) {
+                error_log($e);
+            }
         });
     }
 
     public function post($route, $callback)
     {
         $this->silex_app->post($route, function (Request $request) use ($callback) {
-            return $this->beforeRender($callback($request));
+            try {
+                return $this->beforeRender($callback($request));
+            } catch (\Exception $e) {
+                error_log($e);
+            }
         });
     }
 

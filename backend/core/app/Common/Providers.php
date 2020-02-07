@@ -75,7 +75,11 @@ class Providers
 
         }
 
-        $this->service_instances[$key] = $this->app->getSilexApp()[$key];
+        try {
+            $this->service_instances[$key] = $this->app->getSilexApp()[$key];
+        } catch (\Exception $e) {
+            error_log($e);
+        }
 
         return $this->service_instances[$key];
 

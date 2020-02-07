@@ -3,8 +3,6 @@
 namespace Twake\Users\Services;
 
 use App\App;
-use FOS\User\Security\EmailUserProvider;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Http\RememberMe\TokenBasedRememberMeServices;
 
 class RememberMe

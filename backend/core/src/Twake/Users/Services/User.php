@@ -6,6 +6,8 @@ use App\App;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\Pbkdf2PasswordEncoder;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Twake\Core\Services\Translate;
 use Twake\Users\Entity\Device;
@@ -22,8 +24,6 @@ class User
     var $translate;
     private $em;
     private $pusher;
-    private $encoder_factory;
-    private $authorization_checker;
     private $core_remember_me_manager;
     private $event_dispatcher;
     private $request_stack;
@@ -35,9 +35,9 @@ class User
     private $workspace_service;
     private $pricing_plan;
     private $restClient;
-    private $circle;
     private $standalone;
     private $licenceKey;
+    private $encoder;
 
 
     public function __construct(App $app)
@@ -55,25 +55,6 @@ class User
         $this->translate = $app->getServices()->get("app.translate");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
-
-        $this->encoder_factory = $app->getProviders()->get("security.encoder_factory");
-        $this->authorization_checker = $app->getProviders()->get("security.authorization_checker");
-        $this->token_storage = $app->getProviders()->get("security.token_storage");
-
-        //"@event_dispatcher", "@request_stack"
-        $this->event_dispatcher = $app->getServices()->get("app.twake_doctrine");
-        $this->request_stack = $app->getServices()->get("app.twake_doctrine");
-    }
-
-    public function current()
-    {
-        $securityContext = $this->authorization_checker;
-
-        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            return true;
-        }
-
-        return false;
     }
 
     public function alive($userId)
@@ -141,9 +122,8 @@ class User
             return false;
         }
 
-        $passwordValid = $this->encoder_factory
-            ->getEncoder($user)
-            ->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $encoder = $this->encoder;
+        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
@@ -253,14 +233,13 @@ class User
         $verificationRepository = $this->em->getRepository("Twake\Users:VerificationNumberMail");
         $userRepository = $this->em->getRepository("Twake\Users:User");
         $ticket = $verificationRepository->findOneBy(Array("token" => $token));
-        $factory = $this->encoder_factory;
+        $encoder = $this->encoder;
 
         if ($ticket != null) {
             if ($ticket->verifyCode($code)) {
                 $user = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
                 if ($user != null) {
 
-                    $encoder = $factory->getEncoder($user);
                     $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
                     $user->setMailVerified(true);
 
@@ -462,8 +441,7 @@ class User
         //Create the temporary user
         $user = new \Twake\Users\Entity\User();
         $user->setSalt(bin2hex(random_bytes(40)));
-        $factory = $this->encoder_factory;
-        $encoder = $factory->getEncoder($user);
+        $encoder = $this->encoder;
         $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
         if (!$complete_existing_user) {
             $user->setUsername($pseudo);
@@ -601,8 +579,7 @@ class User
             } else if (!$user->getMailVerified() && $user->getMailVerificationOverride() == $override_key) {
 
                 $user->setSalt(bin2hex(random_bytes(40)));
-                $factory = $this->encoder_factory;
-                $encoder = $factory->getEncoder($user);
+                $encoder = $this->encoder;
                 $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
                 $user->setUsername($pseudo);
 
@@ -634,8 +611,7 @@ class User
 
         $user = new \Twake\Users\Entity\User();
         $user->setSalt(bin2hex(random_bytes(40)));
-        $factory = $this->encoder_factory;
-        $encoder = $factory->getEncoder($user);
+        $encoder = $this->encoder;
         $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
         $user->setUsername($pseudo);
         $user->setEmail($mail);
@@ -667,9 +643,8 @@ class User
             return false;
         }
 
-        $passwordValid = $this->encoder_factory
-            ->getEncoder($user)
-            ->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $encoder = $this->encoder;
+        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         $res = false;
         if ($passwordValid) {
@@ -845,16 +820,13 @@ class User
 
         $userRepository = $this->em->getRepository("Twake\Users:User");
         $user = $userRepository->find($userId);
-        $factory = $this->encoder_factory;
+        $encoder = $this->encoder;
         if ($user != null) {
 
-            $passwordValid = $factory
-                ->getEncoder($user)
-                ->isPasswordValid($user->getPassword(), $oldPassword, $user->getSalt());
+            $passwordValid = $encoder->isPasswordValid($user->getPassword(), $oldPassword, $user->getSalt());
 
             if ($passwordValid) {
 
-                $encoder = $factory->getEncoder($user);
                 $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 
                 $this->em->persist($user);

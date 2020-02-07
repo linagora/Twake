@@ -16,6 +16,7 @@ class Parameters extends \Common\Configuration
             "LICENCE_KEY" => "",
             "STANDALONE" => true,
             "ELASTIC_SERVER" => "elasticsearch_twake:9200",
+            "secret" => "somesecret",
             "db" => [
                 "driver" => "pdo_cassandra",
                 "host" => "scylladb",

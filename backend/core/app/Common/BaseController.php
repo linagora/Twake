@@ -30,8 +30,15 @@ abstract class BaseController
 
     protected function getUser()
     {
-        //TODO retrieve current user
-        return null;
+        $token_storage = $this->app->getProviders()->get("security.token_storage");
+
+        $user = null;
+        $token = $token_storage->getToken();
+        if (null !== $token) {
+            $user = $token->getUser();
+        }
+
+        return $user;
     }
 
 }

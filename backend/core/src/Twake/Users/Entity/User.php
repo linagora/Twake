@@ -165,6 +165,12 @@ class User extends SearchableObject
     protected $emailcanonical;
 
     /**
+     * @ORM\Column(name="remember_me_secret", type="twake_text")
+     */
+    protected $remember_me_secret;
+
+
+    /**
      * @ORM\Column(type="twake_boolean")
      */
     protected $enabled;
@@ -1132,5 +1138,22 @@ class User extends SearchableObject
     {
         $this->timezone = $timezone;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRememberMeSecret()
+    {
+        return $this->remember_me_secret;
+    }
+
+    /**
+     * @param mixed $remember_me_secret
+     */
+    public function setRememberMeSecret($remember_me_secret)
+    {
+        $this->remember_me_secret = $remember_me_secret;
+    }
+
 
 }
