@@ -1,0 +1,14 @@
+administration_api_users_get_all:
+  path: /getUsers
+  defaults: { _controller: AdministrationApiUsers:Users:getAllUsers }
+  methods: [POST]
+
+administration_api_users_get_one:
+  path: /getOne
+  defaults: { _controller: AdministrationApiUsers:Users:getOneUser }
+  methods: [POST]
+
+administration_api_users_find_one:
+  path: /findUser
+  defaults: { _controller: AdministrationApiUsers:Users:findUser }
+  methods: [POST]

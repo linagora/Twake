@@ -1,0 +1,69 @@
+#Tasks
+board_task_get:
+    path:     /task/get
+    defaults: { _controller: Twake\Tasks:Task:get}
+    methods: [POST]
+
+board_task_save:
+    path:     /task/save
+    defaults: { _controller: Twake\Tasks:Task:save}
+    methods: [POST]
+
+board_task_remove:
+    path:     /task/remove
+    defaults: { _controller: Twake\Tasks:Task:remove}
+    methods: [POST]
+
+#Lists
+board_list_get:
+    path:     /list/get
+    defaults: { _controller: Twake\Tasks:BoardList:get}
+    methods: [POST]
+
+board_list_save:
+    path:     /list/save
+    defaults: { _controller: Twake\Tasks:BoardList:save}
+    methods: [POST]
+
+board_list_remove:
+    path:     /list/remove
+    defaults: { _controller: Twake\Tasks:BoardList:remove}
+    methods: [POST]
+
+board_list_remove_all_tasks:
+    path:     /list/tasks/remove
+    defaults: { _controller: Twake\Tasks:BoardList:removeAll}
+    methods: [POST]
+
+board_list_archive_all_tasks:
+    path:     /list/tasks/archive
+    defaults: { _controller: Twake\Tasks:BoardList:archiveAll}
+    methods: [POST]
+
+
+#Boards
+board_board_get:
+    path:     /board/get
+    defaults: { _controller: Twake\Tasks:Board:get}
+    methods: [POST]
+
+board_board_save:
+    path:     /board/save
+    defaults: { _controller: Twake\Tasks:Board:save}
+    methods: [POST]
+
+board_board_remove:
+    path:     /board/remove
+    defaults: { _controller: Twake\Tasks:Board:remove}
+    methods: [POST]
+
+#Export
+board_export:
+    path:     /export
+    defaults: { _controller: Twake\Tasks:Export:export}
+    methods: [POST,GET]
+
+board_token_export:
+    path:     /token_export
+    defaults: { _controller: Twake\Tasks:Export:generateToken}
+    methods: [POST]

@@ -1,0 +1,23 @@
+administration_api_groups_get_all:
+  path: /getGroups
+  defaults: { _controller: AdministrationApiWorkspaces:Groups:getAllGroups }
+  methods: [POST]
+
+administration_api_groups_get_one:
+  path: /getOneGroup
+  defaults: { _controller: AdministrationApiWorkspaces:Groups:getOneGroup }
+  methods: [POST]
+
+administration_api_workspaces_get_all:
+  path: /getAllWorkspaces
+  defaults: { _controller: AdministrationApiWorkspaces:Workspaces:getAllWorkspaces }
+  methods: [POST]
+
+administration_api_workspaces_get_one:
+  path: /getWorkspace
+  defaults: { _controller: AdministrationApiWorkspaces:Workspaces:getOneWorkspace }
+  methods: [POST]
+
+administration_api_groups_find:
+  path: /searchGroups
+  defaults: { _controller: AdministrationApiWorkspaces:Groups:findGroups }

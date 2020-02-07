@@ -1,0 +1,55 @@
+services:
+
+    app.twake_mailer:
+        lazy: true
+        class: Twake\Core\Services\TwakeMailer
+        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%", "%STANDALONE%", "%LICENCE_KEY%", "@app.restclient"]
+
+    app.restclient:
+        lazy: true
+        class: Twake\Core\Services\TwakeRestClient
+        arguments: []
+
+    app.pusher:
+        lazy: true
+        class: Twake\Core\Services\ZMQPusher
+        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.twake_doctrine"]
+
+    app.translate:
+        lazy: true
+        class: Twake\Core\Services\Translate
+        arguments: []
+
+    app.twake_doctrine:
+        class: Twake\Core\Services\DoctrineAdapter\ManagerAdapter
+        arguments: ["@doctrine.orm.entity_manager", "%ELASTIC_SERVER%", "@app.restclient", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
+
+    app.websockets:
+        lazy: true
+        class: Twake\Core\Services\Websockets
+        arguments: ["@app.twake_doctrine", "@app.pusher"]
+
+    app.accessmanager:
+        lazy: true
+        class: Twake\Core\Services\AccessManager
+        arguments: ["@app.twake_doctrine", "@app.workspace_members"]
+
+    app.exportversion:
+        lazy: true
+        class: Twake\Core\Services\ExportManager
+        arguments: ["@app.twake_doctrine"]
+
+    #MONITORING
+
+    app.monitoring_collector_registry:
+        lazy: true
+        class: Twake\Core\Services\Monitoring\CollectorRegistry
+        arguments: ["twake-core", '@TweedeGolf\PrometheusClient\CollectorRegistry']
+
+    app.monitoring_event_listener:
+        lazy: true
+        arguments: ["@app.monitoring_collector_registry"]
+        class: Twake\Core\Services\Monitoring\MonitoringCollectionSubscriber
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
+            - { name: kernel.event_listener, event: kernel.terminate }

@@ -1,0 +1,3 @@
+#citi_go_user_registration_check_inputs_override:
+#    path:     /add
+#    defaults: { _controller: Twake\Upload:DefaultController:add }

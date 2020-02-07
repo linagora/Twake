@@ -1,0 +1,5 @@
+services:
+
+  administration.apps:
+    class: AdministrationApi\Apps\Services\AdministrationApps
+    arguments: [ "@app.twake_doctrine" ]

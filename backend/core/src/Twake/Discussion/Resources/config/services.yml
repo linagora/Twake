@@ -1,0 +1,5 @@
+services:
+    app.messages:
+        lazy: true
+        class: Twake\Discussion\Services\MessageSystem
+        arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets", "@app.channels.notifications", "@app.accessmanager"]

@@ -1,0 +1,9 @@
+services:
+
+  administration.groups:
+    class: AdministrationApi\Workspaces\Services\AdministrationGroups
+    arguments: [ "@app.twake_doctrine" ]
+
+  administration.workspaces:
+    class: AdministrationApi\Workspaces\Services\AdministrationWorkspaces
+    arguments: [ "@app.twake_doctrine" ]

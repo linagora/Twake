@@ -1,0 +1,26 @@
+{% extends "Twake\Core:Mail:en/all.html.twig" %}
+
+{% block title %}📋 Twake, {{ text }}{% endblock %}
+
+{% block secondtitle %}Twake, {{ text }}{% endblock %}
+
+{% block body %}
+
+    <b>Hello from Twake 👋,</b><br/>
+    <b>you have a task remind !</b>
+    <br>
+    <br>
+    <div style="border: 1px solid #000;padding: 16px;">
+
+        {% if task.title %}
+            <b>{{ task.title }}</b><br/><br/>
+        {% else %}
+            <b>Untitled</b><br/><br/>
+        {% endif %}
+
+
+        <b>When: </b> in {{ delay }}<br/><br/>
+
+    </div>
+
+{% endblock %}

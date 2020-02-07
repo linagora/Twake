@@ -17,6 +17,7 @@ class Services extends BaseServices
         "app.websockets" => "Websockets",
         "app.accessmanager" => "AccessManager",
         "app.exportversion" => "ExportManager",
+        "app.string_cleaner" => "StringCleaner"
     ];
 
 }

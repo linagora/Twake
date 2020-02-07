@@ -1,0 +1,5 @@
+#Message routing
+developers_api_v1_users_get:
+    path:     /get
+    defaults: { _controller: DevelopersApiV1Users:Users:get }
+    methods: [POST]

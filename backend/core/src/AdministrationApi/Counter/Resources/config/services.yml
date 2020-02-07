@@ -1,0 +1,5 @@
+services:
+
+  administration.counter:
+    class: AdministrationApi\Counter\Services\CounterService
+    arguments: [ "@app.twake_doctrine" ]

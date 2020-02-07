@@ -4915,6 +4915,66 @@
     "homepage": "https://symfony.com"
   },
   {
+    "name": "symfony/inflector",
+    "version": "v4.4.4",
+    "version_normalized": "4.4.4.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/symfony/inflector.git",
+      "reference": "f419ab2853cc00471ffd7fc18e544b5f5a90adb1"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/symfony/inflector/zipball/f419ab2853cc00471ffd7fc18e544b5f5a90adb1",
+      "reference": "f419ab2853cc00471ffd7fc18e544b5f5a90adb1",
+      "shasum": ""
+    },
+    "require": {
+      "php": "^7.1.3",
+      "symfony/polyfill-ctype": "~1.8"
+    },
+    "time": "2020-01-04T13:00:46+00:00",
+    "type": "library",
+    "extra": {
+      "branch-alias": {
+        "dev-master": "4.4-dev"
+      }
+    },
+    "installation-source": "dist",
+    "autoload": {
+      "psr-4": {
+        "Symfony\\Component\\Inflector\\": ""
+      },
+      "exclude-from-classmap": [
+        "/Tests/"
+      ]
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ],
+    "authors": [
+      {
+        "name": "Bernhard Schussek",
+        "email": "bschussek@gmail.com"
+      },
+      {
+        "name": "Symfony Community",
+        "homepage": "https://symfony.com/contributors"
+      }
+    ],
+    "description": "Symfony Inflector Component",
+    "homepage": "https://symfony.com",
+    "keywords": [
+      "inflection",
+      "pluralize",
+      "singularize",
+      "string",
+      "symfony",
+      "words"
+    ]
+  },
+  {
     "name": "symfony/mime",
     "version": "v4.4.4",
     "version_normalized": "4.4.4.0",
@@ -5342,6 +5402,75 @@
     ]
   },
   {
+    "name": "symfony/property-access",
+    "version": "v4.4.4",
+    "version_normalized": "4.4.4.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/symfony/property-access.git",
+      "reference": "090b4bc92ded1ec512f7e2ed1691210769dffdb3"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/symfony/property-access/zipball/090b4bc92ded1ec512f7e2ed1691210769dffdb3",
+      "reference": "090b4bc92ded1ec512f7e2ed1691210769dffdb3",
+      "shasum": ""
+    },
+    "require": {
+      "php": "^7.1.3",
+      "symfony/inflector": "^3.4|^4.0|^5.0"
+    },
+    "require-dev": {
+      "symfony/cache": "^3.4|^4.0|^5.0"
+    },
+    "suggest": {
+      "psr/cache-implementation": "To cache access methods."
+    },
+    "time": "2020-01-04T13:00:46+00:00",
+    "type": "library",
+    "extra": {
+      "branch-alias": {
+        "dev-master": "4.4-dev"
+      }
+    },
+    "installation-source": "dist",
+    "autoload": {
+      "psr-4": {
+        "Symfony\\Component\\PropertyAccess\\": ""
+      },
+      "exclude-from-classmap": [
+        "/Tests/"
+      ]
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ],
+    "authors": [
+      {
+        "name": "Fabien Potencier",
+        "email": "fabien@symfony.com"
+      },
+      {
+        "name": "Symfony Community",
+        "homepage": "https://symfony.com/contributors"
+      }
+    ],
+    "description": "Symfony PropertyAccess Component",
+    "homepage": "https://symfony.com",
+    "keywords": [
+      "access",
+      "array",
+      "extraction",
+      "index",
+      "injection",
+      "object",
+      "property",
+      "property path",
+      "reflection"
+    ]
+  },
+  {
     "name": "symfony/routing",
     "version": "v4.4.4",
     "version_normalized": "4.4.4.0",
@@ -5418,6 +5547,94 @@
       "uri",
       "url"
     ]
+  },
+  {
+    "name": "symfony/security",
+    "version": "v4.4.4",
+    "version_normalized": "4.4.4.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/symfony/security.git",
+      "reference": "9b4060f040be91d55db67831bf83981097c609b1"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/symfony/security/zipball/9b4060f040be91d55db67831bf83981097c609b1",
+      "reference": "9b4060f040be91d55db67831bf83981097c609b1",
+      "shasum": ""
+    },
+    "require": {
+      "php": "^7.1.3",
+      "symfony/event-dispatcher-contracts": "^1.1|^2",
+      "symfony/http-foundation": "^3.4|^4.0|^5.0",
+      "symfony/http-kernel": "^4.4",
+      "symfony/property-access": "^3.4|^4.0|^5.0",
+      "symfony/service-contracts": "^1.1|^2"
+    },
+    "conflict": {
+      "symfony/event-dispatcher": ">=5",
+      "symfony/ldap": "<4.4"
+    },
+    "replace": {
+      "symfony/security-core": "self.version",
+      "symfony/security-csrf": "self.version",
+      "symfony/security-guard": "self.version",
+      "symfony/security-http": "self.version"
+    },
+    "require-dev": {
+      "psr/container": "^1.0",
+      "psr/log": "~1.0",
+      "symfony/expression-language": "^3.4|^4.0|^5.0",
+      "symfony/finder": "^3.4|^4.0|^5.0",
+      "symfony/ldap": "^4.4|^5.0",
+      "symfony/polyfill-ctype": "~1.8",
+      "symfony/polyfill-intl-icu": "~1.0",
+      "symfony/routing": "^3.4|^4.0|^5.0",
+      "symfony/validator": "^3.4.31|^4.3.4|^5.0"
+    },
+    "suggest": {
+      "psr/container-implementation": "To instantiate the Security class",
+      "symfony/expression-language": "For using the expression voter",
+      "symfony/form": "",
+      "symfony/ldap": "For using the LDAP user and authentication providers",
+      "symfony/routing": "For using the HttpUtils class to create sub-requests, redirect the user, and match URLs",
+      "symfony/validator": "For using the user password constraint"
+    },
+    "time": "2020-01-31T09:11:17+00:00",
+    "type": "library",
+    "extra": {
+      "branch-alias": {
+        "dev-master": "4.4-dev"
+      }
+    },
+    "installation-source": "dist",
+    "autoload": {
+      "psr-4": {
+        "Symfony\\Component\\Security\\": ""
+      },
+      "exclude-from-classmap": [
+        "/Core/Tests/",
+        "/Csrf/Tests/",
+        "/Guard/Tests/",
+        "/Http/Tests/"
+      ]
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ],
+    "authors": [
+      {
+        "name": "Fabien Potencier",
+        "email": "fabien@symfony.com"
+      },
+      {
+        "name": "Symfony Community",
+        "homepage": "https://symfony.com/contributors"
+      }
+    ],
+    "description": "Symfony Security Component",
+    "homepage": "https://symfony.com"
   },
   {
     "name": "symfony/service-contracts",

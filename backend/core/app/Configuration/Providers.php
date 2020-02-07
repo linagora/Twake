@@ -19,14 +19,20 @@ class Providers
                 "twig"
             ],
             "register" => "Silex\Provider\TwigServiceProvider",
-            "parameters" => "twig_parameters",
         ],
         "doctrine" => [
             "services" => [
                 "db"
             ],
             "register" => "Silex\Provider\DoctrineServiceProvider",
-            "parameters" => "db_parameters",
+        ],
+        "security" => [
+            "services" => [
+                "security.token_storage",
+                "security.authorization_checker",
+                "security.encoder_factory"
+            ],
+            "register" => "Silex\Provider\SecurityServiceProvider",
         ],
     ];
 

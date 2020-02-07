@@ -21,7 +21,8 @@
         "twig/twig": "^2.12",
         "doctrine/dbal": "~2.2",
         "knplabs/console-service-provider": "^2.2",
-        "ramsey/uuid-doctrine": "^1.5"
+        "ramsey/uuid-doctrine": "^1.5",
+        "symfony/security": "^4.4"
     },
     "autoload": {
         "psr-4": {

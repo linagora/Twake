@@ -1,0 +1,16 @@
+services:
+  api.v1.check:
+        class: DevelopersApiV1\Core\Services\CheckService
+        arguments: ["@app.twake_doctrine", "@api.v1.access_log"]
+
+  api.v1.api_status:
+        class: DevelopersApiV1\Core\Services\ApiStatus
+        arguments: ["@app.twake_doctrine"]
+
+  api.v1.access_log:
+        class: DevelopersApiV1\Core\Services\AccessLogSystem
+        arguments: ["@app.twake_doctrine"]
+
+  api.v1.check_user_data:
+    class: DevelopersApiV1\Core\Services\CheckUserInfo
+    arguments: ["@app.twake_doctrine"]

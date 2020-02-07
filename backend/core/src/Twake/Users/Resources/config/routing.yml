@@ -1,0 +1,81 @@
+
+twake_user_login_check:
+    "/login" => ["handler"=>"UsersConnections:login", "methods"=>["POST"]],
+
+twake_user_auto_login:
+    "/autoLogin" => ["handler"=>"UsersConnections:autoLogin", "methods"=>["POST"]],
+
+twake_user_logout:
+    "/logout" => ["handler"=>"UsersConnections:logout", "methods"=>["POST"]],
+
+twake_user_is_logged:
+    "/current/isLogged" => ["handler"=>"UsersConnections:isLogged", "methods"=>["POST"]],
+
+twake_user_get:
+    "/current/get" => ["handler"=>"UsersConnections:currentUser", "methods"=>["POST"]],
+
+twake_user_mobile_redirect:
+    "/mobile_redirect" => ["handler"=>"UsersConnections:mobileRedirect", "methods"=>["GET"]],
+
+twake_user_get_identicon:
+    "/current/identicon" => ["handler"=>"UsersConnections:identicon", "methods"=>["GET"]],
+    methods: [GET]
+
+twake_user_alive:
+    "/alive" => ["handler"=>"UsersConnections:alive", "methods"=>["POST"]],
+
+twake_set_is_new:
+    "/set/isNew" => ["handler"=>"UsersConnections:setIsNew", "methods"=>["POST"]],
+
+# Account
+
+twake_user_account_setbasic:
+    "/account/identity" => ["handler"=>"UsersAccount:setIdentity", "methods"=>["POST"]],
+
+twake_user_account_setpseudo:
+    "/account/username" => ["handler"=>"UsersAccount:setUsername", "methods"=>["POST"]],
+
+twake_user_account_setpassword:
+    "/account/password" => ["handler"=>"UsersAccount:setPassword", "methods"=>["POST"]],
+
+twake_user_account_setmainmail:
+    "/account/mainmail" => ["handler"=>"UsersAccount:setMainMail", "methods"=>["POST"]],
+
+twake_user_account_removemail:
+    "/account/removemail" => ["handler"=>"UsersAccount:removeMail", "methods"=>["POST"]],
+
+twake_user_account_addmail:
+    "/account/addmail" => ["handler"=>"UsersAccount:addMail", "methods"=>["POST"]],
+
+twake_user_account_getmails:
+    "/account/mails" => ["handler"=>"UsersAccount:getMails", "methods"=>["POST"]],
+
+twake_user_account_addmailverify:
+    "/account/addmailverify" => ["handler"=>"UsersAccount:addMailVerify", "methods"=>["POST"]],
+
+twake_user_account_setlanguage:
+    "/account/language" => ["handler"=>"UsersAccount:setLanguage", "methods"=>["POST"]],
+
+twake_user_account_getnotification:
+    "/account/get_notifications" => ["handler"=>"UsersAccount:getNotificationPreferences", "methods"=>["POST"]],
+
+twake_user_account_setnotification:
+    "/account/set_notifications" => ["handler"=>"UsersAccount:setNotificationPreferences", "methods"=>["POST"]],
+
+twake_user_account_set_workspaces_preference:
+    "/account/set_workspaces_preference" => ["handler"=>"UsersAccount:setWorkspacesPreferences", "methods"=>["POST"]],
+
+twake_user_account_update_notification:
+    "/account/update_notifications" => ["handler"=>"UsersAccount:updateNotificationPreferenceByWorkspace", "methods"=>["POST"]],
+
+twake_user_account_set_tutorial_status:
+    "/account/set_tutorial_status" => ["handler"=>"UsersAccount:setTutorialStatus", "methods"=>["POST"]],
+
+twake_user_account_update_status:
+    "/account/update_status" => ["handler"=>"UsersAccount:updateStatus", "methods"=>["POST"]],
+
+
+# Subscribe
+
+twake_user_subscribe_mail:
+    "/subscribe/mail" => ["handler"=>"UsersSubscribe:mail", "methods"=>["POST"]],

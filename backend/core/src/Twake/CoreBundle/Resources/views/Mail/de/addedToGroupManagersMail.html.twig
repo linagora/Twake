@@ -1,0 +1,14 @@
+{% extends "Twake\Core:Mail:de/all.html.twig" %}
+
+{% block title %}Sie wurden zu den Managern der Gruppe {{ group }} hinzugefügt{% endblock %}
+
+{% block secondtitle %}Sie wurden zu den Managern der Gruppe {{ group }} hinzugefügt{% endblock %}
+
+{% block body %}
+
+    <b>Guten Tag {{ username|capitalize }},</b>
+    <br>
+    Sie wurden zum Verwalter der Gruppe {{ group }} ernannt.
+    <br>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+#Direct messages
+channels_direct_messages_get:
+    path:     /direct_messages/get
+    defaults: { _controller: Twake\Channels:DirectMessages:get}
+channels_direct_messages_save:
+    path:     /direct_messages/save
+    defaults: { _controller: Twake\Channels:DirectMessages:save}
+channels_direct_messages_remove:
+    path:     /direct_messages/remove
+    defaults: { _controller: Twake\Channels:DirectMessages:remove}
+
+#Channels
+channels_get:
+    path:     /get
+    defaults: { _controller: Twake\Channels:Channels:get}
+channels_save:
+    path:     /save
+    defaults: { _controller: Twake\Channels:Channels:save}
+channels_remove:
+    path:     /remove
+    defaults: { _controller: Twake\Channels:Channels:remove}
+
+#Notifications
+channels_notifications_mute:
+    path:     /mute
+    defaults: { _controller: Twake\Channels:ChannelsNotifications:mute}
+channels_notifications_unread:
+    path:     /unread
+    defaults: { _controller: Twake\Channels:ChannelsNotifications:unread}
+channels_notifications_read:
+    path:     /read
+    defaults: { _controller: Twake\Channels:ChannelsNotifications:read}

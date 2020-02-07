@@ -1,0 +1,13 @@
+services:
+
+    app.applications:
+        class: Twake\Market\Services\MarketApplication
+        arguments: ["@app.twake_doctrine", "@app.group_managers","@app.pricing_plan"]
+
+    app.applications_api:
+        class: Twake\Market\Services\ApplicationApi
+        arguments: ["@app.twake_doctrine", "@app.restclient"]
+
+    website_api_market.data_token:
+        class: Twake\Market\Services\DataTokenSystem
+        arguments: ["@app.twake_doctrine"]

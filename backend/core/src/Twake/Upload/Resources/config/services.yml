@@ -1,0 +1,21 @@
+services:
+    app.images_modifiers:
+        class: Twake\Upload\Services\ImagesModifiers
+
+    app.upload:
+        class: Twake\Upload\Services\Upload
+        arguments: ["@app.images_modifiers"]
+
+    app.uploader:
+        class: Twake\Upload\Services\Uploader
+        arguments: ["@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]
+
+    #AWS
+    app.aws_uploader:
+        class: Twake\Upload\Services\AWS_Uploader
+        arguments: [%aws%, "@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]
+
+    #OpenStack
+    app.openstack_uploader:
+        class: Twake\Upload\Services\OpenStack_Uploader
+        arguments: [%openstack%, "@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]

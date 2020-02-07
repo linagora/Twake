@@ -1,0 +1,17 @@
+services:
+
+    app.tasks.task:
+        class: Twake\Tasks\Services\BoardTask
+        arguments: ["@app.twake_doctrine", "@app.websockets", "@app.applications_api", "@app.notifications", "@app.tasks.export"]
+
+    app.tasks.list:
+        class: Twake\Tasks\Services\BoardList
+        arguments: ["@app.twake_doctrine", "@app.websockets", "@app.applications_api", "@app.notifications", "@app.tasks.export"]
+
+    app.tasks.board:
+        class: Twake\Tasks\Services\BoardBoard
+        arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.tasks.list", "@app.tasks.task"]
+
+    app.tasks.export:
+        class: Twake\Tasks\Services\BoardExport
+        arguments: ["@app.twake_doctrine"]
