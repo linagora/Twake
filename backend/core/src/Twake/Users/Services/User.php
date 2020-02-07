@@ -3,6 +3,7 @@
 namespace Twake\Users\Services;
 
 use App\App;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -20,13 +21,14 @@ use Twake\Users\Entity\VerificationNumberMail;
 class User
 {
 
+    /** @var App */
+    private $app;
+
     /* @var Translate $translate */
     var $translate;
     private $em;
     private $pusher;
     private $core_remember_me_manager;
-    private $event_dispatcher;
-    private $request_stack;
     private $twake_mailer;
     private $string_cleaner;
     private $token_storage;
@@ -42,6 +44,7 @@ class User
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->pusher = $app->getServices()->get("app.pusher");
         $this->core_remember_me_manager = $app->getServices()->get("app.core_remember_me_manager");
@@ -55,6 +58,7 @@ class User
         $this->translate = $app->getServices()->get("app.translate");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
+        $this->encoder = new MessageDigestPasswordEncoder();
     }
 
     public function alive($userId)
@@ -71,7 +75,7 @@ class User
         }
     }
 
-    public function loginWithUsernameOnly($usernameOrMail)
+    public function loginWithUsernameOnly($usernameOrMail, Response $response)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
@@ -92,14 +96,7 @@ class User
         }
 
         // User log in
-        $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-        $this->token_storage->setToken($token);
-
-        $request = $this->request_stack->getCurrentRequest();
-        if ($request) {
-            $event = new InteractiveLoginEvent($request, $token);
-            $this->event_dispatcher->dispatch("security.interactive_login", $event);
-        }
+        $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, false, $response);
 
         return $user;
 
@@ -127,18 +124,7 @@ class User
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
-            // User log in
-            $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-            if ($rememberMe && $request && $response) {
-                $this->core_remember_me_manager->doRemember($request, $response, $token);
-            }
-            $this->token_storage->setToken($token);
-
-            $request = $this->request_stack->getCurrentRequest();
-            if ($request) {
-                $event = new InteractiveLoginEvent($request, $token);
-                $this->event_dispatcher->dispatch("security.interactive_login", $event);
-            }
+            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
 
             return $user;
 
@@ -148,7 +134,7 @@ class User
 
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         $response = new Response();
         $response->headers->clearCookie('REMEMBERME');
@@ -156,12 +142,7 @@ class User
 
         $this->token_storage->setToken(null);
 
-        $request = $this->request_stack->getCurrentRequest();
-        if ($request) {
-            $request->getSession()->invalidate();
-        }
-
-        (new Session())->invalidate();
+        $this->app->getServices()->get("app.session_handler")->destroySession($request);
 
         return true;
     }
@@ -242,13 +223,6 @@ class User
 
                     $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
                     $user->setMailVerified(true);
-
-                    $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-                    $this->token_storage->setToken($token);
-
-                    $request = $this->request_stack->getCurrentRequest();
-                    $event = new InteractiveLoginEvent($request, $token);
-                    $this->event_dispatcher->dispatch("security.interactive_login", $event);
 
                     $this->em->remove($ticket);
                     $this->em->persist($user);
@@ -547,14 +521,7 @@ class User
 
 
                 // User auto log in
-                $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-                $request = $this->request_stack->getCurrentRequest();
-                if ($request && $response) {
-                    $this->core_remember_me_manager->doRemember($request, $response, $token);
-                    $this->token_storage->setToken($token);
-                    $event = new InteractiveLoginEvent($request, $token);
-                    $this->event_dispatcher->dispatch("security.interactive_login", $event);
-                }
+                $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
 
             }
 

@@ -77,6 +77,9 @@ class Routing
             $content["_cookies"] = $cookies;
             $response->setContent(json_encode($content));
         }
+
+        $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
+
         return $response;
     }
 

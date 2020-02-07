@@ -18,7 +18,7 @@ class Services extends BaseServices
         "app.accessmanager" => "AccessManager",
         "app.exportversion" => "ExportManager",
         "app.string_cleaner" => "StringCleaner",
-        "app.session_handler" => "DoctrineAdapter/CassandraSessionHandler"
+        "app.session_handler" => "DoctrineAdapter/SessionHandler"
     ];
 
 }

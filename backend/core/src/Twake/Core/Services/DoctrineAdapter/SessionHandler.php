@@ -18,11 +18,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Twake\Core\Entity\Sessions;
 use Twake\Users\Entity\User;
 
-class CassandraSessionHandler
+class SessionHandler
 {
 
     private $app;
     private $doctrineAdapter;
+    private $cookiesToSet;
+    private $user = null;
 
     public function __construct(App $app)
     {
@@ -32,15 +34,26 @@ class CassandraSessionHandler
         $this->didInit = false;
         $this->lifetime = 3600;
         $this->rememberMeLifetime = 60 * 60 * 24 * 360;
+        $this->cookiesToSet = [];
 
     }
 
-    public function saveLoginToCookie(User $user, $remember_me, Response $response, $old_session_id = null)
+    public function getUser(Request $request)
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+        return $this->checkRequest($request);
+    }
+
+    public function saveLoginToCookie(User $user, $remember_me, Response $response = null, $old_session_id = null)
     {
 
         if ($old_session_id) {
             $this->destroy($old_session_id);
         }
+
+        $this->user = $user;
 
         $session_id = base64_encode(random_bytes(64));
         $user_id = $user->getId() . "";
@@ -50,7 +63,7 @@ class CassandraSessionHandler
         $data = ["userid" => $user_id, "expiration" => $expiration];
 
         $this->write($session_id, $data);
-        $response->headers->setCookie(new Cookie('SESSID', base64_encode(json_encode(["sessid" => $session_id, "userid" => $user_id])), $expiration, '/'));
+        $this->cookiesToSet[0] = new Cookie('SESSID', base64_encode(json_encode(["sessid" => $session_id, "userid" => $user_id])), $expiration, '/');
 
         if ($remember_me) {
 
@@ -81,13 +94,24 @@ class CassandraSessionHandler
             ];
 
             $remember_me_data = base64_encode(json_encode($remember_me_data));
-            $response->headers->setCookie(new Cookie('REMEMBERME', $remember_me_data, $remember_me_data_expiration, '/'));
+            $this->cookiesToSet[1] = new Cookie('REMEMBERME', $remember_me_data, $remember_me_data_expiration, '/');
 
+        }
+
+        if ($response) {
+            $this->setCookiesInResponse($response);
         }
 
     }
 
-    public function checkRequest(Request $request, Response $response)
+    public function setCookiesInResponse(Response $response)
+    {
+        foreach ($this->cookiesToSet as $cookie) {
+            $response->headers->setCookie($cookie);
+        }
+    }
+
+    public function checkRequest(Request $request, Response $response = null)
     {
         $cookie = $request->cookies->get('SESSID');
         $cookie = json_decode(base64_decode($cookie), 1);
@@ -107,7 +131,7 @@ class CassandraSessionHandler
             if ($expected_user_id === $user_id && $data["expiration"] > date("U")) {
                 //Everything is fine
 
-                $user = $this->doctrineAdapter->getRepository("Twake\Core:User")->find($user_id);
+                $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($user_id);
 
                 if ($data["expiration"] < date("U") + $this->lifetime / 2) {
                     //Renew session lifetime
@@ -123,7 +147,7 @@ class CassandraSessionHandler
         if ($remeber_me_cookie) {
             $user_id = $remeber_me_cookie["user_id"];
             $encrypted_data = $remeber_me_cookie["remember_me"];
-            $user = $this->doctrineAdapter->getRepository("Twake\Core:User")->find($user_id);
+            $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($user_id);
             if ($user) {
                 $secret = $user->getRememberMeSecret();
                 if ($secret) {
@@ -177,7 +201,7 @@ class CassandraSessionHandler
 
         $this->destroy($session_id);
 
-        $user = $this->doctrineAdapter->getRepository("Twake\Core:User")->find($user_id);
+        $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($user_id);
         if ($user->getRememberMeSecret()) {
             $user->setRememberMeSecret(false);
             $this->doctrineAdapter->persist($user);
@@ -205,7 +229,7 @@ class CassandraSessionHandler
             $session = new Sessions();
         }
         $session->setSessId($sessionId);
-        $session->setSessData($data);
+        $session->setSessData(json_encode($data));
         $session->setSessLifetime($this->lifetime);
         $session->setSessTime(date("U"));
         $this->doctrineAdapter->persist($session);
@@ -216,14 +240,17 @@ class CassandraSessionHandler
 
     public function read($sessionId)
     {
+        if (!$sessionId) {
+            return null;
+        }
         $repo = $this->doctrineAdapter->getRepository("Twake\Core:Sessions");
         $result = $repo->find($sessionId);
 
         if ($result) {
-            $data = $result->getSessData();
+            $data = json_decode($result->getSessData(), 1);
             return $data;
         }
-        return '';
+        return null;
     }
 
 }

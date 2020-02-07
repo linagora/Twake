@@ -30,13 +30,9 @@ abstract class BaseController
 
     protected function getUser()
     {
-        $token_storage = $this->app->getProviders()->get("security.token_storage");
 
-        $user = null;
-        $token = $token_storage->getToken();
-        if (null !== $token) {
-            $user = $token->getUser();
-        }
+        $request = $this->app->getSilexApp()["request_stack"]->getCurrentRequest();
+        $user = $this->app->getServices()->get("app.session_handler")->getUser($request);
 
         return $user;
     }

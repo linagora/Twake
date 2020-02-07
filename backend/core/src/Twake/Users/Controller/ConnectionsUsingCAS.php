@@ -85,11 +85,11 @@ class ConnectionsUsingCAS extends BaseController
             }
 
             //Search user with this username
-            $res = $this->get("app.user")->loginWithUsernameOnly($username);
+            $res = $this->get("app.user")->loginWithUsernameOnly($username, $response);
             if (!$res) {
                 //Create user with this username
                 $this->get("app.user")->subscribeInfo($mail, md5(bin2hex(random_bytes(32))), $username, $firstname, $lastname, "", null, $this->getParameter("cas_default_language"), "CAS", true);
-                $res = $this->get("app.user")->loginWithUsernameOnly($username);
+                $res = $this->get("app.user")->loginWithUsernameOnly($username, $response);
             }
 
             if ($res) {
@@ -102,10 +102,10 @@ class ConnectionsUsingCAS extends BaseController
     }
 
     // Redirect user to CAS logout page
-    public function logout()
+    public function logout(Request $request)
     {
 
-        $this->get("app.user")->logout();
+        $this->get("app.user")->logout($request);
 
         $cas_login_page_url = $this->getParameter("cas_base_url") . "/logout";
         return $this->redirect($cas_login_page_url);

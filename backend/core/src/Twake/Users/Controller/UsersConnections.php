@@ -50,8 +50,6 @@ class UsersConnections extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
-            $data["data"]["test"] = $this->getUser();
-
             $data["data"]["status"] = "connected";
 
         } else {
@@ -109,7 +107,7 @@ class UsersConnections extends BaseController
             $this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
             $this->get("administration.counter")->incrementCounter("total_devices_linked", -1);
         }
-        $this->get("app.user")->logout();
+        $this->get("app.user")->logout($request);
         return new JsonResponse(Array());
 
     }
@@ -227,58 +225,57 @@ class UsersConnections extends BaseController
 
         $data = Array(
             "errors" => Array(),
-            "data" => Array($this->getUser())
+            "data" => Array()
         );
 
-        if (false) {
 
-            $ok = $this->get("app.user")->current();
-            if (!$ok) {
-                $data["errors"][] = "disconnected";
-            } else {
-                $device = $request->request->get("device", false);
+        $ok = $this->getUser();
+        if (!$ok) {
+            $data["errors"][] = "disconnected";
+        } else {
+            $device = $request->request->get("device", false);
 
-                if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
-                    $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
-                    $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
-                }
-
-                $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));
-
-                $data["data"] = $this->getUser()->getAsArray();
-                $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
-                $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
-                $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
-
-                $data["data"]["status"] = "connected";
-
-
-                $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
-
-                $workspaces = Array();
-                foreach ($workspaces_obj as $workspace_obj) {
-                    $value = $workspace_obj["workspace"]->getAsArray();
-                    $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
-                    $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
-
-                    $workspaces[] = $value;
-                }
-
-                $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
-
-                $data["data"]["mails"] = Array();
-                foreach ($mails as $mail) {
-                    $data["data"]["mails"][] = Array(
-                        "id" => $mail->getId(),
-                        "main" => ($this->getUser()->getEmail() == $mail->getMail()),
-                        "email" => $mail->getMail()
-                    );
-                }
-
-                $data["data"]["workspaces"] = $workspaces;
-
+            if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
+                $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
+
+            $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));
+
+            $data["data"] = $this->getUser()->getAsArray();
+            $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
+            $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
+            $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
+
+            $data["data"]["status"] = "connected";
+
+
+            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
+
+            $workspaces = Array();
+            foreach ($workspaces_obj as $workspace_obj) {
+                $value = $workspace_obj["workspace"]->getAsArray();
+                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
+
+                $workspaces[] = $value;
+            }
+
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+
+            $data["data"]["mails"] = Array();
+            foreach ($mails as $mail) {
+                $data["data"]["mails"][] = Array(
+                    "id" => $mail->getId(),
+                    "main" => ($this->getUser()->getEmail() == $mail->getMail()),
+                    "email" => $mail->getMail()
+                );
+            }
+
+            $data["data"]["workspaces"] = $workspaces;
+
         }
+
 
         return new JsonResponse($data);
 
