@@ -237,7 +237,6 @@ class PDOStatementAdapter
             $message = "SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . preg_replace("/AS .* FROM/", "AS [...] FROM", $query);
             error_log($message);
             error_log($e);
-            \Sentry\captureException(new Exception($message, 0, $e));
         }
 
     }

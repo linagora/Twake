@@ -99,7 +99,7 @@ class Channel extends SearchableObject
     private $original_workspace_id = "";
 
     /**
-     * @ORM\Column(name="original_group_id", type="twake_no_salt_text")
+     * @ORM\Column(name="original_group_id", type="twake_timeuuid")
      */
     private $original_group_id;
 

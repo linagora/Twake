@@ -21,6 +21,10 @@ class Parameters extends \Common\Configuration
             "drive_previews_tmp_folder" => "/tmp/",
             "drive_tmp_folder" => "/tmp/",
             "secret" => "somesecret",
+            "websocket" => [
+                "host" => "websockets",
+                "port" => "8080"
+            ],
             "db" => [
                 "driver" => "pdo_cassandra",
                 "host" => "scylladb",
@@ -28,7 +32,7 @@ class Parameters extends \Common\Configuration
                 "dbname" => "Twake",
                 "user" => "root",
                 "password" => "root",
-                "encrypt_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
                 "dev" => true
             ],
             "openstack" => [

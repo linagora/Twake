@@ -5,7 +5,7 @@ namespace AdministrationApi\Core\Controller;
 
 use Common\BaseController;
 
-class DefaultController extends BaseController
+class Base extends BaseController
 {
 
 

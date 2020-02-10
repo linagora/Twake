@@ -9,12 +9,14 @@
 namespace Twake\Core\Services;
 
 
+use App\App;
+
 class Translate
 {
 
     var $defaultLanguage = 'en';
 
-    public function __construct()
+    public function __construct(App $app)
     {
     }
 

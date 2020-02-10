@@ -7,7 +7,7 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "ajax/workspaces/";
+    protected $routing_prefix = "ajax/workspace/";
 
     protected $routes = [
         "get" => ["handler" => "Workspace:getAction", "methods" => ["POST"]],

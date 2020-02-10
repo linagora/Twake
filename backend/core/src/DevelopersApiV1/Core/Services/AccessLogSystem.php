@@ -24,7 +24,7 @@ class AccessLogSystem
 
     public function record($applicationId, $rightLevel)
     {
-        $accessLogger = $this->doctrine->getRepository("DevelopersApiV1Core:AccessLog")->findOneBy(Array("appid" => $applicationId));
+        $accessLogger = $this->doctrine->getRepository("DevelopersApiV1\Core:AccessLog")->findOneBy(Array("appid" => $applicationId));
 
         if ($accessLogger == null) {
             $accessLogger = new AccessLog();

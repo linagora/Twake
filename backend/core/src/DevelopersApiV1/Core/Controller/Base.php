@@ -13,7 +13,7 @@ use Common\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class DefaultController extends BaseController
+class Base extends BaseController
 {
 
     public function getInfoFromToken(Request $request)

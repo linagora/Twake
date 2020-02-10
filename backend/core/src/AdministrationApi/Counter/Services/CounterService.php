@@ -18,7 +18,7 @@ class CounterService
 
     public function incrementCounter($key, $increment = 1)
     {
-        $counter_repository = $this->em->getRepository("AdministrationApiCounter:StatsCounter");
+        $counter_repository = $this->em->getRepository("AdministrationApi\Counter:StatsCounter");
 
         $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 1, null, 'date', 'DESC');
         $last_counter = $counter_tab[0];
@@ -46,7 +46,7 @@ class CounterService
 
     public function getCounter($key, $beginDate = null, $endDate = null)
     {
-        $counter_repository = $this->em->getRepository("AdministrationApiCounter:StatsCounter");
+        $counter_repository = $this->em->getRepository("AdministrationApi\Counter:StatsCounter");
 
         $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 20, null, 'date', 'DESC');
 

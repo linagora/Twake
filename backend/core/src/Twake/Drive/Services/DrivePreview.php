@@ -282,8 +282,6 @@ END;
                 $name = $entity->getName();
             }
 
-            \Sentry\captureException(new Exception("Error generating preview with unoconv (timeout) ", 0, new Exception($name)));
-
             return false;
         }
         return $filepath;

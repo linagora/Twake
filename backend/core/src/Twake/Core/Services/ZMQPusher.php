@@ -18,8 +18,8 @@ class ZMQPusher
 
     public function __construct(App $app)
     {
-        $this->host = $app->getContainer()->getParameter("websocket_pusher_remote_host");
-        $this->port = $app->getContainer()->getParameter("websocket_pusher_port");
+        $this->host = $app->getContainer()->getParameter("websocket.host");
+        $this->port = $app->getContainer()->getParameter("websocket.port");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->connection = null;
     }
@@ -61,10 +61,14 @@ class ZMQPusher
             $this->connection->send($data);
         } else {
             $context = new \ZMQContext(1);
+            error_log("get socket...");
             $this->connection = $context->getSocket(\ZMQ::SOCKET_PUSH);
             $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
+            error_log("connect socket... " . $config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
             $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
+            error_log("send...");
             $this->connection->send($data);
+            error_log("sent !");
         }
 
     }

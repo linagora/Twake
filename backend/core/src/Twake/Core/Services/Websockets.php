@@ -14,11 +14,14 @@ use Twake\Core\Entity\WebsocketsRoute;
 class Websockets
 {
 
+    /** @var App */
+    private $app;
     private $doctrine;
     private $pusher;
 
     public function __construct(App $app)
     {
+        $this->app = $app;
 
         //Register services to call for init websocekts and verify user has access
         $this->services_for_type = Array(
@@ -94,7 +97,7 @@ class Websockets
         if ($controller) {
             $type = $data["type"];
             if (isset($this->services_for_type[$type])) {
-                $service = $controller->getService($this->services_for_type[$type]);
+                $service = $this->app->getServices()->get($this->services_for_type[$type]);
                 $has_access = $service->init($route, $data, $controller->getUser());
                 if (!$has_access) {
                     return Array();

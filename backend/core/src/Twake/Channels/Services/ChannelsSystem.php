@@ -24,10 +24,6 @@ class ChannelsSystem extends ChannelSystemAbstract
         $route = explode("/", $route);
         $workspace_id = isset($route[2]) ? $route[2] : null;
 
-        if (!$channel_id) {
-            return false;
-        }
-
         return $this->hasAccess([
             "workspace_id" => $workspace_id
         ], $current_user);

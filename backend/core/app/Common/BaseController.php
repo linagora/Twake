@@ -23,12 +23,12 @@ abstract class BaseController
     }
 
     /* Get service */
-    protected function get($key)
+    public function get($key)
     {
         return $this->app->getServices()->get($key);
     }
 
-    protected function getUser()
+    public function getUser()
     {
 
         $request = $this->app->getSilexApp()["request_stack"]->getCurrentRequest();
