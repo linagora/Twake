@@ -14,44 +14,48 @@ use Swift_Signers_DKIMSigner;
 class TwakeMailer
 {
 
+    private $app;
     private $mailer;
     private $templating;
-    private $mailfrom;
-    private $twakeurl;
-    private $twakeaddress;
+    private $templating_loader;
+    private $mail_parameters;
     private $licenceKey;
     private $standalone;
     private $circle;
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->mailer = $app->getProviders()->get("mailer");
         $this->templating = $app->getProviders()->get("twig");
-        $this->mailfrom = $app->getContainer()->getParameter("MAIL_FROM");
-        $this->twakeurl = $app->getContainer()->getParameter("SERVER_NAME");
-        $this->twakeaddress = $app->getContainer()->getParameter("TWAKE_ADDRESS");
+        $this->templating_loader = $app->getProviders()->get("twig.loader");
+        $this->mail_parameters = $app->getContainer()->getParameter("mail");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
         $this->circle = $app->getServices()->get("app.restclient");
     }
 
-    public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Twake\Core:Mail")
+    public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Mail")
     {
 
+        $templateDirectory = "Mail";
+
+        $this->templating_loader->addLoader(new \Twig_Loader_Filesystem($this->app->getAppRootDir() . "/" . $this->mail_parameters["template_dir"]));
+
         $data["mail"] = $mail;
-        $data["twakeaddress"] = $this->twakeaddress;
-        $data["twakeurl"] = $this->twakeurl;
+        $data["twakeaddress"] = $this->mail_parameters["twake_address"];
+        $data["twakeurl"] = $this->mail_parameters["twake_domain_url"];
 
         $language = "en";
         if (isset($data["_language"])) {
             $language = $data["_language"];
-            $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
-            if (!$this->templating->exists($templateName)) {
+            $templateName = $templateDirectory . "/" . $language . "/" . $template . '.html.twig';
+            if (!$this->templating_loader->exists($templateName)) {
                 $language = "en";
             }
         }
 
-        $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
+        $templateName = $templateDirectory . "/" . $language . "/" . $template . '.html.twig';
 
         $html = $this->templating->render(
             $templateName,
@@ -70,30 +74,15 @@ class TwakeMailer
     {
         //[REMOVE_ONPREMISE]
 
-        $privateKey = "-----BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQCst5XO6IcnC/KTyRLgL83HqTLew6/ozMw6IRpS9KvLytg0E8fz
-CNCE4JaN8N5kD6u9b8DZs2EkS6kGnJCDwBBuNFjIVLSZpQbyMnTZ19nBZRtUXsiw
-X3GoQX6RbQqe3ToKUxBpBp5vw7OJi1nCW9WlYhIr2PFC50wBM1H4ea4nLQIDAQAB
-AoGAJWbcGiJgoiQEM9ynKcUwWrxZN8RIo7E1yKDCgpRZX5hdmWlvM0IFZcD82V//
-yMtb9Xnt2TbvIl0ADV56LQ26gMfe93E6GniMeST9AOOVaGzFIF+vbpNxnIMZEqMQ
-wXKxMHyFhUe+xkqESUmvpTexNKfdSA8ukEwZ8BmwK/jK5kECQQDWMwM4lZ4SwjPd
-IjM893hqV82od9BLCdiVCHT7DKx4Rpcp2yNLnA/gp+PrJc3dEbs3nQE0NV78DkNr
-oW/hiOIXAkEAzmw0OPRYdP5Kkq/EUlQSGo4vLPCChGJUD+6l5RZlxwgsNBEpyMoh
-YPqM13SfzJM0due/V9flK2rVYYP8KqMfWwJBAJs2MdJR0E5lfPFzM8+svwvH/hVi
-ZIPLaa5sh1/XSi6JcEX7LfM+7d5rqeMd7LORgqkE0veC6QYaS851F75E0xcCQHVO
-AkNXgClEFSbU4dETW5JhuKdmKhWHN1Qyf233U3FO0KfqFP+49k0BNSZ/bQw5nzfv
-LMqDswUAWjBna9bjCj8CQH30g2ivHYvWnihCGwIXZBMnXzTf3R/JaRX6+5KBy/T/
-DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
------END RSA PRIVATE KEY-----
-";
-        $domainName = 'twakeapp.com';
-        $selector = '1521790800.twakeapp';
+        $privateKey = $this->mail_parameters["dkim"]["private_key"];
+        $domainName = $this->mail_parameters["dkim"]["domain_name"];
+        $selector = $this->mail_parameters["dkim"]["selector"];
         $signer = new Swift_Signers_DKIMSigner($privateKey, $domainName, $selector);
 
         //Sending verification mail
-        $message = \Swift_Message::newInstance()
+        $message = (new \Swift_Message(""))
             ->setSubject($this->html2title($html))
-            ->setFrom($this->mailfrom, "Twake")
+            ->setFrom($this->mail_parameters["from"], $this->mail_parameters["from_name"])
             ->setTo($mail)
             ->setBody(
                 $html,

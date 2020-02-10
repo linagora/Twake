@@ -16,7 +16,8 @@ class Providers
         ],
         "twig" => [
             "services" => [
-                "twig"
+                "twig",
+                "twig.loader"
             ],
             "register" => "Silex\Provider\TwigServiceProvider",
         ],

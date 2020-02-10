@@ -73,7 +73,7 @@ class UsersConnections extends BaseController
 
     public function isLogged(Request $request)
     {
-        $ok = $this->get("app.user")->current();
+        $ok = $this->getUser();
 
         if (!$ok) {
             $origin = $request->query->get("origin", "");
@@ -290,7 +290,7 @@ class UsersConnections extends BaseController
 
         $value = $request->request->get("value");
 
-        $ok = $this->get("app.user")->current();
+        $ok = $this->getUser();
         if (!$ok) {
             $data["errors"][] = "disconnected";
         } else {

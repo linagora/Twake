@@ -13,14 +13,40 @@ class Parameters extends \Common\Configuration
             "admin_api_token" => "",
             "MAIL_FROM" => "",
             "SERVER_NAME" => "",
-            "TWAKE_ADDRESS" => "",
             "LICENCE_KEY" => "",
             "STANDALONE" => true,
             "ELASTIC_SERVER" => "elasticsearch_twake:9200",
             "DRIVE_SALT" => "SecretPassword",
+            "server_name" => "http://localhost:8080/",
             "drive_previews_tmp_folder" => "/tmp/",
             "drive_tmp_folder" => "/tmp/",
             "secret" => "somesecret",
+            "mail" => [
+                "template_dir" => "/src/Twake/Core/Resources/views/",
+                "twake_domain_url" => "https://twakeapp.com/",
+                "from" => "noreply@twakeapp.com",
+                "from_name" => "Twake",
+                "twake_address" => "Twake, 54000 Nancy, France",
+                "dkim" => [
+                    "private_key" => "-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCst5XO6IcnC/KTyRLgL83HqTLew6/ozMw6IRpS9KvLytg0E8fz
+CNCE4JaN8N5kD6u9b8DZs2EkS6kGnJCDwBBuNFjIVLSZpQbyMnTZ19nBZRtUXsiw
+X3GoQX6RbQqe3ToKUxBpBp5vw7OJi1nCW9WlYhIr2PFC50wBM1H4ea4nLQIDAQAB
+AoGAJWbcGiJgoiQEM9ynKcUwWrxZN8RIo7E1yKDCgpRZX5hdmWlvM0IFZcD82V//
+yMtb9Xnt2TbvIl0ADV56LQ26gMfe93E6GniMeST9AOOVaGzFIF+vbpNxnIMZEqMQ
+wXKxMHyFhUe+xkqESUmvpTexNKfdSA8ukEwZ8BmwK/jK5kECQQDWMwM4lZ4SwjPd
+IjM893hqV82od9BLCdiVCHT7DKx4Rpcp2yNLnA/gp+PrJc3dEbs3nQE0NV78DkNr
+oW/hiOIXAkEAzmw0OPRYdP5Kkq/EUlQSGo4vLPCChGJUD+6l5RZlxwgsNBEpyMoh
+YPqM13SfzJM0due/V9flK2rVYYP8KqMfWwJBAJs2MdJR0E5lfPFzM8+svwvH/hVi
+ZIPLaa5sh1/XSi6JcEX7LfM+7d5rqeMd7LORgqkE0veC6QYaS851F75E0xcCQHVO
+AkNXgClEFSbU4dETW5JhuKdmKhWHN1Qyf233U3FO0KfqFP+49k0BNSZ/bQw5nzfv
+LMqDswUAWjBna9bjCj8CQH30g2ivHYvWnihCGwIXZBMnXzTf3R/JaRX6+5KBy/T/
+DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
+-----END RSA PRIVATE KEY-----",
+                    "domain_name" => 'twakeapp.com',
+                    "selector" => '1521790800.twakeapp'
+                ]
+            ],
             "websocket" => [
                 "host" => "websockets",
                 "port" => "8080"
