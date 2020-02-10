@@ -1,13 +1,7 @@
 #Remote want to send a mail or a push notification
-from_remote_mail:
-    path:     /mail
-    defaults: { _controller: Twake\Core:Remote:mail }
+"mail" => ["handler"=>"Remote:mail", "methods"=>["POST"]],
 
-from_remote_push:
-    path:     /push
-    defaults: { _controller: Twake\Core:Remote:push }
+"push" => ["handler"=>"Remote:push", "methods"=>["POST"]],
 
 
-from_remote_recaptcha:
-    path:     /recaptcha
-    defaults: { _controller: Twake\Core:Remote:verifyReCaptcha }
+"recaptcha" => ["handler"=>"Remote:verifyReCaptcha", "methods"=>["POST"]],

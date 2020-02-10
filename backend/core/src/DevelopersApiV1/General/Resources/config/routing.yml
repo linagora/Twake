@@ -1,9 +1,0 @@
-developers_api_v1_general_configure:
-    path:     /configure
-    defaults: { _controller: DevelopersApiV1General:General:configure }
-    methods: [POST]
-
-developers_api_v1_general_close_configure:
-    path:     /configure_close
-    defaults: { _controller: DevelopersApiV1General:General:closeConfigure }
-    methods: [POST]

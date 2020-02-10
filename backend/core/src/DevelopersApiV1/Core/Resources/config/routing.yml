@@ -1,4 +1,0 @@
-developers_api_v1_core_getInfoFromToken:
-    path:     /token
-    defaults: { _controller: DevelopersApiV1Core:Default:getInfoFromToken }
-    methods: [POST]

@@ -1,29 +1,17 @@
-twake_version:
-    path:     /version
-    defaults: { _controller: Twake\Core:Version:get }
-    methods:  [GET]
+"version" => ["handler"=>"Version:getAction", "methods"=>["GET"]],
 
-twake_grouped_query:
-    path:     /grouped_query
-    defaults: { _controller: Twake\Core:GroupedQuery:query }
-    methods:  [POST]
 
-twake_websocket_init:
-    path:     /collections/init
-    defaults: { _controller: Twake\Core:Websockets:init }
-    methods:  [POST]
+"grouped_query" => ["handler"=>"GroupedQuery:query", "methods"=>["POST"]],
 
-twake_accessmanager:
-    path:     /access
-    defaults: { _controller: Twake\Core:Access:has_access }
-    methods:  [POST]
 
-twake_user_workspace_access:
-    path:     /workspaceaccess
-    defaults: { _controller: Twake\Core:Access:user_has_workspace_access }
-    methods:  [POST]
+"collections/init" => ["handler"=>"Websockets:init", "methods"=>["POST"]],
 
-twake_export_version:
-    path:     /exportversion
-    defaults: { _controller: Twake\Core:ImportExport:export_version }
-    methods:  [POST]
+
+"access" => ["handler"=>"Access:has_access", "methods"=>["POST"]],
+
+
+"workspaceaccess" => ["handler"=>"Access:user_has_workspace_access", "methods"=>["POST"]],
+
+
+"exportversion" => ["handler"=>"ImportExport:export_version", "methods"=>["POST"]],
+

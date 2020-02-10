@@ -1,5 +1,0 @@
-services:
-
-  administration.validation:
-    class: AdministrationApi\Core\Services\ValidationService
-    arguments: [ %administration_token% ]
