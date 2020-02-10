@@ -19,7 +19,6 @@ class Routing extends BaseRouting
         "current/identicon" => ["handler" => "UsersConnections:identicon", "methods" => ["GET"]],
         "alive" => ["handler" => "UsersConnections:alive", "methods" => ["POST"]],
         "set/isNew" => ["handler" => "UsersConnections:setIsNew", "methods" => ["POST"]],
-
         // Account
         "account/identity" => ["handler" => "UsersAccount:setIdentity", "methods" => ["POST"]],
         "account/username" => ["handler" => "UsersAccount:setUsername", "methods" => ["POST"]],
@@ -36,27 +35,22 @@ class Routing extends BaseRouting
         "account/update_notifications" => ["handler" => "UsersAccount:updateNotificationPreferenceByWorkspace", "methods" => ["POST"]],
         "account/set_tutorial_status" => ["handler" => "UsersAccount:setTutorialStatus", "methods" => ["POST"]],
         "account/update_status" => ["handler" => "UsersAccount:updateStatus", "methods" => ["POST"]],
-
         // Subscribe
         "subscribe/mail" => ["handler" => "UsersSubscribe:mail", "methods" => ["POST"]],
         "subscribe/doverifymail" => ["handler" => "UsersSubscribe:doVerifyMail", "methods" => ["POST"]],
         "subscribe/identity" => ["handler" => "UsersSubscribe:subscribe", "methods" => ["POST"]],
-
         // New Subscribe
         "subscribe/subscribe" => ["handler" => "UsersSubscribe:subscribeTotaly", "methods" => ["POST"]],
         "subscribe/mail" => ["handler" => "UsersSubscribe:testMail", "methods" => ["POST"]],
         "subscribe/availability" => ["handler" => "UsersSubscribe:getAvaible", "methods" => ["POST"]],
         "subscribe/company_subscribe" => ["handler" => "UsersSubscribe:createCompanyUser", "methods" => ["POST"]],
-
         // Recover
         "recover/mail" => ["handler" => "UsersRecover:mail", "methods" => ["POST"]],
         "recover/verify" => ["handler" => "UsersRecover:codeVerification", "methods" => ["POST"]],
         "recover/password" => ["handler" => "UsersRecover:newPassword", "methods" => ["POST"]],
-
         // Get and search
         "all/get" => ["handler" => "Users:getById", "methods" => ["POST"]],
         "all/search" => ["handler" => "Users:search", "methods" => ["POST"]],
-
         // CAS
         "cas/login" => ["handler" => "ConnectionsUsingCAS:login", "methods" => ["GET"]],
         "cas/verify" => ["handler" => "ConnectionsUsingCAS:verify", "methods" => ["GET"]],

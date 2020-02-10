@@ -281,7 +281,7 @@ class GroupManagers
         ) {
 
             $group = $groupRepository->find($groupId);
-            $managerLinks = $groupManagerRepository->getManagers($group);
+            $managerLinks = $groupManagerRepository->findBy(Array("group" => $group, "level" => 0));
 
             $users = Array();
             foreach ($managerLinks as $managerLink) {

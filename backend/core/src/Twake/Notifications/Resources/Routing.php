@@ -7,19 +7,14 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "ajax/users/";
+    protected $routing_prefix = "ajax/notifications/";
 
     protected $routes = [
 #Collections
         "get" => ["handler" => "Default:getAction", "methods" => ["POST"]],
-
         "remove" => ["handler" => "Default:remove", "methods" => ["POST"]],
-
         "deleteAll" => ["handler" => "Default:deleteAllExceptMessages", "methods" => ["POST"]],
-
         "readAll" => ["handler" => "Default:readAll", "methods" => ["POST"]],
-
-
     ];
 
 }

@@ -7,7 +7,7 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "ajax/users/";
+    protected $routing_prefix = "api/v1/users/";
 
     protected $routes = [
 #Message routing

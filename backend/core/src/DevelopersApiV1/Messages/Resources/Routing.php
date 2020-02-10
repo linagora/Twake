@@ -7,15 +7,12 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "ajax/users/";
+    protected $routing_prefix = "api/v1/messages/";
 
     protected $routes = [
 #Message routing
         "remove" => ["handler" => "Message:removeMessage", "methods" => ["POST"]],
-
-
         "save" => ["handler" => "Message:saveMessage", "methods" => ["POST"]],
-
     ];
 
 }

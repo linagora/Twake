@@ -373,7 +373,7 @@ class WorkspaceLevels
                 return false;
             }
 
-            $levels = $levelRepository->getByLabel($label, $workspace);
+            $levels = $levelRepository->findBy(["label" => $label, "workspace" => $workspace]);
 
             return $levels;
         }
