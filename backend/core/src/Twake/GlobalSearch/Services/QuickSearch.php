@@ -2,7 +2,7 @@
 
 namespace Twake\GlobalSearch\Services;
 
-#test22
+use App\App;
 
 use Twake\Core\Services\StringCleaner;
 

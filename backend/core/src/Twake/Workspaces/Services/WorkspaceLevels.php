@@ -5,6 +5,7 @@ namespace Twake\Workspaces\Services;
 
 use Twake\Workspaces\Entity\WorkspaceLevel;
 use Twake\Workspaces\Model\WorkspaceLevelsInterface;
+use App\App;
 
 class WorkspaceLevels
 {

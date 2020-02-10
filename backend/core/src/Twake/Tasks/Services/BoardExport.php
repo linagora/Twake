@@ -4,6 +4,7 @@
 namespace Twake\Tasks\Services;
 
 use Twake\Tasks\Entity\ExportToken;
+use App\App;
 
 class BoardExport
 {

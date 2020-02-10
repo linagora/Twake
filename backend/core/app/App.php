@@ -78,7 +78,7 @@ class App
 
         // Init routing for all bundles
         foreach ($bundles_instances as $bundle_instance) {
-            $bundle_instance->initRoutes();
+            $bundle_instance->init();
         }
 
     }

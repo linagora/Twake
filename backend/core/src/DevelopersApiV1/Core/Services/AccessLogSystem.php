@@ -9,13 +9,14 @@
 namespace DevelopersApiV1\Core\Services;
 
 use DevelopersApiV1\Core\Entity\AccessLog;
+use App\App;
 
 class AccessLogSystem
 {
     /**
      * AccessLog constructor.
      */
-    public function __construct($doctrine)
+    public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
 

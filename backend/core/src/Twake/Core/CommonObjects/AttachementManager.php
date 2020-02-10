@@ -11,9 +11,9 @@ namespace Twake\Core\CommonObjects;
 
 class AttachementManager
 {
-    function __construct($entity_manager, $ws)
+    function __construct($doctrine, $ws)
     {
-        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->doctrine = $doctrine;
         $this->ws = $ws;
     }
 

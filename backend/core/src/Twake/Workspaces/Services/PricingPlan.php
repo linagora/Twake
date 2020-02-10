@@ -4,6 +4,7 @@ namespace Twake\Workspaces\Services;
 
 use DateTime;
 use Twake\Workspaces\Model\PricingPlanInterface;
+use App\App;
 
 class PricingPlan
 {

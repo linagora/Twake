@@ -20,14 +20,14 @@ class Bundle extends BaseBundle
     protected $routes = [];
     protected $services = [];
 
-    public function initRoutes()
+    public function init()
     {
         $routing = new Routing();
         $this->routes = $routing->getRoutes();
         $this->routing_prefix = $routing->getRoutesPrefix();
-        parent::initRoutes();
+        $this->initRoutes();
 
         $this->services = (new Services())->getServices();
-        parent::initServices();
+        $this->initServices();
     }
 }

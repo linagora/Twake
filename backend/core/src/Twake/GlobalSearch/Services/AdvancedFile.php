@@ -3,6 +3,7 @@
 
 namespace Twake\GlobalSearch\Services;
 
+use App\App;
 
 class AdvancedFile
 {

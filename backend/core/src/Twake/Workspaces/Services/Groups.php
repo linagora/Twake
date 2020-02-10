@@ -6,6 +6,7 @@ use Twake\Workspaces\Entity\Group;
 use Twake\Workspaces\Entity\GroupApp;
 use Twake\Workspaces\Entity\GroupManager;
 use Twake\Workspaces\Model\GroupsInterface;
+use App\App;
 
 class Groups
 {

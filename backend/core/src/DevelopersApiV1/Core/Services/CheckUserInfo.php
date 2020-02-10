@@ -4,12 +4,14 @@
 namespace DevelopersApiV1\Core\Services;
 
 
+use App\App;
+
 class CheckUserInfo
 {
     /**
      * AccessLog constructor.
      */
-    public function __construct($doctrine)
+    public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
 

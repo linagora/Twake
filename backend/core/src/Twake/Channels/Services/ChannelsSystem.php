@@ -5,6 +5,7 @@ namespace Twake\Channels\Services;
 
 use Twake\Core\Services\StringCleaner;
 use Twake\Discussion\Entity\Channel;
+use App\App;
 
 class ChannelsSystem extends ChannelSystemAbstract
 {

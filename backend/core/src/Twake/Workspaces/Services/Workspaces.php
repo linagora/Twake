@@ -11,7 +11,7 @@ use Twake\Workspaces\Entity\Workspace;
 use Twake\Workspaces\Entity\WorkspaceApp;
 use Twake\Workspaces\Entity\WorkspaceLevel;
 use Twake\Workspaces\Model\WorkspacesInterface;
-
+use App\App;
 
 class Workspaces
 {

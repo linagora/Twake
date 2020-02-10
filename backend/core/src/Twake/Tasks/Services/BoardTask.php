@@ -9,6 +9,7 @@ use Twake\Tasks\Entity\Task;
 use Twake\Tasks\Entity\TaskBoard;
 use Twake\Tasks\Entity\TaskNotification;
 use Twake\Tasks\Entity\TaskUser;
+use App\App;
 
 class BoardTask
 {

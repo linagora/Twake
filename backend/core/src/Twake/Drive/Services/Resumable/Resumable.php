@@ -8,6 +8,7 @@ use Monolog\Logger;
 use Twake\Drive\Entity\UploadState;
 use Twake\Drive\Services\DriveFile;
 use Twake\Drive\Services\Storage\EncryptionBag;
+use App\App;
 
 class Resumable
 {

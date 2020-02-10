@@ -4,12 +4,14 @@
 namespace AdministrationApi\Apps\Services;
 
 
+use App\App;
+
 class AdministrationApps
 {
 
     private $em;
 
-    public function __construct($em)
+    public function __construct(App $app)
     {
         $this->em = $app->getServices()->get("app.twake_doctrine");
     }

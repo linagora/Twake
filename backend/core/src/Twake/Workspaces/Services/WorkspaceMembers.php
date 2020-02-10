@@ -6,6 +6,7 @@ use Twake\Workspaces\Entity\GroupUser;
 use Twake\Workspaces\Entity\WorkspaceUser;
 use Twake\Workspaces\Entity\WorkspaceUserByMail;
 use Twake\Workspaces\Model\WorkspaceMembersInterface;
+use App\App;
 
 class WorkspaceMembers
 {

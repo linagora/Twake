@@ -4,6 +4,7 @@ namespace Twake\Tasks\Services;
 
 
 use Twake\Tasks\Entity\Board;
+use App\App;
 
 class BoardBoard
 {

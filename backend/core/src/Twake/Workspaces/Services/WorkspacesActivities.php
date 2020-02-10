@@ -13,6 +13,7 @@ use Doctrine\ORM\ORMException;
 use Dompdf\Exception;
 use Twake\Market\Services\MarketApplication;
 use Twake\Workspaces\Entity\WorkspaceActivity;
+use App\App;
 
 class WorkspacesActivities
 {

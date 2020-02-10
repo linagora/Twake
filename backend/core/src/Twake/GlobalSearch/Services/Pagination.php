@@ -2,6 +2,8 @@
 
 namespace Twake\GlobalSearch\Services;
 
+use App\App;
+
 class Pagination
 
 {

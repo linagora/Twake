@@ -3,6 +3,7 @@
 
 namespace Twake\Discussion\Services;
 
+use App\App;
 use Twake\Discussion\Entity\Call;
 use Twake\Discussion\Entity\Channel;
 use Twake\Discussion\Entity\Message;

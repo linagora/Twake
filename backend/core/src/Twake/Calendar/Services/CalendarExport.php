@@ -3,6 +3,7 @@
 
 namespace Twake\Calendar\Services;
 
+use App\App;
 use Eluceo\iCal\Component;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

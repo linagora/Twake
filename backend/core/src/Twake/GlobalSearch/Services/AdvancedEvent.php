@@ -3,6 +3,8 @@
 
 namespace Twake\GlobalSearch\Services;
 
+use App\App;
+
 class AdvancedEvent
 {
     private $doctrine;

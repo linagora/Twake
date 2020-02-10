@@ -8,7 +8,7 @@
 
 namespace Twake\Market\Services;
 
-
+use App\App;
 use Twake\Market\Entity\DataToken;
 
 class DataTokenSystem

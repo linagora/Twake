@@ -2,7 +2,7 @@
 
 namespace Twake\Drive\Services;
 
-
+use App\App;
 use http\Client\Response;
 use Twake\Drive\Services\Resumable\Network\SimpleRequest;
 use Twake\Drive\Services\Resumable\Network\SimpleResponse;

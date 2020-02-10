@@ -4,6 +4,8 @@
 namespace AdministrationApi\Users\Services;
 
 
+use App\App;
+
 class AdministrationUsers
 {
 
@@ -11,7 +13,7 @@ class AdministrationUsers
 
     private $list_user = Array("users" => Array(), "scroll_id" => "");
 
-    public function __construct($em)
+    public function __construct(App $app)
     {
         $this->em = $app->getServices()->get("app.twake_doctrine");
     }

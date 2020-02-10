@@ -2,12 +2,12 @@
 
 namespace Twake\Workspaces\Services;
 
-
 use Twake\Discussion\Entity\Channel;
 use Twake\Workspaces\Entity\GroupApp;
 use Twake\Workspaces\Entity\WorkspaceApp;
 use Twake\Workspaces\Model\WorkspacesAppsInterface;
 use Twake\Workspaces\Model\WorkspacesInterface;
+use App\App;
 
 class WorkspacesApps
 {
@@ -27,7 +27,6 @@ class WorkspacesApps
         $this->pusher = $app->getServices()->get("app.pusher");
         $this->channel_system = $app->getServices()->get("app.channels.channels_system");
         $this->application_api = $app->getServices()->get("app.applications_api");
-
     }
 
     public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false, $onlyEditableRights = false)

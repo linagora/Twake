@@ -2,7 +2,7 @@
 
 namespace DevelopersApiV1\Core\Services;
 
-
+use App\App;
 use Symfony\Component\HttpFoundation\Request;
 
 class CheckService
@@ -10,10 +10,10 @@ class CheckService
     /**
      * CheckService constructor.
      */
-    public function __construct($doctrine, $accessLogService)
+    public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
-        $this->accessLogService = $accessLogService;
+        $this->accessLogService = $app->getServices()->get("api.v1.access_log");
 
     }
 

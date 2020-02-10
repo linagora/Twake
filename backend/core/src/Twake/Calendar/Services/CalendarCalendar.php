@@ -2,8 +2,8 @@
 
 namespace Twake\Calendar\Services;
 
-
 use Twake\Calendar\Entity\Calendar;
+use App\App;
 
 class CalendarCalendar
 {

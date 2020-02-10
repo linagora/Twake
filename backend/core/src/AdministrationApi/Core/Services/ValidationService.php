@@ -3,6 +3,8 @@
 
 namespace AdministrationApi\Core\Services;
 
+use App\App;
+
 /**
  * Class ValidationService
  * @package AdministrationApi\Core\Services
@@ -19,9 +21,9 @@ class ValidationService
      * ValidationService constructor.
      * @param $token
      */
-    public function __construct($token)
+    public function __construct(App $app)
     {
-        $this->token = $token;
+        $this->token = $app->getContainer()->getParameter("admin_api_token");
     }
 
     /**

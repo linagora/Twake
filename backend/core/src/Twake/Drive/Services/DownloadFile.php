@@ -2,13 +2,12 @@
 
 namespace Twake\Drive\Services;
 
-
 use http\Client\Response;
 use Twake\Drive\Services\Storage\EncryptionBag;
 use Twake\Drive\Services\ZipStream\Option\Archive;
 use Twake\Drive\Services\ZipStream\TwakeFileStream;
 use Twake\Drive\Services\ZipStream\ZipStream;
-
+use App\App;
 
 class DownloadFile
 {

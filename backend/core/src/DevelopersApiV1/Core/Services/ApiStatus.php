@@ -8,6 +8,7 @@
 
 namespace DevelopersApiV1\Core\Services;
 
+use App\App;
 
 class ApiStatus
 {
@@ -16,7 +17,7 @@ class ApiStatus
     /**
      * ApiStatus constructor.
      */
-    public function __construct()
+    public function __construct(App $app)
     {
         //0 < General errors < 1000
         $this->map[1] = "Incorrect authentification";

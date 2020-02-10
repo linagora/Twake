@@ -5,6 +5,7 @@ namespace Twake\Market\Services;
 use Twake\Market\Entity\AccessToken;
 use Twake\Market\Entity\Application;
 use Twake\Market\Entity\ApplicationResource;
+use App\App;
 
 class ApplicationApi
 {

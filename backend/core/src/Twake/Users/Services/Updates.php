@@ -3,6 +3,7 @@
 namespace Twake\Users\Services;
 
 use Twake\Users\Model\ContactsInterface;
+use App\App;
 
 class Updates
 {

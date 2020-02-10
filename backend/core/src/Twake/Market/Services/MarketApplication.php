@@ -4,6 +4,7 @@ namespace Twake\Market\Services;
 
 use Twake\Market\Entity\Application;
 use Twake\Market\Model\MarketApplicationInterface;
+use App\App;
 
 class MarketApplication
 {

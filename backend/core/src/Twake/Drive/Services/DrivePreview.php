@@ -8,7 +8,7 @@
 
 namespace Twake\Drive\Services;
 
-
+use App\App;
 use Dompdf\Exception;
 
 class DrivePreview

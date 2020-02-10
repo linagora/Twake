@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Stream;
 use OpenStack\Common\Transport\Utils as TransportUtils;
 use OpenStack\Identity\v2\Service;
 use OpenStack\OpenStack;
+use App\App;
 
 class OpenStack_Uploader extends Uploader
 {

@@ -4,6 +4,7 @@
 namespace Twake\Channels\Services;
 
 use Twake\Discussion\Entity\Channel;
+use App\App;
 
 class DirectMessagesSystem extends ChannelSystemAbstract
 {

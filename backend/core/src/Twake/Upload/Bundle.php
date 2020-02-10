@@ -4,7 +4,7 @@ namespace Twake\Upload;
 
 require_once __DIR__ . "/Resources/Services.php";
 
-use Twake\Users\Resources\Services;
+use Twake\Upload\Resources\Services;
 use Common\BaseBundle;
 
 class Bundle extends BaseBundle
@@ -15,10 +15,10 @@ class Bundle extends BaseBundle
     protected $routes = [];
     protected $services = [];
 
-    public function initRoutes()
+    public function init()
     {
 
         $this->services = (new Services())->getServices();
-        parent::initServices();
+        $this->initServices();
     }
 }

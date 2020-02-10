@@ -5,6 +5,7 @@ namespace Twake\Channels\Services;
 
 use Twake\Channels\Entity\ChannelMember;
 use Twake\Discussion\Entity\Channel;
+use App\App;
 
 class ChannelsNotificationsSystem extends ChannelSystemAbstract
 {

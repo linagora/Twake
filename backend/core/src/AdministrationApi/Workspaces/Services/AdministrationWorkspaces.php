@@ -3,6 +3,7 @@
 
 namespace AdministrationApi\Workspaces\Services;
 
+use App\App;
 
 class AdministrationWorkspaces
 {
@@ -10,7 +11,7 @@ class AdministrationWorkspaces
     private $em;
     private $list_workspace = Array("workspace" => Array(), "scroll_id" => "");
 
-    public function __construct($em)
+    public function __construct(App $app)
     {
         $this->em = $app->getServices()->get("app.twake_doctrine");
     }

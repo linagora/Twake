@@ -4,13 +4,14 @@
 namespace AdministrationApi\Counter\Services;
 
 use AdministrationApi\Counter\Entity\StatsCounter;
+use App\App;
 
 class CounterService
 {
 
     private $em;
 
-    public function __construct($em)
+    public function __construct(App $app)
     {
         $this->em = $app->getServices()->get("app.twake_doctrine");
     }

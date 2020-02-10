@@ -2,6 +2,7 @@
 
 namespace Twake\Workspaces\Services;
 
+use App\App;
 use Twake\Workspaces\Entity\GroupUser;
 use Twake\Workspaces\Model\GroupManagersInterface;
 

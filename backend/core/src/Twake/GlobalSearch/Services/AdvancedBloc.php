@@ -3,6 +3,8 @@
 
 namespace Twake\GlobalSearch\Services;
 
+use App\App;
+
 class AdvancedBloc
 {
     private $doctrine;

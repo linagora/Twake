@@ -2,7 +2,7 @@
 
 namespace Twake\Calendar\Services;
 
-
+use App\App;
 use Twake\Calendar\Entity\Event;
 use Twake\Calendar\Entity\EventCalendar;
 use Twake\Calendar\Entity\EventNotification;

@@ -4,8 +4,8 @@ namespace DevelopersApiV1\Calendar;
 
 require_once __DIR__ . "/Resources/Routing.php";
 
-use Twake\Users\Resources\Routing;
-use Twake\Users\Resources\Services;
+use DevelopersApiV1\Calendar\Resources\Routing;
+use DevelopersApiV1\Calendar\Resources\Services;
 use Common\BaseBundle;
 
 class Bundle extends BaseBundle
@@ -16,11 +16,11 @@ class Bundle extends BaseBundle
     protected $routes = [];
     protected $services = [];
 
-    public function initRoutes()
+    public function init()
     {
         $routing = new Routing();
         $this->routes = $routing->getRoutes();
         $this->routing_prefix = $routing->getRoutesPrefix();
-        parent::initRoutes();
+        $this->initRoutes();
     }
 }

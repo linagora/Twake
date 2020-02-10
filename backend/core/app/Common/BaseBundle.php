@@ -28,6 +28,10 @@ abstract class BaseBundle
         $this->app = $app;
     }
 
+    public function init()
+    {
+    }
+
     /**
      * Load routes from Bundle php configuration
      */

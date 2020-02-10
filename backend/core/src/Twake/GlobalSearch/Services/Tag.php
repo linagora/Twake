@@ -3,6 +3,7 @@
 namespace Twake\GlobalSearch\Services;
 
 use Twake\GlobalSearch\Entity\WorkspaceTag;
+use App\App;
 
 Class Tag
 {

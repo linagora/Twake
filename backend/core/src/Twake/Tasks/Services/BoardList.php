@@ -2,6 +2,7 @@
 
 namespace Twake\Tasks\Services;
 
+use App\App;
 
 class BoardList
 {

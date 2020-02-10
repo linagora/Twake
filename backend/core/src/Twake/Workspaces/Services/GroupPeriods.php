@@ -8,7 +8,7 @@ use Twake\Workspaces\Entity\GroupManager;
 use Twake\Workspaces\Entity\GroupPeriod;
 use Twake\Workspaces\Entity\GroupPricingInstance;
 use Twake\Workspaces\Model\GroupPeriodInterface;
-
+use App\App;
 class GroupPeriods
 {
 
