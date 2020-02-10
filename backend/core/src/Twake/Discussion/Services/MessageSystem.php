@@ -14,13 +14,13 @@ use Twake\GlobalSearch\Entity\Bloc;
 class MessageSystem
 {
 
-    function __construct($entity_manager, $applications_api, $websockets_service, $message_notifications_center_service, $access_manager)
+    public function __construct(App $app)
     {
-        $this->em = $entity_manager;
-        $this->applications_api = $applications_api;
-        $this->websockets_service = $websockets_service;
-        $this->message_notifications_center_service = $message_notifications_center_service;
-        $this->access_manager = $access_manager;
+        $this->em = $app->getServices()->get("app.twake_doctrine");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
+        $this->websockets_service = $app->getServices()->get("app.websockets");
+        $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
+        $this->access_manager = $app->getServices()->get("app.accessmanager");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

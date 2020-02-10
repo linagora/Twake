@@ -8,10 +8,10 @@ use Twake\Discussion\Entity\Channel;
 class DirectMessagesSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $applicationsApi, $workspaceMembers)
+    public function __construct(App $app)
     {
-        $this->messages_service = $messages_service;
-        parent::__construct($entity_manager, $applicationsApi, $workspaceMembers);
+        $this->messages_service = $app->getServices()->get("app.messages");
+        parent::__construct($app);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

@@ -2,6 +2,7 @@
 
 namespace Twake\Workspaces\Services;
 
+use App\App;
 use Twake\Workspaces\Model\GroupAppsInterface;
 
 class GroupApps
@@ -10,11 +11,11 @@ class GroupApps
     private $gms;
     private $was;
 
-    public function __construct($doctrine, $group_managers_service, $workspace_apps_service)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->gms = $group_managers_service;
-        $this->was = $workspace_apps_service;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->gms = $app->getServices()->get("app.group_managers");
+        $this->was = $app->getServices()->get("app.workspaces_apps");
     }
 
     public function getApps($groupId, $currentUserId = null)

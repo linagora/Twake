@@ -13,7 +13,7 @@ class AttachementManager
 {
     function __construct($entity_manager, $ws)
     {
-        $this->doctrine = $entity_manager;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->ws = $ws;
     }
 

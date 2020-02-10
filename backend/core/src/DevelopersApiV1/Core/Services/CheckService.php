@@ -12,7 +12,7 @@ class CheckService
      */
     public function __construct($doctrine, $accessLogService)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->accessLogService = $accessLogService;
 
     }

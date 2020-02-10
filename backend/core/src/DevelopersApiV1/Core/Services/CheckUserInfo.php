@@ -11,7 +11,7 @@ class CheckUserInfo
      */
     public function __construct($doctrine)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
 
     }
 

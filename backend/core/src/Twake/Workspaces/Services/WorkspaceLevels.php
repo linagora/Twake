@@ -12,10 +12,10 @@ class WorkspaceLevels
     private $doctrine;
     private $pusher;
 
-    public function __construct($doctrine, $pusher)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function getLevel($workspaceId, $userId, $currentUserId = null)

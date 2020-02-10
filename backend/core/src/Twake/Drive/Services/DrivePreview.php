@@ -17,9 +17,9 @@ class DrivePreview
     var $img_height;
     var $img_width;
 
-    public function __construct($doctrine)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->img_height = 300;
         $this->img_width = 300;
     }

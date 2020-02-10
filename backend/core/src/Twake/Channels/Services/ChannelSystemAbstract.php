@@ -10,11 +10,11 @@ class ChannelSystemAbstract
 {
     private $workspaceUser;
 
-    function __construct($entity_manager, $applicationsApi = null, $workspaceUser)
+    public function __construct(App $app)
     {
-        $this->entity_manager = $entity_manager;
-        $this->applicationsApi = $applicationsApi;
-        $this->workspaceUser = $workspaceUser;
+        $this->entity_manager = $app->getServices()->get("app.twake_doctrine");
+        $this->applicationsApi = $app->getServices()->get("app.applications_api");
+        $this->workspaceUser = $app->getServices()->get("app.workspace_members");
     }
 
     public function removeGeneralChannel($object)

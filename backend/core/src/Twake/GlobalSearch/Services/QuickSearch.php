@@ -30,14 +30,15 @@ class QuickSearch
 
     private $workspace_prio;
 
-    public function __construct($doctrine, $userservice, $workspaceservice, $channelservice, $fileservice, $memberservice)
+
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->userservice = $userservice;
-        $this->workspaceservice = $workspaceservice;
-        $this->channelservice = $channelservice;
-        $this->fileservice = $fileservice;
-        $this->memberservice = $memberservice;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->userservice = $app->getServices()->get("app.users");
+        $this->workspaceservice = $app->getServices()->get("app.workspaces");
+        $this->channelservice = $app->getServices()->get("app.channels.channels_system");
+        $this->fileservice = $app->getServices()->get("globalsearch.advancedfile");
+        $this->memberservice = $app->getServices()->get("app.workspace_members");
     }
 
     private static function cmpfile($file1, $file2)

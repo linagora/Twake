@@ -11,10 +11,10 @@ class AdvancedTask
     private $list_tasks = Array("results" => Array(), "scroll_id" => "");
 
 
-    public function __construct($doctrine, $workspaceservice)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->workspaceservice = $workspaceservice;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->workspaceservice = $app->getServices()->get("app.workspaces");
 
     }
 

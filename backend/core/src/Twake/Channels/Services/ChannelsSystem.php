@@ -9,12 +9,12 @@ use Twake\Discussion\Entity\Channel;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi, $workspaceMembers, $access_manager)
+    public function __construct(App $app)
     {
-        $this->access_manager = $access_manager;
-        $this->messages_service = $messages_service;
-        $this->websockets_service = $websockets_service;
-        parent::__construct($entity_manager, $applicationsApi, $workspaceMembers);
+        $this->access_manager = $app->getServices()->get("app.accessmanager");
+        $this->messages_service = $app->getServices()->get("app.messages");
+        $this->websockets_service = $app->getServices()->get("app.websockets");
+        parent::__construct($app);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

@@ -5,7 +5,7 @@ namespace Twake\Drive\Services\OldFileSystem;
 class DriveAdapterSelector
 {
 
-    public function __construct($aws, $openstack, $aws_file_system, $openstack_file_system)
+    public function __construct(App $app)
     {
         $this->aws = $aws;
         $this->openstack = $openstack;

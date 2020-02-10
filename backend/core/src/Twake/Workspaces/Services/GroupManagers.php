@@ -39,11 +39,11 @@ class GroupManagers
     private $twake_mailer;
     private $pusher;
 
-    public function __construct($doctrine, $twake_mailer, $pusher)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->twake_mailer = $twake_mailer;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function changeLevel($groupId, $userId, $level, $currentUserId = null)

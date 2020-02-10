@@ -8,12 +8,12 @@ use Twake\Tasks\Entity\Board;
 class BoardBoard
 {
 
-    function __construct($entity_manager, $application_api, $list_service, $task_service)
+    public function __construct(App $app)
     {
-        $this->doctrine = $entity_manager;
-        $this->applications_api = $application_api;
-        $this->list_service = $list_service;
-        $this->task_service = $task_service;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
+        $this->list_service = $app->getServices()->get("app.tasks.list");
+        $this->task_service = $app->getServices()->get("app.tasks.task");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

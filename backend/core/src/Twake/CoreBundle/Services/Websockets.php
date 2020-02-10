@@ -36,8 +36,8 @@ class Websockets
             "updates" => "app.user_updates"
         );
 
-        $this->doctrine = $doctrine;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function init($route, $data, $controller = null)

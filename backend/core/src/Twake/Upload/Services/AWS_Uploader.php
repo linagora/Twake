@@ -10,10 +10,10 @@ class AWS_Uploader extends Uploader
 {
 
 
-    function __construct($aws_config, $doctrine, $uploadService, $modifiersService)
+    public function __construct(App $app)
     {
 
-        parent::__construct($doctrine, $uploadService, $modifiersService);
+        parent::__construct($app);
 
         $s3_config = $aws_config["S3"];
         $this->aws_version = $s3_config["version"];

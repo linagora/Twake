@@ -1,6 +1,6 @@
 <?php
 
-namespace AdministrationApi\Core;
+namespace AdministrationApi\Workspaces;
 
 require_once __DIR__ . "/Resources/Routing.php";
 require_once __DIR__ . "/Resources/Services.php";

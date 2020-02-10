@@ -12,7 +12,7 @@ use OpenStack\OpenStack;
 class Adapter_OpenStack_DriveFileSystem
 {
 
-    public function __construct($openstack_config, $rootDirectory, $parameter_drive_salt)
+    public function __construct(App $app)
     {
 
         $this->openstack_buckets = $openstack_config["buckets"];

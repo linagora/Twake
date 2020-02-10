@@ -3,6 +3,7 @@
 
 namespace Twake\Notifications\Services;
 
+use App\App;
 use Emojione\Client;
 use Emojione\Ruleset;
 use Twake\Notifications\Entity\MailNotificationQueue;
@@ -26,15 +27,15 @@ class Notifications
     var $standalone;
     var $licenceKey;
 
-    public function __construct($doctrine, $pusher, $mailer, $circle, $pushNotificationServer, $standalone, $licenceKey)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->pusher = $pusher;
-        $this->mailer = $mailer;
-        $this->circle = $circle;
-        $this->pushNotificationServer = $pushNotificationServer;
-        $this->standalone = $standalone;
-        $this->licenceKey = $licenceKey;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->pusher = $app->getServices()->get("app.websockets");
+        $this->mailer = $app->getServices()->get("app.twake_mailer");
+        $this->circle = $app->getServices()->get("app.restclient");
+        $this->pushNotificationServer = $app->getContainer()->getParameter("PUSH_NOTIFICATION_SERVER");
+        $this->standalone = $app->getContainer()->getParameter("STANDALONE");
+        $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
         $this->emojione_client = new Client(new Ruleset());
     }
 

@@ -46,7 +46,7 @@ class Resumable
 
     public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $parameter_drive_salt)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $storagemanager;
         $this->driverefacto = $driverefacto;
         $this->log = new Logger('debug');

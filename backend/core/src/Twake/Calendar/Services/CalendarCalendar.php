@@ -8,10 +8,10 @@ use Twake\Calendar\Entity\Calendar;
 class CalendarCalendar
 {
 
-    function __construct($entity_manager, $application_api)
+    public function __construct(App $app)
     {
-        $this->doctrine = $entity_manager;
-        $this->applications_api = $application_api;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

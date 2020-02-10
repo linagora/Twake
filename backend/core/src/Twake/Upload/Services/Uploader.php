@@ -12,9 +12,9 @@ class Uploader extends BaseController
     var $uploadService;
     var $modifiersService;
 
-    function __construct($doctrine, $uploadService, $modifiersService)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->uploadService = $uploadService;
         $this->modifiersService = $modifiersService;
     }

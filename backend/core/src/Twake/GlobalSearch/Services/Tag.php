@@ -9,10 +9,10 @@ Class Tag
 
     private $em;
 
-    function __construct($entity_manager, $access_manager)
+    public function __construct(App $app)
     {
-        $this->em = $entity_manager;
-        $this->access_manager = $access_manager;
+        $this->em = $app->getServices()->get("app.twake_doctrine");
+        $this->access_manager = $app->getServices()->get("app.accessmanager");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

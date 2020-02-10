@@ -14,10 +14,10 @@ class OpenStack_Uploader extends Uploader
 {
 
 
-    function __construct($openstack_config, $doctrine, $uploadService, $modifiersService)
+    public function __construct(App $app)
     {
 
-        parent::__construct($doctrine, $uploadService, $modifiersService);
+        parent::__construct($app);
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = $openstack_config["buckets_prefix"];

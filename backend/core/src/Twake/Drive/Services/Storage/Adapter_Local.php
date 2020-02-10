@@ -23,7 +23,7 @@ class Adapter_Local implements AdapterInterface
         $this->preview_root = $local_config["storage"]["preview_location"];
         $this->pre_public_path = $local_config["storage"]["preview_public_path"];
         $this->preview = $preview;
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
 
     }
 

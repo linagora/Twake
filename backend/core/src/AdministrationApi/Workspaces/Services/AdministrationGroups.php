@@ -12,7 +12,7 @@ class AdministrationGroups
 
     public function __construct($em)
     {
-        $this->em = $em;
+        $this->em = $app->getServices()->get("app.twake_doctrine");
     }
 
     public function getAllGroups($options)

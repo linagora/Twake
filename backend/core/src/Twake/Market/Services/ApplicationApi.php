@@ -11,10 +11,10 @@ class ApplicationApi
     private $doctrine;
     private $rest_client;
 
-    public function __construct($doctrine, $rest_client)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->rest_client = $rest_client;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->rest_client = $app->getServices()->get("app.restclient");
     }
 
 

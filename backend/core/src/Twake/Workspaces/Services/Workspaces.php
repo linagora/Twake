@@ -32,22 +32,22 @@ class Workspaces
     private $pusher;
     private $translate;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $calendarService, $calendarEventService, $workspaces_service)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->wls = $workspaces_levels_service;
-        $this->wms = $workspaces_members_service;
-        $this->gms = $groups_managers_service;
-        $this->gas = $groups_apps_service;
-        $this->gs = $groups_service;
-        $this->pricing = $priceService;
-        $this->string_cleaner = $cleaner;
-        $this->pusher = $pusher;
-        $this->workspacesActivities = $workspacesActivities;
-        $this->translate = $translate;
-        $this->calendarService = $calendarService;
-        $this->calendarEventService = $calendarEventService;
-        $this->workspaces_service = $workspaces_service;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->wls = $app->getServices()->get("app.workspace_levels");
+        $this->wms = $app->getServices()->get("app.workspace_members");
+        $this->gms = $app->getServices()->get("app.group_managers");
+        $this->gas = $app->getServices()->get("app.group_apps");
+        $this->gs = $app->getServices()->get("app.groups");
+        $this->pricing = $app->getServices()->get("app.pricing_plan");
+        $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
+        $this->pusher = $app->getServices()->get("app.pusher");
+        $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
+        $this->translate = $app->getServices()->get("app.translate");
+        $this->calendarService = $app->getServices()->get("app.calendar.calendar");
+        $this->calendarEventService = $app->getServices()->get("app.calendar.event");
+        $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
     }
 
     public function getPrivate($userId = null)

@@ -13,11 +13,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
     var $notificationSystem;
     var $pusher;
 
-    function __construct($doctrine, $notificationSystem, $pusher)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->notificationSystem = $notificationSystem;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->notificationSystem = $app->getServices()->get("app.notifications");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function newElement($channel, $sender_application = null, $sender_user = null, $message_as_text = "", $message = null)

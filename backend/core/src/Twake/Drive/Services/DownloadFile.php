@@ -21,10 +21,10 @@ class DownloadFile
     private $storagemanager;
     private $parameter_drive_salt;
 
-    public function __construct($resumable, $doctrine, $storagemanager, $drive_salt, $oldFileSystem)
+    public function __construct(App $app)
     {
         $this->resumable = $resumable;
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $storagemanager;
         $this->parameter_drive_salt = $drive_salt;
         $this->oldFileSystem = $oldFileSystem->getFileSystem();

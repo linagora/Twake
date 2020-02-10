@@ -20,10 +20,10 @@ class PricingPlan
     private $doctrine; //min cost is 1%
     private $groupPeriod;
 
-    public function __construct($doctrine, $groupperiodservice)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->groupPeriod = $groupperiodservice;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->groupPeriod = $app->getServices()->get("app.group_period");
     }
 
     public function init()

@@ -18,15 +18,15 @@ class Groups
     private $wms;
     private $pusher;
 
-    public function __construct($doctrine, $group_managers_service, $market_service, $clean, $group_period_service, $workspace_member_service, $pusher)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->gms = $group_managers_service;
-        $this->market = $market_service;
-        $this->string_cleaner = $clean;
-        $this->gps = $group_period_service;
-        $this->wms = $workspace_member_service;
-        $this->pusher = $pusher;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->gms = $app->getServices()->get("app.group_managers");
+        $this->market = $app->getServices()->get("app.applications");
+        $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
+        $this->gps = $app->getServices()->get("app.group_period");
+        $this->wms = $app->getServices()->get("app.workspace_members");
+        $this->pusher = $app->getServices()->get("app.pusher");
     }
 
     public function create($userId, $name, $uniquename, $planId, $group_data_on_create = Array())

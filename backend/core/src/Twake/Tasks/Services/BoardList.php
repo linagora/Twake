@@ -6,13 +6,13 @@ namespace Twake\Tasks\Services;
 class BoardList
 {
 
-    function __construct($entity_manager, $enc_pusher, $application_api, $notifications, $board_listExport)
+    public function __construct(App $app)
     {
-        $this->doctrine = $entity_manager;
-        $this->boardExport = $board_listExport;
-        $this->enc_pusher = $enc_pusher;
-        $this->applications_api = $application_api;
-        $this->notifications = $notifications;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->boardExport = $app->getServices()->get("app.tasks.export");
+        $this->enc_pusher = $app->getServices()->get("app.websockets");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
+        $this->notifications = $app->getServices()->get("app.notifications");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */

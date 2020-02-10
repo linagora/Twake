@@ -12,13 +12,13 @@ use Twake\Core\CommonObjects\AttachementManager;
 class CalendarEvent
 {
 
-    function __construct($entity_manager, $enc_pusher, $application_api, $notifications, $calendarExport)
+    public function __construct(App $app)
     {
-        $this->doctrine = $entity_manager;
-        $this->calendarExport = $calendarExport;
-        $this->enc_pusher = $enc_pusher;
-        $this->applications_api = $application_api;
-        $this->notifications = $notifications;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->calendarExport = $app->getServices()->get("app.calendar.export");
+        $this->enc_pusher = $app->getServices()->get("app.websockets");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
+        $this->notifications = $app->getServices()->get("app.notifications");
         $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 

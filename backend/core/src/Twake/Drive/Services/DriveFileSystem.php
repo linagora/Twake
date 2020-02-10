@@ -11,13 +11,13 @@ use Twake\Drive\Entity\DriveFileVersion;
 class DriveFileSystem
 {
 
-    function __construct($entity_manager, $application_api, $ws, $access_manager)
+    public function __construct(App $app)
     {
-        $this->em = $entity_manager;
-        $this->applications_api = $application_api;
+        $this->em = $app->getServices()->get("app.twake_doctrine");
+        $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->drive_resumable = false;
         $this->ws = $ws;
-        $this->access_manager = $access_manager;
+        $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->attachementManager = new AttachementManager($this->em, $this->ws);
 
         $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");

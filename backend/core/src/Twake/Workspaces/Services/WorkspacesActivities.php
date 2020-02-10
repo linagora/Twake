@@ -20,10 +20,10 @@ class WorkspacesActivities
     var $applicationManager;
     private $doctrine;
 
-    public function __construct($doctrine, $applicationManager)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->applicationManager = $applicationManager;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->applicationManager = $app->getServices()->get("app.applications");
     }
 
     public static function cmpResumed($a, $b)

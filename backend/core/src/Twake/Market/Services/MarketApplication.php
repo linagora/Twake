@@ -11,11 +11,11 @@ class MarketApplication
     private $gms;
     private $pricingPlan;
 
-    public function __construct($doctrine, $group_managers_service, $pricing)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->gms = $group_managers_service;
-        $this->pricingPlan = $pricing;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->gms = $app->getServices()->get("app.group_managers");
+        $this->pricingPlan = $app->getServices()->get("app.pricing_plan");
     }
 
     public function findBySimpleName($name, $entity = false)

@@ -21,17 +21,17 @@ class WorkspaceMembers
     private $pricing;
     private $calendar;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $calendar, $workspacesActivities, $groupManager)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->wls = $workspaces_levels_service;
-        $this->string_cleaner = $string_cleaner;
-        $this->twake_mailer = $twake_mailer;
-        $this->pusher = $pusher;
-        $this->pricing = $priceService;
-        $this->calendar = $calendar;
-        $this->workspacesActivities = $workspacesActivities;
-        $this->groupManager = $groupManager;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->wls = $app->getServices()->get("app.workspace_levels");
+        $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
+        $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
+        $this->pusher = $app->getServices()->get("app.pusher");
+        $this->pricing = $app->getServices()->get("app.pricing_plan");
+        $this->calendar = $app->getServices()->get("app.calendar.calendar");
+        $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
+        $this->groupManager = $app->getServices()->get("app.group_managers");
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)

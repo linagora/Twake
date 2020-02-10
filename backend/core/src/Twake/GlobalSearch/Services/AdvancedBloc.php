@@ -10,11 +10,11 @@ class AdvancedBloc
     private $workspaceservice;
     private $globalresult;
 
-    public function __construct($doctrine, $blocservice, $workspaceservice)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->blocservice = $blocservice;
-        $this->workspaceservice = $workspaceservice;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->blocservice = $app->getServices()->get("globalsearch.messagebloc");
+        $this->workspaceservice = $app->getServices()->get("app.workspaces");
 
     }
 

@@ -19,14 +19,14 @@ class WorkspacesApps
     private $channel_system;
     private $application_api;
 
-    public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher, $channel_system, $application_api)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
-        $this->wls = $workspaces_levels_service;
-        $this->gms = $group_managers_service;
-        $this->pusher = $pusher;
-        $this->channel_system = $channel_system;
-        $this->application_api = $application_api;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->wls = $app->getServices()->get("app.workspace_levels");
+        $this->gms = $app->getServices()->get("app.group_managers");
+        $this->pusher = $app->getServices()->get("app.pusher");
+        $this->channel_system = $app->getServices()->get("app.channels.channels_system");
+        $this->application_api = $app->getServices()->get("app.applications_api");
 
     }
 

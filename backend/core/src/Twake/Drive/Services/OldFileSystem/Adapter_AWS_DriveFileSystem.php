@@ -9,7 +9,7 @@ use Aws\S3\S3Client;
 class Adapter_AWS_DriveFileSystem
 {
 
-    public function __construct($aws_config, $rootDirectory, $parameter_drive_salt)
+    public function __construct(App $app)
     {
 
         $s3_config = $aws_config["S3"];

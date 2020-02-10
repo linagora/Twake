@@ -11,7 +11,7 @@ class UploadFile
 {
     private $resumable;
 
-    public function __construct($resumable)
+    public function __construct(App $app)
     {
         $this->resumable = $resumable;
     }

@@ -11,13 +11,13 @@ class StorageManager
     private $adapter;
     private $doctrine;
 
-    public function __construct($local, $aws, $openstack, $root, $preview, $doctrine)
+    public function __construct(App $app)
     {
         $this->aws = $aws;
         $this->openstack = $openstack;
         $this->root = $root;
         $this->preview = $preview;
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->local = $local;
     }
 

@@ -14,9 +14,9 @@ class GroupPeriods
 
     private $doctrine;
 
-    public function __construct($doctrine)
+    public function __construct(App $app)
     {
-        $this->doctrine = $doctrine;
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
     }
 
     public function changePlanOrRenew($group, $billingType, $planId)

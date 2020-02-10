@@ -11,7 +11,7 @@ class AdministrationApps
 
     public function __construct($em)
     {
-        $this->em = $em;
+        $this->em = $app->getServices()->get("app.twake_doctrine");
     }
 
     public function getAllApps($limit, $offset)
