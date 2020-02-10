@@ -23,10 +23,10 @@ class DownloadFile
 
     public function __construct(App $app)
     {
-        $this->resumable = $resumable;
+        $this->resumable = $app->getServices()->get("driveupload.resumable");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
-        $this->storagemanager = $storagemanager;
-        $this->parameter_drive_salt = $drive_salt;
+        $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
         $this->oldFileSystem = $oldFileSystem->getFileSystem();
     }
 

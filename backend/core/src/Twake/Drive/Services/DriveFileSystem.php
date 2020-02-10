@@ -16,7 +16,7 @@ class DriveFileSystem
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->drive_resumable = false;
-        $this->ws = $ws;
+        $this->ws = $app->getServices()->get("app.websockets");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->attachementManager = new AttachementManager($this->em, $this->ws);
 

@@ -9,7 +9,6 @@ use Twake\Drive\Entity\UploadState;
 use Twake\Drive\Services\DriveFile;
 use Twake\Drive\Services\Storage\EncryptionBag;
 
-
 class Resumable
 {
     const WITHOUT_EXTENSION = true;
@@ -47,13 +46,13 @@ class Resumable
     public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $parameter_drive_salt)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
-        $this->storagemanager = $storagemanager;
-        $this->driverefacto = $driverefacto;
+        $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
+        $this->driverefacto = $app->getServices()->get("app.drive");
         $this->log = new Logger('debug');
         $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
-        $this->previews = $drive_previews_tmp_folder;
-        $this->tempFolder = $drive_tmp_folder;
-        $this->parameter_drive_salt = $parameter_drive_salt;
+        $this->previews = $app->getContainer()->getParameter("drive_previews_tmp_folder");
+        $this->tempFolder = $app->getContainer()->getParameter("drive_tmp_folder");
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
 
 
         //$this->preProcess();

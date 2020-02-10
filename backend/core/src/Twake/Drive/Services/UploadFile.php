@@ -13,7 +13,7 @@ class UploadFile
 
     public function __construct(App $app)
     {
-        $this->resumable = $resumable;
+        $this->resumable = $app->getServices()->get("driveupload.resumable");
     }
 
     public function preprocess($request, $current_user_id)

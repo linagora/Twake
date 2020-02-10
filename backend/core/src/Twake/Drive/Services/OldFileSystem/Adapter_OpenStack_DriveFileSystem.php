@@ -3,6 +3,7 @@
 
 namespace Twake\Drive\Services\OldFileSystem;
 
+use App\App;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use OpenStack\Common\Transport\Utils as TransportUtils;
@@ -14,6 +15,9 @@ class Adapter_OpenStack_DriveFileSystem
 
     public function __construct(App $app)
     {
+        $openstack_config = $app->getContainer()->getParameter("openstack");
+        $this->root = $this->local = $app->getAppRootDir();
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = isset($openstack_config["buckets_prefix"]) ? $openstack_config["buckets_prefix"] : "";
@@ -21,8 +25,6 @@ class Adapter_OpenStack_DriveFileSystem
         $this->openstack_credentials_secret = $openstack_config["user"]["password"];
         $this->openstack_project_id = $openstack_config["project_id"];
         $this->openstack_auth_url = $openstack_config["auth_url"];
-        $this->root = $rootDirectory;
-        $this->parameter_drive_salt = $parameter_drive_salt;
 
         $httpClient = new Client([
             'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url),

@@ -2,6 +2,8 @@
 
 namespace Twake\Upload\Services;
 
+use App\App;
+
 class ImagesModifiers
 {
 
@@ -73,7 +75,7 @@ class ImagesModifiers
     /**
      * Init
      */
-    public function __construct()
+    public function __construct(App $app)
     {
         if (!function_exists('getimagesize')) { // check for GD library
             trigger_error(__CLASS__ . ' requires the GD library', E_USER_ERROR);

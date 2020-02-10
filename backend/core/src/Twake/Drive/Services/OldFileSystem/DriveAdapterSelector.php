@@ -2,15 +2,17 @@
 
 namespace Twake\Drive\Services\OldFileSystem;
 
+use App\App;
+
 class DriveAdapterSelector
 {
 
     public function __construct(App $app)
     {
-        $this->aws = $aws;
-        $this->openstack = $openstack;
-        $this->aws_file_system = $aws_file_system;
-        $this->openstack_file_system = $openstack_file_system;
+        $this->aws = $app->getContainer()->getParameter("aws");
+        $this->openstack = $app->getContainer()->getParameter("openstack");
+        $this->aws_file_system = $app->getServices()->get("app.drive.old.AWS_FileSystem");
+        $this->openstack_file_system = $app->getServices()->get("app.drive.old.OpenStack_FileSystem");
     }
 
     public function getFileSystem()

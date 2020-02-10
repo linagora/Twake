@@ -17,6 +17,8 @@ class OpenStack_Uploader extends Uploader
     public function __construct(App $app)
     {
 
+        $openstack_config = $app->getContainer()->getParameter("openstack");
+
         parent::__construct($app);
 
         $this->openstack_buckets = $openstack_config["buckets"];

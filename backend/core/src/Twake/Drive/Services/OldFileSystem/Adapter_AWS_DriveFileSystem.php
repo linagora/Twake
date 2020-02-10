@@ -3,6 +3,7 @@
 
 namespace Twake\Drive\Services\OldFileSystem;
 
+use App\App;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
@@ -12,14 +13,16 @@ class Adapter_AWS_DriveFileSystem
     public function __construct(App $app)
     {
 
+        $aws_config = $app->getContainer()->getParameter("aws");
+        $this->root = $this->local = $app->getAppRootDir();
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
+
         $s3_config = $aws_config["S3"];
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
         $this->aws_credentials_key = $s3_config["credentials"]["key"];
         $this->aws_credentials_secret = $s3_config["credentials"]["secret"];
-        $this->root = $rootDirectory;
-        $this->parameter_drive_salt = $parameter_drive_salt;
 
         $region = false;
         foreach ($this->aws_buckets as $region_code => $aws_region) {

@@ -2,6 +2,8 @@
 
 namespace Twake\Drive\Services\Storage;
 
+use App\App;
+
 class StorageManager
 {
 
@@ -13,12 +15,12 @@ class StorageManager
 
     public function __construct(App $app)
     {
-        $this->aws = $aws;
-        $this->openstack = $openstack;
-        $this->root = $root;
-        $this->preview = $preview;
+        $this->aws = $app->getContainer()->getParameter("aws");
+        $this->openstack = $app->getContainer()->getParameter("openstack");
+        $this->local = $app->getContainer()->getParameter("local");
+        $this->root = $this->local = $app->getAppRootDir();
+        $this->preview = $app->getServices->get("app.drive.preview");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
-        $this->local = $local;
     }
 
     /**

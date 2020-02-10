@@ -3,6 +3,7 @@
 
 namespace Twake\Upload\Services;
 
+use App\App;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
@@ -12,6 +13,8 @@ class AWS_Uploader extends Uploader
 
     public function __construct(App $app)
     {
+
+        $aws_config = $app->getContainer()->getParameter("aws");
 
         parent::__construct($app);
 

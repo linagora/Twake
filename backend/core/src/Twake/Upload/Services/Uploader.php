@@ -2,10 +2,10 @@
 
 namespace Twake\Upload\Services;
 
-use Common\BaseController;
+use App\App;
 use Twake\Upload\Entity\File;
 
-class Uploader extends BaseController
+class Uploader
 {
 
     var $doctrine;
@@ -15,8 +15,8 @@ class Uploader extends BaseController
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
-        $this->uploadService = $uploadService;
-        $this->modifiersService = $modifiersService;
+        $this->uploadService = $app->getServices()->get("app.upload");
+        $this->modifiersService = $app->getServices()->get("app.images_modifiers");
     }
 
     /**

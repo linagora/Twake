@@ -3,13 +3,15 @@
 
 namespace Twake\Upload\Services;
 
+use App\App;
+
 class Upload
 {
 
     var $imagesModifiers;
     var $default_context;
 
-    function __construct()
+    function __construct(App $app)
     {
 
         $this->default_context = Array(
