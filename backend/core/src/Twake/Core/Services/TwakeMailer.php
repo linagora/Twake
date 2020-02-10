@@ -79,6 +79,8 @@ class TwakeMailer
         $selector = $this->mail_parameters["dkim"]["selector"];
         $signer = new Swift_Signers_DKIMSigner($privateKey, $domainName, $selector);
 
+        $this->app->getSilexApp()['swiftmailer.options'] = $this->mail_parameters["sender"];
+
         //Sending verification mail
         $message = (new \Swift_Message(""))
             ->setSubject($this->html2title($html))

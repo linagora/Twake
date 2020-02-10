@@ -74,7 +74,7 @@ class Adapter_OpenStack implements AdapterInterface
         ]);
 
         $this->preview = $preview;
-        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->doctrine = $doctrine;
 
     }
 

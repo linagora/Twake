@@ -18,8 +18,8 @@ class StorageManager
         $this->aws = $app->getContainer()->getParameter("aws");
         $this->openstack = $app->getContainer()->getParameter("openstack");
         $this->local = $app->getContainer()->getParameter("local");
-        $this->root = $this->local = $app->getAppRootDir();
-        $this->preview = $app->getServices->get("app.drive.preview");
+        $this->root = $app->getAppRootDir();
+        $this->preview = $app->getServices()->get("app.drive.preview");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
     }
 

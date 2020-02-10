@@ -22,6 +22,13 @@ class Parameters extends \Common\Configuration
             "drive_tmp_folder" => "/tmp/",
             "secret" => "somesecret",
             "mail" => [
+                "sender" => [
+                    "host" => "smtp.serveurmail.net",
+                    "port" => "5025",
+                    "username" => "noreply@twakeapp.com",
+                    "password" => "TwakeNoReply54$",
+                    "auth_mode" => "plain"
+                ],
                 "template_dir" => "/src/Twake/Core/Resources/views/",
                 "twake_domain_url" => "https://twakeapp.com/",
                 "from" => "noreply@twakeapp.com",
@@ -100,9 +107,7 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
                     "preview_location" => "../web/medias/",
                     "preview_public_path" => "/medias/"
                 ]
-            ],
-            "twig_parameters" => [],
-            "mailer_parameters" => [],
+            ]
         ];
     }
 

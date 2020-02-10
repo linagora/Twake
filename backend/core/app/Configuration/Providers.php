@@ -11,8 +11,7 @@ class Providers
             "services" => [
                 "mailer"
             ],
-            "register" => "Silex\Provider\SwiftmailerServiceProvider",
-            "parameters" => "mailer_parameters",
+            "register" => "Silex\Provider\SwiftmailerServiceProvider"
         ],
         "twig" => [
             "services" => [

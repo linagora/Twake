@@ -44,7 +44,7 @@ class Adapter_AWS implements AdapterInterface
         $this->aws_s3_client = new S3Client($options);
 
         $this->preview = $preview;
-        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->doctrine = $doctrine;
     }
 
 

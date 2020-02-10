@@ -2,9 +2,6 @@
 
 namespace Twake\Drive\Services\Resumable;
 
-use Cake\Filesystem\File;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Twake\Drive\Entity\UploadState;
 use Twake\Drive\Services\DriveFile;
 use Twake\Drive\Services\Storage\EncryptionBag;
@@ -22,7 +19,6 @@ class Resumable
     protected $response;
     protected $params;
     protected $chunkFile;
-    protected $log;
     protected $filename;
     protected $filepath;
     protected $extension;
@@ -44,17 +40,14 @@ class Resumable
     protected $previews;
     protected $parameter_drive_salt;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $parameter_drive_salt)
+    public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
         $this->driverefacto = $app->getServices()->get("app.drive");
-        $this->log = new Logger('debug');
-        $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
         $this->previews = $app->getContainer()->getParameter("drive_previews_tmp_folder");
         $this->tempFolder = $app->getContainer()->getParameter("drive_tmp_folder");
         $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
-
 
         //$this->preProcess();
     }
@@ -207,15 +200,7 @@ class Resumable
         $part = explode("_", $filename)[0];
         $chemin = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $part . "_" . $chunkNumber;
 
-
-        $file = new File($chemin);
-
-        //$file = new File($this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $filename);
-//        if($file->exists() == 1)
-//            return true;
-//        else
-//            return false;
-        return $file->exists();
+        return file_exists($chemin);
     }
 
     public function tmpChunkDir()
@@ -231,18 +216,16 @@ class Resumable
 
     public function moveUploadedFile($file, $destFile)
     {
-        $file = new File($file);
-        if ($file->exists()) {
-            return $file->copy($destFile);
+        if (file_exists($file)) {
+            return copy($file, $destFile);
         }
         return false;
     }
 
     public function copy($file, $destFile)
     {
-        $file = new File($file);
-        if ($file->exists()) {
-            return $file->copy($destFile);
+        if (file_exists($file)) {
+            return copy($file, $destFile);
         }
         return false;
     }
@@ -456,34 +439,5 @@ class Resumable
         return false;
     }
 
-    /**
-     * Create the final file from chunks
-     */
-    private function createFileAndDeleteTmp($folder, $filename)
-    {
-        //$tmpFolder = new Folder($this->tmpChunkDir($identifier));
-        //$chunkFiles = $tmpFolder->read(true, true, true)[1];
-        // if the user has set a custom filename
-        if (null !== $this->filename) {
-            $finalFilename = $this->createSafeFilename($this->filename, $filename);
-        } else {
-            $finalFilename = $filename;
-        }
-        // replace filename reference by the final file
-        return $this->filepath = $folder . DIRECTORY_SEPARATOR . $finalFilename;
-
-//        $this->extension = $this->findExtension($this->filepath);
-//        if ($this->createFileFromChunks($chunkFiles, $this->filepath) && $this->deleteTmpFolder) {
-//            $tmpFolder->delete();
-//            $this->uploadComplete = true;
-//        }
-    }
-
-    private function log($msg, $ctx = array())
-    {
-        if ($this->debug) {
-            $this->log->addDebug($msg, $ctx);
-        }
-    }
 
 }
