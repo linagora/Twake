@@ -7,7 +7,7 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "ajax/drive/";
+    protected $routing_prefix = "ajax/";
 
     protected $routes = [
 # Drive base

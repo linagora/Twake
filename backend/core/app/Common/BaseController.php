@@ -37,4 +37,9 @@ abstract class BaseController
         return $user;
     }
 
+    public function getParameter($key)
+    {
+        return $this->app->getContainer()->getParameter($key);
+    }
+
 }
