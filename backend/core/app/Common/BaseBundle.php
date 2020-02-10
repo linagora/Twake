@@ -65,7 +65,7 @@ abstract class BaseBundle
                 }
 
                 $that = $this;
-                $routing_service->$method($final_route, function (Request $request = null) use ($that, $controller, $handler) {
+                $routing_service->addRoute($method, $final_route, function (Request $request = null) use ($that, $controller, $handler) {
                     $controller = $that->loadController($controller);
                     if (!$controller) {
                         return new Response("No controller " . $controller . " found", 500);

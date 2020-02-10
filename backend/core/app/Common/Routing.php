@@ -11,6 +11,7 @@ class Routing
 
     /** @var App */
     private $app = null;
+    private $routes = [];
 
     private $silex_app = null;
 
@@ -25,6 +26,23 @@ class Routing
                 $request->request->replace(is_array($data) ? $data : array());
             }
         });
+    }
+
+    public function addRoute($method, $route, $callback)
+    {
+        if (isset($this->routes[$route . ":" . $method])) {
+            error_log("Route " . $route . " was already defined.");
+            return;
+        }
+        $this->routes[$route . ":" . $method] = true;
+
+        if ($method == "get") {
+            $this->get($route, $callback);
+        } else if ($method == "post") {
+            $this->post($route, $callback);
+        } else {
+            error_log("Unable to register route " . $route . ": method " . $method . " is not implemented.");
+        }
     }
 
     public function get($route, $callback)

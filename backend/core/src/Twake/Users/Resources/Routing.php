@@ -41,7 +41,6 @@ class Routing extends BaseRouting
         "subscribe/identity" => ["handler" => "UsersSubscribe:subscribe", "methods" => ["POST"]],
         // New Subscribe
         "subscribe/subscribe" => ["handler" => "UsersSubscribe:subscribeTotaly", "methods" => ["POST"]],
-        "subscribe/mail" => ["handler" => "UsersSubscribe:testMail", "methods" => ["POST"]],
         "subscribe/availability" => ["handler" => "UsersSubscribe:getAvaible", "methods" => ["POST"]],
         "subscribe/company_subscribe" => ["handler" => "UsersSubscribe:createCompanyUser", "methods" => ["POST"]],
         // Recover
