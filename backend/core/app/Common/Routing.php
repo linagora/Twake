@@ -47,9 +47,9 @@ class Routing
 
     public function get($route, $callback)
     {
-        $this->silex_app->get($route, function () use ($callback) {
+        $this->silex_app->get($route, function (Request $request) use ($callback) {
             try {
-                return $this->beforeRender($callback());
+                return $this->beforeRender($callback($request));
             } catch (\Exception $e) {
                 error_log($e);
             }
