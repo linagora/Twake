@@ -54,7 +54,7 @@ class Pusher
         $socket = new \SocketCluster\SocketCluster($websocket);
 
         // Event Emit
-        $socket->publish($data["topic"], json_encode($data["data"]));
+        $socket->publish($data["topic"], $data["data"]);
 
         /*
 
