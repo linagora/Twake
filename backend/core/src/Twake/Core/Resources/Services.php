@@ -11,7 +11,7 @@ class Services extends BaseServices
         "app.websockets" => "Websockets",
         "app.twake_mailer" => "TwakeMailer",
         "app.restclient" => "TwakeRestClient",
-        "app.pusher" => "ZMQPusher",
+        "app.pusher" => "Pusher",
         "app.translate" => "Translate",
         "app.twake_doctrine" => "DoctrineAdapter/ManagerAdapter",
         "app.websockets" => "Websockets",

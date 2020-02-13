@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e986723c07e1313750bc03624e6b48be",
+    "content-hash": "2d766c73cdf8d4c8a59b63fa1c530366",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1316,54 +1316,6 @@
                 "unicode"
             ],
             "time": "2017-06-30T17:09:19+00:00"
-        },
-        {
-            "name": "evenement/evenement",
-            "version": "v2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/igorw/evenement.git",
-                "reference": "6ba9a777870ab49f417e703229d53931ed40fd7a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/igorw/evenement/zipball/6ba9a777870ab49f417e703229d53931ed40fd7a",
-                "reference": "6ba9a777870ab49f417e703229d53931ed40fd7a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^6.0||^5.7||^4.8.35"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Evenement": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Igor Wiedler",
-                    "email": "igor@wiedler.ch"
-                }
-            ],
-            "description": "Événement is a very simple event dispatching library for PHP",
-            "keywords": [
-                "event-dispatcher",
-                "event-emitter"
-            ],
-            "time": "2017-07-17T17:39:19+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2960,93 +2912,6 @@
             "time": "2020-01-27T05:09:17+00:00"
         },
         {
-            "name": "react/event-loop",
-            "version": "v0.4.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "8bde03488ee897dc6bb3d91e4e17c353f9c5252f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/8bde03488ee897dc6bb3d91e4e17c353f9c5252f",
-                "reference": "8bde03488ee897dc6bb3d91e4e17c353f9c5252f",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.8"
-            },
-            "suggest": {
-                "ext-event": "~1.0",
-                "ext-libev": "*",
-                "ext-libevent": ">=0.1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "React\\EventLoop\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Event loop abstraction layer that libraries can use for evented I/O.",
-            "keywords": [
-                "asynchronous",
-                "event-loop"
-            ],
-            "time": "2017-04-27T10:56:23+00:00"
-        },
-        {
-            "name": "react/zmq",
-            "version": "v0.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/reactphp/zmq.git",
-                "reference": "2865e3b23000751ed443d3f108da2735abf80716"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/zmq/zipball/2865e3b23000751ed443d3f108da2735abf80716",
-                "reference": "2865e3b23000751ed443d3f108da2735abf80716",
-                "shasum": ""
-            },
-            "require": {
-                "evenement/evenement": "~2.0",
-                "ext-zmq": "*",
-                "php": ">=5.4.0",
-                "react/event-loop": "0.4.*"
-            },
-            "require-dev": {
-                "ext-pcntl": "*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "React\\ZMQ": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "ZeroMQ bindings for React.",
-            "keywords": [
-                "zeromq",
-                "zmq"
-            ],
-            "time": "2014-05-25T17:54:51+00:00"
-        },
-        {
             "name": "sebastian/code-unit-reverse-lookup",
             "version": "1.0.1",
             "source": {
@@ -3645,6 +3510,60 @@
             ],
             "abandoned": "symfony/flex",
             "time": "2018-04-20T05:17:01+00:00"
+        },
+        {
+            "name": "soleon/sc-php",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/soleon-leiloes/sc-php.git",
+                "reference": "7c8f9169be5cefbe87d87adf2f2dcf59132706b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/soleon-leiloes/sc-php/zipball/7c8f9169be5cefbe87d87adf2f2dcf59132706b2",
+                "reference": "7c8f9169be5cefbe87d87adf2f2dcf59132706b2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "textalk/websocket": "1.0.*"
+            },
+            "require-dev": {
+                "illuminate/broadcasting": "5.2.*",
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "~4.0",
+                "pimple/pimple": "~3.0"
+            },
+            "suggest": {
+                "laravel/framework": "Framework Laravel (5.2.*)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocketCluster\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renato Moura",
+                    "email": "renato@soleon.com.br"
+                }
+            ],
+            "description": "SocketCluster - PHP library for interacting with the SocketCluster.io",
+            "homepage": "https://github.com/soleon-leiloes/sc-php",
+            "keywords": [
+                "Broadcasting",
+                "laravel",
+                "php",
+                "realtime",
+                "socketcluster"
+            ],
+            "time": "2016-07-27T15:19:21+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -5719,6 +5638,44 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2020-01-13T08:00:59+00:00"
+        },
+        {
+            "name": "textalk/websocket",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Textalk/websocket-php.git",
+                "reference": "ba2e5f9ef7cf24d536d1c864ae74b2a9599b86eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Textalk/websocket-php/zipball/ba2e5f9ef7cf24d536d1c864ae74b2a9599b86eb",
+                "reference": "ba2e5f9ef7cf24d536d1c864ae74b2a9599b86eb",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.1.*",
+                "phpunit/phpunit-selenium": "1.3.3",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WebSocket\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fredrik Liljegren",
+                    "email": "fredrik.liljegren@textalk.se"
+                }
+            ],
+            "description": "WebSocket client and server",
+            "time": "2015-04-11T05:45:54+00:00"
         },
         {
             "name": "twig/twig",

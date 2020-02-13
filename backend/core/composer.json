@@ -12,7 +12,6 @@
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
-        "react/zmq": "^0.3.0",
         "phpunit/phpunit": "5.7",
         "aws/aws-sdk-php-symfony": "~2.0",
         "php-opencloud/openstack": "^3.0",
@@ -22,7 +21,8 @@
         "doctrine/dbal": "~2.2",
         "knplabs/console-service-provider": "^2.2",
         "ramsey/uuid-doctrine": "^1.5",
-        "symfony/security": "^4.4"
+        "symfony/security": "^4.4",
+        "soleon/sc-php": "^1.0"
     },
     "autoload": {
         "psr-4": {

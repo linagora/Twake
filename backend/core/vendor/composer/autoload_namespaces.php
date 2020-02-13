@@ -7,7 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Twig_' => array($vendorDir . '/twig/twig/lib'),
-    'React\\ZMQ' => array($vendorDir . '/react/zmq/src'),
     'Pimple' => array($vendorDir . '/pimple/pimple/src'),
-    'Evenement' => array($vendorDir . '/evenement/evenement/src'),
 );

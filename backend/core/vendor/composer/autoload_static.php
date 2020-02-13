@@ -33,6 +33,7 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'W' =>
             array(
                 'Webmozart\\Assert\\' => 17,
+                'WebSocket\\' => 10,
             ),
         'T' =>
             array(
@@ -70,11 +71,11 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Symfony\\Component\\Cache\\' => 24,
                 'Symfony\\Bundle\\FrameworkBundle\\' => 31,
                 'Symfony\\Bridge\\Doctrine\\' => 24,
+                'SocketCluster\\' => 14,
                 'Silex\\' => 6,
             ),
         'R' =>
             array(
-                'React\\EventLoop\\' => 16,
                 'Ramsey\\Uuid\\Doctrine\\' => 21,
                 'Ramsey\\Uuid\\' => 12,
             ),
@@ -148,6 +149,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'Webmozart\\Assert\\' =>
             array(
                 0 => __DIR__ . '/..' . '/webmozart/assert/src',
+            ),
+        'WebSocket\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/textalk/websocket/lib',
             ),
         'Twig\\' =>
             array(
@@ -273,13 +278,13 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/symfony/doctrine-bridge',
             ),
+        'SocketCluster\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/soleon/sc-php/src',
+            ),
         'Silex\\' =>
             array(
                 0 => __DIR__ . '/..' . '/silex/silex/src/Silex',
-            ),
-        'React\\EventLoop\\' =>
-            array(
-                0 => __DIR__ . '/..' . '/react/event-loop/src',
             ),
         'Ramsey\\Uuid\\Doctrine\\' =>
             array(
@@ -428,28 +433,14 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Twig_' =>
                     array(
                         0 => __DIR__ . '/..' . '/twig/twig/lib',
-                    ),
             ),
-        'R' =>
-            array(
-                'React\\ZMQ' =>
-                    array(
-                        0 => __DIR__ . '/..' . '/react/zmq/src',
-                    ),
             ),
         'P' =>
             array(
                 'Pimple' =>
                     array(
                         0 => __DIR__ . '/..' . '/pimple/pimple/src',
-                    ),
             ),
-        'E' =>
-            array(
-                'Evenement' =>
-                    array(
-                        0 => __DIR__ . '/..' . '/evenement/evenement/src',
-                    ),
             ),
     );
 

@@ -7,7 +7,7 @@ use App\App;
 use Twake\Core\Entity\ZMQQueue;
 use Twake\Core\Services\RememberMe;
 
-class ZMQPusher
+class Pusher
 {
 
     var $connected = false;
@@ -30,7 +30,6 @@ class ZMQPusher
             "topic" => $route,
             "data" => $data
         );
-        $data = json_encode($data);
 
         $this->pushForReal($data, $route);
         return;
@@ -42,6 +41,22 @@ class ZMQPusher
 
     public function pushForReal($data, $route)
     {
+
+        $options = [
+            'secure' => false,
+            'host' => $this->host,
+            'port' => $this->port,
+            'path' => '/socketcluster/',
+            'query' => [],
+        ];
+
+        $websocket = \SocketCluster\WebSocket::factory($options);
+        $socket = new \SocketCluster\SocketCluster($websocket);
+
+        // Event Emit
+        $socket->publish($data["topic"], json_encode($data["data"]));
+
+        /*
 
         $config = Array(
             "linger" => 1,
@@ -69,7 +84,7 @@ class ZMQPusher
             error_log("send...");
             $this->connection->send($data);
             error_log("sent !");
-        }
+        }*/
 
     }
 
