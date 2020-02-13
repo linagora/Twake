@@ -90,8 +90,6 @@ class Websockets
             $key_version = $route_entity->getKeyVersion();
         }
 
-        //TODO remove too old route entity and replace by new
-
         //Verify user has access
         $get_result = false;
         if ($controller) {

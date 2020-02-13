@@ -64,14 +64,12 @@ class User
     public function alive($userId)
     {
         $userRepository = $this->em->getRepository("Twake\Users:User");
-
         $user = $userRepository->find($userId);
 
         if ($user != null) {
             $user->isActive();
             $this->em->persist($user);
             $this->em->flush();
-
         }
     }
 

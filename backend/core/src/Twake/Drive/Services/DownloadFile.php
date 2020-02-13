@@ -26,7 +26,7 @@ class DownloadFile
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
         $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
-        $this->oldFileSystem = $oldFileSystem->getFileSystem();
+        $this->oldFileSystem = $app->getServices()->get("app.drive.old.adapter_selector")->getFileSystem();
     }
 
     public function download($workspace_id, $files_ids, $download, $versionId)

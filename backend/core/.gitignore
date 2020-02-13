@@ -117,14 +117,9 @@ fabric.properties
 /web/js/
 docker-compose.yml
 
-### Dev ###
-/docker-data/*
-
 ### Twake specific ###
 /build/
 /vendor/
-/app/Ressources/DatabaseEncryption/.HaliteEncryptor.key
-/app/Ressources/DatabaseEncryption/.Halite.key
 
 ### AWS ###
 /app/config/aws_config.yml
@@ -133,3 +128,5 @@ docker-compose.yml
 /tests/code_coverage/
 /web/detached/*
 /drive/*
+/app/Configuration/Parameters.php
+/cache/

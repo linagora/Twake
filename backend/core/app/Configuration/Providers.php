@@ -25,16 +25,7 @@ class Providers
                 "db"
             ],
             "register" => "Silex\Provider\DoctrineServiceProvider",
-        ],
-        "security" => [
-            "services" => [
-                "security.token_storage",
-                "security.authorization_checker",
-                "security.encoder_factory"
-            ],
-            "register" => "Silex\Provider\SecurityServiceProvider",
-            "parameters" => "security",
-        ],
+        ]
     ];
 
 }

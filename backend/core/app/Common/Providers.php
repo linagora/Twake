@@ -37,6 +37,7 @@ class Providers
 
     public function get($key)
     {
+
         if (isset($this->service_instances[$key])) {
             return $this->service_instances[$key];
         }

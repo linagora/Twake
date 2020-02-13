@@ -455,10 +455,8 @@ class ManagerAdapter
             return;
         }
 
-        $name = $metadata->getName();
         $em = $this->getEntityManager();
-        $factory = new DefaultRepositoryFactory($em, $name);
-        return $factory->getRepository($em, $name);
+        return new RepositoryAdapter($em, $metadata);
     }
 
 

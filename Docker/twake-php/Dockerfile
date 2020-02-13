@@ -1,6 +1,7 @@
 # See https://github.com/docker-library/php/blob/master/7.1/fpm/Dockerfile
 FROM php:7.1-fpm-stretch
 ARG TIMEZONE
+ARG APCU_VERSION=5.1.11
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
@@ -83,6 +84,11 @@ RUN apt-get update && apt-get install -y cmake autoconf g++ gcc make openssl lib
     && cd ext && ./install.sh \
     && docker-php-ext-enable cassandra \
     && rm -rf $INSTALL_DIR
+
+RUN pecl install apcu-${APCU_VERSION} && docker-php-ext-enable apcu
+RUN echo "extension=apcu.so" >> /usr/local/etc/php/php.ini
+RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini
+RUN echo "apc.enable=1" >> /usr/local/etc/php/php.ini
 
 
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc

@@ -48,6 +48,7 @@ class App
 
     public function __construct($silex_app)
     {
+        $time = microtime(true);
 
         $bundles = (new Bundles())->getBundles();
         $bundles_instances = [];
@@ -80,6 +81,8 @@ class App
         foreach ($bundles_instances as $bundle_instance) {
             $bundle_instance->init();
         }
+
+        error_log("build=" . (microtime(true) - $time));
 
     }
 

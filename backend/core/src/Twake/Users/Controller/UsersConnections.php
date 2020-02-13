@@ -14,11 +14,14 @@ class UsersConnections extends BaseController
 
     public function alive(Request $request)
     {
+        $time = microtime(true);
         $focus = $request->request->get("focus", true);
         if ($this->getUser() && $focus) {
             $this->get("app.user")->alive($this->getUser()->getId());
         }
+        error_log("alive=" . (microtime(true) - $time));
         return new JsonResponse(Array("data" => "ok"));
+
     }
 
     public function autoLogin(Request $request)
