@@ -4,8 +4,8 @@
 namespace DevelopersApiV1\Tasks\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Tasks extends BaseController
 {
@@ -15,7 +15,7 @@ class Tasks extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $object = $request->request->get("object", null);
@@ -32,7 +32,7 @@ class Tasks extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
-        return new JsonResponse(Array("result" => $object));
+        return new Response(Array("result" => $object));
     }
 
     public function saveTask(Request $request)
@@ -42,7 +42,7 @@ class Tasks extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $object = $request->request->get("object", null);
@@ -53,7 +53,7 @@ class Tasks extends BaseController
             $object = false;
         }
         if (!$object) {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         }
 
         if ($object) {
@@ -70,7 +70,7 @@ class Tasks extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
-        return new JsonResponse(Array("object" => $object));
+        return new Response(Array("object" => $object));
 
     }
 
@@ -80,7 +80,7 @@ class Tasks extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
         $objects = false;
         $user_id = $request->request->get("user_id", "");
@@ -96,7 +96,7 @@ class Tasks extends BaseController
         }
 
         if ($objects === false) {
-            return new JsonResponse(Array("error" => "payload_error"));
+            return new Response(Array("error" => "payload_error"));
         }
 
         $res = [];
@@ -106,7 +106,7 @@ class Tasks extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
-        return new JsonResponse(Array("data" => $res));
+        return new Response(Array("data" => $res));
     }
 
     public function getListsInBoard(Request $request)
@@ -115,7 +115,7 @@ class Tasks extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
         $objects = false;
         $user_id = $request->request->get("user_id", "");
@@ -132,7 +132,7 @@ class Tasks extends BaseController
         }
 
         if ($objects === false) {
-            return new JsonResponse(Array("error" => "payload_error"));
+            return new Response(Array("error" => "payload_error"));
         }
 
         $res = [];
@@ -142,7 +142,7 @@ class Tasks extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
-        return new JsonResponse(Array("data" => $res));
+        return new Response(Array("data" => $res));
     }
 
     public function getTasksInBoard(Request $request)
@@ -151,7 +151,7 @@ class Tasks extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
         $objects = false;
         $user_id = $request->request->get("user_id", "");
@@ -168,7 +168,7 @@ class Tasks extends BaseController
         }
 
         if ($objects === false) {
-            return new JsonResponse(Array("error" => "payload_error"));
+            return new Response(Array("error" => "payload_error"));
         }
 
         $res = [];
@@ -178,7 +178,7 @@ class Tasks extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
-        return new JsonResponse(Array("data" => $res));
+        return new Response(Array("data" => $res));
     }
 
 }

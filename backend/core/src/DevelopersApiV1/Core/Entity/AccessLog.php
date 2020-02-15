@@ -4,8 +4,6 @@ namespace DevelopersApiV1\Core\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use Symfony\Component\Validator\Constraints\DateTime;
-
 /**
  * AccessLog
  *

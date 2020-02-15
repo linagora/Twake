@@ -3,8 +3,8 @@
 namespace Twake\Core\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Access extends BaseController
 {
@@ -20,7 +20,7 @@ class Access extends BaseController
         $acces = $this->get('app.accessmanager')->has_access($current_user_id, $data, $options);
         $data = Array("data" => $acces);
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function user_has_workspace_access(Request $request)
@@ -32,6 +32,6 @@ class Access extends BaseController
         $publicaccess = $this->get('app.accessmanager')->user_has_workspace_access($current_user_id, $workspace_id);
         $data = Array("data" => $publicaccess);
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 }

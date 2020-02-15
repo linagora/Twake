@@ -10,8 +10,8 @@ namespace Twake\Workspaces\Controller;
 
 use PHPUnit\Util\Json;
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class WorkspaceMembers extends BaseController
@@ -32,7 +32,7 @@ class WorkspaceMembers extends BaseController
         $all_info = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
         $response["data"] = $all_info;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -84,7 +84,7 @@ class WorkspaceMembers extends BaseController
         $response["data"]["added"] = $added;
         $response["data"]["not_added"] = $not_added;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -103,7 +103,7 @@ class WorkspaceMembers extends BaseController
 
         $response["data"] = $res;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -128,7 +128,7 @@ class WorkspaceMembers extends BaseController
 
         $response["data"]["removed"] = $removed;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -154,7 +154,7 @@ class WorkspaceMembers extends BaseController
 
         $response["data"]["updated"] = $updated;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 
@@ -182,7 +182,7 @@ class WorkspaceMembers extends BaseController
         }
 
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 }

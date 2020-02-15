@@ -4,8 +4,8 @@
 namespace Twake\Tasks\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Export extends BaseController
 {
@@ -15,13 +15,13 @@ class Export extends BaseController
         if ($token) {
             return $this->get("app.tasks.export")->exportBoard($token, $this->get("app.tasks.task"));
         } else
-            return new JsonResponse("Errors : Token not found");
+            return new Response("Errors : Token not found");
     }
 
 
     public function generateToken(Request $request)
     {
         $user = $this->getUser();
-        return new JsonResponse(Array("token" => $this->get("app.tasks.export")->generateToken($request, $user)));
+        return new Response(Array("token" => $this->get("app.tasks.export")->generateToken($request, $user)));
     }
 }

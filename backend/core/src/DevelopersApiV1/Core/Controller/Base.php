@@ -10,8 +10,8 @@ namespace DevelopersApiV1\Core\Controller;
 
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Base extends BaseController
 {
@@ -20,13 +20,13 @@ class Base extends BaseController
     {
         $info = $this->get("api.v1.check_user_data")->getInfo($request->request->get("token", null));
         if ($info)
-            return new JsonResponse($info->getAsArray());
+            return new Response($info->getAsArray());
         else
-            return new JsonResponse(array("error" => "invalid_token"));
+            return new Response(array("error" => "invalid_token"));
     }
 
     public function BadRequest()
     {
-        return new JsonResponse(Array("errors" => "0000", "description" => "Bad request"));
+        return new Response(Array("errors" => "0000", "description" => "Bad request"));
     }
 }

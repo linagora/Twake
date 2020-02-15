@@ -4,8 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class UsersRecover extends BaseController
 {
@@ -32,7 +32,7 @@ class UsersRecover extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -60,7 +60,7 @@ class UsersRecover extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -89,7 +89,7 @@ class UsersRecover extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

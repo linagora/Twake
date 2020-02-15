@@ -4,11 +4,11 @@ namespace Twake\Drive\Services\Resumable\Network;
 
 class SimpleRequest
 {
-    public $symfonyrequest;
+    public $apprequest;
 
     public function __construct($request)
     {
-        $this->symfonyrequest = $request;
+        $this->apprequest = $request;
     }
 
     /**

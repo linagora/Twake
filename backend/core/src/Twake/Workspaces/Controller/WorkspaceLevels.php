@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 use Twake\Workspaces\Model\WorkspaceLevelsInterface;
 
 
@@ -31,7 +31,7 @@ class WorkspaceLevels extends BaseController
 
         if ($levels == null) {
             $response["errors"] = "notauthorized";
-            return new JsonResponse($response);
+            return new Response($response);
         }
 
         $list = $this->get("app.workspace_levels")->fixLevels($levels, $workspaceApps);
@@ -46,7 +46,7 @@ class WorkspaceLevels extends BaseController
 
         $response["data"] = $list;
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -61,7 +61,7 @@ class WorkspaceLevels extends BaseController
         $label = $request->request->get("label", "");
         if ($label == null) {
             $response["errors"] = "emptylabel";
-            return new JsonResponse($response);
+            return new Response($response);
         }
 
         $rights = $this->get("app.workspace_levels")->getDefaultLevel($workspaceId)->getRights();
@@ -74,7 +74,7 @@ class WorkspaceLevels extends BaseController
             $response["errors"] = "notauthorized";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -96,7 +96,7 @@ class WorkspaceLevels extends BaseController
             $response["errors"] = "notauthorized";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -118,7 +118,7 @@ class WorkspaceLevels extends BaseController
             $response["errors"] = "notauthorized";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -142,7 +142,7 @@ class WorkspaceLevels extends BaseController
             $response["errors"] = "notauthorized";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function getByLabel(Request $request)
@@ -163,7 +163,7 @@ class WorkspaceLevels extends BaseController
             $response["data"] = $labels;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 

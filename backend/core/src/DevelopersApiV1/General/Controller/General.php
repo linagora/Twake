@@ -9,8 +9,8 @@
 namespace DevelopersApiV1\General\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class General extends BaseController
@@ -23,17 +23,17 @@ class General extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $user_id = $request->request->get("user_id", null);
         if (!$user_id) {
-            return new JsonResponse(Array("error" => "missing_user_id"));
+            return new Response(Array("error" => "missing_user_id"));
         }
 
         $connection_id = $request->request->get("connection_id", false);
         if (!$connection_id) {
-            return new JsonResponse(Array("error" => "missing_connection_id"));
+            return new Response(Array("error" => "missing_connection_id"));
         }
 
         $event = Array(
@@ -43,7 +43,7 @@ class General extends BaseController
         );
         $this->get("app.websockets")->push("updates/" . $user_id, $event);
 
-        return new JsonResponse(Array("result" => "success"));
+        return new Response(Array("result" => "success"));
 
     }
 
@@ -54,19 +54,19 @@ class General extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         //TODO Verify targeted user in in app requested group
 
         $user_id = $request->request->get("user_id", null);
         if (!$user_id) {
-            return new JsonResponse(Array("error" => "missing_user_id"));
+            return new Response(Array("error" => "missing_user_id"));
         }
 
         $connection_id = $request->request->get("connection_id", false);
         if (!$connection_id) {
-            return new JsonResponse(Array("error" => "missing_connection_id"));
+            return new Response(Array("error" => "missing_connection_id"));
         }
 
         $form = $request->request->get("form", Array());
@@ -81,7 +81,7 @@ class General extends BaseController
         );
         $this->get("app.websockets")->push("updates/" . $user_id, $event);
 
-        return new JsonResponse(Array("result" => "success"));
+        return new Response(Array("result" => "success"));
 
     }
 

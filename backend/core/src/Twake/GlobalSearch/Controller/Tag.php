@@ -3,8 +3,8 @@
 namespace Twake\GlobalSearch\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Tag extends BaseController
 {
@@ -16,9 +16,9 @@ class Tag extends BaseController
 
         $res = $this->get("globalsearch.tag")->remove($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function save(Request $request)
@@ -29,9 +29,9 @@ class Tag extends BaseController
         $res = $this->get("globalsearch.tag")->save($object, $options, $this->getUser(), Array());
 
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
 
 
     }
@@ -42,9 +42,9 @@ class Tag extends BaseController
         $objects = $this->get("globalsearch.tag")->get($options, $this->getUser());
 
         if ($objects === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new Response(Array("data" => $objects));
     }
 
 }

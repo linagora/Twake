@@ -57,8 +57,7 @@ class Resumable
         $this->resumableOption = array_merge($this->resumableOption, $resumableOption);
     }
 
-    // sets original filename and extenstion, blah blah
-
+    // sets original filename and extenstion etc
     public function process($current_user)
     {
 

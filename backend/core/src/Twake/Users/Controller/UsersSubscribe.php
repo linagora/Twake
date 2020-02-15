@@ -4,8 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class UsersSubscribe extends BaseController
 {
@@ -41,7 +41,7 @@ class UsersSubscribe extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -59,7 +59,7 @@ class UsersSubscribe extends BaseController
 
         $mail = trim(strtolower($mail));
 
-        $response = new JsonResponse(Array());
+        $response = new Response(Array());
 
         $res = $this->get("app.user")->verifyMail($mail, $token, $code, false, $response);
 
@@ -115,7 +115,7 @@ class UsersSubscribe extends BaseController
 
 		}
 
-		return new JsonResponse($data);
+		return new Response($data);
 
 	}
     */
@@ -148,7 +148,7 @@ class UsersSubscribe extends BaseController
             }
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function subscribeTotaly(Request $request)
@@ -190,7 +190,7 @@ class UsersSubscribe extends BaseController
         } else {
             $data["errors"][] = "error";
         }
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function testMail(Request $request)
@@ -207,7 +207,7 @@ class UsersSubscribe extends BaseController
 
         $data["data"] = $res;
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function createCompanyUser(Request $request)
@@ -236,7 +236,7 @@ class UsersSubscribe extends BaseController
             $data["errors"] = $res;
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 

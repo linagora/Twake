@@ -4,8 +4,7 @@ namespace Twake\Channels\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\Validator\Constraints\DateTime;
+
 use Twake\Core\Entity\FrontObject;
 use Twake\Core\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 

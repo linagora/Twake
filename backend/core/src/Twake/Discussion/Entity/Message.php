@@ -4,7 +4,7 @@ namespace Twake\Discussion\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use Symfony\Component\Validator\Constraints\DateTime;
+
 use Twake\Core\Entity\FrontObject;
 
 /**

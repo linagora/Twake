@@ -12,9 +12,9 @@
 namespace Twake\Core\Services\DoctrineAdapter;
 
 use App\App;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Response;
+use Common\Http\Cookie;
+use Common\Http\Request;
 use Twake\Core\Entity\Sessions;
 use Twake\Users\Entity\User;
 
@@ -28,14 +28,12 @@ class SessionHandler
 
     public function __construct(App $app)
     {
-
         $this->app = $app;
         $this->doctrineAdapter = $app->getServices()->get("app.twake_doctrine");
         $this->didInit = false;
         $this->lifetime = 3600;
         $this->rememberMeLifetime = 60 * 60 * 24 * 360;
         $this->cookiesToSet = [];
-
     }
 
     public function getUser(Request $request)
@@ -107,7 +105,7 @@ class SessionHandler
     public function setCookiesInResponse(Response $response)
     {
         foreach ($this->cookiesToSet as $cookie) {
-            $response->headers->setCookie($cookie);
+            $response->setCookie($cookie);
         }
     }
 

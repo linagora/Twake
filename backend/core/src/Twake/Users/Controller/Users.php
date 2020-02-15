@@ -4,8 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Users extends BaseController
 {
@@ -29,7 +29,7 @@ class Users extends BaseController
 
         $data = Array("data" => $globalresult);
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -50,7 +50,7 @@ class Users extends BaseController
             $data["errors"][] = "user_was_not_found";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

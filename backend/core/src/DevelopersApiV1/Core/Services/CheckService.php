@@ -3,7 +3,7 @@
 namespace DevelopersApiV1\Core\Services;
 
 use App\App;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Request;
 
 class CheckService
 {

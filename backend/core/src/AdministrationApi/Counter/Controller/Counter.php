@@ -4,8 +4,8 @@
 namespace AdministrationApi\Counter\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Counter extends BaseController
 {
@@ -61,7 +61,7 @@ class Counter extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

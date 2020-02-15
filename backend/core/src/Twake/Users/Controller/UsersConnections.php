@@ -4,9 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Response;
+use Common\Http\Request;
 use Twake\Market\Entity\LinkAppWorkspace;
 
 class UsersConnections extends BaseController
@@ -20,7 +19,7 @@ class UsersConnections extends BaseController
             $this->get("app.user")->alive($this->getUser()->getId());
         }
         error_log("alive=" . (microtime(true) - $time));
-        return new JsonResponse(Array("data" => "ok"));
+        return new Response(Array("data" => "ok"));
 
     }
 
@@ -42,7 +41,7 @@ class UsersConnections extends BaseController
         $password = $request->request->get("_password", "");
         $rememberMe = $request->request->get("_remember_me", true);
 
-        $response = new JsonResponse();
+        $response = new Response();
         $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
 
         if ($loginResult) {
@@ -111,7 +110,7 @@ class UsersConnections extends BaseController
             $this->get("administration.counter")->incrementCounter("total_devices_linked", -1);
         }
         $this->get("app.user")->logout($request);
-        return new JsonResponse(Array());
+        return new Response(Array());
 
     }
 
@@ -280,7 +279,7 @@ class UsersConnections extends BaseController
         }
 
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -303,7 +302,7 @@ class UsersConnections extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

@@ -4,8 +4,8 @@
 namespace AdministrationApi\Group\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Group extends BaseController
 {
@@ -40,7 +40,7 @@ class Group extends BaseController
 //            $data["errors"][] = "invalid_authentication_token";
 //        }
 //
-//        return new JsonResponse($data);
+//        return new Response($data);
 
         $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
@@ -55,7 +55,7 @@ class Group extends BaseController
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function getAllWorkspace(Request $request)
@@ -74,7 +74,7 @@ class Group extends BaseController
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -96,7 +96,7 @@ class Group extends BaseController
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -119,7 +119,7 @@ class Group extends BaseController
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -142,7 +142,7 @@ class Group extends BaseController
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -192,7 +192,7 @@ class Group extends BaseController
 //            $data["errors"][] = "invalid_authentication_token";
 //        }
 //
-//        return new JsonResponse($data);
+//        return new Response($data);
     }
 
     public function findGroup(Request $request)
@@ -242,7 +242,7 @@ class Group extends BaseController
 //            $data["errors"][] = "invalid_authentication_token";
 //        }
 //
-//        return new JsonResponse($data);
+//        return new Response($data);
     }
 
 }

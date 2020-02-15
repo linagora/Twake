@@ -8,7 +8,6 @@
     ],
     "require": {
         "php": ">=7.1",
-        "silex/silex": "^2.0",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
@@ -21,8 +20,9 @@
         "doctrine/dbal": "~2.2",
         "knplabs/console-service-provider": "^2.2",
         "ramsey/uuid-doctrine": "^1.5",
-        "symfony/security": "^4.4",
-        "soleon/sc-php": "^1.0"
+        "spatie/pdf-to-text": "*",
+        "soleon/sc-php": "^1.0",
+        "pecee/simple-router": "4.2.0.6"
     },
     "autoload": {
         "psr-4": {

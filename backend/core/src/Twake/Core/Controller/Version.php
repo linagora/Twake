@@ -2,8 +2,8 @@
 
 namespace Twake\Core\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Common\Http\Request;
+use Common\Http\Response;
 
 use Common\BaseController;
 
@@ -31,7 +31,7 @@ class Version extends BaseController
         //TODO remove
         $this->get("app.websockets");
 
-        return new JsonResponse(Array("data" =>
+        return new Response(Array("data" =>
             $data
         ));
 

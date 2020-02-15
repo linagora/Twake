@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class Workspace extends BaseController
@@ -85,7 +85,7 @@ class Workspace extends BaseController
                 $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
         }
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function getPublicData(Request $request)
@@ -111,7 +111,7 @@ class Workspace extends BaseController
 
             }
         }
-        return new JsonResponse($response);
+        return new Response($response);
 
     }
 
@@ -184,7 +184,7 @@ class Workspace extends BaseController
 
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -219,7 +219,7 @@ class Workspace extends BaseController
             $response["data"]["workspace_id"] = $ws_id;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function delete(Request $request)
@@ -239,7 +239,7 @@ class Workspace extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     /**
@@ -260,7 +260,7 @@ class Workspace extends BaseController
             $response["data"] = $apps;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -281,7 +281,7 @@ class Workspace extends BaseController
             $response["data"][] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -302,7 +302,7 @@ class Workspace extends BaseController
             $response["data"][] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function getWorkspaceByName(Request $request)
@@ -319,7 +319,7 @@ class Workspace extends BaseController
         }
 
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -343,7 +343,7 @@ class Workspace extends BaseController
             $response["errors"] = "impossible to archive";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -367,7 +367,7 @@ class Workspace extends BaseController
             $response["errors"] = "impossible to archive";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -391,7 +391,7 @@ class Workspace extends BaseController
             $response["errors"] = "impossible to hide a workspace";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -414,7 +414,7 @@ class Workspace extends BaseController
             $response["errors"] = "impossible to put as favorite a workspace";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -438,7 +438,7 @@ class Workspace extends BaseController
             $response["errors"] = "impossible to receive notifications";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 
@@ -458,6 +458,6 @@ class Workspace extends BaseController
         } else {
             $response["data"] = "Set has not been done";
         }
-        return new JsonResponse($response);
+        return new Response($response);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
 use App\App;
-
 function getDefaultHeaders()
 {
     if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
@@ -13,19 +12,18 @@ function getDefaultHeaders()
     header('Access-Control-Max-Age: 600', true);
 }
 
-$time = microtime(true);
-
 if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
     try {
+
+        $time = microtime(true);
+
         require_once __DIR__ . '/../vendor/autoload.php';
         require_once __DIR__ . '/../app/App.php';
 
 
-        $silex_app = new Silex\Application();
-
         error_log("init=" . (microtime(true) - $time));
-        $app = new App($silex_app);
+        $app = new App();
 
         $time = microtime(true);
         if (php_sapi_name() != "cli") {

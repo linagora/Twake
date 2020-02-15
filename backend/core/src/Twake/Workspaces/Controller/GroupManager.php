@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class GroupManager extends BaseController
@@ -43,7 +43,7 @@ class GroupManager extends BaseController
             );
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -65,7 +65,7 @@ class GroupManager extends BaseController
             $response["data"] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 
@@ -86,7 +86,7 @@ class GroupManager extends BaseController
 
         if (!$user) {
             $response["errors"][] = "usernotfound";
-            return new JsonResponse($response);
+            return new Response($response);
         }
 
         $result = $this->get("app.group_managers")->addManager($groupId, $user->getId(), 1, false, $this->getUser()->getId());
@@ -98,7 +98,7 @@ class GroupManager extends BaseController
             $response["data"] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -119,7 +119,7 @@ class GroupManager extends BaseController
             $response["data"] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -141,7 +141,7 @@ class GroupManager extends BaseController
             $response["data"] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 }

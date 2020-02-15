@@ -19,9 +19,11 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
+        'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
     );
 
@@ -41,8 +43,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             ),
         'S' =>
             array(
+                'Symfony\\Polyfill\\Util\\' => 22,
                 'Symfony\\Polyfill\\Php73\\' => 23,
                 'Symfony\\Polyfill\\Php72\\' => 23,
+                'Symfony\\Polyfill\\Php56\\' => 23,
                 'Symfony\\Polyfill\\Mbstring\\' => 26,
                 'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
                 'Symfony\\Polyfill\\Iconv\\' => 23,
@@ -53,11 +57,9 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Symfony\\Component\\Yaml\\' => 23,
                 'Symfony\\Component\\VarExporter\\' => 30,
                 'Symfony\\Component\\VarDumper\\' => 28,
-                'Symfony\\Component\\Security\\' => 27,
                 'Symfony\\Component\\Routing\\' => 26,
-                'Symfony\\Component\\PropertyAccess\\' => 33,
+                'Symfony\\Component\\Process\\' => 26,
                 'Symfony\\Component\\Mime\\' => 23,
-                'Symfony\\Component\\Inflector\\' => 28,
                 'Symfony\\Component\\HttpKernel\\' => 29,
                 'Symfony\\Component\\HttpFoundation\\' => 33,
                 'Symfony\\Component\\Finder\\' => 25,
@@ -71,6 +73,8 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Symfony\\Component\\Cache\\' => 24,
                 'Symfony\\Bundle\\FrameworkBundle\\' => 31,
                 'Symfony\\Bridge\\Doctrine\\' => 24,
+                'SuperClosure\\' => 13,
+                'Spatie\\PdfToText\\' => 17,
                 'SocketCluster\\' => 14,
                 'Silex\\' => 6,
             ),
@@ -86,6 +90,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Psr\\Container\\' => 14,
                 'Psr\\Cache\\' => 10,
                 'Prophecy\\' => 9,
+                'PhpParser\\' => 10,
+                'PhpDocReader\\' => 13,
+                'Pecee\\' => 6,
+                'PackageVersions\\' => 16,
             ),
         'O' =>
             array(
@@ -99,6 +107,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 'JsonSchema\\' => 11,
                 'JmesPath\\' => 9,
+            ),
+        'I' =>
+            array(
+                'Invoker\\' => 8,
             ),
         'G' =>
             array(
@@ -126,6 +138,7 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'Doctrine\\Bundle\\DoctrineCacheBundle\\' => 36,
                 'Doctrine\\Bundle\\DoctrineBundle\\' => 31,
                 'DeepCopy\\' => 9,
+                'DI\\' => 3,
             ),
         'C' =>
             array(
@@ -158,6 +171,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/twig/twig/src',
             ),
+        'Symfony\\Polyfill\\Util\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+            ),
         'Symfony\\Polyfill\\Php73\\' =>
             array(
                 0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
@@ -165,6 +182,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'Symfony\\Polyfill\\Php72\\' =>
             array(
                 0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
+            ),
+        'Symfony\\Polyfill\\Php56\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
             ),
         'Symfony\\Polyfill\\Mbstring\\' =>
             array(
@@ -206,25 +227,17 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/symfony/var-dumper',
             ),
-        'Symfony\\Component\\Security\\' =>
-            array(
-                0 => __DIR__ . '/..' . '/symfony/security',
-            ),
         'Symfony\\Component\\Routing\\' =>
             array(
                 0 => __DIR__ . '/..' . '/symfony/routing',
             ),
-        'Symfony\\Component\\PropertyAccess\\' =>
+        'Symfony\\Component\\Process\\' =>
             array(
-                0 => __DIR__ . '/..' . '/symfony/property-access',
+                0 => __DIR__ . '/..' . '/symfony/process',
             ),
         'Symfony\\Component\\Mime\\' =>
             array(
                 0 => __DIR__ . '/..' . '/symfony/mime',
-            ),
-        'Symfony\\Component\\Inflector\\' =>
-            array(
-                0 => __DIR__ . '/..' . '/symfony/inflector',
             ),
         'Symfony\\Component\\HttpKernel\\' =>
             array(
@@ -278,6 +291,14 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/symfony/doctrine-bridge',
             ),
+        'SuperClosure\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/jeremeamia/superclosure/src',
+            ),
+        'Spatie\\PdfToText\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/spatie/pdf-to-text/src',
+            ),
         'SocketCluster\\' =>
             array(
                 0 => __DIR__ . '/..' . '/soleon/sc-php/src',
@@ -314,6 +335,22 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
             array(
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy',
             ),
+        'PhpParser\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+            ),
+        'PhpDocReader\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/php-di/phpdoc-reader/src/PhpDocReader',
+            ),
+        'Pecee\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/pecee/simple-router/src/Pecee',
+            ),
+        'PackageVersions\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/ocramius/package-versions/src/PackageVersions',
+            ),
         'OpenStack\\' =>
             array(
                 0 => __DIR__ . '/..' . '/php-opencloud/openstack/src',
@@ -329,6 +366,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'JmesPath\\' =>
             array(
                 0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
+            ),
+        'Invoker\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/php-di/invoker/src',
             ),
         'GuzzleHttp\\Psr7\\' =>
             array(
@@ -404,6 +445,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'DeepCopy\\' =>
             array(
                 0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
+            ),
+        'DI\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/php-di/php-di/src',
             ),
         'Common\\' =>
             array(

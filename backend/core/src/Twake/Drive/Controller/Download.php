@@ -5,8 +5,8 @@ namespace Twake\Drive\Controller;
 
 use PHPUnit\Util\Json;
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Download extends BaseController
 {
@@ -42,7 +42,7 @@ class Download extends BaseController
             return;
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

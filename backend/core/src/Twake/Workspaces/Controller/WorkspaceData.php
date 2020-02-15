@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class WorkspaceData extends BaseController
@@ -36,7 +36,7 @@ class WorkspaceData extends BaseController
             $response["data"]["isArchived"] = $ws->getisArchived();
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function setName(Request $request)
@@ -61,7 +61,7 @@ class WorkspaceData extends BaseController
             $response["data"] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
 
     }
 
@@ -99,7 +99,7 @@ class WorkspaceData extends BaseController
             $data["data"] = $workspace->getAsArray();
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -147,7 +147,7 @@ class WorkspaceData extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

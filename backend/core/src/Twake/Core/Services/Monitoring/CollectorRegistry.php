@@ -2,8 +2,8 @@
 
 namespace Twake\Core\Services\Monitoring;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Request;
+use Common\Http\Response;
 use TweedeGolf\PrometheusClient\CollectorRegistry as PrometheusCollectorRegistry;
 
 /**

@@ -4,8 +4,8 @@
 namespace DevelopersApiV1\Drive\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Drive extends BaseController
 {
@@ -15,7 +15,7 @@ class Drive extends BaseController
         $capabilities = ["drive_save"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $object = $request->request->get("object", null);
@@ -43,7 +43,7 @@ class Drive extends BaseController
         }
 
         if (!$object) {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         }
 
         if ($object) {
@@ -60,7 +60,7 @@ class Drive extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
-        return new JsonResponse(Array("object" => $object));
+        return new Response(Array("object" => $object));
 
 
     }
@@ -70,7 +70,7 @@ class Drive extends BaseController
         $capabilities = ["drive_remove"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $options = Array("application_id" => $application->getId());
@@ -78,7 +78,7 @@ class Drive extends BaseController
 
         $res = $this->get("app.drive")->remove($object, $options, null);
         if (!$res) {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         } else {
 
             $event = Array(
@@ -93,7 +93,7 @@ class Drive extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
-        return new JsonResponse(Array("object" => $res));
+        return new Response(Array("object" => $res));
 
 
     }
@@ -103,7 +103,7 @@ class Drive extends BaseController
         $privileges = ["workspace_drive"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $workspace_id = $request->request->get("workspace_id", null);
@@ -121,12 +121,12 @@ class Drive extends BaseController
             $object = $this->get("app.drive")->find(
                 Array("workspace_id" => $workspace_id, "element_id" => $element_id), $user);
         } else {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         }
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
-        return new JsonResponse(Array("object" => $object));
+        return new Response(Array("object" => $object));
     }
 
     public function getList(Request $request)
@@ -134,7 +134,7 @@ class Drive extends BaseController
         $privileges = ["drive_list"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $user_id = null;
@@ -145,7 +145,7 @@ class Drive extends BaseController
             $objects = $this->get("app.drive")->get(
                 Array("workspace_id" => $workspace_id, "directory_id" => $directory_id, "trash" => false), null);
         } else {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         }
 
         $res = [];
@@ -155,7 +155,7 @@ class Drive extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
-        return new JsonResponse(Array("data" => $res));
+        return new Response(Array("data" => $res));
     }
 
     public function download(Request $request)
@@ -164,7 +164,7 @@ class Drive extends BaseController
         $privileges = ["workspace_drive"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $workspace_id = $request->request->get("workspace_id", null);

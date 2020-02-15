@@ -3,13 +3,8 @@
 namespace Twake\Users\Services;
 
 use App\App;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
-use Symfony\Component\Security\Core\Encoder\Pbkdf2PasswordEncoder;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Common\Http\Request;
+use Common\Http\Response;
 use Twake\Core\Services\Translate;
 use Twake\Users\Entity\Device;
 use Twake\Users\Entity\Mail;
@@ -31,7 +26,6 @@ class User
     private $core_remember_me_manager;
     private $twake_mailer;
     private $string_cleaner;
-    private $token_storage;
     private $workspace_members_service;
     private $group_service;
     private $workspace_service;
@@ -58,7 +52,7 @@ class User
         $this->translate = $app->getServices()->get("app.translate");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
-        $this->encoder = new MessageDigestPasswordEncoder();
+        $this->encoder = new PasswordEncoder();
     }
 
     public function alive($userId)
@@ -135,10 +129,8 @@ class User
     public function logout(Request $request)
     {
         $response = new Response();
-        $response->headers->clearCookie('REMEMBERME');
+        $response->clearCookie('REMEMBERME');
         $response->sendHeaders();
-
-        $this->token_storage->setToken(null);
 
         $this->app->getServices()->get("app.session_handler")->destroySession($request);
 

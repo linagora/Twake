@@ -4,8 +4,8 @@ namespace Common;
 
 use App\App;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Request;
+use Common\Http\Response;
 
 
 /**
@@ -38,7 +38,7 @@ abstract class BaseBundle
     protected function initRoutes()
     {
 
-        // For all defined route, create silex routing + connect lasy controller loader
+        // For all defined route, create routing + connect lasy controller loader
         $routing_service = $this->app->getRouting();
         foreach ($this->routes as $route => $data) {
 

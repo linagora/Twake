@@ -3,8 +3,8 @@
 namespace Twake\Channels\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class ChannelsNotifications extends BaseController
 {
@@ -15,9 +15,9 @@ class ChannelsNotifications extends BaseController
         $mute = $request->request->get("mute", true);
         $res = $this->get("app.channels.notifications")->mute($channel_id, $mute, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function unread(Request $request)
@@ -25,9 +25,9 @@ class ChannelsNotifications extends BaseController
         $channel_id = $request->request->get("channel_id");
         $res = $this->get("app.channels.notifications")->unread($channel_id, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function read(Request $request)
@@ -35,9 +35,9 @@ class ChannelsNotifications extends BaseController
         $channel_id = $request->request->get("channel_id");
         $res = $this->get("app.channels.notifications")->read($channel_id, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
 }

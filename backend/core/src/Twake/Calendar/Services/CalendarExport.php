@@ -5,8 +5,7 @@ namespace Twake\Calendar\Services;
 
 use App\App;
 use Eluceo\iCal\Component;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Response;
 use Twake\Calendar\Entity\ExportToken;
 
 class CalendarExport
@@ -76,10 +75,10 @@ class CalendarExport
                     )
                 );
             } else {
-                return new JsonResponse("Errors : Events not found in data-base");
+                return new Response("Errors : Events not found in data-base");
             }
         } else
-            return new JsonResponse("Errors : Token not found in data-base");
+            return new Response("Errors : Token not found in data-base");
 
 
     }

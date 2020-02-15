@@ -4,8 +4,8 @@ namespace Twake\Market\Controller;
 
 use DevelopersApi\Users\Entity\Token;
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class ApplicationDevelopment extends BaseController
 {
@@ -44,7 +44,7 @@ class ApplicationDevelopment extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -65,7 +65,7 @@ class ApplicationDevelopment extends BaseController
             $data["data"] = $res;
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -97,7 +97,7 @@ class ApplicationDevelopment extends BaseController
 
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -122,7 +122,7 @@ class ApplicationDevelopment extends BaseController
             $data["data"] = Array("success" => true);
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

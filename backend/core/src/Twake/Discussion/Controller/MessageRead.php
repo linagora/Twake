@@ -3,8 +3,8 @@
 namespace Twake\Discussion\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 use Twake\Discussion\Entity\Channel;
 use Twake\Discussion\Entity\StreamMember;
 
@@ -30,7 +30,7 @@ class MessageRead extends BaseController
                 }
             }
         }
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function readAllMessages(Request $request)
@@ -51,7 +51,7 @@ class MessageRead extends BaseController
                 $data["data"][] = "success";
             }
         }
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

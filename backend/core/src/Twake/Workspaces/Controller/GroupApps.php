@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class GroupApps extends BaseController
@@ -33,7 +33,7 @@ class GroupApps extends BaseController
             $response["data"] = $apps;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function setWorkspaceDefault(Request $request)
@@ -52,7 +52,7 @@ class GroupApps extends BaseController
             $response["data"][] = true;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function removeApplication(Request $request)
@@ -70,7 +70,7 @@ class GroupApps extends BaseController
             $response["data"][] = true;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function forceApplication(Request $request)
@@ -88,7 +88,7 @@ class GroupApps extends BaseController
             $response["data"][] = true;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     /**
@@ -111,7 +111,7 @@ class GroupApps extends BaseController
             $response["data"][] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
 }

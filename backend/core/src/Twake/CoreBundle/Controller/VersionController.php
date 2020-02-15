@@ -3,7 +3,7 @@
 namespace Twake\Core\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Common\Http\Response;
 
 class VersionController extends BaseController
 {
@@ -26,7 +26,7 @@ class VersionController extends BaseController
             }
         }
 
-        return new JsonResponse(Array("data" =>
+        return new Response(Array("data" =>
             $data
         ));
 

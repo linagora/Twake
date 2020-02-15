@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Services;
 
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Response;
 
 if (!function_exists('http_parse_headers')) {
     function http_parse_headers($raw_headers)
@@ -86,10 +86,10 @@ class TwakeRestClient
 
         $headers = substr($response, 0, $headerSize);
         $headers = http_parse_headers($headers);
-        $symfony_response->headers->add($headers);
+        $symfony_response->headers->reset($headers);
 
         $curl_data = (object)curl_getinfo($curl);
-        $symfony_response->setStatusCode($curl_data->http_code);
+        $symfony_response->httpStatus($curl_data->http_code);
 
         return $response;
     }

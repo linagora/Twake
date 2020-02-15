@@ -31,7 +31,7 @@ abstract class BaseController
     public function getUser()
     {
 
-        $request = $this->app->getSilexApp()["request_stack"]->getCurrentRequest();
+        $request = $this->app->getRouting()->getCurrentRequest();
         $user = $this->app->getServices()->get("app.session_handler")->getUser($request);
 
         return $user;

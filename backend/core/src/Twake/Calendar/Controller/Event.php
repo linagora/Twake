@@ -3,8 +3,8 @@
 namespace Twake\Calendar\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Event extends BaseController
 {
@@ -16,9 +16,9 @@ class Event extends BaseController
         $object = $request->request->get("object");
         $res = $this->get("app.calendar.event")->remove($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function save(Request $request)
@@ -27,13 +27,13 @@ class Event extends BaseController
         $object = $request->request->get("object");
         $res = $this->get("app.calendar.event")->save($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_events", 1);
             }
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function getAction(Request $request)
@@ -41,9 +41,9 @@ class Event extends BaseController
         $options = $request->request->get("options");
         $objects = $this->get("app.calendar.event")->get($options, $this->getUser());
         if ($objects === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new Response(Array("data" => $objects));
     }
 
 }

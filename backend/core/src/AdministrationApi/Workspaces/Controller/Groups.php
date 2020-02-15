@@ -4,8 +4,8 @@
 namespace AdministrationApi\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Groups extends BaseController
 {
@@ -53,7 +53,7 @@ class Groups extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function getOneGroup(Request $request)
@@ -95,7 +95,7 @@ class Groups extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function findGroups(Request $request)
@@ -184,7 +184,7 @@ class Groups extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

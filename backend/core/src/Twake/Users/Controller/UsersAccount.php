@@ -4,8 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class UsersAccount extends BaseController
 {
@@ -27,7 +27,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -47,7 +47,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -68,7 +68,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -89,7 +89,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -111,7 +111,7 @@ class UsersAccount extends BaseController
             $data["error"][] = "error";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function setWorkspacesPreferences(Request $request)
@@ -131,7 +131,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -152,7 +152,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -193,7 +193,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -230,7 +230,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -255,7 +255,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -279,7 +279,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -304,7 +304,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -329,7 +329,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -360,7 +360,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -387,7 +387,7 @@ class UsersAccount extends BaseController
             $data["errors"][] = "unknown";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 

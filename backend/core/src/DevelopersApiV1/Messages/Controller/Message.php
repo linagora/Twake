@@ -9,8 +9,8 @@
 namespace DevelopersApiV1\Messages\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class Message extends BaseController
@@ -23,7 +23,7 @@ class Message extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $options = Array(
@@ -55,7 +55,7 @@ class Message extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
-        return new JsonResponse(Array("result" => $object));
+        return new Response(Array("result" => $object));
 
     }
 
@@ -66,7 +66,7 @@ class Message extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $object = $request->request->get("message", null);
@@ -84,7 +84,7 @@ class Message extends BaseController
         }
 
         if (!$object) {
-            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+            return new Response(Array("error" => "unknown error or malformed query."));
         }
 
         if (isset($object["message"])) {
@@ -106,7 +106,7 @@ class Message extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
-        return new JsonResponse(Array("object" => $object));
+        return new Response(Array("object" => $object));
 
     }
 

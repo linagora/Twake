@@ -3,8 +3,8 @@
 namespace Twake\Notifications\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Base extends BaseController
 {
@@ -20,7 +20,7 @@ class Base extends BaseController
             $obj = $notif->getAsArray();
             $data[] = $obj;
         }
-        return new JsonResponse(Array("data" => $data));
+        return new Response(Array("data" => $data));
 
     }
 
@@ -47,7 +47,7 @@ class Base extends BaseController
             $data["data"][] = "success";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function deleteAllExceptMessages(Request $request)
@@ -66,7 +66,7 @@ class Base extends BaseController
             $data["data"][] = "success";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function readAllExceptMessages(Request $request)
@@ -85,7 +85,7 @@ class Base extends BaseController
             $data["data"][] = "success";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 
@@ -104,7 +104,7 @@ class Base extends BaseController
             $data["data"][] = "success";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

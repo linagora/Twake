@@ -3,8 +3,8 @@
 namespace Twake\Core\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Websockets extends BaseController
 {
@@ -55,7 +55,7 @@ class Websockets extends BaseController
             $final_result = Array("data" => $final_result);
         }
 
-        return new JsonResponse($final_result);
+        return new Response($final_result);
 
     }
 

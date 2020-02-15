@@ -4,8 +4,8 @@
 namespace AdministrationApi\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Users extends BaseController
 {
@@ -42,7 +42,7 @@ class Users extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function getOneUser(Request $request)
@@ -91,7 +91,7 @@ class Users extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function findUser(Request $request)
@@ -137,7 +137,7 @@ class Users extends BaseController
             $data["errors"][] = "invalid_authentication_token";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

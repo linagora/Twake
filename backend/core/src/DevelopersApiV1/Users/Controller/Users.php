@@ -9,8 +9,8 @@
 namespace DevelopersApiV1\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class Users extends BaseController
@@ -23,7 +23,7 @@ class Users extends BaseController
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
-            return new JsonResponse($application);
+            return new Response($application);
         }
 
         $user_id = $request->request->get("user_id", false);
@@ -32,7 +32,7 @@ class Users extends BaseController
             $object = $this->get("app.users")->getById($user_id);
         }
 
-        return new JsonResponse(Array("object" => $object));
+        return new Response(Array("object" => $object));
 
     }
 

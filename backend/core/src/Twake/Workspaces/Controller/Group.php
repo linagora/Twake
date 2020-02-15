@@ -9,8 +9,8 @@
 namespace Twake\Workspaces\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Group extends BaseController
 {
@@ -31,7 +31,7 @@ class Group extends BaseController
             $response["data"][] = true;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function setLogo(Request $request)
@@ -63,7 +63,7 @@ class Group extends BaseController
             $data["data"] = $group->getAsArray();
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -108,7 +108,7 @@ class Group extends BaseController
             $response["data"]["nbuser"] = $nb;
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function removeUser(Request $request)
@@ -126,7 +126,7 @@ class Group extends BaseController
             $response["data"][] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function editUser(Request $request)
@@ -145,7 +145,7 @@ class Group extends BaseController
             $response["data"][] = "success";
         }
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function getWorkspaces(Request $request)
@@ -174,7 +174,7 @@ class Group extends BaseController
         }
 
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 
     public function runFreeOffer(Request $request)
@@ -195,6 +195,6 @@ class Group extends BaseController
         }
 
 
-        return new JsonResponse($response);
+        return new Response($response);
     }
 }

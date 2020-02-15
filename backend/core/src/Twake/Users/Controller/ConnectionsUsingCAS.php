@@ -4,8 +4,8 @@
 namespace Twake\Users\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Common\Http\Request;
+use Common\Http\Response;
 
 class ConnectionsUsingCAS extends BaseController
 {

@@ -3,8 +3,8 @@
 namespace Twake\Core\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Remote extends BaseController
 {
@@ -29,7 +29,7 @@ class Remote extends BaseController
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {
-                return new JsonResponse(Array("status" => "error", "error" => $result));
+                return new Response(Array("status" => "error", "error" => $result));
             }
 
             $mail = $request->request->get("mail", "");
@@ -37,11 +37,11 @@ class Remote extends BaseController
             $attachments = $request->request->get("attachments", Array());
             $this->get("app.twake_mailer")->sendHTML($mail, $html, $attachments);
 
-            return new JsonResponse(Array("status" => "success"));
+            return new Response(Array("status" => "success"));
 
         }
         //[/REMOVE_ONPREMISE]
-        return new JsonResponse(Array("status" => "error"));
+        return new Response(Array("status" => "error"));
 
     }
 
@@ -65,7 +65,7 @@ class Remote extends BaseController
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {
-                return new JsonResponse(Array("status" => "error", "error" => $result));
+                return new Response(Array("status" => "error", "error" => $result));
             }
 
             $recaptcha = $request->request->get("recaptcha", "");
@@ -73,11 +73,11 @@ class Remote extends BaseController
 
             $res = $this->get("app.user")->verifyReCaptcha($recaptcha, $ip);
 
-            return new JsonResponse(Array("status" => $res ? "success" : "error"));
+            return new Response(Array("status" => $res ? "success" : "error"));
 
         }
         //[/REMOVE_ONPREMISE]
-        return new JsonResponse(Array("status" => "error"));
+        return new Response(Array("status" => "error"));
 
     }
 
@@ -101,7 +101,7 @@ class Remote extends BaseController
             $result = json_decode($result->getContent(), true);
 
             if (!isset($result["status"]) || $result["status"] != "valid") {
-                return new JsonResponse(Array("status" => "error", "error" => $result));
+                return new Response(Array("status" => "error", "error" => $result));
             }
 
             $data_array = $request->request->get("data", Array());
@@ -123,11 +123,11 @@ class Remote extends BaseController
 
             }
 
-            return new JsonResponse(Array("status" => "success"));
+            return new Response(Array("status" => "success"));
 
         }
         //[/REMOVE_ONPREMISE]
-        return new JsonResponse(Array("status" => "error"));
+        return new Response(Array("status" => "error"));
 
     }
 

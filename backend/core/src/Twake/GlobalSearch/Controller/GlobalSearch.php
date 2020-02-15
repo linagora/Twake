@@ -4,8 +4,8 @@
 namespace Twake\GlobalSearch\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class GlobalSearch extends BaseController
 {
@@ -25,7 +25,7 @@ class GlobalSearch extends BaseController
         $this->get("administration.counter")->incrementCounter("total_quicksearch", 1);
 
         $data = Array("data" => $globalresult);
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -52,7 +52,7 @@ class GlobalSearch extends BaseController
         $this->get("administration.counter")->incrementCounter("total_search", 1);
 
         $data = Array("data" => $globalresult);
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function AdvancedFile(Request $request)
@@ -77,7 +77,7 @@ class GlobalSearch extends BaseController
         $globalresult = $this->get('globalsearch.advancedfile')->AdvancedFile($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function AdvancedTask(Request $request)
@@ -102,7 +102,7 @@ class GlobalSearch extends BaseController
         $globalresult = $this->get('globalsearch.advancedtask')->AdvancedTask($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function AdvancedEvent(Request $request)
@@ -126,7 +126,7 @@ class GlobalSearch extends BaseController
         $globalresult = $this->get('globalsearch.advancedevent')->AdvancedEvent($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 }

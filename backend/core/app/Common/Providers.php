@@ -4,7 +4,7 @@ namespace Common;
 
 use App\App;
 
-class Providers
+class Providers extends \Pimple\Container
 {
 
     /** @var App */
@@ -15,9 +15,11 @@ class Providers
 
     private $services = [];
 
-    private $silex_registered_services = [];
+    private $registered_services = [];
 
     private $service_instances = [];
+
+    public $providers_options = [];
 
     public function __construct(App $app, \Configuration\Providers $configuration)
     {
@@ -32,6 +34,8 @@ class Providers
             }
 
         }
+
+        $this->provider_config = new \Pimple\Container();
 
     }
 
@@ -48,42 +52,43 @@ class Providers
         }
 
         $service_register_name = $this->services[$key]["register"];
-        if (!$this->silex_registered_services[$service_register_name]) {
-
-            $options = [];
+        if (!$this->registered_services[$service_register_name]) {
 
             if (isset($services[$key]["parameters"])) {
                 $parameters_key = $services[$key]["parameters"];
                 $parameters = $this->app->getContainer()->get("parameters", $parameters_key);
                 foreach ($parameters as $key => $parameter) {
-                    $this->app->getSilexApp()[$key] = $parameter;
+                    $this->providers_options[$key] = $parameter;
                 }
-                $options = array_merge($options, $parameters);
             }
 
             if (isset($services[$key]["configuration"])) {
                 $parameters_key = $services[$key]["configuration"];
                 $parameters = $this->app->getContainer()->get("configuration", $parameters_key);
                 foreach ($parameters as $key => $parameter) {
-                    $this->app->getSilexApp()[$key] = $parameter;
+                    $this->providers_options[$key] = $parameter;
                 }
-                $options = array_merge($options, $parameters);
             }
 
-            $this->app->getSilexApp()->register(new $service_register_name(), $options);
-            $this->silex_registered_services[$service_register_name] = true;
-
+            $service = new $service_register_name();
+            $service->register($this->provider_config);
+            $this->registered_services[$service_register_name] = $service;
 
         }
 
         try {
-            $this->service_instances[$key] = $this->app->getSilexApp()[$key];
+            $this->service_instances[$key] = $this->registered_services[$service_register_name];
         } catch (\Exception $e) {
             error_log($e);
         }
 
         return $this->service_instances[$key];
 
+    }
+
+    public function getContainer()
+    {
+        return $this->providers_options;
     }
 
 

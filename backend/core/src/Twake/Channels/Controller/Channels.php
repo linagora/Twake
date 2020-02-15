@@ -3,8 +3,8 @@
 namespace Twake\Channels\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class Channels extends BaseController
 {
@@ -16,9 +16,9 @@ class Channels extends BaseController
         $object = $request->request->get("object");
         $res = $this->get("app.channels.channels_system")->remove($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function save(Request $request)
@@ -27,13 +27,13 @@ class Channels extends BaseController
         $object = $request->request->get("object");
         $res = $this->get("app.channels.channels_system")->save($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_channels", 1);
             }
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function getAction(Request $request)
@@ -41,9 +41,9 @@ class Channels extends BaseController
         $options = $request->request->get("options");
         $objects = $this->get("app.channels.channels_system")->get($options, $this->getUser());
         if ($objects === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new Response(Array("data" => $objects));
     }
 
 }

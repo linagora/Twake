@@ -3,8 +3,8 @@
 namespace Twake\Core\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class GroupedQuery extends BaseController
 {
@@ -38,7 +38,7 @@ class GroupedQuery extends BaseController
             }
         }
 
-        return new JsonResponse(Array("data" => $response));
+        return new Response(Array("data" => $response));
 
     }
 

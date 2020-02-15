@@ -3,8 +3,8 @@
 namespace Twake\Discussion\Controller;
 
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 
 class Discussion extends BaseController
@@ -16,14 +16,14 @@ class Discussion extends BaseController
         $object = $request->request->get("object");
 
         if ($object["ephemeral_id"]) {
-            return new JsonResponse(Array("status" => "cancelled"));
+            return new Response(Array("status" => "cancelled"));
         }
 
         $res = $this->get("app.messages")->remove($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function save(Request $request)
@@ -32,13 +32,13 @@ class Discussion extends BaseController
         $object = $request->request->get("object");
         $res = $this->get("app.messages")->save($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_messages", 1);
             }
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function getAction(Request $request)
@@ -46,9 +46,9 @@ class Discussion extends BaseController
         $options = $request->request->get("options");
         $objects = $this->get("app.messages")->get($options, $this->getUser());
         if ($objects === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new Response(Array("data" => $objects));
     }
 
 

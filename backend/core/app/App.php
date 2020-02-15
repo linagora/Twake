@@ -25,14 +25,13 @@ use Common\Providers;
 use Configuration\Bundles;
 use Configuration\Configuration;
 use Configuration\Parameters;
+use Pecee\SimpleRouter\SimpleRouter;
 use Twake\Core\Services\DoctrineAdapter\CassandraSessionHandler;
 
 class App
 {
 
     private $app_root_dir = "";
-
-    private $silex_app = null;
 
     /** @var Routing */
     private $routing_service = null;
@@ -46,7 +45,7 @@ class App
     /** @var Providers */
     private $providers_service = null;
 
-    public function __construct($silex_app)
+    public function __construct()
     {
         $time = microtime(true);
 
@@ -54,8 +53,7 @@ class App
         $bundles_instances = [];
 
         $this->app_root_dir = realpath(__DIR__ . "/../");
-        $this->silex_app = $silex_app;
-        $this->routing_service = new Routing($this, $silex_app);
+        $this->routing_service = new Routing($this);
         $this->container_service = new Container($this);
         $this->services_service = new Services($this);
         $this->providers_service = new Providers($this, new \Configuration\Providers());
@@ -106,11 +104,6 @@ class App
         return $this->providers_service;
     }
 
-    public function getSilexApp()
-    {
-        return $this->silex_app;
-    }
-
     public function getAppRootDir()
     {
         return $this->app_root_dir;
@@ -118,6 +111,6 @@ class App
 
     public function run()
     {
-        $this->silex_app->run();
+        SimpleRouter::start();
     }
 }

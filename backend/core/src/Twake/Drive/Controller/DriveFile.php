@@ -4,8 +4,8 @@ namespace Twake\Drive\Controller;
 
 use PHPUnit\Util\Json;
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class DriveFile extends BaseController
 {
@@ -17,9 +17,9 @@ class DriveFile extends BaseController
 
         $res = $this->get("app.drive")->remove($object, $options, $this->getUser());
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function save(Request $request)
@@ -58,14 +58,14 @@ class DriveFile extends BaseController
         }
 
         if (!$res) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_files", 1);
                 $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
             }
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new Response(Array("data" => Array("object" => $res)));
     }
 
     public function getAction(Request $request)
@@ -75,9 +75,9 @@ class DriveFile extends BaseController
         $objects = $this->get("app.drive")->get($options, $this->getUser());
 
         if ($objects === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new Response(Array("data" => $objects));
     }
 
     public function find(Request $request)
@@ -87,9 +87,9 @@ class DriveFile extends BaseController
         $object = $this->get("app.drive")->find($options, $this->getUser());
 
         if ($object === false) {
-            return new JsonResponse(Array("status" => "error"));
+            return new Response(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $object));
+        return new Response(Array("data" => $object));
     }
 
 
@@ -106,7 +106,7 @@ class DriveFile extends BaseController
         $publicaccess = $this->get('app.drive')->set_file_access($file_id, $publicaccess, $is_editable, $authorized_members, $authorized_channels, $this->getUser());
         $data = Array("data" => $publicaccess);
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function reset_file_access(Request $request)
@@ -116,7 +116,7 @@ class DriveFile extends BaseController
         $publicaccess = $this->get('app.drive')->reset_file_access($file_id, $this->getUser());
         $data = Array("data" => $publicaccess);
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function emptyTrash(Request $request)
@@ -133,7 +133,7 @@ class DriveFile extends BaseController
             $data["data"] = $this->get('app.drive')->emptyTrash($groupId, $this->getUser());
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function sendAsMessage(Request $request)
@@ -190,7 +190,7 @@ class DriveFile extends BaseController
             }
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
     public function open(Request $request)
@@ -209,7 +209,7 @@ class DriveFile extends BaseController
             $data["data"][] = "error";
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
     }
 
 

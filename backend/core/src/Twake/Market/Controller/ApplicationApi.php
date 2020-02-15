@@ -11,8 +11,8 @@ namespace Twake\Market\Controller;
 
 use DevelopersApi\Users\Entity\Token;
 use Common\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Common\Http\Response;
+use Common\Http\Request;
 
 class ApplicationApi extends BaseController
 {
@@ -30,7 +30,7 @@ class ApplicationApi extends BaseController
             $data = array("error" => "unknown_error");
         }
 
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
@@ -60,7 +60,7 @@ class ApplicationApi extends BaseController
 
                 $res = $this->get("app.applications_api")->notifyApp($app_id, $type, $event, $evt_data);
                 if ($res) {
-                    return new JsonResponse($data);
+                    return new Response($data);
                 }
 
             }
@@ -68,7 +68,7 @@ class ApplicationApi extends BaseController
         }
 
         $data["errors"][] = "error";
-        return new JsonResponse($data);
+        return new Response($data);
 
     }
 
