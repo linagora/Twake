@@ -25,7 +25,6 @@ class TwakeMailer
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->mailer = $app->getProviders()->get("mailer");
         $this->mail_parameters = $app->getContainer()->getParameter("mail");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
@@ -65,7 +64,6 @@ class TwakeMailer
             $data
         );
 
-        error_log($html);
 
         if ($this->standalone) {
             $this->sendHtml($mail, $html, $attachments);
@@ -78,6 +76,14 @@ class TwakeMailer
     public function sendHtml($mail, $html, $attachments = Array())
     {
         //[REMOVE_ONPREMISE]
+
+        if (!$this->mailer) {
+            $transport = (new \Swift_SmtpTransport($this->mail_parameters["sender"]["host"], $this->mail_parameters["sender"]["port"]))
+                ->setUsername($this->mail_parameters["sender"]["username"])
+                ->setPassword($this->mail_parameters["sender"]["password"])
+                ->setAuthMode($this->mail_parameters["sender"]["auth_mode"]);
+            $this->mailer = new \Swift_Mailer($transport);
+        }
 
         $privateKey = $this->mail_parameters["dkim"]["private_key"];
         $domainName = $this->mail_parameters["dkim"]["domain_name"];
@@ -112,7 +118,9 @@ class TwakeMailer
 
         $message->attachSigner($signer);
 
-        $this->mailer->send($message);
+        $result = $this->mailer->send($message);
+
+        error_log(json_encode($result));
 
         //[/REMOVE_ONPREMISE]
 
