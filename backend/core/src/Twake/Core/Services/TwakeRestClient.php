@@ -76,22 +76,22 @@ class TwakeRestClient
         curl_setopt_array($curl, $options);
 
         $response = curl_exec($curl);
-        $symfony_response = new Response();
+        $obj_response = new Response();
 
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $content = substr($response, $headerSize);
         $content = empty($content) ? '' : $content;
-        $symfony_response->setContent($content);
+        $obj_response->setContent($content);
 
         $headers = substr($response, 0, $headerSize);
         $headers = http_parse_headers($headers);
-        $symfony_response->headers->reset($headers);
+        $obj_response->headers->reset($headers);
 
         $curl_data = (object)curl_getinfo($curl);
-        $symfony_response->httpStatus($curl_data->http_code);
+        $obj_response->httpStatus($curl_data->http_code);
 
-        return $response;
+        return $obj_response;
     }
 
 }

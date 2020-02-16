@@ -6,6 +6,7 @@ use Common\Http\Request;
 use Common\Http\Response;
 
 use Common\BaseController;
+use WebSocket\Client;
 
 class Version extends BaseController
 {
@@ -27,10 +28,7 @@ class Version extends BaseController
                 $data["branding"] = $branding;
             }
         }
-
-        //TODO remove
-        $this->get("app.websockets");
-
+        
         return new Response(Array("data" =>
             $data
         ));

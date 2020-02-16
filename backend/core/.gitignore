@@ -130,3 +130,4 @@ docker-compose.yml
 /drive/*
 /app/Configuration/Parameters.php
 /cache/
+/backend/core/vendor/

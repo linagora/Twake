@@ -6,6 +6,7 @@ namespace Twake\Core\Services;
 use App\App;
 use Twake\Core\Entity\ZMQQueue;
 use Twake\Core\Services\RememberMe;
+use WebSocket\Client;
 
 class Pusher
 {
@@ -50,41 +51,30 @@ class Pusher
             'query' => [],
         ];
 
-        $websocket = \SocketCluster\WebSocket::factory($options);
-        $socket = new \SocketCluster\SocketCluster($websocket);
+        $path = $options["secure"] ? "wss" : "ws";
+        $path .= "://" . $options["host"];
+        $path .= ":" . $options["port"];
+        $path .= $options["path"];
 
-        // Event Emit
-        $socket->publish($data["topic"], $data["data"]);
+        $client = new Client($path);
+        try {
+            $client->send("{\"event\":\"#handshake\",\"data\":{\"authToken\":null},\"cid\":1}");
 
-        /*
+            $pubData = [
+                'channel' => $data["topic"],
+                'data' => $data["data"],
+            ];
+            $eventData = [
+                'event' => "#publish",
+                'data' => $pubData,
+            ];
+            $data = (string)@json_encode($eventData);
+            $client->send($data);
 
-        $config = Array(
-            "linger" => 1,
-            "protocol" => "tcp",
-            "host" => $this->host,
-            "port" => $this->port
-        );
-
-        if (!extension_loaded('zmq')) {
-            throw new \RuntimeException(sprintf(
-                '%s pusher require ZMQ php extension',
-                get_class($this)
-            ));
+            error_log("send websocket message");
+        } catch (\Exception $e) {
+            error_log($e);
         }
-
-        if ($this->connection) {
-            $this->connection->send($data);
-        } else {
-            $context = new \ZMQContext(1);
-            error_log("get socket...");
-            $this->connection = $context->getSocket(\ZMQ::SOCKET_PUSH);
-            $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
-            error_log("connect socket... " . $config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
-            $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
-            error_log("send...");
-            $this->connection->send($data);
-            error_log("sent !");
-        }*/
 
     }
 
