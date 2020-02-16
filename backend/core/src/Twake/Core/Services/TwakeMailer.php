@@ -4,6 +4,7 @@ namespace Twake\Core\Services;
 
 use App\App;
 use Swift_Signers_DKIMSigner;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Class TwakeMailer
@@ -16,8 +17,6 @@ class TwakeMailer
 
     private $app;
     private $mailer;
-    private $templating;
-    private $templating_loader;
     private $mail_parameters;
     private $licenceKey;
     private $standalone;
@@ -27,8 +26,6 @@ class TwakeMailer
     {
         $this->app = $app;
         $this->mailer = $app->getProviders()->get("mailer");
-        $this->templating = $app->getProviders()->get("twig");
-        $this->templating_loader = $app->getProviders()->get("twig.loader");
         $this->mail_parameters = $app->getContainer()->getParameter("mail");
         $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
         $this->standalone = $app->getContainer()->getParameter("STANDALONE");
@@ -40,7 +37,12 @@ class TwakeMailer
 
         $templateDirectory = "Mail";
 
-        $this->templating_loader->addLoader(new \Twig_Loader_Filesystem($this->app->getAppRootDir() . "/" . $this->mail_parameters["template_dir"]));
+        $path = $this->app->getAppRootDir() . "/" . $this->mail_parameters["template_dir"];
+        $loader = new FilesystemLoader($path);
+
+        $twig = new \Twig\Environment($loader, [
+            'cache' => $this->app->getAppRootDir() . "/" . $this->app->getContainer()->get("configuration", "twig.cache"),
+        ]);
 
         $data["mail"] = $mail;
         $data["twakeaddress"] = $this->mail_parameters["twake_address"];
@@ -50,17 +52,20 @@ class TwakeMailer
         if (isset($data["_language"])) {
             $language = $data["_language"];
             $templateName = $templateDirectory . "/" . $language . "/" . $template . '.html.twig';
-            if (!$this->templating_loader->exists($templateName)) {
+            if (!file_exists($path . $templateName)) {
                 $language = "en";
             }
         }
 
         $templateName = $templateDirectory . "/" . $language . "/" . $template . '.html.twig';
 
-        $html = $this->templating->render(
-            $templateName,
+        $template = $twig->load($templateName);
+
+        $html = $template->render(
             $data
         );
+
+        error_log($html);
 
         if ($this->standalone) {
             $this->sendHtml($mail, $html, $attachments);

@@ -19,11 +19,4 @@ let port = 8080;
 })();
 
 
-(async () => {
-    for await (let event of agServer.listener("connectionAbort")) {
-        console.log("event", event);
-    }
-})();
-
-
 httpServer.listen(port);

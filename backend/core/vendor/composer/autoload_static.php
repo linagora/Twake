@@ -117,6 +117,7 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
                 'GuzzleHttp\\Psr7\\' => 16,
                 'GuzzleHttp\\Promise\\' => 19,
                 'GuzzleHttp\\' => 11,
+                'Germania\\TwigServiceProvider\\' => 29,
             ),
         'E' =>
             array(
@@ -382,6 +383,10 @@ class ComposerStaticInite5b3165d7b27817a1bc18a25953cfe50
         'GuzzleHttp\\' =>
             array(
                 0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+            ),
+        'Germania\\TwigServiceProvider\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/germania-kg/twigserviceprovider/src',
             ),
         'Emojione\\' =>
             array(

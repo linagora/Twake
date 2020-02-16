@@ -13,14 +13,8 @@ class Configuration extends \Common\Configuration
     public function __construct(App $app)
     {
         $this->configuration = [
-            "security" => [
-                "security.firewalls" => [
-                    "main" => [
-                        "users" => function () use ($app) {
-                            return new UserProvider($app->getServices()->get("app.twake_doctrine"));
-                        },
-                    ]
-                ]
+            "twig" => [
+                'cache' => '/cache/twig'
             ]
         ];
     }

@@ -77,7 +77,7 @@ class Providers extends \Pimple\Container
         }
 
         try {
-            $this->service_instances[$key] = $this->registered_services[$service_register_name];
+            $this->service_instances[$key] = $this->provider_config[$key];
         } catch (\Exception $e) {
             error_log($e);
         }
@@ -88,7 +88,7 @@ class Providers extends \Pimple\Container
 
     public function getContainer()
     {
-        return $this->providers_options;
+        return $this->provider_config;
     }
 
 

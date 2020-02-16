@@ -13,13 +13,6 @@ class Providers
             ],
             "register" => "Silex\Provider\SwiftmailerServiceProvider"
         ],
-        "twig" => [
-            "services" => [
-                "twig",
-                "twig.loader"
-            ],
-            "register" => "Silex\Provider\TwigServiceProvider",
-        ],
         "doctrine" => [
             "services" => [
                 "db"

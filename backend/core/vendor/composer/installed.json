@@ -1348,6 +1348,58 @@
     ]
   },
   {
+    "name": "germania-kg/twigserviceprovider",
+    "version": "1.0.5",
+    "version_normalized": "1.0.5.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/GermaniaKG/TwigServiceProvider.git",
+      "reference": "5a0bac212985cb4db138e3d7a3ce1fae5edcbc3c"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/GermaniaKG/TwigServiceProvider/zipball/5a0bac212985cb4db138e3d7a3ce1fae5edcbc3c",
+      "reference": "5a0bac212985cb4db138e3d7a3ce1fae5edcbc3c",
+      "shasum": ""
+    },
+    "require": {
+      "php": "^5.6|^7.0",
+      "pimple/pimple": "^3.0",
+      "twig/twig": "^1.0|^2.0"
+    },
+    "require-dev": {
+      "php-coveralls/php-coveralls": "^2.0",
+      "phpunit/phpunit": "^5.7|^6.0|^7.0"
+    },
+    "time": "2019-02-18T11:11:09+00:00",
+    "type": "library",
+    "installation-source": "dist",
+    "autoload": {
+      "psr-4": {
+        "Germania\\TwigServiceProvider\\": "src"
+      }
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ],
+    "authors": [
+      {
+        "name": "Carsten Witt",
+        "email": "carstenwitt@germania-kg.de",
+        "role": "Developer"
+      }
+    ],
+    "description": "Pimple Service Provider for Twig templating engine",
+    "keywords": [
+      "depedency injection",
+      "pimple",
+      "service provider",
+      "serviceprovider",
+      "twig"
+    ]
+  },
+  {
     "name": "guzzlehttp/guzzle",
     "version": "6.5.2",
     "version_normalized": "6.5.2.0",
