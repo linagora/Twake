@@ -13,6 +13,9 @@ $app = require $bootstrapFilePath;
 
 $app = $app->getSilexApp();
 
+$console->add(new My\Command\MyCommand());
+
+
 $app->register(new ConsoleServiceProvider());
 
 if (!$app instanceof Silex\Application) {

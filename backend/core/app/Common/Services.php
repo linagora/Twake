@@ -33,6 +33,7 @@ class Services
     /** Lasy instanciate service */
     public function get($key)
     {
+
         if (!isset($this->services[$key])) {
             error_log("The requested service " . $key . " is not defined.");
             return null;

@@ -224,14 +224,12 @@ class UsersConnections extends BaseController
 
     public function currentUser(Request $request)
     {
-
         $data = Array(
             "errors" => Array(),
             "data" => Array()
         );
 
-
-        $ok = $this->getUser();
+        $ok = $this->getUser() && $this->getUser()->getId();
         if (!$ok) {
             $data["errors"][] = "disconnected";
         } else {

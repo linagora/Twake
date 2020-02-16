@@ -5,7 +5,7 @@ namespace Tests\UsersBundle;
 require_once __DIR__ . "/../WebTestCaseExtended.php";
 
 use Tests\WebTestCaseExtended;
-use WebsiteApi\UsersBundle\Entity\Mail;
+use Twake\Users\Entity\Mail;
 
 class UserAccountTest extends WebTestCaseExtended
 
@@ -121,7 +121,7 @@ class UserAccountTest extends WebTestCaseExtended
         $this->assertEquals(false, $result);
 
         $user = $this->newUserByName("usertest001");
-        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
         $result = $this->get("app.user")->changeMainMail($user->getId(), "14005200-48b1-11e9-a0b4-0242ac120005");
         $this->assertEquals(false, $result);
 
@@ -240,7 +240,6 @@ class UserAccountTest extends WebTestCaseExtended
 
         $result = $this->get("app.user")->removeUserByUsername($user->getUsername());
 
-
         $result = $this->doPost("/ajax/users/current/get", Array());
 
         $this->assertEquals("disconnected", $result["errors"]["0"]);
@@ -271,7 +270,7 @@ class UserAccountTest extends WebTestCaseExtended
         ));
         $this->assertEquals("nosuchmail", $result["errors"][0]);
 
-        $verif = $this->getDoctrine()->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
+        $verif = $this->getDoctrine()->getRepository("Twake\Users:VerificationNumberMail")->findOneBy(Array("token" => $token));
         $code = $verif->getcode();
         $this->getDoctrine()->persist($verif);
         $this->getDoctrine()->flush();
@@ -323,7 +322,7 @@ class UserAccountTest extends WebTestCaseExtended
         $user->setMailVerified(false);
         $user->setisNew(true);
         $this->getDoctrine()->persist($user);
-        $mail = $this->getDoctrine()->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
+        $mail = $this->getDoctrine()->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
         $this->getDoctrine()->remove($mail);
         $this->getDoctrine()->flush();
 
@@ -361,7 +360,7 @@ class UserAccountTest extends WebTestCaseExtended
         $this->assertEquals(true, $boolean);
 
         $user = $this->newUserByName("usertest001");
-        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
             "email" => "usertest001_notused@twake_phpunit.fr",

@@ -5,13 +5,13 @@ namespace Tests\AccessBundle;
 require_once __DIR__ . "/../WebTestCaseExtended.php";
 
 use Tests\WebTestCaseExtended;
-use WebsiteApi\ChannelsBundle\Entity\Channel;
-use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
-use WebsiteApi\UsersBundle\Entity\User;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
+use Twake\Channels\Entity\Channel;
+use Twake\Channels\Entity\ChannelMember;
+use Twake\Users\Entity\User;
+use Twake\Workspaces\Entity\WorkspaceUser;
+use Twake\Workspaces\Entity\Workspace;
+use Twake\Workspaces\Entity\Group;
+use Twake\Workspaces\Entity\WorkspaceLevel;
 
 class ExterneUserTest extends WebTestCaseExtended
 {
@@ -40,10 +40,10 @@ class ExterneUserTest extends WebTestCaseExtended
     {
         list($g1, $w1, $c1, $u1) = $this->getStuff();
         $mail1 = "mail1@benoit.best";
-        $mailEntity = $this->getDoctrine()->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail1));
+        $mailEntity = $this->getDoctrine()->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => $mail1));
         if ($mailEntity) {
             if ($mailEntity->getUser()) {
-                $groupUsers = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findBy(Array("user" => $mailEntity->getUser()->getId()));
+                $groupUsers = $this->getDoctrine()->getRepository("Twake\Workspaces:GroupUser")->findBy(Array("user" => $mailEntity->getUser()->getId()));
                 foreach ($groupUsers as $groupUser) {
                     $this->getDoctrine()->remove($groupUser);
                 }
@@ -94,7 +94,7 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne is not add in private channel");
         $result = $this->doPost("/ajax/workspace/members/remove", Array("ids" => Array($u2->getId()), "workspaceId" => $w1->getId()));
         $this->assertEquals(Array("removed" => 1), $result["data"]);
-        $linkChannel = $this->getDoctrine()->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $u2->getId() . "", "channel_id" => $c1->getId()));
+        $linkChannel = $this->getDoctrine()->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $u2->getId() . "", "channel_id" => $c1->getId()));
         $this->assertNull($linkChannel, "Wexterne is still in channel (entity) on remove from workspace");
         $this->assertEquals(false, $this->verifyIfUserIsInChannel($u1, $w1, $c1, true, $u2->getUsernameCanonical()), "Wexterne is still in channel (front) on remove from workspace");
     }

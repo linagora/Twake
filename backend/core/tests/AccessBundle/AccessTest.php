@@ -6,13 +6,13 @@ namespace Tests\AccessBundle;
 require_once __DIR__ . "/../WebTestCaseExtended.php";
 
 use Tests\WebTestCaseExtended;
-use WebsiteApi\CalendarBundle\Entity\Calendar;
-use WebsiteApi\ChannelsBundle\Entity\Channel;
-use WebsiteApi\DiscussionBundle\Entity\Message;
-use WebsiteApi\UsersBundle\Entity\User;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
+use Twake\Calendar\Entity\Calendar;
+use Twake\Channels\Entity\Channel;
+use Twake\Discussion\Entity\Message;
+use Twake\Users\Entity\User;
+use Twake\Workspaces\Entity\WorkspaceUser;
+use Twake\Workspaces\Entity\Workspace;
+use Twake\Workspaces\Entity\Group;
 
 class AccessTest extends WebTestCaseExtended
 {
@@ -86,16 +86,20 @@ class AccessTest extends WebTestCaseExtended
         $result = $this->doPost("/ajax/users/current/get", Array());
         $user1_id = $result["data"]["id"];
 
-        $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
-        $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
-        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+        $user1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user1_id));
+        $user2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user2_id));
+        $user3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user3_id));
+
+        error_log($user1->getId());
+        error_log($user2->getId());
+        error_log($user3->getId());
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
 
         // POUR FAIRE LE LIEN ENTRE LE USER1 ET LE WORKSPACE 1 (RESPECTIVEMENT USER2 WORKSPACE2) -> ON CREE DEUX WORKSPACEUSERS
-        $workspace1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace1_id));
-        $workspace2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace2_id));
+        $workspace1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace1_id));
+        $workspace2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace2_id));
 
 //        //creation workspaceUser1
         $workspaceUser1 = new WorkspaceUser($workspace1, $user1, null);
@@ -232,7 +236,7 @@ class AccessTest extends WebTestCaseExtended
         $idtofind_shared = $result["data"]["object"]["id"];
         //error_log(print_r($idtofind_shared,true));
 
-        //$file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        //$file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
 //        $file->setShared(true);
 //        $this->get("app.twake_doctrine")->persist($file);
 //        $this->get("app.twake_doctrine")->flush();
@@ -245,7 +249,7 @@ class AccessTest extends WebTestCaseExtended
             "authorized_channels" => Array()
         ));
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
         $publicdata = $file->getAccesInfo();
        // error_log(print_r($publicdata, true));
 
@@ -594,227 +598,227 @@ class AccessTest extends WebTestCaseExtended
         // ON SUPPRIME TOUT CE QU ON A CREE ET ON VERIFIE QUE LES ENTITES SUPPRIMEES N EXISTENT PLUS
 
         // pour les messages
-        $message1 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message1->getId() . ""));
+        $message1 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message1->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message1);
         $this->get("app.twake_doctrine")->flush();
 
-        $message1 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message1->getId() . ""));
+        $message1 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message1->getId() . ""));
         $this->assertEquals(null, $message1);
 
-        $message2 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message2->getId() . ""));
+        $message2 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message2->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message2);
         $this->get("app.twake_doctrine")->flush();
 
-        $message2 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message2->getId() . ""));
+        $message2 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message2->getId() . ""));
         $this->assertEquals(null, $message2);
 
-        $message3 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message3->getId() . ""));
+        $message3 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message3->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message3);
         $this->get("app.twake_doctrine")->flush();
 
-        $message3 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message3->getId() . ""));
+        $message3 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message3->getId() . ""));
         $this->assertEquals(null, $message3);
 
-        $message4 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message4->getId() . ""));
+        $message4 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message4->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message4);
         $this->get("app.twake_doctrine")->flush();
 
-        $message4 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message4->getId() . ""));
+        $message4 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message4->getId() . ""));
         $this->assertEquals(null, $message4);
 
-        $message5 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message5->getId() . ""));
+        $message5 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message5->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message5);
         $this->get("app.twake_doctrine")->flush();
 
-        $message5 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message5->getId() . ""));
+        $message5 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message5->getId() . ""));
         $this->assertEquals(null, $message5);
 
-        $message6 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message6->getId() . ""));
+        $message6 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message6->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message6);
         $this->get("app.twake_doctrine")->flush();
 
-        $message6 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message6->getId() . ""));
+        $message6 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message6->getId() . ""));
         $this->assertEquals(null, $message6);
 
-        $message7 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message7->getId() . ""));
+        $message7 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message7->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message7);
         $this->get("app.twake_doctrine")->flush();
 
-        $message7 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message7->getId() . ""));
+        $message7 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message7->getId() . ""));
         $this->assertEquals(null, $message7);
 
-        $message8 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message8->getId() . ""));
+        $message8 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message8->getId() . ""));
         $this->get("app.twake_doctrine")->remove($message8);
         $this->get("app.twake_doctrine")->flush();
 
-        $message8 = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message8->getId() . ""));
+        $message8 = $this->get("app.twake_doctrine")->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message8->getId() . ""));
         $this->assertEquals(null, $message8);
 
 
         // pour les channels
-        $channel1 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel1->getId() . ""));
+        $channel1 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel1->getId() . ""));
         $this->get("app.twake_doctrine")->remove($channel1);
         $this->get("app.twake_doctrine")->flush();
 
-        $channel1 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel1->getId() . ""));
+        $channel1 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel1->getId() . ""));
         $this->assertEquals(null, $channel1);
 
-        $channel2 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel2->getId() . ""));
+        $channel2 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel2->getId() . ""));
         $this->get("app.twake_doctrine")->remove($channel2);
         $this->get("app.twake_doctrine")->flush();
 
-        $channel2 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel2->getId() . ""));
+        $channel2 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel2->getId() . ""));
         $this->assertEquals(null, $channel2);
 
-        $channel3 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel3->getId() . ""));
+        $channel3 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel3->getId() . ""));
         $this->get("app.twake_doctrine")->remove($channel3);
         $this->get("app.twake_doctrine")->flush();
 
-        $channel3 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel3->getId() . ""));
+        $channel3 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel3->getId() . ""));
         $this->assertEquals(null, $channel3);
 
-        $channel4 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel4->getId() . ""));
+        $channel4 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel4->getId() . ""));
         $this->get("app.twake_doctrine")->remove($channel4);
         $this->get("app.twake_doctrine")->flush();
 
-        $channel4 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel4->getId() . ""));
+        $channel4 = $this->get("app.twake_doctrine")->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel4->getId() . ""));
         $this->assertEquals(null, $channel4);
 
         // pour les worskspaceUser
-        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace1_id));
+        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace1_id));
         foreach ($workspaceUser1 as $wp) {
             $this->get("app.twake_doctrine")->remove($wp);
             $this->get("app.twake_doctrine")->flush();
         }
 
-        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspace1_id));
+        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace1_id));
         $this->assertEquals(null, $workspaceUser1);
 
-        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspace2_id));
+        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace2_id));
         $this->get("app.twake_doctrine")->remove($workspaceUser2);
         $this->get("app.twake_doctrine")->flush();
 
-        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUSer")->findOneBy(Array("workspace" => $workspace2_id));
+        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUSer")->findOneBy(Array("workspace" => $workspace2_id));
         $this->assertEquals(null, $workspaceUser2);
 
         //pour les fichiers
 
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
         foreach ($version as $v) {
             $this->get("app.twake_doctrine")->remove($v);
             $this->get("app.twake_doctrine")->flush();
         }
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
         $this->assertEquals(Array(), $version);
 
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
         foreach ($version as $v) {
             $this->get("app.twake_doctrine")->remove($v);
             $this->get("app.twake_doctrine")->flush();
         }
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
         $this->assertEquals(Array(), $version);
 
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
         foreach ($version as $v) {
             $this->get("app.twake_doctrine")->remove($v);
             $this->get("app.twake_doctrine")->flush();
         }
-        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        $version = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
         $this->assertEquals(Array(), $version);
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->get("app.twake_doctrine")->remove($file);
         $this->get("app.twake_doctrine")->flush();
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(null, $file);
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->get("app.twake_doctrine")->remove($file);
         $this->get("app.twake_doctrine")->flush();
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals(null, $file);
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
         $this->get("app.twake_doctrine")->remove($file);
         $this->get("app.twake_doctrine")->flush();
 
-        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $file = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
         $this->assertEquals(null, $file);
 
         //pour calendar
 
-        $calendar = $this->get("app.twake_doctrine")->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id_calendar));
+        $calendar = $this->get("app.twake_doctrine")->getRepository("Twake\Calendar:Calendar")->findOneBy(Array("id" => $id_calendar));
         $this->get("app.twake_doctrine")->remove($calendar);
         $this->get("app.twake_doctrine")->flush();
 
-        $calendar = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id_calendar));
+        $calendar = $this->get("app.twake_doctrine")->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $id_calendar));
         $this->assertEquals(null, $calendar);
 
         // pour les users
-        $mail1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user1_id));
+        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user1_id));
         $this->get("app.twake_doctrine")->remove($mail1);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user2_id));
+        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user2_id));
         $this->get("app.twake_doctrine")->remove($mail2);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user3_id));
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user3_id));
         $this->get("app.twake_doctrine")->remove($mail3);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user1_id));
+        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user1_id));
         $this->assertEquals(null, $mail1);
 
-        $mail2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user2_id));
+        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user2_id));
         $this->assertEquals(null, $mail2);
 
-        $mail3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user3_id));
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user3_id));
         $this->assertEquals(null, $mail3);
 
-        $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
+        $user1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user1_id));
         $this->get("app.twake_doctrine")->remove($user1);
         $this->get("app.twake_doctrine")->flush();
 
-        $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
+        $user1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user1_id));
         $this->assertEquals(null, $user1);
 
-        $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
+        $user2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user2_id));
         $this->get("app.twake_doctrine")->remove($user2);
         $this->get("app.twake_doctrine")->flush();
 
-        $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
+        $user2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user2_id));
         $this->assertEquals(null, $user2);
 
-        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+        $user3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user3_id));
         $this->get("app.twake_doctrine")->remove($user3);
         $this->get("app.twake_doctrine")->flush();
 
-        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+        $user3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user3_id));
         $this->assertEquals(null, $user3);
 
         // pour les worskspaces
-        $workspace1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace1->getId() . ""));
+        $workspace1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace1->getId() . ""));
         $this->get("app.twake_doctrine")->remove($workspace1);
 
-        $workspace2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace2->getId() . ""));
+        $workspace2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace2->getId() . ""));
         $this->get("app.twake_doctrine")->remove($workspace2);
 
         // pour le groupe
-        $group = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group->getId() . ""));
+        $group = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $group->getId() . ""));
         $this->get("app.twake_doctrine")->remove($group);
         $this->get("app.twake_doctrine")->flush();
 
-        $group = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group->getId() . ""));
+        $group = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $group->getId() . ""));
         $this->assertEquals(null, $group);
 
-        $workspace1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace1->getId() . ""));
+        $workspace1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace1->getId() . ""));
         $this->assertEquals(null, $workspace1);
 
-        $workspace2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace2->getId() . ""));
+        $workspace2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace2->getId() . ""));
         $this->assertEquals(null, $workspace2);
 
     }

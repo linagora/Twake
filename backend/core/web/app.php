@@ -16,13 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
     try {
 
-        $time = microtime(true);
-
         require_once __DIR__ . '/../vendor/autoload.php';
         require_once __DIR__ . '/../app/App.php';
 
-
-        error_log("init=" . (microtime(true) - $time));
         $app = new App();
 
         $time = microtime(true);

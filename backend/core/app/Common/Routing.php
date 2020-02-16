@@ -24,6 +24,9 @@ class Routing
 
     public function addRoute($method, $route, $callback)
     {
+        $route = preg_replace("/^\//", "", $route);
+        $route = preg_replace("/\/$/", "", $route);
+
         if (isset($this->routes[$route . ":" . $method])) {
             error_log("Route " . $route . " was already defined.");
             return;
@@ -67,21 +70,22 @@ class Routing
     //Allow any origin and set cookies in json response
     private function beforeRender(Response $response)
     {
+
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
-            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
+            $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
         }
-        header('Access-Control-Allow-Headers: ' . 'Content-Type, *', true);
-        header('Access-Control-Allow-Credentials: ' . 'true', true);
-        header('Access-Control-Allow-Methods: ' . 'GET, POST', true);
-        header('Access-Control-Max-Age: ' . '600', true);
+        $response->setHeader('Access-Control-Allow-Headers: ' . 'Content-Type, *', true);
+        $response->setHeader('Access-Control-Allow-Credentials: ' . 'true', true);
+        $response->setHeader('Access-Control-Allow-Methods: ' . 'GET, POST', true);
+        $response->setHeader('Access-Control-Max-Age: ' . '600', true);
         $length = strlen($response->getContent());
-        header('x-decompressed-content-length: ' . $length, true);
+        $response->setHeader('x-decompressed-content-length: ' . $length, true);
 
         $content = $response->getContent();
 
         if (is_array($content)) {
             $cookies = [];
-            foreach (headers_list() as $header) {
+            foreach ($response->headers->all() as $header) {
                 if (strpos("Set-Cookie: ", $header) == 0) {
                     $ex = explode("Set-Cookie: ", $header);
                     if (count($ex) == 2) {
@@ -100,7 +104,15 @@ class Routing
 
     public function execute($method, $route, Request $request)
     {
-        $response = $this->routesToController[$route . ":" . strtolower($method)]($request);
+        $route = preg_replace("/^\//", "", $route);
+        $route = preg_replace("/\/$/", "", $route);
+
+        if (isset($this->routesToController[$route . ":" . strtolower($method)])) {
+            $response = $this->routesToController[$route . ":" . strtolower($method)]($request);
+        } else {
+            error_log(json_encode($route . ":" . strtolower($method)) . " does not exists.");
+            $response = new Response();
+        }
         return $this->beforeRender($response);
     }
 

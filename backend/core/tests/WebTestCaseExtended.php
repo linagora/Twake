@@ -4,13 +4,13 @@ namespace Tests;
 
 use App\App;
 use Common\Http\Request;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\ChannelsBundle\Entity\Channel;
-use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
-use WebsiteApi\UsersBundle\Entity\User;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
+use Twake\Workspaces\Entity\Group;
+use Twake\Workspaces\Entity\Workspace;
+use Twake\Channels\Entity\Channel;
+use Twake\Channels\Entity\ChannelMember;
+use Twake\Users\Entity\User;
+use Twake\Workspaces\Entity\WorkspaceUser;
+use Twake\Workspaces\Entity\WorkspaceLevel;
 
 class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
 {
@@ -57,23 +57,37 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
     protected function doPost($route, $data = Array())
     {
         $request = new Request();
-        //TODO set content
-        //TODO extract route GET parameters
-        return $this->getClient()->getRouting()->execute("post", $route, $request);
+        $query_data = $this->getQueryFromUrl($route);
+        $request->request->reset($data);
+        $request->query->reset($query_data["query"]);
+        return json_decode($this->getClient()->getRouting()->execute("post", $query_data["route"], $request)->getContent(), 1);
     }
 
     protected function doGet($route)
     {
         $request = new Request();
-        //TODO extract route GET parameters
-        return $this->getClient()->getRouting()->execute("get", $route, $request);
+        $query_data = $this->getQueryFromUrl($route);
+        $request->query->reset($query_data["query"]);
+        return json_decode($this->getClient()->getRouting()->execute("get", $query_data["route"], $request)->getContent(), 1);
+    }
+
+    private function getQueryFromUrl($route)
+    {
+        $route = explode("?", $route);
+        if (count($route) == 1) {
+            return ["route" => $route[0], "query" => []];
+        }
+        $parts = $route[1];
+        parse_str($parts, $query);
+
+        return ["route" => $route[0], "query" => $query];
     }
 
 
     public function newUserByName($name, $mail = null)
     {
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+        $user = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => $name));
 
         if ($user) {
             $this->removeUserByName($name);
@@ -83,12 +97,12 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
             $mail = $name . "@twake_phpunit.fr";
         }
 
-        $userWithMail = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
+        $userWithMail = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("emailcanonical" => $mail));
         if ($userWithMail) {
             $this->removeUserByName($userWithMail->getUsername());
         }
 
-        $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
+        $mails = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findBy(Array("mail" => $mail));
         foreach ($mails as $mail) {
             $this->get("app.twake_doctrine")->remove($mail);
             $this->get("app.twake_doctrine")->flush();
@@ -96,18 +110,18 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
         $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", "en", false);
         $this->get("app.user")->verifyMail($mail, $token, "", true);
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+        $user = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => $name));
 
         return $user;
     }
 
     public function removeUserByName($name)
     {
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+        $user = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("usernamecanonical" => $name));
 
         if (isset($user)) {
 
-            $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user));
+            $mails = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user));
 
             foreach ($mails as $mail) {
                 $this->get("app.twake_doctrine")->remove($mail);
@@ -143,7 +157,7 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
         $channel = new Channel();
         $channel->setDirect(false);
         $channel->setOriginalWorkspaceId($workspace->getId());
-        $channel->setOriginalGroup($group);
+        $channel->setOriginalGroupId($group->getId());
 
         $this->getDoctrine()->persist($channel);
         $this->getDoctrine()->flush();

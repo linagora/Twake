@@ -47,7 +47,6 @@ class App
 
     public function __construct()
     {
-        $time = microtime(true);
 
         $bundles = (new Bundles())->getBundles();
         $bundles_instances = [];
@@ -80,7 +79,6 @@ class App
             $bundle_instance->init();
         }
 
-        error_log("build=" . (microtime(true) - $time));
 
     }
 

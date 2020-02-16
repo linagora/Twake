@@ -38,7 +38,7 @@ class Container
         $obj = $this->configuration[$namespace];
         $i = 0;
         while (is_array($obj) && $i < count($key)) {
-            $obj = $obj[$key[$i]];
+            $obj = @$obj[$key[$i]];
 
             if (is_object($obj) && is_subclass_of($obj, "Common\Configuration") && isset($obj->configuration)) {
                 $obj = $obj->configuration;

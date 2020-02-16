@@ -5,10 +5,10 @@ namespace Tests\DriveBundle;
 require_once __DIR__ . "/../WebTestCaseExtended.php";
 
 use Tests\WebTestCaseExtended;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\WorkspacesBundle\Entity\Group;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
-use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
+use Twake\Workspaces\Entity\Workspace;
+use Twake\Workspaces\Entity\Group;
+use Twake\Workspaces\Entity\WorkspaceUser;
+use Twake\Workspaces\Entity\GroupUser;
 
 class DriveCollectionTest extends WebTestCaseExtended
 {
@@ -88,7 +88,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($modified_parent, $added_parent, "Added date and modified date should be the same");
 
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals($workspace_id, $fileordirectory->getWorkspaceId() . "", "Wrong workspace id for file create with a parent in database");
         $this->assertEquals($root_id, $fileordirectory->getParentId() . "", "Wrong parent id for file create with a parent in database");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005", $fileordirectory->getFrontId() . "", "Wrong front id for file create with a parent in database");
@@ -123,7 +123,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($modified, $added, "Added date and modified date should be the same");
 
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_root));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_root));
         $this->assertEquals($workspace_id, $fileordirectory->getWorkspaceId() . "", "Wrong workspace id for file create without a parent in database");
         $this->assertEquals($root_id, $fileordirectory->getParentId() . "", "Wrong parent id for file create without a parent in database");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005", $fileordirectory->getFrontId() . "", "Wrong front id for file create without a parent in database");
@@ -151,9 +151,9 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(false, $result["data"]["object"]["trash"], "Wrong is in trash attribut for file create detached");
         $this->assertEquals($user1_id, $result["data"]["object"]["last_user"], "Wrong last user for file create detached");
 
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        /*$fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");
 */
 
@@ -164,7 +164,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals($modified, $added, "Added date and modified date should be the same");
 
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($workspace_id, $fileordirectory->getWorkspaceId() . "", "Wrong workspace id for file create without a parent in database");
         $this->assertEquals("detached", $fileordirectory->getParentId() . "", "Wrong parent id for file create without a parent in database");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005", $fileordirectory->getFrontId() . "", "Wrong front id for file create without a parent in database");
@@ -191,12 +191,12 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         //error_log(print_r(json_decode($result->getContent(),true),true));
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for file create without a parent");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(300000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($workspace_id, $fileordirectory->getWorkspaceId() . "", "Wrong workspace id for file reatached");
         $this->assertEquals($root_id, $fileordirectory->getParentId() . "", "Wrong parent id for file reatached");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005", $fileordirectory->getFrontId() . "", "Wrong front id for file reatached");
@@ -217,16 +217,16 @@ class DriveCollectionTest extends WebTestCaseExtended
         //error_log(print_r($result->getContent(),true));
         $this->assertEquals(true, $result["data"]["object"]["trash"], "File should be in trash he is not");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals($trash_id, $fileordirectory->getParentId(), "File has nottrash as parent");
         $this->assertEquals($root_id, $fileordirectory->getOldParent(), "File has nottrash as parent");
 
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for the file");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
 
@@ -243,16 +243,16 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $this->assertEquals(false, $result["data"]["object"]["trash"], "File should not be in trash he is ");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals($root_id, $fileordirectory->getParentId(), "File has notroot as parent");
         $this->assertEquals("", $fileordirectory->getOldParent(), "File got old parent he should not");
 
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for the file");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(300000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file trash");*/
 
 
@@ -277,11 +277,11 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(0, $result["data"]["object"]["size"], "Wrong size for the folder");
 
         /*$this->assertEquals(0,$result["data"]["object"]["size"], "Wrong size for the folder");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(300000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file trash");*/
 
 // =================================================================================================================================================
@@ -302,16 +302,16 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(false, $result["data"]["object"]["detached"], "Wrong detached bool for file reatached");
         $this->assertEquals(false, $result["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($idtofind_folder, $fileordirectory->getParentId() . "", "Wrong parent for the file which should be in folder");
 
         //error_log(print_r($result,true));
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for file detached");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(300000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the folder");*/
 
 // =================================================================================================================================================
@@ -328,22 +328,22 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $this->assertEquals(true, $result["data"]["object"]["trash"], "Folder should be in trash he is not");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals($trash_id, $fileordirectory->getParentId(), "Folder as not trash as parent");
         $this->assertEquals($root_id, $fileordirectory->getOldParent(), "Folder as not trash as parent");
         $this->assertEquals(true, $fileordirectory->getIsInTrash(), "Folder as not trash as parent");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($idtofind_folder, $fileordirectory->getParentId(), "Folder as not trash as parent");
         $this->assertEquals("", $fileordirectory->getOldParent(), "Folder as not trash as parent");
         $this->assertEquals(true, $fileordirectory->getIsInTrash(), "Folder as not trash as parent");
 
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for the folder");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
 // =================================================================================================================================================
@@ -358,28 +358,28 @@ class DriveCollectionTest extends WebTestCaseExtended
             "options" => $options
         ));
 
-        $fileson = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $workspace_id, "parent_id" => $idtofind_detached));
+        $fileson = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $workspace_id, "parent_id" => $idtofind_detached));
 
         $this->assertEquals(false, $result["data"]["object"]["trash"], "Detached file should not be in trash he is ");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($root_id, $fileordirectory->getParentId(), "Detached file as not trash as parent");
         $this->assertEquals("", $fileordirectory->getOldParent(), "Detached file as not trash as parent");
         $this->assertEquals(false, $fileordirectory->getIsInTrash(), "Detached file as not trash as parent");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals($trash_id, $fileordirectory->getParentId(), "Folder as not trash as parent");
         $this->assertEquals($root_id, $fileordirectory->getOldParent(), "Folder as not trash as parent");
         $this->assertEquals(true, $fileordirectory->getIsInTrash(), "Folder as not trash as parent");
 
         /*$this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for the file");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(300000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
 // =================================================================================================================================================
@@ -394,12 +394,12 @@ class DriveCollectionTest extends WebTestCaseExtended
             "options" => $options
         ));
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals(null, $fileordirectory, "The deleted file still exist");
 
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        /*$fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(200000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file trash");*/
 
 // =================================================================================================================================================
@@ -415,25 +415,25 @@ class DriveCollectionTest extends WebTestCaseExtended
         ));
 
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals($idtofind_folder, $fileordirectory->getParentId(), "File has nottrash as parent");
         $this->assertEquals($root_id, $fileordirectory->getOldParent(), "File has notroot as old parent");
         $this->assertEquals(true, $fileordirectory->getIsInTrash(), "File is not in trash");
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals($trash_id, $fileordirectory->getParentId(), "Folder is not trash as parent");
         $this->assertEquals(true, $fileordirectory->getIsInTrash(), "Folder is not in trash");
 
         $this->assertEquals(true, $result["data"]["object"]["trash"], "Folder should be in trash he is not");
 
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
+        /*$fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_folder));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");
         $this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for the folder");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in database");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file in trash");*/
 
         //ET ON LE SUPPRIME
@@ -445,12 +445,12 @@ class DriveCollectionTest extends WebTestCaseExtended
             "options" => $options
         ));
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->assertEquals(null, $fileordirectory, "The deleted file still exist");
 
-        /*$fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $trash_id));
+        /*$fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $trash_id));
         $this->assertEquals(0, $fileordirectory->getAsArray()["size"], "Wrong size for the file trash");
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(100000, $fileordirectory->getAsArray()["size"], "Wrong size for the file root");*/
 
 // =================================================================================================================================================
@@ -458,49 +458,49 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         // ON SUPPRIME TOUS LES FICHIERS DU WORKSPACE, LE WORKSPACE EN LUI MEME AINSI QUE LE GROUPE
 
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $workspace_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $workspace_id));
         foreach ($fileordirectory as $item) {
             $this->getDoctrine()->remove($item);
         }
-        $workspace = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+        $workspace = $this->getDoctrine()->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
         $this->getDoctrine()->remove($workspace);
-        $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group->getId() . ""));
+        $group = $this->getDoctrine()->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $group->getId() . ""));
         $this->getDoctrine()->remove($group);
         $this->getDoctrine()->flush();
 
 
-        $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group->getId() . ""));
+        $group = $this->getDoctrine()->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $group->getId() . ""));
         $this->assertEquals(null, $group);
-        $workspace = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+        $workspace = $this->getDoctrine()->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
         $this->assertEquals(null, $workspace);
-        $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("workspace_id" => $workspace_id));
+        $fileordirectory = $this->getDoctrine()->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("workspace_id" => $workspace_id));
         $this->assertEquals(null, $fileordirectory);
 
 
         //ON SUPPRIME TOUTE LES VERSIONS QUI ONT ETE CREE
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
         foreach ($version as $v) {
             $this->getDoctrine()->remove($v);
             $this->getDoctrine()->flush();
         }
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
         $this->assertEquals(Array(), $version);
 
 
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
         foreach ($version as $v) {
             $this->getDoctrine()->remove($v);
             $this->getDoctrine()->flush();
         }
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
         $this->assertEquals(Array(), $version);
 
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
         foreach ($version as $v) {
             $this->getDoctrine()->remove($v);
             $this->getDoctrine()->flush();
         }
-        $version = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        $version = $this->getDoctrine()->getRepository("Twake\Drive:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
         $this->assertEquals(Array(), $version);
 
     }

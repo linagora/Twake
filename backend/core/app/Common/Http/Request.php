@@ -32,7 +32,6 @@ class Request
             $this->request = new ParamBag(is_array($data) ? $data : array());
         }
 
-        error_log(json_encode($this->request->all()));
     }
 
     public function getContent()

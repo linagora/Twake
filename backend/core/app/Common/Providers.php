@@ -52,7 +52,7 @@ class Providers extends \Pimple\Container
         }
 
         $service_register_name = $this->services[$key]["register"];
-        if (!$this->registered_services[$service_register_name]) {
+        if (empty($this->registered_services[$service_register_name])) {
 
             if (isset($services[$key]["parameters"])) {
                 $parameters_key = $services[$key]["parameters"];

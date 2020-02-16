@@ -77,6 +77,10 @@ class TwakeMailer
     {
         //[REMOVE_ONPREMISE]
 
+        if (defined("TESTENV") && TESTENV) {
+            return;
+        }
+
         if (!$this->mailer) {
             $transport = (new \Swift_SmtpTransport($this->mail_parameters["sender"]["host"], $this->mail_parameters["sender"]["port"]))
                 ->setUsername($this->mail_parameters["sender"]["username"])
@@ -118,9 +122,7 @@ class TwakeMailer
 
         $message->attachSigner($signer);
 
-        $result = $this->mailer->send($message);
-
-        error_log(json_encode($result));
+        $this->mailer->send($message);
 
         //[/REMOVE_ONPREMISE]
 
