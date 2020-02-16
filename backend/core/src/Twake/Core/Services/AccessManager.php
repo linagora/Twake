@@ -155,6 +155,7 @@ class AccessManager
     {
         $wp = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
         $members = $wp->getMembers();
+        $members = $members ? $members : [];
         $access = false;
         foreach ($members as $member) {
             if ($member->getUser()->getId() == $current_user_id) {
