@@ -13,6 +13,7 @@ class Routing
     /** @var App */
     private $app = null;
     private $routes = [];
+    private $routesToController = [];
     private $request = null;
 
     public function __construct(App $app)
@@ -28,6 +29,7 @@ class Routing
             return;
         }
         $this->routes[$route . ":" . $method] = true;
+        $this->routesToController[$route . ":" . $method] = $callback;
 
         if ($method == "get") {
             $this->get($route, $callback);
@@ -42,7 +44,8 @@ class Routing
     {
         SimpleRouter::get($route, function () use ($callback) {
             try {
-                $this->beforeRender($callback($this->request));
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
             } catch (\Exception $e) {
                 error_log($e);
             }
@@ -53,7 +56,8 @@ class Routing
     {
         SimpleRouter::post($route, function () use ($callback) {
             try {
-                $this->beforeRender($callback($this->request));
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
             } catch (\Exception $e) {
                 error_log($e);
             }
@@ -91,7 +95,13 @@ class Routing
 
         $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
 
-        $response->send();
+        return $response;
+    }
+
+    public function execute($method, $route, Request $request)
+    {
+        $response = $this->routesToController[$route . ":" . strtolower($method)]($request);
+        return $this->beforeRender($response);
     }
 
     public function getCurrentRequest()
