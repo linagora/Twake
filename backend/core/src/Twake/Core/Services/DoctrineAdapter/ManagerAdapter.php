@@ -64,7 +64,7 @@ class ManagerAdapter
             $driver_type = "Cassandra";
         }
 
-        $paths = array($this->app->getAppRootDir());
+        $paths = array($this->app->getAppRootDir() . "/src/");
         $isDevMode = $this->dev_mode;
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
 

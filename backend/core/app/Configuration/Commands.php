@@ -5,8 +5,9 @@ namespace Configuration;
 class Commands
 {
     public $commands = [
-        "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
         "twake:schema:update" => "Twake\Core\Command\TwakeSchemaUpdateCommand",
+        "twake:init" => "Twake\Core\Command\InitCommand",
+        "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
         "twake:daily" => "Twake\Core\Command\DailyCommand",
         "twake:reindex" => "Twake\Core\Command\ReindexCommand",
         "twake:mapping" => "Twake\Core\Command\MappingCommand",

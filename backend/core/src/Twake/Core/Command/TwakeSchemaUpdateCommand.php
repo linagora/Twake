@@ -7,6 +7,7 @@ use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Common\Commands\ContainerAwareCommand;
+use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Discussion\Entity\Channel;
 use Twake\Market\Entity\LinkAppWorkspace;
 use Twake\Workspaces\Entity\Level;
+use Doctrine\ORM\EntityManager;
 
 class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 {
@@ -341,6 +343,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
         $conversionFor = Array(
             "string" => "text",
             "twake_text" => "text",
+            "twake_no_salt_text" => "text",
             "twake_string" => "text",
             "twake_timeuuid" => "timeuuid",
             "array" => "text",
