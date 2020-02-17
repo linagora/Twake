@@ -46,6 +46,10 @@ class AccessManager
                 $workspace_id = $channel["original_workspace"];
                 $members = $channel["members"];
                 $ext_members = $channel["ext_members"];
+                $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user_id . "", "channel_id" => $id));
+                if ($linkChannel) {
+                    return true;
+                }
                 if (in_array($current_user_id, $members) || in_array($current_user_id, $ext_members)) {
                     return true;
                 } else
@@ -152,21 +156,14 @@ class AccessManager
 
     public function user_has_workspace_access($current_user_id, $workspace_id)
     {
-        error_log("find==>" . $workspace_id);
         $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace_id));
-
-        error_log("count==>" . count($members));
-
         $members = $members ? $members : [];
         $access = false;
         foreach ($members as $member) {
-            error_log("?");
-            error_log($member->getUser()->getId() . "==" . $current_user_id);
             if ($member->getUser()->getId() == $current_user_id) {
                 $access = true;
             }
         }
-        error_log("OK");
         if (!$access) {
             return false;
         }

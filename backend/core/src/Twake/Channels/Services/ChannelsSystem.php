@@ -37,6 +37,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         if (!is_string($current_user)) {
             $current_user = $current_user->getId();
         }
+
         if (empty($data["id"])) {
             return $this->access_manager->has_access($current_user, [
                 "type" => "Workspace",
@@ -44,6 +45,7 @@ class ChannelsSystem extends ChannelSystemAbstract
                 "object_id" => $data["workspace_id"] ?: $data["original_workspace"]
             ]);
         }
+
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
             "edition" => true,
@@ -93,6 +95,7 @@ class ChannelsSystem extends ChannelSystemAbstract
     public function save($object, $options, $current_user)
     {
         if (!$this->hasAccess($object, $current_user)) {
+            error_log("no access " . $object["id"]);
             return false;
         }
 

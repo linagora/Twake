@@ -26,17 +26,18 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "u2 is not invited as wexterne");
     }
 
-    public function testShavinte()
+    public function testChainvite()
     {
         list($g1, $w1, $c1, $u1) = $this->getStuff();
         $u3 = $this->newUserByName("usertest003");
-        $this->updateChavinteFromFront($w1, $c1, $u1, [$u3->getId()], []);
+        $this->login($u1->getUsernameCanonical());
+        $result = $this->updateChainviteFromFront($w1, $c1, $u1, [$u3->getId()], []);
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u3, $w1, $c1, true), "u3 is not invited as chanvité");
-        $this->updateChavinteFromFront($w1, $c1, $u1, [], [$u3->getId()]);
+        $this->updateChainviteFromFront($w1, $c1, $u1, [], [$u3->getId()]);
         $this->assertEquals(false, $this->verifyIfUserIsInChannel($u3, $w1, $c1, true), "u3 is still invited as chanvité");
     }
 
-    public function testShavinteMail()
+    public function testChainviteMail()
     {
         list($g1, $w1, $c1, $u1) = $this->getStuff();
         $mail1 = "mail1@benoit.best";
@@ -53,7 +54,7 @@ class ExterneUserTest extends WebTestCaseExtended
             $this->getDoctrine()->remove($mailEntity);
         }
         $this->getDoctrine()->flush();
-        $this->updateChavinteFromFront($w1, $c1, $u1, [$mail1], []);
+        $this->updateChainviteFromFront($w1, $c1, $u1, [$mail1], []);
         $u4 = $this->newUserByName("usertest004", $mail1);
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u4, $w1, $c1, true), "u4 is not invited as chanvité");
         // on vérifi que $mail1 n'est plus dans la liste
@@ -66,7 +67,7 @@ class ExterneUserTest extends WebTestCaseExtended
         $u2 = $this->newUserByName("usertest002");
         $this->login($u1->getUsernameCanonical());
         $result = $this->doPost("/ajax/workspace/members/addlist", Array("list" => $u2->getUsernameCanonical() . "|1", "workspaceId" => $w1->getId()));
-        $this->updateChavinteFromFront($w1, $c1, $u1, [], [$u2->getId()]);
+        $this->updateChainviteFromFront($w1, $c1, $u1, [], [$u2->getId()]);
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "User can be remove from channel as wexterne");
     }
 
@@ -80,9 +81,9 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->login($u1->getUsernameCanonical());
         $result = $this->doPost("/ajax/workspace/members/addlist", Array("list" => $u2->getUsernameCanonical() . "|1", "workspaceId" => $w1->getId()));
         $this->assertEquals(false, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne is auto add in private channel");
-        $this->updateChavinteFromFront($w1, $c1, $u1, [$u2->getId()], []);
+        $this->updateChainviteFromFront($w1, $c1, $u1, [$u2->getId()], []);
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne can't be add in private channel");
-        $this->updateChavinteFromFront($w1, $c1, $u1, [], [$u2->getId()]);
+        $this->updateChainviteFromFront($w1, $c1, $u1, [], [$u2->getId()]);
         $this->assertEquals(false, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne can't be remove from private channel");
     }
 
@@ -90,14 +91,21 @@ class ExterneUserTest extends WebTestCaseExtended
     {
         list($g1, $w1, $c1, $u1) = $this->getStuff();
         $this->login($u1->getUsernameCanonical());
+
         $u2 = $this->newUserByName("usertest002");
         $result = $this->doPost("/ajax/workspace/members/addlist", Array("list" => $u2->getUsernameCanonical() . "|1", "workspaceId" => $w1->getId()));
+
         $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne was not added in private channel");
+
+        $this->login($u1->getUsernameCanonical());
         $result = $this->doPost("/ajax/workspace/members/remove", Array("ids" => Array($u2->getId()), "workspaceId" => $w1->getId()));
+
+
         $this->assertEquals(Array("removed" => 1), $result["data"]);
         $linkChannel = $this->getDoctrine()->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $u2->getId() . "", "channel_id" => $c1->getId()));
         $this->assertNull($linkChannel, "Wexterne is still in channel (entity) on remove from workspace");
         $this->assertEquals(false, $this->verifyIfUserIsInChannel($u1, $w1, $c1, true, $u2->getUsernameCanonical()), "Wexterne is still in channel (front) on remove from workspace");
+        $this->logout();
     }
 
 
@@ -140,7 +148,7 @@ class ExterneUserTest extends WebTestCaseExtended
         return $channels;
     }
 
-    private function updateChavinteFromFront($workspace, $channel, $user, $toAdd = [], $toRemove = [])
+    private function updateChainviteFromFront($workspace, $channel, $user, $toAdd = [], $toRemove = [])
     {
         $channels = $this->getChannelsFromFront($workspace, $channel, $user);
         $frontChan = $this->getChannelById($channels, $channel->getId());
@@ -179,8 +187,11 @@ class ExterneUserTest extends WebTestCaseExtended
                 "_grouped" => true,
             )
         ));
-        error_log(json_encode($result));
-        $channels = $result["data"]["get"];
+        if (isset($result["data"]["get"])) {
+            $channels = $result["data"]["get"];
+        } else {
+            $channels = [];
+        }
         $isOk = $this->isInChannel($channels, $user, $channel, $hasToBeExterne, $mailOrUsername);
         $this->logout();
         return $isOk;

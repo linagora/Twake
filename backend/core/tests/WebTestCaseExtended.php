@@ -200,6 +200,7 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
             "_username" => $username,
             "_password" => $password
         ));
+        return $result;
     }
 
     public function logout()
