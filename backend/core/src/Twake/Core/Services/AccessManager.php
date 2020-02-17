@@ -152,14 +152,21 @@ class AccessManager
 
     public function user_has_workspace_access($current_user_id, $workspace_id)
     {
-        $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace_id));
+        error_log("find==>" . $workspace_id);
+        $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace_id));
+
+        error_log("count==>" . count($members));
+
         $members = $members ? $members : [];
         $access = false;
         foreach ($members as $member) {
+            error_log("?");
+            error_log($member->getUser()->getId() . "==" . $current_user_id);
             if ($member->getUser()->getId() == $current_user_id) {
                 $access = true;
             }
         }
+        error_log("OK");
         if (!$access) {
             return false;
         }

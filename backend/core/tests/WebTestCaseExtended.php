@@ -204,6 +204,7 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
 
     public function logout()
     {
+        $this->clearClient();
         $this->doPost("/ajax/users/logout", Array());
     }
 }

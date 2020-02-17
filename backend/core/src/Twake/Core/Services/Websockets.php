@@ -95,6 +95,8 @@ class Websockets
         if ($controller) {
             $type = $data["type"];
             if (isset($this->services_for_type[$type])) {
+
+
                 $service = $this->app->getServices()->get($this->services_for_type[$type]);
                 $has_access = $service->init($route, $data, $controller->getUser());
                 if (!$has_access) {

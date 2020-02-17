@@ -92,7 +92,7 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->login($u1->getUsernameCanonical());
         $u2 = $this->newUserByName("usertest002");
         $result = $this->doPost("/ajax/workspace/members/addlist", Array("list" => $u2->getUsernameCanonical() . "|1", "workspaceId" => $w1->getId()));
-        $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne is not add in private channel");
+        $this->assertEquals(true, $this->verifyIfUserIsInChannel($u2, $w1, $c1, true), "Wexterne was not added in private channel");
         $result = $this->doPost("/ajax/workspace/members/remove", Array("ids" => Array($u2->getId()), "workspaceId" => $w1->getId()));
         $this->assertEquals(Array("removed" => 1), $result["data"]);
         $linkChannel = $this->getDoctrine()->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $u2->getId() . "", "channel_id" => $c1->getId()));
@@ -179,6 +179,7 @@ class ExterneUserTest extends WebTestCaseExtended
                 "_grouped" => true,
             )
         ));
+        error_log(json_encode($result));
         $channels = $result["data"]["get"];
         $isOk = $this->isInChannel($channels, $user, $channel, $hasToBeExterne, $mailOrUsername);
         $this->logout();
