@@ -1,25 +1,25 @@
-version: '2'
+version: "2"
 
 services:
-    scylladb:
-      image: scylladb/scylla
-      ports:
-        - 9180:9180
-        - 9100:9100
-        - 9160:9160
-        - 9042:9042
-      volumes:
-        - ./scylladb:/var/lib/scylla
-        - ./Docker:/docker_dir/
-      command: '--experimental 1'
-    php:
-        image: twake-php
-        build: twake-php
-        volumes:
-            - ./cron:/cron
-            - ./:/twake-core:cached
-            - ./fpm/:/etc/data/fpm/
-        depends_on:
-          - scylladb
-        links:
-          - scylladb
+  scylladb:
+    image: scylladb/scylla
+    ports:
+      - 9180:9180
+      - 9100:9100
+      - 9160:9160
+      - 9042:9042
+    volumes:
+      - ./scylladb:/var/lib/scylla
+      - ./docker:/docker_dir/
+    command: "--experimental 1"
+  php:
+    image: twake-php
+    build: twake-php
+    volumes:
+      - ./cron:/cron
+      - ./backend/core/:/twake-core:cached
+      - ./fpm/:/etc/data/fpm/
+    depends_on:
+      - scylladb
+    links:
+      - scylladb

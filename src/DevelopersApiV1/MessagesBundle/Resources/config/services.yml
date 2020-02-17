@@ -1,4 +1,0 @@
-services:
-#    developers_api_v1_messages.example:
-#        class: DevelopersApiV1\MessagesBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]

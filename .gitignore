@@ -115,7 +115,10 @@ fabric.properties
 ### Symfony Patch ###
 /web/css/
 /web/js/
+docker-compose.yml
 
+### Dev ###
+/docker-data/*
 
 ### Twake specific ###
 /build/

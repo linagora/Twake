@@ -1,7 +1,0 @@
-notifications_topic:
-    channel: notifications/{id_user}
-    handler:
-        callback: 'notifications.topic' #related to the getName() of your topic
-    requirements:
-         id_user:
-            pattern: "[a-zA-Z0-9-]+"

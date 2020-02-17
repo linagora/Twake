@@ -1,0 +1,35 @@
+{
+    "name": "twake/twake-core",
+    "authors": [
+        {
+            "name": "Romaric Mourgues",
+            "email": "romaric.mourgues@twakeapp.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "doctrine/orm": "^2.5",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-cache-bundle": "^1.2",
+        "phpunit/phpunit": "5.7",
+        "aws/aws-sdk-php-symfony": "~2.0",
+        "php-opencloud/openstack": "^3.0",
+        "emojione/emojione": "3.1",
+        "swiftmailer/swiftmailer": "^6.0",
+        "twig/twig": "^2.12",
+        "doctrine/dbal": "~2.2",
+        "knplabs/console-service-provider": "^2.2",
+        "ramsey/uuid-doctrine": "^1.5",
+        "spatie/pdf-to-text": "*",
+        "soleon/sc-php": "^1.0",
+        "pecee/simple-router": "4.2.0.6",
+        "germania-kg/twigserviceprovider": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/",
+            "Common\\": "app/Common",
+            "App\\": "app/"
+        }
+    }
+}

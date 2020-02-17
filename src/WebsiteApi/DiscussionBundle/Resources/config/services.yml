@@ -1,4 +1,0 @@
-services:
-    app.messages:
-            class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets", "@app.channels.notifications"]
