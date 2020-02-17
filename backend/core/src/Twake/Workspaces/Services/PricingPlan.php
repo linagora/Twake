@@ -3,6 +3,7 @@
 namespace Twake\Workspaces\Services;
 
 use DateTime;
+use Twake\Workspaces\Entity\GroupUser;
 use Twake\Workspaces\Model\PricingPlanInterface;
 use App\App;
 
@@ -125,39 +126,48 @@ class PricingPlan
     public function dailyDataGroupUser()
     {
         $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
-        $listGroupUser = $groupUserRepository->findBy(Array("didConnectToday" => 1));
-        $dateToday = date('z') + 1;
-        foreach ($listGroupUser as $ga) {
-            $lastDate = $ga->getLastDayOfUpdate();
+        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
+        $list = $groupRepository->findBy([]);
+        
+        foreach ($list as $g) {
 
-            if ($lastDate != $dateToday) {
+            $listGroupUser = $groupUserRepository->findBy(Array("group" => $g));
+            $dateToday = date('z') + 1;
+            foreach ($listGroupUser as $ga) {
                 if ($ga->getDidConnectToday()) {
-                    $ga->increaseConnectionsPeriod();
-                    $usedApps = $ga->getUsedAppsToday();
-                    $ga->setLastDayOfUpdate($dateToday);
-                    foreach ($usedApps as $app) {
-                        $appsUsage = $ga->getAppsUsagePeriod();
-                        if ($appsUsage != null && !empty($appsUsage) &&
-                            array_key_exists($app, $appsUsage)
-                        ) {
-                            $obj = $appsUsage;
-                            $obj[$app] = $appsUsage[$app] + 1;
-                            $ga->setAppsUsagePeriod($obj);
-                        } else {
-                            $obj = $appsUsage;
-                            $obj[$app] = 1;
-                            $ga->setAppsUsagePeriod($obj);
+                    $lastDate = $ga->getLastDayOfUpdate();
+
+                    if ($lastDate != $dateToday) {
+                        if ($ga->getDidConnectToday()) {
+                            $ga->increaseConnectionsPeriod();
+                            $usedApps = $ga->getUsedAppsToday();
+                            $ga->setLastDayOfUpdate($dateToday);
+                            foreach ($usedApps as $app) {
+                                $appsUsage = $ga->getAppsUsagePeriod();
+                                if ($appsUsage != null && !empty($appsUsage) &&
+                                    array_key_exists($app, $appsUsage)
+                                ) {
+                                    $obj = $appsUsage;
+                                    $obj[$app] = $appsUsage[$app] + 1;
+                                    $ga->setAppsUsagePeriod($obj);
+                                } else {
+                                    $obj = $appsUsage;
+                                    $obj[$app] = 1;
+                                    $ga->setAppsUsagePeriod($obj);
+                                }
+                            }
+                            $ga->setUsedAppsToday([]);
+                            $ga->setDidConnectToday(0);
+                            $this->doctrine->persist($ga);
                         }
+
                     }
-                    $ga->setUsedAppsToday([]);
-                    $ga->setDidConnectToday(0);
-                    $this->doctrine->persist($ga);
                 }
 
             }
+            $this->doctrine->flush();
 
         }
-        $this->doctrine->flush();
     }
 
     /**

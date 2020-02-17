@@ -1,6 +1,0 @@
-"version" => ["handler"=>"Version:getAction", "methods"=>["GET"]],
-"grouped_query" => ["handler"=>"GroupedQuery:query", "methods"=>["POST"]],
-"collections/init" => ["handler"=>"Websockets:init", "methods"=>["POST"]],
-"access" => ["handler"=>"Access:has_access", "methods"=>["POST"]],
-"workspaceaccess" => ["handler"=>"Access:user_has_workspace_access", "methods"=>["POST"]],
-"exportversion" => ["handler"=>"ImportExport:export_version", "methods"=>["POST"]],

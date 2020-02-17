@@ -1,7 +1,0 @@
-#Remote want to send a mail or a push notification
-"mail" => ["handler"=>"Remote:mail", "methods"=>["POST"]],
-
-"push" => ["handler"=>"Remote:push", "methods"=>["POST"]],
-
-
-"recaptcha" => ["handler"=>"Remote:verifyReCaptcha", "methods"=>["POST"]],

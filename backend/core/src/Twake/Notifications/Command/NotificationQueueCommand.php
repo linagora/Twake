@@ -20,8 +20,8 @@ class NotificationQueueCommand extends ContainerAwareCommand
         $services = $this->getApp()->getServices();
         $em = $services->get('app.twake_doctrine');
         $circle = $services->get("app.restclient");
-        $key = $this->getContainer()->getParameter('LICENCE_KEY');
-        $server = $this->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
+        $key = $this->getApp()->getContainer()->getParameter('LICENCE_KEY');
+        $server = $this->getApp()->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
         $notifRepo = $em->getRepository("Twake\Notifications:PushNotificationQueue");
 
         $limit = date("U", date("U") + 60);
@@ -40,7 +40,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
                 sleep(1);
             } else {
 
-                if (!$this->getContainer()->getParameter('STANDALONE')) {
+                if (!$this->getApp()->getContainer()->getParameter('STANDALONE')) {
                     $masterServer = "https://app.twakeapp.com/api/remote/push";
                     $dataArray = Array(
                         "licenceKey" => $key,

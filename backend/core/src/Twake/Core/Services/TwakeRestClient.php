@@ -38,27 +38,27 @@ if (!function_exists('http_parse_headers')) {
 class TwakeRestClient
 {
 
-    public function get($url, $curl_options)
+    public function get($url, $curl_options = [])
     {
         return $this->request("GET", $url, [], $curl_options);
     }
 
-    public function post($url, $data, $curl_options)
+    public function post($url, $data, $curl_options = [])
     {
         return $this->request("POST", $url, $data, $curl_options);
     }
 
-    public function put($url, $data, $curl_options)
+    public function put($url, $data, $curl_options = [])
     {
         return $this->request("PUT", $url, $data, $curl_options);
     }
 
-    public function delete($url, $curl_options)
+    public function delete($url, $curl_options = [])
     {
         return $this->request("DELETE", $url, [], $curl_options);
     }
 
-    private function request($method, $url, $data, $curl_options)
+    private function request($method, $url, $data, $curl_options = [])
     {
         $options = [];
         foreach ($curl_options as $key => $opt) {

@@ -28,8 +28,8 @@ class DrivePreviewCommand extends ContainerAwareCommand
         $this->em = $services->get("app.twake_doctrine");
         $this->pusher = $services->get("app.pusher");
         $this->preview = $services->get("app.drive.preview");
-        $this->root = $this->getContainer()->getParameter('kernel.root_dir');
-        $this->drive_previews_tmp_folder = $this->getContainer()->getParameter("drive_previews_tmp_folder");
+        $this->root = $this->getApp()->getContainer()->getParameter('kernel.root_dir');
+        $this->drive_previews_tmp_folder = $this->getApp()->getContainer()->getParameter("drive_previews_tmp_folder");
         $this->storagemanager = $services->get("driveupload.storemanager");
 
         $this->autoGenPreview($services);

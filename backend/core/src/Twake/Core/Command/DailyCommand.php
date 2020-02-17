@@ -36,14 +36,13 @@ class DailyCommand extends ContainerAwareCommand
 
         $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
-
         $services->get("app.pricing_plan")->dailyDataGroupUser();
         $services->get("app.pricing_plan")->groupPeriodUsage();
 
         /* Send usage report */
-
+        
         $licenceServer = "https://licences.twakeapp.com/api";
-        $licenceKey = $this->getContainer()->getParameter('LICENCE_KEY');
+        $licenceKey = $this->getApp()->getContainer()->getParameter('LICENCE_KEY');
         $data = Array(
             "licenceKey" => $licenceKey
         );

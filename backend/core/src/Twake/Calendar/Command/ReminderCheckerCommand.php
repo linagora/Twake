@@ -20,7 +20,7 @@ class ReminderCheckerCommand extends ContainerAwareCommand
     {
         $services = $this->getApp()->getServices();
         $services->get("app.calendar.event")->checkReminders();
-        posix_kill(posix_getpid(), SIGKILL);
+        @posix_kill(posix_getpid(), SIGKILL);
     }
 
 
