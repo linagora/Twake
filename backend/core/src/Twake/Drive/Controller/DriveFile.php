@@ -46,7 +46,7 @@ class DriveFile extends BaseController
             $res = $this->get("app.drive")->save($object, $options, $current_user_id, Array());
         }
 
-        if ($object["_once_set_access"] && $object["id"]) {
+        if (!empty($object["_once_set_access"]) && !empty($object["id"])) {
 
             $is_editable = $object["acces_info"]["is_editable"];
             $publicaccess = $object["acces_info"]["public_access"];
@@ -60,7 +60,7 @@ class DriveFile extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         } else {
-            if (!$object["id"]) {
+            if (empty($object["id"])) {
                 $this->get("administration.counter")->incrementCounter("total_files", 1);
                 $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
             }

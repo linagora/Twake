@@ -67,9 +67,9 @@ class DriveFileSystem
         return $this->access_manager->has_access($current_user, Array(
             "type" => "DriveFile",
             "edition" => true,
-            "object_id" => empty($data["id"]) ? $data["parent_id"] : $data["id"],
-            "workspace_id" => $data["workspace_id"]
-        ), ["token" => $data["public_access_token"]]);
+            "object_id" => empty($data["id"]) ? (isset($data["parent_id"]) ? $data["parent_id"] : null) : $data["id"],
+            "workspace_id" => isset($data["workspace_id"]) ? $data["workspace_id"] : null
+        ), ["token" => @$data["public_access_token"]]);
     }
 
     public function get($options, $current_user)
@@ -622,7 +622,7 @@ class DriveFileSystem
             $fileordirectory->setTags($object["tags"]);
         }
         if (isset($object["attachments"]) || $did_create) {
-            $this->attachementManager->updateAttachements($fileordirectory, $object["attachments"] ? $object["attachments"] : Array());
+            $this->attachementManager->updateAttachements($fileordirectory, isset($object["attachments"]) ? $object["attachments"] : Array());
         }
 
 
