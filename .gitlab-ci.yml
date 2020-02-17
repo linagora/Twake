@@ -17,6 +17,7 @@ test:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
+        - rm docker-compose.yml
         - mv docker/docker-compose-test.yml docker-compose.yml
         - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
         - apk add python python-dev py-pip build-base libffi-dev openssl-dev
@@ -43,6 +44,7 @@ manual_test:
         refs:
             - dev
     script:
+        - rm docker-compose.yml
         - mv docker/docker-compose-test.yml docker-compose.yml
         - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
         - apk add python python-dev py-pip build-base libffi-dev openssl-dev
