@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,7 +43,7 @@ class InitCommand extends ContainerAwareCommand
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
         $starttime = microtime(true);
 
@@ -70,14 +70,14 @@ class InitCommand extends ContainerAwareCommand
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
 
-        $manager = $this->getContainer()->get('app.twake_doctrine');
+        $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
 
         /**
          * Récupération des repository, de Twake et des applis de base
          */
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $serverbase = $this->getContainer()->getParameter('SERVER_NAME');
 
         // Création d'un pricing minimum gratuit

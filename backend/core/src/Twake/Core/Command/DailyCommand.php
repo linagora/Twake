@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Market\Entity\Application;
@@ -24,7 +24,7 @@ class DailyCommand extends ContainerAwareCommand
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
         $this->output = $output;
@@ -34,7 +34,7 @@ class DailyCommand extends ContainerAwareCommand
          * Récupération des repository, de Twake et des applis de base
          */
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
 
         $services->get("app.pricing_plan")->dailyDataGroupUser();

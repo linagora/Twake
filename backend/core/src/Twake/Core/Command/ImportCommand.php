@@ -3,7 +3,7 @@
 namespace Twake\Core\Command;
 
 use DateTime;
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Calendar\Entity\Calendar;
@@ -49,7 +49,7 @@ class ImportCommand extends ContainerAwareCommand
         //->addArgument('tarname', InputArgument::REQUIRED, 'Which tar do you want to import');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
 // =================================================================================================================================================
@@ -64,7 +64,7 @@ class ImportCommand extends ContainerAwareCommand
         error_log("========================================================================================");
 
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
         //$group_name = $input->getArgument('tarname');
         $export_user = true;
@@ -133,7 +133,7 @@ class ImportCommand extends ContainerAwareCommand
     private function importGroup()
     {
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
 
 // =================================================================================================================================================
@@ -819,7 +819,7 @@ class ImportCommand extends ContainerAwareCommand
 
     private function importGroupPrivateChannels()
     {
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
 
         //PARTIE SUR LES CHANNEL PRIVES

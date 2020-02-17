@@ -2,7 +2,7 @@
 
 namespace Twake\Notifications\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -14,10 +14,10 @@ class NotificationQueueCommand extends ContainerAwareCommand
         $this->setName("twake:notifications_queue");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $em = $services->get('app.twake_doctrine');
         $circle = $services->get("app.restclient");
         $key = $this->getContainer()->getParameter('LICENCE_KEY');

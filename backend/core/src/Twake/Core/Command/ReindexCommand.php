@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,9 +18,9 @@ class ReindexCommand extends ContainerAwareCommand
             ->setDescription("Command to reindex scylladb date in all index in Elasticsearch");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
-        $manager = $this->getContainer()->get('app.twake_doctrine');
+        $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
         $channels = $manager->getRepository("Twake\Channels:Channel")->findBy(Array("direct" => true));
         foreach ($channels as $i => $channel) {
@@ -72,7 +72,7 @@ class ReindexCommand extends ContainerAwareCommand
 
         $messages = $manager->getRepository("Twake\Discussion:Message")->findBy(Array("channel_id" => $channel->getId()));
         foreach ($messages as $message) {
-            $this->getContainer()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
+            $this->getApp()->getServices()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
         }
 
         return count($messages);
@@ -81,7 +81,7 @@ class ReindexCommand extends ContainerAwareCommand
 
     private function indexRepository($repository, $options = Array())
     {
-        $manager = $this->getContainer()->get('app.twake_doctrine');
+        $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
         error_log("index " . $repository);
 

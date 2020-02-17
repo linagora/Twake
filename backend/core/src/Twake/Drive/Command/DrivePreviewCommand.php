@@ -2,7 +2,7 @@
 
 namespace Twake\Drive\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Drive\Services\DriveFileSystemOld;
@@ -21,9 +21,9 @@ class DrivePreviewCommand extends ContainerAwareCommand
             ->setName("twake:preview_worker");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
 
         $this->em = $services->get("app.twake_doctrine");
         $this->pusher = $services->get("app.pusher");

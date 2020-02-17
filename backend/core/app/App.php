@@ -12,17 +12,21 @@ require_once __DIR__ . "/Common/Container.php";
 require_once __DIR__ . "/Common/Services.php";
 require_once __DIR__ . "/Common/Configuration.php";
 require_once __DIR__ . "/Common/Providers.php";
+require_once __DIR__ . "/Common/CommandsManager.php";
 
 require_once __DIR__ . "/Configuration/Bundles.php";
 require_once __DIR__ . "/Configuration/Configuration.php";
 require_once __DIR__ . "/Configuration/Parameters.php";
 require_once __DIR__ . "/Configuration/Providers.php";
+require_once __DIR__ . "/Configuration/Commands.php";
 
+use Common\CommandsManager;
 use Common\Routing;
 use Common\Container;
 use Common\Services;
 use Common\Providers;
 use Configuration\Bundles;
+use Configuration\Commands;
 use Configuration\Configuration;
 use Configuration\Parameters;
 use Pecee\SimpleRouter\SimpleRouter;
@@ -79,7 +83,6 @@ class App
             $bundle_instance->init();
         }
 
-
     }
 
     public function getRouting()
@@ -105,6 +108,19 @@ class App
     public function getAppRootDir()
     {
         return $this->app_root_dir;
+    }
+
+    public function getCommands()
+    {
+        return $this->commands;
+    }
+
+    public function runCli()
+    {
+        if (php_sapi_name() == "cli") {
+            $this->commands = new CommandsManager($this, (new Commands())->commands);
+            ($this->commands)->run();
+        }
     }
 
     public function run()

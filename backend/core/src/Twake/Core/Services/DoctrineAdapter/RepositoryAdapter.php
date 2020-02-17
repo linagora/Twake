@@ -123,7 +123,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            error_log("ERROR with findBy");
+            error_log("ERROR with findRange");
             $a = [];
         }
         return $a;
@@ -251,7 +251,9 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         } catch (\Exception $e) {
             error_log($e);
-            var_dump($e->getTraceAsString());
+            foreach (explode("\n", $e->getTraceAsString()) as $line) {
+                error_log($line);
+            }
             error_log("ERROR with findBy");
             $a = [];
         }

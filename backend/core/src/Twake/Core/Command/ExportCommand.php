@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,12 +27,12 @@ class ExportCommand extends ContainerAwareCommand
             ->addArgument('name', InputArgument::REQUIRED, 'What group do you want to export?');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
 
-        $services = $this->getApplication()->getKernel()->getContainer();
-        $doctrine = $this->getContainer()->get('doctrine');
+        $services = $this->getApp()->getServices();
+        $doctrine = $this->getApp()->getServices()->get('doctrine');
         $manager = $doctrine->getManager();
         $group_name = $input->getArgument('name');
         $export_user = true;

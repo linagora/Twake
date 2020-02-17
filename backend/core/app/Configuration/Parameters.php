@@ -66,7 +66,7 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
                 "user" => "root",
                 "password" => "root",
                 "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
-                "dev" => false
+                "dev" => true
             ],
             "openstack" => [
                 "use" => false,

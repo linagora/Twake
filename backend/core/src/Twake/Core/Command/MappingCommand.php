@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,7 +18,7 @@ class MappingCommand extends ContainerAwareCommand
             ->setDescription("Command add mapping in all index in Elasticsearch");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
         $mapping_workspace = Array(
@@ -229,7 +229,7 @@ class MappingCommand extends ContainerAwareCommand
         error_log($url . $mapping_suffix);
 
         try {
-            $this->getContainer()->get("app.restclient")->put("http://" . $url, "");
+            $this->getApp()->getServices()->get("app.restclient")->put("http://" . $url, "");
         } catch (\Exception $e) {
 
         }

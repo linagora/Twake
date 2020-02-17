@@ -353,7 +353,7 @@ class Notifications
     {
 
         $devicesRepo = $this->doctrine->getRepository("Twake\Users:Device");
-        $devices = $devicesRepo->findBy(Array("user" => $user));
+        $devices = $devicesRepo->findBy(Array("user_id" => $user));
 
         $count = count($devices);
         for ($i = 0; $i < $count; $i++) {

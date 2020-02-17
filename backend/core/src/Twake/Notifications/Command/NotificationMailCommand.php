@@ -4,7 +4,7 @@ namespace Twake\Notifications\Command;
 
 use Emojione\Client;
 use Emojione\Ruleset;
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Notifications\Entity\MailNotificationQueue;
@@ -20,10 +20,10 @@ class NotificationMailCommand extends ContainerAwareCommand
         $this->setName("twake:notifications_mail");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $em = $services->get('app.twake_doctrine');
 
         //Get users to notify
@@ -77,7 +77,7 @@ class NotificationMailCommand extends ContainerAwareCommand
     protected function sendMail($users_ids, $template = "unread_notifications")
     {
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $em = $services->get('app.twake_doctrine');
 
         $emojione_client = new Client(new Ruleset());

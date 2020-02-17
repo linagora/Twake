@@ -6,7 +6,7 @@ use Cassandra;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,32 +33,16 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
      * @param OutputInterface $output
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
-        $mysql_doctrine = $this->getContainer()->get('doctrine');
-        $mysql_em = $mysql_doctrine->getManager();
-
-        $doctrine = $this->getContainer()->get('app.twake_doctrine');
+        $doctrine = $this->getApp()->getServices()->get('app.twake_doctrine');
         $em = $doctrine->getManager();
         $connection = $em->getConnection();
         $connection = $connection->getWrappedConnection();
 
-
-        if ($this->getContainer()->getParameter("database_driver") == "pdo_mysql") {
-
-            $updateCommand = new UpdateCommand();
-            $updateCommand->setHelperSet(new HelperSet());
-            $helperSet = $updateCommand->getHelperSet();
-            $helperSet->set(new ConnectionHelper($mysql_em->getConnection()), 'db');
-            $helperSet->set(new EntityManagerHelper($mysql_em), 'em');
-
-            $updateCommand->execute($input, $output);
-
-            return;
-        }
-
         $entities = array();
-        $meta = $mysql_em->getMetadataFactory()->getAllMetadata();
+
+        $meta = $em->getMetadataFactory()->getAllMetadata();
         foreach ($meta as $m) {
             $entities[] = $m;
         }

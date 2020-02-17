@@ -1011,10 +1011,8 @@ class User extends SearchableObject
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isEqualTo(BaseUserInterface $user)
+
+    public function isEqualTo(User $user)
     {
         if (!$user instanceof self) {
             return false;

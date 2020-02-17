@@ -2,7 +2,7 @@
 
 namespace Twake\Tasks\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,14 +21,14 @@ class TaskReminderCheckerCommand extends ContainerAwareCommand
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
 
         $services->get("app.tasks.task")->checkReminders();
 
-        posix_kill(posix_getpid(), SIGKILL);
+        @posix_kill(posix_getpid(), SIGKILL);
 
     }
 

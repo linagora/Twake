@@ -3,28 +3,7 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Knp\Provider\ConsoleServiceProvider;
+use App\App;
 
-$bootstrapFilePath = __DIR__.'/../web/app.php';
-
-set_time_limit(0);
-
-$app = require $bootstrapFilePath;
-
-$app = $app->getSilexApp();
-
-$console->add(new My\Command\MyCommand());
-
-
-$app->register(new ConsoleServiceProvider());
-
-if (!$app instanceof Silex\Application) {
-    throw new LogicException(sprintf('The bootstrap file %s must return an instance of Silex\Application.', $bootstrapFilePath));
-}
-if (!isset($app['console'])) {
-    throw new LogicException('The console service does not exist. Did you forget to register Knp\Provider\ConsoleServiceProvider ?');
-}
-
-$console = $app['console'];
-
-$console->run();
+$app = new App();
+$app->runCli();

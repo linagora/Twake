@@ -2,7 +2,7 @@
 
 namespace Twake\Core\Command;
 
-use Symfony\Bundle\Framework\Command\ContainerAwareCommand;
+use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Workspaces\Entity\WorkspaceUser;
@@ -18,11 +18,11 @@ class DbStressTestCommand extends ContainerAwareCommand
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute()
     {
         return;
 
-        $services = $this->getApplication()->getKernel()->getContainer();
+        $services = $this->getApp()->getServices();
         $manager = $services->get('app.twake_doctrine');
 
         $workspace = $manager->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array());
