@@ -9,16 +9,15 @@ services:
       - 9160:9160
       - 9042:9042
     volumes:
-      - ./scylladb:/var/lib/scylla
-      - ./docker:/docker_dir/
+      - ./docker-data/scylladb:/var/lib/scylla
     command: "--experimental 1"
   php:
-    image: twake-php
-    build: twake-php
+    image: docker/twake-php
+    build: docker/twake-php
     volumes:
-      - ./cron:/cron
+      - ./docker/cron:/cron
       - ./backend/core/:/twake-core:cached
-      - ./fpm/:/etc/data/fpm/
+      - ./docker-data/fpm/:/etc/docker-data/fpm/
     depends_on:
       - scylladb
     links:
