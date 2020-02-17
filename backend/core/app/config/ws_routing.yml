@@ -1,5 +1,0 @@
-gos_web_socket:
-    server:
-        router:
-            resources:
-                - '@TwakeCoreBundle/Resources/config/ws_routing.yml'

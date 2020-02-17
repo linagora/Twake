@@ -1,18 +1,40 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Request;
+use App\App;
+function getDefaultHeaders()
+{
+    if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
+        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
+    }
+    header('Access-Control-Allow-Headers: ' . 'Content-Type, *', true);
+    header('Access-Control-Allow-Credentials: true', true);
+    header('Access-Control-Allow-Methods: GET, POST', true);
+    header('Access-Control-Max-Age: 600', true);
+}
 
-/** @var \Composer\Autoload\ClassLoader $loader */
-$loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../var/bootstrap.php.cache';
+if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
-$kernel = new AppKernel('dev', true);
-$kernel->loadClassCache();
-//$kernel = new AppCache($kernel);
+    try {
 
-// When using the HttpCache, you need to call the method in your front controller instead of relying on the configuration parameter
-//Request::enableHttpMethodParameterOverride();
-$request = Request::createFromGlobals();
-$response = $kernel->handle($request);
-$response->send();
-$kernel->terminate($request, $response);
+        require_once __DIR__ . '/../vendor/autoload.php';
+        require_once __DIR__ . '/../app/App.php';
+
+        $app = new App();
+
+        $time = microtime(true);
+        if (php_sapi_name() != "cli") {
+            $app->run();
+        }
+        error_log("run=" . (microtime(true) - $time));
+
+        return $app;
+
+    } catch (\Exception $e) {
+        getDefaultHeaders();
+    }
+
+} else {
+
+    getDefaultHeaders();
+
+}

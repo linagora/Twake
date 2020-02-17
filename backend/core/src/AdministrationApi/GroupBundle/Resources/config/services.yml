@@ -1,5 +1,0 @@
-services:
-
-  administration.group:
-    class: AdministrationApi\GroupBundle\Services\AdministrationGroup
-    arguments: [ "@app.twake_doctrine" ]

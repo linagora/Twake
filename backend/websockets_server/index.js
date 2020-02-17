@@ -9,6 +9,7 @@ let port = 8080;
     console.log("Listening on port " + port);
 
     for await (let {socket} of agServer.listener("connection")) {
+        console.log("new co");
         (async () => {
             for await (let req of socket.procedure("ping/ping")) {
                 req.end("OK");
@@ -16,5 +17,6 @@ let port = 8080;
         })();
     }
 })();
+
 
 httpServer.listen(port);

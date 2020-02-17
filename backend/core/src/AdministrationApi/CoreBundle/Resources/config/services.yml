@@ -1,5 +1,0 @@
-services:
-
-  administration.validation:
-    class: AdministrationApi\CoreBundle\Services\ValidationService
-    arguments: [ %administration_token% ]

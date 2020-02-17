@@ -1,6 +1,0 @@
-services:
-
-    app.notifications:
-        class: WebsiteApi\NotificationsBundle\Services\Notifications
-        arguments: ["@app.twake_doctrine","@app.websockets", "@app.twake_mailer", "@twake.restclient", "%PUSH_NOTIFICATION_SERVER%", "%STANDALONE%", "%LICENCE_KEY%"]
-        public: true

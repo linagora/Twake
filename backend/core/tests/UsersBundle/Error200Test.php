@@ -2,6 +2,8 @@
 
 namespace Tests\UsersBundle;
 
+require_once __DIR__ . "/../WebTestCaseExtended.php";
+
 use Tests\WebTestCaseExtended;
 
 class Error200Test extends WebTestCaseExtended
@@ -28,15 +30,16 @@ class Error200Test extends WebTestCaseExtended
     {
 
         $this->removeUserByName("usertest001");
-        $user = $this->newUserByName("usertest001","usertest001@twake_phpunit.fr");
+        $user = $this->newUserByName("usertest001", "usertest001@twake_phpunit.fr");
         $this->login($user->getUsernameCanonical());
 
         $result = $this->doPost("/ajax/users/account/addmail", Array(
             "mail" => "usertest0021@twake_phpunit.fr"
         ));
+
         $token = $result["data"]["token"];
 
-        $verif = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
+        $verif = $this->get("app.twake_doctrine")->getRepository("Twake\Users:VerificationNumberMail")->findOneBy(Array("token" => $token));
         $code = $verif->getCleanCode();
 
         $result = $this->doPost("/ajax/users/account/addmailverify", Array(
