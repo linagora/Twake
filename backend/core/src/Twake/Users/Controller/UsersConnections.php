@@ -221,7 +221,6 @@ class UsersConnections extends BaseController
         echo $image->getImageBlob();
         die();
     }
-
     public function currentUser(Request $request)
     {
         $data = Array(
@@ -229,7 +228,7 @@ class UsersConnections extends BaseController
             "data" => Array()
         );
 
-        $ok = $this->getUser() && $this->getUser()->getId();
+        $ok = $this->getUser();
         if (!$ok) {
             $data["errors"][] = "disconnected";
         } else {
@@ -249,8 +248,7 @@ class UsersConnections extends BaseController
 
             $data["data"]["status"] = "connected";
 
-
-            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
+            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
 
             $workspaces = Array();
             foreach ($workspaces_obj as $workspace_obj) {
@@ -261,7 +259,7 @@ class UsersConnections extends BaseController
                 $workspaces[] = $value;
             }
 
-            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser()->getId());
 
             $data["data"]["mails"] = Array();
             foreach ($mails as $mail) {

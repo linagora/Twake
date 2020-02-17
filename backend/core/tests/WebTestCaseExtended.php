@@ -20,6 +20,8 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
     /** @var App */
     public $app;
 
+    public $cookies = [];
+
 
     public function __construct()
     {
@@ -41,9 +43,14 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
         return $this->getClient()->getServices()->get($service);
     }
 
-    protected function clearClient()
+    protected function clearApp()
     {
         $this->app = null;
+    }
+
+    protected function clearClient()
+    {
+        $this->cookies = [];
     }
 
     protected function getClient(): App
@@ -56,19 +63,27 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
 
     protected function doPost($route, $data = Array())
     {
+        $this->clearApp();
         $request = new Request();
         $query_data = $this->getQueryFromUrl($route);
+        $request->cookies->reset($this->cookies);
         $request->request->reset($data);
         $request->query->reset($query_data["query"]);
-        return json_decode($this->getClient()->getRouting()->execute("post", $query_data["route"], $request)->getContent(), 1);
+        $response = $this->getClient()->getRouting()->execute("post", $query_data["route"], $request);
+        $this->cookies = array_merge($this->cookies, $response->getCookiesValues());
+        return json_decode($response->getContent(), 1);
     }
 
     protected function doGet($route)
     {
+        $this->clearApp();
         $request = new Request();
+        $request->cookies->reset($this->cookies);
         $query_data = $this->getQueryFromUrl($route);
         $request->query->reset($query_data["query"]);
-        return json_decode($this->getClient()->getRouting()->execute("get", $query_data["route"], $request)->getContent(), 1);
+        $response = $this->getClient()->getRouting()->execute("get", $query_data["route"], $request);
+        $this->cookies = array_merge($this->cookies, $response->getCookiesValues());
+        return json_decode($response->getContent(), 1);
     }
 
     private function getQueryFromUrl($route)
@@ -121,7 +136,7 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
 
         if (isset($user)) {
 
-            $mails = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user));
+            $mails = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findBy(Array("user_id" => $user));
 
             foreach ($mails as $mail) {
                 $this->get("app.twake_doctrine")->remove($mail);

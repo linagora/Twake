@@ -114,8 +114,9 @@ class User
         $encoder = $this->encoder;
         $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
-        if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
+        if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
+            
             $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
 
             return $user;
@@ -501,7 +502,7 @@ class User
 
                 $mailObj = new Mail();
                 $mailObj->setMail($user->getEmail());
-                $mailObj->setUser($user);
+                $mailObj->setUserId($user->getId());
 
                 $this->em->persist($mailObj);
 
@@ -620,10 +621,10 @@ class User
         if ($user != null) {
             $device = $devicesRepository->findOneBy(Array("value" => $value));
             if (!$device) {
-                $newDevice = new Device($user, $type, $value, $version);
-            } else if ($device->getUser() != $user) {
+                $newDevice = new Device($user->getId(), $type, $value, $version);
+            } else if ($device->getUserId() != $user->getId()) {
                 $this->em->remove($device);
-                $newDevice = new Device($user, $type, $value, $version);
+                $newDevice = new Device($user->getId(), $type, $value, $version);
             } else {
                 $newDevice = $device;
                 $device->setVersion($version);
@@ -648,7 +649,7 @@ class User
         $res = false;
         if ($user != null) {
             $device = $devicesRepository->findOneBy(Array("value" => $value));
-            if ($device && $device->getUser()->getId() == $userId) {
+            if ($device && $device->getUserId() == $userId) {
                 $this->em->remove($device);
                 $this->em->flush();
             }
@@ -665,7 +666,7 @@ class User
         $userRepository = $this->em->getRepository("Twake\Users:User");
         $user = $userRepository->find($userId);
 
-        return $mailRepository->findBy(Array("user" => $user));
+        return $mailRepository->findBy(Array("user_id" => $user));
 
     }
 
@@ -717,7 +718,7 @@ class User
 
         if ($user != null) {
             $mail = $mailRepository->findOneBy(Array("id" => $mailId));
-            if ($mail && $mail->getUser()->getId() == $userId) {
+            if ($mail && $mail->getUserId() == $userId) {
                 $this->em->remove($mail);
                 $this->em->flush();
                 $res = true;
@@ -746,7 +747,7 @@ class User
                     if ($mailExists == null) {
                         $mail = new Mail();
                         $mail->setMail($ticket->getMail());
-                        $mail->setUser($user);
+                        $mail->setUserId($user->getId());
 
                         $this->em->remove($ticket);
                         $this->em->persist($mail);
@@ -1049,9 +1050,8 @@ class User
             return false;
         }
 
-        $this->removeLinkedToUserRows("Twake\Users:Device", $user, "user");
-        $this->removeLinkedToUserRows("Twake\Users:Mail", $user, "user");
-        $this->removeLinkedToUserRows("Twake\Users:UserStats", $user, "user");
+        $this->removeLinkedToUserRows("Twake\Users:Device", $user, "user_id");
+        $this->removeLinkedToUserRows("Twake\Users:Mail", $user, "user_id");
 
         $this->removeLinkedToUserRows("Twake\Workspaces:WorkspaceUser", $user, "user");
         $this->removeLinkedToUserRows("Twake\Workspaces:GroupUser", $user, "user");

@@ -19,7 +19,6 @@ class VerificationNumberMail
      * @ORM\Column(name="id", type="twake_timeuuid")  //TO ADD FOR CASSANDRA
      * @ORM\Id
      *
-     * //TO ADD FOR CASSANDRA
      */
     private $id;
 

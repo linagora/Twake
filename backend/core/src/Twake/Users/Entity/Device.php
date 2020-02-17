@@ -22,9 +22,9 @@ class Device
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Users\Entity\User")
+     * @ORM\Column(name="user_id", type="twake_timeuuid")
      */
-    private $user;
+    private $user_id;
 
     /**
      * @var string
@@ -47,9 +47,9 @@ class Device
      */
     private $value = "";
 
-    public function __construct($user, $type, $value, $version)
+    public function __construct($user_id, $type, $value, $version)
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->setType($type);
         $this->setValue($value);
         $this->setVersion($version);
@@ -71,17 +71,17 @@ class Device
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->user_id;
     }
 
     /**
      * @param mixed $user
      */
-    public function setUser($user)
+    public function setUserId($user_id)
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -135,7 +135,7 @@ class Device
     public function getAsArray()
     {
         return Array(
-            "user" => $this->getUser()->getAsArray(),
+            "user_id" => $this->getUserId(),
             "type" => $this->getType(),
             "value" => $this->getValue(),
             "version" => $this->getVersion()

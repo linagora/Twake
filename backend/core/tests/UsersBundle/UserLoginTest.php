@@ -297,7 +297,7 @@ class UserLoginTest extends WebTestCaseExtended
 
         $existedDevice = $this->getDoctrine()->getRepository("Twake\Users:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
 
-        $this->assertEquals("usertest002", $existedDevice->getUser()->getUsername());
+        $this->assertEquals($user->getId(), $existedDevice->getUserId());
 
     }
 

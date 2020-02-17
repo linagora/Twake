@@ -238,7 +238,7 @@ class ImportCommand extends ContainerAwareCommand
                     if (!isset($mail_to_find)) {
                         $mail_bdd = new Mail();
                         $mail_bdd->setMail($mail);
-                        $mail_bdd->setUser($new_user);
+                        $mail_bdd->setUserId($new_user->getId());
                         $manager->persist($mail_bdd);
                     }
                 }

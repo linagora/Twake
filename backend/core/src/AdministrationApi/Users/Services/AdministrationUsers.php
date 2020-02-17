@@ -61,7 +61,7 @@ class AdministrationUsers
     {
         $mailsRepository = $this->em->getRepository("Twake\Users:Mail");
 
-        $mails_tab = $mailsRepository->findBy(Array("user" => $user));
+        $mails_tab = $mailsRepository->findBy(Array("user_id" => $user));
 
         $mails = array();
 
@@ -90,7 +90,7 @@ class AdministrationUsers
     {
         $devicesRepository = $this->em->getRepository("Twake\Users:Device");
 
-        $devices_tab = $devicesRepository->findBy(Array("user" => $user));
+        $devices_tab = $devicesRepository->findBy(Array("user_id" => $user));
 
         $devices = array();
 

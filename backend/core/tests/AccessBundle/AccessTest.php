@@ -90,10 +90,6 @@ class AccessTest extends WebTestCaseExtended
         $user2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user2_id));
         $user3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user3_id));
 
-        error_log($user1->getId());
-        error_log($user2->getId());
-        error_log($user3->getId());
-
 //// =================================================================================================================================================
 //// =================================================================================================================================================
 
@@ -209,7 +205,7 @@ class AccessTest extends WebTestCaseExtended
         $root = $this->get("app.drive")->getRootEntity($workspace1_id);
         $root_id = $root->getId() . "";
 
-        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id . "", "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier", "nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/v2/save", Array(
@@ -758,25 +754,25 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(null, $calendar);
 
         // pour les users
-        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user1_id));
+        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user1_id));
         $this->get("app.twake_doctrine")->remove($mail1);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user2_id));
+        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user2_id));
         $this->get("app.twake_doctrine")->remove($mail2);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user3_id));
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user3_id));
         $this->get("app.twake_doctrine")->remove($mail3);
         $this->get("app.twake_doctrine")->flush();
 
-        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user1_id));
+        $mail1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user1_id));
         $this->assertEquals(null, $mail1);
 
-        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user2_id));
+        $mail2 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user2_id));
         $this->assertEquals(null, $mail2);
 
-        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user" => $user3_id));
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:Mail")->findOneBy(Array("user_id" => $user3_id));
         $this->assertEquals(null, $mail3);
 
         $user1 = $this->get("app.twake_doctrine")->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user1_id));

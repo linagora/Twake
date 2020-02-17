@@ -235,7 +235,7 @@ class User extends SearchableObject
 
     public function getId()
     {
-        return $this->id;
+        return $this->id . "";
     }
 
     public function setIdAsString()

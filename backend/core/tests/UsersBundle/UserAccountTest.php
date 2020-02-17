@@ -101,7 +101,7 @@ class UserAccountTest extends WebTestCaseExtended
 
         $mail = new Mail();
         $mail->setMail("emailforphpunittest@twake_phpunit.fr");
-        $mail->setUser($user);
+        $mail->setUserId($user->getId());
         $this->getDoctrine()->persist($mail);
         $this->getDoctrine()->flush();
 

@@ -33,6 +33,15 @@ class Response
         $this->cookies[$cookie->getName()] = $cookie;
     }
 
+    public function getCookiesValues()
+    {
+        $key_value = [];
+        foreach ($this->cookies as $name => $cookie) {
+            $key_value[$name] = $cookie->getValue();
+        }
+        return $key_value;
+    }
+
     public function clearCookie($name)
     {
         $this->cookies[$name] = new Cookie($name, null, 1, "/");

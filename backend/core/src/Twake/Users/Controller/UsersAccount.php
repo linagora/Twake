@@ -374,7 +374,7 @@ class UsersAccount extends BaseController
 
         if ($this->getUser()) {
 
-            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser()->getId());
             foreach ($mails as $mail) {
                 $data["data"][] = Array(
                     "id" => $mail->getId(),

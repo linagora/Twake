@@ -42,12 +42,13 @@ class ExterneUserTest extends WebTestCaseExtended
         $mail1 = "mail1@benoit.best";
         $mailEntity = $this->getDoctrine()->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => $mail1));
         if ($mailEntity) {
-            if ($mailEntity->getUser()) {
-                $groupUsers = $this->getDoctrine()->getRepository("Twake\Workspaces:GroupUser")->findBy(Array("user" => $mailEntity->getUser()->getId()));
+            if ($mailEntity->getUserId()) {
+                $groupUsers = $this->getDoctrine()->getRepository("Twake\Workspaces:GroupUser")->findBy(Array("user" => $mailEntity->getUserId()));
                 foreach ($groupUsers as $groupUser) {
                     $this->getDoctrine()->remove($groupUser);
                 }
-                $this->getDoctrine()->remove($mailEntity->getUser());
+                $user = $this->getDoctrine()->getRepository("Twake\Users:User")->find($mailEntity->getUserId());
+                $this->getDoctrine()->remove($user);
             }
             $this->getDoctrine()->remove($mailEntity);
         }
@@ -132,6 +133,9 @@ class ExterneUserTest extends WebTestCaseExtended
                 "_grouped" => true,
             )
         ));
+        if (!isset($result["data"])) {
+            return [];
+        }
         $channels = $result["data"]["get"];
         return $channels;
     }

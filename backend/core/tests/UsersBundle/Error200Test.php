@@ -36,6 +36,7 @@ class Error200Test extends WebTestCaseExtended
         $result = $this->doPost("/ajax/users/account/addmail", Array(
             "mail" => "usertest0021@twake_phpunit.fr"
         ));
+
         $token = $result["data"]["token"];
 
         $verif = $this->get("app.twake_doctrine")->getRepository("Twake\Users:VerificationNumberMail")->findOneBy(Array("token" => $token));

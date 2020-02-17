@@ -71,7 +71,6 @@ class DriveCollectionTest extends WebTestCaseExtended
             "object" => $object,
             "options" => $options,
         ));
-        error_log(json_encode($result));
         $idtofind_parent = $result["data"]["object"]["id"];
 
         $this->assertEquals($workspace_id, $result["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent " . json_encode($result));

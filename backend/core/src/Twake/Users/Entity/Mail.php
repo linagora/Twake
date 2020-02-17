@@ -29,9 +29,9 @@ class Mail extends SearchableObject
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Users\Entity\User")
+     * @ORM\Column(name="user_id", type="twake_timeuuid")
      */
-    private $user;
+    private $user_id;
 
     /**
      * @var string
@@ -72,11 +72,9 @@ class Mail extends SearchableObject
      *
      * @return Mail
      */
-    public function setUser($user)
+    public function setUserId($user_id)
     {
-        $this->user = $user;
-
-        return $this;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -84,9 +82,9 @@ class Mail extends SearchableObject
      *
      * @return int
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->user_id;
     }
 
     /**

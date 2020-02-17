@@ -136,7 +136,7 @@ class ExportCommand extends ContainerAwareCommand
                         $logo64 = "";
                     }
 
-                    $mails = $manager->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user_array["id"]));
+                    $mails = $manager->getRepository("Twake\Users:Mail")->findBy(Array("user_id" => $user_array["id"]));
                     $secondarymail = Array();
                     foreach ($mails as $mail) {
                         $secondarymail[] = $mail->getMail();

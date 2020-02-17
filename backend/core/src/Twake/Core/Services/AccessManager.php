@@ -15,7 +15,6 @@ class AccessManager
 
     public function has_access($current_user_id, $data, $options = null)
     {
-
         if ($current_user_id && !is_string($current_user_id)) {
             $current_user_id = $current_user_id->getId();
         }
@@ -153,8 +152,7 @@ class AccessManager
 
     public function user_has_workspace_access($current_user_id, $workspace_id)
     {
-        $wp = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
-        $members = $wp->getMembers();
+        $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace_id));
         $members = $members ? $members : [];
         $access = false;
         foreach ($members as $member) {

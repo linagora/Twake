@@ -224,7 +224,7 @@ class WorkspaceMembers
             foreach ($channels as $channel_entity) {
 
                 $isInChannel = false;
-                $mails = $this->doctrine->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user));
+                $mails = $this->doctrine->getRepository("Twake\Users:Mail")->findBy(Array("user_id" => $user));
                 $channelExt = $channel_entity->getExtMembers();
                 if (!$channelExt) {
                     $channelExt = Array();
@@ -248,7 +248,7 @@ class WorkspaceMembers
                         }
                         if (!$workspaceMember->getAutoAddExterne()) {
                             // c'est un chaviter d'espace
-                            $mails = $this->doctrine->getRepository("Twake\Users:Mail")->findBy(Array("user" => $user->getId()));
+                            $mails = $this->doctrine->getRepository("Twake\Users:Mail")->findBy(Array("user_id" => $user->getId()));
                             $channelExt = $channel_entity->getExtMembers();
                             foreach ($mails as $mail) {
                                 if (($index = array_search($mail->getMail(), $channelExt)) !== false) {

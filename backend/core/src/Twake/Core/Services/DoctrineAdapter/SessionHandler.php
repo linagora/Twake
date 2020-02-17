@@ -41,7 +41,8 @@ class SessionHandler
         if ($this->user) {
             return $this->user;
         }
-        return $this->checkRequest($request);
+        $this->user = $this->checkRequest($request);
+        return $this->user;
     }
 
     public function saveLoginToCookie(User $user, $remember_me, Response $response = null, $old_session_id = null)
@@ -111,7 +112,9 @@ class SessionHandler
 
     public function checkRequest(Request $request, Response $response = null)
     {
+
         $cookie = $request->cookies->get('SESSID');
+
         $cookie = json_decode(base64_decode($cookie), 1);
         $session_id = $cookie["sessid"];
         $expected_user_id = $cookie["userid"];

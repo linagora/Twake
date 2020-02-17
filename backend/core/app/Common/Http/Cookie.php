@@ -60,4 +60,9 @@ class Cookie
         return $this->name;
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
 }

@@ -104,6 +104,8 @@ class Routing
 
     public function execute($method, $route, Request $request)
     {
+        $this->request = $request;
+        
         $route = preg_replace("/^\//", "", $route);
         $route = preg_replace("/\/$/", "", $route);
 
