@@ -14,7 +14,7 @@ services:
     command: "--experimental 1"
   php:
     image: twake-php
-    build: Docker/twake-php
+    build: docker/twake-php
     volumes:
       - ./backend/core/:/twake-core:cached
       - ./docker-data/fpm/:/etc/docker-data/fpm/
@@ -26,7 +26,7 @@ services:
       - scylladb
   websockets:
     image: twake-websockets
-    build: Docker/twake-websockets
+    build: docker/twake-websockets
     volumes:
       - ./backend/websockets_server:/WebsocketsServer
     restart: "always"
@@ -48,7 +48,7 @@ services:
     restart: "always"
   nginx:
     image: twake-nginx
-    build: Docker/twake-nginx
+    build: docker/twake-nginx
     ports:
       - 8000:80
     links:
@@ -61,7 +61,7 @@ services:
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
   php_push_server:
     image: twake-php-push-server
-    build: Docker/twake-php-push-server
+    build: docker/twake-php-push-server
     volumes:
       - ./backend/push_notification_server:/twake-push-server
     restart: "unless-stopped"
