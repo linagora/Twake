@@ -53,6 +53,9 @@ abstract class BaseBundle
                 if (isset($data["methods"])) $methods = $data["methods"];
             }
 
+            $security = [];
+            if (isset($data["security"])) $security = $data["security"];
+
             $controller = explode(":", $handler);
             $handler = $controller[1];
             $controller = $controller[0];
@@ -65,7 +68,22 @@ abstract class BaseBundle
                 }
 
                 $that = $this;
-                $routing_service->addRoute($method, $final_route, function (Request $request = null) use ($that, $controller, $handler) {
+                $routing_service->addRoute($method, $final_route, function (Request $request = null) use ($that, $controller, $handler, $security) {
+
+                    if (count($security) > 0) {
+                        foreach ($security as $security_service) {
+                            $service = $this->app->getServices()->get($security_service);
+                            if ($service) {
+                                $response = $service->applySecurity($request);
+                                if ($response && $response !== true) {
+                                    return $response;
+                                }
+                            } else {
+                                error_log("Missing security service " . $service);
+                            }
+                        }
+                    }
+
                     $controller = $that->loadController($controller);
                     if (!$controller) {
                         return new Response("No controller " . $controller . " found", 500);
