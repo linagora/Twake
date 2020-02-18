@@ -114,7 +114,6 @@ class User
         $encoder = $this->encoder;
         $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
-
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
             
             $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);

@@ -45,7 +45,7 @@ class SessionHandler
         return $this->user;
     }
 
-    public function saveLoginToCookie(User $user, $remember_me, Response $response = null, $old_session_id = null)
+    public function saveLoginToCookie(User $user, $remember_me = true, Response $response = null, $old_session_id = null)
     {
 
         if ($old_session_id) {
@@ -88,12 +88,13 @@ class SessionHandler
                     $nonce);
 
             $remember_me_data = [
-                "remember_me" => $remember_me_data,
+                "remember_me" => base64_encode($remember_me_data),
                 "user_id" => $user->getId() . ""
             ];
 
             $remember_me_data = base64_encode(json_encode($remember_me_data));
             $this->cookiesToSet[1] = new Cookie('REMEMBERME', $remember_me_data, $remember_me_data_expiration, '/');
+
 
         }
 
@@ -146,25 +147,31 @@ class SessionHandler
 
         //Not authentified, try remember me
         if ($remeber_me_cookie) {
+
             $user_id = $remeber_me_cookie["user_id"];
-            $encrypted_data = $remeber_me_cookie["remember_me"];
+            $encrypted_data = base64_decode($remeber_me_cookie["remember_me"]);
             $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($user_id);
             if ($user) {
                 $secret = $user->getRememberMeSecret();
                 if ($secret) {
+
                     $nonceSize = openssl_cipher_iv_length('aes-256-ctr');
                     $nonce = mb_substr($encrypted_data, 0, $nonceSize, '8bit');
                     $ciphertext = mb_substr($encrypted_data, $nonceSize, null, '8bit');
                     $data = openssl_decrypt(
                         $ciphertext,
                         'aes-256-ctr',
-                        $key,
+                        $secret,
                         OPENSSL_RAW_DATA,
                         $nonce
                     );
+
                     if ($data) {
+                        $data = json_decode($data, true);
+
                         $stored_expiration = $data["expiration"];
                         $stored_user_id = $data["user_id"];
+
                         if ($stored_expiration > date("U") && $stored_user_id == $user_id) {
                             //Remember me is valid
                             $this->saveLoginToCookie($user, true, $response);

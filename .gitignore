@@ -108,6 +108,7 @@ fabric.properties
 
 # Build data
 /build/
+/builds/
 
 # Backup entities generated with doctrine:generate:entities command
 **/Entity/*~
@@ -119,6 +120,7 @@ docker-compose.yml
 
 ### Dev ###
 /docker-data/*
+/docker/data/*
 
 ### Twake specific ###
 /build/
