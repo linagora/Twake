@@ -16,7 +16,6 @@ class Routing extends BaseRouting
         "current/isLogged" => ["handler" => "UsersConnections:isLogged", "methods" => ["POST"]],
         "current/get" => ["handler" => "UsersConnections:currentUser", "methods" => ["POST"]],
         "mobile_redirect" => ["handler" => "UsersConnections:mobileRedirect", "methods" => ["GET"]],
-        "current/identicon" => ["handler" => "UsersConnections:identicon", "methods" => ["GET"]],
         "alive" => ["handler" => "UsersConnections:alive", "methods" => ["POST"]],
         "set/isNew" => ["handler" => "UsersConnections:setIsNew", "methods" => ["POST"]],
         // Account
@@ -50,6 +49,7 @@ class Routing extends BaseRouting
         // Get and search
         "all/get" => ["handler" => "Users:getById", "methods" => ["POST"]],
         "all/search" => ["handler" => "Users:search", "methods" => ["POST"]],
+        "all/search/username" => ["handler" => "Users:searchUsersByUsername", "methods" => ["POST"]],
         // CAS
         "cas/login" => ["handler" => "ConnectionsUsingCAS:login", "methods" => ["GET"]],
         "cas/verify" => ["handler" => "ConnectionsUsingCAS:verify", "methods" => ["GET"]],

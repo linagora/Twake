@@ -7,6 +7,7 @@ class Commands
     public $commands = [
         "twake:schema:update" => "Twake\Core\Command\TwakeSchemaUpdateCommand",
         "twake:init" => "Twake\Core\Command\InitCommand",
+        "twake:routes" => "Twake\Core\Command\GetRoutesCommand",
         "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
         "twake:daily" => "Twake\Core\Command\DailyCommand",
         "twake:reindex" => "Twake\Core\Command\ReindexCommand",

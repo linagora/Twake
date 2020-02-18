@@ -33,6 +33,38 @@ class Users extends BaseController
 
     }
 
+    public function searchUsersByUsername(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+            $username = $request->request->get("username", "");
+            $restrictions = $request->request->get("restriction", "all");
+            $groupId = $request->request->get("groupId", "-1");
+            $workspaceId = $request->request->get("workspaceId", "-1");
+            $res = $this->get("app.users")->searchUsersByUsername($username, $restrictions, $groupId, $workspaceId);
+            if (!$res) {
+                $data["errors"][] = "error";
+            } else {
+                $array_user = [];
+                foreach ($res as $user) {
+                    $array_user[] = $user->getAsArray();
+                }
+                $data["data"] = $array_user;
+            }
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
     public function getById(Request $request)
     {
 
