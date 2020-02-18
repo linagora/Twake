@@ -61,9 +61,14 @@ class Pusher
 
             }
 
+            $signin_key = $this->container->getParameter("websocket.pusher_private");
+            $sent_data = $data["data"];
+            openssl_sign((string)@json_encode($sent_data), $signed, $signin_key);
+            $sent_data["_sign"] = $signed;
+
             $pubData = [
                 'channel' => $data["topic"],
-                'data' => $data["data"],
+                'data' => $sent_data,
             ];
             $eventData = [
                 'event' => "#publish",
