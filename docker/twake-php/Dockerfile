@@ -1,12 +1,9 @@
 # See https://github.com/docker-library/php/blob/master/7.1/fpm/Dockerfile
-FROM php:7.1-fpm-stretch
+FROM php:7.1-fpm-alpine
 ARG TIMEZONE
 ARG APCU_VERSION=5.1.11
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
-
-RUN timeout 5s echo "Hello"
-RUN echo "Hello"
 
 # Set timezone
 RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
