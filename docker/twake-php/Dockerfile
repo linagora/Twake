@@ -5,8 +5,12 @@ ARG APCU_VERSION=5.1.11
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
+RUN timeout 5s echo "Hello"
+RUN echo "Hello"
+
 # Set timezone
-RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
+RUN echo ${TIMEZONE} > /etc/timezone
 RUN printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini
 RUN "date"
 
