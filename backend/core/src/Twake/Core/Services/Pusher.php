@@ -15,10 +15,12 @@ class Pusher
     var $connection = null;
     var $host;
     var $port;
+    var $pusher_private_key;
     var $doctrine;
 
     public function __construct(App $app)
     {
+        $this->pusher_private_key = $app->getContainer()->getParameter("websocket.pusher_private");
         $this->host = $app->getContainer()->getParameter("websocket.host");
         $this->port = $app->getContainer()->getParameter("websocket.port");
         $this->connection = null;
@@ -61,9 +63,14 @@ class Pusher
 
             }
 
+            $signin_key = $this->pusher_private_key;
+            $sent_data = $data["data"];
+            openssl_sign((string)@json_encode($sent_data), $signed, $signin_key);
+            $sent_data["_sign"] = base64_encode($signed);
+            
             $pubData = [
                 'channel' => $data["topic"],
-                'data' => $data["data"],
+                'data' => $sent_data,
             ];
             $eventData = [
                 'event' => "#publish",

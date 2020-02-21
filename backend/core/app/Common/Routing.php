@@ -118,6 +118,11 @@ class Routing
         return $this->beforeRender($response);
     }
 
+    public function getRoutes()
+    {
+        return array_keys($this->routes);
+    }
+
     public function getCurrentRequest()
     {
         return $this->request;

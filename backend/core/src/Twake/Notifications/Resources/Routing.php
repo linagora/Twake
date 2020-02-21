@@ -11,10 +11,10 @@ class Routing extends BaseRouting
 
     protected $routes = [
 #Collections
-        "get" => ["handler" => "Base:getAction", "methods" => ["POST"]],
-        "remove" => ["handler" => "Base:remove", "methods" => ["POST"]],
-        "deleteAll" => ["handler" => "Base:deleteAllExceptMessages", "methods" => ["POST"]],
-        "readAll" => ["handler" => "Base:readAll", "methods" => ["POST"]],
+        "get" => ["handler" => "Base:getAction", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "remove" => ["handler" => "Base:remove", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "deleteAll" => ["handler" => "Base:deleteAllExceptMessages", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "readAll" => ["handler" => "Base:readAll", "methods" => ["POST"], "security" => ["user_connected_security"]],
     ];
 
 }

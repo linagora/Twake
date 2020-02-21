@@ -11,17 +11,17 @@ class Routing extends BaseRouting
 
     protected $routes = [
 #Direct messages
-        "direct_messages/get" => ["handler" => "DirectMessages:getAction", "methods" => ["POST"]],
-        "direct_messages/save" => ["handler" => "DirectMessages:save", "methods" => ["POST"]],
-        "direct_messages/remove" => ["handler" => "DirectMessages:remove", "methods" => ["POST"]],
+        "direct_messages/get" => ["handler" => "DirectMessages:getAction", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "direct_messages/save" => ["handler" => "DirectMessages:save", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "direct_messages/remove" => ["handler" => "DirectMessages:remove", "methods" => ["POST"], "security" => ["user_connected_security"]],
 #Channels
-        "get" => ["handler" => "Channels:getAction", "methods" => ["POST"]],
-        "save" => ["handler" => "Channels:save", "methods" => ["POST"]],
-        "remove" => ["handler" => "Channels:remove", "methods" => ["POST"]],
+        "get" => ["handler" => "Channels:getAction", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "save" => ["handler" => "Channels:save", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "remove" => ["handler" => "Channels:remove", "methods" => ["POST"], "security" => ["user_connected_security"]],
 #Notifications
-        "mute" => ["handler" => "ChannelsNotifications:mute", "methods" => ["POST"]],
-        "unread" => ["handler" => "ChannelsNotifications:unread", "methods" => ["POST"]],
-        "read" => ["handler" => "ChannelsNotifications:read", "methods" => ["POST"]],
+        "mute" => ["handler" => "ChannelsNotifications:mute", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "unread" => ["handler" => "ChannelsNotifications:unread", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "read" => ["handler" => "ChannelsNotifications:read", "methods" => ["POST"], "security" => ["user_connected_security"]],
     ];
 
 }

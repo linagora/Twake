@@ -113,4 +113,42 @@ class Users
         }
         return false;
     }
+
+    public function searchUsersByUsername($username, $restrictions, $groupId, $workspaceId)
+    {
+        if ($username == "")
+            return "empty username";
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+        $users = $userRepository->findByName($username);
+
+        if ($restrictions == "all") {
+            return $users;
+        }
+        $res = [];
+        if ($restrictions == "group") {
+            $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+            foreach ($users as $user) {
+                $groupuser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $groupId));
+                if ($groupuser) {
+                    $res[] = $user;
+                }
+            }
+        }
+
+        if ($restrictions == "workspace") {
+            $workspaceUsers = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+
+            foreach ($users as $user) {
+                $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspaceId, "user" => $user));
+                if ($workspaceUser) {
+                    $res[] = $user;
+                }
+            }
+        }
+
+        return $res;
+
+    }
 }

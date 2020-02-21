@@ -5,6 +5,11 @@ ARG APCU_VERSION=5.1.11
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone
+RUN printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini
+RUN "date"
+
 RUN apt-get update && apt-get -y install cron
 
 RUN apt-get update && apt-get install -y \
@@ -66,11 +71,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer --version
 
-# Set timezone
-RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone
-RUN printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini
-RUN "date"
-
 # Type docker-php-ext-install to see available extensions
 RUN docker-php-ext-install pdo pdo_mysql
 
@@ -89,7 +89,6 @@ RUN pecl install apcu-${APCU_VERSION} && docker-php-ext-enable apcu
 RUN echo "extension=apcu.so" >> /usr/local/etc/php/php.ini
 RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini
 RUN echo "apc.enable=1" >> /usr/local/etc/php/php.ini
-
 
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc
 RUN echo 'alias sf3="php bin/console"' >> ~/.bashrc

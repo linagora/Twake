@@ -8,6 +8,7 @@ class Services extends BaseServices
 {
 
     protected $services = [
+        "user_connected_security" => "UserConnectedSecurity",
         "app.websockets" => "Websockets",
         "app.twake_mailer" => "TwakeMailer",
         "app.restclient" => "TwakeRestClient",
