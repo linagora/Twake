@@ -2,6 +2,7 @@
 
 namespace Twake\Core\Services;
 
+use App\App;
 use Common\Http\Response;
 
 if (!function_exists('http_parse_headers')) {
@@ -37,6 +38,12 @@ if (!function_exists('http_parse_headers')) {
 
 class TwakeRestClient
 {
+    private $app = null;
+
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
 
     public function get($url, $curl_options = [])
     {
@@ -60,6 +67,9 @@ class TwakeRestClient
 
     private function request($method, $url, $data, $curl_options = [])
     {
+
+        if ($this->app) $this->app->getCounter()->startTimer("external_requests");
+
         $options = [];
         foreach ($curl_options as $key => $opt) {
             $options[$key] = $opt;
@@ -90,6 +100,8 @@ class TwakeRestClient
 
         $curl_data = (object)curl_getinfo($curl);
         $obj_response->httpStatus($curl_data->http_code);
+
+        if ($this->app) $this->app->getCounter()->stopTimer("external_requests");
 
         return $obj_response;
     }

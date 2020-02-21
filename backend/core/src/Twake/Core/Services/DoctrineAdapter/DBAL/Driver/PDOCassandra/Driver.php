@@ -7,7 +7,6 @@ use Twake\Core\Services\DoctrineAdapter\DBAL\Schema\CassandraSchemaManager;
 
 /**
  * PDO Cassandra driver.
- * @author Thang Tran <thang.tran@pyramid-consulting.com>
  */
 class Driver implements \Doctrine\DBAL\Driver
 {

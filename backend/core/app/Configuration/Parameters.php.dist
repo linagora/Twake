@@ -10,6 +10,7 @@ class Parameters extends \Common\Configuration
     public function __construct()
     {
         $this->configuration = [
+"env" => "dev",
 "admin_api_token" => "",
 "MAIL_FROM" => "",
 "SERVER_NAME" => "",

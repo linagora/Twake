@@ -6,12 +6,6 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 
-/**
- * The CassandraPlatform provides the behavior, features and CQL dialect of the
- * Cassandra platform.
- *
- * @author Thang Tran <thang.tran@pyramid-consulting.com>
- */
 class CassandraPlatform extends AbstractPlatform
 {
     /**

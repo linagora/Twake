@@ -6,9 +6,6 @@ use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 
 /**
  * Cassandra Keywordlist
- *
- * @license    BSD http://www.opensource.org/licenses/bsd-license.php
- * @author Thang Tran <thang.tran@pyramid-consulting.com>
  */
 class CassandraKeywords extends KeywordList
 {
