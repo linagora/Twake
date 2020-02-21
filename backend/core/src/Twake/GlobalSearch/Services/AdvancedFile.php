@@ -117,6 +117,8 @@ class AdvancedFile
 
             $result = $this->doctrine->es_search($options);
 
+            $this->list_files["results"] = [];
+
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $file) {
 
