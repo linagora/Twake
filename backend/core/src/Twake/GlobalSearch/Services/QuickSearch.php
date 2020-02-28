@@ -162,6 +162,7 @@ class QuickSearch
         $options["title"] = join(" ", $words);
 
         $files = $this->fileservice->AdvancedFile($current_user_id, $options, $workspaces);
+        error_log(json_encode($files));
         foreach ($files["results"] as $file) {
             if (isset($this->workspace_prio) && $this->workspace_prio == $file["file"]["workspace_id"]) {
                 $this->priofileresult[] = $file;

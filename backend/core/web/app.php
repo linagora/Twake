@@ -21,11 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
         $app = new App();
 
-        $time = microtime(true);
+        $app->getCounter()->startTimer("main_run");
         if (php_sapi_name() != "cli") {
             $app->run();
         }
-        error_log("run=" . (microtime(true) - $time));
+        $app->getCounter()->stopTimer("main_run");
+
+        $app->getCounter()->showResults();
 
         return $app;
 

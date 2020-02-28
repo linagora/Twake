@@ -1,0 +1,4 @@
+*.DS_Store
+/vendor/
+/config/*.pem
+/config/configuration.php

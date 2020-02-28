@@ -10,6 +10,7 @@ class Parameters extends \Common\Configuration
     public function __construct()
     {
         $this->configuration = [
+"env" => "dev",
 "admin_api_token" => "",
 "MAIL_FROM" => "",
 "SERVER_NAME" => "",
@@ -42,7 +43,9 @@ class Parameters extends \Common\Configuration
 ],
 "websocket" => [
 "host" => "websockets",
-"port" => "8080"
+"port" => "8080",
+"pusher_public" => "-----BEGIN PUBLIC KEY-----",
+"pusher_private" => "-----BEGIN RSA PRIVATE KEY-----",
 ],
 "db" => [
 "driver" => "pdo_cassandra",

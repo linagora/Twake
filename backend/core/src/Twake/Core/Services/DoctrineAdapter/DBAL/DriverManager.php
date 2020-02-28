@@ -24,116 +24,13 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 
-/**
- * Factory for creating Doctrine\DBAL\Connection instances.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
- * TODO: File issue to make it non-final and overridable
- */
 final class DriverManager
 {
-    /**
-     * List of supported drivers and their mappings to the driver classes.
-     *
-     * To add your own driver use the 'driverClass' parameter to
-     * {@link DriverManager::getConnection()}.
-     *
-     * @var array
-     */
     static $instance = null;
     private static $_driverMap = array(
-        'pdo_mysql' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-        'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
-        'pdo_pgsql' => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
-        'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
-        'oci8' => 'Doctrine\DBAL\Driver\OCI8\Driver',
-        'ibm_db2' => 'Doctrine\DBAL\Driver\IBMDB2\DB2Driver',
-        'pdo_sqlsrv' => 'Doctrine\DBAL\Driver\PDOSqlsrv\Driver',
-        'mysqli' => 'Doctrine\DBAL\Driver\Mysqli\Driver',
-        'drizzle_pdo_mysql' => 'Doctrine\DBAL\Driver\DrizzlePDOMySql\Driver',
-        'sqlanywhere' => 'Doctrine\DBAL\Driver\SQLAnywhere\Driver',
-        'sqlsrv' => 'Doctrine\DBAL\Driver\SQLSrv\Driver',
         'pdo_cassandra' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra\Driver',
     );
 
-    /**
-     * List of URL schemes from a database URL and their mappings to driver.
-     */
-    private static $driverSchemeAliases = array(
-        'db2' => 'ibm_db2',
-        'mssql' => 'pdo_sqlsrv',
-        'mysql' => 'pdo_mysql',
-        'mysql2' => 'pdo_mysql', // Amazon RDS, for some weird reason
-        'postgres' => 'pdo_pgsql',
-        'postgresql' => 'pdo_pgsql',
-        'pgsql' => 'pdo_pgsql',
-        'sqlite' => 'pdo_sqlite',
-        'sqlite3' => 'pdo_sqlite',
-    );
-
-    /**
-     * Private constructor. This class cannot be instantiated.
-     */
-    private function __construct()
-    {
-    }
-
-    /**
-     * Creates a connection object based on the specified parameters.
-     * This method returns a Doctrine\DBAL\Connection which wraps the underlying
-     * driver connection.
-     *
-     * $params must contain at least one of the following.
-     *
-     * Either 'driver' with one of the following values:
-     *
-     *     pdo_mysql
-     *     pdo_sqlite
-     *     pdo_pgsql
-     *     pdo_oci (unstable)
-     *     pdo_sqlsrv
-     *     pdo_sqlsrv
-     *     mysqli
-     *     sqlanywhere
-     *     sqlsrv
-     *     ibm_db2 (unstable)
-     *     drizzle_pdo_mysql
-     *
-     * OR 'driverClass' that contains the full class name (with namespace) of the
-     * driver class to instantiate.
-     *
-     * Other (optional) parameters:
-     *
-     * <b>user (string)</b>:
-     * The username to use when connecting.
-     *
-     * <b>password (string)</b>:
-     * The password to use when connecting.
-     *
-     * <b>driverOptions (array)</b>:
-     * Any additional driver-specific options for the driver. These are just passed
-     * through to the driver.
-     *
-     * <b>pdo</b>:
-     * You can pass an existing PDO instance through this parameter. The PDO
-     * instance will be wrapped in a Doctrine\DBAL\Connection.
-     *
-     * <b>wrapperClass</b>:
-     * You may specify a custom wrapper class through the 'wrapperClass'
-     * parameter but this class MUST inherit from Doctrine\DBAL\Connection.
-     *
-     * <b>driverClass</b>:
-     * The driver class to use.
-     *
-     * @param array $params The parameters.
-     * @param \Doctrine\DBAL\Configuration|null $config The configuration to use.
-     * @param \Doctrine\Common\EventManager|null $eventManager The event manager to use.
-     *
-     * @return \Doctrine\DBAL\Connection
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public static function getConnection(
         array $params,
         Configuration $config = null,
@@ -185,16 +82,6 @@ final class DriverManager
         return new $wrapperClass($params, $driver, $config, $eventManager);
     }
 
-    /**
-     * Extracts parts from a database URL, if present, and returns an
-     * updated list of parameters.
-     *
-     * @param array $params The list of parameters.
-     *
-     * @return array A modified list of parameters with info from a database
-     *              URL extracted into indidivual parameter parts.
-     * @throws DBALException
-     */
     private static function parseDatabaseUrl(array $params)
     {
         if (!isset($params['url'])) {
@@ -212,9 +99,6 @@ final class DriverManager
 
         if (isset($url['scheme'])) {
             $params['driver'] = str_replace('-', '_', $url['scheme']); // URL schemes must not contain underscores, but dashes are ok
-            if (isset(self::$driverSchemeAliases[$params['driver']])) {
-                $params['driver'] = self::$driverSchemeAliases[$params['driver']]; // use alias like "postgres", else we just let checkParams decide later if the driver exists (for literal "pdo-pgsql" etc)
-            }
         }
 
         if (isset($url['host'])) {
@@ -247,15 +131,6 @@ final class DriverManager
         return $params;
     }
 
-    /**
-     * Checks the list of parameters.
-     *
-     * @param array $params The list of parameters.
-     *
-     * @return void
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
     private static function _checkParams(array $params)
     {
         // check existence of mandatory parameters
@@ -277,11 +152,6 @@ final class DriverManager
         }
     }
 
-    /**
-     * Returns the list of supported drivers.
-     *
-     * @return array
-     */
     public static function getAvailableDrivers()
     {
         return array_keys(self::$_driverMap);

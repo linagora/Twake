@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
 use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
+use Twake\Core\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra\CassandraConnection;
 use Twake\Core\Services\DoctrineAdapter\DBAL\DriverManager;
 use Twake\Core\Services\StringCleaner;
 
@@ -110,6 +111,10 @@ class ManagerAdapter
         $entityManager = EntityManager::create($conn, $config);
 
         $this->manager = $entityManager;
+
+        /** @var CassandraConnection */
+        $cassandraConnection = $this->manager->getConnection()->getWrappedConnection();
+        $cassandraConnection->setApp($this->app);
 
         return $this->manager;
     }

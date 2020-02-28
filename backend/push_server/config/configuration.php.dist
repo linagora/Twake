@@ -1,0 +1,6 @@
+<?php
+
+$configuration = [
+    "apns_certificate" => __DIR__ . "/apns_prod.pem",
+    "firebase_api_key" => "KEY",
+];

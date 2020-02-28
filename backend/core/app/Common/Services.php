@@ -50,4 +50,9 @@ class Services
         return $this->services_instances[$key];
     }
 
+    public function isLoaded($key)
+    {
+        return isset($this->services[$key]);
+    }
+
 }

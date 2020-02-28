@@ -13,6 +13,7 @@ require_once __DIR__ . "/Common/Services.php";
 require_once __DIR__ . "/Common/Configuration.php";
 require_once __DIR__ . "/Common/Providers.php";
 require_once __DIR__ . "/Common/CommandsManager.php";
+require_once __DIR__ . "/Common/Counter.php";
 
 require_once __DIR__ . "/Configuration/Bundles.php";
 require_once __DIR__ . "/Configuration/Configuration.php";
@@ -21,6 +22,7 @@ require_once __DIR__ . "/Configuration/Providers.php";
 require_once __DIR__ . "/Configuration/Commands.php";
 
 use Common\CommandsManager;
+use Common\Counter;
 use Common\Routing;
 use Common\Container;
 use Common\Services;
@@ -49,6 +51,9 @@ class App
     /** @var Providers */
     private $providers_service = null;
 
+    /** @var Counter */
+    private $counter = null;
+
     public function __construct()
     {
 
@@ -64,6 +69,8 @@ class App
         // Import configuration
         $this->container_service->import(new Configuration($this), "configuration");
         $this->container_service->import(new Parameters($this), "parameters");
+
+        $this->counter = new Counter($this);
 
         // Require and instanciate all defined bundles
         foreach ($bundles as $bundle) {
@@ -113,6 +120,11 @@ class App
     public function getCommands()
     {
         return $this->commands;
+    }
+
+    public function getCounter()
+    {
+        return $this->counter;
     }
 
     public function runCli()

@@ -6,23 +6,16 @@ use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 
 /**
  * Cassandra Keywordlist
- *
- * @license    BSD http://www.opensource.org/licenses/bsd-license.php
- * @author Thang Tran <thang.tran@pyramid-consulting.com>
  */
 class CassandraKeywords extends KeywordList
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return 'Cassandra';
     }
 
     /**
-     * {@inheritdoc}
-     * ref. http://www.datastax.com/documentation/cql/3.0/cql/cql_reference/keywords_r.html
+     * http://www.datastax.com/documentation/cql/3.0/cql/cql_reference/keywords_r.html
      */
     protected function getKeywords()
     {

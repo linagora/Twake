@@ -2,6 +2,7 @@
 
 namespace Twake\Core\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra;
 
+use App\App;
 use Cassandra;
 use Dompdf\Exception;
 
@@ -248,16 +249,16 @@ class PDOStatementAdapter
 
 }
 
-/**
- * @author Thang Tran <thang.tran@pyramid-consulting.com>
- */
 class CassandraConnection
 {
 
     private $use_ttl = null;
+    /** @var App */
+    private $app = null;
 
     public function __construct($keyspace, $username, $password, $driverOptions)
     {
+
         $this->cluster = Cassandra::cluster()
             ->withContactPoints($driverOptions["host"])
             ->build();
@@ -273,7 +274,7 @@ class CassandraConnection
                 "CREATE KEYSPACE IF NOT EXISTS " . strtolower($keyspace) . " WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}"
             );
             $future = $this->session->executeAsync($statement);
-            $result = $future->get();
+            $future->get();
 
             error_log("Did create keyspace");
 
@@ -282,6 +283,11 @@ class CassandraConnection
 
         $this->keyspace = $keyspace;
         $this->view_to_use = null;
+    }
+
+    public function setApp(App $app)
+    {
+        $this->app = $app;
     }
 
     public function changeTableToView($view_to_use)
@@ -309,25 +315,16 @@ class CassandraConnection
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function commit()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}non-PHPdoc)
-     */
     public function rollBack()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}non-PHPdoc)
-     */
     function prepare($prepareString)
     {
         $prepareString = $this->removeTableAlias($prepareString);
@@ -339,8 +336,6 @@ class CassandraConnection
 
     /**
      * Cassandra does not support table alias. Let's remove them
-     * @param string $sql
-     * @return string $sql
      */
     private function removeTableAlias($sql)
     {
@@ -366,8 +361,6 @@ class CassandraConnection
 
     /**
      * For COUNT(), Cassandra only allows two formats: COUNT(1) and COUNT(*)
-     * @param string $sql
-     * @return string $sql
      */
     private function normalizeCount($sql)
     {
@@ -385,6 +378,9 @@ class CassandraConnection
      */
     public function query($cql = null, $pdoStatement = null)
     {
+        if ($this->app) $this->app->getCounter()->startTimer("cql_time");
+
+
         $view_to_use = false;
         if ($this->view_to_use) {
             $view_to_use = $this->view_to_use . "_custom_index";
@@ -419,6 +415,7 @@ class CassandraConnection
 
 
             $pdo->setData(new FakeCassandraRows($list));
+            if ($this->app) $this->app->getCounter()->stopTimer("cql_time");
 
             return $pdo;
 
@@ -436,6 +433,8 @@ class CassandraConnection
                 $sql = "select now() from system.local";
             }
 
+            if ($this->app) $this->app->getCounter()->incrementCounter("cql_requests");
+
             $future = $this->session->executeAsync($sql);
             if (!$pdoStatement) {
                 $pdo = new PDOStatementAdapter();
@@ -446,6 +445,8 @@ class CassandraConnection
 
             $rows = $future->get();
             $pdo->setData($rows);
+
+            if ($this->app) $this->app->getCounter()->stopTimer("cql_time");
 
             return $pdo;
 
@@ -508,4 +509,6 @@ class CassandraConnection
         }
         return $sql;
     }
+
+
 }
