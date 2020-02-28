@@ -43,7 +43,9 @@ class Parameters extends \Common\Configuration
 ],
 "websocket" => [
 "host" => "websockets",
-"port" => "8080"
+"port" => "8080",
+"pusher_public" => "-----BEGIN PUBLIC KEY-----",
+"pusher_private" => "-----BEGIN RSA PRIVATE KEY-----",
 ],
 "db" => [
 "driver" => "pdo_cassandra",

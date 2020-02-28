@@ -315,25 +315,16 @@ class CassandraConnection
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function commit()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}non-PHPdoc)
-     */
     public function rollBack()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}non-PHPdoc)
-     */
     function prepare($prepareString)
     {
         $prepareString = $this->removeTableAlias($prepareString);
@@ -345,8 +336,6 @@ class CassandraConnection
 
     /**
      * Cassandra does not support table alias. Let's remove them
-     * @param string $sql
-     * @return string $sql
      */
     private function removeTableAlias($sql)
     {
@@ -372,8 +361,6 @@ class CassandraConnection
 
     /**
      * For COUNT(), Cassandra only allows two formats: COUNT(1) and COUNT(*)
-     * @param string $sql
-     * @return string $sql
      */
     private function normalizeCount($sql)
     {

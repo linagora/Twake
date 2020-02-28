@@ -65,8 +65,10 @@ class Pusher
 
             $signin_key = $this->pusher_private_key;
             $sent_data = $data["data"];
-            openssl_sign((string)@json_encode($sent_data), $signed, $signin_key);
-            $sent_data["_sign"] = base64_encode($signed);
+            if ($signin_key) {
+                openssl_sign((string)@json_encode($sent_data), $signed, $signin_key);
+                $sent_data["_sign"] = base64_encode($signed);
+            }
             
             $pubData = [
                 'channel' => $data["topic"],

@@ -15,8 +15,6 @@ use Twake\Workspaces\Entity\Level;
 use Twake\Workspaces\Entity\PricingPlan;
 
 /**
- * Created by PhpStorm.
- * User: Romaric Mourgues
  * Date: 20/06/2017
  * Time: 09:45
  */

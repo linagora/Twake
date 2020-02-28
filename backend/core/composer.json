@@ -18,12 +18,10 @@
         "swiftmailer/swiftmailer": "^6.0",
         "twig/twig": "^2.12",
         "doctrine/dbal": "~2.2",
-        "knplabs/console-service-provider": "^2.2",
         "ramsey/uuid-doctrine": "^1.5",
         "spatie/pdf-to-text": "*",
         "soleon/sc-php": "^1.0",
         "pecee/simple-router": "4.2.0.6",
-        "germania-kg/twigserviceprovider": "^1.0"
     },
     "autoload": {
         "psr-4": {

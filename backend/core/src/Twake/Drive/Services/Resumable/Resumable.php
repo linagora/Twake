@@ -48,8 +48,6 @@ class Resumable
         $this->previews = $app->getContainer()->getParameter("drive_previews_tmp_folder");
         $this->tempFolder = $app->getContainer()->getParameter("drive_tmp_folder");
         $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
-
-        //$this->preProcess();
     }
 
     public function setResumableOption(array $resumableOption)
@@ -274,22 +272,6 @@ class Resumable
         $this->filename = $filename;
         return $this;
     }
-
-//    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
-//    {
-//        if ($chunkSize <= 0) {
-//            return false;
-//        }
-//        $numOfChunks = intval($totalSize / $chunkSize) + ($totalSize % $chunkSize == 0 ? 0 : 1);
-//        //$numOfChunks= intval($totalSize / $chunkSize) ;
-//        for ($i = 1; $i < $numOfChunks; $i++) {
-//            if (!$this->isChunkUploaded($identifier, $filename, $i)) {
-//                return false;
-//            }
-//        }
-//
-//        return true;
-//    }
 
     /**
      * Get final filename.
