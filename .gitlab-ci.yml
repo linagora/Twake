@@ -2,7 +2,7 @@ image: node:9.4.0
 image: docker
 
 services:
-    - docker:dind
+    - docker:19.03-dind
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
