@@ -2,7 +2,7 @@ image: node:9.4.0
 image: docker
 
 services:
-    - docker:dind
+    - docker:19.03-dind
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
@@ -38,9 +38,6 @@ test:
 
 manual_test:
     stage: test
-    only:
-        refs:
-            - dev
     script:
         - mv docker/docker-compose-test.yml docker-compose.yml
         - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
