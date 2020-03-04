@@ -54,6 +54,7 @@ class Routing extends BaseRouting
         "cas/login" => ["handler" => "ConnectionsUsingCAS:login", "methods" => ["GET"]],
         "cas/verify" => ["handler" => "ConnectionsUsingCAS:verify", "methods" => ["GET"]],
         "cas/logout" => ["handler" => "ConnectionsUsingCAS:logout", "methods" => ["GET"]],
+        "openid/{method?}" => ["handler" => "OpenID:index", "methods" => ["GET", "POST"]],
     ];
 
 }

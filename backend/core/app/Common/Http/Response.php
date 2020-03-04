@@ -2,6 +2,8 @@
 
 namespace Common\Http;
 
+use WebSocket\Exception;
+
 class Response
 {
 
