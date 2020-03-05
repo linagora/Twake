@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Twake\Users\Controller;
+namespace Twake\Users\Controller\Adapters;
 
 use Common\BaseController;
 use Common\Http\Request;
 use Common\Http\Response;
 
-class ConnectionsUsingCAS extends BaseController
+class CAS extends BaseController
 {
 
     // Redirect user to CAS connection page
@@ -85,12 +85,8 @@ class ConnectionsUsingCAS extends BaseController
             }
 
             //Search user with this username
-            $res = $this->get("app.user")->loginWithUsernameOnly($username, $response);
-            if (!$res) {
-                //Create user with this username
-                $this->get("app.user")->subscribeInfo($mail, md5(bin2hex(random_bytes(32))), $username, $firstname, $lastname, "", null, $this->getParameter("cas_default_language"), "CAS", true);
-                $res = $this->get("app.user")->loginWithUsernameOnly($username, $response);
-            }
+            $res = $this->get("app.user")->loginFromService("cas", $mail, $mail, $username, $firstname . " " . $lastname, "");
+
 
             if ($res) {
                 return $this->redirect($this->getParameter("SERVER_NAME"));

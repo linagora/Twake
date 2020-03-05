@@ -37,9 +37,6 @@ class Routing extends BaseRouting
         // Subscribe
         "subscribe/mail" => ["handler" => "UsersSubscribe:mail", "methods" => ["POST"]],
         "subscribe/doverifymail" => ["handler" => "UsersSubscribe:doVerifyMail", "methods" => ["POST"]],
-        "subscribe/identity" => ["handler" => "UsersSubscribe:subscribe", "methods" => ["POST"]],
-        // New Subscribe
-        "subscribe/subscribe" => ["handler" => "UsersSubscribe:subscribeTotaly", "methods" => ["POST"]],
         "subscribe/availability" => ["handler" => "UsersSubscribe:getAvaible", "methods" => ["POST"]],
         "subscribe/company_subscribe" => ["handler" => "UsersSubscribe:createCompanyUser", "methods" => ["POST"]],
         // Recover
@@ -51,10 +48,10 @@ class Routing extends BaseRouting
         "all/search" => ["handler" => "Users:search", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "all/search/username" => ["handler" => "Users:searchUsersByUsername", "methods" => ["POST"], "security" => ["user_connected_security"]],
         // CAS
-        "cas/login" => ["handler" => "ConnectionsUsingCAS:login", "methods" => ["GET"]],
-        "cas/verify" => ["handler" => "ConnectionsUsingCAS:verify", "methods" => ["GET"]],
-        "cas/logout" => ["handler" => "ConnectionsUsingCAS:logout", "methods" => ["GET"]],
-        "openid/{method?}" => ["handler" => "OpenID:index", "methods" => ["GET", "POST"]],
+        "cas/login" => ["handler" => "Adapters/CAS:login", "methods" => ["GET"]],
+        "cas/verify" => ["handler" => "Adapters/CAS:verify", "methods" => ["GET"]],
+        "cas/logout" => ["handler" => "Adapters/CAS:logout", "methods" => ["GET"]],
+        "openid/{method?}" => ["handler" => "Adapters/OpenID:index", "methods" => ["GET", "POST"]],
     ];
 
 }

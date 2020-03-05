@@ -3,6 +3,7 @@
 namespace Common;
 
 use App\App;
+use Common\Http\Response;
 
 /**
  * Controllers super class
@@ -40,6 +41,15 @@ abstract class BaseController
     public function getParameter($key)
     {
         return $this->app->getContainer()->getParameter($key);
+    }
+
+    public function redirect($url)
+    {
+        $response = new Response("");
+        $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
+        $response->setHeader("Location: " . $url, true);
+        $response->sendHeaders();
+        exit();
     }
 
 }

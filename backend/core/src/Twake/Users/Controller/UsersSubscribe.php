@@ -86,40 +86,6 @@ class UsersSubscribe extends BaseController
         return $response;
     }
 
-    /*
-	public function subscribe(Request $request)
-	{
-
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
-
-		$code = $request->request->get("code", "");
-		$token = $request->request->get("token", "");
-		$username = $request->request->get("username", "");
-        $password = $request->request->get("password", "");
-        $name = $request->request->get("name", "");
-        $firstname = $request->request->get("firstname", "");
-        $phone = $request->request->get("phone", "");
-
-		$res = $this->get("app.user")->subscribe($token, $code, $username, $password,$name,$firstname,$phone);
-
-		if ($res || $this->get("app.user")->current()) {
-
-			$data["data"]["status"] = "success";
-
-		} else {
-
-			$data["errors"][] = "badusername";
-
-		}
-
-		return new Response($data);
-
-	}
-    */
-
     public function getAvaible(Request $request)
     {
         $data = Array(
@@ -147,65 +113,6 @@ class UsersSubscribe extends BaseController
 
             }
         }
-
-        return new Response($data);
-    }
-
-    public function subscribeTotaly(Request $request)
-    {
-
-        $data = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $mail = $request->request->get("mail", "");
-        $username = $request->request->get("username", "");
-        $password = $request->request->get("password", "");
-        $lastName = $request->request->get("lastName", "");
-        $firstName = $request->request->get("firstName", "");
-        $phone = $request->request->get("phone", "");
-        $recaptcha = $request->request->get("recaptcha", "");
-        $language = $request->request->get("language", "en");
-        $origin = $request->request->get("origin", "");
-
-
-        $res = $this->get("app.user")->subscribeInfo($mail, $password, $username, $firstName, $lastName, $phone, $recaptcha, $language, $origin);
-
-        if ($res == true && is_bool($res)) {
-
-            $data["data"]["status"] = "success";
-
-        } elseif (is_array($res)) {
-            if (in_array(-1, $res)) {
-
-                $data["errors"][] = "mailalreadytaken";
-
-            }
-            if (in_array(-2, $res)) {
-
-                $data["errors"][] = "usernamealreadytaken";
-
-            }
-        } else {
-            $data["errors"][] = "error";
-        }
-        return new Response($data);
-    }
-
-    public function testMail(Request $request)
-    {
-
-        $data = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $mail = $request->request->get("mail", "");
-
-        $res = $this->get("app.user")->testMail($mail);
-
-        $data["data"] = $res;
 
         return new Response($data);
     }
