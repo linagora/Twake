@@ -21,7 +21,7 @@ class ExternalUserRepository
     /**
      * @var int
      *
-     * @ORM\Column(name="service_id", type="text")
+     * @ORM\Column(name="service_id", type="string")
      * @ORM\Id
      */
     protected $service_id;
@@ -29,7 +29,7 @@ class ExternalUserRepository
     /**
      * @var int
      *
-     * @ORM\Column(name="external_id", type="text")
+     * @ORM\Column(name="external_id", type="string")
      * @ORM\Id
      */
     protected $external_id;
