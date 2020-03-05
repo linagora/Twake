@@ -149,9 +149,9 @@ class User
             $thumbnail = new File();
             $thumbnail->setPublicLink($picture);
             $user->setThumbnail($thumbnail);
+            $this->em->persist($thumbnail);
         }
 
-        $this->em->persist($thumbnail);
         $this->em->persist($user);
         $this->em->flush();
 
