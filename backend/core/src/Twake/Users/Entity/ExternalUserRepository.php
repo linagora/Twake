@@ -19,16 +19,12 @@ class ExternalUserRepository
 {
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="service_id", type="string")
      * @ORM\Id
      */
     protected $service_id;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="external_id", type="string")
      * @ORM\Id
      */
@@ -45,7 +41,7 @@ class ExternalUserRepository
      * @param int $external_id
      * @param $user_id
      */
-    public function __construct(int $service_id, int $external_id, $user_id)
+    public function __construct($service_id, $external_id, $user_id)
     {
         $this->service_id = $service_id;
         $this->external_id = $external_id;
@@ -53,17 +49,17 @@ class ExternalUserRepository
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getServiceId(): int
+    public function getServiceId()
     {
         return $this->service_id;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getExternalId(): int
+    public function getExternalId()
     {
         return $this->external_id;
     }
