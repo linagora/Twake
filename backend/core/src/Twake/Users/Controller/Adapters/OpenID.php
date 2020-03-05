@@ -10,6 +10,10 @@ use Twake\Users\Entity\User;
 
 class OpenID extends BaseController
 {
+    function logout(Request $request)
+    {
+        $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?post_logout_redirect_uri=" . $this->getParameter("SERVER_NAME"));
+    }
 
     function index(Request $request)
     {
@@ -38,11 +42,13 @@ class OpenID extends BaseController
             $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
             if (empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) {
-                return new Response(["error" => "Your mail is not verified"]);
+                $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "Your mail is not verified"])));
+                return new Response();
             }
 
             if (empty($data["user_id"])) {
-                return new Response(["error" => "An error occurred (no unique id found)"]);
+                $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "An error occurred (no unique id found)"])));
+                return new Response();
             }
 
             //Generate username, fullname, email, picture from recovered data
@@ -71,7 +77,7 @@ class OpenID extends BaseController
 
         }
 
-        return new Response(["error" => "An unknown error occurred"]);
+        $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "An unknown error occurred"])));
 
     }
 

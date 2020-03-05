@@ -131,6 +131,8 @@ class User
             $user->setMailVerified(true);
             $user->setEmail($email);
             $this->em->persist($user);
+            $user->setLanguage("en");
+            $user->setPhone("");
 
             $ext_link = new ExternalUserRepository($service_id, $external_id, $user->getId());
             $this->em->persist($ext_link);
@@ -139,15 +141,15 @@ class User
 
         $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
         $user->setLastName(@explode(" ", $fullname)[1] ?: "");
-        $user->setPhone("");
-        $user->setLanguage("en");
 
-        if ($user->getThumbnail()) {
-            $this->em->remove($user->getThumbnail());
+        if (!$user->getThumbnail() || $user->getThumbnail()->getPublicLink() != $picture) {
+            if ($user->getThumbnail()) {
+                $this->em->remove($user->getThumbnail());
+            }
+            $thumbnail = new File();
+            $thumbnail->setPublicLink($picture);
+            $user->setThumbnail($thumbnail);
         }
-        $thumbnail = new File();
-        $thumbnail->setPublicLink($picture);
-        $user->setThumbnail($thumbnail);
 
         $this->em->persist($thumbnail);
         $this->em->persist($user);
