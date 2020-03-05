@@ -12,6 +12,8 @@ class OpenID extends BaseController
 {
     function logout(Request $request)
     {
+        error_reporting(E_ERROR | E_PARSE);
+
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
         $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?" . $logout_parameter . "=" . $this->getParameter("SERVER_NAME"));
     }
@@ -22,6 +24,8 @@ class OpenID extends BaseController
         if (!$this->getParameter("auth.openid.use")) {
             return new Response(["error" => "OpenID is not enabled on this instance"]);
         }
+
+        error_reporting(E_ERROR | E_PARSE);
 
         try {
             $oidc = new OpenIDConnectClient(
