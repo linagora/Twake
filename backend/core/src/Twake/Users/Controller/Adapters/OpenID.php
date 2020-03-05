@@ -14,6 +14,8 @@ class OpenID extends BaseController
     {
         error_reporting(E_ERROR | E_PARSE);
 
+        $this->get("app.user")->logout($request);
+
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
         $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?" . $logout_parameter . "=" . $this->getParameter("SERVER_NAME"));
     }
