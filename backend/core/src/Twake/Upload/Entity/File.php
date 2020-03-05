@@ -83,7 +83,7 @@ class File
         $this->name = "<null>";
         $this->sizes = 31; //All sizes
         $this->date = date("U");
-        $this->weight = -1;
+        $this->weight = 0;
     }
 
 

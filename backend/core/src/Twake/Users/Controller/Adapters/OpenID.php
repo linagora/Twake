@@ -50,6 +50,7 @@ class OpenID extends BaseController
             $email = $data["email"];
             $picture = $data["picture"];
             $fullname = $data["name"] ?: (($data["given_name"] . " " . $data["family_name"]) ?: $data["nickname"]);
+            $fullname = explode("@", $fullname)[0];
             $username = preg_replace("/ '/", "_",
                 preg_replace("/[^a-zA-Z0-9]/", "",
                     trim(

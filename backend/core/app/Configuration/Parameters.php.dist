@@ -103,6 +103,13 @@ class Parameters extends \Common\Configuration
                     "provider_uri" => 'https://auth0.com',
                     "client_id" => '',
                     "client_secret" => ''
+                ],
+                "cas" => [
+                    "use" => false,
+                    "base_url" => '',
+                    "email_key" => '',
+                    "lastname_key" => '',
+                    "firstname_key" => ''
                 ]
             ]
         ];

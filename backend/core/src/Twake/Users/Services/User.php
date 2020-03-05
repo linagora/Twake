@@ -110,7 +110,7 @@ class User
             $original_username = $username;
             do {
                 $res = $this->getAvaibleMailPseudo($email, $username);
-                if (!$res) {
+                if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
                         return false;

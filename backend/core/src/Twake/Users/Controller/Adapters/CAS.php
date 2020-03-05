@@ -13,7 +13,7 @@ class CAS extends BaseController
     // Redirect user to CAS connection page
     public function login()
     {
-        $cas_login_page_url = $this->getParameter("cas_base_url");
+        $cas_login_page_url = $this->getParameter("auth.cas.base_url");
         $cas_login_page_url .= "/login?";
         $cas_login_page_url .= "service=";
         $cas_login_page_url .= urlencode($this->getParameter("SERVER_NAME") . "ajax/users/cas/verify");
@@ -24,7 +24,7 @@ class CAS extends BaseController
     public function verify(Request $request)
     {
         $ticket = $request->query->get("ticket");
-        $cas_ticket_verification_url = $this->getParameter("cas_base_url");
+        $cas_ticket_verification_url = $this->getParameter("auth.cas.base_url");
 
         $cas_ticket_verification_url .= "/serviceValidate?";
         $cas_ticket_verification_url .= "service=";
@@ -61,23 +61,23 @@ class CAS extends BaseController
             $details = $result["serviceResponse"]["authenticationSuccess"];
 
             $username = $details["user"];
-            $mail = $username . "@" . str_replace(Array("http", "https", ":", "/"), "", $this->getParameter("cas_base_url"));
+            $mail = $username . "@" . str_replace(Array("http", "https", ":", "/"), "", $this->getParameter("auth.cas.base_url"));
             $firstname = "";
             $lastname = "";
 
             if (isset($details["attributes"])) {
 
-                $mailKey = $this->getParameter("cas_email_key") ? $this->getParameter("cas_email_key") : "email";
+                $mailKey = $this->getParameter("auth.cas.email_key") ? $this->getParameter("auth.cas.email_key") : "email";
                 if (isset($details["attributes"][$mailKey])) {
                     $mail = $details["attributes"][$mailKey];
                 }
 
-                $lastnameKey = $this->getParameter("cas_lastname_key") ? $this->getParameter("cas_lastname_key") : "lastname";
+                $lastnameKey = $this->getParameter("auth.cas.lastname_key") ? $this->getParameter("auth.cas.lastname_key") : "lastname";
                 if (isset($details["attributes"][$lastnameKey])) {
                     $lastname = $details["attributes"][$lastnameKey];
                 }
 
-                $firstnameKey = $this->getParameter("cas_firstname_key") ? $this->getParameter("cas_firstname_key") : "firstname";
+                $firstnameKey = $this->getParameter("auth.cas.firstname_key") ? $this->getParameter("auth.cas.firstname_key") : "firstname";
                 if (isset($details["attributes"][$firstnameKey])) {
                     $firstname = $details["attributes"][$firstnameKey];
                 }
@@ -103,7 +103,7 @@ class CAS extends BaseController
 
         $this->get("app.user")->logout($request);
 
-        $cas_login_page_url = $this->getParameter("cas_base_url") . "/logout";
+        $cas_login_page_url = $this->getParameter("auth.cas.base_url") . "/logout";
         return $this->redirect($cas_login_page_url);
     }
 
