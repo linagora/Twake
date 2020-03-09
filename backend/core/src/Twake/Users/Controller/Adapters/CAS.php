@@ -88,13 +88,7 @@ class CAS extends BaseController
             $res = $this->get("app.user")->loginFromService("cas", $mail, $mail, $username, $firstname . " " . $lastname, "");
 
             if ($res) {
-                $cookies = [];
-                foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
-                         as
-                         $cookie) {
-                    $cookies[] = $cookie;
-                }
-                return new Response("<script type='application/javascript'>window.opener.loginCallback('" . json_encode($cookies) . "');window.close();</script>");
+                return $this->closeIframe("success");
             }
 
         }
@@ -110,6 +104,17 @@ class CAS extends BaseController
 
         $cas_login_page_url = $this->getParameter("auth.cas.base_url") . "/logout";
         return $this->redirect($cas_login_page_url);
+    }
+
+    private function closeIframe($message)
+    {
+        $cookies = [];
+        foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
+                 as
+                 $cookie) {
+            $cookies[] = $cookie . "";
+        }
+        return new Response("<html><head></head><body></body><script type='application/javascript'>window.opener.postMessage('" . json_encode(["message" => $message, "cookies" => $cookies]) . "', '" . $this->getParameter("SERVER_NAME") . "');window.close();</script></html>");
     }
 
 }

@@ -50,13 +50,11 @@ class OpenID extends BaseController
                 $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
                 if (empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) {
-                    $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "Your mail is not verified"])));
-                    return new Response();
+                    return $this->closeIframe(["error" => "Your mail is not verified"]);
                 }
 
                 if (empty($data["user_id"])) {
-                    $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "An error occurred (no unique id found)"])));
-                    return new Response();
+                    return $this->closeIframe(["error" => "An error occurred (no unique id found)"]);
                 }
 
                 //Generate username, fullname, email, picture from recovered data
@@ -80,13 +78,7 @@ class OpenID extends BaseController
 
 
                 if ($user) {
-                    $cookies = [];
-                    foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
-                             as
-                             $cookie) {
-                        $cookies[] = $cookie;
-                    }
-                    return new Response("<script type='application/javascript'>window.opener.loginCallback('" . json_encode($cookies) . "');window.close();</script>");
+                    return $this->closeIframe("success");
                 }
 
             }
@@ -97,7 +89,22 @@ class OpenID extends BaseController
             return;
         }
 
-        $this->redirect($this->getParameter("SERVER_NAME") . "?login_error=" . base64_encode(json_encode(["error" => "An unknown error occurred"])));
+        return $this->closeIframe(["error" => "An unknown error occurred"]);
+
+    }
+
+    private function closeIframe($message)
+    {
+        $cookies = [];
+        foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
+                 as
+                 $cookie) {
+            $cookies[] = $cookie . "";
+        }
+        return new Response("<html><head></head><body></body><script type='application/javascript'>window.opener.postMessage('"
+            . json_encode(["message" => $message, "cookies" => $cookies]) .
+            "', '" . $this->getParameter("SERVER_NAME") .
+            "');window.close();</script></html>");
 
     }
 
