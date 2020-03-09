@@ -10,6 +10,12 @@ use Twake\Users\Entity\User;
 
 class OpenID extends BaseController
 {
+
+    function logoutSuccess(Request $request)
+    {
+        return $this->closeIframe("success");
+    }
+
     function logout(Request $request)
     {
         error_reporting(E_ERROR | E_PARSE);
@@ -17,7 +23,7 @@ class OpenID extends BaseController
         $this->get("app.user")->logout($request);
 
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
-        $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?" . $logout_parameter . "=" . $this->getParameter("SERVER_NAME"));
+        $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?" . $logout_parameter . "=" . $this->getParameter("SERVER_NAME") . "/ajax/openid/logout_success");
     }
 
     function index(Request $request)

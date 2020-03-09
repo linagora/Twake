@@ -10,6 +10,11 @@ use Common\Http\Response;
 class CAS extends BaseController
 {
 
+    function logoutSuccess(Request $request)
+    {
+        return $this->closeIframe("success");
+    }
+
     // Redirect user to CAS connection page
     public function login()
     {
