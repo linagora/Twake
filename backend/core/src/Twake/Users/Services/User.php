@@ -139,6 +139,7 @@ class User
 
         }
 
+        $user->setIdentityProvider($service_id);
         $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
         $user->setLastName(@explode(" ", $fullname)[1] ?: "");
 

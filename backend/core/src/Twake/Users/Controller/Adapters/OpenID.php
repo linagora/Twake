@@ -78,9 +78,15 @@ class OpenID extends BaseController
                 /** @var User $user */
                 $user = $this->get("app.user")->loginFromService("openid", $external_id, $email, $username, $fullname, $picture);
 
+
                 if ($user) {
-                    $this->redirect($this->getParameter("SERVER_NAME"));
-                    return null;
+                    $cookies = [];
+                    foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
+                             as
+                             $cookie) {
+                        $cookies[] = $cookie;
+                    }
+                    return new Response("<script type='application/javascript'>window.opener.loginCallback('" . json_encode($cookies) . "');window.close();</script>");
                 }
 
             }

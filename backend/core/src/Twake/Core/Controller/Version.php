@@ -14,12 +14,15 @@ class Version extends BaseController
     function getVersion(Request $request)
     {
 
-        $auth = "normal";
+        $auth = [];
+        if ($this->getParameter("auth.internal.use")) {
+            $auth[] = "internal";
+        }
         if ($this->getParameter("auth.cas.use")) {
-            $auth = "cas";
+            $auth[] = "cas";
         }
         if ($this->getParameter("auth.openid.use")) {
-            $auth = "openid";
+            $auth[] = "openid";
         }
 
         $data = Array(

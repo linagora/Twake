@@ -130,6 +130,11 @@ class User extends SearchableObject
     protected $phone = "";
 
     /**
+     * @ORM\Column(name="identity_provider", type="string", length=64)
+     */
+    protected $identity_provider = "";
+
+    /**
      * @ORM\Column(name="origin", type="string", length=64)
      */
     protected $origin = "";
@@ -428,6 +433,19 @@ class User extends SearchableObject
         $this->isnew = $isnew;
     }
 
+    public function getIdentityProvider()
+    {
+        return $this->identity_provider;
+    }
+
+    public function setIdentityProvider($identity_provider)
+    {
+        if (!$identity_provider) {
+            $this->identity_provider = "";
+        }
+        $this->identity_provider = $identity_provider;
+    }
+
     /**
      * @return mixed
      */
@@ -520,6 +538,7 @@ class User extends SearchableObject
             "firstname" => $this->getFirstName(),
             "lastname" => $this->getLastName(),
             "thumbnail" => (($this->getThumbnail() == null) ? null : $this->getThumbnail()->getPublicURL(2)) . "",
+            "identity_provider" => $this->getIdentityProvider(),
             "connected" => $this->isConnected(),
             "language" => $this->getLanguage(),
             "isNew" => $this->getisNew(),

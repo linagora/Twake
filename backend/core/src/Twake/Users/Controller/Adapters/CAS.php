@@ -87,9 +87,14 @@ class CAS extends BaseController
             //Search user with this username
             $res = $this->get("app.user")->loginFromService("cas", $mail, $mail, $username, $firstname . " " . $lastname, "");
 
-
             if ($res) {
-                return $this->redirect($this->getParameter("SERVER_NAME"));
+                $cookies = [];
+                foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
+                         as
+                         $cookie) {
+                    $cookies[] = $cookie;
+                }
+                return new Response("<script type='application/javascript'>window.opener.loginCallback('" . json_encode($cookies) . "');window.close();</script>");
             }
 
         }

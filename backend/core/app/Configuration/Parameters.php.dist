@@ -98,6 +98,9 @@ class Parameters extends \Common\Configuration
                 ]
             ],
             "auth" => [
+                "internal" => [
+                    "use" => true,
+                ],
                 "openid" => [
                     "use" => false,
                     "provider_uri" => 'https://auth0.com',
