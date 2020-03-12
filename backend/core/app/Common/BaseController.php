@@ -38,9 +38,9 @@ abstract class BaseController
         return $user;
     }
 
-    public function getParameter($key)
+    public function getParameter($key, $fallback = null)
     {
-        return $this->app->getContainer()->getParameter($key);
+        return $this->app->getContainer()->getParameter($key) ?: $fallback;
     }
 
     public function redirect($url)

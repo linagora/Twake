@@ -299,7 +299,7 @@ class Notifications
     {
 
         $devicesRepo = $this->doctrine->getRepository("Twake\Users:Device");
-        $devices = $devicesRepo->findBy(Array("user" => $user));
+        $devices = $devicesRepo->findBy(Array("user_id" => $user->getId()));
 
         $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
         $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');

@@ -42,6 +42,8 @@ class OpenID extends BaseController
                 $this->getParameter("auth.openid.client_secret")
             );
 
+            $oidc->setRedirectURL($this->getParameter("SERVER_NAME") . "/ajax/users/openid");
+
             $oidc->addScope(array('openid', 'email', 'profile'));
             if ($oidc->authenticate()) {
 

@@ -28,7 +28,6 @@ services:
     build: docker/twake-websockets
     volumes:
       - ./backend/websockets_server:/WebsocketsServer
-    restart: "always"
   elasticsearch_twake:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     container_name: elasticsearch_twake
