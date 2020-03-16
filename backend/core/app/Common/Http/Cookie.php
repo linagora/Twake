@@ -32,12 +32,12 @@ class Cookie
         $str .= '=';
 
         if ('' === (string)$this->value) {
-            $str .= 'deleted; expires=' . gmdate('D, d-M-Y H:i:s T', time() - 31536001) . '; Max-Age=0';
+            $str .= 'deleted; expires=' . gmdate('D, d-M-Y H:i:s T', time() - 31536001) . '; Max-Age=0; SameSite=None; Secure';
         } else {
             $str .= rawurlencode($this->value);
 
             if (0 !== $this->expire) {
-                $str .= '; expires=' . gmdate('D, d-M-Y H:i:s T', $this->expire) . '; Max-Age=' . $this->getMaxAge();
+                $str .= '; expires=' . gmdate('D, d-M-Y H:i:s T', $this->expire) . '; Max-Age=' . $this->getMaxAge() . "; SameSite=None; Secure";
             }
         }
 
