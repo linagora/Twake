@@ -62,8 +62,8 @@ class NotificationQueueCommand extends ContainerAwareCommand
                     $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 3, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 }
 
-                foreach ($messages as $message) {
-                    $push_message = $queues->getMessage($message);
+                foreach ($messages as $queue_message) {
+                    $push_message = $queues->getMessage($queue_message);
 
                     if ($this->getApp()->getContainer()->getParameter('STANDALONE')) {
                         $data = $push_message;
@@ -86,7 +86,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
                     }
 
 
-                    $queues->ack("push_notification", $message);
+                    $queues->ack("push_notification", $queue_message);
                 }
 
 
