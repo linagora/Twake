@@ -6,6 +6,12 @@
             "email": "romaric.mourgues@twakeapp.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TwakeApp/Pusher"
+        }
+    ],
     "require": {
         "php": ">=7.1",
         "doctrine/orm": "^2.5",
@@ -23,7 +29,8 @@
         "soleon/sc-php": "^1.0",
         "pecee/simple-router": "4.2.0.6",
         "jumbojett/openid-connect-php": "^0.8.0",
-        "mxp100/pusher": "^1.0"
+        "pimple/pimple": "~3.0",
+        "mxp100/pusher": "dev-twake-1.0 as 1.0"
     },
     "autoload": {
         "psr-4": {
