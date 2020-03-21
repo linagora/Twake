@@ -54,7 +54,30 @@ class Parameters extends \Common\Configuration
                 "user" => "root",
                 "password" => "root",
                 "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "ssl" => [
+                    "node_certificate" => "path"
+                ],
                 "dev" => false
+            ],
+            "queue" => [
+                "sqs" => [
+                    "use" => false,
+                    "profile" => "default",
+                    "version" => "2012-11-05",
+                    'region' => 'us-west-2',
+                    "credentials" => [
+                        "key" => "",
+                        "secret" => ""
+                    ]
+
+                ],
+                "rabbitmq" => [
+                    "use" => false,
+                    "host" => "",
+                    "port" => false,
+                    "username" => "",
+                    "password" => ""
+                ]
             ],
             "openstack" => [
                 "use" => false,

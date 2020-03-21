@@ -260,7 +260,28 @@ class CassandraConnection
     {
 
         $this->cluster = Cassandra::cluster()
-            ->withContactPoints($driverOptions["host"])
+            ->withContactPoints($driverOptions["host"]);
+
+        if ($driverOptions["ssl"]) {
+            $ssl = Cassandra::ssl()
+                ->withTrustedCerts($driverOptions["ssl"]["node_certificate"])
+                ->withVerifyFlags(Cassandra::VERIFY_PEER_CERT)
+                ->build();
+            $this->cluster = $this->cluster
+                ->withSSL($ssl);
+        }
+
+        if ($driverOptions["port"]) {
+            $this->cluster = $this->cluster
+                ->withPort($driverOptions["port"]);
+        }
+
+        if ($driverOptions["user"]) {
+            $this->cluster = $this->cluster
+                ->withCredentials($driverOptions["user"], $driverOptions["password"]);
+        }
+
+        $this->cluster = $this->cluster
             ->build();
 
         try {
