@@ -38,7 +38,7 @@ class RabbitMQ implements QueueManager
         $channel->basic_publish($msg, '', $route);
     }
 
-    public function consume($route, $should_ack = false, $max_messages = 50, $message_processing = 60)
+    public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
         $list = [];
         $callback = function ($msg) use ($max_messages, $list) {

@@ -44,7 +44,7 @@ class SQS implements QueueManager
         ));
     }
 
-    public function consume($route, $should_ack = false, $max_messages = 50, $message_processing = 60)
+    public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
         $client = $this->getChannel();
         $result = $client->createQueue(array('QueueName' => $route));

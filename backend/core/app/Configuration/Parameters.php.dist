@@ -59,7 +59,7 @@ class Parameters extends \Common\Configuration
                 ],
                 "dev" => false
             ],
-            "queue" => [
+            "queues" => [
                 "sqs" => [
                     "use" => false,
                     "profile" => "default",

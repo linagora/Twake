@@ -12,7 +12,7 @@ use Twake\Workspaces\Entity\Group;
 use Twake\Workspaces\Entity\GroupPeriod;
 
 
-class DailyCommand extends ContainerAwareCommand
+class TestQueue extends ContainerAwareCommand
 {
     var $leveladmin;
     var $output;
