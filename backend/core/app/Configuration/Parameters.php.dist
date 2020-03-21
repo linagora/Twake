@@ -59,6 +59,10 @@ class Parameters extends \Common\Configuration
                 ],
                 "dev" => false
             ],
+            "push_notifications" => [
+                "apns_certificate" => __DIR__ . "/certs/apns_prod.pem",
+                "firebase_api_key" => "KEY",
+            ],
             "queues" => [
                 "sqs" => [
                     "use" => false,

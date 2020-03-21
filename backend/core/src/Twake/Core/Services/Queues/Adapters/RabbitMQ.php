@@ -33,7 +33,7 @@ class RabbitMQ implements QueueManager
     public function push($route, $message)
     {
         $channel = $this->getChannel();
-        $channel->queue_declare($route, false, true, false, false);
+        $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
         $msg = new AMQPMessage(json_encode($message));
         $channel->basic_publish($msg, '', $route);
     }
@@ -50,10 +50,15 @@ class RabbitMQ implements QueueManager
         };
         $this->stop_consume = false;
         $channel = $this->getChannel();
-        $channel->queue_declare($route, false, true, false, false);
+        $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
+        $channel->basic_qos(null, $max_messages, null);
         $channel->basic_consume($route, '', false, !$should_ack, false, false, $callback);
         while ($channel->is_consuming() && !$this->stop_consume) {
-            $channel->wait();
+            try {
+                $channel->wait(null, false, 10);
+            } catch (Exception $err) {
+                //Timeout
+            }
         }
         return $list;
     }
@@ -66,7 +71,7 @@ class RabbitMQ implements QueueManager
     public function ack($route, $message)
     {
         $channel = $this->getChannel();
-        $channel->queue_declare($route, false, true, false, false);
+        $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
         $channel->ack($message->delivery_info['delivery_tag']);
     }
 

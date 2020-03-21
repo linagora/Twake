@@ -6,6 +6,7 @@ namespace Twake\Notifications\Services;
 use App\App;
 use Emojione\Client;
 use Emojione\Ruleset;
+use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twake\Notifications\Entity\MailNotificationQueue;
 use Twake\Notifications\Entity\Notification;
 use Twake\Notifications\Entity\PushNotificationQueue;
@@ -26,10 +27,13 @@ class Notifications
     var $pushNotificationServer;
     var $standalone;
     var $licenceKey;
+    /** @var QueueManager */
+    var $queues;
 
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->queues = $app->getServices()->get("app.queues")->getAdapter();
         $this->pusher = $app->getServices()->get("app.websockets");
         $this->mailer = $app->getServices()->get("app.twake_mailer");
         $this->circle = $app->getServices()->get("app.restclient");
@@ -338,15 +342,7 @@ class Notifications
             "type" => $type
         );
 
-        try {
-            $element = new PushNotificationQueue($data);
-            $this->doctrine->persist($element);
-            if ($doPush) {
-                $this->doctrine->flush();
-            }
-        } catch (\Exception $exception) {
-            error_log("ERROR in pushDeviceInternal");
-        }
+        $this->queues->push("push_notification", $data);
     }
 
     public function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
