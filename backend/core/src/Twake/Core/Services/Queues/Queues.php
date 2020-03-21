@@ -4,6 +4,7 @@
 namespace Twake\Core\Services\Queues;
 
 use App\App;
+use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twake\Core\Services\Queues\Adapters\SQS;
 
 class Queues
@@ -20,27 +21,11 @@ class Queues
         }
     }
 
-    public function push($route, $message)
+    /**
+     * @return QueueManager
+     */
+    public function getAdapter()
     {
-        if (!$this->adapter) {
-            return;
-        }
-        $this->adapter->push($route, $message);
+        return $this->adapter;
     }
-
-    public function consume()
-    {
-        if (!$this->adapter) {
-            return [];
-        }
-        return $this->adapter->consume($route, $message);
-    }
-
-    public function close()
-    {
-        if ($this->adapter) {
-            $this->adapter->close();
-        }
-    }
-
 }
