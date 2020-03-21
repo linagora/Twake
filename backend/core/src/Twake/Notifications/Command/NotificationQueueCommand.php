@@ -120,8 +120,8 @@ class NotificationQueueCommand extends ContainerAwareCommand
         $adapter = new Apns($serverKey, AdapterInterface::ENVIRONMENT_PRODUCTION);
 
 
-        $pusher = new Pusher([new Push($adapter, $devices, $data)]);
-        $pusher->push();
+        $pusher = new Pusher([new Push($adapter, $devices)]);
+        $pusher->push($data);
 
     }
 
