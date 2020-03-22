@@ -1,6 +1,6 @@
 <?php
 
-namespace Twake\Notifications\Command;
+namespace Twake\Core\Command;
 
 use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
