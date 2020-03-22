@@ -57,11 +57,6 @@ services:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
       - ./frontend/desktop/public/:/twake-react/
-  php_push_server:
-    image: twake-php-push-server
-    build: docker/twake-php-push-server
-    volumes:
-      - ./backend/push_notification_server:/twake-push-server
   node-exporter:
     image: prom/node-exporter
     ports:
