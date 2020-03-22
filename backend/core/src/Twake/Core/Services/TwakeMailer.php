@@ -4,6 +4,9 @@ namespace Twake\Core\Services;
 
 use App\App;
 use Swift_Signers_DKIMSigner;
+use Twake\Core\Entity\MailTask;
+use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
+use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twig\Loader\FilesystemLoader;
 
 /**
@@ -32,6 +35,29 @@ class TwakeMailer
     }
 
     public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Mail")
+    {
+        $task = new MailTask(Array(
+            "mail" => $mail,
+            "data" => $data,
+            "template" => $template,
+            "attachments" => $attachments,
+            "template_directory" => $templateDirectory
+        ));
+
+        /** @var ManagerAdapter $em */
+        $em = $this->app->getServices()->get("app.twake_doctrine");
+        $em->useTTLOnFirstInsert(60 * 60 * 24); //Kept 1 day
+        $em->persist($task);
+        $em->flush();
+
+        /** @var QueueManager $queues */
+        $queues = $this->app->getServices()->get("app.queues")->getAdapter();
+        $queues->push("mails", Array(
+            "task_id" => $task->getId()
+        ));
+    }
+
+    public function sendInternal($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Mail")
     {
 
         $templateDirectory = "Mail";

@@ -8,14 +8,15 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # m h dom mon dow user  command
-0 *     * * *   root    cd /twake-core/; php bin/console twake:cron;
-1 0     * * *   root    cd /twake-core/; php bin/console twake:cronDaily;
 1 0     * * *   root    cd /twake-core/; php bin/console twake:daily;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:mails_queue;
+
 */15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_check;
 */15 *	* * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
-#*/15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_synchronization;
-* *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue ;
+
 */10 *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;
+
 * *     * * *   root    cd /twake-core/; php bin/console twake:preview_worker;
-* *     * * *   root    cd /twake-core/; php bin/console twake:check_zmq_queue;
+
 32 *	  * * *	  root	  kill -USR2 1;
