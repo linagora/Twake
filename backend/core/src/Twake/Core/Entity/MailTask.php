@@ -58,7 +58,7 @@ class MailTask extends SearchableObject
      */
     public function getData()
     {
-        return json_decode($this->data);
+        return json_decode($this->data, 1);
     }
 
     /**
