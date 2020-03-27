@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y wget
 
 ADD ./site.conf /etc/nginx/sites-enabled/site
+ADD ./nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
