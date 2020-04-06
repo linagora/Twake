@@ -339,7 +339,8 @@ class Notifications
             "data" => json_encode($_data),
             "badge" => $badge,
             "device_id" => $deviceId,
-            "type" => $type
+            "type" => $type,
+            "_task_id" => $_data["_task_id"] //Anti duplicate
         );
 
         $this->queues->push("push_notification", $data);

@@ -53,7 +53,7 @@ class EventNotification
     {
         $this->event_id = $event_id;
         $this->when_ts = $ts;
-        $this->when_ts_week = floor($ts / (60 * 60 * 24 * 7)); //Timestamp rounded by week
+        $this->when_ts_week = floor($ts / (60 * 60 * 24)); //Timestamp rounded by day
         $this->setDelay($delay);
         $this->setMode($mode);
     }

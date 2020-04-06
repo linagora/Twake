@@ -30,11 +30,25 @@ class RabbitMQ implements QueueManager
         return $this->channel;
     }
 
-    public function push($route, $message)
+    public function push($route, $message, $options = [])
     {
         $channel = $this->getChannel();
-        $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
-        $msg = new AMQPMessage(json_encode($message));
+        $channel->queue_declare($route, false, true, false, false, [
+            "x-message-ttl" => 24 * 60 * 60 * 1000 * (isset($options["delay"]) ? (20 * 365) : 1)
+        ]);
+
+        $amqp_options = [];
+        if (isset($options["delay"])) {
+            $amqp_options = [
+                'delivery_mode' => 2, # make message persistent
+                'application_headers' => new AMQPTable([
+                    'x-delay' => $options["delay"] * 1000
+                ])
+            ];
+            $data["DelaySeconds"] = $options["delay"];
+        }
+
+        $msg = new AMQPMessage(json_encode($message), $amqp_options);
         $channel->basic_publish($msg, '', $route);
     }
 

@@ -33,15 +33,21 @@ class SQS implements QueueManager
     }
 
 
-    public function push($route, $message)
+    public function push($route, $message, $options = [])
     {
         $client = $this->getChannel();
         $result = $client->createQueue(array('QueueName' => $route));
         $queueUrl = $result->get('QueueUrl');
-        $client->sendMessage(array(
+        $data = array(
             'QueueUrl' => $queueUrl,
-            'MessageBody' => json_encode($message),
-        ));
+            'MessageBody' => json_encode($message)
+        );
+
+        if (isset($options["delay"])) {
+            $data["DelaySeconds"] = $options["delay"];
+        }
+
+        $client->sendMessage($data);
     }
 
     public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)

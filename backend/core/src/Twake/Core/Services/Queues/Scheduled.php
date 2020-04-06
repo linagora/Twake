@@ -1,0 +1,175 @@
+<?php
+
+
+namespace Twake\Core\Services\Queues;
+
+use AdministrationApi\Counter\Entity\ScheduledCounter;
+use App\App;
+use Twake\Core\Entity\ScheduledTask;
+use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
+use Twake\Core\Services\Queues\Adapters\QueueManager;
+use Twake\Core\Services\Queues\Adapters\SQS;
+
+/**
+ * Class Scheduled
+ * Used to generate scheduled tasks (calendar, tasks etc)
+ * @package Twake\Core\Services\Queues
+ */
+class Scheduled
+{
+
+    var $bulk_size = 100;
+    var $time_interval = 15 * 60;
+    var $max_ttl = 20 * 364 * 24 * 60 * 60;
+
+    /** @var ManagerAdapter */
+    var $doctrine;
+    /** @var QueueManager */
+    var $queues;
+
+    var $already_sent_shard = [];
+
+    public function __construct(App $app)
+    {
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->queues = $app->getServices()->get("app.queues")->getAdapter();
+    }
+
+    private function timeKeyFromTimestamp($timestamp)
+    {
+        return floor(($timestamp / $this->time_interval)) * $this->time_interval;
+    }
+
+    /** Schedule a task, called once by one node */
+    public function schedule($route, $timestamp, $message)
+    {
+
+        if ($timestamp < date("U") + 15 * 60) {
+            $this->queues->push("scheduled_notifications_" . $route, [
+                "message" => $message,
+                "timestamp" => $timestamp
+            ], [
+                "delay" => date("U") - $timestamp
+            ]);
+            return true;
+        }
+
+        //Get current counter state (if exists)
+        $counter_repository = $this->em->getRepository("Twake\Core:ScheduledCounter");
+        $counter = $counter_repository->findOneBy(Array('time' => $this->timeKeyFromTimestamp($timestamp), 'type' => 'total'));
+        if (!$counter) {
+            $counter = new ScheduledCounter($timestamp, "total", $this->time_interval);
+        }
+
+        //Get shard to place notification
+        $shard = floor(($counter->getValue() + 1) / $this->bulk_size);
+
+        $notification = new ScheduledTask($timestamp, $shard, $route, $message, $this->time_interval);
+        $counter->setIncrementValue(1);
+
+        //Save counter and notification
+        $this->doctrine->useTTLOnFirstInsert(min(date("U") - $timestamp + $this->time_interval * 2, $this->max_ttl));
+        $this->doctrine->persist($notification);
+        $this->doctrine->persist($counter);
+        $this->doctrine->flush();
+
+        return true;
+    }
+
+    /** Get all notifications in 15 minutes interval (all nodes are calling this each minutes) */
+    public function consumeShards($timeout = 60)
+    {
+
+        if ($already_sent_shard[$timekey . "_all"]) {
+            return;
+        }
+
+        $start = date("U");
+
+        $timestamp = date("U");
+        $timekey = $this->timeKeyFromTimestamp($timestamp);
+
+        //Get current counter state (if exists)
+        $counter_repository = $this->em->getRepository("Twake\Core:ScheduledCounter");
+        $counter_total = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'total'));
+        $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
+        //Nothing to do, no notifications
+        if (!$counter_total || $counter_total->getValue() == 0
+            || ($counter_done && $counter_total->getValue() <= $counter_done->getValue())) {
+            return true;
+        }
+
+        $shards = []; //Get number of shards ex. shards 0, 1 and 2 for 235 notifications and 100 as bulk size
+        for ($i = 0; $i <= floor($counter_total->getValue() / $this->bulk_size); $i++) {
+            $shards[] = $i;
+        }
+        shuffle($shards);
+
+        foreach ($shards as $shard) {
+
+            if (date("U") - $start > $timeout) {
+                return;
+            }
+
+            if ($already_sent_shard[$timekey . "_" . $shard]) {
+                continue;
+            }
+
+            $counter_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
+            $tokenbdd = $counter_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard, 'id' => "token"));
+
+            if (!$tokenbdd) {
+
+                $token = base64_encode(bin2hex(random_bytes(32)));
+
+                $tokenbdd = new ScheduledTask();
+                $tokenbdd->setId("token");
+                $tokenbdd->setData($token);
+                $this->doctrine->useTTLOnFirstInsert(60 * 60); //1 hour
+                $this->doctrine->persist($tokenbdd);
+                $this->doctrine->flush();
+
+                $this->queues->push("scheduled_notifications", [
+                    "timekey" => $timekey,
+                    "shard" => $shard,
+                    "token" => $token
+                ], [
+                    "delay" => date("U") - $timestamp
+                ]);
+
+            } else {
+                $already_sent_shard[$timekey . "_" . $shard] = true;
+            }
+
+        }
+
+        $already_sent_shard[$timekey . "_all"] = true;
+
+    }
+
+    /** Consume shard task and ack once finished sent from consumeShards method and ignore duplicatas using token (sent on scheduled_notifications) */
+    public function consumeShardsFromRabbitMQ()
+    {
+
+        $this->queues->push("scheduled_notifications_" . $route, [
+            "message" => $message,
+            "timestamp" => $timestamp
+        ], [
+            "delay" => date("U") - $timestamp
+        ]);
+
+    }
+
+    /** Get RabbitMQ notifications received at exact wanted time (sent on scheduled_notifications_[route]) */
+    public function consume()
+    {
+
+    }
+
+    /** Ack a scheduled notification from any scheduled_notifications_[route] */
+    public function ack()
+    {
+
+    }
+
+}

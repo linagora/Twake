@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  * @ORM\Entity()
  */
-class MailTask extends SearchableObject
+class MailTask
 {
 
     /**
