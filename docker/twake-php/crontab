@@ -12,8 +12,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 * *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue;
 * *	    * * *	  root	  cd /twake-core/; php bin/console twake:mails_queue;
 
-*/15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_check;
-*/15 *	* * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
+* *     * * *   root    cd /twake-core/; php bin/console twake:calendar_check;
+* *     * * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
 
 */10 *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;
 

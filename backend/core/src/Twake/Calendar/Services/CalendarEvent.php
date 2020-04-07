@@ -630,7 +630,7 @@ class CalendarEvent
         $token = base64_encode(bin2hex(random_bytes(32)));
 
         foreach ($notifications as $index => $notification) {
-            $notifications[$i]["token"] = $token;
+            $notifications[$index]["token"] = $token;
         }
 
         $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);

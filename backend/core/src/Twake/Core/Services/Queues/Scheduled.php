@@ -51,7 +51,7 @@ class Scheduled
                 "message" => $message,
                 "timestamp" => $timestamp
             ], [
-                "delay" => date("U") - $timestamp
+                "delay" => $timestamp - date("U")
             ]);
             return true;
         }
@@ -184,7 +184,7 @@ class Scheduled
                         "message" => $notification->getData(),
                         "timestamp" => $timestamp
                     ], [
-                        "delay" => date("U") - $timestamp
+                        "delay" => $timestamp - date("U")
                     ]);
 
                 }
