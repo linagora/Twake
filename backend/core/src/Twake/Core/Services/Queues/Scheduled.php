@@ -61,6 +61,8 @@ class Scheduled
         $counter = $counter_repository->findOneBy(Array('time' => $this->timeKeyFromTimestamp($timestamp), 'type' => 'total'));
         if (!$counter) {
             $counter = new ScheduledCounter($timestamp, "total", $this->time_interval);
+            $counter_done = new ScheduledCounter($timestamp, "done", $this->time_interval);
+            $counter_done->setIncrementValue(0);
         }
 
         //Get shard to place notification
@@ -73,6 +75,7 @@ class Scheduled
         $this->doctrine->useTTLOnFirstInsert(min(date("U") - $timestamp + $this->time_interval * 2, $this->max_ttl));
         $this->doctrine->persist($notification);
         $this->doctrine->persist($counter);
+        $this->doctrine->persist($counter_done);
         $this->doctrine->flush();
 
         return true;
@@ -191,20 +194,25 @@ class Scheduled
 
                 // Remove counters if task finished
                 $counter_repository = $this->doctrine->getRepository("Twake\Core:ScheduledCounter");
-
-                /** @var ScheduledCounter $counter_done */
-                $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
-                $final_value = $counter_done->getValue() + $this->bulk_size;
-                $counter_done->setIncrementValue($this->bulk_size);
-                $this->doctrine->persist($counter_done);
-                $this->doctrine->flush();
-
                 /** @var ScheduledCounter $counter_total */
                 $counter_total = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'total'));
-                if ($final_value >= $counter_total->getValue()) {
-                    $this->doctrine->remove($counter_total);
-                    $this->doctrine->remove($counter_done);
-                    $this->doctrine->flush();
+
+                if ($counter_total) {
+                    /** @var ScheduledCounter $counter_done */
+                    $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
+                    $final_value = $counter_total->getValue();
+                    if ($counter_done) {
+                        $final_value = $counter_done->getValue() + $this->bulk_size;
+                        $counter_done->setIncrementValue($this->bulk_size);
+                        $this->doctrine->persist($counter_done);
+                        $this->doctrine->flush();
+                    }
+
+                    if ($final_value >= $counter_total->getValue()) {
+                        $this->doctrine->remove($counter_total);
+                        $this->doctrine->remove($counter_done);
+                        $this->doctrine->flush();
+                    }
                 }
 
                 // Remove shard
