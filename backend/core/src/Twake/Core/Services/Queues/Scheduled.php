@@ -62,7 +62,7 @@ class Scheduled
         if (!$counter) {
             $counter = new ScheduledCounter($timestamp, "total", $this->time_interval);
             $counter_done = new ScheduledCounter($timestamp, "done", $this->time_interval);
-            $counter_done->setIncrementValue(0);
+            $this->doctrine->persist($counter_done);
         }
 
         //Get shard to place notification
@@ -75,7 +75,6 @@ class Scheduled
         $this->doctrine->useTTLOnFirstInsert(min(date("U") - $timestamp + $this->time_interval * 2, $this->max_ttl));
         $this->doctrine->persist($notification);
         $this->doctrine->persist($counter);
-        $this->doctrine->persist($counter_done);
         $this->doctrine->flush();
 
         return true;
@@ -161,7 +160,7 @@ class Scheduled
 
         $shards = $this->queues->consume("scheduled_notifications", true, 1);
 
-        foreach ($shards as $shard) {
+        foreach ($shards ?: [] as $shard) {
 
             $shard_message = $this->queues->getMessage($shard);
 
