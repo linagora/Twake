@@ -190,6 +190,7 @@ class Scheduled
                 }
 
                 // Remove counters if task finished
+                $counter_repository = $this->doctrine->getRepository("Twake\Core:ScheduledCounter");
 
                 /** @var ScheduledCounter $counter_done */
                 $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
