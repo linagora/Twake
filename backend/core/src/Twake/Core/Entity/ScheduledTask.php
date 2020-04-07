@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Mail
  *
- * @ORM\Table(name="scheduled_task",options={"engine":"MyISAM",
+ * @ORM\Table(name="scheduled_queue_task",options={"engine":"MyISAM",
  *
  *     "scylladb_keys": {{"time":"ASC", "shard":"ASC", "id":"ASC"}}
  * })

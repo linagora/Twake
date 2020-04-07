@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Counter
  *
- * @ORM\Table(name="scheduled_counter",options={"engine":"MyISAM", "scylladb_keys": {{"time":"ASC", "type":"ASC"}} })
+ * @ORM\Table(name="scheduled_queue_counter",options={"engine":"MyISAM", "scylladb_keys": {{"time":"ASC", "type":"ASC"}} })
  * @ORM\Entity()
  */
 class ScheduledCounter
