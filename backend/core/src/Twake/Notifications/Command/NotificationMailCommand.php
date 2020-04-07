@@ -7,6 +7,8 @@ use Emojione\Ruleset;
 use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
+use Twake\Core\Services\Queues\Scheduled;
 use Twake\Notifications\Entity\MailNotificationQueue;
 use Twake\Notifications\Entity\UserNotificationStatus;
 use Twake\Users\Entity\User;
@@ -25,46 +27,55 @@ class NotificationMailCommand extends ContainerAwareCommand
 
         $services = $this->getApp()->getServices();
         $em = $services->get('app.twake_doctrine');
-
-        //Get users to notify
-        $users = [];
+        /** @var Scheduled $scheduled */
+        $scheduled = $services->get("app.queues_scheduled");
 
         $repo = $em->getRepository("Twake\Notifications:MailNotificationQueue");
-        $entries = $repo->findBy(Array(), Array(), 1000);
 
-        foreach ($entries as $entry) {
+        $limit = date("U", date("U") + 60);
 
-            $date = date("U") - $entry->getDate()->getTimestamp();
+        while (date("U") < $limit) {
 
-            if ($date > 60 * 60 * 12) //12h
-            {
+            $reminders = $scheduled->consume("mail_reminder", true);
 
-                $user_notification_status = $em->getRepository("Twake\Notifications:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));
-                if (!$user_notification_status) {
-                    $user_notification_status = new UserNotificationStatus($entry->getUserId());
+            if (count($reminders ?: []) == 0) {
+                sleep(1);
+            }
+
+            //Get users to notify
+            foreach ($reminders ?: [] as $reminder_original) {
+
+                $reminder = $scheduled->getMessage($reminder_original);
+
+                /** @var ManagerAdapter $entry */
+                $entry = $repo->findOneBy(Array("id" => $reminder["id"], "user_id" => $reminder["user_id"]));
+
+                if ($entry && $entry->getToken() === $reminder["token"]) {
+
+                    $user_notification_status = $em->getRepository("Twake\Notifications:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));
+                    if (!$user_notification_status) {
+                        $user_notification_status = new UserNotificationStatus($entry->getUserId());
+                    }
+
+                    if ($user_notification_status->getMailStatus() == 0) {
+                        $user_notification_status->setMailStatus(1);
+
+                        $users = [];
+                        $users[] = Array("user" => $entry->getUserId(), "date" => $entry->getDate()->getTimestamp());
+                        $em->remove($entry);
+
+                        $em->persist($user_notification_status);
+                        $this->sendMail($users, "messages_notifications");
+                        $em->flush();
+                    }
+
                 }
 
-                if ($user_notification_status->getMailStatus() == 0) {
-                    $user_notification_status->setMailStatus(1);
+                $scheduled->ack("mail_reminder", $reminder_original);
 
-                    $users[] = Array("user" => $entry->getUserId(), "date" => $entry->getDate()->getTimestamp());
-                    $em->remove($entry);
-
-                    $em->persist($user_notification_status);
-
-                    error_log("send to " . $entry->getUserId());
-                } else {
-                    error_log("cancelled " . $entry->getUserId());
-                }
-
-                error_log($date);
             }
 
         }
-
-        $em->flush();
-
-        $this->sendMail($users, "messages_notifications");
 
     }
 
@@ -94,15 +105,7 @@ class NotificationMailCommand extends ContainerAwareCommand
             $mail_preferences = isset($preferences["mail_notifications"]) ? $preferences["mail_notifications"] : 2;
 
             if ($mail_preferences == 0) {
-                break;
-            }
-
-            if ($mail_preferences == 1 && date("U") - $date < 60 * 60 * 12) { // Everything or Only daily mails
-                $new = new MailNotificationQueue($user_id);
-                $time = new \DateTime();
-                $time->setTimestamp($date);
-                $new->setDate($time);
-                break;
+                continue;
             }
 
             $count = max(0, $user->getNotificationWriteIncrement() - $user->getNotificationReadIncrement());

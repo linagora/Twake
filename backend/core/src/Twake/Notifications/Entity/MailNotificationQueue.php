@@ -31,6 +31,11 @@ class MailNotificationQueue
      */
     private $date;
 
+    /**
+     * @ORM\Column(type="twake_text")
+     */
+    private $token;
+
 
     public function __construct($user_id)
     {
@@ -73,6 +78,22 @@ class MailNotificationQueue
     public function getUserId()
     {
         return $this->user_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token): void
+    {
+        $this->token = $token;
     }
 
 
