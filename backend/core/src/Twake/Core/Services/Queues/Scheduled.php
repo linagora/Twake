@@ -43,6 +43,9 @@ class Scheduled
     /** Schedule a task, called once by one node */
     public function schedule($route, $timestamp, $message)
     {
+        if ($timestamp < date("U")) {
+            return;
+        }
 
         if ($timestamp < date("U") + 15 * 60) {
             $this->queues->push("scheduled_notifications_" . $route, [
@@ -115,8 +118,8 @@ class Scheduled
                 continue;
             }
 
-            $counter_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
-            $tokenbdd = $counter_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard, 'id' => "token"));
+            $tasks_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
+            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard, 'id' => "token"));
 
             if (!$tokenbdd) {
 
@@ -127,15 +130,16 @@ class Scheduled
                 $tokenbdd->setData($token);
                 $this->doctrine->useTTLOnFirstInsert(60 * 60); //1 hour
                 $this->doctrine->persist($tokenbdd);
-                $this->doctrine->flush();
 
                 $this->queues->push("scheduled_notifications", [
                     "timekey" => $timekey,
                     "shard" => $shard,
                     "token" => $token
                 ], [
-                    "delay" => date("U") - $timestamp
+                    "delay" => 2 //2 seconds time to update table
                 ]);
+
+                $this->doctrine->flush();
 
             } else {
                 $already_sent_shard[$timekey . "_" . $shard] = true;
@@ -151,25 +155,80 @@ class Scheduled
     public function consumeShardsFromRabbitMQ()
     {
 
-        $this->queues->push("scheduled_notifications_" . $route, [
-            "message" => $message,
-            "timestamp" => $timestamp
-        ], [
-            "delay" => date("U") - $timestamp
-        ]);
+        $shards = $this->queues->consume("scheduled_notifications", true, 1);
+
+        foreach ($shards as $shard) {
+
+            $shard_message = $this->queues->getMessage($shard);
+
+            $token = $shard_message["token"];
+            $shard_number = $shard_message["shard"];
+            $timekey = $shard_message["timekey"];
+
+            $tasks_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
+            /** @var ScheduledTask $tokenbdd */
+            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard_number, 'id' => "token"));
+            if ($tokenbdd && $tokenbdd->getData() === $token) {
+
+                /** @var ScheduledTask[] $notifications */
+                $notifications = $tasks_repository->findBy(Array('time' => $timekey, 'shard' => $shard_number));
+                foreach ($notifications as $notification) {
+                    if ($notification->getId() == "token") {
+                        continue;
+                    }
+
+                    $timestamp = $notification->getTimestamp();
+
+                    $this->queues->push("scheduled_notifications_" . $notification->getRoute(), [
+                        "message" => $notification->getData(),
+                        "timestamp" => $timestamp
+                    ], [
+                        "delay" => date("U") - $timestamp
+                    ]);
+
+                }
+
+                // Remove counters if task finished
+
+                /** @var ScheduledCounter $counter_done */
+                $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
+                $final_value = $counter_done->getValue() + $this->bulk_size;
+                $counter_done->setIncrementValue($this->bulk_size);
+                $this->doctrine->persist($counter_done);
+                $this->doctrine->flush();
+
+                /** @var ScheduledCounter $counter_total */
+                $counter_total = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'total'));
+                if ($final_value >= $counter_total->getValue()) {
+                    $this->doctrine->remove($counter_total);
+                    $this->doctrine->remove($counter_done);
+                    $this->doctrine->flush();
+                }
+
+                // Remove shard
+                $tasks_repository->removeBy(Array('time' => $timekey, 'shard' => $shard_number));
+                $this->doctrine->flush();
+
+            }
+
+            if ($tokenbdd) {
+                $this->queues->ack("scheduled_notifications", $shard);
+            }
+
+        }
 
     }
 
     /** Get RabbitMQ notifications received at exact wanted time (sent on scheduled_notifications_[route]) */
-    public function consume()
+    public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
-
+        return $this->queues->consume("scheduled_notifications_" . $route, $should_ack, $max_messages, $message_processing);
     }
 
     /** Ack a scheduled notification from any scheduled_notifications_[route] */
-    public function ack()
+    public function ack($route, $message)
     {
-
+        $queues->ack("scheduled_notifications_" . $route, $message);
     }
 
 }

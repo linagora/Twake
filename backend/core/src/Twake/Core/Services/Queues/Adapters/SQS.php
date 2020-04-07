@@ -44,7 +44,7 @@ class SQS implements QueueManager
         );
 
         if (isset($options["delay"])) {
-            $data["DelaySeconds"] = $options["delay"];
+            $data["DelaySeconds"] = max(0, $options["delay"]);
         }
 
         $client->sendMessage($data);

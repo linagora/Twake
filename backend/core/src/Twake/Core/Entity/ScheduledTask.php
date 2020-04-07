@@ -95,5 +95,21 @@ class ScheduledTask
         $this->data = json_encode($data);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
 
 }

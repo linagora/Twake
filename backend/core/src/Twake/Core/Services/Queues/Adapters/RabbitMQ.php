@@ -42,7 +42,7 @@ class RabbitMQ implements QueueManager
             $amqp_options = [
                 'delivery_mode' => 2, # make message persistent
                 'application_headers' => new AMQPTable([
-                    'x-delay' => $options["delay"] * 1000
+                    'x-delay' => max(0, $options["delay"] * 1000)
                 ])
             ];
             $data["DelaySeconds"] = $options["delay"];
