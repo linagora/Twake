@@ -2,6 +2,7 @@
 
 namespace Twake\Drive\Services\Resumable;
 
+use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twake\Drive\Entity\UploadState;
 use Twake\Drive\Services\DriveFile;
 use Twake\Drive\Services\Storage\EncryptionBag;
@@ -39,9 +40,12 @@ class Resumable
     protected $current_user;
     protected $previews;
     protected $parameter_drive_salt;
+    /** @var QueueManager */
+    protected $queues;
 
     public function __construct(App $app)
     {
+        $this->queues = $app->getServices()->get("app.queues")->getAdapter();
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
         $this->driverefacto = $app->getServices()->get("app.drive");
@@ -170,6 +174,10 @@ class Resumable
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
                 $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
+            } else {
+                $this->queues->push("drive_preview_to_generate", [
+                    "file_id" => $fileordirectory->getId()
+                ]);
             }
             $fileToReturn = $fileordirectory->getAsArray();
             if (!$fileordirectory->getIsDirectory()) {

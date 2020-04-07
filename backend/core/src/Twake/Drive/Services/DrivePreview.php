@@ -32,9 +32,10 @@ class DrivePreview
                 mkdir($path, 0777, true);
             }
 
-//            if (filesize($file) > 50000000) { //50Mo (protection)
-//                return false;
-//            }
+            if (filesize($file) > 50000000) { //50Mo (protection)
+                return false;
+            }
+
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $filetype = finfo_file($finfo, $file);
 

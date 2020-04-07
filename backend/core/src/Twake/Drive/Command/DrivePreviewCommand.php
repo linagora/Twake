@@ -25,6 +25,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
     {
         $services = $this->getApp()->getServices();
 
+        $this->queues = $services->get("app.queues");
         $this->em = $services->get("app.twake_doctrine");
         $this->pusher = $services->get("app.pusher");
         $this->preview = $services->get("app.drive.preview");
@@ -32,50 +33,55 @@ class DrivePreviewCommand extends ContainerAwareCommand
         $this->drive_previews_tmp_folder = $this->getApp()->getContainer()->getParameter("drive_previews_tmp_folder");
         $this->storagemanager = $services->get("driveupload.storemanager");
 
-        $this->autoGenPreview($services);
+        $limit = date("U", date("U") + 60);
+
+        while (date("U") < $limit) {
+
+            $todos = $this->queues->consume("drive_preview_to_generate", true);
+            if (count($todos ?: []) == 0) {
+                sleep(1);
+            }
+            foreach ($todos ?: [] as $todo_original) {
+                $todo = $this->queues->getMessage($todo_original);
+                $this->autoGenPreview($todo["file_id"]);
+                $this->queues->ack($todo_original);
+            }
+
+        }
+
     }
 
-    public function autoGenPreview()
+    public function autoGenPreview($file_id)
     {
-        $start = microtime(true);
-        $time_elapsed_secs = 0;
+        /* @var DriveFile $file */
+        $file = $this->em->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $file_id));
+        if ($file->getSize() > 10 && $file->getSize() < 50000000) {
 
-        while ($time_elapsed_secs < 60) {
-            /* @var DriveFile $file */
-            $files = $this->em->getRepository("Twake\Drive:DriveFile")->findBy(Array("previewhasbeengenerated" => false), Array(), 50);
-            foreach ($files as $file) {
-                if ($file->getSize() > 10 && $file->getSize() < 50000000) {
+            $file->setPreviewHasBeenGenerated(true);
 
-                    $file->setPreviewHasBeenGenerated(true);
+            if (in_array(strtolower($file->getExtension()), $this->previewableExt)) {
 
-                    if (in_array(strtolower($file->getExtension()), $this->previewableExt)) {
+                $tmppath = $this->checkLocalFileForPreview($file);
 
-                        $tmppath = $this->checkLocalFileForPreview($file);
+                if (!$tmppath || !file_exists($tmppath)) {
+                    //TODO Unimplemented $tmppath = $this->oldFileSystem->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+                }
 
-                        if (!$tmppath || !file_exists($tmppath)) {
-                            //TODO Unimplemented $tmppath = $this->oldFileSystem->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
-                        }
-
-                        $res = $this->storagemanager->getAdapter()->genPreview($file, $tmppath);
-                        if ($res) {
-                            $file->setHasPreview(true);
-                        }
-
-                    }
-
-                    $this->em->persist($file);
-                    $this->em->flush();
-
-                    $this->pusher->push(Array("action" => "update_file", "file" => $file->getAsArray()), "drive/file/" . $file->getWorkspaceId() . "/" . $file->getParentId());
-
+                $res = $this->storagemanager->getAdapter()->genPreview($file, $tmppath);
+                if ($res) {
+                    $file->setHasPreview(true);
                 }
 
             }
-            $this->em->clear();
-            sleep(1);
 
-            $time_elapsed_secs = microtime(true) - $start;
+            $this->em->persist($file);
+            $this->em->flush();
+
+            $this->pusher->push(Array("action" => "update_file", "file" => $file->getAsArray()), "drive/file/" . $file->getWorkspaceId() . "/" . $file->getParentId());
+
         }
+
+
         return true;
     }
 
