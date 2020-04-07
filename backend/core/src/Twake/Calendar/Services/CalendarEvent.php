@@ -670,7 +670,7 @@ class CalendarEvent
 
         foreach ($notifications as $notification_original) {
 
-            $notification = $notification_original->getMessage();
+            $notification = $this->queues_scheduled->getMessage($notification_original);
 
             //Send notification
             /** @var EventCalendar $event */

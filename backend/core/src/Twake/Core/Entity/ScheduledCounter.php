@@ -1,6 +1,6 @@
 <?php
 
-namespace AdministrationApi\Counter\Entity;
+namespace Twake\Core\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,7 +20,7 @@ class ScheduledCounter
     private $time;
 
     /**
-     * @ORM\Column(name="date", type="string")
+     * @ORM\Column(name="type", type="string")
      * @ORM\Id
      */
     protected $type;

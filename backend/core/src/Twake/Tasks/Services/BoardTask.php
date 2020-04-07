@@ -541,7 +541,7 @@ class BoardTask
 
         foreach ($notifications as $notification_original) {
 
-            $notification = $notification_original->getMessage();
+            $notification = $this->queues_scheduled->getMessage($notification_original);
 
             //Send notification
             $task = $this->doctrine->getRepository("Twake\Tasks:Task")->findOneBy(Array("id" => $notification["task_id"]));
