@@ -5,7 +5,7 @@ namespace Twake\Core\Command;
 use Common\Commands\ContainerAwareCommand;
 use Twake\Core\Services\Queues\Scheduled;
 
-class ScheduledNotificationsConsumeShard extends ContainerAwareCommand
+class ScheduledNotificationsConsumeTimetable extends ContainerAwareCommand
 {
 
     protected function configure()

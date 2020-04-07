@@ -58,7 +58,7 @@ class Scheduled
         }
 
         //Get current counter state (if exists)
-        $counter_repository = $this->em->getRepository("Twake\Core:ScheduledCounter");
+        $counter_repository = $this->doctrine->getRepository("Twake\Core:ScheduledCounter");
         $counter = $counter_repository->findOneBy(Array('time' => $this->timeKeyFromTimestamp($timestamp), 'type' => 'total'));
         if (!$counter) {
             $counter = new ScheduledCounter($timestamp, "total", $this->time_interval);
@@ -93,7 +93,7 @@ class Scheduled
         $timekey = $this->timeKeyFromTimestamp($timestamp);
 
         //Get current counter state (if exists)
-        $counter_repository = $this->em->getRepository("Twake\Core:ScheduledCounter");
+        $counter_repository = $this->doctrine->getRepository("Twake\Core:ScheduledCounter");
         $counter_total = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'total'));
         $counter_done = $counter_repository->findOneBy(Array('time' => $timekey, 'type' => 'done'));
         //Nothing to do, no notifications
@@ -118,7 +118,7 @@ class Scheduled
                 continue;
             }
 
-            $tasks_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
+            $tasks_repository = $this->doctrine->getRepository("Twake\Core:ScheduledTask");
             $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard, 'id' => "token"));
 
             if (!$tokenbdd) {
@@ -167,7 +167,7 @@ class Scheduled
             $shard_number = $shard_message["shard"];
             $timekey = $shard_message["timekey"];
 
-            $tasks_repository = $this->em->getRepository("Twake\Core:ScheduledTask");
+            $tasks_repository = $this->doctrine->getRepository("Twake\Core:ScheduledTask");
             /** @var ScheduledTask $tokenbdd */
             $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard_number, 'id' => "token"));
             if ($tokenbdd && $tokenbdd->getData() === $token) {
