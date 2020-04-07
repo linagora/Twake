@@ -155,6 +155,8 @@ class Scheduled
     public function consumeShardsFromRabbitMQ()
     {
 
+        $done = 0;
+
         $shards = $this->queues->consume("scheduled_notifications", true, 1);
 
         foreach ($shards as $shard) {
@@ -215,7 +217,11 @@ class Scheduled
                 $this->queues->ack("scheduled_notifications", $shard);
             }
 
+            $done++;
+
         }
+
+        return $done;
 
     }
 
@@ -229,6 +235,11 @@ class Scheduled
     public function ack($route, $message)
     {
         $queues->ack("scheduled_notifications_" . $route, $message);
+    }
+
+    public function getMessage($message)
+    {
+        return ($this->queues->getMessage($message) ?: [])["message"] ?: null;
     }
 
 }

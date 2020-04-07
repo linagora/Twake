@@ -16,7 +16,7 @@ class Services extends BaseServices
         "app.translate" => "Translate",
         "app.twake_doctrine" => "DoctrineAdapter/ManagerAdapter",
         "app.queues" => "Queues/Queues",
-        "app.websockets" => "Websockets",
+        "app.queues_scheduled" => "Queues/Scheduled",
         "app.accessmanager" => "AccessManager",
         "app.exportversion" => "ExportManager",
         "app.string_cleaner" => "StringCleaner",

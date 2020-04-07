@@ -34,7 +34,7 @@ class RabbitMQ implements QueueManager
     {
         $channel = $this->getChannel();
         $channel->queue_declare($route, false, true, false, false, [
-            "x-message-ttl" => 24 * 60 * 60 * 1000 * (isset($options["delay"]) ? (20 * 365) : 1)
+            "x-message-ttl" => 24 * 60 * 60 * 1000
         ]);
 
         $amqp_options = [];

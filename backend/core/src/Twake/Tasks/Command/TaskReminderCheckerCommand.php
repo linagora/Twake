@@ -23,12 +23,16 @@ class TaskReminderCheckerCommand extends ContainerAwareCommand
 
     protected function execute()
     {
-
         $services = $this->getApp()->getServices();
 
-        $services->get("app.tasks.task")->checkReminders();
+        $limit = date("U", date("U") + 60);
 
-        @posix_kill(posix_getpid(), SIGKILL);
+        while (date("U") < $limit) {
+            $sent = $services->get("app.task.task")->checkReminders();
+            if (count($sent) == 0) {
+                sleep(1);
+            }
+        }
 
     }
 
