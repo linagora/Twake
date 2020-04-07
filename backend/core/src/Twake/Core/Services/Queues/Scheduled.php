@@ -3,12 +3,11 @@
 
 namespace Twake\Core\Services\Queues;
 
-use AdministrationApi\Counter\Entity\ScheduledCounter;
 use App\App;
 use Twake\Core\Entity\ScheduledTask;
+use Twake\Core\Entity\ScheduledCounter;
 use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
 use Twake\Core\Services\Queues\Adapters\QueueManager;
-use Twake\Core\Services\Queues\Adapters\SQS;
 
 /**
  * Class Scheduled
