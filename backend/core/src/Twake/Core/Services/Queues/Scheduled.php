@@ -124,7 +124,7 @@ class Scheduled
 
                 $token = base64_encode(bin2hex(random_bytes(32)));
 
-                $tokenbdd = new ScheduledTask();
+                $tokenbdd = new ScheduledTask($timestamp, $shard, "", "", $this->time_interval);
                 $tokenbdd->setId("token");
                 $tokenbdd->setData($token);
                 $this->doctrine->useTTLOnFirstInsert(60 * 60); //1 hour

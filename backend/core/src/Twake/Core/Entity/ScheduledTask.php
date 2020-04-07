@@ -76,7 +76,7 @@ class ScheduledTask
      */
     public function setId($id): void
     {
-        $this->id = $id;
+        $this->id = $id . "";
     }
 
     /**
