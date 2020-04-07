@@ -234,7 +234,7 @@ class Scheduled
     /** Ack a scheduled notification from any scheduled_notifications_[route] */
     public function ack($route, $message)
     {
-        $queues->ack("scheduled_notifications_" . $route, $message);
+        $this->queues->ack("scheduled_notifications_" . $route, $message);
     }
 
     public function getMessage($message)
