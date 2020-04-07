@@ -121,7 +121,7 @@ class Scheduled
             }
 
             $tasks_repository = $this->doctrine->getRepository("Twake\Core:ScheduledTask");
-            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard, 'id' => "token"));
+            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard . '', 'id' => "token"));
 
             if (!$tokenbdd) {
 
@@ -171,11 +171,11 @@ class Scheduled
 
             $tasks_repository = $this->doctrine->getRepository("Twake\Core:ScheduledTask");
             /** @var ScheduledTask $tokenbdd */
-            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard_number, 'id' => "token"));
+            $tokenbdd = $tasks_repository->findOneBy(Array('time' => $timekey, 'shard' => $shard_number . "", 'id' => "token"));
             if ($tokenbdd && $tokenbdd->getData() === $token) {
 
                 /** @var ScheduledTask[] $notifications */
-                $notifications = $tasks_repository->findBy(Array('time' => $timekey, 'shard' => $shard_number));
+                $notifications = $tasks_repository->findBy(Array('time' => $timekey, 'shard' => $shard_number . ""));
                 foreach ($notifications as $notification) {
                     if ($notification->getId() == "token") {
                         continue;
@@ -216,7 +216,7 @@ class Scheduled
                 }
 
                 // Remove shard
-                $tasks_repository->removeBy(Array('time' => $timekey, 'shard' => $shard_number));
+                $tasks_repository->removeBy(Array('time' => $timekey, 'shard' => $shard_number . ""));
                 $this->doctrine->flush();
 
             }

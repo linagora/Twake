@@ -24,7 +24,7 @@ class ScheduledTask
     private $time;
 
     /**
-     * @ORM\Column(name="shard", type="twake_bigint")
+     * @ORM\Column(name="shard", type="string")
      * @ORM\Id
      */
     private $shard;
@@ -59,7 +59,7 @@ class ScheduledTask
         $this->route = $route;
         $this->time = floor(($timestamp / $time_interval)) * $time_interval;
         $this->timestamp = $timestamp;
-        $this->shard = $shard;
+        $this->shard = $shard . "";
         $this->setData($data);
     }
 
