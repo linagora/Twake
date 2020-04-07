@@ -168,6 +168,8 @@ class PDOStatementAdapter
 
                 if ($this->types[$position + 1] == "twake_boolean") {
                     $value = (!$value) ? "0" : "1"; //Cassandra booleans are tiny ints
+                } else if ($this->types[$position + 1] == "twake_bigint") {
+                    $value = intval($value);
                 } else if ($value == NULL && !is_string($value)) {
                     $value = "NULL";
                 } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
