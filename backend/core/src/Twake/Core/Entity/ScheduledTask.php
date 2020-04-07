@@ -24,7 +24,7 @@ class ScheduledTask
     private $time;
 
     /**
-     * @ORM\Column(name="id", type="twake_bigint")
+     * @ORM\Column(name="shard", type="twake_bigint")
      * @ORM\Id
      */
     private $shard;
@@ -36,7 +36,7 @@ class ScheduledTask
     private $id;
 
     /**
-     * @ORM\Column(type="twake_bigint")
+     * @ORM\Column(name="timestamp", type="twake_bigint")
      */
     private $timestamp;
 
@@ -46,7 +46,7 @@ class ScheduledTask
     private $route;
 
     /**
-     * @ORM\Column(type="twake_text")
+     * @ORM\Column(name="data", type="twake_text")
      */
     private $data;
 
