@@ -39,7 +39,7 @@ class NotificationMailCommand extends ContainerAwareCommand
             $reminders = $scheduled->consume("mail_reminder", true);
 
             if (count($reminders ?: []) == 0) {
-                sleep(1);
+                break;
             }
 
             //Get users to notify

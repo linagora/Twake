@@ -24,7 +24,7 @@ class ReminderCheckerCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
             $sent = $services->get("app.calendar.event")->checkReminders();
-            if (count($sent) == 0) {
+            if ($sent == 0) {
                 sleep(30);
             }
         }
