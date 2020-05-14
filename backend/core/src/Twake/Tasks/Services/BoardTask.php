@@ -23,6 +23,7 @@ class BoardTask
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->notifications = $app->getServices()->get("app.notifications");
         $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
+        $this->queues_scheduled = $app->getServices()->get("app.queues_scheduled");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -534,7 +535,6 @@ class BoardTask
 
     public function checkReminders()
     {
-
         $sent = 0;
 
         $notifications = $this->queues_scheduled->consume("tasks_task", true);

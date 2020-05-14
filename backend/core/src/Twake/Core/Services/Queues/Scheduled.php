@@ -235,7 +235,8 @@ class Scheduled
     /** Get RabbitMQ notifications received at exact wanted time (sent on scheduled_notifications_[route]) */
     public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
-        return $this->queues->consume("scheduled_notifications_" . $route, $should_ack, $max_messages, $message_processing);
+        $list = $this->queues->consume("scheduled_notifications_" . $route, $should_ack, $max_messages, $message_processing);
+        return $list;
     }
 
     /** Ack a scheduled notification from any scheduled_notifications_[route] */
