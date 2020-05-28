@@ -49,15 +49,12 @@ class Parameters extends \Common\Configuration
             "db" => [
                 "driver" => "pdo_cassandra",
                 "host" => "scylladb",
-                "port" => 9160,
-                "dbname" => "Twake",
-                "user" => "root",
-                "password" => "root",
+                "port" => false,
+                "dbname" => "twake",
+                "user" => null,
+                "password" => null,
                 "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
-                "ssl" => [
-                    "node_certificate" => "path"
-                ],
-                "dev" => false
+                "dev" => true
             ],
             "push_notifications" => [
                 "apns_certificate" => __DIR__ . "/certs/apns_prod.pem",

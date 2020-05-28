@@ -4,8 +4,6 @@
 (Recommanded : use linux distribution Debian / Ubuntu)
 
 ### Step 0 - frontend
-`git submodule update --init --recursive;`
-OU
 ```
 cd frontend/
 git clone git@gitlab.com:Twake/Twake-react.git desktop
@@ -25,9 +23,7 @@ Install docker and docker-compose
 ### Step 2 - Configuration
 1. `cp backend/core/app/Configuration/Parameters.php.dist backend/core/app/Configuration/Parameters.php`
 
-2. Edit values
-
-Remove ["db"]["ssl"] key for local usage or provide ssl certificate
+2. Edit values if needed (default should work in local)
 
 /!\ If you do not use twake onpremise license key to relay mails ans push notifications, you must define a mail server config
 
