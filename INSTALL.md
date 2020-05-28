@@ -63,3 +63,12 @@ To enable OpenID, in Parameters.php, in auth list add key :
 ```
 
 To disable classic auth, remove internal key or set enable to false from auth.
+
+Be carefull, if you run Keycloak or any other provider on your local machine with twake in docker container, you must provide your machine IP and not 'localhost' as domain.
+Example: http://192.168.1.18:8080/auth/realms/master instead of http://localhost:8080/auth/realms/master
+Or you should map keycloak on Twake docker-compose network
+
+In keycloak, or other providers you must define the allowed return url for openid, the return url should be :
+http://localhost:8000/* or more precisely http://localhost:8000/ajax/users/openid/*
+
+WARNING: All profiles must have an email, and their email must be 'verified' !
