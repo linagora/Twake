@@ -38,4 +38,4 @@ If you are interested in a hosted version of Twake on our infrastructure, please
 
 ## License
 
-Twake is licensed under [Affero GPL v3] (http://www.gnu.org/licenses/agpl-3.0.html)
+Twake is licensed under [Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
