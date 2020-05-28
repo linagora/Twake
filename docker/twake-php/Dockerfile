@@ -76,12 +76,24 @@ RUN docker-php-ext-install pdo pdo_mysql
 
 # Add cassandra driver
 ENV INSTALL_DIR /usr/src/datastax-php-driver
+#RUN apt-get update && apt-get install -y libgmp-dev libpcre3-dev g++ make cmake libssl-dev openssl
+#RUN wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/dependenices/libuv/v1.8.0/libuv_1.8.0-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/dependenices/libuv/v1.8.0/libuv-dev_1.8.0-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/v2.4.1/cassandra-cpp-driver_2.4.1-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/v2.4.1/cassandra-cpp-driver-dev_2.4.1-1_amd64.deb
+#RUN dpkg -i libuv_1.8.0-1_amd64.deb && dpkg -i libuv-dev_1.8.0-1_amd64.deb && dpkg -i cassandra-cpp-driver-dev_2.4.1-1_amd64.deb && dpkg -i cassandra-cpp-driver_2.4.1-1_amd64.deb
+
+RUN apt-get update && apt-get install -y libgmp-dev libpcre3-dev g++ make cmake libssl-dev openssl
+RUN wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/dependencies/libuv/v1.8.0/libuv_1.8.0-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/dependencies/libuv/v1.8.0/libuv-dev_1.8.0-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/cassandra/v2.4.1/cassandra-cpp-driver_2.4.1-1_amd64.deb && wget http://downloads.datastax.com/cpp-driver/ubuntu/16.04/cassandra/v2.4.1/cassandra-cpp-driver-dev_2.4.1-1_amd64.deb
+#RUN apt-get update && apt-get install -y libssl
+RUN echo "deb http://security.debian.org/debian-security jessie/updates main" >> /etc/apt/sources.list
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    libssl1.0.0
+RUN dpkg -i --force-overwrite libuv_1.8.0-1_amd64.deb && dpkg -i --force-overwrite libuv-dev_1.8.0-1_amd64.deb && dpkg -i --force-overwrite cassandra-cpp-driver_2.4.1-1_amd64.deb && dpkg -i --force-overwrite cassandra-cpp-driver-dev_2.4.1-1_amd64.deb
+
 RUN apt-get update && apt-get install -y cmake autoconf g++ gcc make openssl libssl-dev libuv1-dev libgmp-dev \
-    && apt-get install -y libgmp10 \
-    && git clone https://github.com/datastax/php-driver.git $INSTALL_DIR \
+    && apt-get install -y libgmp10
+RUN git clone https://github.com/datastax/php-driver.git $INSTALL_DIR \
     && cd $INSTALL_DIR \
-    && git submodule update --init \
-    && cd ext && ./install.sh \
+    && git submodule update --init
+RUN cd ext && ./install.sh \
     && docker-php-ext-enable cassandra \
     && rm -rf $INSTALL_DIR
 

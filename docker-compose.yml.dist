@@ -12,8 +12,7 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
     command: "--experimental 1"
   php:
-    image: twake-php
-    build: docker/twake-php
+    image: twaketech/twake-php
     volumes:
       - ./backend/core/:/twake-core:cached
       - ./docker-data/fpm/:/etc/docker-data/fpm/
@@ -24,8 +23,7 @@ services:
       - websockets
       - scylladb
   websockets:
-    image: twake-websockets
-    build: docker/twake-websockets
+    image: twaketech/twake-websockets
     volumes:
       - ./backend/websockets_server:/WebsocketsServer
   elasticsearch_twake:
@@ -44,8 +42,7 @@ services:
     ports:
       - 9200:9200
   nginx:
-    image: twake-nginx
-    build: docker/twake-nginx
+    image: twaketech/twake-nginx
     ports:
       - 8000:80
     links:
