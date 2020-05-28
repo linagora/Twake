@@ -106,9 +106,14 @@ class SessionHandler
 
     public function setCookiesInResponse(Response $response)
     {
-        foreach ($this->cookiesToSet as $cookie) {
+        foreach ($this->getCookies() as $cookie) {
             $response->setCookie($cookie);
         }
+    }
+
+    public function getCookies()
+    {
+        return $this->cookiesToSet;
     }
 
     public function checkRequest(Request $request, Response $response = null)

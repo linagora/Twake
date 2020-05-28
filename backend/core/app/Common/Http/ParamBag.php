@@ -22,6 +22,11 @@ class ParamBag
         return isset($this->array[$key]) ? $this->array[$key] : $default;
     }
 
+    public function has($key)
+    {
+        return isset($this->array[$key]);
+    }
+
     public function getBoolean($key, $default = false)
     {
         return isset($this->array[$key]) ? !!$this->array[$key] : $default;

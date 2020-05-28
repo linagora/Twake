@@ -14,8 +14,19 @@ class Version extends BaseController
     function getVersion(Request $request)
     {
 
+        $auth = [];
+        if ($this->getParameter("auth.internal.use")) {
+            $auth[] = "internal";
+        }
+        if ($this->getParameter("auth.cas.use")) {
+            $auth[] = "cas";
+        }
+        if ($this->getParameter("auth.openid.use")) {
+            $auth[] = "openid";
+        }
+
         $data = Array(
-            "use_cas" => false,
+            "auth_mode" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("ELASTIC_SERVER"),
             "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161",
             "websocket_public_key" => $this->container->getParameter("websocket.pusher_public"),

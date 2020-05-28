@@ -4,6 +4,7 @@ namespace Twake\Tasks\Services;
 
 
 use Twake\Core\CommonObjects\AttachementManager;
+use Twake\Notifications\Entity\Notification;
 use Twake\Tasks\Entity\Board;
 use Twake\Tasks\Entity\Task;
 use Twake\Tasks\Entity\TaskBoard;
@@ -22,6 +23,7 @@ class BoardTask
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->notifications = $app->getServices()->get("app.notifications");
         $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
+        $this->queues_scheduled = $app->getServices()->get("app.queues_scheduled");
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -261,6 +263,11 @@ class BoardTask
     {
 
         $notifications = $notifications ? $notifications : [];
+        $token = base64_encode(bin2hex(random_bytes(32)));
+
+        foreach ($notifications as $index => $notification) {
+            $notifications[$index]["token"] = $token;
+        }
 
         $has_before = true;
         if (!$task->getBefore() || $task->getBefore() < date("U")) {
@@ -269,7 +276,6 @@ class BoardTask
         }
 
         $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);
-        $current_notifications = $task->getNotifications();
         $task->setNotifications($updated_notifications);
         $this->doctrine->persist($task);
 
@@ -277,7 +283,8 @@ class BoardTask
             //Add deadline
             $updated_notifications[] = Array(
                 "delay" => 0,
-                "mode" => "push"
+                "mode" => "push",
+                "token" => $token
             );
         }
 
@@ -285,23 +292,14 @@ class BoardTask
             //Add start time as notification
             $updated_notifications[] = Array(
                 "delay" => $has_before ? ($task->getBefore() - $task->getStartTime()) : ($task->getStartTime()),
-                "mode" => "push"
+                "mode" => "push",
+                "token" => $token
             );
         }
 
-        $get_diff = $this->getArrayDiffUsingKeys($updated_notifications, $current_notifications, ["delay", "mode"]);
+        $this->doctrine->flush();
 
-        if (count($get_diff["del"]) > 0 || $replace_all) {
-            $notifications_in_task = $this->doctrine->getRepository("Twake\Tasks:TaskNotification")->findBy(Array("task_id" => $task->getId()));
-            foreach ($notifications_in_task as $notification) {
-                if ($replace_all || !$this->inArrayUsingKeys($get_diff["del"], ["delay" => $notification->getDelay(), "mode" => $notification->getMode()], ["mode", "delay"]) || $replace_all) {
-                    //Remove old notifications
-                    $this->doctrine->remove($notification);
-                }
-            }
-        }
-
-        foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
+        foreach ($updated_notifications as $notification) {
             if ($has_before) {
                 $notification_date = $task->getBefore() - $notification["delay"];
                 $delay = $notification["delay"];
@@ -309,11 +307,18 @@ class BoardTask
                 $notification_date = $notification["delay"];
                 $delay = "0";
             }
-            $notification = new TaskNotification($task->getId(), $delay, $notification_date, $notification["mode"]);
-            $this->doctrine->persist($notification);
-        }
 
-        $this->doctrine->flush();
+            if ($notification_date < date("U")) {
+                continue;
+            }
+
+            $this->queues_scheduled->schedule("tasks_task", $notification_date, [
+                "token" => $token,
+                "task_id" => $task->getId(),
+                "delay" => $delay,
+                "mode" => $notification["mode"]
+            ]);
+        }
 
     }
 
@@ -530,88 +535,107 @@ class BoardTask
 
     public function checkReminders()
     {
+        $sent = 0;
 
-        $when_ts_week = floor(date("U") / (7 * 24 * 60 * 60));
+        $notifications = $this->queues_scheduled->consume("tasks_task", true);
 
-        $notifications = $this->doctrine->getRepository("Twake\Tasks:TaskNotification")->findRange(Array("when_ts_week" => $when_ts_week));//, "when_ts", date("U") - 60 * 60, date("U") + 60 * 45);
+        foreach ($notifications ?: [] as $notification_original) {
 
-        foreach ($notifications as $notification) {
+            $notification = $this->queues_scheduled->getMessage($notification_original);
 
-            if ($notification->getWhenTs() <= date("U") + 60 * 5) {
-                //Send notification
-                $task = $this->doctrine->getRepository("Twake\Tasks:Task")->findOneBy(Array("id" => $notification->getTaskId()));
+            //Send notification
+            $task = $this->doctrine->getRepository("Twake\Tasks:Task")->findOneBy(Array("id" => $notification["task_id"]));
 
-                $is_deadline = false;
-                if ($task->getBefore() && abs($task->getBefore() - ($notification->getWhenTs() + $notification->getDelay())) < 60) {
-                    $is_deadline = true;
+            if ($task) {
+
+                $existing_notifications = $task->getNotifications();
+                $valid_notification = false;
+                foreach ($existing_notifications as $existing_notification) {
+                    //Verify this received notification exists in calendar event
+                    if ($existing_notification["token"] == $notification["token"]) {
+                        $valid_notification = true;
+                    }
                 }
 
-                if (!$task->getArchived()) {
+                if ($valid_notification) {
 
-                    $delay = floor($notification->getDelay() / 60) . "min";
-                    if ($notification->getDelay() > 60 * 60) {
-                        $delay = floor($notification->getDelay() / (60 * 60)) . "h";
-                    }
-                    if ($notification->getDelay() > 60 * 60 * 24) {
-                        $delay = floor($notification->getDelay() / (60 * 60 * 24)) . "j";
-                    }
-                    if ($notification->getDelay() > 60 * 60 * 24 * 7 * 2) {
-                        $delay = floor($notification->getDelay() / (60 * 60 * 24 * 7)) . "w";
+                    $is_deadline = false;
+                    if ($task->getBefore() && abs($task->getBefore() - ($notification->getWhenTs() + $notification["delay"])) < 60) {
+                        $is_deadline = true;
                     }
 
-                    $title = "Untitled";
-                    if ($task->getTitle()) {
-                        $title = $task->getTitle();
-                    }
-                    $text = $title . ($is_deadline ? " (deadline)" : "") . ($delay > 0 ? (" in " . $delay) : "");
+                    if (!$task->getArchived()) {
 
-                    $participants = $task->getParticipants();
-
-                    foreach ($participants as $participant) {
-                        if ($notification->getMode() == "mail" || !$notification->getMode()) {
-                            $mail = $participant["user_id_or_mail"];
-                            $language = false;
-                            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
-                                $mail = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
-                                if ($mail) {
-                                    $language = $mail->getLanguage();
-                                    $mail = $mail->getEMail();
-                                } else {
-                                    $mail = null;
-                                }
-                            }
-                            //Mail
-                            if ($mail) {
-                                $this->notifications->sendCustomMail(
-                                    $mail, "task_notification", Array(
-                                        "_language" => $language ? $language : "en",
-                                        "text" => $text,
-                                        "delay" => $delay,
-                                        "task" => $task->getAsArray()
-                                    )
-                                );
-                            }
+                        $delay = floor($notification["delay"] / 60) . "min";
+                        if ($notification["delay"] > 60 * 60) {
+                            $delay = floor($notification["delay"] / (60 * 60)) . "h";
                         }
-                        if ($notification->getMode() == "push" || !$notification->getMode()) {
-                            //Push notification
-                            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
-                                $user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
-                                if ($user) {
-                                    $this->notifications->pushDevice(
-                                        $user, $text, "📋 Tasks notification"
+                        if ($notification["delay"] > 60 * 60 * 24) {
+                            $delay = floor($notification["delay"] / (60 * 60 * 24)) . "j";
+                        }
+                        if ($notification["delay"] > 60 * 60 * 24 * 7 * 2) {
+                            $delay = floor($notification["delay"] / (60 * 60 * 24 * 7)) . "w";
+                        }
+
+                        $title = "Untitled";
+                        if ($task->getTitle()) {
+                            $title = $task->getTitle();
+                        }
+                        $text = $title . ($is_deadline ? " (deadline)" : "") . ($delay > 0 ? (" in " . $delay) : "");
+
+                        $participants = $task->getParticipants();
+
+                        foreach ($participants as $participant) {
+                            if ($notification["mode"] == "mail" || !$notification["mode"]) {
+                                $mail = $participant["user_id_or_mail"];
+                                $language = false;
+                                if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                                    $mail = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                                    if ($mail) {
+                                        $language = $mail->getLanguage();
+                                        $mail = $mail->getEMail();
+                                    } else {
+                                        $mail = null;
+                                    }
+                                }
+                                //Mail
+                                if ($mail) {
+                                    $this->notifications->sendCustomMail(
+                                        $mail, "task_notification", Array(
+                                            "_task_id" => $notification->getId(),
+                                            "_language" => $language ? $language : "en",
+                                            "text" => $text,
+                                            "delay" => $delay,
+                                            "task" => $task->getAsArray()
+                                        )
                                     );
                                 }
                             }
+                            if ($notification["mode"] == "push" || !$notification["mode"]) {
+                                //Push notification
+                                if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                                    $user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                                    if ($user) {
+                                        $this->notifications->pushDevice(
+                                            $user, $text, "📋 Tasks notification", null, Array(
+                                                "_task_id" => $notification->getId()
+                                            )
+                                        );
+                                    }
+                                }
+                            }
                         }
                     }
-
                 }
-
-                //remove notification (we can remove it because it is stored in task cache anyway)
-                $this->doctrine->remove($notification);
-                $this->doctrine->flush();
             }
+
+
+            $sent++;
+            $this->queues_scheduled->ack("tasks_task", $notification_original);
+
         }
+
+        return $sent;
 
     }
 

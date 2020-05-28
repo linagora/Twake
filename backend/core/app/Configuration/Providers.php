@@ -9,7 +9,7 @@ class Providers
             "services" => [
                 "db"
             ],
-            "register" => "Silex\Provider\DoctrineServiceProvider",
+            "register" => "Twake\Core\Services\DoctrineAdapter\DoctrineServiceProvider",
         ]
     ];
 

@@ -8,14 +8,18 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # m h dom mon dow user  command
-0 *     * * *   root    cd /twake-core/; php bin/console twake:cron;
-1 0     * * *   root    cd /twake-core/; php bin/console twake:cronDaily;
 1 0     * * *   root    cd /twake-core/; php bin/console twake:daily;
-*/15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_check;
-*/15 *	* * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
-#*/15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_synchronization;
-* *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue ;
-*/10 *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:mails_queue;
+
+* *     * * *   root    cd /twake-core/; php bin/console twake:calendar_check;
+* *     * * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
+
+* *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;
+
 * *     * * *   root    cd /twake-core/; php bin/console twake:preview_worker;
-* *     * * *   root    cd /twake-core/; php bin/console twake:check_zmq_queue;
+
+* *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_timetable
+* *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_shard
+
 32 *	  * * *	  root	  kill -USR2 1;

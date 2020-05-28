@@ -129,5 +129,7 @@ docker-compose.yml
 /web/detached/*
 /drive/*
 /app/Configuration/Parameters.php
+/app/Configuration/certs/apns_prod.pem
+/app/Configuration/certs/apns_dev.pem
 /cache/
 /backend/core/vendor/

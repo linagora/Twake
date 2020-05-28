@@ -56,7 +56,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
-    public function findRange(Array $filters, $order_field = null, $min = null, $max = null, $view_to_use = null)
+    public function findRange(Array $filters, $limit = false, $order_field = null, $min = null, $max = null, $view_to_use = null)
     {
 
         try {
@@ -108,6 +108,10 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
             if ($view_to_use) {
                 $this->_em->getConnection()->getWrappedConnection()->changeTableToView($view_to_use);
+            }
+
+            if ($limit) {
+                $qb = $qb->setMaxResults(abs($limit));
             }
 
             $qb = $qb->getQuery();

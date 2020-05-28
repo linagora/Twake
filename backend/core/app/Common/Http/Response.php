@@ -2,6 +2,8 @@
 
 namespace Common\Http;
 
+use WebSocket\Exception;
+
 class Response
 {
 
@@ -50,6 +52,7 @@ class Response
     public function getContent()
     {
         if (is_array($this->content)) {
+            $this->content["_cookies"] = $this->getCookiesValues();
             return json_encode($this->content);
         }
         return $this->content;

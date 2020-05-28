@@ -5,8 +5,11 @@ namespace Twake\Users\Services;
 use App\App;
 use Common\Http\Request;
 use Common\Http\Response;
+use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
 use Twake\Core\Services\Translate;
+use Twake\Upload\Entity\File;
 use Twake\Users\Entity\Device;
+use Twake\Users\Entity\ExternalUserRepository;
 use Twake\Users\Entity\Mail;
 use Twake\Users\Entity\VerificationNumberMail;
 
@@ -21,6 +24,7 @@ class User
 
     /* @var Translate $translate */
     var $translate;
+    /** @var ManagerAdapter */
     private $em;
     private $pusher;
     private $core_remember_me_manager;
@@ -67,11 +71,98 @@ class User
         }
     }
 
-    public function loginWithUsernameOnly($usernameOrMail, Response $response)
+    /**
+     * @param $service_id
+     * @param $external_id
+     * @return null|\Twake\Users\Entity\User
+     */
+    public function getUserFromExternalRepository($service_id, $external_id)
+    {
+
+        $extRepository = $this->em->getRepository("Twake\Users:ExternalUserRepository");
+        /** @var ExternalUserRepository $user_link */
+        $user_link = $extRepository->findOneBy(Array("service_id" => $service_id, "external_id" => $external_id));
+
+        if (!$user_link) {
+            return null;
+        } else {
+            $user_id = $user_link->getUserId();
+            $userRepository = $this->em->getRepository("Twake\Users:User");
+            /** @var \Twake\Users\Entity\User $user */
+            $user = $userRepository->find($user_id);
+            if (!$user) {
+                $this->em->remove($user_link);
+            }
+            return $user;
+        }
+
+    }
+
+    public function loginFromService($service_id, $external_id, $email, $username, $fullname, $picture)
+    {
+        $user = $this->getUserFromExternalRepository($service_id, $external_id);
+
+        if (!$user) {
+            //Subscribe user
+
+            //Find allowed username / email
+            $counter = 1;
+            $original_username = $username;
+            do {
+                $res = $this->getAvaibleMailPseudo($email, $username);
+                if ($res !== true) {
+                    if (in_array(-1, $res)) {
+                        //Mail used
+                        return false;
+                    }
+                    if (in_array(-2, $res)) {
+                        //Username used
+                        $username = $original_username . $counter;
+                    }
+                }
+                $counter++;
+            } while (!$res);
+
+            $user = new \Twake\Users\Entity\User();
+            $user->setSalt(bin2hex(random_bytes(40)));
+            $encoder = $this->encoder;
+            $user->setPassword($encoder->encodePassword(bin2hex(random_bytes(40)), $user->getSalt()));
+            $user->setUsername($username);
+            $user->setMailVerified(true);
+            $user->setEmail($email);
+            $this->em->persist($user);
+            $user->setLanguage("en");
+            $user->setPhone("");
+
+            $ext_link = new ExternalUserRepository($service_id, $external_id, $user->getId());
+            $this->em->persist($ext_link);
+
+        }
+
+        $user->setIdentityProvider($service_id);
+        $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
+        $user->setLastName(@explode(" ", $fullname)[1] ?: "");
+
+        if (!$user->getThumbnail() || $user->getThumbnail()->getPublicLink() != $picture) {
+            if ($user->getThumbnail()) {
+                $this->em->remove($user->getThumbnail());
+            }
+            $thumbnail = new File();
+            $thumbnail->setPublicLink($picture);
+            $user->setThumbnail($thumbnail);
+            $this->em->persist($thumbnail);
+        }
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $this->loginWithUsernameOnly($user->getusernameCanonical());
+    }
+
+    public function loginWithUsernameOnly($usernameOrMail, Response $response = null)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
-
 
         $userRepository = $this->em->getRepository("Twake\Users:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
@@ -226,39 +317,11 @@ class User
         return false;
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $recaptcha, $language, $origin = "", $force = false)
-    {
-        $mail = $this->string_cleaner->simplifyMail($mail);
-        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
-
-        $avaible = $this->getAvaibleMailPseudo($mail, $pseudo);
-        if (is_bool($avaible) && !$avaible) {
-            return $avaible;
-        }
-        if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            return false;
-        }
-        if (!($force || $this->testRecaptcha($recaptcha))) {
-            return false;
-        }
-
-        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false, false);
-        $user = $this->verifyMail($mail, $token, "", true);
-        if ($user == null || $user == false) {
-            return false;
-        }
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setPhone($phone);
-        $user->setLanguage($language);
-        $user->setCreationDate(new \DateTime());
-        $user->setOrigin($origin);
-        $this->em->persist($user);
-        $this->em->flush();
-
-        return $user;
-    }
-
+    /**
+     * @param $mail
+     * @param $pseudo
+     * @return [-1, -2] | true (-1 is bad mail, -2 is bad username)
+     */
     public function getAvaibleMailPseudo($mail, $pseudo)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
@@ -292,60 +355,6 @@ class User
             return true;
         }
         return $retour;
-    }
-
-    public function testRecaptcha($recaptcha)
-    {
-        if ($this->standalone) {
-
-            return $this->verifyReCaptcha($recaptcha, $_SERVER['REMOTE_ADDR']);
-
-        } else {
-
-            $masterServer = "https://app.twakeapp.com/api/remote";
-            $data = Array(
-                "licenceKey" => $this->licenceKey,
-                "client_ip" => $_SERVER['REMOTE_ADDR'],
-                "recaptcha" => $recaptcha
-            );
-            $result = $this->restClient->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-            $result = json_decode($result->getContent(), true);
-
-            if (isset($result["status"])) {
-                return $result["status"];
-            }
-            return false;
-
-        }
-
-    }
-
-    public function verifyReCaptcha($recaptcha, $client_ip)
-    {
-
-        if ($recaptcha == "phone_app_no_verification") {
-            return true;
-        }
-
-        //[REMOVE_ONPREMISE]
-
-        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-
-        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-            . $secret
-            . "&response=" . $recaptcha
-            . "&remoteip=" . $client_ip;
-
-        $decode = json_decode(file_get_contents($api_url), true);
-
-        if (isset($decode["success"])) {
-            return true;
-        }
-
-        //[/REMOVE_ONPREMISE]
-
-        return false;
-
     }
 
     public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language, $newsletter = false, $sendEmail = true)

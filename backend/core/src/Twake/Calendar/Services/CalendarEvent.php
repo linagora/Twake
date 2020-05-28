@@ -8,9 +8,13 @@ use Twake\Calendar\Entity\EventCalendar;
 use Twake\Calendar\Entity\EventNotification;
 use Twake\Calendar\Entity\EventUser;
 use Twake\Core\CommonObjects\AttachementManager;
+use Twake\Core\Services\Queues\Scheduled;
 
 class CalendarEvent
 {
+
+    /** @var Scheduled */
+    var $queues_scheduled;
 
     public function __construct(App $app)
     {
@@ -19,6 +23,7 @@ class CalendarEvent
         $this->enc_pusher = $app->getServices()->get("app.websockets");
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->notifications = $app->getServices()->get("app.notifications");
+        $this->queues_scheduled = $app->getServices()->get("app.queues_scheduled");
         $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 
@@ -59,7 +64,7 @@ class CalendarEvent
                 $workspace_id = $object["workspace_id"];
                 $calendar_id = $object["calendar_id"];
                 if ($calendar_id && $workspace_id) {
-                    $events_links = array_merge($events_links, $this->doctrine->getRepository("Twake\Calendar:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), "sort_date", $after_ts, $before_ts));
+                    $events_links = array_merge($events_links, $this->doctrine->getRepository("Twake\Calendar:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), false, "sort_date", $after_ts, $before_ts));
                 }
             }
 
@@ -76,7 +81,7 @@ class CalendarEvent
 
             $events_links = [];
             foreach (($options["users_ids_or_mails"] ? $options["users_ids_or_mails"] : []) as $user_id_or_mail) {
-                $events_links = array_merge($events_links, $this->doctrine->getRepository("Twake\Calendar:EventUser")->findRange(Array("user_id_or_mail" => $user_id_or_mail), "sort_date", $after_ts, $before_ts));
+                $events_links = array_merge($events_links, $this->doctrine->getRepository("Twake\Calendar:EventUser")->findRange(Array("user_id_or_mail" => $user_id_or_mail), false, "sort_date", $after_ts, $before_ts));
             }
 
             foreach ($events_links as $event_link) {
@@ -109,7 +114,6 @@ class CalendarEvent
         }
 
         $entities = $this->doctrine->getRepository("Twake\Calendar:EventCalendar")->findBy(Array("event_id" => $id));
-        $entities = array_merge($entities, $this->doctrine->getRepository("Twake\Calendar:EventNotification")->findBy(Array("event_id" => $id)));
         $entities = array_merge($entities, $this->doctrine->getRepository("Twake\Calendar:EventUser")->findBy(Array("event_id" => $id)));
         foreach ($entities as $entity) {
             $this->doctrine->remove($entity);
@@ -623,30 +627,29 @@ class CalendarEvent
     {
 
         $notifications = $notifications ? $notifications : [];
+        $token = base64_encode(bin2hex(random_bytes(32)));
+
+        foreach ($notifications as $index => $notification) {
+            $notifications[$index]["token"] = $token;
+        }
 
         $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);
-        $current_notifications = $event->getNotifications();
         $event->setNotifications($updated_notifications);
         $this->doctrine->persist($event);
-
-        $get_diff = $this->getArrayDiffUsingKeys($updated_notifications, $current_notifications, ["delay", "mode"]);
-
-        if (count($get_diff["del"]) > 0 || $replace_all) {
-            $notifications_in_event = $this->doctrine->getRepository("Twake\Calendar:EventNotification")->findBy(Array("event_id" => $event->getId()));
-            foreach ($notifications_in_event as $notification) {
-                if (!$this->inArrayUsingKeys($get_diff["del"], ["delay" => $notification->getDelay(), "mode" => $notification->getMode()], ["mode", "delay"]) || $replace_all) {
-                    //Remove old participants
-                    $this->doctrine->remove($notification);
-                }
-            }
-        }
-
-        foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
-            $notification = new EventNotification($event->getId(), $notification["delay"], $event->getFrom() - $notification["delay"], $notification["mode"]);
-            $this->doctrine->persist($notification);
-        }
-
         $this->doctrine->flush();
+
+        foreach ($updated_notifications as $notification) {
+            if ($event->getFrom() - $notification["delay"] < date("U")) {
+                continue;
+            }
+
+            $this->queues_scheduled->schedule("calendar_events", $event->getFrom() - $notification["delay"], [
+                "token" => $token,
+                "event_id" => $event->getId(),
+                "delay" => $notification["delay"],
+                "mode" => $notification["mode"]
+            ]);
+        }
 
     }
 
@@ -661,79 +664,98 @@ class CalendarEvent
     public function checkReminders()
     {
 
-        $when_ts_week = floor(date("U") / (7 * 24 * 60 * 60));
+        $sent = 0;
 
-        $notifications = $this->doctrine->getRepository("Twake\Calendar:EventNotification")->findRange(Array("when_ts_week" => $when_ts_week));//, "when_ts", date("U") - 60 * 60, date("U") + 60 * 45);
+        $notifications = $this->queues_scheduled->consume("calendar_events", true);
 
-        foreach ($notifications as $notification) {
+        foreach ($notifications ?: [] as $notification_original) {
 
-            if ($notification->getWhenTs() <= date("U") + 60 * 5) {
-                //Send notification
-                $event = $this->doctrine->getRepository("Twake\Calendar:Event")->findOneBy(Array("id" => $notification->getEventId()));
+            $notification = $this->queues_scheduled->getMessage($notification_original);
 
+            //Send notification
+            /** @var EventCalendar $event */
+            $event = $this->doctrine->getRepository("Twake\Calendar:Event")->findOneBy(Array("id" => $notification["event_id"]));
 
-                $delay = floor($notification->getDelay() / 60) . "min";
-                if ($notification->getDelay() > 60 * 60) {
-                    $delay = floor($notification->getDelay() / (60 * 60)) . "h";
-                }
-                if ($notification->getDelay() > 60 * 60 * 24) {
-                    $delay = floor($notification->getDelay() / (60 * 60 * 24)) . "j";
-                }
-                if ($notification->getDelay() > 60 * 60 * 24 * 7 * 2) {
-                    $delay = floor($notification->getDelay() / (60 * 60 * 24 * 7)) . "w";
-                }
+            if ($event) {
 
-                $title = "Untitled";
-                if ($event->getTitle()) {
-                    $title = $event->getTitle();
-                }
-                $text = $title . " in " . $delay;
-
-                $participants = $event->getParticipants();
-
-                foreach ($participants as $participant) {
-                    if ($notification->getMode() == "mail" || !$notification->getMode()) {
-                        $mail = $participant["user_id_or_mail"];
-                        $language = false;
-                        if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
-                            $mail = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
-                            if ($mail) {
-                                $language = $mail->getLanguage();
-                                $mail = $mail->getEMail();
-                            } else {
-                                $mail = null;
-                            }
-                        }
-                        //Mail
-                        if ($mail) {
-                            $this->notifications->sendCustomMail(
-                                $mail, "event_notification", Array(
-                                    "_language" => $language ? $language : "en",
-                                    "text" => $text,
-                                    "delay" => $delay,
-                                    "event" => $event->getAsArray()
-                                )
-                            );
-                        }
+                $existing_notifications = $event->getNotifications();
+                $valid_notification = false;
+                foreach ($existing_notifications as $existing_notification) {
+                    //Verify this received notification exists in calendar event
+                    if ($existing_notification["token"] == $notification["token"]) {
+                        $valid_notification = true;
                     }
-                    if ($notification->getMode() == "push" || !$notification->getMode()) {
-                        //Push notification
-                        if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
-                            $user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
-                            if ($user) {
-                                $this->notifications->pushDevice(
-                                    $user, $text, "📅 Calendar notification"
+                }
+
+                if ($valid_notification) {
+
+                    $delay = floor($notification["delay"] / 60) . "min";
+                    if ($notification["delay"] > 60 * 60) {
+                        $delay = floor($notification["delay"] / (60 * 60)) . "h";
+                    }
+                    if ($notification["delay"] > 60 * 60 * 24) {
+                        $delay = floor($notification["delay"] / (60 * 60 * 24)) . "j";
+                    }
+                    if ($notification["delay"] > 60 * 60 * 24 * 7 * 2) {
+                        $delay = floor($notification["delay"] / (60 * 60 * 24 * 7)) . "w";
+                    }
+
+                    $title = "Untitled";
+                    if ($event->getTitle()) {
+                        $title = $event->getTitle();
+                    }
+                    $text = $title . " in " . $delay;
+
+                    $participants = $event->getParticipants();
+
+                    foreach ($participants as $participant) {
+                        if ($notification["mode"] == "mail" || !$notification["mode"]) {
+                            $mail = $participant["user_id_or_mail"];
+                            $language = false;
+                            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                                $mail = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                                if ($mail) {
+                                    $language = $mail->getLanguage();
+                                    $mail = $mail->getEMail();
+                                } else {
+                                    $mail = null;
+                                }
+                            }
+                            //Mail
+                            if ($mail) {
+                                $this->notifications->sendCustomMail(
+                                    $mail, "event_notification", Array(
+                                        "_language" => $language ? $language : "en",
+                                        "text" => $text,
+                                        "delay" => $delay,
+                                        "event" => $event->getAsArray()
+                                    )
                                 );
                             }
                         }
+                        if ($notification["mode"] == "push" || !$notification["mode"]) {
+                            //Push notification
+                            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                                $user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                                if ($user) {
+                                    $this->notifications->pushDevice(
+                                        $user, $text, "📅 Calendar notification", null
+                                    );
+                                }
+                            }
+                        }
                     }
+
                 }
 
-                //remove notification (we can remove it because it is stored in event cache anyway)
-                $this->doctrine->remove($notification);
-                $this->doctrine->flush();
             }
+
+            $sent++;
+            $this->queues_scheduled->ack("calendar_events", $notification_original);
+
         }
+
+        return $sent;
 
     }
 

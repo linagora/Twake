@@ -6,6 +6,9 @@ namespace Twake\Notifications\Services;
 use App\App;
 use Emojione\Client;
 use Emojione\Ruleset;
+use Twake\Core\Services\DoctrineAdapter\ManagerAdapter;
+use Twake\Core\Services\Queues\Adapters\QueueManager;
+use Twake\Core\Services\Queues\Scheduled;
 use Twake\Notifications\Entity\MailNotificationQueue;
 use Twake\Notifications\Entity\Notification;
 use Twake\Notifications\Entity\PushNotificationQueue;
@@ -21,15 +24,22 @@ use Twake\Users\Entity\User;
 class Notifications
 {
 
+    /** @var ManagerAdapter */
     var $doctrine;
     var $circle;
     var $pushNotificationServer;
     var $standalone;
     var $licenceKey;
+    /** @var QueueManager */
+    var $queues;
+    /** @var Scheduled */
+    var $scheduled_queues;
 
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+        $this->queues = $app->getServices()->get("app.queues")->getAdapter();
+        $this->scheduled_queues = $app->getServices()->get("app.queues_scheduled");
         $this->pusher = $app->getServices()->get("app.websockets");
         $this->mailer = $app->getServices()->get("app.twake_mailer");
         $this->circle = $app->getServices()->get("app.restclient");
@@ -275,31 +285,11 @@ class Notifications
 
     }
 
-    /**
-     * @param $user User
-     */
-    private function addMailReminder($user)
-    {
-
-        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
-        $this->doctrine->persist($user);
-
-        $repo = $this->doctrine->getRepository("Twake\Notifications:MailNotificationQueue");
-        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
-        if (!$reminder) {
-            $reminder = new MailNotificationQueue($user->getId());
-            $this->doctrine->persist($reminder);
-        }
-
-        $this->doctrine->flush();
-
-    }
-
     public function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
     {
 
         $devicesRepo = $this->doctrine->getRepository("Twake\Users:Device");
-        $devices = $devicesRepo->findBy(Array("user" => $user));
+        $devices = $devicesRepo->findBy(Array("user_id" => $user->getId()));
 
         $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
         $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
@@ -335,18 +325,11 @@ class Notifications
             "data" => json_encode($_data),
             "badge" => $badge,
             "device_id" => $deviceId,
-            "type" => $type
+            "type" => $type,
+            "_task_id" => $_data["_task_id"] //Anti duplicate
         );
 
-        try {
-            $element = new PushNotificationQueue($data);
-            $this->doctrine->persist($element);
-            if ($doPush) {
-                $this->doctrine->flush();
-            }
-        } catch (\Exception $exception) {
-            error_log("ERROR in pushDeviceInternal");
-        }
+        $this->queues->push("push_notification", $data);
     }
 
     public function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
@@ -521,6 +504,37 @@ class Notifications
             $this->doctrine->remove($reminder);
             $this->doctrine->flush();
         }
+
+    }
+
+    /**
+     * @param $user User
+     */
+    private function addMailReminder($user)
+    {
+
+        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
+        $this->doctrine->persist($user);
+
+        $repo = $this->doctrine->getRepository("Twake\Notifications:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if (!$reminder) {
+            $token = base64_encode(bin2hex(random_bytes(32)));
+
+            $reminder = new MailNotificationQueue($user->getId());
+            $reminder->setToken($token);
+            $this->doctrine->useTTLOnFirstInsert(60 * 60 * 24);
+            $this->doctrine->persist($reminder);
+
+            $this->scheduled_queues->schedule("mail_reminder", date("U") + 60 * 60 * 12, [
+                "token" => $token,
+                "user_id" => $user->getId(),
+                "id" => $reminder->getId()
+            ]);
+
+        }
+
+        $this->doctrine->flush();
 
     }
 

@@ -27,9 +27,10 @@ class ManagerAdapter
             "driver" => $app->getContainer()->getParameter("db.driver"),
             "host" => $app->getContainer()->getParameter("db.host"),
             "port" => $app->getContainer()->getParameter("db.port"),
-            "username" => $app->getContainer()->getParameter("db.username"),
+            "user" => $app->getContainer()->getParameter("db.user"),
             "password" => $app->getContainer()->getParameter("db.password"),
             "dbname" => $app->getContainer()->getParameter("db.dbname"),
+            "ssl" => $app->getContainer()->getParameter("db.ssl"),
             "encryption_key" => $app->getContainer()->getParameter("db.encryption_key"),
         );
         $this->dev_mode = $app->getContainer()->getParameter("db.dev") || (defined("TESTENV") && TESTENV); // If false no entity generation
@@ -87,8 +88,9 @@ class ManagerAdapter
             'host' => $this->database_configuration["host"],
             'port' => $this->database_configuration["port"],
             'dbname' => $this->database_configuration["dbname"],
-            'user' => $this->database_configuration["username"],
+            'user' => $this->database_configuration["user"],
             'password' => $this->database_configuration["password"],
+            'ssl' => $this->database_configuration["ssl"],
             'twake_types' => Array(
                 'twake_float' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'FloatType',
                 'twake_datetime' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
