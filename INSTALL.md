@@ -23,9 +23,11 @@ yarn install
 Install docker and docker-compose
 
 ### Step 2 - Configuration
-1. `cp /backend/core/app/Configuration/Parameters.php.dist /backend/core/app/Configuration/Parameters.php`
+1. `cp backend/core/app/Configuration/Parameters.php.dist backend/core/app/Configuration/Parameters.php`
 
 2. Edit values
+
+Remove ["db"]["ssl"] key for local usage or provide ssl certificate
 
 /!\ If you do not use twake onpremise license key to relay mails ans push notifications, you must define a mail server config
 
