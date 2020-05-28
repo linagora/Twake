@@ -12,7 +12,7 @@ git clone git@gitlab.com:Twake/Twake-react.git desktop
 ```
 
 Puis pour le frontend
-````
+```
 cd frontend/desktop
 git checkout 1.2
 yarn install
