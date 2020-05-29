@@ -12,8 +12,7 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
     command: "--experimental 1"
   php:
-    image: docker/twake-php
-    build: docker/twake-php
+    image: twaketech/twake-php
     volumes:
       - ./docker/cron:/cron
       - ./backend/core/:/twake-core:cached
