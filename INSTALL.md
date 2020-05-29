@@ -32,6 +32,9 @@ Install docker and docker-compose
 
 ### Step 4 - Install dependencies
 `sudo docker-compose exec php php composer.phar install`
+
+`docker-compose exec php php bin/console twake:schema:update`
+
 `sudo docker-compose exec php php bin/console twake:init`
 
 ### Verify everything works
