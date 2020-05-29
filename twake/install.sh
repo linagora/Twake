@@ -1,5 +1,5 @@
 php_parameters_dist=backend/core/app/Configuration/Parameters.php.dist
-react_parameters_dist=frontend/src/client/constants.js.dist
+react_parameters_dist=frontend/src/app/environment/environment.js.dist
 docker_compose_dist=docker-compose.yml.dist.localhost
 
 #Check dependencies
@@ -14,7 +14,7 @@ fi
 
 #Start installation
 php_parameters=backend/core/app/Configuration/Parameters.php
-react_parameters=frontend/src/client/constants.js
+react_parameters=frontend/src/app/environment/environment.js
 
 if test -f "docker-compose.yml"; then
   echo "ℹ️ $docker_compose_dist already exists, skiping default docker-compose."

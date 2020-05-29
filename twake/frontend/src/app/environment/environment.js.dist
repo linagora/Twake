@@ -8,7 +8,7 @@ export default {
   "websocket_url": 'ws://localhost:8000',
   "websocket_use_old_mode": false,
   "version": '1.2',
-  "version_detail": '1.2.101-3011',
+  "version_detail": '1.2.201-3011',
   "version_name": 'Albatros',
   "__DEV__": true
 }
