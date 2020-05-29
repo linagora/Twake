@@ -1,7 +1,0 @@
-window.jisti_domain = "meet.jit.si";
-window.config_use_cas = false;
-
-window.API_ROOT_URL = "http://localhost:8080";
-window.WEBSOCKET_URL = "localhost:8080/ws/";
-
-window.branding = {};
