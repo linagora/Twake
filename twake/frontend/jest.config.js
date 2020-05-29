@@ -18,7 +18,7 @@ module.exports = {
         "^components/(.*)" :  path.resolve(__dirname, 'src/client/app/components/$1'),
         "^lib/(.*)" :  path.resolve(__dirname, 'src/client/app/lib/$1'),
         "^services/(.*)" :  path.resolve(__dirname, 'src/client/app/services/$1'),
-        "^constants/(.*)" :  path.resolve(__dirname, 'src/client/app/constants/$1'),
+        "^components/(.*)" :  path.resolve(__dirname, 'src/client/app/components/$1'),
     },
     "transformIgnorePatterns" :[
         "/node_modules/(?!MODULE_NAME_HERE).+\\.js$"

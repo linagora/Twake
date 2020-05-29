@@ -1,0 +1,14 @@
+export default {
+  "mixpanel_enabled": false,
+  "test_login_on_woodpecker": false,
+  "sentry_dsn": "https://9a4c141c0b284164aa1c3c69def20812@sentry.io/1775858",
+  "mixpanel_id": "8d6e53f2820846e3784fcfd4b308acab",
+  "version_detail": "1.2.200",
+  "api_root_url": 'http://localhost:8000',
+  "websocket_url": 'ws://localhost:8000',
+  "websocket_use_old_mode": false,
+  "version": '1.2',
+  "version_detail": '1.2.101-3011',
+  "version_name": 'Albatros',
+  "__DEV__": true
+}

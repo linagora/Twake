@@ -1,0 +1,86 @@
+@import '~components/constants.scss';
+
+.filepicker {
+  margin: -5px 0;
+
+  .no-filepicker {
+    display: none;
+  }
+
+  .file_type_icon {
+    width: 20px;
+    margin-right: 4px;
+  }
+
+  .title {
+    background: #ffffff;
+    margin-bottom: 0px;
+    font-size: 16px;
+    color: #000;
+    line-height: 20px;
+    padding-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .getback {
+    background: $grey_background;
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+    margin-right: 5px;
+    margin-left: 0px;
+    cursor: pointer;
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+
+  .menu-buttons {
+    text-align: right;
+    padding: 8px 0px;
+  }
+
+  .drive_view.list {
+    height: 150px;
+    overflow: auto;
+    width: 100%;
+
+    .file .icon {
+      width: 20px;
+      background-size: 60%;
+    }
+
+    .directory .icon {
+      width: 24px;
+    }
+
+    .directory .app_icon {
+      height: 16px;
+    }
+
+    .file,
+    .directory {
+      height: 40px;
+      padding-top: 4px;
+
+      .text {
+        line-height: 30px;
+        margin-left: 6px;
+      }
+
+      .icon {
+        padding-top: 3px;
+        padding-right: 0px;
+        padding-left: 5px;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
+  }
+}

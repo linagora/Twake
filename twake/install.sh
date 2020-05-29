@@ -16,7 +16,7 @@ fi
 php_parameters=backend/core/app/Configuration/Parameters.php
 react_parameters=frontend/src/client/constants.js
 
-if test -f "$docker_compose_dist"; then
+if test -f "docker-compose.yml"; then
   echo "ℹ️ $docker_compose_dist already exists, skiping default docker-compose."
 else
   cp $docker_compose_dist docker-compose.yml
@@ -41,8 +41,9 @@ yarn install --silent
 yarn build-after-sh
 cd ../
 
-echo "⏳ Install docker..."
+echo "⏳ Install/Update docker..."
 
+docker-compose pull
 docker-compose up -d
 
 echo "⏳ Install backend..."

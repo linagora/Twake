@@ -1,2 +1,0 @@
-window.API_ROOT_URL = "http://localhost:8000";
-window.WEBSOCKET_URL = "localhost:8000/ws/";

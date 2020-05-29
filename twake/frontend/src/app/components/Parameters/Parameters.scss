@@ -1,0 +1,58 @@
+@import '~components/constants.scss';
+
+.parameters_attribute {
+  padding-bottom: 10px;
+  opacity: 0.8;
+
+  &:not(.open) {
+    &:hover {
+      opacity: 1;
+
+      .label a {
+        text-decoration: underline;
+      }
+    }
+  }
+  &.open {
+    opacity: 1;
+
+    .value {
+      border-radius: $larger_border_radius;
+      box-sizing: border-box;
+      opacity: 1;
+      overflow: visible;
+      transition-delay: overflow 0.2s;
+    }
+  }
+
+  & > .label {
+    font-size: 15px;
+    margin-bottom: 5px;
+    cursor: pointer;
+
+    a {
+      font-size: 13px;
+      margin-top: 2px;
+      float: right;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .description {
+      font-size: 13px;
+      margin-top: 5px;
+      opacity: 0.4;
+    }
+  }
+
+  & > .value {
+    font-size: 14px;
+    max-height: 0;
+    transition: max-height 0.2s, opacity 0.2s;
+    overflow: hidden;
+    opacity: 0;
+    display: flex;
+  }
+}

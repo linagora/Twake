@@ -6,10 +6,8 @@
 
 # testing
 /coverage
-/src/client/public/bundle.js
-
-# production
-/build
+/src/app/environment/environment.js
+/src/app/environment/*-e
 
 # misc
 .DS_Store
@@ -22,9 +20,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/.idea/*
-/src/client/public/images/*
-/node_modules/fullcanlendar/dist/fullcalendar.css
-
-/src/client/public/*.js
+/.bin/
+/.storybook/
+/.idea/
+/public/dist/
+/public/public/dist/
 /storybook-static/
+/build/

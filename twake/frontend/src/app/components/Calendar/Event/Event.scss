@@ -1,0 +1,146 @@
+@import '~components/constants.scss';
+
+.event_container {
+  margin: 0px;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  color: $white;
+  box-sizing: border-box;
+  padding-left: 4px;
+  padding-right: 2px;
+  padding-top: 2px;
+  position: relative;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+
+  & > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:hover {
+    box-shadow: 0 0px 1000px 0px rgba(0, 0, 0, 0.1) inset;
+  }
+
+  .icon {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: -2px;
+  }
+
+  .text {
+    &.title {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    &.simple {
+      font-size: 11px;
+      font-weight: 500;
+    }
+  }
+
+  .time,
+  .place,
+  .description,
+  .users {
+    display: flex;
+    flex-direction: row;
+    text-overflow: ellipsis;
+  }
+
+  .users {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    display: flex;
+    align-items: center;
+    height: 28px;
+
+    .emojione-container {
+      width: 24px;
+      text-align: center;
+    }
+
+    .more {
+      font-size: 12px;
+      margin: 0 2px;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+  }
+
+  .time.size_15,
+  .place.size_15,
+  .place.size_30,
+  .users.size_15,
+  .users.size_30,
+  .users.size_45 {
+    .user_head {
+      width: 12px !important;
+      height: 12px !important;
+    }
+  }
+
+  .place.size_45 {
+    margin-top: 8px;
+  }
+
+  .users > div {
+    border-radius: 4px;
+    margin-left: 2px;
+  }
+
+  //event
+  min-height: 60px;
+
+  &.size_15 {
+    min-height: 16px;
+    height: 16px;
+    font-size: 11px;
+  }
+
+  &.size_30 {
+    min-height: 24px;
+    height: 24px;
+  }
+
+  &.size_45 {
+    min-height: 32px;
+    height: 32px;
+  }
+
+  &.size_60 {
+    min-height: 48px;
+  }
+
+  .inEvent {
+    border-style: solid;
+    border: 0px;
+  }
+
+  //rappel
+  &.remind {
+    border-radius: 8px;
+    min-height: 18px;
+  }
+
+  //deadline
+
+  &.deadline {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    box-shadow: 0 2px 0px 0px rgba(255, 0, 0, 0.5) inset;
+    min-height: 18px;
+  }
+
+  //deplacement
+
+  &.move {
+    border-radius: 8px;
+    border-top-left-radius: 4px;
+  }
+}
