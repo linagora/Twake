@@ -73,9 +73,12 @@ class Response
         if (defined("TESTENV") && TESTENV) {
             return;
         }
+        $all_cookies = [];
         foreach ($this->cookies as $cookie) {
             header("Set-Cookie: " . $cookie, false);
+            $all_cookies[] = $cookie->asArray();
         }
+        header("All-Cookies: " . json_encode($all_cookies), true);
         foreach ($this->headers->all() as $name => $value) {
             header($name . ": " . $value, true);
         }

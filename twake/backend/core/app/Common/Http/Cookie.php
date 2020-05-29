@@ -45,6 +45,11 @@ class Cookie
         return $str;
     }
 
+    public function asArray()
+    {
+        return [str_replace(self::$reservedCharsFrom, self::$reservedCharsTo, $this->name), (string)$this->value, $this->expire];
+    }
+
     public function getMaxAge()
     {
         $maxAge = $this->expire - time();

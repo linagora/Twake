@@ -79,11 +79,8 @@
     </script>
     <script src="/public/loadBundle.js?v=2" type="text/javascript"></script>
     <script type="text/javascript">
-      loadBundle('/public/dist/env.js?d='+(new Date()).getTime(), ()=>{}, ()=>{
         loadBundle('/public/dist/login~app~vendor.js');
         loadBundle('/public/dist/app.js');
-//        loadBundle('/public/js/mixpanel.js');
-      });
       document.getElementById('app_loader').classList.add('load');
     </script>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
