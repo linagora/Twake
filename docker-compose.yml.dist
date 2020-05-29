@@ -11,6 +11,15 @@ services:
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
     command: "--experimental 1"
+  rabbitmq:
+    image: rabbitmq:3
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - 5672:5672
+      - 15672:15672
   php:
     image: twake-php
     build: docker/twake-php
@@ -56,7 +65,7 @@ services:
     volumes:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
-      - ./frontend/desktop/public/:/twake-react/
+      - ./frontend/public/:/twake-react/
   node-exporter:
     image: prom/node-exporter
     ports:

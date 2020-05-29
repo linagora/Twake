@@ -1,0 +1,131 @@
+@import '~constants/constants.scss';
+
+.current_user {
+  display: flex;
+  margin-left: 16px;
+  margin-right: 16px;
+  width: auto;
+  box-sizing: border-box;
+
+  .image {
+    padding-right: 8px;
+    cursor: pointer;
+  }
+
+  .content {
+    flex: 1;
+    overflow: hidden;
+    height: 42px;
+
+    .name {
+      display: flex;
+      cursor: pointer;
+
+      .text {
+        height: 22px;
+        font-size: 16px;
+        color: $black;
+        letter-spacing: 0;
+        line-height: 22px;
+        font-weight: 700;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .icon {
+        height: 22px;
+        line-height: 22px;
+        font-size: 20px;
+        min-width: 24px;
+        margin-left: -4px;
+      }
+    }
+
+    .subname {
+      display: flex;
+      color: $grey_dark;
+
+      .icon {
+        display: flex;
+        align-items: center;
+        padding-right: 2px;
+        .emojione {
+          width: 12px;
+          height: 12px;
+          margin-top: -2px;
+        }
+        cursor: pointer;
+      }
+
+      .text {
+        font-size: 14px;
+        line-height: 20px;
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        cursor: pointer;
+      }
+
+      .bell {
+        display: flex;
+        align-items: center;
+        margin-left: 2px;
+        cursor: pointer;
+
+        &:hover {
+          background: $grey_light;
+          border-radius: 4px;
+        }
+
+        .bell-icon {
+          font-size: 14px;
+        }
+        &.disabled {
+          color: $red;
+        }
+        &.sleep {
+          color: $yellow;
+        }
+      }
+    }
+  }
+}
+
+.loading_render {
+  .current_user {
+    pointer-events: none;
+    .user_head {
+      background: #dfdfdf !important;
+    }
+    .user_head,
+    .name,
+    .subname {
+      background: $grey_light;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+      animation-iteration-count: infinite;
+      animation-name: placeHolderShimmer;
+      animation-timing-function: linear;
+      background: $grey_light;
+      background: linear-gradient(to right, $grey_light 8%, #f2f2f2 18%, $grey_light 33%);
+      background-size: 800px 104px;
+      & > * {
+        display: none !important;
+      }
+    }
+    .name {
+      background: #dfdfdf !important;
+      height: 16px;
+      border-radius: 8px;
+      width: 70%;
+      margin-top: 2px;
+    }
+    .subname {
+      margin-top: 6px;
+      height: 16px;
+      border-radius: 8px;
+      width: 90%;
+    }
+  }
+}

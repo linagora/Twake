@@ -1,0 +1,261 @@
+@import '~constants/constants.scss';
+
+/* PseudoMarkdownCompiler */
+
+.markdown {
+  &.loading_interaction {
+    .interactive_element {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  a {
+    overflow: hidden;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+    overflow-wrap: break-word;
+  }
+  .bold {
+    display: inline;
+    font-weight: bold;
+  }
+  .italic {
+    display: inline;
+    font-style: italic;
+  }
+  .underline {
+    display: inline;
+    text-decoration: underline;
+  }
+  .strikethrough {
+    display: inline;
+    text-decoration: line-through;
+  }
+  .inline-code,
+  .multiline-code {
+    color: #e6e1dc;
+    background: #535353;
+    font-family: monospace;
+    padding: 0 5px;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow: auto;
+    box-sizing: border-box;
+  }
+  .multiline-code {
+    color: #fff;
+    padding: 5px;
+    border-radius: 8px;
+    .hljs {
+      border-radius: 6px;
+    }
+  }
+  .inline-code {
+    border-radius: 4px;
+    background: #232323;
+    padding-bottom: 1px;
+  }
+  .inline-code {
+    display: inline;
+  }
+  .multiline-code {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  .multiline-quote,
+  .one-line-quote {
+    display: block;
+    width: 100%;
+    border-left: 2px solid #aaa;
+    padding-left: 5px;
+    box-sizing: border-box;
+  }
+  .one-line-quote {
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+  .user_twacode.unknown,
+  .channel_twacode.unknown {
+    pointer-events: none;
+    padding-right: 0px;
+    color: $grey_dark;
+    background: rgba(0, 0, 0, 0);
+  }
+  .user_twacode {
+    font-weight: 500;
+    box-sizing: border-box;
+    color: $black;
+    height: 18px;
+    text-transform: capitalize;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    padding-right: 5px;
+    margin-right: -2px;
+    vertical-align: top;
+    background: $primary_background;
+    cursor: pointer;
+
+    &:hover {
+      color: $primary;
+    }
+
+    .userimage {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: top;
+      background: $grey_light;
+      margin: 1px;
+      margin-right: 3px;
+      background-size: cover;
+      background-position: center;
+    }
+  }
+  .channel_twacode {
+    font-weight: 500;
+    box-sizing: border-box;
+    color: $black;
+    height: 18px;
+    text-transform: capitalize;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    padding-right: 5px;
+    margin-right: -2px;
+    vertical-align: top;
+    background: $primary_background;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover {
+      color: $primary;
+    }
+
+    .emojione-container {
+      margin-right: 3px;
+      img.emojione {
+        width: 14px;
+        margin-left: 4px;
+        bottom: 1px;
+      }
+    }
+  }
+
+  .user_bloc {
+    vertical-align: top;
+    margin-top: -10px;
+    transform: translateY(6px);
+    padding: 4px 5px;
+    height: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    &:hover {
+      background: #f2f2f2;
+    }
+  }
+
+  .attachment {
+    padding: 0;
+    padding-left: 9px;
+    margin: 5px 0;
+    position: relative;
+    &:before {
+      content: '';
+      width: 4px;
+      border-radius: 2px;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: $primary;
+    }
+  }
+
+  .progress_bar {
+    width: 100%;
+    max-width: 200px;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(128, 128, 128, 0.1);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+    vertical-align: middle;
+
+    & > div {
+      height: 100%;
+      transition: width 0.5s;
+      background: $primary;
+    }
+  }
+
+  .interactive_message_btn,
+  .interactive_message_input {
+    margin-right: 8px;
+    vertical-align: middle;
+    margin-top: 8px;
+
+    &.danger {
+      background: #ff6c6c;
+      color: #fff;
+
+      &:hover {
+        background: #ee5c5c;
+      }
+    }
+
+    &.default {
+      background: #eee;
+      color: #000;
+
+      &:hover {
+        background: #ddd;
+      }
+    }
+  }
+
+  //Inline buttons
+  .interactive_message_btn.underline {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+    cursor: pointer;
+    vertical-align: top;
+    background: transparent !important;
+    color: #888;
+
+    &:hover {
+      color: #000;
+    }
+
+    &.danger {
+      color: #ff6c6c;
+      &:hover {
+        color: #ee5c5c;
+      }
+    }
+
+    &.primary {
+      color: $primary;
+      &:hover {
+        color: #007ed9;
+      }
+    }
+  }
+
+  .image.twacode {
+    height: 120px;
+    margin-top: 8px;
+    border-radius: 4px;
+    max-width: 100%;
+  }
+}

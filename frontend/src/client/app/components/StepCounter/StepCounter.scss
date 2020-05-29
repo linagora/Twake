@@ -1,0 +1,20 @@
+@import '~constants/constants.scss';
+
+.stepCounter {
+  display: flex;
+  width: 100%;
+  display: flex;
+  margin: auto;
+  margin-bottom: 24px;
+  .step {
+    height: 8px;
+    background: black;
+    border-radius: 4px;
+    margin: 0px 5px;
+    background: $primary_background;
+    transition: background 0.2s;
+  }
+  .setSelected {
+    background: $primary;
+  }
+}

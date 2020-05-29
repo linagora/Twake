@@ -1,0 +1,169 @@
+@import '~constants/constants.scss';
+
+.loginPage {
+  .twake_logo {
+    color: #fff;
+    position: absolute;
+    top: 45px;
+    left: 45px;
+    width: 145px;
+    height: 46px;
+    background-image: url(/public/img/logo.png);
+    background-size: 100%;
+    z-index: 1;
+  }
+
+  .smalltext.error {
+    margin-bottom: 16px;
+  }
+
+  .white_background {
+    bottom: 0;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    height: 50vh;
+    bottom: 0px;
+    transition: height 0.5s;
+    transform: rotateZ(-5deg) scaleX(1.1) scaleY(2) translateY(25%);
+    background: $white;
+  }
+
+  .help_footer {
+    font-size: 15px;
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    z-index: 10;
+  }
+
+  .app_version_footer {
+    font-size: 15px;
+    position: absolute;
+    bottom: 25px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+    z-index: 9;
+
+    .version_name {
+      margin-bottom: 5px;
+    }
+
+    .smalltext {
+      bottom: -5px;
+      position: relative;
+    }
+  }
+
+  .center_box {
+    .title {
+      margin-bottom: 15px;
+    }
+
+    .blue_link {
+      display: block;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+  }
+
+  .center_box_container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 0px;
+    height: 0px;
+    z-index: 100;
+
+    .center_box {
+      transform: translateX(-50%) translateY(-50%);
+      position: relative;
+      height: auto;
+      z-index: 1;
+
+      min-width: 325px;
+      padding: 32px;
+      text-align: center;
+
+      .title {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        margin-bottom: 24px;
+      }
+    }
+  }
+
+  &.willGoToApp {
+    .white_background {
+      height: 120vh;
+    }
+  }
+
+  .bottom {
+    margin-top: 16px;
+    line-height: 40px;
+    display: flex;
+
+    .returnBtn {
+      text-align: left;
+      flex: 1;
+      margin-top: 0;
+      font-size: unset;
+    }
+    .btn {
+      height: 40px;
+      line-height: 40px;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 0px 20px;
+    }
+    .blueBtn {
+      background: $primary;
+      color: white;
+    }
+    .btn:hover {
+      cursor: pointer;
+      box-shadow: inset 0px 0px 100px 100px rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .big_emoji {
+    img.emojione {
+      width: 64px;
+    }
+  }
+}
+
+.beta_warning {
+  position: relative;
+  font-size: 12px;
+  text-align: left;
+  color: $black;
+  background: $grey_background;
+  border: 2px solid $grey_light;
+  border-radius: 4px;
+  margin-top: 16px;
+  padding: 8px;
+  padding-left: 32px;
+  cursor: pointer;
+
+  &:hover {
+    background: $grey_light;
+    border-color: $grey_dark;
+  }
+
+  .emojione-container {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+  }
+}

@@ -45,7 +45,14 @@ class OpenID extends BaseController
             $oidc->setRedirectURL($this->getParameter("SERVER_NAME") . "/ajax/users/openid");
 
             $oidc->addScope(array('openid', 'email', 'profile'));
-            if ($oidc->authenticate()) {
+
+            try {
+                $authentificated = $oidc->authenticate();
+            }catch(\Exception $err){
+                error_log("Error with Authenticated: ".$err);
+                $authentificated = false;
+            }
+            if ($authentificated) {
 
                 $data = [];
                 $data["user_id"] = $oidc->requestUserInfo('sub'); //User unique id
@@ -83,18 +90,21 @@ class OpenID extends BaseController
 
                 /** @var User $user */
                 $user = $this->get("app.user")->loginFromService("openid", $external_id, $email, $username, $fullname, $picture);
-
-
+                
                 if ($user) {
                     return $this->closeIframe("success");
+                }else{
+                    return $this->closeIframe(["error" => "No user profile created"]);
                 }
 
+            }else{
+                $this->logout($request);
+                return $this->closeIframe(["error" => "OIDC auth error"]);
             }
 
         } catch (\Exception $e) {
             error_log($e);
             $this->logout($request);
-            return;
         }
 
         return $this->closeIframe(["error" => "An unknown error occurred"]);

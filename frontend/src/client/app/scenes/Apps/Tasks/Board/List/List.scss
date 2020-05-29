@@ -1,0 +1,183 @@
+@import '~constants/constants.scss';
+
+.board .list {
+  display: inline-block;
+  height: 100%;
+  vertical-align: top;
+  position: relative;
+
+  .list_draggable_parent {
+    height: 100%;
+    overflow: visible;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .scrollable_task_list {
+    max-height: 100%;
+    overflow: scroll;
+    flex: 1;
+    position: relative;
+  }
+
+  .list_draggable {
+    width: 280px;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    margin-right: 16px;
+    transition: box-shadow 0.2s, transform 0.2s !important;
+
+    &.isDragging:active {
+      transform: rotateZ(3deg);
+    }
+
+    &:hover {
+      .list_header .options {
+        display: block;
+      }
+    }
+
+    .list_header {
+      width: 100%;
+      display: block;
+      box-sizing: border-box;
+      margin-bottom: 0;
+      position: relative;
+
+      .list_title {
+        padding: 4px 8px;
+        position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 60%;
+        display: inline-block;
+        line-height: 24px;
+
+        .list_title_background {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          opacity: 0.15;
+          top: 0;
+          left: 0;
+          border-radius: 8px;
+        }
+      }
+
+      .list_color {
+        width: calc(100% + 2px);
+        height: 3px;
+        border-radius: 4px;
+        top: -1px;
+        position: absolute;
+        left: -1px;
+      }
+
+      img.emojione {
+        margin-right: 6px;
+        margin-top: -4px;
+      }
+
+      .options {
+        display: none;
+        float: right;
+        margin: 0px;
+        color: $black;
+        font-size: 20px;
+        margin-top: 4px;
+        line-height: normal;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .add_task {
+      margin-bottom: 8px;
+      padding-top: 0px;
+      display: flex;
+      transition: opacity 0.2s, height 0.2s;
+      border-radius: 8px;
+      background: $grey_background;
+      padding-right: 4px;
+      &:hover {
+        background: $grey_light;
+      }
+
+      button {
+        margin-top: 4px;
+      }
+
+      input {
+        flex: 1;
+        margin-right: 8px;
+      }
+
+      &.unselected {
+        &:hover {
+          background: $grey_background;
+          color: $black;
+        }
+        background: transparent;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 32px;
+        padding: 0 8px;
+        color: $grey_dark;
+        cursor: pointer;
+      }
+    }
+
+    .droppable {
+      flex: 1;
+      transition: padding-bottom 0.2s;
+      max-height: calc(100% - 80px);
+      height: auto;
+
+      .empty {
+        height: 70px;
+        padding: 16px;
+        padding-top: 20px;
+        box-sizing: border-box;
+        font-size: 12px;
+        border-radius: 2px;
+        text-align: center;
+        color: $grey_dark;
+        display: inline-block;
+        width: 100%;
+        transition: all 0.2s;
+      }
+    }
+  }
+}
+
+.list.done {
+  margin: 0;
+  background: #eee;
+  padding: 0 10px;
+
+  .list_header {
+    border-top: 0px;
+  }
+
+  .list_header {
+    margin-bottom: 10px;
+  }
+
+  .task {
+    opacity: 0.5;
+    transition: all 0.2s;
+
+    &:hover,
+    &.selected {
+      opacity: 1;
+    }
+  }
+}

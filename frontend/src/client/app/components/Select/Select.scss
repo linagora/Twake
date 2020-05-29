@@ -1,0 +1,41 @@
+@import '~constants/constants.scss';
+
+.select {
+  box-sizing: border-box;
+  width: auto;
+  vertical-align: middle;
+  background-color: $grey_background;
+  border: 0px;
+  text-overflow: ellipsis;
+  padding-right: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &.full_width {
+    width: 100%;
+  }
+
+  &.small {
+    height: 32px;
+    line-height: 32px;
+    padding: 0 8px;
+    padding-right: 32px;
+    font-size: 14px;
+  }
+
+  &.medium {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 12px;
+    padding-right: 32px;
+    font-size: 16px;
+  }
+
+  &.big {
+    height: 64px;
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    padding-right: 40px;
+  }
+}

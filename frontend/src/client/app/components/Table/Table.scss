@@ -1,0 +1,63 @@
+@import '~constants/constants.scss';
+
+.table {
+  overflow: hidden;
+  border-radius: $base_border_radius;
+  margin-bottom: 16px;
+  border: 1px solid $grey_background;
+  font-weight: 500;
+
+  &.unfocused {
+    box-shadow: none;
+  }
+
+  .headerTable {
+    background: $grey_background;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    padding: 16px;
+    border-bottom: 1px solid $grey_background;
+  }
+  .contentTable {
+    .tr {
+      display: flex;
+      border-bottom: 1px solid $grey_background;
+      padding: 16px;
+      font-size: 14px;
+
+      &:hover {
+        background: $grey_background;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      & > div {
+        position: relative;
+        min-height: 32px;
+
+        & > .absolute_position {
+          width: 100%;
+          position: absolute;
+          height: 100%;
+          display: flex;
+        }
+      }
+    }
+
+    .fix_text_padding_medium {
+      padding: 8px 0;
+      display: inline-block;
+      line-height: 18px;
+    }
+
+    .text-complete-width {
+      overflow: hidden;
+      flex: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

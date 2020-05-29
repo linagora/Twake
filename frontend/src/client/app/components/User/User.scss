@@ -1,0 +1,64 @@
+@import '~constants/constants.scss';
+
+.user_head {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: solid 1px $grey_background;
+  background-position: center;
+  background-size: contain;
+  background-color: $grey_light;
+  position: relative;
+  border: 0px solid #fff;
+
+  &.border {
+    border: 1px solid #fff;
+  }
+
+  .status {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 6px;
+    background: $green;
+    border: 1px solid $grey_background;
+
+    &.grey {
+      background: $grey_dark;
+    }
+    &.red {
+      background: $red;
+    }
+  }
+
+  &.big {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    .status {
+      border-width: 2px;
+      bottom: -2px;
+      right: -2px;
+    }
+  }
+
+  &.medium {
+    width: 24px;
+    height: 24px;
+    .status {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  &.small {
+    width: 16px;
+    height: 16px;
+    .status {
+      width: 4px;
+      height: 4px;
+    }
+  }
+}

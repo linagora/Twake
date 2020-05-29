@@ -1,0 +1,75 @@
+@import '~constants/constants.scss';
+
+.createWorkspaceView {
+  height: 100%;
+  background: white;
+  position: relative;
+
+  .close {
+    background: #f2f2f2;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 13px;
+    color: #666;
+    box-sizing: border-box;
+    position: absolute;
+    right: 10vh;
+    top: 10vh;
+    cursor: pointer;
+    &:hover {
+      background: #eee;
+      color: #333;
+    }
+  }
+
+  .center_box_container {
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    .center_box {
+      transform: translateX(-50%) translateY(-50%);
+      height: auto;
+      width: 400px;
+      padding: 40px;
+      .title {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+      }
+      .subtitle {
+        text-align: center;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .bottom {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        .returnBtn {
+          flex: 1;
+        }
+        .nextBtn {
+          width: unset;
+        }
+      }
+      .select {
+        width: 100%;
+        border: solid 1px rgba(0, 0, 0, 0.3);
+        height: 38px;
+        border-radius: $base_border_radius;
+        background: white;
+        font-size: 14px;
+        opacity: 0.8;
+        margin: 10px 0px;
+      }
+    }
+  }
+}

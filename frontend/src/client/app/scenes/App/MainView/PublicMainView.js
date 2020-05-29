@@ -1,0 +1,101 @@
+import React, { Component } from 'react';
+
+import Languages from 'services/languages/languages.js';
+import ChannelsService from 'services/channels/channels.js';
+import Collections from 'services/Collections/Collections.js';
+import Icon from 'components/Icon/Icon.js';
+import InputIcon from 'components/Inputs/InputIcon.js';
+import Emojione from 'components/Emojione/Emojione.js';
+import User from 'services/user/user.js';
+import './MainView.scss';
+import PlugIcon from '@material-ui/icons/PowerOutlined';
+import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import Tabs from './Tabs/Tabs.js';
+import Messages from 'scenes/Apps/Messages/Messages.js';
+import Drive from 'scenes/Apps/Drive/Drive.js';
+import Calendar from 'scenes/Apps/Calendar/Calendar.js';
+import Tasks from 'scenes/Apps/Tasks/Tasks.js';
+
+import Input from 'components/Inputs/Input.js';
+import Search from './Search.js';
+import Globals from 'services/Globals.js';
+import Api from 'services/api.js';
+import GroupSwitch from 'components/Leftbar/GroupSwitch/GroupSwitch.js';
+
+export default class MainView extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      i18n: Languages,
+      users_repository: Collections.get('users'),
+      value: '',
+      loading: false,
+      group: {},
+    };
+
+    Languages.addListener(this);
+    Collections.get('users').addListener(this);
+  }
+  componentWillUnmount() {
+    Languages.removeListener(this);
+    Collections.get('users').removeListener(this);
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('should update');
+    return true;
+  }
+  componentDidMount() {
+    Api.post(
+      'workspace/get_public_data',
+      { workspace_id: Globals.store_public_access_get_data.workspace_id },
+      res => {
+        if (res && res.data) {
+          console.log(res.data);
+          this.state.group = {
+            name: res.data.group_name,
+            logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),
+          };
+          this.setState({});
+          console.log('set state with ', this.state.group);
+        }
+      },
+    );
+  }
+  render() {
+    console.log('render');
+
+    var noapp = (
+      <div>
+        <div className="no_channel_text">This public link is invalid or has expired.</div>
+      </div>
+    );
+
+    var found = false;
+    var view = (Globals.store_public_access_get_data || {}).view;
+
+    var group = this.state.group;
+    console.log(this.state.group);
+
+    return [
+      <div className="public_header">
+        <div className="left">
+          <GroupSwitch group={group} notifications={0} imageOnly />
+          <span className="companyName">{group.name}</span>
+        </div>
+        <div className="right">
+          <a href="https://twakeapp.com" target="_BLANK">
+            <span className="nomobile">Créez votre espace de travail gratuitement sur </span>
+            Twake &nbsp; 👉
+          </a>
+        </div>
+      </div>,
+      <div className="main_view public">
+        {!this.state.loading && view == 'drive_public_access' && (found = true) && (
+          <Drive key={'public_drive'} />
+        )}
+        {!found && !this.state.loading && noapp}
+      </div>,
+    ];
+  }
+}

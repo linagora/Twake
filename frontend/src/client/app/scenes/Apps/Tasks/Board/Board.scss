@@ -1,0 +1,236 @@
+@import '~constants/constants.scss';
+
+.board {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+
+  margin: 0 -32px;
+  margin-bottom: -15px;
+  margin-top: -8px;
+
+  &.inline {
+    height: auto;
+    .list,
+    .component_tabs,
+    .component_tabs > .body,
+    .lists_before {
+      display: block !important;
+      height: auto !important;
+      position: relative !important;
+      max-height: none !important;
+    }
+    .list .list_draggable .droppable {
+      max-height: none;
+      height: auto;
+      flex: none;
+    }
+  }
+
+  &.mode_list {
+    .lists_before {
+      padding-top: 16px;
+    }
+    .lists_before .component_tabs .body .scrollable_task_list {
+      padding: 0px 24px;
+    }
+    .lists_before .component_tabs .component_tabs_tabs,
+    .lists_before .component_tabs .body .add_task {
+      margin-right: 24px;
+      margin-left: 24px;
+    }
+    .component_tabs {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      .body {
+        flex: 1;
+        position: relative;
+      }
+    }
+    .component_tabs > .body {
+      padding-left: 0px;
+      padding-right: 0px;
+      & > .component_tabs_tab {
+        &.no-selection-border {
+          border-bottom: 0px;
+          margin-left: 0px;
+          padding-left: 0px;
+        }
+      }
+    }
+    .list .list_draggable .list_header {
+      display: none;
+    }
+    .list {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+    .list,
+    .list_draggable {
+      margin-right: 0px;
+      width: 100%;
+      .task_draggable_parent {
+        margin-bottom: 0px;
+        .task {
+          border-left: 0px;
+          border-right: 0px;
+          border-top: 0px;
+          border-radius: 0px;
+          display: flex;
+          padding-right: 56px;
+
+          .task_options {
+            padding-top: 2px;
+            display: block;
+            background: transparent;
+          }
+
+          .task_line_1 {
+            padding-top: 2px;
+            flex: 1;
+            .task_title {
+              line-height: 22px;
+              font-size: 14px;
+              font-weight: bold;
+            }
+            .tags-in-name {
+              display: inline-block;
+              vertical-align: bottom;
+            }
+          }
+          .task_line_2,
+          .task_line_tags,
+          .task_users {
+            margin-top: 0px;
+            width: 20%;
+            max-width: 110px;
+          }
+          .task_line_tags {
+            display: none;
+          }
+        }
+      }
+    }
+    .task {
+      .attachmentPicker {
+        width: auto;
+        margin: 0px;
+        .attachments .attachment {
+          width: 40px;
+          height: 40px;
+          margin-top: -8px;
+          margin-bottom: -8px;
+          margin-right: 8px;
+        }
+        .attachments,
+        .attachments .attachment > .file,
+        .attachments .attachment > .file .preview {
+          width: 100%;
+          height: 100%;
+          margin: 0px;
+        }
+        .attachments .attachment > .file .data {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .lists_before {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+
+    .lists_scrollable {
+      white-space: nowrap;
+      height: 100%;
+      position: absolute;
+      width: 100%;
+
+      & > div:first-child {
+        padding-left: 32px;
+        padding-bottom: 16px;
+        box-sizing: border-box;
+        padding-top: 16px;
+      }
+    }
+  }
+
+  .list_add {
+    font-size: 14px;
+    font-weight: 500;
+    width: auto;
+    padding: 4px;
+    height: 32px;
+    padding-right: 4px;
+    padding-left: 8px;
+    line-height: 24px;
+    vertical-align: top;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
+    .m-icon-small {
+      vertical-align: middle;
+      margin-top: -2px;
+      font-size: 18px !important;
+    }
+  }
+}
+
+.board_header {
+  display: flex;
+
+  .app_title {
+    flex: 1;
+  }
+
+  .options {
+    font-size: 13px;
+    margin-left: 10px;
+    line-height: 18px;
+    display: flex;
+    align-items: center;
+  }
+
+  .view_title {
+    font-size: 24px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    line-height: 24px;
+    height: 50px;
+    display: flex;
+
+    .name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .filter_input {
+      flex: 1;
+      margin-left: 20px;
+      margin-top: -2px;
+      margin-right: 20px;
+      text-align: right;
+    }
+
+    .anticon {
+      margin-right: 5px;
+      line-height: 30px;
+    }
+
+    .board_parameters {
+      float: right;
+      cursor: pointer;
+      color: #666;
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+  }
+}
