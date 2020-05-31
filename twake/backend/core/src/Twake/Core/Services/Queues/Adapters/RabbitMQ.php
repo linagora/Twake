@@ -25,7 +25,7 @@ class RabbitMQ implements QueueManager
             $this->connection = new AMQPStreamConnection($this->parameters["host"], $this->parameters["port"] ?: 5672, $this->parameters["username"], $this->parameters["password"]);
         }
         if (!$this->channel) {
-            $this->channel = $connection->channel();
+            $this->channel = $this->connection->channel();
         }
         return $this->channel;
     }

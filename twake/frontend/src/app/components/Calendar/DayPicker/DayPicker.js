@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';
 import './DayPicker.scss';
@@ -38,7 +38,13 @@ export default class DayPicker extends React.Component {
       .startOf('month')
       .startOf('week');
     for (var i = 0; i < 35; i++) {
-      days.push(moment(first_day_of_month).add(i, 'days'));
+      days.push(
+        moment(
+          moment(first_day_of_month)
+            .add(i, 'days')
+            .getDate(),
+        ),
+      );
     }
     return {
       days: days,

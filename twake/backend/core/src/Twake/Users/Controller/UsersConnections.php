@@ -18,7 +18,6 @@ class UsersConnections extends BaseController
         if ($this->getUser() && $focus) {
             $this->get("app.user")->alive($this->getUser()->getId());
         }
-        error_log("alive=" . (microtime(true) - $time));
         return new Response(Array("data" => "ok"));
 
     }

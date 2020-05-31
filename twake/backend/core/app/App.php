@@ -137,6 +137,12 @@ class App
 
     public function run()
     {
+      try{
         SimpleRouter::start();
+      }catch(\Exception $err){
+        error_log($err);
+        http_response_code(500);
+        echo '{"error": "'.$err->getMessage().'"}';
+      }
     }
 }

@@ -602,7 +602,6 @@ class BoardTask
                                 if ($mail) {
                                     $this->notifications->sendCustomMail(
                                         $mail, "task_notification", Array(
-                                            "_task_id" => $notification->getId(),
                                             "_language" => $language ? $language : "en",
                                             "text" => $text,
                                             "delay" => $delay,
@@ -618,7 +617,6 @@ class BoardTask
                                     if ($user) {
                                         $this->notifications->pushDevice(
                                             $user, $text, "📋 Tasks notification", null, Array(
-                                                "_task_id" => $notification->getId()
                                             )
                                         );
                                     }

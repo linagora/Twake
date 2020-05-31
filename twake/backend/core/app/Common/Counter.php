@@ -15,7 +15,7 @@ class Counter
 
     public function __construct(App $app)
     {
-        $this->dev_mode = $app->getContainer()->getParameter("env") === "dev";
+        $this->dev_mode = $app->getContainer()->getParameter("env.timer") == true;
     }
 
     public function incrementCounter($key)

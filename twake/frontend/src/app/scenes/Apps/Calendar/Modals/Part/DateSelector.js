@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import TimeSelector from 'components/Calendar/TimeSelector.js';
 import Checkbox from 'components/Inputs/Checkbox.js';

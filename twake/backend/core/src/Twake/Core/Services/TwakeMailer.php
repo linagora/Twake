@@ -53,8 +53,7 @@ class TwakeMailer
         /** @var QueueManager $queues */
         $queues = $this->app->getServices()->get("app.queues")->getAdapter();
         $queues->push("mails", Array(
-            "task_id" => $task->getId(),
-            "_task_id" => $data["_task_id"] //Anti duplicate
+            "task_id" => $task->getId()
         ));
     }
 

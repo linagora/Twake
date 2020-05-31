@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
@@ -341,7 +341,9 @@ export default class DatePicker extends React.Component {
                 <DayPicker
                   value={moment(this.state.time_ts * 1000)}
                   onChange={value => {
-                    this.changeDate(moment(value).toDate(), true);
+                    var ts = value._d.getTime();
+                    console.log(new Date(ts));
+                    this.changeDate(new Date(ts), true);
                     MenusManager.closeMenu();
                     this.cancelBlur = false;
                     setTimeout(() => this.input.blur(), 100);
@@ -360,6 +362,8 @@ export default class DatePicker extends React.Component {
   }
 
   blur() {
+    console.log('call blur', this.state.time_ts);
+
     if (this.cancelBlur) {
       this.cancelBlur = false;
       return;
