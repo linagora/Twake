@@ -104,7 +104,6 @@ class CAS extends BaseController
     // Redirect user to CAS logout page
     public function logout(Request $request)
     {
-
         $this->get("app.user")->logout($request);
 
         $cas_login_page_url = $this->getParameter("auth.cas.base_url") . "/logout";
@@ -117,9 +116,9 @@ class CAS extends BaseController
         foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
                  as
                  $cookie) {
-            $cookies[] = $cookie . "";
+             $cookies[] = $cookie->asArray();
         }
-        return new Response("<html><head></head><body></body><script type='application/javascript'>window.opener.postMessage('" . json_encode(["message" => $message, "cookies" => $cookies]) . "', '" . $this->getParameter("SERVER_NAME") . "');window.close();</script></html>");
+        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".urlencode(json_encode(["provider"=>"cas", "message" => $message, "cookies" => json_encode($cookies)])));
     }
 
 }

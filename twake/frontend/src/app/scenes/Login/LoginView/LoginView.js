@@ -21,7 +21,8 @@ export default class LoginView extends Component {
   componentDidMount() {
     if (
       ((LoginService.server_infos || {}).auth_mode || []).length > 0 &&
-      ((LoginService.server_infos || {}).auth_mode || []).indexOf('internal') < 0
+      ((LoginService.server_infos || {}).auth_mode || []).indexOf('internal') < 0 &&
+      !(LoginService.external_login_error || false)
     ) {
       LoginService.loginWithExternalProvider(
         ((LoginService.server_infos || {}).auth_mode || [])[0],

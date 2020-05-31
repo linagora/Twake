@@ -13,17 +13,30 @@ class OpenID extends BaseController
 
     function logoutSuccess(Request $request)
     {
-        return $this->closeIframe("success");
+        try{
+          $message = json_decode(urldecode($request->query->get("error_code")));
+        }catch(\Exception $err){
+          $message = "success";
+        }
+        return $this->closeIframe($message);
     }
 
-    function logout(Request $request)
+    function logout(Request $request, $message = null)
     {
         error_reporting(E_ERROR | E_PARSE);
 
         $this->get("app.user")->logout($request);
 
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
-        $this->redirect($this->getParameter("auth.openid.provider_uri") . "/logout?" . $logout_parameter . "=" . $this->getParameter("SERVER_NAME") . "/ajax/openid/logout_success");
+        $logout_url_suffix = $this->getParameter("auth.openid.logout_suffix") ?: "/logout";
+
+        $logout_redirect_url = $this->getParameter("SERVER_NAME") . "/ajax/users/openid/logout_success";
+
+        if($message){
+          $logout_redirect_url .= "?error_code=".urlencode(json_encode($message));
+        }
+
+        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . "?" . $logout_parameter . "=" . urlencode($logout_redirect_url));
     }
 
     function index(Request $request)
@@ -65,11 +78,11 @@ class OpenID extends BaseController
                 $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
                 if (empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) {
-                    return $this->closeIframe(["error" => "Your mail is not verified"]);
+                    return $this->logout($request, ["error" => "Your mail is not verified"]);
                 }
 
                 if (empty($data["user_id"])) {
-                    return $this->closeIframe(["error" => "An error occurred (no unique id found)"]);
+                    return $this->logout($request, ["error" => "An error occurred (no unique id found)"]);
                 }
 
                 //Generate username, fullname, email, picture from recovered data
@@ -90,16 +103,15 @@ class OpenID extends BaseController
 
                 /** @var User $user */
                 $user = $this->get("app.user")->loginFromService("openid", $external_id, $email, $username, $fullname, $picture);
-                
+
                 if ($user) {
                     return $this->closeIframe("success");
                 }else{
-                    return $this->closeIframe(["error" => "No user profile created"]);
+                    return $this->logout($request, ["error" => "No user profile created"]);
                 }
 
             }else{
-                $this->logout($request);
-                return $this->closeIframe(["error" => "OIDC auth error"]);
+                return $this->logout($request, ["error" => "OIDC auth error"]);
             }
 
         } catch (\Exception $e) {
@@ -107,7 +119,7 @@ class OpenID extends BaseController
             $this->logout($request);
         }
 
-        return $this->closeIframe(["error" => "An unknown error occurred"]);
+        return $this->logout($request, ["error" => "An unknown error occurred"]);
 
     }
 
@@ -117,13 +129,9 @@ class OpenID extends BaseController
         foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
                  as
                  $cookie) {
-            $cookies[] = $cookie . "";
+            $cookies[] = $cookie->asArray();
         }
-        return new Response("<html><head></head><body></body><script type='application/javascript'>window.opener.postMessage('"
-            . json_encode(["message" => $message, "cookies" => $cookies]) .
-            "', '" . $this->getParameter("SERVER_NAME") .
-            "');window.close();</script></html>");
-
+        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)])));
     }
 
 }

@@ -55,7 +55,8 @@ Change auth.openid to:
   "use" => true,
   "provider_uri" => 'http://[machine_ip]:8080/auth/realms/master',
   "client_id" => 'account',
-  "client_secret" => '[keycloak_secret]'
+  "client_secret" => '[keycloak_secret]',
+  "logout_suffix" => "/protocol/openid-connect/logout" //Specific to keycloak
 ```
 
 ℹ️ [machine_ip] Because Twake is accessing keycloak for inside a docker container, do not use localhost or 127.0.0.1 to access keycloak.

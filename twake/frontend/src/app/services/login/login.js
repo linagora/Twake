@@ -31,6 +31,7 @@ class Login extends Observable {
     Globals.window.login = this;
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
+    this.external_login_error = false;
   }
   reset() {
     this.state = '';
@@ -92,14 +93,33 @@ class Login extends Observable {
       return;
     }
 
+    var external_login_result =
+      WindowState.findGetParameter('external_login') !== undefined
+        ? WindowState.findGetParameter('external_login')
+        : false;
+    try {
+      external_login_result = JSON.parse(external_login_result);
+    } catch (err) {
+      console.error(err);
+      external_login_result = false;
+    }
+    if (external_login_result) {
+      if (external_login_result.cookies) {
+        Globals.retrieveRequestCookies(external_login_result.cookies);
+      }
+      this.firstInit = true;
+      this.external_login_error = true;
+      this.notify();
+    }
+
     var that = this;
     Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function(res) {
       that.firstInit = true;
       if (res.errors.length > 0) {
-        if (that.server_infos.auth_mode == 'openid') {
+        if (that.server_infos.auth_mode == 'openid' && !that.external_login_error) {
           document.location = Api.route('users/openid');
           return;
-        } else if (that.server_infos.auth_mode == 'cas') {
+        } else if (that.server_infos.auth_mode == 'cas' && !that.external_login_error) {
           document.location = Api.route('users/cas/login');
           return;
         }
@@ -121,6 +141,8 @@ class Login extends Observable {
   }
 
   loginWithExternalProvider(service) {
+    this.external_login_error = false;
+
     var url = '';
 
     if (service == 'openid') {
@@ -170,6 +192,8 @@ class Login extends Observable {
   }
 
   logout() {
+    var identity_provider = CurrentUser.get() ? CurrentUser.get().identity_provider : 'internal';
+
     this.currentUserId = null;
 
     Globals.localStorageClear();
@@ -197,10 +221,10 @@ class Login extends Observable {
             that.state = 'logged_out';
             that.notify();
           } else {
-            if (CurrentUser.get().identity_provider == 'openid') {
+            if (identity_provider == 'openid') {
               var location = Api.route('users/openid/logout');
               Globals.window.location = location;
-            } else if (CurrentUser.get().identity_provider == 'cas') {
+            } else if (identity_provider == 'cas') {
               var location = Api.route('users/cas/logout');
               Globals.window.location = location;
             } else {

@@ -143,14 +143,18 @@ class User
         $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
         $user->setLastName(@explode(" ", $fullname)[1] ?: "");
 
-        if (!$user->getThumbnail() || $user->getThumbnail()->getPublicLink() != $picture) {
+        if (($picture && (!$user->getThumbnail() || $user->getThumbnail()->getPublicLink() != $picture)) || ($user->getThumbnail() && !$picture)) {
             if ($user->getThumbnail()) {
                 $this->em->remove($user->getThumbnail());
             }
-            $thumbnail = new File();
-            $thumbnail->setPublicLink($picture);
-            $user->setThumbnail($thumbnail);
-            $this->em->persist($thumbnail);
+            if($picture){
+              $thumbnail = new File();
+              $thumbnail->setPublicLink($picture);
+              $user->setThumbnail($thumbnail);
+              $this->em->persist($thumbnail);
+            }else{
+              $user->setThumbnail(null);
+            }
         }
 
         $this->em->persist($user);
@@ -206,7 +210,7 @@ class User
         $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
-            
+
             $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
 
             return $user;
