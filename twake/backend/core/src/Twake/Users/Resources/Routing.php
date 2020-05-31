@@ -55,6 +55,7 @@ class Routing extends BaseRouting
         "openid/logout" => ["handler" => "Adapters/OpenID:logout", "methods" => ["GET"]],
         "openid/logout_success" => ["handler" => "Adapters/OpenID:logoutSuccess", "methods" => ["GET"]],
         "openid/{method?}" => ["handler" => "Adapters/OpenID:index", "methods" => ["GET", "POST"]],
+        "openid" => ["handler" => "Adapters/OpenID:index", "methods" => ["GET", "POST"]],
     ];
 
 }

@@ -17,6 +17,7 @@ export default class DatePicker extends React.Component {
 
     this.display_format = 'D MMM YYYY';
 
+    this.old_props_ts = props.ts;
     this.state = {
       time_ts: props.ts,
       time_string: moment(new Date(props.ts * 1000)).format(this.display_format),
@@ -109,8 +110,8 @@ export default class DatePicker extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextStates) {
-    if (nextProps.ts != this.old_ts) {
-      this.old_ts = nextProps.ts;
+    if (nextProps.ts != this.old_props_ts) {
+      this.old_props_ts = nextProps.ts;
       nextStates.time_ts = nextProps.ts;
       if (!this.focused) {
         nextStates.time_string = moment(new Date(nextProps.ts * 1000)).format(this.display_format);
@@ -342,11 +343,12 @@ export default class DatePicker extends React.Component {
                   value={moment(this.state.time_ts * 1000)}
                   onChange={value => {
                     var ts = value._d.getTime();
-                    console.log(new Date(ts));
-                    this.changeDate(new Date(ts), true);
                     MenusManager.closeMenu();
-                    this.cancelBlur = false;
-                    setTimeout(() => this.input.blur(), 100);
+                    setTimeout(() => {
+                      this.changeDate(new Date(ts), true);
+                      this.cancelBlur = false;
+                      this.input.blur();
+                    }, 100);
                   }}
                   onClick={() => this.input.focus()}
                 />
@@ -362,8 +364,6 @@ export default class DatePicker extends React.Component {
   }
 
   blur() {
-    console.log('call blur', this.state.time_ts);
-
     if (this.cancelBlur) {
       this.cancelBlur = false;
       return;

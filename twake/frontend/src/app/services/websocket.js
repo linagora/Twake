@@ -232,94 +232,109 @@ class Websocket extends Observable {
     }
     this.is_reconnecting = true;
 
-    var that = this;
-    var onopen = function(session) {
-      that.is_reconnecting = false;
+    api.post(
+      'users/alive',
+      { focus: this.didFocusedLastMinute },
+      res => {
+        if (res._request_failed) {
+          setTimeout(() => {
+            this.is_reconnecting = false;
+            this.reconnect();
+          }, 2000);
+        } else {
+          var that = this;
+          var onopen = function(session) {
+            that.is_reconnecting = false;
 
-      that.disconnect();
+            that.disconnect();
 
-      that.connected = true;
-      that.notify();
-      console.log('Network : Connected');
+            that.connected = true;
+            that.notify();
+            console.log('Network : Connected');
 
-      that.testNetwork = false;
+            that.testNetwork = false;
 
-      if (that.firstTime) {
-        that.firstTime = false;
-      } else {
-        if (new Date().getTime() - that.last_reconnect_call.getTime() > 10000) {
-          that.last_reconnect_call = new Date();
+            if (that.firstTime) {
+              that.firstTime = false;
+            } else {
+              if (new Date().getTime() - that.last_reconnect_call.getTime() > 10000) {
+                that.last_reconnect_call = new Date();
 
-          var key = Object.keys(that.disconnectListeners);
-          key.forEach(k => {
-            try {
-              that.disconnectListeners[k]();
-            } catch (err) {}
-          });
-        }
-      }
+                var key = Object.keys(that.disconnectListeners);
+                key.forEach(k => {
+                  try {
+                    that.disconnectListeners[k]();
+                  } catch (err) {}
+                });
+              }
+            }
 
-      that.ws = session;
-      that.startHeartBeat();
+            that.ws = session;
+            that.startHeartBeat();
 
-      var routes = Object.keys(that.subscribed);
-      routes.forEach(route => {
-        if (that.subscribed[route] && that.subscribed[route].length > 0) {
+            var routes = Object.keys(that.subscribed);
+            routes.forEach(route => {
+              if (that.subscribed[route] && that.subscribed[route].length > 0) {
+                try {
+                  this.ws.unsubscribe(route);
+                } catch (err) {}
+                var unid = Number.unid();
+                that.subscribedKey[route] = unid;
+                that.ws.subscribe(route, function(a, b) {
+                  that.message(unid, a, b);
+                });
+              }
+            });
+          };
+
           try {
-            this.ws.unsubscribe(route);
-          } catch (err) {}
-          var unid = Number.unid();
-          that.subscribedKey[route] = unid;
-          that.ws.subscribe(route, function(a, b) {
-            that.message(unid, a, b);
-          });
+            var connection = null;
+
+            var suffix = '';
+            if (this.use_old_mode) {
+              suffix = '/ws/';
+            }
+
+            var method = '?';
+            var route = Globals.window.websocket_url || '';
+
+            if (route.split('://').length > 1) {
+              method = route.split('://')[0];
+              route = route.split('://')[1];
+            }
+
+            console.log('wss://' + route + suffix);
+
+            if (
+              Globals.window.api_root_url.indexOf('https:') == 0 ||
+              Globals.window.standalone ||
+              Globals.window.reactNative ||
+              method == 'wss'
+            ) {
+              connection = that.autobahn.connect('wss://' + route + suffix);
+            } else {
+              connection = that.autobahn.connect('ws://' + route + suffix);
+            }
+
+            connection.on('socket/connect', function(session) {
+              that.is_reconnecting = false;
+
+              onopen(session);
+            });
+            connection.on('socket/disconnect', function(error) {
+              console.log(error);
+              that.connectionError(error.reason, error.code);
+              that.is_reconnecting = false;
+            });
+          } catch (err) {
+            that.connectionError('autobahn.connect', err);
+            that.is_reconnecting = false;
+          }
         }
-      });
-    };
-
-    try {
-      var connection = null;
-
-      var suffix = '';
-      if (this.use_old_mode) {
-        suffix = '/ws/';
-      }
-
-      var method = '?';
-      var route = Globals.window.websocket_url || '';
-
-      if (route.split('://').length > 1) {
-        method = route.split('://')[0];
-        route = route.split('://')[1];
-      }
-
-      console.log('wss://' + route + suffix);
-
-      if (
-        Globals.window.api_root_url.indexOf('https:') == 0 ||
-        Globals.window.standalone ||
-        Globals.window.reactNative ||
-        method == 'wss'
-      ) {
-        connection = that.autobahn.connect('wss://' + route + suffix);
-      } else {
-        connection = that.autobahn.connect('ws://' + route + suffix);
-      }
-
-      connection.on('socket/connect', function(session) {
-        that.is_reconnecting = false;
-
-        onopen(session);
-      });
-      connection.on('socket/disconnect', function(error) {
-        console.log(error);
-        that.connectionError(error.reason, error.code);
-        that.is_reconnecting = false;
-      });
-    } catch (err) {
-      that.connectionError('autobahn.connect', err);
-      that.is_reconnecting = false;
-    }
+      },
+      false,
+      5000,
+    );
   }
 
   disconnect() {

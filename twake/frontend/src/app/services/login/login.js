@@ -129,29 +129,7 @@ class Login extends Observable {
       url = Api.route('users/cas');
     }
 
-    var width = 400;
-    var height = 600;
-
-    var title = 'Login with ' + service;
-    var left = screen.width / 2 - width / 2;
-    var top = screen.height / 2 - height / 2;
-    var options = '';
-    options += ',width=' + width;
-    options += ',height=' + height;
-    options += ',top=' + top;
-    options += ',left=' + left;
-
-    /*    Globals.window.addEventListener('message', event => {});
-
-    Globals.window.loginCallback = data => {
-      console.log(data);
-    };
-*/
-
-    var popup = Globals.window.open(url, title, options);
-    popup.onbeforeunload = () => {
-      this.init();
-    };
+    Globals.window.location = url;
   }
 
   login(username, password, rememberme, hide_load) {
@@ -192,14 +170,6 @@ class Login extends Observable {
   }
 
   logout() {
-    if (CurrentUser.get().identity_provider == 'openid') {
-      var location = Api.route('users/openid/logout');
-      var popup = Globals.window.open(location, '', '');
-    } else if (CurrentUser.get().identity_provider == 'cas') {
-      var location = Api.route('users/cas/logout');
-      var popup = Globals.window.open(location, '', '');
-    }
-
     this.currentUserId = null;
 
     Globals.localStorageClear();
@@ -227,7 +197,15 @@ class Login extends Observable {
             that.state = 'logged_out';
             that.notify();
           } else {
-            Globals.window.location.reload();
+            if (CurrentUser.get().identity_provider == 'openid') {
+              var location = Api.route('users/openid/logout');
+              Globals.window.location = location;
+            } else if (CurrentUser.get().identity_provider == 'cas') {
+              var location = Api.route('users/cas/logout');
+              Globals.window.location = location;
+            } else {
+              Globals.window.location.reload();
+            }
           }
         },
       );
