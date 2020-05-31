@@ -85,6 +85,12 @@ export default class LoginView extends Component {
             </div>
           )}
 
+          {this.state.login.external_login_error && (
+            <div id="identification_information" className="smalltext error">
+              Unable to login: {this.state.login.external_login_error}
+            </div>
+          )}
+
           {(((login.server_infos || {}).auth_mode || []).indexOf('internal') >= 0 ||
             ((login.server_infos || {}).auth_mode || []).length == 0) && (
             <div class="internal-login">

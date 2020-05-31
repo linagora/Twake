@@ -33,7 +33,7 @@ class OpenID extends BaseController
         $logout_redirect_url = $this->getParameter("SERVER_NAME") . "/ajax/users/openid/logout_success";
 
         if($message){
-          $logout_redirect_url .= "?error_code=".urlencode(json_encode($message));
+          $logout_redirect_url .= "?error_code=".str_replace('+', '%20', urlencode(json_encode($message)));
         }
 
         $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . "?" . $logout_parameter . "=" . urlencode($logout_redirect_url));
@@ -125,13 +125,14 @@ class OpenID extends BaseController
 
     private function closeIframe($message)
     {
+        //TODO USE Unique use token instead of cookies !!!!
         $cookies = [];
         foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
                  as
                  $cookie) {
             $cookies[] = $cookie->asArray();
         }
-        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)])));
+        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)]))));
     }
 
 }

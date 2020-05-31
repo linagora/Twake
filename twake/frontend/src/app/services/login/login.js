@@ -104,11 +104,12 @@ class Login extends Observable {
       external_login_result = false;
     }
     if (external_login_result) {
-      if (external_login_result.cookies) {
+      if (external_login_result.cookies && external_login_result.message == 'success') {
         Globals.retrieveRequestCookies(external_login_result.cookies);
+      } else {
+        this.external_login_error = (external_login_result.message || {}).error || 'Unknown error';
       }
       this.firstInit = true;
-      this.external_login_error = true;
       this.notify();
     }
 
