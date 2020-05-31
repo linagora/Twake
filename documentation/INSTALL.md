@@ -18,6 +18,12 @@ cd twake
 ./start.sh
 ```
 
+### New account without mail configured
+
+If mails aren't sent, you can find the subscribe account link in the php container logs :
+
+`docker-compose logs -f --tail 100 php`
+
 # Using Keycloak
 
 ### Run keycloak and persist data
