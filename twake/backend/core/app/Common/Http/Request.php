@@ -38,8 +38,6 @@ class Request
         }
         $this->cookies = new ParamBag($cookies);
 
-        error_log("cookies: " . json_encode($cookies));
-
         if (0 === strpos($this->headers->get('Content-Type'), 'application/json')) {
             $data = json_decode($this->getContent(), true);
             $this->request = new ParamBag(is_array($data) ? $data : array());

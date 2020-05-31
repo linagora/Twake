@@ -48,6 +48,8 @@ docker-compose up -d
 
 echo "⏳ Install backend..."
 
+docker-compose exec php chmod -R 777 /twake-core/var/
+docker-compose exec php chmod -R 777 /tmp/
 docker-compose exec php php composer.phar install
 docker-compose exec php php bin/console twake:schema:update
 docker-compose exec php php bin/console twake:init

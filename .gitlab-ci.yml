@@ -16,6 +16,7 @@ test:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
+        - cd twake
         - mv docker/docker-compose-test.yml docker-compose.yml
         - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
         - apk add python python-dev py-pip build-base libffi-dev openssl-dev
@@ -28,9 +29,8 @@ test:
         - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
         - docker-compose exec -T php chmod -R 777 /twake-core/var/
         - docker-compose exec -T php chmod -R 777 /tmp/
+        - docker-compose exec -T php php ./bin/console twake:schema:update #Init install
         - docker-compose exec -T php php ./bin/console twake:init #Init install
-        - docker-compose exec -T php php composer.phar show
-
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
     when: always
@@ -42,6 +42,7 @@ manual_test:
         refs:
             - dev
     script:
+        - cd twake
         - mv docker/docker-compose-test.yml docker-compose.yml
         - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
         - apk add python python-dev py-pip build-base libffi-dev openssl-dev
@@ -54,9 +55,8 @@ manual_test:
         - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
         - docker-compose exec -T php chmod -R 777 /twake-core/var/
         - docker-compose exec -T php chmod -R 777 /tmp/
+        - docker-compose exec -T php php ./bin/console twake:schema:update #Init install
         - docker-compose exec -T php php ./bin/console twake:init #Init install
-        - docker-compose exec -T php php composer.phar show
-
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
     when: manual
@@ -69,13 +69,7 @@ front_test:
 
     script:
 
-        - echo on met en place le FRONT- echo on met en place le FRONT
-        - git clone https://oauth2:sU6C_fg6M6HRowGQYCr5@gitlab.com/Twake/Twake-react.git #attention, ce token expire le 30/09 et il est sur mon compte gitlab donc je suppose que si je n'ai plus accès au git de Twake cette commande ne fonctionnera plus....
-
-        - cd Twake-react
-        - git fetch
-        - git checkout 1.2
-
+        - cd frontend
         - apk update && apk add yarn
         - yarn install
         - yarn run dev-build

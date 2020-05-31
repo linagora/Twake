@@ -401,11 +401,11 @@ class User
         $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
 
-        if (!defined("TESTENV")) {
-            error_log("sign in code: " . $code);
-        }
-
         $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+
+        if (!defined("TESTENV")) {
+            error_log("sign in code: " . $magic_link);
+        }
 
         if ($sendEmail) {
             $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
