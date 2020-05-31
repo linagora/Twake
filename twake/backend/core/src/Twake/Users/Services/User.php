@@ -437,6 +437,8 @@ class User
 
         if ($sendEmail) {
             try {
+              $contact_list_subscribe = $this->app->getContainer()->getParameter("mail.mailjet.contact_list_subscribe");
+              if($contact_list_subscribe){
                 $data = Array(
                     "Email" => $mail,
                     "Properties" => Array(
@@ -446,13 +448,16 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post($contact_list_subscribe["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_subscribe["token"]));
+              }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
         }
         if ($newsletter) {
             try {
+              $contact_list_newsletter = $this->app->getContainer()->getParameter("mail.mailjet.contact_list_newsletter");
+              if($contact_list_newsletter){
                 $data = Array(
                     "Email" => $mail,
                     "Properties" => Array(
@@ -462,7 +467,8 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post($contact_list_newsletter["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_newsletter["token"]));
+              }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }

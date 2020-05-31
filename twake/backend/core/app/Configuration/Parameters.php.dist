@@ -41,6 +41,10 @@ class Parameters extends \Common\Configuration
                     "private_key" => "",
                     "domain_name" => '',
                     "selector" => ''
+                ],
+                "mailjet"=> [
+                  "contact_list_subscribe"=> false,
+                  "contact_list_newsletter"=> false
                 ]
             ],
             "websocket" => [
