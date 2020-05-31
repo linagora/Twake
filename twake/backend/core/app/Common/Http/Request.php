@@ -28,8 +28,10 @@ class Request
 
         //Get all cookies
         $cookies = $_COOKIE;
+        $header_cookies = [];
         try {
-            $header_cookies = json_decode(getallheaders()["All-Cookies"], 1);
+            $all_cookies = isset(getallheaders()["All-Cookies"]) ? getallheaders()["All-Cookies"] : "[]";
+            $header_cookies = json_decode($all_cookies, 1);
         } catch (\Exception $err) {
             $header_cookies = [];
         }

@@ -133,3 +133,5 @@ docker-compose.yml
 /app/Configuration/certs/apns_dev.pem
 /cache/
 /backend/core/vendor/
+
+cassandra.log

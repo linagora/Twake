@@ -47,10 +47,10 @@ class Parameters extends \Common\Configuration
             "db" => [
                 "driver" => "pdo_cassandra",
                 "host" => "scylladb",
-                "port" => false,
+                "port" => 9042,
                 "dbname" => "twake",
-                "user" => null,
-                "password" => null,
+                "user" => "root",
+                "password" => "root",
                 "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
                 "dev" => true
             ],

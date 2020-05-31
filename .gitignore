@@ -121,6 +121,9 @@ docker-compose.yml
 ### Dev ###
 /docker-data/*
 /docker/data/*
+/twake/docker-data/*
+/twake/docker-data
+/twake/backend/websockets_server/false
 
 ### Twake specific ###
 /build/

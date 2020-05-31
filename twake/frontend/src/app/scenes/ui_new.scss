@@ -38,6 +38,7 @@ body,
 .allow_selection,
 input,
 textarea {
+  font-family: $main_font;
   -webkit-touch-callout: text; /* iOS Safari */
   -webkit-user-select: text; /* Safari */
   -khtml-user-select: text; /* Konqueror HTML */
