@@ -1,0 +1,152 @@
+@import '~components/constants.scss';
+
+.task_draggable_parent {
+  margin-bottom: 8px;
+}
+
+.task_draggable_parent.archived {
+  opacity: 0.5;
+}
+
+.task_draggable {
+  white-space: pre-wrap;
+  padding: 16px;
+  border: 1px solid $grey_light;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: $white;
+
+  &.isDragging:active {
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+    border: 1px solid $white;
+    border-radius: 4px;
+    transform: rotateZ(3deg);
+  }
+
+  .attachmentPicker {
+    margin-top: 8px;
+    width: 100%;
+    .attachments,
+    .attachments .attachment,
+    .attachments .attachment > .file,
+    .attachments .attachment > .file .preview {
+      width: 100%;
+      margin: 0px;
+    }
+  }
+
+  .task.ant-card {
+    .ant-card-body {
+      padding: 14px;
+    }
+
+    .addon_icon {
+      float: right;
+      margin-left: 5px;
+
+      .anticon {
+        line-height: 20px;
+      }
+    }
+  }
+
+  .task.selected {
+    border-color: #0487e7;
+  }
+}
+
+.task {
+  position: relative;
+
+  .tags-in-name {
+    display: none;
+  }
+
+  .task_options {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    height: 24px;
+    background: $grey_background;
+    border-radius: 4px;
+    line-height: 24px;
+    cursor: pointer;
+    &:hover {
+      background: $grey_light;
+    }
+  }
+  &:hover .task_options {
+    display: block;
+  }
+
+  .task_line_2 {
+    float: left;
+    vertical-align: top;
+    padding: 5px 0;
+    padding-bottom: 0;
+    height: 18px;
+    margin-top: 8px;
+  }
+
+  .task_line_tags {
+    margin-bottom: -8px;
+    margin-top: 8px;
+  }
+
+  .task_users {
+    float: right;
+    vertical-align: top;
+    height: 26px;
+    margin-top: 8px;
+  }
+
+  .task_info {
+    display: inline;
+    color: $black;
+    line-height: 16px;
+    font-weight: 500;
+    font-size: 12px;
+    vertical-align: top;
+    margin-right: 4px;
+    i {
+      color: $grey_dark;
+      &:before {
+        margin-left: 0px;
+      }
+    }
+    span,
+    i {
+      vertical-align: top;
+      line-height: 18px;
+    }
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .isDone {
+    display: none;
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-size: 14px;
+    border: solid 1px rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    padding: 2px;
+    background: #fff;
+    box-shadow: 0 0 10px 10px rgba(255, 255, 255, 1);
+  }
+  .isDone:hover {
+    cursor: pointer;
+    color: rgb(81, 183, 91);
+    border-color: rgb(81, 183, 91);
+  }
+}
+.task:hover {
+  .isDone {
+    display: block;
+  }
+}

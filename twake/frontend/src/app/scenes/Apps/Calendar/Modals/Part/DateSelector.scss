@@ -1,0 +1,59 @@
+@import '~components/constants.scss';
+
+.date_selector_full {
+  display: inline-flex;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+  background: $grey_background;
+  max-width: 360px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .clock_part {
+    text-align: center;
+    width: 6%;
+    max-width: 32px;
+    min-width: 20px;
+  }
+  & > .middle {
+    width: 3%;
+    max-width: 32px;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: top;
+    display: inline-block;
+    padding: 0px 4px;
+    opacity: 0.5;
+  }
+  & > .start,
+  & > .end {
+    flex: 1;
+    display: inline-flex;
+    max-width: 150px;
+
+    input {
+      width: 100%;
+      max-width: none !important;
+    }
+
+    & > .time_selector {
+      flex: 1;
+    }
+
+    & > .date_selector {
+      flex: 2;
+    }
+  }
+
+  .icon_clock {
+    color: $grey_dark;
+    margin-top: 12px;
+    display: inline-block;
+    margin-right: -4px;
+  }
+  .input.medium {
+    text-align: center;
+    padding: 0px;
+  }
+}
