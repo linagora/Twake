@@ -4,6 +4,7 @@ export default {
   "sentry_dsn": false,
   "mixpanel_id": false,
   "version_detail": "1.2.200",
+  front_root_url: 'https://localhost:8000',
   "api_root_url": 'http://localhost:8000',
   "websocket_url": 'ws://localhost:8000',
   "websocket_use_old_mode": false,
