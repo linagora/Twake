@@ -82,7 +82,7 @@ class Response
         foreach ($this->headers->all() as $name => $value) {
             header($name . ": " . $value, true);
         }
-
+        header("Access-Control-Expose-Headers: All-Cookies");
     }
 
     public function send()

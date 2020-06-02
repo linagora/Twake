@@ -31,7 +31,7 @@ If you are interested in a hosted version of Twake on our infrastructure, please
 ## Manual install of Twake
 
 Install Twake on your machine with docker-compose using the install documentation here :
-[documentation/INSTALL.md](documentation/INSTALL.md)
+[documentation/INSTALL.md](documentation/install.md)
 
 ## License
 

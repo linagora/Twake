@@ -1,8 +1,8 @@
-# Installing Twake
+# Installing Twake (manual installation)
 
 ### Dependencies
 
-`docker`, `docker-compose`, `yarn`
+`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`
 
 ### Installation / update
 
@@ -66,3 +66,14 @@ Change auth.openid to:
 ```
 
 ℹ️ [machine_ip] Because Twake is accessing keycloak for inside a docker container, do not use localhost or 127.0.0.1 to access keycloak.
+
+### Reset Twake
+
+Reseting Twake is easy in dev mode, just delete the docker-data directory.
+
+```
+./stop.sh
+cd twake/
+rm -R docker-data/
+./install.sh
+```

@@ -46,6 +46,17 @@ echo "⏳ Install/Update docker..."
 docker-compose pull
 docker-compose up -d
 
+echo "⏳ IWait for scylladb..."
+
+res=7
+while [ "$res" = "7" ]
+do
+        docker-compose exec php curl -s scylladb:9042 > /dev/null
+        res=$?
+        sleep 5
+done
+
+
 echo "⏳ Install backend..."
 
 docker-compose exec php chmod -R 777 /tmp/
