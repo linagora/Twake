@@ -145,7 +145,7 @@
     "react-test-renderer": "^16.5.2",
     "sass-loader": "^7.1.0",
     "storybook-addon-specifications": "^2.1.2",
-    "webpack": "^4.20.2",
+    "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "why-did-you-update": "^1.0.6"
   }
