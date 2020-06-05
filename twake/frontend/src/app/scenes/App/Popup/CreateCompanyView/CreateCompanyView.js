@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
@@ -10,6 +10,7 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
+import CurrentUser from 'services/user/current_user.js';
 
 export default class CreateCompanyView extends Component {
   constructor() {
@@ -389,18 +390,22 @@ export default class CreateCompanyView extends Component {
     }
   }
   next() {
+    if (['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0) {
+      this.state.page = 4;
+    }
+
     if (this.state.page >= 4) {
       if (!this.did_create_workspace) {
         this.did_create_workspace = true;
         this.state.workspaces.createWorkspace(
           this.state.i18n.t('scenes.app.workspaces.create_company.default_workspace_name'),
-          this.state.members,
+          this.state.members || [],
           null,
           this.state.companyName,
           {
-            type: this.state.groupType,
-            size: this.state.groupSize,
-            main_activity: this.state.groupActivity,
+            type: this.state.groupType || '',
+            size: this.state.groupSize || '',
+            main_activity: this.state.groupActivity || '',
           },
         );
       }

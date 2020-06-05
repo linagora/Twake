@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
@@ -38,6 +38,12 @@ export default class Tutorial extends Component {
   componentDidMount() {
     if (ElectronService.isElectron()) {
       CurrentUserService.updateTutorialStatus('has_desktop_app');
+    }
+    if (
+      ['openid', 'cas'].indexOf(CurrentUserService.get().identity_provider) >= 0 &&
+      !(UserService.getCurrentUser().tutorial_status || {}).no_tuto
+    ) {
+      this.removeTuto('no_tuto', e);
     }
   }
   removeTuto(tuto, evt) {
