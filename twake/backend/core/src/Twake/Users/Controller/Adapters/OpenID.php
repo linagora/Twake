@@ -5,7 +5,7 @@ namespace Twake\Users\Controller\Adapters;
 use Common\BaseController;
 use Common\Http\Request;
 use Common\Http\Response;
-use Jumbojett\OpenIDConnectClient;
+use Twake\Users\Controller\Adapters\OpenID\OpenIDConnectClient;
 use Twake\Users\Entity\User;
 
 class OpenID extends BaseController
@@ -62,7 +62,9 @@ class OpenID extends BaseController
             $oidc->addScope(array('openid', 'email', 'profile'));
 
             try {
-                $authentificated = $oidc->authenticate($this);
+                $authentificated = $oidc->authenticate([
+                  "ignore_id_token" => true
+                ]);
             }catch(\Exception $err){
                 error_log("Error with Authenticated: ".$err);
                 $authentificated = false;
