@@ -216,7 +216,6 @@ class Adapter_Local implements AdapterInterface
         $pathTemp = $chunkFile . ".decrypt";
 
         $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
-        @unlink($chunkFile);
         return $pathTemp;
 
     }
