@@ -2,7 +2,11 @@
 
 ### Dependencies
 
-`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`
+`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`, `webpack`
+
+Procedure here :
+
+[./install_dependencies.md](./install_dependencies.md)
 
 ### Installation / update
 
