@@ -1,5 +1,6 @@
 docker-compose up -d
 docker-compose exec php chmod -R 777 /tmp/
+docker-compose exec php chmod -R 777 /twake-core
 
 echo "⏳ Wait for scylladb..."
 
