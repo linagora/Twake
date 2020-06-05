@@ -67,6 +67,9 @@ echo "⏳ Now waiting for scylladb"
 docker-compose exec php php bin/console twake:schema:update
 docker-compose exec php php bin/console twake:init
 
+docker-compose exec php chmod -R 777 /tmp/
+docker-compose exec php chmod -R 777 /twake-core
+
 docker-compose stop
 
 echo "✅ Twake is ready, run start.sh to start Twake."

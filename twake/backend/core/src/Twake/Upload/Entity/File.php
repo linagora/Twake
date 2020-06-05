@@ -130,7 +130,7 @@ class File
         if ($this->aws_public_link) {
             return false;
         }
-        return APPPATH . "/../web/" . $this->getPublicURL($size);
+        return "../web/" . $this->getPublicURL($size);
     }
 
 
@@ -259,4 +259,3 @@ class File
 
 
 }
-

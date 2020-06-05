@@ -154,7 +154,14 @@ Qp6BEGio7qt0MNDLr0WPxNQMmPcSazWOsoOCQBvEMg==
                     "use" => false,
                     "provider_uri" => 'https://auth0.com',
                     "client_id" => '',
-                    "client_secret" => ''
+                    "client_secret" => '',
+                    "provider_config" => [
+                      //token_endpoint
+                      //token_endpoint_auth_methods_supported
+                      //userinfo_endpoint
+                      //end_session_endpoint
+                      //authorization_endpoint
+                    ]
                 ],
                 "cas" => [
                     "use" => false,
