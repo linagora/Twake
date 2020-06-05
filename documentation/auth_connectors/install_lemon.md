@@ -28,7 +28,18 @@ Dans ClientOpenIDConnect > twake > Options > Basique > Adresse connexion :
 http://15.236.209.74/ajax/users/openid
 
 Dans ClientOpenIDConnect > twake > Attributs exportés :
-email_verified, picture, name (=>cn), given_name (=>givenName), family_name (=>sn), email (=>mail), sub (=>uid)
+
+```
+{
+  email_verified: email_verified,
+  picture: picture,
+  name: cn,
+  given_name: givenName,
+  family_name: sn,
+  email: mail,
+  sub: uid
+}
+```
 
 [Ne marche pas pour le moment]
 Dans ClientOpenIDConnect > twake > Options > Déconnexion > Adresse :

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import workspacesUsersService from 'services/workspaces/workspaces_users.js';
@@ -221,9 +221,16 @@ export default class AddUser extends Component {
             onClick={() => {
               this.finish();
             }}
-            value={this.state.i18n.t(
-              'scenes.apps.parameters.group_sections.managers.invite_manager_button',
-            )}
+            value={
+              this.state.members.length == 0
+                ? this.state.i18n.t(
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
+                    'Skip',
+                  )
+                : this.state.i18n.t(
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button',
+                  )
+            }
             loading={this.state.workspacesUsersService.loading || this.props.loading}
             loadingTimeout={1500}
           />

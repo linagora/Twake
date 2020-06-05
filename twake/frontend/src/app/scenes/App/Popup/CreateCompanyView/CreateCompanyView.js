@@ -390,10 +390,6 @@ export default class CreateCompanyView extends Component {
     }
   }
   next() {
-    if (['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0) {
-      this.state.page = 4;
-    }
-
     if (this.state.page >= 4) {
       if (!this.did_create_workspace) {
         this.did_create_workspace = true;
@@ -410,6 +406,14 @@ export default class CreateCompanyView extends Component {
         );
       }
     } else {
+      //Pass usage form
+      if (
+        ['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0 &&
+        this.state.page == 1
+      ) {
+        this.state.page = 2;
+      }
+
       if (this.state.page == 2) {
         this.state.page = 3;
       }

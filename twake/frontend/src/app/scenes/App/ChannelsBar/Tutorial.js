@@ -43,7 +43,7 @@ export default class Tutorial extends Component {
       ['openid', 'cas'].indexOf(CurrentUserService.get().identity_provider) >= 0 &&
       !(UserService.getCurrentUser().tutorial_status || {}).no_tuto
     ) {
-      this.removeTuto('no_tuto', e);
+      CurrentUserService.updateTutorialStatus('no_tuto');
     }
   }
   removeTuto(tuto, evt) {

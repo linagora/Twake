@@ -62,7 +62,7 @@ class OpenID extends BaseController
             $oidc->addScope(array('openid', 'email', 'profile'));
 
             try {
-                $authentificated = $oidc->authenticateWithOption($this);
+                $authentificated = $oidc->authenticate($this);
             }catch(\Exception $err){
                 error_log("Error with Authenticated: ".$err);
                 $authentificated = false;
