@@ -30,7 +30,7 @@ class OpenID extends BaseController
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
         $logout_url_suffix = $this->getParameter("auth.openid.logout_suffix") ?: "/logout";
 
-        $logout_redirect_url = $this->getParameter("SERVER_NAME") . "/ajax/users/openid/logout_success";
+        $logout_redirect_url = rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid/logout_success";
 
         if($message){
           $logout_redirect_url .= "?error_code=".str_replace('+', '%20', urlencode(json_encode($message)));
@@ -57,7 +57,7 @@ class OpenID extends BaseController
 
             $oidc->providerConfigParam($this->getParameter("auth.openid.provider_config", []));
 
-            $oidc->setRedirectURL($this->getParameter("SERVER_NAME") . "/ajax/users/openid");
+            $oidc->setRedirectURL(rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid");
 
             $oidc->addScope(array('openid', 'email', 'profile'));
 
@@ -79,7 +79,7 @@ class OpenID extends BaseController
                 $data["email_verified"] = $oidc->requestUserInfo('email_verified');
                 $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
-                if (empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) {
+                if ((empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) && !$this->getParameter("auth.openid.ignore_mail_verified")) {
                     return $this->logout($request, ["error" => "Your mail is not verified"]);
                 }
 
@@ -134,7 +134,7 @@ class OpenID extends BaseController
                  $cookie) {
             $cookies[] = $cookie->asArray();
         }
-        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)]))));
+        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)]))));
     }
 
 }
