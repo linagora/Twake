@@ -39,6 +39,8 @@ export default class Tutorial extends Component {
     if (ElectronService.isElectron()) {
       CurrentUserService.updateTutorialStatus('has_desktop_app');
     }
+  }
+  componentDidUpdate() {
     if (
       ['openid', 'cas'].indexOf(CurrentUserService.get().identity_provider) >= 0 &&
       !(UserService.getCurrentUser().tutorial_status || {}).no_tuto

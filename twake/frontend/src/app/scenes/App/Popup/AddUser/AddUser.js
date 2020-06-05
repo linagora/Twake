@@ -222,7 +222,7 @@ export default class AddUser extends Component {
               this.finish();
             }}
             value={
-              this.state.members.length == 0
+              (this.state.members || []).map(item => (item || {}).mail || '').join('').length == 0
                 ? this.state.i18n.t(
                     'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
                     'Skip',
