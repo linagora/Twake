@@ -27,23 +27,23 @@ class Bundle extends BaseBundle
         $this->services = (new Services())->getServices();
         $this->initServices();
 
-        $path = __DIR__ . "/../Connectors/"
-        $dir = new DirectoryIterator($path);
+        $path = __DIR__ . "/../Connectors/";
+        $dir = new \DirectoryIterator($path);
         $connectors_bundles_instances = [];
         // Require and instanciate all defined connectors
         foreach ($dir as $fileinfo) {
             if ($fileinfo->isDir() && !$fileinfo->isDot()) {
               try{
-                $bundle = "BuiltInConnectors/Connectors/" . $file->getFilename();
-                if (file_exists(__DIR__ . "/../src/" . $bundle . "/Bundle.php")) {
-                    require_once __DIR__ . "/../src/" . $bundle . "/Bundle.php";
+                $bundle = "BuiltInConnectors/Connectors/" . $fileinfo->getFilename();
+                if (file_exists(__DIR__ . "/../../" . $bundle . "/Bundle.php")) {
+                    require_once __DIR__ . "/../../" . $bundle . "/Bundle.php";
                     $class_name = str_replace("/", "\\", $bundle) . "\\Bundle";
-                    $connectors_bundles_instances[] = new $class_name($this);
+                    $connectors_bundles_instances[] = new $class_name($this->app);
                 } else {
                     error_log("No such connector bundle " . $bundle);
                 }
               }catch(\Exception $err){
-                error_log("No such connector bundle " . $file->getFilename());
+                error_log("No such connector bundle " . $fileinfo->getFilename());
                 error_log($err->getMessage());
               }
             }

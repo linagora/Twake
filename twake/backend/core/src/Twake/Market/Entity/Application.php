@@ -562,6 +562,8 @@ class Application extends SearchableObject
     {
         $return = $this->getAsArray();
 
+        $return["id"] = $this->getId();
+
         $return["api_id"] = $this->getId();
         $return["api_key"] = $this->getApiPrivateKey();
         $return["api_event_url"] = $this->getApiEventsUrl();

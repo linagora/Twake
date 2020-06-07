@@ -36,13 +36,17 @@ class MarketApplication
     public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
     {
 
-        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-        $group = $workspace->getGroup();
+        $group_id = "10000000-1000-1000-1000-100000000000";
+        if($workspace_id || $current_user_id != null){
+          $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+          $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+          $group = $workspace->getGroup();
+          $group_id = $group->getId();
+        }
 
         if ($current_user_id == null
             || $this->gms->hasPrivileges(
-                $this->gms->getLevel($group->getId(), $current_user_id),
+                $this->gms->getLevel($group_id, $current_user_id),
                 "MANAGE_APPS"
             )
         ) {
@@ -51,7 +55,7 @@ class MarketApplication
                 return false;
             }
 
-            $application = new Application($group->getId(), $name);
+            $application = new Application($group_id, $name);
             $application->setCreationDate(new \DateTime());
             $application->setAppGroupName($app_group_name);
 
@@ -71,19 +75,23 @@ class MarketApplication
     public function getGroupDevelopedApps($workspace_id, $current_user_id)
     {
 
-        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-        $group = $workspace->getGroup();
+        $group_id = "10000000-1000-1000-1000-100000000000";
+        if($workspace_id || $current_user_id != null){
+          $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+          $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+          $group = $workspace->getGroup();
+          $group_id = $group->getId();
+        }
 
         if ($current_user_id == null
             || $this->gms->hasPrivileges(
-                $this->gms->getLevel($group->getId(), $current_user_id),
+                $this->gms->getLevel($group_id, $current_user_id),
                 "MANAGE_APPS"
             )
         ) {
 
             $repo = $this->doctrine->getRepository("Twake\Market:Application");
-            $apps = $repo->findBy(Array("group_id" => $group->getId()));
+            $apps = $repo->findBy(Array("group_id" => $group_id));
 
             $list = [];
 

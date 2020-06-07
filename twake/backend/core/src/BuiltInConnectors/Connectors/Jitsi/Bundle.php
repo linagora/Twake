@@ -23,7 +23,7 @@ class Bundle extends BaseBundle
     {
         $routing = new Routing();
         $this->routes = $routing->getRoutes();
-        $this->routing_prefix = "bundle/connectors/" . $routing->getRoutesPrefix();
+        $this->routing_prefix = "bundle/connectors/" . (new ConnectorDefinition())->definition["simple_name"] . $routing->getRoutesPrefix();
         $this->initRoutes();
 
         $this->services = (new Services())->getServices();

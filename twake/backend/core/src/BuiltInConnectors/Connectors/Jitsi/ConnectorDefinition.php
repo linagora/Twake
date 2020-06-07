@@ -1,10 +1,8 @@
 <?php
+namespace BuiltInConnectors\Connectors\Jitsi;
 
 class ConnectorDefinition
 {
-
-  public $bundle_name = "Jitsi";
-
   public $definition = [
     [
       'app_group_name' => 'twake',
@@ -36,10 +34,8 @@ class ConnectorDefinition
           ]
         ]
       ],
-      'public' => true,
-      'is_available_to_public' => true,
       'api_allowed_ips' => '*',
       'api_event_url' => '/event'
-    )
+    ]
   ];
 }

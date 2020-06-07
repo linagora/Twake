@@ -7,7 +7,7 @@ use Common\BaseRouting;
 class Routing extends BaseRouting
 {
 
-    protected $routing_prefix = "jitsi/";
+    protected $routing_prefix = "/";
 
     protected $routes = [
 
