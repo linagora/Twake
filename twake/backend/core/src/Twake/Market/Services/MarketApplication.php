@@ -51,7 +51,7 @@ class MarketApplication
             )
         ) {
 
-            if (!$name || !$simple_name || !$workspace_id) {
+            if (!$name || !$simple_name || (!$workspace_id && $current_user_id != null)) {
                 return false;
             }
 
@@ -201,6 +201,27 @@ class MarketApplication
 
         return false;
 
+    }
+
+    public function toggleAppValidation($application_id, $status = null){
+      $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $appsRepository->findOneBy(array("id" => $id));
+
+      $rep = false;
+
+      if ($app) {
+          if ($app->getPublic()) {
+
+              if($status === null){
+                $status = !$app->getIsAvailableToPublic();
+              }
+
+              $app->setIsAvailableToPublic($status);
+              $this->doctrine->persist($app);
+          }
+      }
+
+      $this->doctrine->flush();
     }
 
     public function remove($application_id, $current_user_id)

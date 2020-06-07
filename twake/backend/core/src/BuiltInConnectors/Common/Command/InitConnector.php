@@ -15,15 +15,17 @@ class InitConnector extends ContainerAwareCommand
     protected function execute()
     {
 
-      $connector_name = isset(func_get_args()[0]) ? func_get_args()[0] : false;
+      $arg_list = $_SERVER['argv'];
+
+      $connector_name = isset($arg_list[0]) ? $arg_list[0] : false;
       if(!$connector_name){
         error_log("Choose which connector to enable.\n php bin/console twake:init_connector jitsi enable forced\n php bin/console twake:init_connector jitsi disable");
         die;
       }
-      $action_name = isset(func_get_args()[1]) ? func_get_args()[1] : "enable";
+      $action_name = isset($arg_list[1]) ? $arg_list[1] : "enable";
       $enable = $action_name != "disable";
 
-      $second_action_name = isset(func_get_args()[2]) ? func_get_args()[2] : "";
+      $second_action_name = isset($arg_list[2]) ? $arg_list[2] : "";
       $force = $second_action_name == "forced";
 
       error_log(($enable?"Enabling" : "Disabling") . " " . $connector_name. ($force?" and forcing in future workspaces":"") . "!");
@@ -54,14 +56,13 @@ class InitConnector extends ContainerAwareCommand
       foreach ($connectors_bundles_instances as $bundle_instance) {
         if(method_exists($bundle_instance, "getDefinition")){
           $definition = $bundle_instance->getDefinition();
-          error_log(json_encode($definition));
 
           if($definition["simple_name"] == $connector_name){
               $found = true;
 
               $simple_name = "twake.".$definition["simple_name"];
 
-              $app_exists = $this->app->get("app.applications")->findAppBySimpleName($simple_name, true);
+              $app_exists = $this->app->getServices()->get("app.applications")->findAppBySimpleName($simple_name, true);
 
               $application = [
                 'simple_name' => $simple_name,
@@ -76,18 +77,22 @@ class InitConnector extends ContainerAwareCommand
                 'hooks' => $definition['hooks'],
                 'display' => $definition['display'],
                 'api_allowed_ips' => $definition['api_allowed_ips'],
-                'api_event_url' => rtrim($this->app->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . ltrim($definition['api_event_url'], "/"),
-                'public': true
+                'api_event_url' => rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . ltrim($definition['api_event_url'], "/"),
+                'public' => true
               ];
 
               if($enable){
                 //Update database with this app
                 if(!$app_exists){
-                  $new_app = $this->app->get("app.applications")->createApp(null, $definition["name"], $simple_name, $definition["app_group_name"], null);
+                  $new_app = $this->app->getServices()->get("app.applications")->createApp(null, $definition["name"], $simple_name, $definition["app_group_name"], null);
                   $application["id"] = $new_app["id"];
+                }else{
+                  $application["id"] = $app_exists["id"];
                 }
 
-                $this->app->get("app.applications")->update($application, true);
+                $this->app->getServices()->get("app.applications")->update($application, null);
+
+                $this->app->getServices()->get("app.applications")->toggleAppValidation($application["id"], true);
 
                 error_log("The connector is now available to the public.");
               }else{
@@ -96,7 +101,7 @@ class InitConnector extends ContainerAwareCommand
                 if($app_exists){
                     $application["public"] = false;
                     $application["id"] = $app_exists["id"];
-                    $this->app->get("app.applications")->update($application, true);
+                    $this->app->getServices()->get("app.applications")->toggleAppValidation($application["id"], false);
                 }
 
                 error_log("The connector is now unavailable to the public.");

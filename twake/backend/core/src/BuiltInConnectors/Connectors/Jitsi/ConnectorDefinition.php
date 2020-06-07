@@ -4,7 +4,6 @@ namespace BuiltInConnectors\Connectors\Jitsi;
 class ConnectorDefinition
 {
   public $definition = [
-    [
       'app_group_name' => 'twake',
       'categories' => [ 'voice_video' ],
       'name' => 'Jitsi',
@@ -36,6 +35,5 @@ class ConnectorDefinition
       ],
       'api_allowed_ips' => '*',
       'api_event_url' => '/event'
-    ]
   ];
 }
