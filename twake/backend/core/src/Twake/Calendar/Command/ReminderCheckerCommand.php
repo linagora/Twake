@@ -3,8 +3,6 @@
 namespace Twake\Calendar\Command;
 
 use Common\Commands\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 
 class ReminderCheckerCommand extends ContainerAwareCommand

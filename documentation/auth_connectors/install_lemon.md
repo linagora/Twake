@@ -22,6 +22,10 @@ Edit Twake PHP config `twake/backend/core/app/Configuration/Parameters.php`
 ],
 ```
 
+Add line to /etc/hosts if needed :
+
+`sudo docker-compose exec php bash -c "echo '51.210.124.92 manager.open-paas.org.local auth.open-paas.org.local reload.open-paas.org.local' >> /etc/hosts"`
+
 ### 2. Lemon LDAP configuration
 
 Dans ClientOpenIDConnect > twake > Options > Basique > Adresse connexion :
@@ -44,38 +48,3 @@ Dans ClientOpenIDConnect > twake > Attributs exportés :
 [Ne marche pas pour le moment]
 Dans ClientOpenIDConnect > twake > Options > Déconnexion > Adresse :
 http://15.236.209.74/ajax/users/openid/logout_success
-
-### 3. Twake vendors
-
-[Monkey fix for now because id_token is null with LemonLDAP]
-
-Change file `vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php` line 284 :
-
-```
-if (!property_exists($token_json, 'id_token')) {
-    throw new OpenIDConnectClientException("User did not authorize openid scope.");
-}
-
-$claims = $this->decodeJWT($token_json->id_token, 1);
-
-// Verify the signature
-if ($this->canVerifySignatures()) {
-     if (!$this->getProviderConfigValue('jwks_uri')) {
-        throw new OpenIDConnectClientException ("Unable to verify signature due to no jwks_uri being defined");
-    }
-    if (!$this->verifyJWTsignature($token_json->id_token)) {
-        throw new OpenIDConnectClientException ("Unable to verify signature");
-    }
-} else {
-    user_error("Warning: JWT signature verification unavailable.");
-}
-
-// If this is a valid claim
-if ($this->verifyJWTclaims($claims, $token_json->access_token)) {
-```
-
-to
-
-```
-if (true) {
-```

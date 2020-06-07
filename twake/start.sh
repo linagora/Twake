@@ -12,4 +12,4 @@ do
         sleep 5
 done
 
-echo "✅ Twake is running on port 8000 !"
+echo "✅ Twake is running (on port 8000 if default) !"

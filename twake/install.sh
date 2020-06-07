@@ -37,6 +37,7 @@ fi
 echo "⏳ Building frontend..."
 
 cd frontend
+chmod -R 777 .
 yarn install --silent
 yarn build-after-sh
 cd ../
@@ -46,7 +47,13 @@ echo "⏳ Install/Update docker..."
 docker-compose pull
 docker-compose up -d
 
-echo "⏳ IWait for scylladb..."
+
+echo "⏳ Install backend..."
+
+docker-compose exec php chmod -R 777 /tmp/
+docker-compose exec php php composer.phar install
+
+echo "⏳ Now waiting for scylladb"
 
 res=7
 while [ "$res" = "7" ]
@@ -56,13 +63,7 @@ do
         sleep 5
 done
 
-
-echo "⏳ Install backend..."
-
-docker-compose exec php chmod -R 777 /tmp/
-docker-compose exec php php composer.phar install
-
-echo "⏳ Now waiting for scylladb"
+echo "⏳ Init or update scylladb..."
 
 docker-compose exec php php bin/console twake:schema:update
 docker-compose exec php php bin/console twake:init
