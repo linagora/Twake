@@ -107,7 +107,7 @@ class Login extends Observable {
       if (external_login_result.token && external_login_result.message == 'success') {
         //Login with token
         try {
-          token = JSON.parse(token);
+          const token = JSON.parse(external_login_result.token);
           this.login(token.username, token.token, true, true);
           this.firstInit = true;
           return;
