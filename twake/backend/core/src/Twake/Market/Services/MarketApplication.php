@@ -28,7 +28,7 @@ class MarketApplication
 
     public function getCredentials($simple_name){
       $repo = $this->doctrine->getRepository("Twake\Market:Application");
-      $app = $repo->findOneBy(Array("simple_name" => $name));
+      $app = $repo->findOneBy(Array("simple_name" => $simple_name));
       return ($app) ? $app->getAsCredentialArray() : false;
     }
 

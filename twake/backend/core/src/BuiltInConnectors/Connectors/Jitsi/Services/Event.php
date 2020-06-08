@@ -33,7 +33,7 @@ class Event
 
             $room_id = $channel["id"];
 
-            $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake-" . $room_id;
+            $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake_" . str_replace("-", "_", $room_id);
 
             $message["channel_id"] = $channel["id"];
             $message["sender"] = $user["id"];
@@ -62,7 +62,7 @@ class Event
 
             $room_id = $message["hidden_data"]["room_id"];
 
-            $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake-" . $room_id;
+            $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake_" . str_replace("-", "_", $room_id);
 
             $display = Array(
                     "type" => "system", "content" => [

@@ -35,4 +35,8 @@ class Bundle extends BaseBundle
       return (new ConnectorDefinition())->definition;
     }
 
+    public function getConfiguration(){
+      return (new ConnectorDefinition())->configuration;
+    }
+
 }

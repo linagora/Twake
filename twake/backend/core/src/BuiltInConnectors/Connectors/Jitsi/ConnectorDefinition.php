@@ -3,6 +3,10 @@ namespace BuiltInConnectors\Connectors\Jitsi;
 
 class ConnectorDefinition
 {
+  public $configuration = [
+    'jitsi_domain' => 'jitsi.drs2-perf.integration-open-paas.org'
+  ];
+
   public $definition = [
       'app_group_name' => 'twake',
       'categories' => [ 'voice_video' ],

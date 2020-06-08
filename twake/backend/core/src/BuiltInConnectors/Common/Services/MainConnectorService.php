@@ -21,14 +21,14 @@ class MainConnectorService {
         $this->emojione_client = new Client(new Ruleset());
     }
 
-    public setConnector($simple_name){
+    public function setConnector($simple_name){
       $this->app_simple_name = $simple_name;
     }
 
-    private getConnectorKeys(){
+    private function getConnectorKeys(){
       $simple_name = "twake." . $this->app_simple_name;
       if(!isset($this->credentials[$simple_name])){
-        $this->credentials[$simple_name] = $this->market_service->getCredentials($this->app_simple_name);
+        $this->credentials[$simple_name] = $this->market_service->getCredentials($simple_name);
       }
       return $this->credentials[$simple_name];
     }
