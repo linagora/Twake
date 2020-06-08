@@ -458,7 +458,7 @@ class User extends SearchableObject
 
     public function setTokenLogin($token_login)
     {
-        $this->token_login = $token_login;
+        $this->token_login = json_encode($token_login);
     }
 
     /**

@@ -26,9 +26,9 @@ class InitConnector extends ContainerAwareCommand
       $enable = $action_name != "disable";
 
       $second_action_name = isset($arg_list[2]) ? $arg_list[2] : "";
-      $force = $second_action_name == "forced";
+      $is_default = $second_action_name == "default";
 
-      error_log(($enable?"Enabling" : "Disabling") . " " . $connector_name. ($force?" and forcing in future workspaces":"") . "!");
+      error_log(($enable?"Enabling" : "Disabling") . " " . $connector_name. ($is_default?" and default for future workspaces":"") . "!");
 
       $path = __DIR__ . "/../../Connectors/";
       $dir = new \DirectoryIterator($path);
@@ -91,8 +91,11 @@ class InitConnector extends ContainerAwareCommand
                 }
 
                 $this->app->getServices()->get("app.applications")->update($application, null);
-
                 $this->app->getServices()->get("app.applications")->toggleAppValidation($application["id"], true);
+
+                if($is_default){
+                  $this->app->getServices()->get("app.applications")->toggleAppDefault($application["id"], true);
+                }
 
                 error_log("The connector is now available to the public.");
               }else{
@@ -102,6 +105,7 @@ class InitConnector extends ContainerAwareCommand
                     $application["public"] = false;
                     $application["id"] = $app_exists["id"];
                     $this->app->getServices()->get("app.applications")->toggleAppValidation($application["id"], false);
+                    $this->app->getServices()->get("app.applications")->toggleAppDefault($application["id"], false);
                 }
 
                 error_log("The connector is now unavailable to the public.");

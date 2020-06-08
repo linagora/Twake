@@ -209,6 +209,30 @@ class MarketApplication
 
     }
 
+    public function toggleAppDefault($application_id, $status = null){
+      $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $appsRepository->findOneBy(array("id" => $application_id));
+
+      $rep = false;
+
+      if ($app) {
+
+          $app->setEsIndexed(false);
+
+          if ($app->getDefault()) {
+
+              if($status === null){
+                $status = !$app->getDefault();
+              }
+
+              $app->setDefault($status);
+              $this->doctrine->persist($app);
+          }
+      }
+
+      $this->doctrine->flush();
+    }
+
     public function toggleAppValidation($application_id, $status = null){
       $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
       $app = $appsRepository->findOneBy(array("id" => $application_id));

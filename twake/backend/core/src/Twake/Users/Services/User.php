@@ -191,6 +191,9 @@ class User
           ]
         );
 
+        $this->em->persist($user);
+        $this->em->flush();
+
         return ["token" => $token, "username" => $user->getUsername()];
 
     }
@@ -222,7 +225,7 @@ class User
         }
 
         $encoder = $this->encoder;
-        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $passwordOrToken, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
