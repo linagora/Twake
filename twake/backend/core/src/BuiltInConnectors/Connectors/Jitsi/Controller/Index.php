@@ -23,22 +23,26 @@ class Index extends BaseController
 
     public function call(Request $request){
         $user_id = $request->query->get("twake_user", false);
-        $group_id = $request->query->get("twake_group", false);
+
+        $id = explode("__", array_pop(explode("/", $_SERVER['REQUEST_URI'])));
+
+        $group_id = str_replace("_", "-", $id[0]);
+        $id = str_replace("_", "", $id[1]);
         $user = $this->get('connectors.jitsi.event')->getUserFromId(str_replace("twake-", "", str_replace("_", "-", $id)), $user_id, $group_id);
 
-        $loader = new \Twig\Loader\FilesystemLoader(__DIR__.'/../Views/');
+        $loader = new \Twig\Loader\FilesystemLoader(realpath(__DIR__.'/../Views/'));
         $twig = new \Twig\Environment($loader, [
             'cache' =>  $this->app->getAppRootDir() . "/" . $this->app->getContainer()->get("configuration", "twig.cache"),
         ]);
-        $twig->load("index.html.twig");
+        $template = $twig->load("Templates/call.html.twig");
 
         $configuration = (new ConnectorDefinition())->configuration;
 
-        return $twig->render(
+        return $template->render(
           Array(
             "id" => $id,
             "user" => $user,
-            "jitsi_domain" => $configuration["jitsi_domain"]
+            "jitsi_domain" => $this->getParameter("connectors.jitsi.jitsi_domain", $configuration["jitsi_domain"])
           )
         );
     }

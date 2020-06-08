@@ -4,7 +4,7 @@ namespace BuiltInConnectors\Connectors\Jitsi;
 class ConnectorDefinition
 {
   public $configuration = [
-    'jitsi_domain' => 'jitsi.drs2-perf.integration-open-paas.org'
+    'jitsi_domain' => 'meet.jit.si'
   ];
 
   public $definition = [

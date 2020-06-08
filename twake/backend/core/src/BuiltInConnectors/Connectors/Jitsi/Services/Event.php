@@ -31,7 +31,7 @@ class Event
 
         if ($type == "action" && ($event == "command" || $event == "open")) {
 
-            $room_id = $channel["id"];
+            $room_id = $group["id"]."__".$channel["id"];
 
             $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake_" . str_replace("-", "_", $room_id);
 
