@@ -24,7 +24,7 @@ class Index extends BaseController
     public function call(Request $request){
         $user_id = $request->query->get("twake_user", false);
 
-        $id = explode("__", array_pop(explode("/", $_SERVER['REQUEST_URI'])));
+        $id = explode("__", explode("twake_", array_pop(explode("/", $_SERVER['REQUEST_URI'])))[1]);
 
         $group_id = str_replace("_", "-", $id[0]);
         $id = str_replace("_", "", $id[1]);
@@ -38,7 +38,7 @@ class Index extends BaseController
 
         $configuration = (new ConnectorDefinition())->configuration;
 
-        return new Response($template->render( 
+        return new Response($template->render(
           Array(
             "id" => $id,
             "user" => $user,
