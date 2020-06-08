@@ -38,7 +38,7 @@ class Index extends BaseController
 
         $configuration = (new ConnectorDefinition())->configuration;
 
-        return new Response($template->render(
+        return new Response($template->render( 
           Array(
             "id" => $id,
             "user" => $user,
