@@ -98,7 +98,7 @@ class User
 
     }
 
-    public function loginFromService($service_id, $external_id, $email, $username, $fullname, $picture)
+    public function loginFromServiceWithToken($service_id, $external_id, $email, $username, $fullname, $picture)
     {
         $user = $this->getUserFromExternalRepository($service_id, $external_id);
 
@@ -160,10 +160,10 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return $this->loginWithUsernameOnly($user->getusernameCanonical());
+        return $this->loginWithUsernameOnlyWithToken($user->getusernameCanonical());
     }
 
-    public function loginWithUsernameOnly($usernameOrMail, Response $response = null)
+    public function loginWithUsernameOnlyWithToken($usernameOrMail, Response $response = null)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
@@ -182,14 +182,20 @@ class User
             return false;
         }
 
-        // User log in
-        $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, false, $response);
+        $token = bin2hex(random_bytes(64));
 
-        return $user;
+        $user->setTokenLogin(
+          [
+            "expiration" => date("U") + 120,
+            "token" => $token
+          ]
+        );
+
+        return ["token" => $token, "username" => $user->getUsername()];
 
     }
 
-    public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
+    public function login($usernameOrMail, $passwordOrToken, $rememberMe = false, $request = null, $response = null)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
@@ -206,13 +212,21 @@ class User
             return false;
         }
 
+        $tokenLogin = $user->getTokenLogin();
+
+        if(isset($tokenLogin["expiration"]) && $tokenLogin["expiration"] > date("U")){
+          if(isset($tokenLogin["token"]) && $tokenLogin["token"] == $passwordOrToken){
+            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            return $user;
+          }
+        }
+
         $encoder = $this->encoder;
         $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
             $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
-
             return $user;
 
         }

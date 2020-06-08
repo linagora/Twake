@@ -48,6 +48,8 @@ class OpenID extends BaseController
 
         error_reporting(E_ERROR | E_PARSE);
 
+        $this->get("app.user")->logout($request);
+
         try {
             $oidc = new OpenIDConnectClient(
                 $this->getParameter("auth.openid.provider_uri"),
@@ -106,10 +108,10 @@ class OpenID extends BaseController
                 );
 
                 /** @var User $user */
-                $user = $this->get("app.user")->loginFromService("openid", $external_id, $email, $username, $fullname, $picture);
+                $userTokens = $this->get("app.user")->loginFromServiceWithToken("openid", $external_id, $email, $username, $fullname, $picture);
 
-                if ($user) {
-                    return $this->closeIframe("success");
+                if ($userTokens) {
+                    return $this->closeIframe("success", $userTokens);
                 }else{
                     return $this->logout($request, ["error" => "No user profile created"]);
                 }
@@ -127,16 +129,9 @@ class OpenID extends BaseController
 
     }
 
-    private function closeIframe($message)
+    private function closeIframe($message, $userTokens=null)
     {
-        //TODO USE Unique use token instead of cookies !!!!
-        $cookies = [];
-        foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
-                 as
-                 $cookie) {
-            $cookies[] = $cookie->asArray();
-        }
-        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)]))));
+        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
 }

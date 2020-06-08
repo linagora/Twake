@@ -104,8 +104,16 @@ class Login extends Observable {
       external_login_result = false;
     }
     if (external_login_result) {
-      if (external_login_result.cookies && external_login_result.message == 'success') {
-        Globals.retrieveRequestCookies(external_login_result.cookies);
+      if (external_login_result.token && external_login_result.message == 'success') {
+        //Login with token
+        try {
+          token = JSON.parse(token);
+          this.login(token.username, token.token, true, true);
+          this.firstInit = true;
+          return;
+        } catch {
+          this.external_login_error = 'Unknown error';
+        }
       } else {
         this.external_login_error = (external_login_result.message || {}).error || 'Unknown error';
       }
@@ -117,10 +125,16 @@ class Login extends Observable {
     Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function(res) {
       that.firstInit = true;
       if (res.errors.length > 0) {
-        if (that.server_infos.auth_mode == 'openid' && !that.external_login_error) {
+        if (
+          res.errors.indexOf('redirect_to_openid') >= 0 ||
+          (that.server_infos.auth_mode == 'openid' && !that.external_login_error)
+        ) {
           document.location = Api.route('users/openid');
           return;
-        } else if (that.server_infos.auth_mode == 'cas' && !that.external_login_error) {
+        } else if (
+          res.errors.indexOf('redirect_to_cas') >= 0 ||
+          (that.server_infos.auth_mode == 'cas' && !that.external_login_error)
+        ) {
           document.location = Api.route('users/cas/login');
           return;
         }

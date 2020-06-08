@@ -20,11 +20,11 @@ use Twake\Users\Entity\User;
 
 class SessionHandler
 {
-
     private $app;
     private $doctrineAdapter;
     private $cookiesToSet;
     private $user = null;
+    private $did_use_remember_me = false;
 
     public function __construct(App $app)
     {
@@ -116,8 +116,14 @@ class SessionHandler
         return $this->cookiesToSet;
     }
 
+    public function getDidUseRememberMe(){
+      return $this->did_use_remember_me;
+    }
+
     public function checkRequest(Request $request, Response $response = null)
     {
+
+        $this->did_use_remember_me = false;
 
         $cookie = $request->cookies->get('SESSID');
 
@@ -179,6 +185,7 @@ class SessionHandler
 
                         if ($stored_expiration > date("U") && $stored_user_id == $user_id) {
                             //Remember me is valid
+                            $this->did_use_remember_me = true;
                             $this->saveLoginToCookie($user, true, $response);
                             return $user;
                         }
@@ -201,6 +208,7 @@ class SessionHandler
         $session_id = $cookie["sessid"];
 
         $this->destroy($session_id);
+        $this->destroyRememberMe($request);
 
     }
 
