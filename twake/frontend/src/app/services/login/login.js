@@ -111,7 +111,8 @@ class Login extends Observable {
           this.login(token.username, token.token, true, true);
           this.firstInit = true;
           return;
-        } catch {
+        } catch (err) {
+          console.error(err);
           this.external_login_error = 'Unknown error';
         }
       } else {
