@@ -56,6 +56,10 @@ Both configurations contains localhost:8000 route by default, replace by your ow
 
 /!\ http / https matter in these configuration
 
+### Configure security keys
+
+[./security_install.md](./security_install.md)
+
 ### New account without mail configured
 
 If mails aren't sent, you can find the subscribe account link in the php container logs :

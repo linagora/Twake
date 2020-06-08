@@ -26,6 +26,12 @@ class MarketApplication
         return ($app && !$entity) ? $app->getAsArray() : $app;
     }
 
+    public function getCredentials($simple_name){
+      $repo = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $repo->findOneBy(Array("simple_name" => $name));
+      return ($app) ? $app->getAsCredentialArray() : false;
+    }
+
     public function find($id, $entity = false)
     {
         $repo = $this->doctrine->getRepository("Twake\Market:Application");
@@ -36,7 +42,7 @@ class MarketApplication
     public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
     {
 
-        $group_id = "10000000-1000-1000-1000-100000000000";
+        $group_id = "00000000-0000-1000-0000-000000000000";
         if($workspace_id || $current_user_id != null){
           $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
           $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
@@ -75,7 +81,7 @@ class MarketApplication
     public function getGroupDevelopedApps($workspace_id, $current_user_id)
     {
 
-        $group_id = "10000000-1000-1000-1000-100000000000";
+        $group_id = "00000000-0000-1000-0000-000000000000";
         if($workspace_id || $current_user_id != null){
           $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
           $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
@@ -205,11 +211,14 @@ class MarketApplication
 
     public function toggleAppValidation($application_id, $status = null){
       $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
-      $app = $appsRepository->findOneBy(array("id" => $id));
+      $app = $appsRepository->findOneBy(array("id" => $application_id));
 
       $rep = false;
 
       if ($app) {
+
+          $app->setEsIndexed(false);
+
           if ($app->getPublic()) {
 
               if($status === null){

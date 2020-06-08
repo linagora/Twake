@@ -18,7 +18,7 @@ class Parameters extends \Common\Configuration
             "MAIL_FROM" => "",
             "LICENCE_KEY" => "",
             "STANDALONE" => true,
-            "ELASTIC_SERVER" => "elasticsearch_twake:9200",
+            "ELASTIC_SERVER" => "elasticsearch:9200",
             "DRIVE_SALT" => "SecretPassword",
             "SERVER_NAME" => "http://localhost:8000/",
             "drive_previews_tmp_folder" => "/tmp/",

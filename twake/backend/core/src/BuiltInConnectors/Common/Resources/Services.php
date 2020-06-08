@@ -6,6 +6,8 @@ use Common\BaseServices;
 
 class Services extends BaseServices
 {
-    protected $services = [];
+    protected $services = [
+      "connectors.common.main" => "MainConnectorService"
+    ];
 
 }

@@ -77,7 +77,7 @@ class InitConnector extends ContainerAwareCommand
                 'hooks' => $definition['hooks'],
                 'display' => $definition['display'],
                 'api_allowed_ips' => $definition['api_allowed_ips'],
-                'api_event_url' => rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . ltrim($definition['api_event_url'], "/"),
+                'api_event_url' => rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/" . ltrim($definition['api_event_url'], "/"),
                 'public' => true
               ];
 
