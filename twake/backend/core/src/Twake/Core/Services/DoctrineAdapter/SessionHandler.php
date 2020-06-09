@@ -223,7 +223,7 @@ class SessionHandler
         $this->destroy($session_id);
 
         $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($user_id);
-        if ($user->getRememberMeSecret()) {
+        if ($user && $user->getRememberMeSecret()) {
             $user->setRememberMeSecret(false);
             $this->doctrineAdapter->persist($user);
             $this->doctrineAdapter->flush();

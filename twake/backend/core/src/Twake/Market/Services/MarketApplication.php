@@ -219,15 +219,12 @@ class MarketApplication
 
           $app->setEsIndexed(false);
 
-          if ($app->getDefault()) {
-
-              if($status === null){
-                $status = !$app->getDefault();
-              }
-
-              $app->setDefault($status);
-              $this->doctrine->persist($app);
+          if($status === null){
+            $status = !$app->getDefault();
           }
+
+          $app->setDefault($status);
+          $this->doctrine->persist($app);
       }
 
       $this->doctrine->flush();
