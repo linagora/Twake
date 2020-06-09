@@ -36,7 +36,12 @@ class OpenID extends BaseController
           $logout_redirect_url .= "?error_code=".str_replace('+', '%20', urlencode(json_encode($message)));
         }
 
-        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . "?" . $logout_parameter . "=" . urlencode($logout_redirect_url));
+        $redirect = "";
+        if(!$this->getParameter("auth.openid.disable_logout_redirect")){
+          $redirect =  "?" . $logout_parameter . "=" . urlencode($logout_redirect_url);
+        }
+
+        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . $redirect);
     }
 
     function index(Request $request)

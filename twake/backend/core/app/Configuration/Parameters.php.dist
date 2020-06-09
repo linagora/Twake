@@ -155,6 +155,7 @@ Qp6BEGio7qt0MNDLr0WPxNQMmPcSazWOsoOCQBvEMg==
                     "provider_uri" => 'https://auth0.com',
                     "client_id" => '',
                     "client_secret" => '',
+                    //"disable_logout_redirect" => false
                     "provider_config" => [
                       //token_endpoint
                       //token_endpoint_auth_methods_supported

@@ -130,12 +130,16 @@ class User
             $user->setUsername($username);
             $user->setMailVerified(true);
             $user->setEmail($email);
-            $this->em->persist($user);
             $user->setLanguage("en");
             $user->setPhone("");
 
+            $this->em->persist($user);
+            $this->em->flush();
+
             $ext_link = new ExternalUserRepository($service_id, $external_id, $user->getId());
             $this->em->persist($ext_link);
+
+            $this->workspace_members_service->autoAddMemberByNewMail($email, $user->getId());
 
         }
 
