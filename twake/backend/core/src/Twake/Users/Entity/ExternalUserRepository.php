@@ -72,4 +72,12 @@ class ExternalUserRepository
         return $this->user_id;
     }
 
+    /**
+     * @return mixed
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
 }

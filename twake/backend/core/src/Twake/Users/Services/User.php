@@ -90,13 +90,28 @@ class User
             $userRepository = $this->em->getRepository("Twake\Users:User");
             /** @var \Twake\Users\Entity\User $user */
             $user = $userRepository->find($user_id);
-            if (!$user) {
-                $this->em->remove($user_link);
-            }
             return $user;
         }
 
     }
+   public function setUserFromExternalRepository($service_id, $external_id, $user_id)
+   {
+
+       $extRepository = $this->em->getRepository("Twake\Users:ExternalUserRepository");
+       /** @var ExternalUserRepository $user_link */
+       $user_link = $extRepository->findOneBy(Array("service_id" => $service_id, "external_id" => $external_id));
+
+       if (!$user_link) {
+         $user_link = new ExternalUserRepository($service_id, $external_id, $user_id);
+         $this->em->persist($user_link);
+       } else {
+         $user_link->setUserId($user_id);
+       }
+
+       $this->em->flush();
+       return $user_link;
+
+   }
 
     public function loginFromServiceWithToken($service_id, $external_id, $email, $username, $fullname, $picture)
     {
@@ -132,18 +147,17 @@ class User
             $user->setEmail($email);
             $user->setLanguage("en");
             $user->setPhone("");
+            $user->setIdentityProvider($service_id);
 
             $this->em->persist($user);
             $this->em->flush();
 
-            $ext_link = new ExternalUserRepository($service_id, $external_id, $user->getId());
-            $this->em->persist($ext_link);
+            $this->setUserFromExternalRepository($service_id, $external_id, $user->getId());
 
             $this->workspace_members_service->autoAddMemberByNewMail($email, $user->getId());
 
         }
 
-        $user->setIdentityProvider($service_id);
         $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
         $user->setLastName(@explode(" ", $fullname)[1] ?: "");
 
