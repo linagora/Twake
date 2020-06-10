@@ -75,7 +75,8 @@ class Login extends Observable {
         ? WindowState.findGetParameter('logout') === '1'
         : false;
     if (logout) {
-      this.logout();
+      this.logout(true);
+      WindowState.setUrl('/', true);
       return;
     }
 
@@ -217,7 +218,7 @@ class Login extends Observable {
     });
   }
 
-  logout() {
+  logout(no_reload) {
     var identity_provider = CurrentUser.get() ? CurrentUser.get().identity_provider : 'internal';
 
     this.currentUserId = null;
@@ -254,7 +255,9 @@ class Login extends Observable {
               var location = Api.route('users/cas/logout');
               Globals.window.location = location;
             } else {
-              Globals.window.location.reload();
+              if (!no_reload) {
+                Globals.window.location.reload();
+              }
             }
           }
         },
