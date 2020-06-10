@@ -70,6 +70,15 @@ class Login extends Observable {
       this.notify();
     });
 
+    var logout =
+      WindowState.findGetParameter('logout') !== undefined
+        ? WindowState.findGetParameter('logout') === '1'
+        : false;
+    if (logout) {
+      this.logout();
+      return;
+    }
+
     var subscribe =
       WindowState.findGetParameter('subscribe') !== undefined
         ? WindowState.findGetParameter('subscribe') === '1'
