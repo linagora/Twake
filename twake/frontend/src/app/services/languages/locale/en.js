@@ -711,6 +711,7 @@ export default {
   'scenes.apps.parameters.group_sections.managers.invite_manager_text': 'Add a manager',
   'scenes.apps.parameters.group_sections.managers.invite_manager_placeholder': 'Manager username',
   'scenes.apps.parameters.group_sections.managers.invite_manager_button': 'Add',
+  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Skip',
   'scenes.apps.parameters.group_sections.managers.invite_manager_message': 'Add a manager ?',
   'scenes.apps.parameters.group_sections.managers.only_reading': 'Only reading',
   'scenes.apps.parameters.group_sections.managers.management': 'Users and workspaces management',

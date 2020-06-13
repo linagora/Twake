@@ -135,6 +135,11 @@ class User extends SearchableObject
     protected $identity_provider = "";
 
     /**
+     * @ORM\Column(name="token_login", type="twake_text")
+     */
+    protected $token_login = "";
+
+    /**
      * @ORM\Column(name="origin", type="string", length=64)
      */
     protected $origin = "";
@@ -444,6 +449,16 @@ class User extends SearchableObject
             $this->identity_provider = "";
         }
         $this->identity_provider = $identity_provider;
+    }
+
+    public function getTokenLogin()
+    {
+        return json_decode(empty($this->token_login)?"{}":$this->token_login, 1);
+    }
+
+    public function setTokenLogin($token_login)
+    {
+        $this->token_login = json_encode($token_login);
     }
 
     /**

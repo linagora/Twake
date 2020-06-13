@@ -74,7 +74,7 @@ class Routing
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
         }
-        $response->setHeader('Access-Control-Allow-Headers: ' . 'Content-Type, *', true);
+        $response->setHeader('Access-Control-Allow-Headers: ' . 'All-Cookies, Content-Type, *', true);
         $response->setHeader('Access-Control-Allow-Credentials: ' . 'true', true);
         $response->setHeader('Access-Control-Allow-Methods: ' . 'GET, POST', true);
         $response->setHeader('Access-Control-Max-Age: ' . '600', true);
@@ -105,7 +105,7 @@ class Routing
     public function execute($method, $route, Request $request)
     {
         $this->request = $request;
-        
+
         $route = preg_replace("/^\//", "", $route);
         $route = preg_replace("/\/$/", "", $route);
 

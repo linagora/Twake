@@ -37,14 +37,20 @@ fi
 echo "⏳ Building frontend..."
 
 cd frontend
+chmod -R 777 .
 yarn install --silent
 yarn build-after-sh
 cd ../
+
+echo "⬆️ Increase vm.max_map_count..."
+
+sudo sysctl -w vm.max_map_count=262144
 
 echo "⏳ Install/Update docker..."
 
 docker-compose pull
 docker-compose up -d
+
 
 echo "⏳ Install backend..."
 
@@ -52,9 +58,31 @@ docker-compose exec php chmod -R 777 /tmp/
 docker-compose exec php php composer.phar install
 
 echo "⏳ Now waiting for scylladb"
+res=7
+while [ "$res" = "7" ]
+do
+        docker-compose exec php curl -s scylladb:9042 > /dev/null
+        res=$?
+        sleep 5
+done
+
+echo "⏳ Now waiting for elasticsearch"
+res=7
+while [ "$res" = "7" ]
+do
+        docker-compose exec php curl -s elasticsearch:9200 > /dev/null
+        res=$?
+        sleep 5
+done
+
+echo "⏳ Init or update scylladb..."
 
 docker-compose exec php php bin/console twake:schema:update
+docker-compose exec php php bin/console twake:mapping
 docker-compose exec php php bin/console twake:init
+
+docker-compose exec php chmod -R 777 /tmp/
+docker-compose exec php chmod -R 777 /twake-core
 
 docker-compose stop
 

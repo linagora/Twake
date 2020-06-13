@@ -558,9 +558,19 @@ class Application extends SearchableObject
             base64_encode(random_bytes(100)));
     }
 
+    public function getAsCredentialArray()
+    {
+      $return = [];
+      $return["api_id"] = $this->getId();
+      $return["api_key"] = $this->getApiPrivateKey();
+      return $return;
+    }
+
     public function getAsArrayForDevelopers()
     {
         $return = $this->getAsArray();
+
+        $return["id"] = $this->getId();
 
         $return["api_id"] = $this->getId();
         $return["api_key"] = $this->getApiPrivateKey();

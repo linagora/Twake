@@ -48,7 +48,11 @@ class User {
         output += string[i].charCodeAt(0);
       }
       var i = output % 100;
-      thumbnail = Globals.window.api_root_url + '/public/identicon/' + i + '.png';
+      thumbnail =
+        (Globals.window.front_root_url || Globals.window.api_root_url) +
+        '/public/identicon/' +
+        i +
+        '.png';
       //        Globals.window.api_root_url + '/ajax/users/current/identicon?username=' + user.username;
     } else {
       thumbnail = Globals.window.addApiUrlIfNeeded(user.thumbnail);

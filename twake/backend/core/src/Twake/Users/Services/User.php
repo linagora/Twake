@@ -90,15 +90,30 @@ class User
             $userRepository = $this->em->getRepository("Twake\Users:User");
             /** @var \Twake\Users\Entity\User $user */
             $user = $userRepository->find($user_id);
-            if (!$user) {
-                $this->em->remove($user_link);
-            }
             return $user;
         }
 
     }
+   public function setUserFromExternalRepository($service_id, $external_id, $user_id)
+   {
 
-    public function loginFromService($service_id, $external_id, $email, $username, $fullname, $picture)
+       $extRepository = $this->em->getRepository("Twake\Users:ExternalUserRepository");
+       /** @var ExternalUserRepository $user_link */
+       $user_link = $extRepository->findOneBy(Array("service_id" => $service_id, "external_id" => $external_id));
+
+       if (!$user_link) {
+         $user_link = new ExternalUserRepository($service_id, $external_id, $user_id);
+         $this->em->persist($user_link);
+       } else {
+         $user_link->setUserId($user_id);
+       }
+
+       $this->em->flush();
+       return $user_link;
+
+   }
+
+    public function loginFromServiceWithToken($service_id, $external_id, $email, $username, $fullname, $picture)
     {
         $user = $this->getUserFromExternalRepository($service_id, $external_id);
 
@@ -130,16 +145,19 @@ class User
             $user->setUsername($username);
             $user->setMailVerified(true);
             $user->setEmail($email);
-            $this->em->persist($user);
             $user->setLanguage("en");
             $user->setPhone("");
+            $user->setIdentityProvider($service_id);
 
-            $ext_link = new ExternalUserRepository($service_id, $external_id, $user->getId());
-            $this->em->persist($ext_link);
+            $this->em->persist($user);
+            $this->em->flush();
+
+            $this->setUserFromExternalRepository($service_id, $external_id, $user->getId());
+
+            $this->workspace_members_service->autoAddMemberByNewMail($email, $user->getId());
 
         }
 
-        $user->setIdentityProvider($service_id);
         $user->setFirstName(@explode(" ", $fullname)[0] ?: "");
         $user->setLastName(@explode(" ", $fullname)[1] ?: "");
 
@@ -160,10 +178,10 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return $this->loginWithUsernameOnly($user->getusernameCanonical());
+        return $this->loginWithUsernameOnlyWithToken($user->getusernameCanonical());
     }
 
-    public function loginWithUsernameOnly($usernameOrMail, Response $response = null)
+    public function loginWithUsernameOnlyWithToken($usernameOrMail, Response $response = null)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
@@ -182,14 +200,23 @@ class User
             return false;
         }
 
-        // User log in
-        $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, false, $response);
+        $token = bin2hex(random_bytes(64));
 
-        return $user;
+        $user->setTokenLogin(
+          [
+            "expiration" => date("U") + 120,
+            "token" => $token
+          ]
+        );
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return ["token" => $token, "username" => $user->getUsername()];
 
     }
 
-    public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
+    public function login($usernameOrMail, $passwordOrToken, $rememberMe = false, $request = null, $response = null)
     {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
@@ -206,13 +233,21 @@ class User
             return false;
         }
 
+        $tokenLogin = $user->getTokenLogin();
+
+        if(isset($tokenLogin["expiration"]) && $tokenLogin["expiration"] > date("U")){
+          if(isset($tokenLogin["token"]) && $tokenLogin["token"] == $passwordOrToken){
+            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            return $user;
+          }
+        }
+
         $encoder = $this->encoder;
-        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $passwordValid = $encoder->isPasswordValid($user->getPassword(), $passwordOrToken, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
             $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
-
             return $user;
 
         }
@@ -437,6 +472,8 @@ class User
 
         if ($sendEmail) {
             try {
+              $contact_list_subscribe = $this->app->getContainer()->getParameter("mail.mailjet.contact_list_subscribe");
+              if($contact_list_subscribe){
                 $data = Array(
                     "Email" => $mail,
                     "Properties" => Array(
@@ -446,13 +483,16 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post($contact_list_subscribe["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_subscribe["token"]));
+              }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
         }
         if ($newsletter) {
             try {
+              $contact_list_newsletter = $this->app->getContainer()->getParameter("mail.mailjet.contact_list_newsletter");
+              if($contact_list_newsletter){
                 $data = Array(
                     "Email" => $mail,
                     "Properties" => Array(
@@ -462,7 +502,8 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post($contact_list_newsletter["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_newsletter["token"]));
+              }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }

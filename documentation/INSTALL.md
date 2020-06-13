@@ -1,8 +1,12 @@
-# Installing Twake
+# Installing Twake (manual installation)
 
 ### Dependencies
 
-`docker`, `docker-compose`, `yarn`
+`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`, `webpack`
+
+Procedure here :
+
+[./install_dependencies.md](./install_dependencies.md)
 
 ### Installation / update
 
@@ -18,45 +22,52 @@ cd twake
 ./start.sh
 ```
 
-# Using Keycloak
+Twake will be running on port 8000.
 
-### Run keycloak and persist data
+### Use port 80 or 443 over https
 
-```
-cd twake
-docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -v $(pwd)/docker-data/keycloak-db:/opt/jboss/keycloak/standalone/data jboss/keycloak
-```
-
-### Configure keycloak with twake for the first time
-
-#### On Keycloak
-
-Go to `http://localhost:8080/auth/`
-
-Login with admin:admin
-
-Go to client > account > Credentials tab and save the `Secret`
-
-Go to Settings tab and add a Valid Redirect uri to `http://localhost:8000/*` and save
-
-Then create an user in User / Add User
-
-⚠️ Users must have an email and the email must be marked as verified !
-
-Then create a password for this user.
-
-#### On Twake
-
-Go to backend/core/app/Configuration/Parameters.php
-
-Change auth.openid to:
+To use 443 use a nginx layer with a proxy to port 8000 + certauto
 
 ```
-  "use" => true,
-  "provider_uri" => 'http://[machine_ip]:8080/auth/realms/master',
-  "client_id" => 'account',
-  "client_secret" => '[keycloak_secret]',
-  "logout_suffix" => "/protocol/openid-connect/logout" //Specific to keycloak
+# /etc/nginx/site-enabled/default
+location / {
+    proxy_pass http://127.0.0.1:8000;
+}
+
+location /socketcluster/ {
+    proxy_pass http://127.0.0.1:8000/socketcluster/;
+    # this magic is needed for WebSocket
+    proxy_http_version  1.1;
+    proxy_set_header    Upgrade $http_upgrade;
+    proxy_set_header    Connection "upgrade";
+    proxy_set_header    Host $http_host;
+    proxy_set_header    X-Real-IP $remote_addr;
+    proxy_connect_timeout 7d;
+    proxy_send_timeout 7d;
+    proxy_read_timeout 7d;
+}
 ```
 
-ℹ️ [machine_ip] Because Twake is accessing keycloak for inside a docker container, do not use localhost or 127.0.0.1 to access keycloak.
+### Configure domain name
+
+You must edit configuration at `backend/core/app/Configuration/Parameters.php` and `frontend/src/app/environment/environment.js`.
+
+Both configurations contains localhost:8000 route by default, replace by your own domain if needed.
+
+/!\ http / https matter in these configuration
+
+### Configure security keys
+
+[./security_install.md](./security_install.md)
+
+### New account without mail configured
+
+If mails aren't sent, you can find the subscribe account link in the php container logs :
+
+`docker-compose logs -f --tail 100 php`
+
+# Other links
+
+[./auth_connectors/install_lemon.md](./auth_connectors/install_lemon.md)
+
+[./auth_connectors/install_keycloak.md](./auth_connectors/install_keycloak.md)

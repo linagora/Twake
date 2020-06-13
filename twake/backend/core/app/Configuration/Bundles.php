@@ -36,6 +36,8 @@ class Bundles extends BaseBundles
         "AdministrationApi/Users",
         "AdministrationApi/Workspaces",
 
+        "BuiltInConnectors/Common",
+
     ];
 
 }

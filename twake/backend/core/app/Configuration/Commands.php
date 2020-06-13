@@ -7,6 +7,7 @@ class Commands
     public $commands = [
         "twake:schema:update" => "Twake\Core\Command\TwakeSchemaUpdateCommand",
         "twake:init" => "Twake\Core\Command\InitCommand",
+        "twake:init_connector" => "BuiltInConnectors\Common\Command\InitConnector",
         "twake:routes" => "Twake\Core\Command\GetRoutesCommand",
         "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
         "twake:daily" => "Twake\Core\Command\DailyCommand",
@@ -18,7 +19,7 @@ class Commands
         "twake:notifications_mail" => "Twake\Notifications\Command\NotificationMailCommand",
         "twake:preview_worker" => "Twake\Drive\Command\DrivePreviewCommand",
         "twake:scheduled_notifications_consume_timetable" => "Twake\Core\Command\ScheduledNotificationsConsumeTimetable",
-        "twake:scheduled_notifications_consume_shard" => "Twake\Core\Command\ScheduledNotificationsConsumeShard"
+        "twake:scheduled_notifications_consume_shard" => "Twake\Core\Command\ScheduledNotificationsConsumeShard",
     ];
 
 }

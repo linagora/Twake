@@ -5,7 +5,7 @@ namespace Twake\Users\Controller\Adapters;
 use Common\BaseController;
 use Common\Http\Request;
 use Common\Http\Response;
-use Jumbojett\OpenIDConnectClient;
+use Twake\Users\Controller\Adapters\OpenID\OpenIDConnectClient;
 use Twake\Users\Entity\User;
 
 class OpenID extends BaseController
@@ -30,13 +30,18 @@ class OpenID extends BaseController
         $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
         $logout_url_suffix = $this->getParameter("auth.openid.logout_suffix") ?: "/logout";
 
-        $logout_redirect_url = $this->getParameter("SERVER_NAME") . "/ajax/users/openid/logout_success";
+        $logout_redirect_url = rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid/logout_success";
 
         if($message){
           $logout_redirect_url .= "?error_code=".str_replace('+', '%20', urlencode(json_encode($message)));
         }
 
-        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . "?" . $logout_parameter . "=" . urlencode($logout_redirect_url));
+        $redirect = "";
+        if(!$this->getParameter("auth.openid.disable_logout_redirect")){
+          $redirect =  "?" . $logout_parameter . "=" . urlencode($logout_redirect_url);
+        }
+
+        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . $redirect);
     }
 
     function index(Request $request)
@@ -48,6 +53,8 @@ class OpenID extends BaseController
 
         error_reporting(E_ERROR | E_PARSE);
 
+        $this->get("app.user")->logout($request);
+
         try {
             $oidc = new OpenIDConnectClient(
                 $this->getParameter("auth.openid.provider_uri"),
@@ -55,12 +62,16 @@ class OpenID extends BaseController
                 $this->getParameter("auth.openid.client_secret")
             );
 
-            $oidc->setRedirectURL($this->getParameter("SERVER_NAME") . "/ajax/users/openid");
+            $oidc->providerConfigParam($this->getParameter("auth.openid.provider_config", []));
+
+            $oidc->setRedirectURL(rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid");
 
             $oidc->addScope(array('openid', 'email', 'profile'));
 
             try {
-                $authentificated = $oidc->authenticate();
+                $authentificated = $oidc->authenticate([
+                  "ignore_id_token" => true
+                ]);
             }catch(\Exception $err){
                 error_log("Error with Authenticated: ".$err);
                 $authentificated = false;
@@ -77,7 +88,7 @@ class OpenID extends BaseController
                 $data["email_verified"] = $oidc->requestUserInfo('email_verified');
                 $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
-                if (empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) {
+                if ((empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) && !$this->getParameter("auth.openid.ignore_mail_verified")) {
                     return $this->logout($request, ["error" => "Your mail is not verified"]);
                 }
 
@@ -102,10 +113,10 @@ class OpenID extends BaseController
                 );
 
                 /** @var User $user */
-                $user = $this->get("app.user")->loginFromService("openid", $external_id, $email, $username, $fullname, $picture);
+                $userTokens = $this->get("app.user")->loginFromServiceWithToken("openid", $external_id, $email, $username, $fullname, $picture);
 
-                if ($user) {
-                    return $this->closeIframe("success");
+                if ($userTokens) {
+                    return $this->closeIframe("success", $userTokens);
                 }else{
                     return $this->logout($request, ["error" => "No user profile created"]);
                 }
@@ -123,16 +134,9 @@ class OpenID extends BaseController
 
     }
 
-    private function closeIframe($message)
+    private function closeIframe($message, $userTokens=null)
     {
-        //TODO USE Unique use token instead of cookies !!!!
-        $cookies = [];
-        foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
-                 as
-                 $cookie) {
-            $cookies[] = $cookie->asArray();
-        }
-        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "cookies" => json_encode($cookies)]))));
+        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
 }

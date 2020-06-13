@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a29dfec9a2fbe2e811335b8fa1ef727",
+    "content-hash": "b02bfec6c909b832470e7e0ba34e5f56",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1669,39 +1669,6 @@
             "time": "2018-03-21T22:21:57+00:00"
         },
         {
-            "name": "jumbojett/openid-connect-php",
-            "version": "v0.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jumbojett/OpenID-Connect-PHP.git",
-                "reference": "08c29b063803538f345183b66ac05cff7ed6eb9b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jumbojett/OpenID-Connect-PHP/zipball/08c29b063803538f345183b66ac05cff7ed6eb9b",
-                "reference": "08c29b063803538f345183b66ac05cff7ed6eb9b",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=5.4",
-                "phpseclib/phpseclib": "~2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Bare-bones OpenID Connect client",
-            "time": "2019-01-02T19:05:13+00:00"
-        },
-        {
             "name": "justinrainbow/json-schema",
             "version": "5.2.9",
             "source": {
@@ -2558,16 +2525,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.26",
+            "version": "2.0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "09655fcc1f8bab65727be036b28f6f20311c126c"
+                "reference": "34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/09655fcc1f8bab65727be036b28f6f20311c126c",
-                "reference": "09655fcc1f8bab65727be036b28f6f20311c126c",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc",
+                "reference": "34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc",
                 "shasum": ""
             },
             "require": {
@@ -2646,7 +2613,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2020-03-13T04:15:39+00:00"
+            "time": "2020-04-04T23:17:33+00:00"
         },
         {
             "name": "phpspec/prophecy",

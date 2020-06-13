@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
@@ -69,9 +69,17 @@ export default class Tutorial extends Component {
       CurrentUserService.updateTutorialStatus('did_invite_collaborators');
     }
 
+    if (
+      ['openid', 'cas'].indexOf(CurrentUserService.get().identity_provider) >= 0 &&
+      !tutorial_status.no_tuto
+    ) {
+      CurrentUserService.updateTutorialStatus('no_tuto');
+      tutorial_status.no_tuto = true;
+    }
+
     return (
       <div className="left_tutorials">
-        {WorkspaceUserRights.isInvite() && !tutorial_status.no_invite && (
+        {WorkspaceUserRights.isInvite() && !tutorial_status.no_invite && false && (
           <TutorialUI
             title={[
               Languages.t(

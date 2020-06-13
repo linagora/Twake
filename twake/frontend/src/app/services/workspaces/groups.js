@@ -87,34 +87,40 @@ class Groups extends Observable {
     data.append('groupId', this.currentGroupId);
     var that = this;
 
-    $.ajax({
-      url: route,
-      type: 'POST',
-      data: data,
-      cache: false,
-      contentType: false,
-      processData: false,
-      xhrFields: {
-        withCredentials: true,
-      },
-      xhr: function() {
-        var myXhr = $.ajaxSettings.xhr();
-        myXhr.onreadystatechange = function() {
-          if (myXhr.readyState == XMLHttpRequest.DONE) {
-            that.loading = false;
-            var resp = JSON.parse(myXhr.responseText);
-            if (resp.errors.indexOf('badimage') > -1) {
-              that.error_identity_badimage = true;
-            } else {
-              var group = resp.data;
-              Collections.get('groups').updateObject(group);
-              ws.publish('group/' + group.id, { data: { group: group } });
+    Globals.getAllCookies(cookies => {
+      $.ajax({
+        url: route,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+
+        headers: {
+          'All-Cookies': JSON.stringify(cookies),
+        },
+        xhrFields: {
+          withCredentials: true,
+        },
+        xhr: function() {
+          var myXhr = $.ajaxSettings.xhr();
+          myXhr.onreadystatechange = function() {
+            if (myXhr.readyState == XMLHttpRequest.DONE) {
+              that.loading = false;
+              var resp = JSON.parse(myXhr.responseText);
+              if (resp.errors.indexOf('badimage') > -1) {
+                that.error_identity_badimage = true;
+              } else {
+                var group = resp.data;
+                Collections.get('groups').updateObject(group);
+                ws.publish('group/' + group.id, { data: { group: group } });
+              }
+              that.notify();
             }
-            that.notify();
-          }
-        };
-        return myXhr;
-      },
+          };
+          return myXhr;
+        },
+      });
     });
   }
 }

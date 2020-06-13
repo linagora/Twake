@@ -125,6 +125,12 @@ class UsersConnections extends BaseController
         if (!$ok) {
             $data["errors"][] = "disconnected";
         } else {
+
+            if( $this->get("app.session_handler")->getDidUseRememberMe() && $ok->getIdentityProvider()){
+              $data["errors"][] = "redirect_to_" . $ok->getIdentityProvider();
+              return new Response($data);
+            }
+
             $device = $request->request->get("device", false);
 
             if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {

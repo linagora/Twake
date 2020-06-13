@@ -90,10 +90,10 @@ class CAS extends BaseController
             }
 
             //Search user with this username
-            $res = $this->get("app.user")->loginFromService("cas", $mail, $mail, $username, $firstname . " " . $lastname, "");
+            $res = $this->get("app.user")->loginFromServiceWithToken("cas", $mail, $mail, $username, $firstname . " " . $lastname, "");
 
             if ($res) {
-                return $this->closeIframe("success");
+                return $this->closeIframe("success", $res);
             }
 
         }
@@ -110,15 +110,9 @@ class CAS extends BaseController
         return $this->redirect($cas_login_page_url);
     }
 
-    private function closeIframe($message)
+    private function closeIframe($message, $userTokens=null)
     {
-        $cookies = [];
-        foreach ($this->app->getServices()->get("app.session_handler")->getCookies()
-                 as
-                 $cookie) {
-             $cookies[] = $cookie->asArray();
-        }
-        $this->redirect($this->getParameter("SERVER_NAME") . "?external_login=".urlencode(json_encode(["provider"=>"cas", "message" => $message, "cookies" => json_encode($cookies)])));
+        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
 }

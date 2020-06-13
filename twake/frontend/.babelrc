@@ -1,17 +1,26 @@
 {
-  "presets" : ["es2015", "stage-0", "react"],
+  "presets": ["env", "stage-0", "react"],
   "plugins": [
-    ["import", {
-    "libraryName": "antd",
-    "style": true
-  }]],
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": true
+      }
+    ]
+  ],
   "env": {
-        "test": {
-            "presets" : ["es2015", "stage-0", "react"],
-            "plugins": [["import", {
-              "libraryName": "antd",
-              "style": true
-            }]],
-        }
+    "test": {
+      "presets": ["env", "stage-0", "react"],
+      "plugins": [
+        [
+          "import",
+          {
+            "libraryName": "antd",
+            "style": true
+          }
+        ]
+      ]
     }
+  }
 }

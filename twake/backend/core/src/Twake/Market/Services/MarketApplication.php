@@ -26,6 +26,12 @@ class MarketApplication
         return ($app && !$entity) ? $app->getAsArray() : $app;
     }
 
+    public function getCredentials($simple_name){
+      $repo = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $repo->findOneBy(Array("simple_name" => $simple_name));
+      return ($app) ? $app->getAsCredentialArray() : false;
+    }
+
     public function find($id, $entity = false)
     {
         $repo = $this->doctrine->getRepository("Twake\Market:Application");
@@ -36,22 +42,26 @@ class MarketApplication
     public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
     {
 
-        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-        $group = $workspace->getGroup();
+        $group_id = "00000000-0000-1000-0000-000000000000";
+        if($workspace_id || $current_user_id != null){
+          $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+          $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+          $group = $workspace->getGroup();
+          $group_id = $group->getId();
+        }
 
         if ($current_user_id == null
             || $this->gms->hasPrivileges(
-                $this->gms->getLevel($group->getId(), $current_user_id),
+                $this->gms->getLevel($group_id, $current_user_id),
                 "MANAGE_APPS"
             )
         ) {
 
-            if (!$name || !$simple_name || !$workspace_id) {
+            if (!$name || !$simple_name || (!$workspace_id && $current_user_id != null)) {
                 return false;
             }
 
-            $application = new Application($group->getId(), $name);
+            $application = new Application($group_id, $name);
             $application->setCreationDate(new \DateTime());
             $application->setAppGroupName($app_group_name);
 
@@ -71,19 +81,23 @@ class MarketApplication
     public function getGroupDevelopedApps($workspace_id, $current_user_id)
     {
 
-        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-        $group = $workspace->getGroup();
+        $group_id = "00000000-0000-1000-0000-000000000000";
+        if($workspace_id || $current_user_id != null){
+          $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+          $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+          $group = $workspace->getGroup();
+          $group_id = $group->getId();
+        }
 
         if ($current_user_id == null
             || $this->gms->hasPrivileges(
-                $this->gms->getLevel($group->getId(), $current_user_id),
+                $this->gms->getLevel($group_id, $current_user_id),
                 "MANAGE_APPS"
             )
         ) {
 
             $repo = $this->doctrine->getRepository("Twake\Market:Application");
-            $apps = $repo->findBy(Array("group_id" => $group->getId()));
+            $apps = $repo->findBy(Array("group_id" => $group_id));
 
             $list = [];
 
@@ -193,6 +207,51 @@ class MarketApplication
 
         return false;
 
+    }
+
+    public function toggleAppDefault($application_id, $status = null){
+      $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $appsRepository->findOneBy(array("id" => $application_id));
+
+      $rep = false;
+
+      if ($app) {
+
+          $app->setEsIndexed(false);
+
+          if($status === null){
+            $status = !$app->getDefault();
+          }
+
+          $app->setDefault($status);
+          $this->doctrine->persist($app);
+      }
+
+      $this->doctrine->flush();
+    }
+
+    public function toggleAppValidation($application_id, $status = null){
+      $appsRepository = $this->doctrine->getRepository("Twake\Market:Application");
+      $app = $appsRepository->findOneBy(array("id" => $application_id));
+
+      $rep = false;
+
+      if ($app) {
+
+          $app->setEsIndexed(false);
+
+          if ($app->getPublic()) {
+
+              if($status === null){
+                $status = !$app->getIsAvailableToPublic();
+              }
+
+              $app->setIsAvailableToPublic($status);
+              $this->doctrine->persist($app);
+          }
+      }
+
+      $this->doctrine->flush();
     }
 
     public function remove($application_id, $current_user_id)
