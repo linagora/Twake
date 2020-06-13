@@ -1,0 +1,25 @@
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user  command
+1 0     * * *   root    cd /twake-core/; php bin/console twake:daily;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue;
+* *	    * * *	  root	  cd /twake-core/; php bin/console twake:mails_queue;
+
+* *     * * *   root    cd /twake-core/; php bin/console twake:calendar_check;
+* *     * * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
+
+* *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;
+
+* *     * * *   root    cd /twake-core/; php bin/console twake:preview_worker;
+
+* *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_timetable
+* *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_shard
+
+32 *	  * * *	  root	  kill -USR2 1;

@@ -1,0 +1,97 @@
+.dayPicker {
+  width: 200px;
+  font-size: 14px;
+  font-weight: 500;
+
+  .titleDayPicker {
+    display: flex;
+    margin-top: -8px;
+    margin-bottom: -4px;
+    .month {
+      display: inline-block;
+      text-transform: capitalize;
+      line-height: 30px;
+    }
+    .chevron {
+      flex: 1;
+      text-align: right;
+      display: inline-block;
+      .move_icon {
+        display: inline-block;
+        font-size: 14px;
+        opacity: 1;
+        padding: 5px;
+        border-radius: 4px;
+      }
+      .move_icon:hover {
+        cursor: pointer;
+        background: rgba(55, 53, 47, 0.08);
+      }
+    }
+  }
+  .days {
+    .weeknumber {
+      background: #dfdfdf;
+      height: 26px;
+      line-height: 26px;
+      vertical-align: top;
+      display: inline-block;
+      font-size: 12px;
+      color: #000;
+      opacity: 0.3;
+      padding: 0 1px;
+      box-sizing: border-box;
+      width: 12.5%;
+      text-align: center;
+    }
+    .dayName {
+      display: inline-block;
+      width: 12.5%;
+      text-align: center;
+      height: 28px;
+      line-height: 28px;
+      font-size: 11px;
+      border-radius: 4px;
+      opacity: 0.6;
+    }
+    .dayName:first-child {
+      opacity: 0.3;
+    }
+    .day {
+      display: inline-block;
+      width: 12.5%;
+      text-align: center;
+      height: 24px;
+      line-height: 24px;
+      margin-bottom: 2px;
+      border-radius: 4px;
+    }
+    .day:not(.selected):hover {
+      background: rgba(45, 156, 219, 0.2);
+    }
+    .day:hover {
+      cursor: pointer;
+    }
+    .notInMonth {
+      opacity: 0.5;
+    }
+    .selected + .selected:not(.last) {
+      border-radius: 0px;
+    }
+    .selected {
+      background: #827dff;
+      border-radius: 4px 0px 0px 4px;
+      color: white;
+    }
+    .selected + .last {
+      border-radius: 0px 4px 4px 0px;
+    }
+    :not(.selected) + .last {
+      border-radius: 4px;
+    }
+    .today:not(.selected) {
+      color: rgb(235, 87, 87);
+      border-radius: 4px;
+    }
+  }
+}

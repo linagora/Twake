@@ -1,0 +1,18 @@
+image: node:9.4.0
+
+before_script: 
+    - apk update -qq && apk add git
+
+stages:
+    - test
+
+test:
+    stage: test
+
+    script:
+    
+        - echo install front
+        - yarn install
+        - yarn run dev-build
+
+    when: manual

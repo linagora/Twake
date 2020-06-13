@@ -1,0 +1,12 @@
+export default {
+  env_dev: true,
+  mixpanel_enabled: false,
+  sentry_dsn: false,
+  mixpanel_id: false,
+  front_root_url: 'http://localhost:8000',
+  api_root_url: 'http://localhost:8000',
+  websocket_url: 'ws://localhost:8000',
+  version: '1.2',
+  version_detail: '1.2.201-3011',
+  version_name: 'Albatros'
+}

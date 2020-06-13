@@ -1,0 +1,40 @@
+.input.autoheight_container {
+  overflow: hidden;
+
+  textarea {
+    padding: 16px;
+    resize: none;
+    font-size: 14px;
+  }
+
+  &.small,
+  &.medium,
+  &.big {
+    padding: 0px;
+  }
+
+  &.small {
+    textarea {
+      padding: 4px 8px;
+      resize: none;
+      font-size: 14px;
+      line-height: 16px;
+    }
+  }
+  &.medium {
+    textarea {
+      padding: 13px 16px;
+      resize: none;
+      font-size: 14px;
+      line-height: 16px;
+    }
+  }
+  &.big {
+    textarea {
+      padding: 16px;
+      resize: none;
+      font-size: 16px;
+      line-height: 18px;
+    }
+  }
+}

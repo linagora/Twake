@@ -1,0 +1,178 @@
+<?php
+
+namespace Configuration;
+
+class Parameters extends \Common\Configuration
+{
+
+    public $configuration = [];
+
+    public function __construct()
+    {
+        $this->configuration = [
+            "env" => [
+              "type"  =>  "dev",
+              "timer" => false
+            ],
+            "admin_api_token" => "",
+            "MAIL_FROM" => "",
+            "LICENCE_KEY" => "",
+            "STANDALONE" => true,
+            "ELASTIC_SERVER" => "elasticsearch:9200",
+            "DRIVE_SALT" => "SecretPassword",
+            "SERVER_NAME" => "http://localhost:8000/",
+            "drive_previews_tmp_folder" => "/tmp/",
+            "drive_tmp_folder" => "/tmp/",
+            "secret" => "",
+            "mail" => [
+                "sender" => [
+                    "host" => "",
+                    "port" => "",
+                    "username" => "",
+                    "password" => "",
+                    "auth_mode" => "plain"
+                ],
+                "template_dir" => "/src/Twake/Core/Resources/views/",
+                "twake_domain_url" => "https://twakeapp.com/",
+                "from" => "noreply@twakeapp.com",
+                "from_name" => "Twake",
+                "twake_address" => "Twake, 54000 Nancy, France",
+                "dkim" => [
+                    "private_key" => "",
+                    "domain_name" => '',
+                    "selector" => ''
+                ],
+                "mailjet"=> [
+                  "contact_list_subscribe"=> false,
+                  "contact_list_newsletter"=> false
+                ]
+            ],
+            "websocket" => [
+                "host" => "websockets",
+                "port" => "8080",
+                "pusher_public" => "-----BEGIN PUBLIC KEY-----
+MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgG65NWZFnj+9op68VRBN/WtG9eRp
+MVyQiVAWSsShxIK0xLUDac4B9wADvnqZqyylFZpRsVLeXEo5FJMmmPG9OYRed5un
+0ulXWTEBBi5ON2ku91EFx1+02sd0Cbkc0hwy2A3mTPU5ykF2MqH9mUf2SQ5yhhGh
+p3UZN60QZtJwmWDbAgMBAAE=
+-----END PUBLIC KEY-----",
+                "pusher_private" => "-----BEGIN RSA PRIVATE KEY-----
+MIICWwIBAAKBgG65NWZFnj+9op68VRBN/WtG9eRpMVyQiVAWSsShxIK0xLUDac4B
+9wADvnqZqyylFZpRsVLeXEo5FJMmmPG9OYRed5un0ulXWTEBBi5ON2ku91EFx1+0
+2sd0Cbkc0hwy2A3mTPU5ykF2MqH9mUf2SQ5yhhGhp3UZN60QZtJwmWDbAgMBAAEC
+gYBWCyWdOYK1w/eI5ZAxIHpMEJPrkXejmEqs6vXlglTEwhePF3z0c4BwCXjPq3Vj
+N1LnXo6veE89+serZrY6PbNgw9KIH8HuSRnYAEHVlv0KmLQvC40GWi7iGdCoN3NK
+0ZEcFnekpMx2XYGmxWTy7/n2PT1f+dlzLG8EUK0B768vmQJBAN0xS+RE8nHu4RWo
+RlRV0kYwwOvfETYLSKzC7jXgcnV4dI65xnjQjuxil0oH7YQewhmGjEtTANMXetG9
+W0JV5tUCQQCAJa8kbAeUTOA5AjOXm58IlxKiKIRYJlQS6wlploOmGcGMCLBkjPdR
+SdR9QG7vTZbFQ1qTI78Llwla2XyV+2DvAkAVbodZ8MxE+c5ZWNqnpUEgh+zJbe2u
+/Nzn0GNgWQT+GNPCWIHAhwSyJsNd6vK6kHhiHMVPLxWvXmEKHXzQKp6ZAkB1YA74
+EWsvzuphzT5sU0Jrn9SVav8tro27dkT8zbxv24+IMD1BHE07y6AxyV7TGgJLVNIV
+i9xlRUZwTFztE39JAkEAh1mQwoMuBaKwSftCooUHHHxUel1J9e99quJtES0Al6bu
+Qp6BEGio7qt0MNDLr0WPxNQMmPcSazWOsoOCQBvEMg==
+-----END RSA PRIVATE KEY-----",
+            ],
+            "db" => [
+                "driver" => "pdo_cassandra",
+                "host" => "scylladb",
+                "port" => 9042,
+                "dbname" => "twake",
+                "user" => "root",
+                "password" => "root",
+                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "dev" => true
+            ],
+            "push_notifications" => [
+                "apns_certificate" => __DIR__ . "/certs/apns_prod.pem",
+                "firebase_api_key" => "KEY",
+            ],
+            "queues" => [
+                "sqs" => [
+                    "use" => false,
+                    "profile" => "default",
+                    "version" => "2012-11-05",
+                    'region' => 'us-west-2',
+                    "credentials" => [
+                        "key" => "",
+                        "secret" => ""
+                    ]
+
+                ],
+                "rabbitmq" => [
+                    "use" => true,
+                    "host" => "rabbitmq",
+                    "port" => 5672,
+                    "username" => "admin",
+                    "password" => "admin"
+                ]
+            ],
+            "openstack" => [
+                "use" => false,
+                "project_id" => "",
+                "auth_url" => "https//auth.cloud.ovh.net/v2.0",
+                "buckets_prefix" => "",
+                "buckets" => [
+                    "fr" => [
+                        "public" => "",
+                        "private" => "",
+                        "region" => "SBG5"
+                    ],
+                    "user" => [
+                        "id" => "",
+                        "password" => ""
+                    ]
+                ],
+            ],
+            "aws" => [
+                "S3" => [
+                    "base_url" => "http//127.0.0.1:9000",
+                    "use" => false,
+                    "version" => "latest",
+                    "buckets_prefix" => "dev.",
+                    "buckets" => [
+                        "fr" => "eu-west-3"
+                    ],
+                    "credentials" => [
+                        "key" => "",
+                        "secret" => ""
+                    ]
+                ],
+            ],
+            "local" => [
+                "storage" => [
+                    "use" => true,
+                    "location" => "../drive/",
+                    "preview_location" => "../web/medias/",
+                    "preview_public_path" => "/medias/"
+                ]
+            ],
+            "auth" => [
+                "internal" => [
+                    "use" => true,
+                ],
+                "openid" => [
+                    "use" => false,
+                    "provider_uri" => 'https://auth0.com',
+                    "client_id" => '',
+                    "client_secret" => '',
+                    //"disable_logout_redirect" => false
+                    "provider_config" => [
+                      //token_endpoint
+                      //token_endpoint_auth_methods_supported
+                      //userinfo_endpoint
+                      //end_session_endpoint
+                      //authorization_endpoint
+                    ]
+                ],
+                "cas" => [
+                    "use" => false,
+                    "base_url" => '',
+                    "email_key" => '',
+                    "lastname_key" => '',
+                    "firstname_key" => ''
+                ]
+            ]
+        ];
+    }
+
+}

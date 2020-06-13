@@ -1,0 +1,21 @@
+@import '~components/constants.scss';
+
+.componentTester {
+  background: #f5f5f7;
+  padding: 25px;
+  max-height: 100vh;
+  overflow: scroll;
+  box-sizing: border-box;
+
+  .section {
+    background: #fff;
+    max-width: 900px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    padding: 25px;
+    box-sizing: border-box;
+    border-radius: $base_border_radius;
+    margin-top: 25px;
+  }
+}
