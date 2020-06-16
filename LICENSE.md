@@ -1,8 +1,8 @@
-GNU Affero General Public License version 3 – OpenPaaS
+GNU Affero General Public License version 3 – Twake
 
-License and Additional Terms for OpenPaaS software
+License and Additional Terms for Twake software
 
-OpenPaaS is an open-source, cloud-based and enterprise-centric PaaS and SaaS
+Twake is an open-source, cloud-based and enterprise-centric SaaS
 dedicated to social and collaborative services, distributed under the GNU
 Affero GPL v3 License terms, with Additional Terms pursuant to Section 7 of
 said license.
@@ -14,10 +14,10 @@ it warrants an easy and reasonable access to software innovation to large user
 communities, and is highly committed to supporting free software and open
 source whenever possible.
 
-Linagora wishes its paternity over OpenPaaS to be acknowledged,
+Linagora wishes its paternity over Twake to be acknowledged,
 regardless of its present or later use, modification, distribution and/or
 evolutions. Accordingly, these terms aim at preserving Linagora moral rights
-over OpenPaaS.
+over Twake.
 
 We have taken care of not affecting product copying, improvements or deploying.
 It is our conviction that the community will not be affected by these terms,
@@ -38,14 +38,14 @@ you comply with its requirements, notably:
    General Public License version 3, including its Additional Terms pursuant to
    its section 7, subsections (b), (c) and (e).
 
-Following are the applicable Additional Terms for use of OpenPaaS
+Following are the applicable Additional Terms for use of Twake
 pursuant to section 7, subsections (b), (c) and (e) of the GNU Affero General
 Public License version 3.
 
-Additional Terms applicable for OpenPaaS
+Additional Terms applicable for Twake
 
 The following additional terms are applicable to the use, modification and
-distribution of OpenPaaS:
+distribution of Twake:
 
   1. Notices and Attribution:
 
@@ -55,30 +55,30 @@ this program must display Appropriate Legal Notices, as required under Section
 
 In accordance with Section 7 and subsection (b) of the GNU Affero General
 Public License version 3, these Appropriate Legal Notices consist in the
-display of the Signature Notice “OpenPaaS is powered by Linagora.” for any
+display of the Signature Notice Twake is powered by Linagora.” for any
 and all type of outbound messages (e.g. e-mail and meeting requests).
 Retaining this Signature Notice in any and all free and Open Source versions
-of OpenPaaS is mandatory notwhistanding any other terms and conditions.
+of Twake is mandatory notwhistanding any other terms and conditions.
 
 These Signature Notices can be freely translated and replaced by any notice of
 strictly identical meaning in another language according to localization of the
-software, provided such notice clearly displays the words “OpenPaaS” and
+software, provided such notice clearly displays the words “Twake” and
 “Linagora”.
 
-Regardless of the notice language, the Logo/words "OpenPaaS" must be a clickable
-hypertext link that leads directly to the Internet URL http://open-paas.org.
+Regardless of the notice language, the Logo/words "Twake" must be a clickable
+hypertext link that leads directly to the Internet URL http://twake.app.
 The Logo/word "Linagora" must be a clickable hypertext link that leads directly
 to the Internet URL http://www.linagora.com.
 
-2. Use of the OpenPaaS and Linagora trademarks and logos
+2. Use of the Twake and Linagora trademarks and logos
 
-OpenPaaS™ and Linagora™ are registered trademarks of Linagora.
+Twake™ and Linagora™ are registered trademarks of Linagora.
 
 Pursuant to Section 7, subsections (c) and (e) of the GNU Affero General Public
 License version 3, this license allows limited use of these trademarks under
 the following terms:
 
-All Linagora trademarks, including OpenPaaS™ and Linagora™ logos shall be used by
+All Linagora trademarks, including Twake™ and Linagora™ logos shall be used by
 the licensees and sublicensees for the sole purpose of complying with the
 present Additional Terms to the GNU Affero General Public License version 3,
 excluding any other purpose without written consent obtained from Linagora.
@@ -91,14 +91,14 @@ commercially, or on product packaging, websites, books, documentation or any
 other publication without a written, signed agreement with Linagora is strictly
 prohibited, and constitutes an infringement of Linagora intellectual property
 rights over these trademarks.  Using these trademarks in a way harmful,
-damaging or detrimental to the value of the OpenPaaS brand or any other Linagora
+damaging or detrimental to the value of the Twake brand or any other Linagora
 trademarks, integrity, image, reputation, and/or goodwill, as determined by
 Linagora, is also strictly prohibited, and constitutes an infringement of
 Linagora intellectual property rights over these trademarks as well.
 
 Please report any possible violation of the GNU Affero General Public License
 version 3, any violation of the hereabove Additional Terms, any infringement
-and/or misuse of any OpenPaaS or Linagora trade marks and/or a violation of the
+and/or misuse of any Twake or Linagora trade marks and/or a violation of the
 aforementioned Trademark Policy at <info@linagora.com>.
 
 		GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November
