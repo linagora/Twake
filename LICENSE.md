@@ -47,7 +47,7 @@ Additional Terms applicable for Twake
 The following additional terms are applicable to the use, modification and
 distribution of Twake:
 
-  1. Notices and Attribution:
+1. Notices and Attribution:
 
 The interactive user interfaces in modified source and object code versions of
 this program must display Appropriate Legal Notices, as required under Section
@@ -55,7 +55,7 @@ this program must display Appropriate Legal Notices, as required under Section
 
 In accordance with Section 7 and subsection (b) of the GNU Affero General
 Public License version 3, these Appropriate Legal Notices consist in the
-display of the Signature Notice Twake is powered by Linagora.” for any
+display of the Signature Notice “Twake is powered by Linagora.” for any
 and all type of outbound messages (e.g. e-mail and meeting requests).
 Retaining this Signature Notice in any and all free and Open Source versions
 of Twake is mandatory notwhistanding any other terms and conditions.
