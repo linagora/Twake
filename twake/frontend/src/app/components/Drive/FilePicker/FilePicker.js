@@ -159,7 +159,7 @@ export default class FilePicker extends React.Component {
               refInput={node => (node ? node.focus() : '')}
               type="text"
               defaultValue={''}
-              placeholder={'Nom du dossier'}
+              placeholder={Languages.t('scenes.apps.drive.navigators.navigator_content.directory_name',[],'Nom du dossier')}
               onKeyPress={e => {
                 if (e.key === 'Enter') {
                   DriveService.createDirectory(
@@ -189,10 +189,10 @@ export default class FilePicker extends React.Component {
               </Button>
             )}
             {this.props.mode == 'select_location' && (
-              <Button className="small" value="Déplacer ici" onClick={() => this.submit()} />
+              <Button className="small" value={Languages.t('components.drive.moove_here', [], "Déplacer ici")} onClick={() => this.submit()} />
             )}
             {this.props.mode == 'select_file' && this.state.current_selection.id && (
-              <Button className="small" value="Sélectionner" onClick={() => this.submit()} />
+              <Button className="small" value={Languages.t('scenes.app.taskpicker.select',[], "Sélectionner")} onClick={() => this.submit()} />
             )}
           </div>
         )}

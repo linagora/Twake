@@ -27,7 +27,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-right: 16px;
     transition: box-shadow 0.2s, transform 0.2s !important;
 
@@ -72,7 +72,7 @@
       .list_color {
         width: calc(100% + 2px);
         height: 3px;
-        border-radius: 4px;
+        border-radius: var(--default-border-radius);
         top: -1px;
         position: absolute;
         left: -1px;
@@ -126,7 +126,7 @@
           color: $black;
         }
         background: transparent;
-        border-radius: 4px;
+        border-radius: var(--default-border-radius);
         font-size: 14px;
         line-height: 32px;
         padding: 0 8px;

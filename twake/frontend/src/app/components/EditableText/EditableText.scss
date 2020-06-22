@@ -9,7 +9,7 @@
     top: 8px;
     width: 24px;
     height: 24px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
   }
 
   input {

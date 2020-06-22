@@ -108,7 +108,7 @@ export default class CurrentUser extends Component {
                   focusOnDidMount
                   menu_level={level}
                   preferedEmoji={this.preferedEmojisStatus}
-                  placeholder="Status"
+                  placeholder={Languages.t('scenes.app.popup.appsparameters.pages.status_tilte', [], "Status")}
                   value={this.state.new_status}
                   onChange={value => {
                     if (value[0] == 'trash') {

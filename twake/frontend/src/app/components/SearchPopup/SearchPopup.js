@@ -14,6 +14,7 @@ import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
+import Languages from 'services/languages/languages.js';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -134,37 +135,37 @@ export default class SearchPopup extends React.Component {
       {
         filterType: false,
         searchPopupStyle: 'small',
-        title: 'All',
+        title: Languages.t('components.searchpopup.all', [], 'All'),
         render: '',
       },
       {
         filterType: 'channel',
         searchPopupStyle: 'small',
-        title: 'Channels',
+        title: Languages.t('scenes.apps.messages.left_bar.channels', [], 'Channels'),
         render: '',
       },
       {
         filterType: 'file',
         hasFilters: true,
-        title: 'Files',
+        title: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Files'),
         render: '',
       },
       {
         filterType: 'message',
         hasFilters: true,
-        title: 'Messages',
+        title: Languages.t('components.application.messages', [], 'Messages'),
         render: '',
       },
       {
         filterType: 'task',
         hasFilters: true,
-        title: 'Tasks',
+        title: Languages.t('components.searchpopup.tasks', [], 'Tasks'),
         render: '',
       },
       {
         filterType: 'event',
         hasFilters: true,
-        title: 'Events',
+        title: Languages.t('scenes.app.popup.appsparameters.pages.event_subtitle', [], 'Events'),
         render: '',
       },
     ];
@@ -179,7 +180,11 @@ export default class SearchPopup extends React.Component {
               icon="search"
               className="full_width search_input"
               big
-              placeholder={this.state.withFilters ? 'Recherche avancée' : 'Recherche rapide'}
+              placeholder={this.state.withFilters ? Languages.t(
+                'scenes.app.mainview.advanced_search_placeholder',
+                [], 'Recherche avancée', ) : Languages.t(
+                'scenes.app.mainview.quick_search_placeholder',
+                [], 'Recherche rapide', )}
               value={Search.value}
               refInput={node => (this.input = node)}
               onChange={this.handleChange}
@@ -212,7 +217,7 @@ export default class SearchPopup extends React.Component {
                       this.setState({ withFilters: !this.state.withFilters });
                     }}
                   >
-                    {this.state.withFilters ? 'hide filters' : 'show filters'}
+                    {this.state.withFilters ? Languages.t('components.searchpopup.hide_filters', [],'hide filters') : Languages.t('components.searchpopup.show_filters', [],'show filters')}
                   </a>
                 </div>
               )}
@@ -372,17 +377,17 @@ export default class SearchPopup extends React.Component {
                 })}
                 {!Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-                    Enter some text to search Twake.
+                    {Languages.t('components.searchpopup.enter_text', [], "Enter some text to search Twake.")}
                   </div>
                 )}
                 {Search.search_http_loading && Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 16 }}>
-                    Loading more results...
+                    {Languages.t('components.searchpopup.loading', [], "Loading more results...")}
                   </div>
                 )}
                 {Search.value && this.state.total == 0 && !Search.search_http_loading && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-                    No result found.
+                    {Languages.t('components.user_picker.modal_no_result', [], "No results found.")}
                   </div>
                 )}
                 {this.state.total > 0 && Search.scroll_id && !Search.search_http_loading && (
@@ -392,7 +397,7 @@ export default class SearchPopup extends React.Component {
                         Search.loadMore();
                       }}
                     >
-                      Load more results
+                      {Languages.t('components.searchpopup.load_more', [], "Load more results...")}
                     </a>
                   </div>
                 )}

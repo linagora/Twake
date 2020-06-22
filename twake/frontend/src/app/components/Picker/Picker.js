@@ -140,7 +140,7 @@ export default class Picker extends React.Component {
               renderItem={[() => {}]}
               regexHooked={[/(.*)/]}
               placeholder={
-                this.state.currentSelected.length ? '' : this.props.placeholder || 'Search'
+                this.state.currentSelected.length ? '' : this.props.placeholder || Languages.t('scenes.apps.drive.left.search', [], 'Search')
               }
               onChange={evt => {
                 this.alreadyBackspace = false;

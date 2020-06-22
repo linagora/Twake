@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import Languages from 'services/languages/languages.js';
 
 import Directory from 'components/Drive/Directory.js';
 import File from 'components/Drive/File.js';
@@ -22,9 +23,9 @@ class DelayedElement extends Component {
 
     var attachmentMenu = {
       type: 'menu',
-      text: 'Attachments',
+      text: Languages.t('scenes.apps.tasks.modals.attachments', [], 'Attachments'),
       submenu: [
-        { type: 'title', text: 'Attachments' },
+        { type: 'title', text: Languages.t('scenes.apps.tasks.modals.attachments', [], 'Attachments') },
         {
           type: 'react-element',
           reactElement: () => (
@@ -36,7 +37,7 @@ class DelayedElement extends Component {
         },
         {
           type: 'menu',
-          text: 'Remove attachments',
+          text: Languages.t('scenes.apps.drive.remove_attachs', [], 'Remove attachments'),
           class: 'error',
           onClick: () => {
             var x = this.state.element;

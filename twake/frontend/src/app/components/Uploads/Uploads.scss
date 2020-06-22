@@ -61,7 +61,7 @@
         background: $secondary;
         padding: 4px;
         color: #fff;
-        border-radius: 4px;
+        border-radius: var(--default-border-radius);
         max-width: 100px;
         overflow: hidden;
         text-overflow: ellipsis;

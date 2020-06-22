@@ -18,7 +18,7 @@ body.no_select {
 .selectionRect {
   background: $primary;
   z-index: 10;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   position: absolute;
   pointer-events: none;
   opacity: 0;

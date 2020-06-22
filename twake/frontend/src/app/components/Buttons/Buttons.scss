@@ -45,13 +45,13 @@
   color: $white;
   font-weight: 500;
   border: 0px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
 
   &:hover {
-    background: #6156df;
+    background: var(--primary-hover);
   }
   &:active {
     background: #5b50d0;

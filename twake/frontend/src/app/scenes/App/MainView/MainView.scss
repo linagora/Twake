@@ -157,7 +157,7 @@
     .tab_group {
       display: inline-block;
       margin-right: 8px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
 
       &:hover {
         background: $grey_background;
@@ -184,7 +184,7 @@
       font-size: 14px;
       display: inline-flex;
       padding: 0 8px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       height: 32px;
       box-sizing: border-box;
       line-height: 32px;

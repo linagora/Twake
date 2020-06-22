@@ -103,7 +103,9 @@ export default class CompanyIdendity extends Component {
               />
             </div>
           </Attribute>
-          <Attribute label="Logo de l'entreprise" description="Modifiez l'image de cet entreprise">
+          <Attribute label={Languages.t('scenes.apps.parameters.workspace_sections.workspace.logo_company', [],
+          "Logo de l'entreprise")} description={Languages.t('scenes.app.popup.workspaceparameter.pages.logo_company_modify_description',
+          [], "Modifiez l'image de cet entreprise")}>
             <div
               onClick={event => {
                 $(this.fileinput).click();
@@ -126,7 +128,7 @@ export default class CompanyIdendity extends Component {
               </div>
             </div>
             <div className="smalltext">
-              Maximum weight 5 mo.
+              {Languages.t('scenes.app.popup.workspaceparameter.pages.weight_max_small_text', [], "Maximum weight 5 mo.")}
               <br />
               <a
                 className="red"

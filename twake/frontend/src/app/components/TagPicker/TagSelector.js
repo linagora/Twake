@@ -39,7 +39,7 @@ class TagEditor extends React.Component {
           menu_level={this.props.level}
           className="medium bottom-margin full_width"
           focusOnDidMount
-          placeholder="Tag name"
+          placeholder={Languages.t('components.tagpicker.tag_name', [], "Tag name")}
           value={[this.state.edited_tag_color, this.state.edited_tag_name]}
           onEnter={() => {
             this.saveTag(tag);

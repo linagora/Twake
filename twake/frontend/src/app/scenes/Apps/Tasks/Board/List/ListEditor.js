@@ -51,7 +51,8 @@ export default class ListEditor extends React.Component {
             className="full_width"
             focusOnDidMount
             menu_level={this.props.menuLevel}
-            placeholder="List name"
+            placeholder={Languages.t('scenes.apps.tasks.board.list_name',
+            [], "List name")}
             value={[this.state.color, this.state.name]}
             onEnter={() => this.save()}
             onChange={value => {

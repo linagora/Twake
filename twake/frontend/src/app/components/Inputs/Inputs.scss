@@ -33,7 +33,7 @@ INPUTS
 }
 
 .input {
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   border: 0px;
   background: $grey_background;
   color: $black;
@@ -150,7 +150,7 @@ INPUTS
 
 .checkbox {
   border: 1px solid $grey_light;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   display: inline-block;
   padding: 0px;
   box-sizing: border-box;
@@ -164,7 +164,7 @@ INPUTS
   }
 
   .state {
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     transform: scale(0);
     transition: transform 0.2s, opacity 0.2s;
     .m-icon-small {
@@ -344,7 +344,7 @@ select,
     flex: 1;
     overflow: hidden;
     position: relative;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
   }
 
   .emoji {
@@ -352,7 +352,7 @@ select,
     height: 40px;
     display: inline-block;
     background: $grey_background;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-right: 4px;
     padding: 11px;
     box-sizing: border-box;
@@ -371,7 +371,7 @@ select,
     flex: 1;
     overflow: hidden;
     position: relative;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
   }
 
   .color {
@@ -379,7 +379,7 @@ select,
     height: 40px;
     display: inline-block;
     background: $grey_background;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-right: 4px;
     padding: 14px;
     box-sizing: border-box;
@@ -412,7 +412,7 @@ select,
     flex: 1;
     overflow: hidden;
     position: relative;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
   }
 
   &.input_enter {
@@ -728,7 +728,7 @@ select,
   height: 16px;
   width: 16px;
   background: #d6d6d6;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   display: inline-block;
   padding: 5px;
   box-sizing: border-box;
@@ -739,7 +739,7 @@ select,
   .state {
     width: 6px;
     height: 6px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     transform: scale(0);
     transition: transform 0.2s, opacity 0.2s;
 

@@ -153,7 +153,7 @@
         }
         .load_after,
         .load_end {
-          border-radius: 4px 4px 0 0;
+          border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
         }
         .load_end {
           position: absolute;
@@ -242,7 +242,7 @@
           width: 16px;
           height: 16px;
           display: inline-block;
-          border-radius: 4px;
+          border-radius: var(--default-border-radius);
           margin-right: 5px;
           vertical-align: bottom;
           margin-left: 0px;

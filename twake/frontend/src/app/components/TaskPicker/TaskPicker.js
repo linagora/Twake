@@ -244,7 +244,7 @@ export default class TaskPicker extends Component {
           {this.props.mode == 'select_task' &&
             this.state.taskSelected &&
             this.state.taskSelected.id && (
-              <Button className="small" value="Sélectionner" onClick={() => this.submit()} />
+              <Button className="small" value={Languages.t('scenes.app.taskpicker.select',[], "Sélectionner")} onClick={() => this.submit()} />
             )}
         </div>
       </div>

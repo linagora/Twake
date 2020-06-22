@@ -172,12 +172,16 @@ export default class Viewer extends Component {
               {current.url && (
                 <div>
                   <a href={current.url} target="_blank" style={{ fontSize: 14 }}>
-                    Open link in new window
+                    {Languages.t('scenes.apps.drive.open_link',
+                    [],
+                    "Open link in new window")}
                   </a>
                   <br />
                   <br />
                   <a href="https://twake.app/download" target="_blank" style={{ fontSize: 12 }}>
-                    Download Twake Desktop to preview in app
+                  {Languages.t('scenes.apps.drive.viewer.download_desktop',
+                  [],
+                  "Download Twake Desktop to preview in app")}
                   </a>
                 </div>
               )}

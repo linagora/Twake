@@ -94,7 +94,7 @@ export default class MainView extends Component {
 
       var menu = [
         {
-          text: 'Select from computer',
+          text: Languages.t('scenes.apps.messages.select_computer', [], 'Select from computer'),
           onClick: () => {
             this.upload_zone.open();
           },
@@ -103,7 +103,7 @@ export default class MainView extends Component {
       var has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
       if (has_drive_app) {
         menu.push({
-          text: 'Select in Documents',
+          text: Languages.t('scenes.apps.messages.select_twake', [], 'Select in Documents'),
           submenu: [
             {
               type: 'react-element',

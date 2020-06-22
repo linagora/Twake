@@ -6,6 +6,7 @@ import locale_fr from './locale/fr.js';
 import locale_de from './locale/de.js';
 import locale_es from './locale/es.js';
 import locale_ja from './locale/ja.js';
+import locale_ru from './locale/ru.js';
 import WindowState from 'services/utils/window.js';
 import LocalStorage from 'services/localStorage.js';
 import DateTime from 'services/utils/datetime.js';
@@ -20,7 +21,7 @@ class Languages extends Observable {
     this.setObservableName('i18n');
     this.data = {};
     this.default_data = {};
-    this.available = ['en', 'fr', 'de', 'es', 'ja'];
+    this.available = ['en', 'fr', 'de', 'es', 'ja', 'ru'];
     this.language = 'en';
 
     //Determine default language
@@ -81,6 +82,9 @@ class Languages extends Observable {
     }
     if (language == 'ja') {
       this.data = locale_ja;
+    }
+    if (language == 'ru') { 
+      this.data = locale_ru; 
     }
 
     this.default_data = locale_en;

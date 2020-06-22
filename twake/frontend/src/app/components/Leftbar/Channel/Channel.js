@@ -7,6 +7,7 @@ import Icon from 'components/Icon/Icon.js';
 import User from 'components/User/User.js';
 import Draggable from 'components/Draggable/Draggable.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
+import Languages from 'services/languages/languages.js';
 
 export default class Channel extends React.Component {
   constructor(props) {
@@ -48,7 +49,7 @@ export default class Channel extends React.Component {
           )}
         </div>
         {this.props.notMember && (
-          <Tooltip className="not_member" tooltip="User not in current workspace" position="top">
+          <Tooltip className="not_member" tooltip={Languages.t('scenes.apps.drive.drive_tour.left_bar.not_in_ws', [],"User not in current workspace")} position="top">
             <Icon type="external-link-alt" />
           </Tooltip>
         )}
@@ -57,7 +58,8 @@ export default class Channel extends React.Component {
           <div className="group_count">{this.props.users.length}</div>
         )}
         {this.props.imported && (
-          <Tooltip className="imported" tooltip="Imported from another workspace" position="top">
+          <Tooltip className="imported" tooltip={Languages.t('scenes.apps.drive.drive_tour.left_bar.imported', 
+          [], "Imported from another workspace")} position="top">
             ({this.props.imported})
           </Tooltip>
         )}

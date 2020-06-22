@@ -1,0 +1,32 @@
+.integration {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+
+  & > .integration-header {
+    height: 56px;
+    transition: height 0.2s;
+    background: var(--primary);
+    display: flex;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+
+    .logo {
+      flex: 1;
+      background-position: left;
+      background-repeat: no-repeat;
+      background-size: auto 60%;
+      margin-left: 8px;
+    }
+  }
+
+  & > .integrated-app {
+    flex: 1;
+    position: relative;
+
+    & > .appPage {
+      height: 100%;
+    }
+  }
+}

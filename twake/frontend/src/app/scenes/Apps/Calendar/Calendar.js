@@ -647,7 +647,7 @@ export default class Calendar extends Component {
 
             <div className="right">
               {this.state.view != 'dayGridMonth' && (
-                <div className="week_number">Semaine {moment(CalendarService.date).week()}</div>
+                <div className="week_number">{Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')} {moment(CalendarService.date).week()}</div>
               )}
 
               <Menu

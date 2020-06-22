@@ -294,7 +294,7 @@
     overflow: visible !important;
     transition: z-index 0.5s;
     transition-delay: 0s;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-bottom: 0;
     background: #ffffff00 !important;
     display: flex;

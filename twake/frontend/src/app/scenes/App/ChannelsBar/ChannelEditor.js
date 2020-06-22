@@ -60,7 +60,8 @@ export default class ChannelEditor extends Component {
           <InputWithIcon
             focusOnDidMount
             menu_level={this.props.level}
-            placeholder="Name"
+            placeholder={Languages.t('scenes.apps.messages.left_bar.stream_modal.placeholder_name',
+            [], "Name")}
             value={[this.state.channel.icon, this.state.channel.name]}
             onEnter={() => this.updateChan()}
             onChange={value => {

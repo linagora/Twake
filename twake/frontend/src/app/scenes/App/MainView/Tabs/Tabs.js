@@ -140,7 +140,7 @@ export default class Tabs extends Component {
             {emoji && <Emojione className="tab-app-icon" type={emoji} />}
           </div>
         )}
-        {tab ? tab.name : 'Discussion'}
+        {tab ? tab.name : Languages.t('scenes.app.mainview.discussion', [], 'Discussion')}
         {WorkspaceUserRights.hasWorkspacePrivilege() && tab && this.props.currentTab == tab.id && (
           <Menu
             menu={[

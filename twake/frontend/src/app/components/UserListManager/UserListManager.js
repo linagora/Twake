@@ -10,6 +10,7 @@ import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
 import OutsideClickHandler from 'react-outside-click-handler';
 import './UserListManager.scss';
+import Languages from 'services/languages/languages.js';
 
 export default class UserListManager extends React.Component {
   constructor(props) {
@@ -186,7 +187,7 @@ export default class UserListManager extends React.Component {
           }
         >
           {this.state.users_ids.length == 0 && !this.props.noPlaceholder && (
-            <div className="menu-text no-users">Aucun utilisateur.</div>
+            <div className="menu-text no-users">{Languages.t('components.userlistmanager.no_users', [], 'Aucun utilisateur.')}</div>
           )}
           {this.state.users_ids
             .slice(0, this.props.max || 100)
@@ -209,7 +210,8 @@ export default class UserListManager extends React.Component {
                   className="small secondary-text right-margin"
                   onClick={() => this.setState({ editing: true })}
                 >
-                  <Icon type="plus" className="m-icon-small" /> Ajouter des utilisateurs
+                  <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn', 
+                  [], "Ajouter des utilisateurs")}
                 </Button>
               )}
               {!!this.state.editing && (
@@ -237,7 +239,7 @@ export default class UserListManager extends React.Component {
                   autoFocus
                   small
                   position={'bottom'}
-                  placeholder="Ajouter des utilisateurs"
+                  placeholder={Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn', [], "Ajouter des utilisateurs")}
                 />
               )}
 
@@ -247,7 +249,7 @@ export default class UserListManager extends React.Component {
                     className="small primary-text right-margin"
                     onClick={() => this.select(UsersService.getCurrentUser())}
                   >
-                    <Icon type="user" className="m-icon-small" /> M'ajouter
+                    <Icon type="user" className="m-icon-small" /> {Languages.t('components.users_picker.add_me', [], "M'ajouter")}
                   </Button>
                 )}
               {!!this.props.showAddAll &&
@@ -270,7 +272,8 @@ export default class UserListManager extends React.Component {
                       );
                     }}
                   >
-                    <Icon type="users-alt" className="m-icon-small" /> Ajouter tout le monde
+                    <Icon type="users-alt" className="m-icon-small" /> {Languages.t('scenes.apps.parameters.workspace_sections.members.invite_all', 
+                    [],"Ajouter tout le monde")}
                   </Button>
                 )}
             </div>
@@ -280,7 +283,7 @@ export default class UserListManager extends React.Component {
             <div className="menu-custom" style={{ height: 40 }}>
               {this.props.onCancel && (
                 <Button
-                  value="Annuler"
+                  value={Languages.t('general.cancel',[],"Annuler")}
                   className="secondary"
                   style={{ float: 'left' }}
                   onClick={() => {
@@ -294,7 +297,7 @@ export default class UserListManager extends React.Component {
               {this.props.onChange && (
                 <Button
                   style={{ float: 'right' }}
-                  value={this.props.continueText || 'Enregistrer'}
+                  value={this.props.continueText || Languages.t('scenes.apps.messages.message.save_button', [], 'Enregistrer')}
                   onClick={() => this.props.onChange(this.state.users_ids)}
                 />
               )}

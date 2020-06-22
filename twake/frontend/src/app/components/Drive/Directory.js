@@ -6,6 +6,7 @@ import Loader from 'components/Loader/Loader.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import Draggable from 'components/Draggable/Draggable.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
+import Languages from 'services/languages/languages.js';
 import './Drive.scss';
 
 export default class Directory extends DriveElement {
@@ -31,7 +32,7 @@ export default class Directory extends DriveElement {
           {this.state.loading && <Loader color="#CCC" className="file_loader" />}
           {!this.state.loading && (
             <span className="text" style={{ opacity: 0.5 }}>
-              Directory not found.
+              {Languages.t('components.drive.navigators.directory_not_found', [], "Directory not found.")}
             </span>
           )}
         </div>

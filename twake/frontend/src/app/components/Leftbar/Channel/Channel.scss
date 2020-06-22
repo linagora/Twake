@@ -54,7 +54,7 @@
   width: auto;
   margin-left: 16px;
   margin-right: 16px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   max-width: 200px;
   box-sizing: border-box;
   font-size: 14px;
@@ -145,7 +145,7 @@
     height: 16px;
     color: $white;
     margin-right: 8px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     padding: 2px 4px;
     box-sizing: border-box;
     line-height: 12px;
@@ -159,7 +159,7 @@
     height: 16px;
     color: #fff;
     margin-right: 4px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     padding: 2px 3px;
     font-weight: 700;
     box-sizing: border-box;
@@ -243,7 +243,7 @@
     }
     i.emojione.emoji-image {
       margin-top: 0px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
     }
 
     .user_list {
@@ -289,7 +289,7 @@
   height: 0px;
   background: $grey_light;
   border: 0px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   box-sizing: border-box;
   text-align: center;
   line-height: 28px;

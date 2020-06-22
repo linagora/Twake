@@ -53,7 +53,7 @@
     }
   }
   .inline-code {
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     background: #232323;
     padding-bottom: 1px;
   }
@@ -91,7 +91,7 @@
     color: $black;
     height: 18px;
     text-transform: capitalize;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
@@ -108,7 +108,7 @@
     .userimage {
       width: 16px;
       height: 16px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       display: inline-block;
       vertical-align: top;
       background: $grey_light;
@@ -124,7 +124,7 @@
     color: $black;
     height: 18px;
     text-transform: capitalize;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
@@ -183,7 +183,7 @@
     width: 100%;
     max-width: 200px;
     height: 8px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     overflow: hidden;
     background: rgba(128, 128, 128, 0.1);
     margin-top: 5px;
@@ -255,7 +255,7 @@
   .image.twacode {
     height: 120px;
     margin-top: 8px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     max-width: 100%;
   }
 }

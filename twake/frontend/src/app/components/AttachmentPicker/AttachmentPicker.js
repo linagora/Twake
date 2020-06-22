@@ -9,6 +9,7 @@ import Button from 'components/Buttons/Button.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
+import Languages from 'services/languages/languages.js';
 import './AttachmentPicker.scss';
 
 export default class AttachmentPicker extends Component {
@@ -63,7 +64,7 @@ export default class AttachmentPicker extends Component {
                 additionalMenu = [
                   {
                     type: 'menu',
-                    text: 'Remove attachment',
+                    text: Languages.t('components.attachmentpicker.remove_attach', [], 'Remove attachment'),
                     onClick: () => {
                       this.removeAttachment(att);
                     },
@@ -104,13 +105,13 @@ export default class AttachmentPicker extends Component {
             menu={[
               {
                 type: 'menu',
-                text: 'File',
+                text: Languages.t('components.attachmentpicker.file', [], 'File'),
                 icon: 'file',
                 submenu: [
                   {
                     type: 'menu',
                     icon: 'desktop',
-                    text: 'From computer',
+                    text: Languages.t('components.attachmentpicker.from_computer', [], 'From computer'),
                     onClick: () => {
                       this.upload_zone.open();
                       MenusManager.closeMenu();
@@ -119,7 +120,7 @@ export default class AttachmentPicker extends Component {
                   {
                     type: 'menu',
                     icon: 'folder',
-                    text: 'From Twake Documents',
+                    text: Languages.t('components.attachmentpicker.from_twake', [], 'From Twake Documents'),
                     submenu: [
                       {
                         type: 'react-element',
@@ -140,7 +141,7 @@ export default class AttachmentPicker extends Component {
               },
               {
                 type: 'menu',
-                text: 'Task',
+                text: Languages.t('scenes.apps.tasks.task', [], 'Task'),
                 icon: 'check-square',
                 submenu: [
                   {
@@ -161,7 +162,8 @@ export default class AttachmentPicker extends Component {
           >
             {' '}
             <Button className="small secondary-text right-margin">
-              <Icon type="plus" className="m-icon-small" /> Ajouter des pièces jointes
+              <Icon type="plus" className="m-icon-small" /> {Languages.t('components.attachmentpicker.add_attachment', 
+              [], "Ajouter des pièces jointes")}
             </Button>
           </Menu>
         )}

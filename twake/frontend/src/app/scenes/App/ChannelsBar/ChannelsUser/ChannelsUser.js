@@ -96,7 +96,7 @@ export default class ChannelsUser extends Component {
               users={[]}
               canRemoveMyself
               scope="all"
-              continueText="Continuer"
+              continueText={Languages.t('general.continue', [], "Continuer")}
               onChange={ids => {
                 ChannelsService.openDiscussion(ids);
               }}

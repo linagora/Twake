@@ -1,0 +1,14 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Вы были добавлены к менеджерам группы {{ group }}{% endblock %}
+
+{% block secondtitle %}Вы были добавлены к менеджерам группы {{ group }}{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    Вы были назначены менеджером группы {{ group }}.
+    <br>
+
+{% endblock %}

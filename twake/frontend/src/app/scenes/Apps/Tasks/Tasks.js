@@ -131,9 +131,9 @@ export default class Tasks extends Component {
         {!loading && !current_board && (
           <div className="tasks_app">
             <div className="board_selector">
-              <div className="app_title">Boards</div>
+              <div className="app_title">{Languages.t('scenes.apps.tasks.boards', [], 'Boards')}</div>
 
-              <div className="app_subtitle">All</div>
+              <div className="app_subtitle">{Languages.t('components.workspace.list_manager.all', [], 'All')}</div>
 
               {boards.map(board => {
                 return (
@@ -268,7 +268,7 @@ export default class Tasks extends Component {
                         </Menu>
                       )}
                     </div>
-                    <div className="board_info">{board.active_tasks || '0'} tâches actives</div>
+                    <div className="board_info">{board.active_tasks || '0'} {Languages.t('scenes.apps.tasks.active_tasks',[],'tâches actives')}</div>
                   </div>
                 );
               })}
@@ -299,7 +299,9 @@ export default class Tasks extends Component {
               )}
 
               <div className="app_title" style={{ marginTop: 16 }}>
-                Team
+                {Languages.t('scenes.apps.tasks.left.team',
+                [],
+                'Team')}
               </div>
 
               {Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
@@ -326,7 +328,9 @@ export default class Tasks extends Component {
                 })}
 
               <div className="app_title" style={{ marginTop: 16 }}>
-                Mes tâches
+                {Languages.t('scenes.apps.tasks.my_tasks',
+                [],
+                "Mes tâches")}
               </div>
 
               <Board

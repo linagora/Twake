@@ -34,7 +34,7 @@
           width: 30px;
           background-size: contain;
           background-position: center;
-          border-radius: 4px;
+          border-radius: var(--default-border-radius);
           margin-right: 5px;
         }
         .app_name {

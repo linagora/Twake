@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from 'scenes/app.js';
+import Integration from 'scenes/integration.js';
 import registerServiceWorker from './registerServiceWorker';
 import $ from 'jquery';
 import * as Sentry from '@sentry/browser';
@@ -27,5 +28,10 @@ if (process.env.NODE_ENV === 'production' && window.sentry_dsn) {
   Sentry.init({ dsn: window.sentry_dsn });
 }
 
-ReactDOM.render(<App key="root" />, document.getElementById('app'));
+ReactDOM.render(
+  <Integration>
+    <App key="root" />
+  </Integration>,
+  document.getElementById('app'),
+);
 registerServiceWorker();

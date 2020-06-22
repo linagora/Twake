@@ -174,7 +174,7 @@ export default class EventDetails extends Component {
                     {(event.notifications || []).length > 0 && (
                       <div className="subtitle reminders bottom-margin">
                         <Icon type="bell" style={{ marginRight: 4 }} />
-                        {(event.notifications || []).length} rappel(s)
+                        {(event.notifications || []).length} {Languages.t('scenes.apps.calendar.reminders', [], 'rappel(s)')}
                       </div>
                     )}
 

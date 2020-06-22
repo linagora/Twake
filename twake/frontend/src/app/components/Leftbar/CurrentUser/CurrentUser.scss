@@ -75,7 +75,7 @@
 
         &:hover {
           background: $grey_light;
-          border-radius: 4px;
+          border-radius: var(--default-border-radius);
         }
 
         .bell-icon {

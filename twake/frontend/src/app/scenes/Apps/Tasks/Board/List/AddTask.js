@@ -38,7 +38,7 @@ export default class AddTask extends React.Component {
             this.setState({ unselected: false });
           }}
         >
-          + New task
+          {Languages.t('scenes.apps.board.new_task', [], '+ New task')}
         </div>
       );
     }

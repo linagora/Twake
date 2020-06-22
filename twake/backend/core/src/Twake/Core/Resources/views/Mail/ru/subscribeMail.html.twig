@@ -1,0 +1,21 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Подтверждение по электронной почте{% endblock %}
+
+{% block secondtitle %}Подтверждение по электронной почте{% endblock %}
+
+{% block body %}
+
+    <b>Добро пожаловать в Twake !</b>
+    <br>
+    Для того, чтобы создать свой аккаунт, вы можете нажать на эту ссылку:
+    <br>
+    <a style="color: #837dff;"
+       href="{{ twakeurl }}{{ magic_link }}">{{ twakeurl }}{{ magic_link }}</a>
+    <br>
+    <br>
+    Перейдя по этой ссылке, вы соглашаетесь с <a style="color: #837dff;" href="https://twakeapp.com/files/TOS.pdf">условиями 
+    использования twake</a>.
+    <br><br>
+
+{% endblock %}

@@ -36,7 +36,7 @@
     font-size: 14px;
     display: inline-block;
     background-color: $grey_background;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-right: 8px;
     margin-bottom: 8px;
     text-transform: capitalize;

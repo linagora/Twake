@@ -34,7 +34,7 @@
 .connexion_dot {
   width: 8px;
   height: 8px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   background: #29ce42;
   margin-right: 2px;
   vertical-align: top;

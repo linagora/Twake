@@ -59,7 +59,7 @@
       background: $white;
       z-index: 1;
       box-shadow: 0 2px 32px rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       padding: 16px;
       box-sizing: border-box;
       display: flex;
@@ -182,7 +182,7 @@
           height: 16px;
           color: #ffffff;
           margin-right: 0px;
-          border-radius: 4px;
+          border-radius: var(--default-border-radius);
           padding: 2px 4px;
           box-sizing: border-box;
           line-height: 12px;
@@ -228,7 +228,7 @@
     & > .selectable {
       background: $primary_background;
       color: $primary;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
     }
 
     & > .selectable > .icon .user_list .user_head {
@@ -255,7 +255,7 @@
   &.selected > .selectable {
     background: $primary;
     color: $white;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     & > .more .right-arrow {
       color: $white;
     }

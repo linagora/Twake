@@ -12,7 +12,7 @@
   white-space: pre-wrap;
   padding: 16px;
   border: 1px solid $grey_light;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   font-size: 14px;
   transition: box-shadow 0.2s, transform 0.2s;
   background: $white;
@@ -20,7 +20,7 @@
   &.isDragging:active {
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
     border: 1px solid $white;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     transform: rotateZ(3deg);
   }
 
@@ -70,7 +70,7 @@
     right: 8px;
     height: 24px;
     background: $grey_background;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     line-height: 24px;
     cursor: pointer;
     &:hover {

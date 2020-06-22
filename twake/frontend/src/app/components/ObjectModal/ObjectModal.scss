@@ -22,7 +22,7 @@
       width: 24px;
       height: 24px;
       line-height: 24px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       margin-left: 8px;
       background: $grey_background;
       cursor: pointer;
