@@ -17,6 +17,7 @@ class Users
     public function __construct(App $app)
     {
         $this->em = $app->getServices()->get("app.twake_doctrine");
+        $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
     }
 
     public function search($options = Array())
@@ -108,6 +109,16 @@ class Users
     {
         $userRepository = $this->em->getRepository("Twake\Users:User");
         $user = $userRepository->find($id);
+        if ($user) {
+            return $entity ? $user : $user->getAsArray();
+        }
+        return false;
+    }
+
+    public function getByEmail($email, $entity = false)
+    {
+        $userRepository = $this->em->getRepository("Twake\Users:User");
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $this->string_cleaner->simplifyMail($email)));
         if ($user) {
             return $entity ? $user : $user->getAsArray();
         }
