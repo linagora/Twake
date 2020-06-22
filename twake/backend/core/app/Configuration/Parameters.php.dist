@@ -14,6 +14,42 @@ class Parameters extends \Common\Configuration
               "type"  =>  "dev",
               "timer" => false
             ],
+            "branding" => [
+              /*
+              "header" => [
+                "logo" => 'https://openpaas.linagora.com/images/white-logo.svg',
+                "apps" => [
+                  [
+                    "name"=> 'Accueil',
+                    "url"=> 'https://openpaas.linagora.com/',
+                    "icon"=> 'https://openpaas.linagora.com/images/application-menu/home-icon.svg',
+                  ],
+                  [
+                    "name"=> 'Inbox',
+                    "url"=> 'https://openpaas.linagora.com/#/unifiedinbox/inbox',
+                    "icon"=> 'https://openpaas.linagora.com/unifiedinbox/images/inbox-icon.svg',
+                  ],
+                  [
+                    "name"=> 'Calendrier',
+                    "url"=> 'https://openpaas.linagora.com/#/calendar',
+                    "icon"=> 'https://openpaas.linagora.com/calendar/images/calendar-icon.svg',
+                  ],
+                  [
+                    "name"=> 'Contacts',
+                    "url"=> 'https://openpaas.linagora.com/#/contact/addressbooks/',
+                    "icon"=> 'https://openpaas.linagora.com/contact/images/contacts-icon.svg',
+                  ],
+                ],
+              ],
+              "style" => [
+                "color" => '#2196F3',
+                "default_border_radius" => '2',
+              ],
+              "name": "OpenPaaS",
+              "link": "https://open-paas.org/",
+              "logo": "https://open-paas.org/wp-content/uploads/2019/10/openpaas.png"
+              */
+            ],
             "admin_api_token" => "",
             "MAIL_FROM" => "",
             "LICENCE_KEY" => "",

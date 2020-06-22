@@ -153,6 +153,7 @@ class MenusManager extends Observable {
       x = 0;
       left = false;
     }
+
     return {
       x: x,
       y: y + (rect.height || 0) / 2,

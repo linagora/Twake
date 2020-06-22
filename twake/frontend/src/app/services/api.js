@@ -111,7 +111,7 @@ export default class Api {
     var collection = null,
       collection_filter = null,
       collection_find_by = null;
-    if (source.collection) {
+    if (source.collection && collectionService.get) {
       collection = collectionService.get(source.collection);
       collection_find_by = source.collection_find_by || {};
       collection_filter =

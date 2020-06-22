@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -108,7 +108,11 @@ export default class CurrentUser extends Component {
                   focusOnDidMount
                   menu_level={level}
                   preferedEmoji={this.preferedEmojisStatus}
-                  placeholder={Languages.t('scenes.app.popup.appsparameters.pages.status_tilte', [], "Status")}
+                  placeholder={Languages.t(
+                    'scenes.app.popup.appsparameters.pages.status_tilte',
+                    [],
+                    'Status',
+                  )}
                   value={this.state.new_status}
                   onChange={value => {
                     if (value[0] == 'trash') {

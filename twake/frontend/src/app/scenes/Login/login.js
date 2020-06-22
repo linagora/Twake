@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';

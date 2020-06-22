@@ -36,4 +36,13 @@ class Users extends BaseController
 
     }
 
+    public function getNotifications(Request $request)
+    {
+      $result = Array("unred" => 0, "notifications" => Array());
+
+      //TODO get user notifications
+
+      return new Response($result);
+    }
+
 }

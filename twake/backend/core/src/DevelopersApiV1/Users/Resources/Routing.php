@@ -10,8 +10,9 @@ class Routing extends BaseRouting
     protected $routing_prefix = "api/v1/users/";
 
     protected $routes = [
-#Message routing
+        #Message routing
         "get" => ["handler" => "Users:getAction", "methods" => ["POST"]],
+        "notifications" => ["handler" => "Users:getNotifications", "methods" => ["POST"]],
     ];
 
 }
