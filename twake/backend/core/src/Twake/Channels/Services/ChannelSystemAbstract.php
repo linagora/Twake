@@ -304,7 +304,7 @@ class ChannelSystemAbstract
                             $_ext_members[array_search($mail, $_ext_members)] = $user->getId();
                             $this->addUserToChannel($user, $channel_entity);
                             $did_something = true;
-                        } else { 
+                        } else {
                             $member = new \Twake\Channels\Entity\ChannelMember($mail, $channel_entity);
                             $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                             $member->setExterne(true);
