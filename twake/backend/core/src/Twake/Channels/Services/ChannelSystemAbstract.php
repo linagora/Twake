@@ -232,8 +232,8 @@ class ChannelSystemAbstract
 
         foreach ($current_members as $member_id) {
             if (!in_array($member_id, $members_ids)) {
-                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
-                if ($member) {
+                $members = $membersRepo->findBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
+                for ($members as $member) {
                     $this->entity_manager->remove($member);
                 }
             }
@@ -321,8 +321,8 @@ class ChannelSystemAbstract
 
         foreach ($current_ext as $member_id) {
             if (!in_array($member_id, $_ext_members)) {
-                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $member_id));
-                if ($member) {
+                $members = $membersRepo->findBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $member_id));
+                for ($members as $member) {
                     $this->entity_manager->remove($member);
                     $this->removeExterneIfNotAnymoreInChannel($channel_entity->getOriginalWorkspaceId(), $channel_entity->getId(), $member_id);
                     // vérifier si l'utilisateur est dans un autre channel
