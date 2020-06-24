@@ -31,20 +31,13 @@ export default class MainView extends Component {
       auto_scroll_activated: true,
     };
 
+    this.options = this.props.options || {};
+
     Languages.addListener(this);
     Collections.get('messages').addListener(this);
     MessagesService.addListener(this);
 
-    MessagesService.messageDetailsComponent = (
-      <MainView
-        ref={node => (MessagesService.mountedComponent = node)}
-        messageDetails
-        channel={this.props.channel}
-      />
-    );
-
-    this.parentMessageId =
-      (this.props.messageDetails ? MessagesService.currentShowedMessageId : '') || '';
+    this.parentMessageId = this.options.threadId || '';
   }
   componentWillUnmount() {
     Languages.removeListener(this);
@@ -66,11 +59,7 @@ export default class MainView extends Component {
     MessagesService.showMessage('');
   }
   onUpdate() {
-    this.messages_collection_key =
-      'messages_' +
-      this.props.channel.id +
-      '_' +
-      (this.props.messageDetails ? MessagesService.currentShowedMessageId : '');
+    this.messages_collection_key = 'messages_' + this.props.channel.id + '_' + this.parentMessageId;
   }
   sendMessage(val) {
     this.input.setValue('');
@@ -80,8 +69,7 @@ export default class MainView extends Component {
       val,
       {
         channel_id: this.props.channel.id,
-        parent_message_id:
-          (this.props.messageDetails ? MessagesService.currentShowedMessageId : '') || '',
+        parent_message_id: this.parentMessageId || '',
       },
       this.messages_collection_key,
     );
@@ -132,7 +120,7 @@ export default class MainView extends Component {
       channel: this.props.channel,
       parent_message:
         (this.props.messageDetails
-          ? Collections.get('messages').find(MessagesService.currentShowedMessageId)
+          ? Collections.get('messages').find(this.parentMessageId)
           : null) || null,
       from_icon: from_icon,
     };
@@ -276,16 +264,14 @@ export default class MainView extends Component {
                   MessagesService.startEditingLastMessage({
                     channel_id: this.props.channel.id,
                     parent_message_id:
-                      (this.props.messageDetails
-                        ? MessagesService.currentShowedMessageId
-                        : undefined) || undefined,
+                      (this.props.messageDetails ? this.parentMessageId : undefined) || undefined,
                   });
                 }}
                 triggerApp={(app, from_icon, evt) => this.triggerApp(app, from_icon, evt)}
                 onChange={() => {
                   MessagesService.iamWriting(this.props.channel.id, this.parentMessageId, true);
                 }}
-                disabled={MessagesService.currentShowedMessageId != this.parentMessageId}
+                disabled={this.parentMessageId != this.parentMessageId}
                 onFocus={() => MessagesService.startRespond(false)}
               />
             </DroppableZone>

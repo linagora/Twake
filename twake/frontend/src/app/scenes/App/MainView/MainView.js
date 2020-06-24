@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
@@ -15,6 +15,9 @@ import Drive from 'scenes/Apps/Drive/Drive.js';
 import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';
 import Search from './Search.js';
+import AppView from './AppView/AppView.js';
+import CloseIcon from '@material-ui/icons/CloseOutlined';
+import Workspaces from 'services/workspaces/workspaces.js';
 
 export default class MainView extends Component {
   constructor() {
@@ -31,6 +34,7 @@ export default class MainView extends Component {
 
     Languages.addListener(this);
     ChannelsService.addListener(this);
+    Workspaces.addListener(this);
     Collections.get('channels').addListener(this);
     Collections.get('users').addListener(this);
 
@@ -39,6 +43,7 @@ export default class MainView extends Component {
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
+    Workspaces.removeListener(this);
     Collections.get('channels').removeListener(this);
     Collections.get('users').removeListener(this);
   }
@@ -53,7 +58,62 @@ export default class MainView extends Component {
     }
     return true;
   }
+  getAppFromChannel(current_channel, current_channel_tab) {
+    var app = 'messages';
+    if (!current_channel) {
+      return null;
+    }
+    if ((current_channel.app || {}).simple_name && !current_channel.direct) {
+      app = current_channel.app;
+    } else if (current_channel_tab) {
+      app = Collections.get('applications').find(current_channel_tab.app_id);
+    }
+    return app;
+  }
+  getSideAppName(app, channel) {
+    if (!channel) {
+      return '';
+    }
+    var workspace_name = '';
+    if (!channel.direct) {
+      workspace_name = (Collections.get('workspaces').find(channel.original_workspace) || {}).name;
+    }
+    if (app === 'messages') {
+      var channel_name = (workspace_name ? workspace_name + ' • ' : '') + channel.name;
+      if (channel.direct && !channel.application) {
+        channel_name = this.getChannelNameFromMembers(channel);
+      }
+      return this.state.i18n.t('scenes.app.side_app.messages_thread_title', [channel_name]);
+    } else {
+      return workspace_name;
+    }
+  }
+  getChannelNameFromMembers(current_channel) {
+    var i_user = 0;
+    return Object.values(current_channel.members)
+      .map(id => {
+        if (id == User.getCurrentUserId() && current_channel.members_count > 1) {
+          return undefined;
+        }
+        i_user++;
+        var user = Collections.get('users').known_objects_by_id[id];
+        if (user) {
+          return (
+            (i_user > 1 ? ', ' : ' ') +
+            (Object.values(current_channel.members).length > 2
+              ? user.firstname || user.username
+              : User.getFullName(user))
+          );
+        } else {
+          User.asyncGet(id);
+        }
+      })
+      .join('');
+  }
   render() {
+    var current_side_channel = Collections.get('channels').findByFrontId(
+      this.state.channels.currentSideChannelFrontId,
+    );
     var current_channel = Collections.get('channels').findByFrontId(
       this.state.channels.currentChannelFrontId,
     );
@@ -76,7 +136,6 @@ export default class MainView extends Component {
         return true;
       });
     }
-    var i_user = 0;
 
     var noapp = (
       <div>
@@ -108,12 +167,8 @@ export default class MainView extends Component {
       }
     }
 
-    var app = 'messages';
-    if ((current_channel.app || {}).simple_name && !current_channel.direct) {
-      app = current_channel.app;
-    } else if (current_channel_tab) {
-      app = Collections.get('applications').find(current_channel_tab.app_id);
-    }
+    let app = this.getAppFromChannel(current_channel, current_channel_tab);
+    let side_app = this.getAppFromChannel(current_side_channel);
 
     if (current_channel.direct) {
       var members_front_ids = [];
@@ -129,8 +184,6 @@ export default class MainView extends Component {
         Collections.get('users').find(User.getCurrentUserId()).front_id,
       ]);
     }
-
-    var found = false;
 
     var icon = 'comments-alt';
     var emoji = '';
@@ -204,25 +257,7 @@ export default class MainView extends Component {
                 {current_channel.members_count > 2 &&
                   ' (' + (current_channel.members_count - 1) + ')'}
 
-                {Object.values(current_channel.members)
-                  .map(id => {
-                    if (id == User.getCurrentUserId() && current_channel.members_count > 1) {
-                      return undefined;
-                    }
-                    i_user++;
-                    var user = Collections.get('users').known_objects_by_id[id];
-                    if (user) {
-                      return (
-                        (i_user > 1 ? ', ' : ' ') +
-                        (Object.values(current_channel.members).length > 2
-                          ? user.firstname || user.username
-                          : User.getFullName(user))
-                      );
-                    } else {
-                      User.asyncGet(id);
-                    }
-                  })
-                  .join('')}
+                {this.getChannelNameFromMembers(current_channel)}
               </div>
             </div>
           )}
@@ -234,31 +269,41 @@ export default class MainView extends Component {
           </div>
         </div>
 
-        {!this.state.loading && (app || {}).simple_name == 'twake_drive' && (found = true) && (
-          <Drive
-            key={current_channel.id + '_' + (current_channel_tab || {}).id}
-            channel={current_channel}
-            tab={current_channel_tab}
-          />
-        )}
-        {!this.state.loading && (app || {}).simple_name == 'twake_calendar' && (found = true) && (
-          <Calendar
-            key={current_channel.id + '_' + (current_channel_tab || {}).id}
-            channel={current_channel}
-            tab={current_channel_tab}
-          />
-        )}
-        {!this.state.loading && (app || {}).simple_name == 'twake_tasks' && (found = true) && (
-          <Tasks
-            key={current_channel.id + '_' + (current_channel_tab || {}).id}
-            channel={current_channel}
-            tab={current_channel_tab}
-          />
-        )}
-        {!this.state.loading && app == 'messages' && (found = true) && (
-          <Messages key={current_channel.id} channel={current_channel} />
-        )}
-        {!found && !this.state.loading && noapp}
+        <div className="app_views">
+          <div className="app_main">
+            <AppView
+              loading={this.state.loading}
+              app={app}
+              noapp={noapp}
+              current_channel={current_channel}
+              current_channel_tab={current_channel_tab}
+            />
+          </div>
+          {side_app &&
+            (!current_side_channel.original_group ||
+              current_side_channel.original_group == Workspaces.currentWorkspaceId) && (
+              <div className="app_side">
+                <div className="side_header">
+                  {this.getSideAppName(side_app, current_side_channel)}
+
+                  <CloseIcon
+                    className="m-icon-medium close"
+                    onClick={() => {
+                      ChannelsService.select(false, true);
+                    }}
+                  />
+                </div>
+                <div className="app_side_content">
+                  <AppView
+                    app={side_app}
+                    noapp={noapp}
+                    current_channel={current_side_channel}
+                    options={this.state.channels.currentSideChannelOptions}
+                  />
+                </div>
+              </div>
+            )}
+        </div>
       </div>
     );
   }

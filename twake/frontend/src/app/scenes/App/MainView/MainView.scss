@@ -225,20 +225,68 @@
     padding-bottom: 5px;
   }
 
-  .app {
+  .app_views {
     flex: 1;
-    position: relative;
     display: flex;
+    height: 100%;
+    overflow: hidden;
 
-    .app_loader {
-      position: absolute;
-      margin: auto;
-      width: 50px;
-      height: 50px;
-      right: 0px;
-      bottom: 0px;
-      top: 0px;
-      left: 0px;
+    .app_main {
+      position: relative;
+      flex: 1;
+      display: flex;
+    }
+    .app_side {
+      position: relative;
+      width: 46%;
+      border-left: 1px solid var(--grey-background);
+      display: flex;
+      flex-direction: column;
+
+      .side_header {
+        height: 40px;
+        background: var(--grey-background);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--black-alpha-2);
+        padding: 8px;
+        padding-left: 16px;
+        line-height: 24px;
+        box-sizing: border-box;
+
+        .close {
+          cursor: pointer;
+          position: absolute;
+          right: 8px;
+          color: var(--black-alpha-1);
+          &:hover {
+            color: var(--black);
+          }
+        }
+      }
+
+      .app_side_content {
+        flex: 1;
+        display: flex;
+        position: relative;
+      }
+    }
+
+    .app {
+      flex: 1;
+      position: relative;
+      display: flex;
+
+      .app_loader {
+        position: absolute;
+        margin: auto;
+        width: 50px;
+        height: 50px;
+        right: 0px;
+        bottom: 0px;
+        top: 0px;
+        left: 0px;
+      }
     }
   }
 }

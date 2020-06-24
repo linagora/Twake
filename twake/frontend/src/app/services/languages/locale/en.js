@@ -48,6 +48,7 @@ export default {
   'components.add_workspace.placeholder_marketing': 'Marketing',
   'components.add_workspace.workspace_name': 'Workspace name',
   'components.add_workspace.create_new_workspace': 'Create a new workspace',
+  'scenes.app.side_app.messages_thread_title': '$1 • Messages thread',
   'scenes.app.workspaces.create_company.group_data': 'Configure your new group',
   'scenes.app.workspaces.create_company.group_data.text':
     'Your group will contain multiple workspaces for each project or team you have. A group can be a company, an organisation or a departement for instance.',

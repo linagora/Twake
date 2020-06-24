@@ -74,7 +74,7 @@ export default class ChannelsUser extends Component {
   }
   membersInWorkspace(members) {
     var yes = true;
-    members.forEach(member_id => {
+    (members || []).forEach(member_id => {
       yes =
         yes &&
         !!this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId)[member_id];

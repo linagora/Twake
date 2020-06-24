@@ -379,7 +379,7 @@
   }
 }
 
-.message .message_bloc_and_response .response_edited {
+.response_edited {
   margin-top: 10px;
   display: flex;
 
@@ -389,7 +389,7 @@
 }
 
 .message .message_bloc_and_response .content_edited,
-.message .message_bloc_and_response .response_edited {
+.response_edited {
   display: flex;
 
   .autocomplete {

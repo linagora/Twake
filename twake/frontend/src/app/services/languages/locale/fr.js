@@ -53,6 +53,7 @@ export default {
   'components.add_workspace.placeholder_marketing': 'Marketing',
   'components.add_workspace.workspace_name': 'Nom de votre espace de travail',
   'components.add_workspace.create_new_workspace': 'Créer un nouvel espace de travail',
+  'scenes.app.side_app.messages_thread_title': '$1 • Réponses à un message',
   'scenes.app.workspaces.create_company.group_data': 'Configurez votre nouveau groupe',
   'scenes.app.workspaces.create_company.group_data.text':
     'Votre groupe contiendra plusieurs espaces de travail pour chacun de vos projets et équipes. Un groupe peut être une entreprise, un département ou une organisation par exemple.',

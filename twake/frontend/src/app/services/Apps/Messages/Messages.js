@@ -399,14 +399,9 @@ class Messages extends Observable {
   }
 
   showMessage(id) {
-    this.currentShowedMessageId = id;
-    this.notify();
-    if (this.messageDetailsComponent && this.currentShowedMessageId) {
-      MediumPopupManager.open(this.messageDetailsComponent, {
-        position: 'center',
-        size: { width: '50vw' },
-      });
-    }
+    const message = Collections.get('messages').find(id);
+    const channel = Collections.get('channels').find(message.channel_id);
+    ChannelsService.select(channel, true, { threadId: id });
   }
 
   scrollToMessage(channel, parent_id, id) {
