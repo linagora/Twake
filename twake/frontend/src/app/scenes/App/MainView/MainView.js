@@ -281,7 +281,7 @@ export default class MainView extends Component {
           </div>
           {side_app &&
             (!current_side_channel.original_group ||
-              current_side_channel.original_group == Workspaces.currentWorkspaceId) && (
+              current_side_channel.original_group == Workspaces.currentGroupId) && (
               <div className="app_side">
                 <div className="side_header">
                   {this.getSideAppName(side_app, current_side_channel)}
