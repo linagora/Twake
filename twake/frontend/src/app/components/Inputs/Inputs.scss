@@ -531,7 +531,7 @@ select,
     height: 28px;
     display: inline-block;
     background: #F2F2F2;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     margin-right: 4px;
     padding: 7px 5px;
     box-sizing: border-box;
@@ -558,7 +558,7 @@ select,
     height: 28px;
     display: inline-block;
     background: #F2F2F2;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     margin-right: 4px;
     padding: 8px;
     box-sizing: border-box;

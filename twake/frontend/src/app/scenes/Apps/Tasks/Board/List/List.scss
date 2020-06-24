@@ -65,7 +65,7 @@
           opacity: 0.15;
           top: 0;
           left: 0;
-          border-radius: 8px;
+          border-radius: var(--default-border-radius-large);
         }
       }
 
@@ -104,7 +104,7 @@
       padding-top: 0px;
       display: flex;
       transition: opacity 0.2s, height 0.2s;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
       background: $grey_background;
       padding-right: 4px;
       &:hover {

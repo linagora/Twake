@@ -104,7 +104,7 @@
       .user_image {
         width: 26px;
         height: 26px;
-        border-radius: 8px;
+        border-radius: var(--default-border-radius-large);
         position: relative;
         background-color: #dddddd;
         background-size: cover;
@@ -248,7 +248,7 @@
   flex-direction: column;
 
   .main_view {
-    border-radius: 8px 8px 0 0;
+    border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
 

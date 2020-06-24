@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -31,8 +31,9 @@ export default class Responses extends Component {
   }
   sendResponse() {
     this.setState({ response_message_raw: '' });
-    if (Globals.window.mixpanel_enabled)
+    if (Globals.window.mixpanel_enabled) {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
+    }
     MessagesService.sendMessage(
       this.state.response_message_raw,
       {
@@ -41,7 +42,7 @@ export default class Responses extends Component {
       },
       this.props.messagesCollectionKey,
     );
-    MessagesService.startRespond(false);
+    MessagesService.startRespond(this.props.parentMessage);
   }
   triggerApp(app, from_icon) {
     if (
@@ -110,6 +111,7 @@ export default class Responses extends Component {
             }}
           >
             <Input
+              key={this.state.app_messages_service.respondedMessage.front_id}
               className="right-margin"
               localStorageIdentifier={this.props.channelId}
               onResize={this.props.measure}
@@ -122,6 +124,12 @@ export default class Responses extends Component {
               onChange={val => this.setState({ response_message_raw: val })}
               onSend={val => {
                 this.sendResponse();
+              }}
+              onEditLastMessage={() => {
+                MessagesService.startEditingLastMessage({
+                  channel_id: this.props.channelId,
+                  parent_message_id: this.props.parentMessage.id,
+                });
               }}
               onEscape={() => {
                 MessagesService.startRespond(false);

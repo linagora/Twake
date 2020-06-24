@@ -52,7 +52,7 @@
       background: $red;
       width: 16px;
       height: 16px;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
       color: $white;
       font-size: 12px;
       line-height: 16px;

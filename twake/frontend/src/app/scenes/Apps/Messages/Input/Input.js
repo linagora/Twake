@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon.js';
@@ -90,6 +90,10 @@ export default class Input extends Component {
     }
   }
   onKeyUp(evt) {
+    if (evt.key == 'ArrowUp' && !this.state.content) {
+      //Edit last message from ourselve
+      this.props.onEditLastMessage && this.props.onEditLastMessage();
+    }
     this.disable_enter = false;
   }
   onKeyPress(evt) {
@@ -125,6 +129,7 @@ export default class Input extends Component {
   focus() {
     if (this.autocomplete) {
       this.autocomplete.focus();
+      this.props.onFocus && this.props.onFocus();
     }
   }
   triggerApp(app, from_icon, evt) {
@@ -325,6 +330,11 @@ export default class Input extends Component {
             onKeyUp={evt => this.onKeyUp(evt)}
             position={'top'}
             onEscape={this.props.onEscape}
+            onFocusChange={status => {
+              if (status) {
+                this.props.onFocus && this.props.onFocus();
+              }
+            }}
           />
 
           <div className="input_addons">

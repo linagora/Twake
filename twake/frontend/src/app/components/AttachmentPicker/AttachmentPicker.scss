@@ -8,7 +8,7 @@
     border: solid 1px $grey_light;
     height: 32px;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     padding: 4px;
     padding-right: 8px;
     line-height: 24px;

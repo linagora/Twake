@@ -1,9 +1,9 @@
 @import '~components/constants.scss';
 
 .channel_category {
-  font-size: 16px;
-  font-weight: 700;
-  color: $grey_dark;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--black-alpha-2);
   margin-top: 24px;
   margin-bottom: 8px;
   margin-left: 16px;
@@ -50,7 +50,7 @@
 }
 
 .channel {
-  height: 32px;
+  height: 28px;
   width: auto;
   margin-left: 16px;
   margin-right: 16px;
@@ -61,12 +61,12 @@
   font-weight: 500;
   font-style: normal;
   font-stretch: normal;
-  line-height: 32px;
+  line-height: 28px;
   background: transparent;
   color: $black;
   display: flex;
   cursor: pointer;
-  padding-left: 8px;
+  padding-left: 4px;
   padding-right: 4px;
   line-height: normal;
 
@@ -88,7 +88,7 @@
   }
 
   &.extra-margin {
-    padding-left: 16px;
+    padding-left: 6px;
   }
 
   &.has_notifications {
@@ -113,7 +113,7 @@
       border-color: $primary;
     }
     .user_head .status.grey {
-      background-color: $grey_light;
+      background-color: $grey_background;
     }
 
     .black-icon {
@@ -141,9 +141,9 @@
   }
 
   .group_count {
-    background: $grey_dark;
+    background: var(--black-alpha-1);
     height: 16px;
-    color: $white;
+    color: var(--white);
     margin-right: 8px;
     border-radius: var(--default-border-radius);
     padding: 2px 4px;
@@ -152,7 +152,7 @@
     font-size: 12px;
     display: inline-block;
     vertical-align: middle;
-    margin-top: 8px;
+    margin-top: 6px;
   }
   .app_indicator {
     background: #92929c;
@@ -183,7 +183,7 @@
     white-space: nowrap;
     flex: 1;
     padding-right: 4px;
-    line-height: 32px;
+    line-height: 28px;
   }
 
   .not_member {
@@ -252,7 +252,7 @@
         margin-left: -14px;
       }
       & > div:first-child {
-        margin-left: -5px;
+        margin-left: 0px;
       }
     }
   }
@@ -266,7 +266,7 @@
     font-weight: 700;
     text-align: center;
     line-height: 16px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     margin: 8px 4px;
     padding: 0 2px;
     vertical-align: top;
@@ -350,7 +350,7 @@
 .loading_render {
   .channel {
     pointer-events: none;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     height: 16px;
     margin-bottom: 16px;
     animation-duration: 1s;
@@ -371,7 +371,7 @@
     font-size: 0;
     height: 16px;
     background: #dfdfdf;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     width: 60%;
     margin-top: 30px;
     margin-bottom: 16px;

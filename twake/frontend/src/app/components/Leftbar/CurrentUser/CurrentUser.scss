@@ -117,14 +117,14 @@
     .name {
       background: #dfdfdf !important;
       height: 16px;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
       width: 70%;
       margin-top: 2px;
     }
     .subname {
       margin-top: 6px;
       height: 16px;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
       width: 90%;
     }
   }

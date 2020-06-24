@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -74,6 +74,7 @@ export default class MainView extends Component {
   }
   sendMessage(val) {
     this.input.setValue('');
+
     MessagesService.iamWriting(this.props.channel.id, this.parentMessageId, false);
     MessagesService.sendMessage(
       val,
@@ -271,11 +272,21 @@ export default class MainView extends Component {
                 onSend={val => {
                   this.sendMessage(val);
                 }}
+                onEditLastMessage={() => {
+                  MessagesService.startEditingLastMessage({
+                    channel_id: this.props.channel.id,
+                    parent_message_id:
+                      (this.props.messageDetails
+                        ? MessagesService.currentShowedMessageId
+                        : undefined) || undefined,
+                  });
+                }}
                 triggerApp={(app, from_icon, evt) => this.triggerApp(app, from_icon, evt)}
                 onChange={() => {
                   MessagesService.iamWriting(this.props.channel.id, this.parentMessageId, true);
                 }}
                 disabled={MessagesService.currentShowedMessageId != this.parentMessageId}
+                onFocus={() => MessagesService.startRespond(false)}
               />
             </DroppableZone>
           </UploadZone>

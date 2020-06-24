@@ -47,7 +47,7 @@
   .multiline-code {
     color: #fff;
     padding: 5px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     .hljs {
       border-radius: 6px;
     }

@@ -266,7 +266,7 @@
     min-width: 240px;
     width: 20%;
     margin-right: 15px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     background: #f2f2f2;
     box-sizing: border-box;
     padding: 15px;

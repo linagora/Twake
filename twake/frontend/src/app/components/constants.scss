@@ -15,12 +15,15 @@ $primary_background: #f3f2ff;*/
   --secondary: #182952;
   --primary-background: #f3f2ff;
   --black: #444;
+  --black-alpha-1: #18295288;
+  --black-alpha-2: #18295255;
   --grey-light: #eeeeee;
   --grey-dark: #92929c;
   --grey-background: #f5f5f7;
   --white: #fff;
   --pale-grey: #f5f5f7;
-  --default-border-radius: 4px;
+  --default-border-radius: 3px;
+  --default-border-radius-large: 5px;
 }
 
 $primary: var(--primary);

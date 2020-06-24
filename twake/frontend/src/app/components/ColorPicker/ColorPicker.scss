@@ -4,7 +4,7 @@
   .color {
     width: 16px;
     height: 16px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     display: inline-block;
     margin: 10px;
     position: relative;

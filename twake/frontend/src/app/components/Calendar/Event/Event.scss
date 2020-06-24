@@ -124,7 +124,7 @@
 
   //rappel
   &.remind {
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     min-height: 18px;
   }
 
@@ -140,7 +140,7 @@
   //deplacement
 
   &.move {
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     border-top-left-radius: 4px;
   }
 }

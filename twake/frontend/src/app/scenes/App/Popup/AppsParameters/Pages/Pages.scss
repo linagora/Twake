@@ -97,7 +97,7 @@
       padding-left: 5px;
       padding-right: 5px;
       box-sizing: border-box;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
 
       &:hover {
         background: #f2f2f2;
@@ -145,7 +145,7 @@
     margin: 15px;
     margin-top: 0px;
     background: #555;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     color: #fff;
     padding: 15px;
   }

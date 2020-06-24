@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import './AutoComplete.scss';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
@@ -82,7 +82,7 @@ export default class AutoComplete extends Component {
     }
     for (var i = 0; i < that.props.regexHooked.length; i++) {
       var text = allText.match(that.props.regexHooked[i]);
-      if (text) {
+      if (text && allText) {
         if (that.state.currentRegexUsed < 0 || that.state.currentRegexUsed != i) {
           that.state.currentRegexUsed = i;
         }
@@ -125,6 +125,7 @@ export default class AutoComplete extends Component {
       }
     }
     that.setState({ currentList: [], currentRegexUsed: -1, resultPosition: '' });
+    this.props.keyUp && this.props.keyUp(ev);
   }
   componentWillUnmount() {
     document.removeEventListener('click', this.outsideClickListener);
