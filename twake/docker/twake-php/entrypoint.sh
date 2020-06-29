@@ -17,5 +17,13 @@ exec "$@"
 
 chmod -R 777 /var/www
 chmod -R 777 /tmp/
+chmod -R 777 /twake-core/
+
+if test -f "/configuration/Parameters.php"; then
+  cp /configuration/Parameters.php /twake-core/app/Configuration/Parameters.php
+else
+  cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
+fi
+
 cron -f &
 docker-php-entrypoint php-fpm

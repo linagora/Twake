@@ -60,7 +60,13 @@ class InitConnector extends ContainerAwareCommand
           if($definition["simple_name"] == $connector_name){
               $found = true;
 
+              $server_route = rtrim($this->app->getContainer()->getParameter("internal_server_name")?:$this->app->getContainer()->getParameter("SERVER_NAME"), "/");
+
               $simple_name = "twake.".$definition["simple_name"];
+              $icon = $definition['icon_url'];
+              if(!(strpos("http://", $icon) === 0 || strpos("https://", $icon) === 0)){
+                $icon = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/icon";
+              }
 
               $app_exists = $this->app->getServices()->get("app.applications")->findAppBySimpleName($simple_name, true);
 
@@ -68,16 +74,15 @@ class InitConnector extends ContainerAwareCommand
                 'simple_name' => $simple_name,
                 'name' => $definition['name'],
                 'description' => $definition['description'],
-                'icon_url' => $definition['icon_url'],
+                'icon_url' => $icon,
                 'website' => $definition['website'],
                 'categories' => $definition['categories'],
-
                 'privileges' => $definition['privileges'],
                 'capabilities' => $definition['capabilities'],
                 'hooks' => $definition['hooks'],
                 'display' => $definition['display'],
                 'api_allowed_ips' => $definition['api_allowed_ips'],
-                'api_event_url' => rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/" . ltrim($definition['api_event_url'], "/"),
+                'api_event_url' => $server_route . "/bundle/connectors/" . $definition["simple_name"] . "/" . ltrim($definition['api_event_url'], "/"),
                 'public' => true
               ];
 
@@ -100,7 +105,6 @@ class InitConnector extends ContainerAwareCommand
                 error_log("The connector is now available to the public.");
               }else{
                 //If in database, set to non public
-
                 if($app_exists){
                     $application["public"] = false;
                     $application["id"] = $app_exists["id"];

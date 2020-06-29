@@ -248,9 +248,8 @@ class Websocket extends Observable {
 
             that.disconnect();
 
-            that.connected = true;
+            that.updateConnected(true);
             that.notify();
-            console.log('Network : Connected');
 
             that.testNetwork = false;
 
@@ -351,7 +350,7 @@ class Websocket extends Observable {
       return;
     }
 
-    this.connected = false;
+    this.updateConnected(false);
     this.notify();
 
     console.log('Network : Connexion error', reason, details);
@@ -389,7 +388,7 @@ class Websocket extends Observable {
           if (this.ws) {
             this.ws.call('ping/ping', {}).then(
               result => {
-                this.connected = true;
+                this.updateConnected(true);
                 this.notify();
                 this.testNetwork = false;
               },
@@ -423,6 +422,13 @@ class Websocket extends Observable {
 
   getSubscribeCount(route) {
     return this.subscribed[route] ? this.subscribed[route].length : 0;
+  }
+
+  updateConnected(state) {
+    if (state != this.connected) {
+      this.connected = state;
+      console.log('CONNECTED = ', state);
+    }
   }
 
   isConnected() {

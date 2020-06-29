@@ -18,6 +18,21 @@
   .message_bloc_and_response {
     width: 100%;
 
+    &.has_responses {
+      border: 1px solid var(--grey-background);
+      border-radius: var(--default-border-radius-large);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 4px;
+      padding-bottom: 16px;
+      margin: -4px;
+      margin-bottom: 8px;
+    }
+
+    /*&.is_response {
+      border-left: 4px solid var(--grey-background);
+      padding-left: 4px;
+    }*/
+
     .message_bloc {
       display: flex;
       position: relative;
@@ -392,7 +407,7 @@
 .response_edited {
   display: flex;
 
-  .autocomplete {
+  .write_message .input .autocomplete {
     margin: 16px;
   }
 
@@ -421,6 +436,9 @@
     .emojione {
       width: 88px;
       margin-bottom: 10px;
+    }
+    .icon {
+      font-size: 88px;
     }
 
     .channel_first_message_icon {

@@ -19,6 +19,10 @@
     .message_bloc > .container {
       max-height: 30vh;
     }
+    .message .message_bloc_and_response.has_responses {
+      box-shadow: none;
+      border: 0px;
+    }
   }
 
   &.in_modal {

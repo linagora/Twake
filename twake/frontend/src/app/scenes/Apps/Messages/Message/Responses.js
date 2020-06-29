@@ -10,6 +10,8 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Button from 'components/Buttons/Button.js';
 import Globals from 'services/Globals.js';
 
+const showed_messages = 5;
+
 export default class Responses extends Component {
   constructor() {
     super();
@@ -63,7 +65,7 @@ export default class Responses extends Component {
   render() {
     return (
       <div className="responses">
-        {this.props.parentMessage.responses_count > 5 && (
+        {this.props.parentMessage.responses_count > showed_messages && (
           <a
             className="action_link"
             onClick={() => MessagesService.showMessage(this.props.parentMessage.id)}
@@ -78,28 +80,29 @@ export default class Responses extends Component {
           </a>
         )}
 
-        {this.state.messages_repository
-          .findBy({
-            channel_id: this.props.channelId,
-            parent_message_id: this.props.parentMessage.id,
-            _user_ephemeral: undefined,
-          })
-          .sort((a, b) => a.creation_date - b.creation_date)
-          .slice(-5)
-          .map(message => {
-            if (!message) {
-              return '';
-            }
-            return (
-              <Message
-                key={message.front_id}
-                messagesCollectionKey={this.props.messagesCollectionKey}
-                previousMessage={{}}
-                message={message}
-                isResponse
-              />
-            );
-          })}
+        {showed_messages > 0 &&
+          this.state.messages_repository
+            .findBy({
+              channel_id: this.props.channelId,
+              parent_message_id: this.props.parentMessage.id,
+              _user_ephemeral: undefined,
+            })
+            .sort((a, b) => a.creation_date - b.creation_date)
+            .slice(-showed_messages)
+            .map(message => {
+              if (!message) {
+                return '';
+              }
+              return (
+                <Message
+                  key={message.front_id}
+                  messagesCollectionKey={this.props.messagesCollectionKey}
+                  previousMessage={{}}
+                  message={message}
+                  isResponse
+                />
+              );
+            })}
 
         {this.state.app_messages_service.respondedMessage.parent_message_id ==
           this.props.parentMessage.id && (
@@ -163,8 +166,9 @@ export default class Responses extends Component {
           </div>
         )}
 
-        {this.state.app_messages_service.respondedMessage.parent_message_id !=
-          this.props.parentMessage.id &&
+        {showed_messages > 0 &&
+          this.state.app_messages_service.respondedMessage.parent_message_id !=
+            this.props.parentMessage.id &&
           (this.props.parentMessage.responses_count > 0 || this.props.isLastMessage) && (
             <a
               className="action_link add_response"

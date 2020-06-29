@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -85,7 +85,7 @@ export default class Message extends Component {
   }
 
   dropMessage(message) {
-    if (Globals.window.mixpanel_enabled){
+    if (Globals.window.mixpanel_enabled) {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Drop message Event');
     }
@@ -218,7 +218,13 @@ export default class Message extends Component {
       }
 
       message = [
-        <div className="message_bloc_and_response">
+        <div
+          className={
+            'message_bloc_and_response ' +
+            (this.props.message.responses_count > 0 ? 'has_responses ' : '') +
+            (this.props.message.parent_message_id ? 'is_response ' : '')
+          }
+        >
           <div
             className={'message_bloc ' + className}
             onMouseOver={() => this.setState({ was_hover: true })}

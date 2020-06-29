@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Notifications from 'services/user/notifications.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
@@ -75,6 +75,6 @@ export default class NotificationsBodyLayer extends React.Component {
         </div>
       );
     }
-    return '';
+    return <div></div>;
   }
 }

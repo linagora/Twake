@@ -70,12 +70,14 @@
     }
 
     .title {
-      font-size: 16px;
-      font-weight: bold;
-      line-height: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 28px;
       display: inline-block;
       margin-right: 24px;
       margin-bottom: 0px;
+      margin-top: 4px;
+      color: var(--black);
 
       .emojione-container {
         margin-right: 4px;
@@ -138,9 +140,9 @@
 
     .tab_add_menu {
       display: inline-block;
-      height: 32px;
+      height: 28px;
       vertical-align: top;
-      padding-top: 6px;
+      padding-top: 3px;
       box-sizing: border-box;
     }
     .tab_add {
@@ -183,13 +185,13 @@
     .tab {
       font-size: 14px;
       display: inline-flex;
-      padding: 0 8px;
+      padding: 0 4px;
       border-radius: var(--default-border-radius);
-      height: 32px;
+      height: 28px;
       box-sizing: border-box;
-      line-height: 32px;
+      line-height: 28px;
       margin-right: 5px;
-      color: $grey_dark;
+      color: var(--grey-dark);
       font-weight: 500;
       margin-right: 8px;
       cursor: pointer;

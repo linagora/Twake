@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from 'scenes/app.js';
-import Integration from 'scenes/integration/integration.js';
+import Integration from 'scenes/Integration/integration.js';
 import registerServiceWorker from './registerServiceWorker';
 import $ from 'jquery';
 import * as Sentry from '@sentry/browser';

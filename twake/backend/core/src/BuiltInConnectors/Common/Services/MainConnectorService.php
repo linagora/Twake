@@ -16,7 +16,7 @@ class MainConnectorService {
     {
         $this->market_service = $app->getServices()->get("app.applications");
         $this->rest_client = $app->getServices()->get("app.restclient");
-        $this->api_url = rtrim($app->getContainer()->getParameter("SERVER_NAME"), "/") . "/api/v1/";
+        $this->api_url = rtrim($app->getContainer()->getParameter("internal_server_name")?:$app->getContainer()->getParameter("SERVER_NAME"), "/") . "/api/v1/";
         $this->server_url = rtrim($app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/";
         $this->emojione_client = new Client(new Ruleset());
     }

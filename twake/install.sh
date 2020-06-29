@@ -2,11 +2,6 @@ php_parameters_dist=backend/core/app/Configuration/Parameters.php.dist
 react_parameters_dist=frontend/src/app/environment/environment.js.dist
 docker_compose_dist=docker-compose.yml.dist.localhost
 
-#Check dependencies
-if ! command -v yarn >/dev/null 2>&1 ; then
-    echo "Please install yarn"
-    exit 1
-fi
 if ! command -v docker-compose >/dev/null 2>&1 ; then
     echo "Please install docker and docker-compose"
     exit 1
@@ -34,14 +29,6 @@ else
   cp $react_parameters_dist $react_parameters
 fi
 
-echo "⏳ Building frontend..."
-
-cd frontend
-chmod -R 777 .
-yarn install --silent
-yarn build-after-sh
-cd ../
-
 echo "⬆️ Increase vm.max_map_count..."
 
 sudo sysctl -w vm.max_map_count=262144
@@ -50,12 +37,6 @@ echo "⏳ Install/Update docker..."
 
 docker-compose pull
 docker-compose up -d
-
-
-echo "⏳ Install backend..."
-
-docker-compose exec php chmod -R 777 /tmp/
-docker-compose exec php php composer.phar install
 
 echo "⏳ Now waiting for scylladb"
 res=7

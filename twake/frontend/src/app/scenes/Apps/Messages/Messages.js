@@ -169,7 +169,7 @@ export default class MainView extends Component {
       .sort((a, b) => a.creation_date - b.creation_date);
 
     return (
-      <div className="app">
+      <div className="app" onClick={() => ChannelsService.readChannelIfNeeded(this.props.channel)}>
         <div className={'messages_app ' + (this.props.messageDetails ? 'in_modal ' : '')}>
           <UploadZone
             className="messages_main"

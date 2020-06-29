@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -114,7 +114,9 @@ export default class FirstMessage extends Component {
         )}
         {!channel.direct && (
           <div className="content">
-            <Emojione s128 type={channel.icon} />
+            <div className="icon">
+              <Emojione s128 type={channel.icon} />
+            </div>
             <div className="title">{channel.name}</div>
             <div className="text">
               {Languages.t(

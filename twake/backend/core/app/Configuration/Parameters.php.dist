@@ -57,6 +57,7 @@ class Parameters extends \Common\Configuration
             "ELASTIC_SERVER" => "elasticsearch:9200",
             "DRIVE_SALT" => "SecretPassword",
             "SERVER_NAME" => "http://localhost:8000/",
+            "internal_server_name" => "http://nginx/",
             "drive_previews_tmp_folder" => "/tmp/",
             "drive_tmp_folder" => "/tmp/",
             "secret" => "",

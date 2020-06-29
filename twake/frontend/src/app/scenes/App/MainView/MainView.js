@@ -295,6 +295,10 @@ export default class MainView extends Component {
                 </div>
                 <div className="app_side_content">
                   <AppView
+                    key={
+                      current_side_channel +
+                      JSON.stringify(this.state.channels.currentSideChannelOptions)
+                    }
                     app={side_app}
                     noapp={noapp}
                     current_channel={current_side_channel}

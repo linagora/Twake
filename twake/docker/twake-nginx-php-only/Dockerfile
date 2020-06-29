@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get install -y wget
 
-ADD ./site.conf /etc/nginx/sites-enabled/site
-ADD ./nginx.conf /etc/nginx/nginx.conf
+ADD docker/twake-nginx-php-only/site.conf /etc/nginx/sites-enabled/site
+ADD docker/twake-nginx-php-only/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
@@ -35,12 +35,8 @@ RUN apt-get update && apt-get install -y \
   python3-minimal python3-pkg-resources python3-virtualenv python3.4 \
   python3.4-minimal virtualenv zlib1g-dev
 
-#Crontab
-ADD crontab /etc/cron.d/twake-cron
-RUN chmod 0644 /etc/cron.d/twake-cron
-RUN touch /var/log/cron.log
 
-COPY ./entrypoint.sh /
+COPY docker/twake-nginx-php-only/entrypoint.sh /
 RUN chmod 0777 /entrypoint.sh
 ENTRYPOINT /entrypoint.sh
 

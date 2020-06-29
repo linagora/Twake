@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -452,10 +452,10 @@ export default class MessagesList extends Component {
         m =>
           !Mlist.states[this.key].visible_min_id ||
           !Mlist.states[this.key].visible_max_id ||
-          ((!m.id && Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
-            (m.id &&
-              Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
-              Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0)),
+          (!m.id && Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
+          (m.id &&
+            Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
+            Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0),
       )
       .filter(message => !message._user_ephemeral)
       .sort((a, b) => a.creation_date - b.creation_date);

@@ -247,6 +247,9 @@ class MarketApplication
               }
 
               $app->setIsAvailableToPublic($status);
+              if(!$status){
+                $app->setPublic(false);
+              }
               $this->doctrine->persist($app);
           }
       }
@@ -334,6 +337,18 @@ class MarketApplication
             if ($allows_unpublished_apps_from_group_id == $application->getGroupId() || $application->getPublic()) {
                 $result[] = $application->getAsArray();
             }
+        }
+
+        if(count($result) === 0){
+          $app = $this->findAppBySimpleName($query);
+          if($app){
+            $result[] = $app;
+          }else{
+            $app = $this->findAppBySimpleName("twake.".$query);
+            if($app){
+              $result[] = $app;
+            }
+          }
         }
 
         return $result;
