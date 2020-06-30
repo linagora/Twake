@@ -21,6 +21,28 @@ class MappingCommand extends ContainerAwareCommand
     protected function execute()
     {
 
+        //Wait for es connection
+        error_log("\n⏳Waiting for ElasticSearch connection");
+        $connected = false;
+        $iteration = 0;
+        while(!$connected && $iteration < 12*3){
+          try{
+            $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER'));
+            $connected = $test->getContent();
+          }catch(\Exception $e){
+            $connected = false;
+          }
+          if(!$connected){
+            error_log("... not found, retry in 5 seconds (timeout 180s)");
+            sleep(5);
+          }
+          $iteration++;
+        }
+        if(!$connected){
+          error_log("\n💥 Unable to join ElasticSearch !\n");
+          return;
+        }
+
         $mapping_workspace = Array(
             "_source" => Array(
                 "includes" => Array("id"),
@@ -229,9 +251,10 @@ class MappingCommand extends ContainerAwareCommand
         error_log($url . $mapping_suffix);
 
         try {
-            $this->getApp()->getServices()->get("app.restclient")->put("http://" . $url, "");
+          $this->getApp()->getServices()->get("app.restclient")->put("http://" . $url, "");
         } catch (\Exception $e) {
-
+          error_log("no es");
+          error_log($e);
         }
 
         $mapping = json_encode($mapping);

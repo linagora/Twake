@@ -57,6 +57,7 @@ class ApplicationApi extends BaseController
                 $evt_data["workspace"] = $workspace->getAsArray();
                 $evt_data["group"] = $workspace->getGroup()->getAsArray();
                 $evt_data["user"] = $this->getUser()->getAsArray();
+                $evt_data["user"]["email"] = $this->getUser()->getEmail();
 
                 $res = $this->get("app.applications_api")->notifyApp($app_id, $type, $event, $evt_data);
                 if ($res) {

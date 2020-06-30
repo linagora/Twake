@@ -122,6 +122,7 @@ class WorkspacesApps extends Observable {
     };
 
     if (options.apps) {
+      this.loading_by_workspace[workspace_id] = false;
       loadApps(options.apps);
     } else {
       Api.post('workspace/apps/get', data, res => {

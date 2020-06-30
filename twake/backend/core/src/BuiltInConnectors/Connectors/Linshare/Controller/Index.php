@@ -38,8 +38,23 @@ class Index extends BaseController
         $event = $request->request->get("event");
         $type = $request->request->get("type");
 
-        $this->get('connectors.linshare.event')->proceedEvent($type, $event, $data);
+        if($event == "workspace" && $type == "configuration" || $event == "save_configuration_domain"){
+          $this->get('connectors.linshare.configure')->proceedEvent($type, $event, $data);
+        }else{
+          $this->get('connectors.linshare.event')->proceedEvent($type, $event, $data);
+        }
 
+        return new Response([]);
+    }
+
+    public function download(Request $request)
+    {
+        $file_uuid = $request->query->get("file_uuid");
+        $group_id = $request->query->get("group_id");
+        $owner_id = $request->query->get("owner_id");
+        $twake_user = $request->query->get("twake_user");
+
+        $this->get('connectors.linshare.event')->download($twake_user, $file_uuid, $group_id, $owner_id);
         return new Response([]);
     }
 

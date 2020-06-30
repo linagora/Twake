@@ -2,8 +2,6 @@
 
 namespace BuiltInConnectors\Connectors\Jitsi\Services;
 
-use  JitsiBundle\Entity\JitsiMessage;
-
 class Event
 {
 

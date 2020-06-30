@@ -203,6 +203,10 @@
     margin-right: 8px;
     vertical-align: middle;
     margin-top: 8px;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     &.danger {
       background: #ff6c6c;

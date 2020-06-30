@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
 import Twacode from 'components/Twacode/Twacode.js';
@@ -42,7 +42,7 @@ export default class ConfigBodyLayer extends React.Component {
         ConfiguratorsManager.configurator_order[ConfiguratorsManager.configurator_order.length - 1]
       ];
   }
-  onAction(type, id, passives, evt) {
+  onAction(type, id, context, passives, evt) {
     if (type == 'interactive_action') {
       this.setState({ loading_interaction: true });
       clearTimeout(this.loading_interaction_timeout);
@@ -53,6 +53,7 @@ export default class ConfigBodyLayer extends React.Component {
       var type = 'interactive_configuration_action';
       var event = id;
       var data = {
+        interactive_context: context,
         form: passives,
         hidden_data: this.configurator.hidden_data,
       };
@@ -101,7 +102,9 @@ export default class ConfigBodyLayer extends React.Component {
                   id={'configurator'}
                   content={this.configurator.form}
                   isApp={true}
-                  onAction={(type, id, passives, evt) => this.onAction(type, id, passives, evt)}
+                  onAction={(type, id, context, passives, evt) =>
+                    this.onAction(type, id, context, passives, evt)
+                  }
                 />
               </div>
             </div>

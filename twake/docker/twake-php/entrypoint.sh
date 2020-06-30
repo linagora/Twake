@@ -25,5 +25,9 @@ else
   cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
 fi
 
+php bin/console twake:schema:update
+php bin/console twake:mapping
+php bin/console twake:init
+
 cron -f &
 docker-php-entrypoint php-fpm

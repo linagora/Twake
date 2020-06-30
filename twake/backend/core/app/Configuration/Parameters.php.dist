@@ -51,7 +51,6 @@ class Parameters extends \Common\Configuration
               */
             ],
             "admin_api_token" => "",
-            "MAIL_FROM" => "",
             "LICENCE_KEY" => "",
             "STANDALONE" => true,
             "ELASTIC_SERVER" => "elasticsearch:9200",

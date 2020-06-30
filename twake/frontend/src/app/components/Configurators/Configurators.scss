@@ -22,7 +22,8 @@
       border-radius: $base_border_radius;
       box-shadow: $base_box_shadow;
       position: relative;
-      display: inline-block;
+      display: inline-flex;
+      flex-direction: column;
       transform: translateX(-50%) translateY(-50%);
       .header {
         padding: 15px;
@@ -51,6 +52,8 @@
         }
       }
       .content {
+        flex: 1;
+        overflow: auto;
         padding: 15px;
         box-sizing: border-box;
       }

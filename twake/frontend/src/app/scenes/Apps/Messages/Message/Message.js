@@ -103,24 +103,25 @@ export default class Message extends Component {
     this.state.app_messages_service.edited_message_raw[this.props.message.front_id] = undefined;
     this.setState({});
   }
-  onInteractiveMessageAction(action_id, passives, evt) {
+  onInteractiveMessageAction(action_id, context, passives, evt) {
     var app_id = this.props.message.application_id;
     var type = 'interactive_message_action';
     var event = action_id;
     var data = {
+      interactive_context: context,
       form: passives,
       message: this.props.message,
     };
     WorkspacesApps.notifyApp(app_id, type, event, data);
   }
-  onAction(type, id, passives, evt) {
+  onAction(type, id, context, passives, evt) {
     if (type == 'interactive_action') {
       this.setState({ loading_interaction: true });
       clearTimeout(this.loading_interaction_timeout);
       this.loading_interaction_timeout = setTimeout(() => {
         this.setState({ loading_interaction: false });
       }, 5000);
-      this.onInteractiveMessageAction(id, passives, evt);
+      this.onInteractiveMessageAction(id, context, passives, evt);
     }
   }
   render() {
@@ -318,7 +319,9 @@ export default class Message extends Component {
                       this.props.message.edited &&
                       this.props.message.message_type == 0 && <div className="edited">(edited)</div>
                     }
-                    onAction={(type, id, passives, evt) => this.onAction(type, id, passives, evt)}
+                    onAction={(type, id, context, passives, evt) =>
+                      this.onAction(type, id, context, passives, evt)
+                    }
                   />
                 )}
                 {this.state.app_messages_service.editedMessage.front_id ==

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
@@ -16,7 +16,7 @@ export default class TwacodeTester extends Component {
     };
   }
 
-  onAction(type, id, passives, evt) {
+  onAction(type, id, context, passives, evt) {
     console.log(type, id, evt);
 
     //Button pressed
@@ -33,7 +33,7 @@ export default class TwacodeTester extends Component {
     }
   }
 
-  onPassiveChange(type, id, value) {
+  onPassiveChange(type, id, context, value) {
     this.state.passives[id] = value;
     this.setState({});
   }
@@ -107,8 +107,12 @@ export default class TwacodeTester extends Component {
                 id={'tester'}
                 content={JSON.parse(this.state.content)}
                 isApp={true}
-                onAction={(type, id, passives, evt) => this.onAction(type, id, passives, evt)}
-                onPassiveChange={(type, id, value) => this.onPassiveChange(type, id, value)}
+                onAction={(type, id, context, passives, evt) =>
+                  this.onAction(type, id, context, passives, evt)
+                }
+                onPassiveChange={(type, id, context, value) =>
+                  this.onPassiveChange(type, id, context, value)
+                }
               />
             )}
           </div>

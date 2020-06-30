@@ -38,6 +38,8 @@ class InitCommand extends ContainerAwareCommand
     protected function execute()
     {
 
+        //TODO use configuration to choose what app to use
+
         $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
         /**

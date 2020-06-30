@@ -1,28 +1,44 @@
-# Installing Twake (manual installation)
+# Install Twake
 
-### Dependencies
+### Run Twake on localhost
 
-`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`, `webpack`
-
-Procedure here :
-
-[./install_dependencies.md](./install_dependencies.md)
-
-### Installation / update
+You will need docker-compose: [./install_docker_compose.md](./install_dependencies.md)
 
 ```
 cd twake
-./install.sh
-```
-
-### Start
-
-```
-cd twake
-./start.sh
+docker-compose up -d
+# sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch
 ```
 
 Twake will be running on port 8000.
+
+Please wait 5-10 minutes on the first run to let the database be initialized. You can monitor the startup of twake here: `docker-compose logs -f php`
+
+### Update Twake
+
+```
+cd twake
+docker-compose stop
+docker-compose pull
+docker-compose up -d
+```
+
+### Configuration files
+
+There are two configuration files available in the volume `configuration` :
+
+```
+configuration/Parameters.php
+configuration/environment.js
+```
+
+Once updated, you must do a `docker-compose restart`
+
+Default files can be found here :
+
+[/twake/backend/core/app/Configuration/Parameters.php.dist](Parameters.php)
+
+[/twake/frontend/src/app/environment/environment.js.dist](./install_dependencies.md)
 
 ### Use port 80 or 443 over https
 

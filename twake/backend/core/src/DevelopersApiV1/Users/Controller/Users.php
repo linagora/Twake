@@ -29,7 +29,9 @@ class Users extends BaseController
         $user_id = $request->request->get("user_id", false);
 
         if ($user_id) {
-            $object = $this->get("app.users")->getById($user_id);
+            $object_orm = $this->get("app.users")->getById($user_id, true);
+            $object = $object_orm->getAsArray();
+            $object["email"] = $object_orm->getEmail();
         }
 
         return new Response(Array("object" => $object));

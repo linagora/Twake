@@ -57,11 +57,10 @@ class MainConnectorService {
         );
 
         foreach ($custom_options as $key=>$value){
-            $custom[$key] = $value;
+          $custom[$key] = $value;
         }
 
         $resp = $restClient->post($route, $data_string, $custom);
-
 
         try {
             if(!$raw) {
@@ -84,7 +83,7 @@ class MainConnectorService {
         );
 
         foreach ($custom_options as $key=>$value){
-            $custom[$key] = $value;
+          $custom[$key] = $value;
         }
 
         $resp = $restClient->get($route, $custom);

@@ -59,11 +59,15 @@ export default class Emojione extends React.Component {
       html = html.replace('/32/', '/128/');
     }
 
-    /*return (
-      <span className={'emojione-container emoji-text ' + (this.props.className || '')}>
-        {emojione.shortnameToUnicode(this.props.type)}
-      </span>
-    );*/
+    //TODO check if on apple mac
+    var isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+    if (isMacLike) {
+      return (
+        <span className={'emojione-container emoji-text ' + (this.props.className || '')}>
+          {emojione.shortnameToUnicode(this.props.type)}
+        </span>
+      );
+    }
 
     return (
       <i
