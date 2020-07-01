@@ -63,6 +63,7 @@ export default class Responses extends Component {
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
   render() {
+    let previous_message = {};
     return (
       <div className="responses">
         {this.props.parentMessage.responses_count > showed_messages && (
@@ -93,11 +94,13 @@ export default class Responses extends Component {
               if (!message) {
                 return '';
               }
+              const tmp_previous_message = previous_message;
+              previous_message = message;
               return (
                 <Message
                   key={message.front_id}
                   messagesCollectionKey={this.props.messagesCollectionKey}
-                  previousMessage={{}}
+                  previousMessage={tmp_previous_message}
                   message={message}
                   isResponse
                 />
@@ -153,8 +156,8 @@ export default class Responses extends Component {
               }}
             />
             <Button
-              value={Languages.t('scenes.apps.messages.message.cancell_button', [], 'Annuler')}
-              className="small secondary"
+              value={Languages.t('scenes.apps.messages.message.cancel_button', [], 'Annuler')}
+              className="small secondary right-margin"
               onClick={() => {
                 if (this.input) {
                   this.input.setValue('');

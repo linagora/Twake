@@ -542,10 +542,7 @@ export default class MessagesList extends Component {
                 messagesCollectionKey={this.props.messagesCollectionKey}
                 message={message}
                 previousMessage={_previous || {}}
-                new={
-                  message.creation_date >
-                  (this.props.channel._user_last_access || message.creation_date)
-                }
+                unreadAfter={this.props.unreadAfter}
                 hasTimeline={true}
                 refDom={node => this.registerPositionForId(message.id, node)}
               />

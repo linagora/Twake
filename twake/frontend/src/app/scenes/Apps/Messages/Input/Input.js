@@ -412,8 +412,6 @@ export default class Input extends Component {
             >
               {Languages.t('scenes.apps.messages.input.send_button', [], 'Envoyer')}
             </Button>
-            {/*<SendIcon className="send_main m-icon-medium" />
-            <SendIcon className="send_hidden m-icon-medium" />*/}
           </div>
         )}
 

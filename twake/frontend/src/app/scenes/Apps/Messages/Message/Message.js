@@ -142,7 +142,10 @@ export default class Message extends Component {
     }
     this.state.messages_repository.listenOnly(this, listenOnly);
 
+    var isFirstNewMessage = this.props.message.creation_date > this.props.unreadAfter;
+
     var show_user =
+      isFirstNewMessage ||
       this.props.previousMessage.sender != this.props.message.sender ||
       this.props.previousMessage.sender == null ||
       this.props.message.responses_count > 0 ||
@@ -153,7 +156,7 @@ export default class Message extends Component {
     var canDrag = true;
     var className =
       ' ' +
-      (this.props.new ? 'new ' : '') +
+      (isFirstNewMessage ? 'new ' : '') +
       (this.props.isResponse ? 'response ' : '') +
       (show_user ? '' : 'without_title ') +
       (this.state.is_selected ? 'is_selected ' : '') +
@@ -222,6 +225,7 @@ export default class Message extends Component {
         <div
           className={
             'message_bloc_and_response ' +
+            (isFirstNewMessage ? 'new ' : '') +
             (this.props.message.responses_count > 0 ? 'has_responses ' : '') +
             (this.props.message.parent_message_id ? 'is_response ' : '')
           }
@@ -252,7 +256,7 @@ export default class Message extends Component {
                     <span>
                       {' '}
                       {Languages.t(
-                        'scenes.apps.messages.message.personel_spam',
+                        'scenes.apps.messages.message.personal_message',
                         [],
                         '- Vous seul pouvez voir ce message.',
                       )}
@@ -375,7 +379,7 @@ export default class Message extends Component {
                     />
                     <Button
                       value={Languages.t(
-                        'scenes.apps.messages.message.cancell_button',
+                        'scenes.apps.messages.message.cancel_button',
                         [],
                         'Annuler',
                       )}
@@ -503,6 +507,22 @@ export default class Message extends Component {
         types={['message']}
         onDrop={data => this.dropMessage(data.data)}
       >
+        {!this.props.previousMessage ||
+          (this.props.message.creation_date &&
+            isFirstNewMessage &&
+            this.props.previousMessage.creation_date <= this.props.unreadAfter && (
+              <div className="message_timeline new_messages">
+                <div className="time_container">
+                  <div className="time">
+                    {Languages.t(
+                      'scenes.apps.messages.message.new_messages_bar',
+                      [],
+                      'New messages',
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
         {(!this.props.previousMessage ||
           this.props.message.creation_date - this.props.previousMessage.creation_date >
             60 * 60 * 2) && (

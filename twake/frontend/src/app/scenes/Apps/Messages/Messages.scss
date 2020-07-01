@@ -48,6 +48,17 @@
       margin-bottom: 0px;
       z-index: 2;
 
+      &.new_messages {
+        &::before {
+          border-color: $primary;
+        }
+        .time_container {
+          .time {
+            background: $primary;
+          }
+        }
+      }
+
       .time_container {
         display: inline-block;
         padding: 0px 11px;

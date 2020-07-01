@@ -39,6 +39,8 @@ class Channels extends Observable {
     this.current_tab_id = null;
     this.current_tab_id_by_channel_id = {};
 
+    this.channel_front_read_state = {};
+
     var that = this;
     Globals.window.addEventListener('focus', function(e) {
       that.readChannelIfNeeded(
@@ -75,6 +77,10 @@ class Channels extends Observable {
       this.currentSideChannelFrontId = channel.front_id;
       this.currentSideChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
     } else {
+      if (channel) {
+        this.channel_front_read_state[channel.id] = channel._user_last_access;
+      }
+
       if (channel && channel.direct && !channel.id) {
         this.openDiscussion(channel.members);
       }
@@ -345,6 +351,8 @@ class Channels extends Observable {
   incrementChannel(channel) {
     channel._user_last_message_increment++;
     channel.messages_increment++;
+    channel.last_activity = new Date().getTime() / 1000;
+    channel._user_last_access = new Date().getTime() / 1000;
     Collections.get('channels').completeObject(channel);
   }
 
@@ -561,6 +569,11 @@ class Channels extends Observable {
       app_id: app_id,
       original_workspace: workspace_id,
     })[0];
+  }
+
+  markFrontAsRead(channel_id, date = undefined) {
+    this.channel_front_read_state[channel_id] = date || new Date().getTime() / 1000;
+    this.notify();
   }
 }
 

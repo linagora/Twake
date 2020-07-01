@@ -34,7 +34,7 @@ class MailNotificationQueue
     /**
      * @ORM\Column(type="twake_text")
      */
-    private $token;
+    private $atoken;
 
 
     public function __construct($user_id)
@@ -85,7 +85,7 @@ class MailNotificationQueue
      */
     public function getToken()
     {
-        return $this->token;
+        return $this->atoken;
     }
 
     /**
@@ -93,9 +93,8 @@ class MailNotificationQueue
      */
     public function setToken($token): void
     {
-        $this->token = $token;
+        $this->atoken = $token;
     }
 
 
 }
-

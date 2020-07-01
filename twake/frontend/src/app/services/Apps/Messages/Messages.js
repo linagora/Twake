@@ -156,7 +156,11 @@ class Messages extends Observable {
     message.sender = UserService.getCurrentUserId();
     message.creation_date = new Date().getTime() / 1000 + 60; //To be on the bottom
     message.content = val;
-    Collections.get('messages').save(message, collectionKey, () => {
+
+    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
+
+    Collections.get('messages').save(message, collectionKey, message => {
+      ChannelsService.markFrontAsRead(channel.id);
       ChannelsService.incrementChannel(channel);
     });
 

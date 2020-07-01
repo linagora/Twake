@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
@@ -232,7 +232,6 @@ export default class Channel extends Component {
     pos.x = pos.x || pos.left;
     pos.y = pos.y || pos.top;
     MenusManager.openMenu(menu, { x: pos.x + pos.width, y: pos.y + pos.height / 2 }, 'right');
-    console.log('open');
   }
   render() {
     var channel = this.props.channel;

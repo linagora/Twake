@@ -35,6 +35,7 @@ export default class MainView extends Component {
 
     Languages.addListener(this);
     Collections.get('messages').addListener(this);
+    ChannelsService.addListener(this);
     MessagesService.addListener(this);
 
     this.parentMessageId = this.options.threadId || '';
@@ -42,6 +43,7 @@ export default class MainView extends Component {
   componentWillUnmount() {
     Languages.removeListener(this);
     Collections.get('messages').removeListener(this);
+    ChannelsService.removeListener(this);
     MessagesService.removeListener(this);
 
     /*if(this.messages_collection_key){
@@ -126,7 +128,10 @@ export default class MainView extends Component {
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
+
   render() {
+    const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.id];
+
     //Add delay to make everything look more fast (loading all message add delay)
     if (!this.did_mount) {
       setTimeout(() => {
@@ -212,6 +217,7 @@ export default class MainView extends Component {
                 key={this.props.channel.id}
                 messagesCollectionKey={this.messages_collection_key}
                 channel={this.props.channel}
+                unreadAfter={unreadAfter}
                 parentMessageId={parentMessageId}
               />
 

@@ -33,6 +33,11 @@
       padding-left: 4px;
     }*/
 
+    &.new.has_responses,
+    &.new:not(.has_responses) .message_bloc.new {
+      border-left: 4px solid var(--primary-background);
+    }
+
     .message_bloc {
       display: flex;
       position: relative;

@@ -6,6 +6,7 @@ You will need docker-compose: [./install_docker_compose.md](./install_dependenci
 
 ```
 cd twake
+cp docker-compose.yml.dist docker-compose.yml
 docker-compose up -d
 # sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch
 ```
