@@ -154,7 +154,12 @@ class Messages extends Observable {
     message.pinned = false;
     message.responses_count = 0;
     message.sender = UserService.getCurrentUserId();
-    message.creation_date = new Date().getTime() / 1000 + 60; //To be on the bottom
+
+    const max_message_time = Collections.get('messages')
+      .findBy({ channel_id: options.channel_id })
+      .map(i => i.creation_date)
+      .reduce((a, b) => a + b, 0);
+    message.creation_date = Math.max(max_message_time + 1, new Date().getTime() / 1000); //To be on the bottom
     message.content = val;
 
     ChannelsService.markFrontAsRead(channel.id, message.creation_date);

@@ -483,7 +483,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post($contact_list_subscribe["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_subscribe["token"]));
+                $this->restClient->post($contact_list_subscribe["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_subscribe["token"], CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
               }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
@@ -502,7 +502,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post($contact_list_newsletter["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_newsletter["token"]));
+                $this->restClient->post($contact_list_newsletter["url"], json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => $contact_list_newsletter["token"], CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
               }
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
