@@ -25,6 +25,19 @@
     }
   }
 
+  .message_bloc_and_response.has_responses {
+    .message_timeline {
+      text-align: left;
+      margin-left: -6px;
+      .time_container .time {
+        background: transparent;
+        color: $grey_dark;
+        padding: 0;
+        font-weight: normal;
+      }
+    }
+  }
+
   &.in_modal {
     height: 80vh;
     margin: -16px;

@@ -1737,7 +1737,7 @@ export default {
   'components.workspace.list_manager.current_space': 'Current workspace',
   'components.workspace.list_manager.current_company': 'Current company',
   'components.workspace.list_manager.all': 'All',
-  'components.searchpopup.all': 'All',
+  'components.searchpopup.all': 'Default',
   'components.workspace.calendar.invalid': 'Invalid',
   'components.searchpopup.enter_text': 'Enter some text to search Twake.',
   'components.searchpopup.loading': 'Loading more results',

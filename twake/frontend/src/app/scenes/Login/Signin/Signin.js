@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
@@ -202,26 +202,32 @@ export default class Signin extends Component {
             value={this.state.firstName}
             onChange={evt => this.setState({ firstName: evt.target.value })}
           />
-          <Input
-            id="phone_number_create"
-            className="bottom-margin medium full_width"
-            onKeyDown={e => {
-              if (e.keyCode == 13) {
-                this.next();
-              }
-            }}
-            placeholder={'+11 1 23 45 67 89'}
-            value={this.state.phone}
-            onChange={evt => this.setState({ phone: evt.target.value })}
-          />
-          <Checkbox
-            small
-            value={this.state.newsletter}
-            onChange={value => {
-              this.setState({ newsletter: value });
-            }}
-            label={this.state.i18n.t('scenes.login.create_account.newsletter')}
-          />
+          {(!LoginService.server_infos.branding.name ||
+            LoginService.server_infos.branding.enable_newsletter) && [
+            <Input
+              key="phone"
+              id="phone_number_create"
+              className="bottom-margin medium full_width"
+              onKeyDown={e => {
+                if (e.keyCode == 13) {
+                  this.next();
+                }
+              }}
+              placeholder={'+11 1 23 45 67 89'}
+              value={this.state.phone}
+              onChange={evt => this.setState({ phone: evt.target.value })}
+            />,
+            <Checkbox
+              key="newsletter"
+              small
+              value={this.state.newsletter}
+              onChange={value => {
+                this.setState({ newsletter: value });
+              }}
+              label={this.state.i18n.t('scenes.login.create_account.newsletter')}
+            />,
+          ]}
+
           <div className="bottom">
             <a className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}

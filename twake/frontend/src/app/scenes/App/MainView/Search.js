@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Search from 'services/search/search.js';
@@ -35,6 +35,7 @@ export default class MainView extends Component {
           [],
           'Recherche rapide',
         )}
+        small
         icon="search"
         onClick={() => Search.open()}
       />

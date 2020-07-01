@@ -249,7 +249,7 @@ export default class ChannelsUser extends Component {
               if (channel._user_last_message_increment - channel.messages_increment < 0) {
                 keep = true;
               }
-              if (this.membersInWorkspace(channel.members)) {
+              if (this.membersInWorkspace(channel.members) && channel.messages_increment > 0) {
                 keep = true;
               }
               if (this.state.channels.currentChannelFrontId == channel.front_id) {

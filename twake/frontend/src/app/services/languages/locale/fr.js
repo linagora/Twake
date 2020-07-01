@@ -1802,7 +1802,7 @@ export default {
   'components.workspace.list_manager.current_space': 'Espace de travail courant',
   'components.workspace.list_manager.current_company': 'Entreprise courante',
   'components.workspace.list_manager.all': 'Tous',
-  'components.searchpopup.all': 'Partout',
+  'components.searchpopup.all': 'Défaut',
   'components.workspace.calendar.invalid': 'Invalide',
   'components.searchpopup.enter_text': 'Entrez du texte à chercher dans Twake.',
   'components.searchpopup.loading': 'Chargement de plus de résultats',

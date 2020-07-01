@@ -319,6 +319,10 @@
       font-size: 18px;
       margin-left: -5px;
       color: $grey_dark;
+      .emojione-container {
+        min-width: 24px;
+        text-align: center;
+      }
 
       .user_head {
         margin-left: 5px;

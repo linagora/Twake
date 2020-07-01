@@ -24,7 +24,7 @@
   }
 
   .header {
-    padding: 13px 32px;
+    padding: 13px 16px;
     display: flex;
     border-bottom: 1px solid $grey_light;
 
@@ -44,6 +44,9 @@
     }
 
     .right {
+      .input_icon {
+        margin-top: 2px;
+      }
     }
   }
 
@@ -87,8 +90,8 @@
       }
 
       &.direct_message {
-        line-height: 40px;
-        height: 40px;
+        line-height: 28px;
+        height: 28px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -116,7 +119,7 @@
         border: 1px solid #fff;
         margin-right: 0px;
         vertical-align: top;
-        margin-top: 5px;
+        margin-right: 4px;
 
         &:not(:first-child) {
           margin-left: -16px;
@@ -167,6 +170,7 @@
       .tab {
         margin-right: 0px;
         border-radius: 0px;
+        padding-right: 8px;
         &:first-child {
           border-radius: $base_border_radius 0 0 $base_border_radius;
         }

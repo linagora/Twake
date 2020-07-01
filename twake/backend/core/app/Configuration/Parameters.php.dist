@@ -45,6 +45,7 @@ class Parameters extends \Common\Configuration
                 "color" => '#2196F3',
                 "default_border_radius" => '2',
               ],
+              "enable_newsletter" => true,
               "name" => "OpenPaaS",
               "link" => "https://open-paas.org/",
               "logo" => "https://open-paas.org/wp-content/uploads/2019/10/openpaas.png"

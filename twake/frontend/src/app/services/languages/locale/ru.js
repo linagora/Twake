@@ -1792,7 +1792,7 @@ export default {
   'components.workspace.list_manager.current_space': 'Текущая рабочая область',
   'components.workspace.list_manager.current_company': 'Текущая компания',
   'components.workspace.list_manager.all': 'Все',
-  'components.searchpopup.all': 'Везде',
+  'components.searchpopup.all': 'По умолчанию',
   'components.workspace.calendar.invalid': 'Недействительны',
   'components.searchpopup.enter_text': 'Введите текст для поиска в Twake.',
   'components.searchpopup.loading': 'Загрузка дополнительных результатов',

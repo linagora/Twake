@@ -137,6 +137,7 @@
       .sender {
         position: relative;
         margin-right: 4px;
+        min-width: 16px;
 
         .user-image {
           width: 24px;
@@ -148,20 +149,6 @@
           &.is_app {
             border-radius: var(--default-border-radius);
           }
-        }
-
-        .date {
-          opacity: 0;
-          color: $grey_dark;
-          font-size: 10px;
-          margin: 3px 2px;
-          margin-left: 0px;
-          margin-right: 3px;
-          font-weight: 500;
-          width: 20px;
-          line-height: 14px;
-          position: relative;
-          overflow: hidden;
         }
       }
 
@@ -195,11 +182,8 @@
             font-size: 12px;
             color: $grey_dark;
             margin-left: 5px;
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            height: 14px;
-            margin-top: -1px;
             max-width: 400px;
 
             img.emojione {
@@ -346,6 +330,8 @@
 
           i.emojione-container {
             vertical-align: middle;
+            min-width: 18px;
+            display: inline-block;
 
             img {
               width: 14px;
@@ -367,6 +353,10 @@
       }
     }
   }
+}
+
+.message_bloc_and_response .message {
+  margin-top: 0px;
 }
 
 .message .message_bloc.system {

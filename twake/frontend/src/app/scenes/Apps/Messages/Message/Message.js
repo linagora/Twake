@@ -191,7 +191,7 @@ export default class Message extends Component {
             username: 'app#' + app.simple_name,
             firstname: app.name,
             lastname: '',
-            thumbnail: app.icon_url,
+            thumbnail: WorkspacesApps.getAppIcon(app),
           };
         }
 
@@ -247,23 +247,7 @@ export default class Message extends Component {
                   }}
                 />
               )}
-              {!show_user && (
-                <div className="date js-drag-handler">
-                  <Moment tz={moment.tz.guess()} format="h:mm">
-                    {this.props.message.creation_date * 1000}
-                  </Moment>
-                  {this.props.message._user_ephemeral && (
-                    <span>
-                      {' '}
-                      {Languages.t(
-                        'scenes.apps.messages.message.personal_message',
-                        [],
-                        '- Vous seul pouvez voir ce message.',
-                      )}
-                    </span>
-                  )}
-                </div>
-              )}
+              {!show_user && <div className="date js-drag-handler"></div>}
             </div>
             <div key="container" className="container">
               <div className="message_container">
@@ -394,7 +378,8 @@ export default class Message extends Component {
                 )}
 
                 {!(this.props.message.hidden_data || {}).disable_reactions &&
-                  this.props.message.reactions && (
+                  this.props.message.reactions &&
+                  Object.keys(this.props.message.reactions).length > 0 && (
                     <div className="reactions">
                       {Object.keys(this.props.message.reactions)
                         .sort(
