@@ -20,7 +20,6 @@ test:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
-        - cd twake
         - docker-compose up -d
         - docker ps #To get the name of the existing container (juste pour info)
         - docker-compose exec -T php chmod -R 777 /tmp/
@@ -31,7 +30,6 @@ test:
 manual_test:
     stage: test
     script:
-      - cd twake
       - docker-compose up -d
       - docker ps #To get the name of the existing container (juste pour info)
       - docker-compose exec -T php chmod -R 777 /tmp/
@@ -41,7 +39,6 @@ manual_test:
 front_test:
     stage: test
     script:
-        - cd twake
         - docker-compose up -d nginx
         - docker-compose exec -T nginx yarn install
         - docker-compose exec -T nginx yarn dev-build
