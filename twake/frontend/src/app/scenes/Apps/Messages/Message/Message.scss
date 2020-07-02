@@ -32,7 +32,7 @@
       }
 
       &:hover {
-        .thread_footer .show_responses {
+        .thread_footer .show_responses_parent .show_responses {
           opacity: 1;
         }
       }
@@ -401,12 +401,15 @@
     .show_responses {
       margin-top: 3px;
     }
-    .show_responses {
-      margin-right: 8px;
-      flex: 1;
+    .show_responses_parent {
       text-align: right;
-      opacity: 0;
-      transition: opacity 0.2s;
+      flex: 1;
+      .show_responses {
+        margin-right: 8px;
+        text-align: right;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
     }
   }
 }

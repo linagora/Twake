@@ -22,16 +22,19 @@ services:
   php:
     image: twaketech/twake-php
     volumes:
-      - ./configuration/backend/:/configuration/
+      - ./backend/core/:/twake-core:cached
+      - ./docker-data/fpm/:/etc/docker-data/fpm/
     depends_on:
-      - rabbitmq
       - scylladb
+      - rabbitmq
       - elasticsearch
     links:
       - websockets
       - scylladb
   websockets:
     image: twaketech/twake-websockets
+    volumes:
+      - ./backend/websockets_server:/WebsocketsServer
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
@@ -56,5 +59,6 @@ services:
     volumes_from:
       - php
     volumes:
-      - ./configuration/frontend/:/configuration
       - ./docker-data/logs/nginx/:/var/log/nginx
+      - ./docker-data/letsencrypt/:/etc/letsencrypt/
+      - ./frontend/public/:/twake-react/

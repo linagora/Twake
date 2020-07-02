@@ -5,7 +5,10 @@ services:
     - docker:19.03-dind
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
-    - apk update && apk add git
+    - cd twake
+    - mv docker-compose.yml.dist.tests docker-compose.yml
+    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+    - pip install docker-compose
 
 stages:
     - test
@@ -17,65 +20,28 @@ test:
             - schedules #permet d'executer le test selon le schedule
     script:
         - cd twake
-        - mv docker/docker-compose-test.yml docker-compose.yml
-        - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
-        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-        - pip install docker-compose
-        - docker-compose up -d --build
+        - docker-compose up -d
         - docker ps #To get the name of the existing container (juste pour info)
-        - docker-compose exec -T php php -dmemory_limit=-1 composer.phar install
         - docker-compose exec -T php chmod -R 777 /tmp/
-        - docker-compose exec -T php php ./bin/console twake:schema:update #Init install
-        - docker-compose exec -T php php ./bin/console twake:init #Init install
         - docker-compose exec -T php  ./vendor/bin/phpunit
-
     when: always
 
 
 manual_test:
     stage: test
     script:
-        - cd twake
-        - mv docker/docker-compose-test.yml docker-compose.yml
-        - mv docker/CoreParameters-test.php backend/core/app/Configuration/Parameters.php
-        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-        - pip install docker-compose
-        - docker-compose up -d --build
-        - docker ps #To get the name of the existing container (juste pour info)
-        - docker-compose exec -T php php -dmemory_limit=-1 composer.phar install
-        - docker-compose exec -T php chmod -R 777 /tmp/
-        - docker-compose exec -T php php ./bin/console twake:schema:update #Init install
-        - docker-compose exec -T php php ./bin/console twake:init #Init install
-        - docker-compose exec -T php  ./vendor/bin/phpunit
-
+      - cd twake
+      - docker-compose up -d
+      - docker ps #To get the name of the existing container (juste pour info)
+      - docker-compose exec -T php chmod -R 777 /tmp/
+      - docker-compose exec -T php  ./vendor/bin/phpunit
     when: manual
 
-
-
 front_test:
-
     stage: test
-
     script:
-
-        - cd frontend
-        - apk update && apk add yarn
-        - yarn install
-        - yarn run dev-build
-
-
-        #- yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
-
-
-        - node run_server.js & #permet de lancer le code permettant de générer le serveur
-
-        #puppeteer n'installe pas automatiquement TOUTES les dépendances -> installer les suivantes : https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch-on-unix
-
-        #execution des tests que je souhaite faire => attention dans tous les tests, on a besoin d'ajouter --no-sandbox
-        #- node src/test/screenshotTest.js
-        #- node src/test/loginTest.js
-        - node src/test/creationAccountTest.js
-        #- node src/test/pwdForgottenTest.js
-
-
+        - cd twake
+        - docker-compose up -d nginx
+        - docker-compose exec -T nginx yarn install
+        - docker-compose exec -T nginx yarn dev-build
     when: manual

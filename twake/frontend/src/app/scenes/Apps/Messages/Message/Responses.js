@@ -187,13 +187,19 @@ export default class Responses extends Component {
             this.state.app_messages_service.respondedMessage.parent_message_id !=
               this.props.parentMessage.id &&
             (this.props.parentMessage.responses_count > 0 || this.props.isLastMessage) && (
-              <a
-                className="action_link show_responses left-margin"
-                onClick={() => MessagesService.showMessage(this.props.parentMessage.id)}
-              >
-                <Icon className="m-icon-small" type="arrow-from-right" />
-                {Languages.t('scenes.apps.messages.message.show_on_right', [], 'Show on the right')}
-              </a>
+              <div className="show_responses_parent">
+                <a
+                  className="action_link show_responses left-margin"
+                  onClick={() => MessagesService.showMessage(this.props.parentMessage.id)}
+                >
+                  <Icon className="m-icon-small" type="arrow-from-right" />
+                  {Languages.t(
+                    'scenes.apps.messages.message.show_on_right',
+                    [],
+                    'Show on the right',
+                  )}
+                </a>
+              </div>
             )}
         </div>
       </div>
