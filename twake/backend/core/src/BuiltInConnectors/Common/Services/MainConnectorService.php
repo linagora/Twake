@@ -4,6 +4,7 @@ namespace BuiltInConnectors\Common\Services;
 
 use Emojione\Client;
 use Emojione\Ruleset;
+use BuiltInConnectors\Common\Entity\BuiltInConnectorsEntity;
 
 use Exception;
 
@@ -19,6 +20,7 @@ class MainConnectorService {
         $this->api_url = rtrim($app->getContainer()->getParameter("internal_server_name")?:$app->getContainer()->getParameter("SERVER_NAME"), "/") . "/api/v1/";
         $this->server_url = rtrim($app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/";
         $this->emojione_client = new Client(new Ruleset());
+        $this->doctrine = $app->getServices()->get("app.twake_doctrine");
     }
 
     public function setConnector($simple_name){
@@ -126,5 +128,29 @@ class MainConnectorService {
     public function getAppName()
     {
         return $this->app_simple_name;
+    }
+
+    /** Save connector document to db */
+    public function saveDocument($id, $content){
+      $cred = $this->getConnectorKeys();
+      if(!$cred["api_id"]){
+        return false;
+      }
+      $document = new BuiltInConnectorsEntity($cred["api_id"], $id);
+      $document->setValue($content);
+      $this->doctrine->persist($document);
+      $this->doctrine->flush();
+      return true;
+    }
+
+    /** Get connector document from db */
+    public function getDocument($id){
+      $cred = $this->getConnectorKeys();
+      if(!$cred["api_id"]){
+        return false;
+      }
+      $documentsRepo = $this->doctrine->getRepository("BuiltInConnectors\Common:BuiltInConnectorsEntity");
+      $document = $documentsRepo->findOneBy(["connector_id" => $cred["api_id"], "document_id" => $id]);
+      return $document?$document->getValue():null;
     }
 }

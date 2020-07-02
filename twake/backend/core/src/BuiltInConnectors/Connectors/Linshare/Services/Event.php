@@ -50,6 +50,11 @@ class Event
       if ($type == "action") {
 
         $linshare_domain = $this->app->getContainer()->getParameter("connectors.linshare.domain", $configuration["domain"]);
+        $document_id = $group["id"]."_domain_conf";
+        $document_value = $this->main_service->getDocument($document_id);
+        if($document_value){
+          $linshare_domain = $document_value;
+        }
 
         // GET Documents from LinShare
         $token = $this->getJWT($user["email"]);
@@ -98,24 +103,37 @@ class Event
 
       if($type == "interactive_configuration_action" && $event == "send_file"){
 
+        $data_string = Array(
+            "group_id" => $group["id"],
+            "user_id" => $user["id"],
+            "connection_id" =>$data["connection_id"]
+        );
+        $this->main_service->postApi("general/configure_close", $data_string);
+
         $file = json_decode($data["form"]["file_select"], 1);
         $server_route = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/");
-        $download_route = $server_route . "/bundle/connectors/" . $definition["simple_name"] . "/download";
 
         if(!$file || !$file["name"]){
           return;
         }
 
-        $message["channel_id"] = $interactive_context["channel_id"];
-        $message["sender"] = $user["id"];
-        $message["parent_message_id"] = isset($parent_message["id"])?$parent_message["id"]:"";
         $download_parameters = [
           "file_uuid=" . $file["uuid"],
           "group_id=" . $group["id"],
           "owner_id=" . $user["id"]
         ];
+        $download_route = $server_route . "/bundle/connectors/" . $definition["simple_name"] . "/download";
+        $download_route = $download_route . "?" . join("&", $download_parameters);
+        $linshare_privatekey = $this->app->getContainer()->getParameter("connectors.linshare.key.private", $configuration["key"]["private"]);
+        openssl_sign($file["uuid"] . $user["id"], $signature, $linshare_privatekey, OPENSSL_ALGO_SHA512);
+        $download_route .= "&sign=" . str_replace(str_split('+/='), str_split('._-'), base64_encode($signature));
+
+        $message["channel_id"] = $interactive_context["channel_id"];
+        $message["sender"] = $user["id"];
+        $message["parent_message_id"] = isset($parent_message["id"])?$parent_message["id"]:"";
+
         $message["content"] = Array(
-          ["type" => "url", "user_identifier" => true, "url" => $download_route . "?" . join("&", $download_parameters), "content" => ["type" => "button", "content" => "Download " . $file["name"]]]
+          ["type" => "url", "user_identifier" => true, "url" => $download_route, "content" => ["type" => "button", "content" => "Download " . $file["name"]]]
         );
         $message["hidden_data"] = Array(
             "allow_delete" => "everyone"
@@ -128,20 +146,28 @@ class Event
 
         $message = $this->main_service->postApi("messages/save", $data_string);
 
-        $data_string = Array(
-            "group_id" => $group["id"],
-            "user_id" => $user["id"],
-            "connection_id" =>$data["connection_id"]
-        );
-        $this->main_service->postApi("general/configure_close", $data_string);
-
       }
 
     }
 
-    public function download($twake_user, $file_uuid, $group_id, $owner_id){
+    public function download($twake_user, $file_uuid, $group_id, $owner_id, $sign){
+
       $this->main_service->setConnector("linshare");
+
+      $linshare_publickey = $this->app->getContainer()->getParameter("connectors.linshare.key.public", $configuration["key"]["public"]);
+      $r = openssl_verify($file_uuid . $owner_id, base64_decode(str_replace(str_split('._-'), str_split('+/='), $sign)), $linshare_publickey, OPENSSL_ALGO_SHA512);
+      if(!$r){
+        echo "This document isn't available.";
+        die();
+      }
+
+
       $linshare_domain = $this->app->getContainer()->getParameter("connectors.linshare.domain", $configuration["domain"]);
+      $document_id = $group_id."_domain_conf";
+      $document_value = $this->main_service->getDocument($document_id);
+      if($document_value){
+        $linshare_domain = $document_value;
+      }
 
       //Get user email
       $user_object = $this->main_service->postApi("users/get", Array("user_id" => $twake_user, "group_id" => $group_id));
@@ -157,13 +183,18 @@ class Event
       //TODO download as the requester and not as the owner
 
       //Test if user has access to this file
-      $token = $this->getJWT($requester_email);
+      $token = $this->getJWT($owner_email);
       $document = $this->main_service->get(rtrim($linshare_domain, "/") . "/linshare/webservice/rest/user/documents/".$file_uuid, false, [
         CURLOPT_HTTPHEADER => [
           "Accept: application/json",
           "Authorization: Bearer " . $token
         ]
       ]);
+
+      if(!$document){
+        echo "This document isn't available.";
+        die();
+      }
 
       $size = $document["size"];
       $quoted = $document["name"];

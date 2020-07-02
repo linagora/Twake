@@ -13,7 +13,7 @@ class Index extends BaseController
     {
       $configuration = (new ConnectorDefinition())->definition;
       $route = realpath(__DIR__."/../Resources/medias/".$configuration["icon_url"]);
-      
+
       $filename = basename($route);
       $file_extension = strtolower(substr(strrchr($filename,"."),1));
 
@@ -51,9 +51,10 @@ class Index extends BaseController
         $file_uuid = $request->query->get("file_uuid");
         $group_id = $request->query->get("group_id");
         $owner_id = $request->query->get("owner_id");
+        $sign = $request->query->get("sign");
         $twake_user = $request->query->get("twake_user");
 
-        $this->get('connectors.linshare.event')->download($twake_user, $file_uuid, $group_id, $owner_id);
+        $this->get('connectors.linshare.event')->download($twake_user, $file_uuid, $group_id, $owner_id, $sign);
         return new Response([]);
     }
 
