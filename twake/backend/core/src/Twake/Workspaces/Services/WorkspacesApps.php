@@ -184,6 +184,8 @@ class WorkspacesApps
         $app = $appRepository->findOneBy(Array("id" => $applicationId));
 
         if ($workspace == null || $app == null) {
+            error_log("hello 2");
+            error_log($applicationId);
             return false;
         }
 

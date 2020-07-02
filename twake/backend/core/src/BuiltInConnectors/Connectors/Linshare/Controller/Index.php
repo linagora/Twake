@@ -13,8 +13,7 @@ class Index extends BaseController
     {
       $configuration = (new ConnectorDefinition())->definition;
       $route = realpath(__DIR__."/../Resources/medias/".$configuration["icon_url"]);
-      error_log($route);
-
+      
       $filename = basename($route);
       $file_extension = strtolower(substr(strrchr($filename,"."),1));
 

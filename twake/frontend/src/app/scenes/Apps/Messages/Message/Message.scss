@@ -23,9 +23,19 @@
       border-radius: var(--default-border-radius-large);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       padding: 4px;
-      padding-bottom: 16px;
+      padding-bottom: 8px;
       margin: -4px;
       margin-bottom: 8px;
+
+      .sender {
+        min-width: 16px;
+      }
+
+      &:hover {
+        .thread_footer .show_responses {
+          opacity: 1;
+        }
+      }
     }
 
     /*&.is_response {
@@ -137,7 +147,7 @@
       .sender {
         position: relative;
         margin-right: 4px;
-        min-width: 16px;
+        min-width: 24px;
 
         .user-image {
           width: 24px;
@@ -328,7 +338,7 @@
           font-weight: 500;
           cursor: pointer;
 
-          i.emojione-container {
+          .emojione-container {
             vertical-align: middle;
             min-width: 18px;
             display: inline-block;
@@ -384,8 +394,20 @@
       vertical-align: text-top;
     }
   }
-  .add_response {
-    margin-top: 3px;
+  .thread_footer {
+    width: 100%;
+    display: flex;
+    .add_response,
+    .show_responses {
+      margin-top: 3px;
+    }
+    .show_responses {
+      margin-right: 8px;
+      flex: 1;
+      text-align: right;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
   }
 }
 

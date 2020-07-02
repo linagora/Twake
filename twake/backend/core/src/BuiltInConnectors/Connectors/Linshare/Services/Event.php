@@ -102,6 +102,10 @@ class Event
         $server_route = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/");
         $download_route = $server_route . "/bundle/connectors/" . $definition["simple_name"] . "/download";
 
+        if(!$file || !$file["name"]){
+          return;
+        }
+
         $message["channel_id"] = $interactive_context["channel_id"];
         $message["sender"] = $user["id"];
         $message["parent_message_id"] = isset($parent_message["id"])?$parent_message["id"]:"";

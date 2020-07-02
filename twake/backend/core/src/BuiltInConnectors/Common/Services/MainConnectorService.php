@@ -26,7 +26,7 @@ class MainConnectorService {
     }
 
     private function getConnectorKeys(){
-      $simple_name = "twake." . $this->app_simple_name;
+      $simple_name = $this->app_simple_name;
       if(!isset($this->credentials[$simple_name])){
         $this->credentials[$simple_name] = $this->market_service->getCredentials($simple_name);
       }

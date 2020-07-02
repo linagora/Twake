@@ -1613,6 +1613,7 @@ export default {
   'scenes.apps.messages.message.pinned': 'Épinglé',
   'scenes.apps.messages.message.remove_button': 'Supprimer',
   'scenes.apps.messages.message.reply_button': 'Répondre',
+  'scenes.apps.messages.message.show_on_right': 'Afficher à droite',
   'scenes.apps.messages.message.save_button': 'Enregistrer',
   'scenes.apps.messages.message.show_button': 'Afficher',
   'scenes.apps.messages.message.show_responses_button': 'Afficher toutes les réponses',

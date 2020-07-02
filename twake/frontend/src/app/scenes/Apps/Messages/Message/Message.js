@@ -492,25 +492,24 @@ export default class Message extends Component {
         types={['message']}
         onDrop={data => this.dropMessage(data.data)}
       >
-        {!this.props.previousMessage ||
+        {!!(
+          !this.props.previousMessage ||
           (this.props.message.creation_date &&
             isFirstNewMessage &&
-            this.props.previousMessage.creation_date <= this.props.unreadAfter && (
-              <div className="message_timeline new_messages">
-                <div className="time_container">
-                  <div className="time">
-                    {Languages.t(
-                      'scenes.apps.messages.message.new_messages_bar',
-                      [],
-                      'New messages',
-                    )}
-                  </div>
-                </div>
+            this.props.previousMessage.creation_date <= this.props.unreadAfter)
+        ) && (
+          <div className="message_timeline new_messages">
+            <div className="time_container">
+              <div className="time">
+                {Languages.t('scenes.apps.messages.message.new_messages_bar', [], 'New messages')}
               </div>
-            ))}
-        {(!this.props.previousMessage ||
-          this.props.message.creation_date - this.props.previousMessage.creation_date >
-            60 * 60 * 2) && (
+            </div>
+          </div>
+        )}
+        {!!(
+          !this.props.previousMessage ||
+          this.props.message.creation_date - this.props.previousMessage.creation_date > 60 * 60 * 2
+        ) && (
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">

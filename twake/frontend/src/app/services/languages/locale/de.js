@@ -1606,6 +1606,7 @@ export default {
   'scenes.apps.messages.message.pinned': 'Stift',
   'scenes.apps.messages.message.remove_button': 'Delete',
   'scenes.apps.messages.message.reply_button': 'Antworten',
+  'scenes.apps.messages.message.show_on_right': 'Rechts zeigen',
   'scenes.apps.messages.message.save_button': 'sparen',
   'scenes.apps.messages.message.show_button': 'Anzeige',
   'scenes.apps.messages.message.show_responses_button': 'Alle Antworten anzeigen',

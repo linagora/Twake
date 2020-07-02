@@ -62,7 +62,7 @@ class InitConnector extends ContainerAwareCommand
 
               $server_route = rtrim($this->app->getContainer()->getParameter("internal_server_name")?:$this->app->getContainer()->getParameter("SERVER_NAME"), "/");
 
-              $simple_name = "twake.".$definition["simple_name"];
+              $simple_name = $definition["simple_name"];
               $icon = $definition['icon_url'];
               if(!(strpos("http://", $icon) === 0 || strpos("https://", $icon) === 0)){
                 $icon = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/icon";

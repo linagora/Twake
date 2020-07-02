@@ -31,7 +31,7 @@ class ConnectorDefinition
           'commands' =>
           [
             [
-              'command' => '',
+              'command' => 'Meeting name',
               'description' => 'Create a Jisti call',
             ]
           ]

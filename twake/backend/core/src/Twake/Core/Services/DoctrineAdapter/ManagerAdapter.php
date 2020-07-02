@@ -371,7 +371,7 @@ class ManagerAdapter
 
                     return Array("result" => $entities);
                 }
-                return [];
+                return ["result" => []];
             }
             if (isset($options["index"]) && !$type) {
                 $index = $options["index"];
@@ -405,12 +405,12 @@ class ManagerAdapter
         }
 
         if (!$res) {
-            return false;
+            return ["result" => []];
         }
 
         $res = $res->getContent();
 
-        $result = [];
+        $result = ["result" => []];
         $scroll_id = "";
 
         if ($res) {

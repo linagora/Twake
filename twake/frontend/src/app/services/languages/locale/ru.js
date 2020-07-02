@@ -53,6 +53,7 @@ export default {
   'components.add_workspace.placeholder_marketing': 'Маркетинг',
   'components.add_workspace.workspace_name': 'Имя рабочего пространства',
   'components.add_workspace.create_new_workspace': 'Создать новое рабочее пространство',
+  'scenes.app.side_app.messages_thread_title': '$1 • Ответы на сообщение',
   'scenes.app.workspaces.create_company.group_data': 'Настройте вашу новую группу',
   'scenes.app.workspaces.create_company.group_data.text':
     'Ваша группа будет содержать несколько рабочих пространств для каждого проекта или команды, которая у вас есть. Группа может быть, например, компанией, организацией или отделением.',
@@ -1601,6 +1602,7 @@ export default {
   'scenes.apps.messages.message.pinned': 'Прикреплённый',
   'scenes.apps.messages.message.remove_button': 'Удалить',
   'scenes.apps.messages.message.reply_button': 'Ответить',
+  'scenes.apps.messages.message.show_on_right': 'Показать справа',
   'scenes.apps.messages.message.save_button': 'Сохранить',
   'scenes.apps.messages.message.show_button': 'Показать',
   'scenes.apps.messages.message.show_responses_button': 'Просмотр всех ответов',
