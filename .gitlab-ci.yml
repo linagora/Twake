@@ -6,7 +6,7 @@ services:
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk add --update --no-cache curl jq py3-configobj py3-pip py3-setuptools python3 python3-dev
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+    - apk add build-base libffi-dev openssl-dev
     - pip install docker-compose
     - cd twake
     - mv docker-compose.yml.dist.tests docker-compose.yml
