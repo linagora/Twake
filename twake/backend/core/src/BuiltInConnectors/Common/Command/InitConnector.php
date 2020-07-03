@@ -19,7 +19,14 @@ class InitConnector extends ContainerAwareCommand
 
       $connector_name = isset($arg_list[0]) ? $arg_list[0] : false;
       if(!$connector_name){
-        error_log("Choose which connector to enable.\n php bin/console twake:init_connector jitsi enable forced\n php bin/console twake:init_connector jitsi disable");
+
+        error_log("⚙️ Installing default connectors defined in configuration");
+
+        $connectors = $this->getApp()->getContainer()->getParameter("defaults.applications.connectors");
+        foreach($connectors as $name => $configuration){
+          $this->toggleConnector($name, !!$configuration, isset($configuration["default"]) && $configuration["default"]);
+        }
+
         die;
       }
       $action_name = isset($arg_list[1]) ? $arg_list[1] : "enable";
@@ -27,6 +34,12 @@ class InitConnector extends ContainerAwareCommand
 
       $second_action_name = isset($arg_list[2]) ? $arg_list[2] : "";
       $is_default = $second_action_name == "default";
+
+      $this->toggleConnector($connector_name, $enable, $is_default);
+
+    }
+
+    public function toggleConnector($connector_name, $enable, $is_default){
 
       error_log(($enable?"Enabling" : "Disabling") . " " . $connector_name. ($is_default?" and default for future workspaces":"") . "!");
 
