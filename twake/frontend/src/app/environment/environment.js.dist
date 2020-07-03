@@ -7,6 +7,6 @@ export default {
   api_root_url: 'http://' + document.location.host,
   websocket_url: 'ws://' + document.location.host,
   version: '1.2',
-  version_detail: '1.2.205-3189',
+  version_detail: '1.2.205-3198',
   version_name: 'Albatros'
 }

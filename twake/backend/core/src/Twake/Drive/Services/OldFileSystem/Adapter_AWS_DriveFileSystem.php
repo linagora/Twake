@@ -38,7 +38,7 @@ class Adapter_AWS_DriveFileSystem
             'region' => $this->aws_bucket_region,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
-                'env.secret' => $this->aws_credentials_secret
+                'secret' => $this->aws_credentials_secret
             ]
         ];
         if (isset($s3_config["base_url"]) && $s3_config["base_url"]) {
