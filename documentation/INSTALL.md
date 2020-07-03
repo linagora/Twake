@@ -5,10 +5,21 @@
 You will need docker-compose: [./install_docker_compose.md](./install_dependencies.md)
 
 ```
+sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch in local
+mkdir twake
+cd twake
+curl https://github.com/TwakeApp/Twake/blob/master/twake/docker-compose.yml.dist --output docker-compose.yml
+docker-compose up -d
+```
+
+or
+
+```
+# Using the git repository
+# sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch in local
 cd twake
 cp docker-compose.yml.dist docker-compose.yml
 docker-compose up -d
-# sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch
 ```
 
 Twake will be running on port 8000.
