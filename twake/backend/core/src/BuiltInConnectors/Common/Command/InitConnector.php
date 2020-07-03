@@ -23,8 +23,10 @@ class InitConnector extends ContainerAwareCommand
         error_log("⚙️ Installing default connectors defined in configuration");
 
         $connectors = $this->getApp()->getContainer()->getParameter("defaults.applications.connectors");
-        foreach($connectors as $name => $configuration){
-          $this->toggleConnector($name, !!$configuration, isset($configuration["default"]) && $configuration["default"]);
+        if($connectors){
+          foreach($connectors as $name => $configuration){
+            $this->toggleConnector($name, !!$configuration, isset($configuration["default"]) && $configuration["default"]);
+          }
         }
 
         die;

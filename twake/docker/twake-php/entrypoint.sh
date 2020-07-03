@@ -28,6 +28,7 @@ fi
 php bin/console twake:schema:update
 php bin/console twake:mapping
 php bin/console twake:init
+php bin/console twake:init_connector
 
 cron -f &
 docker-php-entrypoint php-fpm

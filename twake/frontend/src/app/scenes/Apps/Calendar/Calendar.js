@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
@@ -145,14 +145,14 @@ export default class Calendar extends Component {
     this.loaded_date_range[key].max = max;
     this.loaded_date_range[key].last_updated = new Date();
   }
-  componentDidMount(){
-    LocalStorage.getItem("calendar_view",res => {
-      console.log("getitem : ",res);
-      if(res){
-        this.setState({ view:res });
+  componentDidMount() {
+    LocalStorage.getItem('calendar_view', res => {
+      console.log('getitem : ', res);
+      if (res) {
+        this.setState({ view: res });
         this.calendar.view(res);
       }
-    })
+    });
   }
   componentWillUnmount() {
     Collections.get('events').removeListener(this);
@@ -524,7 +524,7 @@ export default class Calendar extends Component {
       { type: 'separator' },
       {
         type: 'menu',
-        text: Languages.t('scenes.apps.calendar.export_view_menu', [], 'Exporter la vue...'),
+        text: Languages.t('scenes.apps.calendar.export_view_menu', [], 'Exporter la vue'),
         submenu: [
           { type: 'title', text: Languages.t('scenes.apps.calendar.export_title', [], 'Exporter') },
           {
@@ -647,7 +647,10 @@ export default class Calendar extends Component {
 
             <div className="right">
               {this.state.view != 'dayGridMonth' && (
-                <div className="week_number">{Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')} {moment(CalendarService.date).week()}</div>
+                <div className="week_number">
+                  {Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')}{' '}
+                  {moment(CalendarService.date).week()}
+                </div>
               )}
 
               <Menu
@@ -705,7 +708,7 @@ export default class Calendar extends Component {
                   value={this.state.view}
                   onChange={value => {
                     this.calendar.view(value);
-                    LocalStorage.setItem("calendar_view",value);
+                    LocalStorage.setItem('calendar_view', value);
                     Menu.closeAll();
                   }}
                   options={[

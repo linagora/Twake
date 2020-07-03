@@ -83,8 +83,8 @@ class Languages extends Observable {
     if (language == 'ja') {
       this.data = locale_ja;
     }
-    if (language == 'ru') { 
-      this.data = locale_ru; 
+    if (language == 'ru') {
+      this.data = locale_ru;
     }
 
     this.default_data = locale_en;

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -167,14 +167,18 @@ export default class EventDetails extends Component {
                         }}
                       >
                         <Icon type="link" style={{ marginRight: 4 }} />
-                        <a>Click to open link - {event.location}</a>
+                        <a>
+                          {Languages.t('scenes.apps.calendar.video_link', [], 'Click to open link')}{' '}
+                          - {event.location}
+                        </a>
                       </div>
                     )}
 
                     {(event.notifications || []).length > 0 && (
                       <div className="subtitle reminders bottom-margin">
                         <Icon type="bell" style={{ marginRight: 4 }} />
-                        {(event.notifications || []).length} {Languages.t('scenes.apps.calendar.reminders', [], 'rappel(s)')}
+                        {(event.notifications || []).length}{' '}
+                        {Languages.t('scenes.apps.calendar.reminders', [], 'rappel(s)')}
                       </div>
                     )}
 

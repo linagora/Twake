@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -544,7 +544,7 @@ export default class Drive extends Component {
           },
           {
             type: 'menu',
-            text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer...'),
+            text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer'),
             submenu: [
               {
                 type: 'react-element',
@@ -717,9 +717,11 @@ export default class Drive extends Component {
                       onEnter={() => {
                         this.createFolder();
                       }}
-                      placeholder= {Languages.t('scenes.apps.messages.left_bar.stream_modal.placeholder_name', 
-                      [],
-                      "Name")}
+                      placeholder={Languages.t(
+                        'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
+                        [],
+                        'Name',
+                      )}
                       value={this.state.new_directory_name}
                       onChange={evt => this.setState({ new_directory_name: evt.target.value })}
                     />
@@ -844,15 +846,13 @@ export default class Drive extends Component {
 
             {in_trash && (
               <div className="smalltext drive_trash_info">
-                Vous êtes dans la corbeille,{' '}
                 <a
                   onClick={() => {
                     DriveService.toggleInTrash(this.drive_channel);
                   }}
                 >
-                  sortir de la corbeille
+                  {Languages.t('scenes.apps.drive.go_out_trash_menu', [], 'Sortir de la corbeille')}
                 </a>
-                .
               </div>
             )}
 
