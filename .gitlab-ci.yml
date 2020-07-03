@@ -20,12 +20,15 @@ test:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
-        - docker-compose up -d
-        - docker ps #To get the name of the existing container (juste pour info)
-        - docker-compose exec -T php chmod -R 777 /tmp/
-        - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
-        - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
-        - docker-compose exec -T php php bin/console twake:init #Test in we can do things
+      - docker-compose up -d
+      - docker ps #To get the name of the existing container (juste pour info)
+      - docker-compose exec -T nginx yarn install
+      - docker-compose exec -T nginx yarn dev-build
+      - docker-compose exec -T php chmod -R 777 /tmp/
+      - docker-compose exec -T php php composer.phar install
+      - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+      - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+      - docker-compose exec -T php php bin/console twake:init #Test in we can do things
     when: always
 
 
@@ -34,7 +37,10 @@ manual_test:
     script:
       - docker-compose up -d
       - docker ps #To get the name of the existing container (juste pour info)
+      - docker-compose exec -T nginx yarn install
+      - docker-compose exec -T nginx yarn dev-build
       - docker-compose exec -T php chmod -R 777 /tmp/
+      - docker-compose exec -T php php composer.phar install
       - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
       - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
       - docker-compose exec -T php php bin/console twake:init #Test in we can do things
