@@ -13,11 +13,11 @@ class Adapter_AWS_DriveFileSystem
     public function __construct(App $app)
     {
 
-        $aws_config = $app->getContainer()->getParameter("aws");
+        $aws_config = $app->getContainer()->getParameter("storage.S3");
         $this->root = $this->local = $app->getAppRootDir();
-        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
 
-        $s3_config = $aws_config["S3"];
+        $s3_config = $aws_config;
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
@@ -38,7 +38,7 @@ class Adapter_AWS_DriveFileSystem
             'region' => $this->aws_bucket_region,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
-                'secret' => $this->aws_credentials_secret
+                'env.secret' => $this->aws_credentials_secret
             ]
         ];
         if (isset($s3_config["base_url"]) && $s3_config["base_url"]) {

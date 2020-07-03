@@ -63,7 +63,7 @@ class Index extends BaseController
           Array(
             "id" => $id,
             "user" => $user,
-            "jitsi_domain" => $this->getParameter("connectors.jitsi.jitsi_domain", $configuration["jitsi_domain"])
+            "jitsi_domain" => $this->getParameter("defaults.connectors.jitsi.jitsi_domain", $configuration["jitsi_domain"])
           )
         ));
     }

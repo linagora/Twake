@@ -49,9 +49,9 @@ class Resumable
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
         $this->driverefacto = $app->getServices()->get("app.drive");
-        $this->previews = $app->getContainer()->getParameter("drive_previews_tmp_folder");
-        $this->tempFolder = $app->getContainer()->getParameter("drive_tmp_folder");
-        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
+        $this->previews = $app->getContainer()->getParameter("storage.drive_previews_tmp_folder");
+        $this->tempFolder = $app->getContainer()->getParameter("storage.drive_tmp_folder");
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
     }
 
     public function setResumableOption(array $resumableOption)

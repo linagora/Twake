@@ -19,7 +19,7 @@ class RememberMe
     {
 
         $providerKey = $this->container->getParameter('fos_user.firewall_name');
-        $key = $this->container->getParameter('secret');
+        $key = $this->container->getParameter('env.secret');
 
         $userManager = $this->container->get('fos_user.user_manager');
         $userProvider = new EmailUserProvider($userManager);

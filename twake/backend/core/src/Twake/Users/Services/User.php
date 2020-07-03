@@ -54,8 +54,8 @@ class User
         $this->pricing_plan = $app->getServices()->get("app.pricing_plan");
         $this->restClient = $app->getServices()->get("app.restclient");
         $this->translate = $app->getServices()->get("app.translate");
-        $this->standalone = $app->getContainer()->getParameter("STANDALONE");
-        $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
+        $this->standalone = $app->getContainer()->getParameter("env.standalone");
+        $this->licenceKey = $app->getContainer()->getParameter("env.licence_key");
         $this->encoder = new PasswordEncoder();
     }
 

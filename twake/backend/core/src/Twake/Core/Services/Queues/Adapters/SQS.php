@@ -24,7 +24,7 @@ class SQS implements QueueManager
                 'version' => $this->parameters["version"],
                 'credentials' => [
                     'key' => $this->parameters["credentials"]["key"],
-                    'secret' => $this->parameters["credentials"]["secret"]
+                    'env.secret' => $this->parameters["credentials"]["secret"]
                 ]
             ];
             $client = new SqsClient($config);

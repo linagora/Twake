@@ -13,7 +13,7 @@ class Adapter_AWS implements AdapterInterface
     public function __construct($aws_config, $preview, $doctrine)
     {
 
-        $s3_config = $aws_config["S3"];
+        $s3_config = $aws_config;
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
@@ -34,7 +34,7 @@ class Adapter_AWS implements AdapterInterface
             'region' => $this->aws_bucket_region,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
-                'secret' => $this->aws_credentials_secret
+                'env.secret' => $this->aws_credentials_secret
             ]
         ];
         if (isset($s3_config["base_url"]) && $s3_config["base_url"]) {

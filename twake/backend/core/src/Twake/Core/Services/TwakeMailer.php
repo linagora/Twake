@@ -29,8 +29,8 @@ class TwakeMailer
     {
         $this->app = $app;
         $this->mail_parameters = $app->getContainer()->getParameter("mail");
-        $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
-        $this->standalone = $app->getContainer()->getParameter("STANDALONE");
+        $this->licenceKey = $app->getContainer()->getParameter("env.licence_key");
+        $this->standalone = $app->getContainer()->getParameter("env.standalone");
         $this->circle = $app->getServices()->get("app.restclient");
     }
 

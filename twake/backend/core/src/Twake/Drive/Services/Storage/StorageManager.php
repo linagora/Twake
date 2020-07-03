@@ -15,9 +15,9 @@ class StorageManager
 
     public function __construct(App $app)
     {
-        $this->aws = $app->getContainer()->getParameter("aws");
-        $this->openstack = $app->getContainer()->getParameter("openstack");
-        $this->local = $app->getContainer()->getParameter("local");
+        $this->aws = $app->getContainer()->getParameter("storage.S3");
+        $this->openstack = $app->getContainer()->getParameter("storage.openstack");
+        $this->local = $app->getContainer()->getParameter("storage.local");
         $this->root = $app->getAppRootDir();
         $this->preview = $app->getServices()->get("app.drive.preview");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
@@ -61,7 +61,7 @@ class StorageManager
     public function BindAdapter()
     {
 
-        if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
+        if (isset($this->aws["use"]) && $this->aws["use"]) {
             return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
         } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
             return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);

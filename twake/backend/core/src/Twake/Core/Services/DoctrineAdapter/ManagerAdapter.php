@@ -37,7 +37,7 @@ class ManagerAdapter
         $this->manager = null;
 
         $this->circle = $app->getServices()->get("app.restclient");
-        $this->es_server = $app->getContainer()->getParameter("ELASTIC_SERVER");
+        $this->es_server = $app->getContainer()->getParameter("es.host");
         $this->es_updates = Array();
         $this->es_removes = Array();
         $this->generator = null;

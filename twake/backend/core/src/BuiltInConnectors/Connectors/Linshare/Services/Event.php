@@ -18,8 +18,8 @@ class Event
       $data = [];
       $data["sub"] = $user_email;
 
-      $linshare_privatekey = $this->app->getContainer()->getParameter("connectors.linshare.key.private", $configuration["key"]["private"]);
-      $data["iss"] = $this->app->getContainer()->getParameter("connectors.linshare.key.issuer", $configuration["key"]["issuer"]) ?: "Twake";
+      $linshare_privatekey = $this->app->getContainer()->getParameter("defaults.connectors.linshare.key.private", $configuration["key"]["private"]);
+      $data["iss"] = $this->app->getContainer()->getParameter("defaults.connectors.linshare.key.issuer", $configuration["key"]["issuer"]) ?: "Twake";
 
       // Create JWT
       $header = json_encode(['alg' => 'RS512']);
@@ -49,7 +49,7 @@ class Event
 
       if ($type == "action") {
 
-        $linshare_domain = $this->app->getContainer()->getParameter("connectors.linshare.domain", $configuration["domain"]);
+        $linshare_domain = $this->app->getContainer()->getParameter("defaults.connectors.linshare.domain", $configuration["domain"]);
         $document_id = $group["id"]."_domain_conf";
         $document_value = $this->main_service->getDocument($document_id);
         if($document_value){
@@ -111,7 +111,7 @@ class Event
         $this->main_service->postApi("general/configure_close", $data_string);
 
         $file = json_decode($data["form"]["file_select"], 1);
-        $server_route = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/");
+        $server_route = rtrim($this->app->getContainer()->getParameter("env.server_name"), "/");
 
         if(!$file || !$file["name"]){
           return;
@@ -124,7 +124,7 @@ class Event
         ];
         $download_route = $server_route . "/bundle/connectors/" . $definition["simple_name"] . "/download";
         $download_route = $download_route . "?" . join("&", $download_parameters);
-        $linshare_privatekey = $this->app->getContainer()->getParameter("connectors.linshare.key.private", $configuration["key"]["private"]);
+        $linshare_privatekey = $this->app->getContainer()->getParameter("defaults.connectors.linshare.key.private", $configuration["key"]["private"]);
         openssl_sign($file["uuid"] . $user["id"], $signature, $linshare_privatekey, OPENSSL_ALGO_SHA512);
         $download_route .= "&sign=" . str_replace(str_split('+/='), str_split('._-'), base64_encode($signature));
 
@@ -154,7 +154,7 @@ class Event
 
       $this->main_service->setConnector("linshare");
 
-      $linshare_publickey = $this->app->getContainer()->getParameter("connectors.linshare.key.public", $configuration["key"]["public"]);
+      $linshare_publickey = $this->app->getContainer()->getParameter("defaults.connectors.linshare.key.public", $configuration["key"]["public"]);
       $r = openssl_verify($file_uuid . $owner_id, base64_decode(str_replace(str_split('._-'), str_split('+/='), $sign)), $linshare_publickey, OPENSSL_ALGO_SHA512);
       if(!$r){
         echo "This document isn't available.";
@@ -162,7 +162,7 @@ class Event
       }
 
 
-      $linshare_domain = $this->app->getContainer()->getParameter("connectors.linshare.domain", $configuration["domain"]);
+      $linshare_domain = $this->app->getContainer()->getParameter("defaults.connectors.linshare.domain", $configuration["domain"]);
       $document_id = $group_id."_domain_conf";
       $document_value = $this->main_service->getDocument($document_id);
       if($document_value){

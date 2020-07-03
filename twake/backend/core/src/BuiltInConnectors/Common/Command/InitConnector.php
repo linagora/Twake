@@ -60,12 +60,12 @@ class InitConnector extends ContainerAwareCommand
           if($definition["simple_name"] == $connector_name){
               $found = true;
 
-              $server_route = rtrim($this->app->getContainer()->getParameter("internal_server_name")?:$this->app->getContainer()->getParameter("SERVER_NAME"), "/");
+              $server_route = rtrim($this->app->getContainer()->getParameter("env.internal_server_name")?:$this->app->getContainer()->getParameter("env.server_name"), "/");
 
               $simple_name = $definition["simple_name"];
               $icon = $definition['icon_url'];
               if(!(strpos("http://", $icon) === 0 || strpos("https://", $icon) === 0)){
-                $icon = rtrim($this->app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/icon";
+                $icon = rtrim($this->app->getContainer()->getParameter("env.server_name"), "/") . "/bundle/connectors/" . $definition["simple_name"] . "/icon";
               }
 
               $app_exists = $this->app->getServices()->get("app.applications")->findAppBySimpleName($simple_name, true);

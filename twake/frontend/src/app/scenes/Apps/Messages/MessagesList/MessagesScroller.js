@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Globals from 'services/Globals.js';
@@ -71,7 +71,10 @@ export default class MessagesScroller extends Component {
     } else {
       this.fixedToBottom = false;
       this.props.onFixedBottomChange && this.props.onFixedBottomChange(false);
-      if (Globals.window.mixpanel_enabled)
+      if (
+        Globals.window.mixpanel_enabled &&
+        this.node.scrollHeight - this.node.scrollTop - this.node.clientHeight > 200
+      )
         Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Scroll Event');
     }
   }

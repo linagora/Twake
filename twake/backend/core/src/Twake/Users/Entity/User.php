@@ -752,14 +752,6 @@ class User extends SearchableObject
     /**
      * {@inheritdoc}
      */
-    public function getPlainPassword()
-    {
-        return $this->plainpassword;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getConfirmationToken()
     {
         return $this->confirmationtoken;

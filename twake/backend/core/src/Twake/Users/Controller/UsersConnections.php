@@ -25,7 +25,7 @@ class UsersConnections extends BaseController
     public function autoLogin(Request $request)
     {
         $this->login($request);
-        return $this->redirect($this->getParameter("SERVER_NAME"));
+        return $this->redirect($this->getParameter("env.server_name"));
     }
 
     public function login(Request $request)
@@ -97,7 +97,7 @@ class UsersConnections extends BaseController
             }
             return $this->redirect($url);
         }
-        return $this->redirect($this->getParameter("SERVER_NAME"));
+        return $this->redirect($this->getParameter("env.server_name"));
     }
 
     public function logout(Request $request)

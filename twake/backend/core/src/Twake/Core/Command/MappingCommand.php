@@ -27,7 +27,7 @@ class MappingCommand extends ContainerAwareCommand
         $iteration = 0;
         while(!$connected && $iteration < 12*3){
           try{
-            $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER'));
+            $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('es.host'));
             $connected = $test->getContent();
           }catch(\Exception $e){
             $connected = false;
@@ -216,31 +216,31 @@ class MappingCommand extends ContainerAwareCommand
         );
 
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/task";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/task";
         $this->updateMapping($url, $mapping_task, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/event";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/event";
         $this->updateMapping($url, $mapping_event, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/channel";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/channel";
         $this->updateMapping($url, $mapping_channel, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/group";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/group";
         $this->updateMapping($url, $mapping_group, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/mail";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/mail";
         $this->updateMapping($url, $mapping_mail, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/workspace";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/workspace";
         $this->updateMapping($url, $mapping_workspace, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/users";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/users";
         $this->updateMapping($url, $mapping_users, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/drive_file";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/drive_file";
         $this->updateMapping($url, $mapping_file, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/message_bloc";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/message_bloc";
         $this->updateMapping($url, $mapping_message_bloc, "/_mapping/_doc");
 
     }

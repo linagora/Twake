@@ -42,7 +42,7 @@ class DailyCommand extends ContainerAwareCommand
         /* Send usage report */
         
         $licenceServer = "https://licences.twakeapp.com/api";
-        $licenceKey = $this->getApp()->getContainer()->getParameter('LICENCE_KEY');
+        $licenceKey = $this->getApp()->getContainer()->getParameter('env.licence_key');
         $data = Array(
             "licenceKey" => $licenceKey
         );

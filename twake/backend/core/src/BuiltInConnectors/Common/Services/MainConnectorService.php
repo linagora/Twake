@@ -17,8 +17,8 @@ class MainConnectorService {
     {
         $this->market_service = $app->getServices()->get("app.applications");
         $this->rest_client = $app->getServices()->get("app.restclient");
-        $this->api_url = rtrim($app->getContainer()->getParameter("internal_server_name")?:$app->getContainer()->getParameter("SERVER_NAME"), "/") . "/api/v1/";
-        $this->server_url = rtrim($app->getContainer()->getParameter("SERVER_NAME"), "/") . "/bundle/connectors/";
+        $this->api_url = rtrim($app->getContainer()->getParameter("env.internal_server_name")?:$app->getContainer()->getParameter("env.server_name"), "/") . "/api/v1/";
+        $this->server_url = rtrim($app->getContainer()->getParameter("env.server_name"), "/") . "/bundle/connectors/";
         $this->emojione_client = new Client(new Ruleset());
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
     }

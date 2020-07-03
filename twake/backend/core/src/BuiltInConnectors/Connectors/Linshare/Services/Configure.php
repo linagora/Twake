@@ -15,7 +15,7 @@ class Configure
     public function proceedEvent($type, $event, $data) {
       $this->main_service->setConnector("linshare");
       $configuration = (new ConnectorDefinition())->configuration;
-      $linshare_domain = $this->app->getContainer()->getParameter("connectors.linshare.domain", $configuration["domain"]);
+      $linshare_domain = $this->app->getContainer()->getParameter("defaults.connectors.linshare.domain", $configuration["domain"]);
 
       $group = $data["group"];
       $entity = null;
@@ -39,7 +39,7 @@ class Configure
           $linshare_domain = $document_value;
         }
 
-        $linshare_publickey = $this->app->getContainer()->getParameter("connectors.linshare.key.public", $configuration["key"]["public"]);
+        $linshare_publickey = $this->app->getContainer()->getParameter("defaults.connectors.linshare.key.public", $configuration["key"]["public"]);
 
         $form = Array("type" => "nop", "content" => [
             Array("type" => "nop" , "content" => "• To configure your company with LinShare you must enter your LinShare domain URL first."),
