@@ -67,7 +67,7 @@ class Event
 
         if ($type == "interactive_message_action" && $event == "create") {
 
-            $room_id = $group["id"]."__".$channel["id"];
+            $room_id = $group["id"]."__".$original_message["channel_id"];
 
             $original_message = $message;
 
@@ -89,11 +89,16 @@ class Event
 
             $data_string = Array(
                 "group_id" => $group["id"],
+                "message" => $data["message"]
+            );
+            $this->main_service->postApi("messages/remove", $data_string);
+
+            $data_string = Array(
+                "group_id" => $group["id"],
                 "message" => $message
             );
 
             $message = $this->main_service->postApi("messages/save", $data_string);
-            error_log(json_encode($message));
 
             $message_id = $message["object"]["id"];
 
