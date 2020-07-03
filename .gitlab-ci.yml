@@ -23,7 +23,9 @@ test:
         - docker-compose up -d
         - docker ps #To get the name of the existing container (juste pour info)
         - docker-compose exec -T php chmod -R 777 /tmp/
-        - docker-compose exec -T php  ./vendor/bin/phpunit
+        - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+        - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+        - docker-compose exec -T php php bin/console twake:init #Test in we can do things
     when: always
 
 
@@ -33,7 +35,9 @@ manual_test:
       - docker-compose up -d
       - docker ps #To get the name of the existing container (juste pour info)
       - docker-compose exec -T php chmod -R 777 /tmp/
-      - docker-compose exec -T php  ./vendor/bin/phpunit
+        - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+        - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+        - docker-compose exec -T php php bin/console twake:init #Test in we can do things
     when: manual
 
 front_test:
