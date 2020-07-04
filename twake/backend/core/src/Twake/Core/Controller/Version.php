@@ -37,7 +37,7 @@ class Version extends BaseController
         if ($this->container->hasParameter("defaults.branding")) {
             $branding = $this->container->getParameter("defaults.branding");
             if ($branding && $branding["name"]) {
-                $data["defaults.branding"] = $branding;
+                $data["branding"] = $branding;
             }
         }
 
