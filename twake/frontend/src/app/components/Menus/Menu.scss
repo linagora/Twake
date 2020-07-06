@@ -208,7 +208,7 @@
   }
 
   &.as_frame {
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 0 20px 0 rgba(0, 0, 0, 0.15);
     background-color: $white;
     width: 250px;
@@ -260,7 +260,7 @@
     color: $black;
     margin: 0 8px;
     padding: 0 8px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     font-weight: 500;
     display: flex;
     overflow: hidden;
@@ -319,6 +319,10 @@
       font-size: 18px;
       margin-left: -5px;
       color: $grey_dark;
+      .emojione-container {
+        min-width: 24px;
+        text-align: center;
+      }
 
       .user_head {
         margin-left: 5px;
@@ -331,7 +335,7 @@
         height: 16px;
         text-align: center;
         line-height: 16px;
-        border-radius: 4px;
+        border-radius: var(--default-border-radius);
         font-weight: 500;
         margin-left: 5px;
         background: $grey_dark;
@@ -347,14 +351,14 @@
 
       .emoji-image {
         margin-top: 0px;
-        border-radius: 4px;
+        border-radius: var(--default-border-radius);
       }
     }
 
     .image {
       width: 24px;
       height: 24px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       background-color: $grey_dark;
       display: inline-block;
       background-size: contain;

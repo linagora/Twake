@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -85,7 +85,7 @@ export default class Message extends Component {
   }
 
   dropMessage(message) {
-    if (Globals.window.mixpanel_enabled){
+    if (Globals.window.mixpanel_enabled) {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Drop message Event');
     }
@@ -103,24 +103,25 @@ export default class Message extends Component {
     this.state.app_messages_service.edited_message_raw[this.props.message.front_id] = undefined;
     this.setState({});
   }
-  onInteractiveMessageAction(action_id, passives, evt) {
+  onInteractiveMessageAction(action_id, context, passives, evt) {
     var app_id = this.props.message.application_id;
     var type = 'interactive_message_action';
     var event = action_id;
     var data = {
+      interactive_context: context,
       form: passives,
       message: this.props.message,
     };
     WorkspacesApps.notifyApp(app_id, type, event, data);
   }
-  onAction(type, id, passives, evt) {
+  onAction(type, id, context, passives, evt) {
     if (type == 'interactive_action') {
       this.setState({ loading_interaction: true });
       clearTimeout(this.loading_interaction_timeout);
       this.loading_interaction_timeout = setTimeout(() => {
         this.setState({ loading_interaction: false });
       }, 5000);
-      this.onInteractiveMessageAction(id, passives, evt);
+      this.onInteractiveMessageAction(id, context, passives, evt);
     }
   }
   render() {
@@ -141,7 +142,10 @@ export default class Message extends Component {
     }
     this.state.messages_repository.listenOnly(this, listenOnly);
 
+    var isFirstNewMessage = this.props.message.creation_date > this.props.unreadAfter;
+
     var show_user =
+      isFirstNewMessage ||
       this.props.previousMessage.sender != this.props.message.sender ||
       this.props.previousMessage.sender == null ||
       this.props.message.responses_count > 0 ||
@@ -152,7 +156,7 @@ export default class Message extends Component {
     var canDrag = true;
     var className =
       ' ' +
-      (this.props.new ? 'new ' : '') +
+      (isFirstNewMessage ? 'new ' : '') +
       (this.props.isResponse ? 'response ' : '') +
       (show_user ? '' : 'without_title ') +
       (this.state.is_selected ? 'is_selected ' : '') +
@@ -187,7 +191,7 @@ export default class Message extends Component {
             username: 'app#' + app.simple_name,
             firstname: app.name,
             lastname: '',
-            thumbnail: app.icon_url,
+            thumbnail: WorkspacesApps.getAppIcon(app),
           };
         }
 
@@ -218,7 +222,14 @@ export default class Message extends Component {
       }
 
       message = [
-        <div className="message_bloc_and_response">
+        <div
+          className={
+            'message_bloc_and_response ' +
+            (isFirstNewMessage ? 'new ' : '') +
+            (this.props.message.responses_count > 0 ? 'has_responses ' : '') +
+            (this.props.message.parent_message_id ? 'is_response ' : '')
+          }
+        >
           <div
             className={'message_bloc ' + className}
             onMouseOver={() => this.setState({ was_hover: true })}
@@ -236,23 +247,7 @@ export default class Message extends Component {
                   }}
                 />
               )}
-              {!show_user && (
-                <div className="date js-drag-handler">
-                  <Moment tz={moment.tz.guess()} format="h:mm">
-                    {this.props.message.creation_date * 1000}
-                  </Moment>
-                  {this.props.message._user_ephemeral && (
-                    <span>
-                      {' '}
-                      {Languages.t(
-                        'scenes.apps.messages.message.personel_spam',
-                        [],
-                        '- Vous seul pouvez voir ce message.',
-                      )}
-                    </span>
-                  )}
-                </div>
-              )}
+              {!show_user && <div className="date js-drag-handler"></div>}
             </div>
             <div key="container" className="container">
               <div className="message_container">
@@ -312,7 +307,9 @@ export default class Message extends Component {
                       this.props.message.edited &&
                       this.props.message.message_type == 0 && <div className="edited">(edited)</div>
                     }
-                    onAction={(type, id, passives, evt) => this.onAction(type, id, passives, evt)}
+                    onAction={(type, id, context, passives, evt) =>
+                      this.onAction(type, id, context, passives, evt)
+                    }
                   />
                 )}
                 {this.state.app_messages_service.editedMessage.front_id ==
@@ -366,7 +363,7 @@ export default class Message extends Component {
                     />
                     <Button
                       value={Languages.t(
-                        'scenes.apps.messages.message.cancell_button',
+                        'scenes.apps.messages.message.cancel_button',
                         [],
                         'Annuler',
                       )}
@@ -381,7 +378,8 @@ export default class Message extends Component {
                 )}
 
                 {!(this.props.message.hidden_data || {}).disable_reactions &&
-                  this.props.message.reactions && (
+                  this.props.message.reactions &&
+                  Object.keys(this.props.message.reactions).length > 0 && (
                     <div className="reactions">
                       {Object.keys(this.props.message.reactions)
                         .sort(
@@ -494,9 +492,24 @@ export default class Message extends Component {
         types={['message']}
         onDrop={data => this.dropMessage(data.data)}
       >
-        {(!this.props.previousMessage ||
-          this.props.message.creation_date - this.props.previousMessage.creation_date >
-            60 * 60 * 2) && (
+        {!!(
+          !this.props.previousMessage ||
+          (this.props.message.creation_date &&
+            isFirstNewMessage &&
+            this.props.previousMessage.creation_date <= this.props.unreadAfter)
+        ) && (
+          <div className="message_timeline new_messages">
+            <div className="time_container">
+              <div className="time">
+                {Languages.t('scenes.apps.messages.message.new_messages_bar', [], 'New messages')}
+              </div>
+            </div>
+          </div>
+        )}
+        {!!(
+          !this.props.previousMessage ||
+          this.props.message.creation_date - this.props.previousMessage.creation_date > 60 * 60 * 2
+        ) && (
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">

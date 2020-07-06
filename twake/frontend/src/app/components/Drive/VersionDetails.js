@@ -55,7 +55,8 @@ export default class VersionDetails extends React.Component {
                 <div className="icon">
                   <Icon type="plus" className="m-icon-small iconWithBackground" />
                 </div>
-                <div className="footerTitle">Ajouter une nouvelle version</div>
+                <div className="footerTitle">{Languages.t('components.drive.new_versions', 
+                [], "Ajouter une nouvelle version")}</div>
               </div>
             </div>
           </div>
@@ -107,7 +108,7 @@ export default class VersionDetails extends React.Component {
                       menu={[
                         {
                           type: 'menu',
-                          text: 'Télécharger',
+                          text: Languages.t('scenes.apps.drive.preview_bloc.operations_download', [], 'Télécharger'),
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
                             console.log(link);

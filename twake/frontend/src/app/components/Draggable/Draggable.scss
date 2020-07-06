@@ -3,6 +3,8 @@
 .draggable {
   .js-drag-handler {
     cursor: grab;
+    width: 100%;
+    min-height: 16px;
   }
 }
 

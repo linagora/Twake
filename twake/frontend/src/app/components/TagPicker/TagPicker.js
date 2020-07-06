@@ -19,9 +19,9 @@ export default class TagPicker extends React.Component {
       selected: [],
       value: this.props.value || [],
       list: props.data || [
-        { id: 1, name: 'To do' },
-        { id: 2, name: 'Doing' },
-        { id: 3, name: 'Done' },
+        { id: 1, name: Languages.t('scenes.apps.tasks.task_status.todo', [], 'To do') },
+        { id: 2, name: Languages.t('scenes.apps.tasks.task_status.current', [], 'Doing') },
+        { id: 3, name: Languages.t('scenes.apps.tasks.task_status.done', [], 'Done') },
       ],
     };
   }
@@ -160,7 +160,7 @@ export default class TagPicker extends React.Component {
 
     return (
       <div className={'tagPicker ' + (this.props.className || '')}>
-        {!this.props.readOnly && value.length == 0 && <div className="tag notag">No tag</div>}
+        {!this.props.readOnly && value.length == 0 && <div className="tag notag">{Languages.t('components.tagpicker.notag', [], 'No tag')}</div>}
 
         {tag_list}
 
@@ -171,7 +171,7 @@ export default class TagPicker extends React.Component {
               this.addTags(evt);
             }}
           >
-            <Icon type="plus" className="m-icon-small" /> Add
+            <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
           </Button>
         )}
 

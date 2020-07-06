@@ -41,8 +41,6 @@ class CommandsManager
             return;
         }
 
-        error_log(json_encode($arguments));
-
         $command = new $this->commands[$command]($this->app);
 
         $command->executeFromManager();

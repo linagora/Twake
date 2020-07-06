@@ -68,6 +68,11 @@ class Response
         $this->status = $code;
     }
 
+    public function getHttpStatus()
+    {
+        return $this->status;
+    }
+
     public function sendHeaders()
     {
         if (defined("TESTENV") && TESTENV) {

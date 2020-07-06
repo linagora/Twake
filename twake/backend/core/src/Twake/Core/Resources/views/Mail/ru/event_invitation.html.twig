@@ -1,0 +1,33 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}📅 Twake, вас пригласили на следующее мероприятие.{% endblock %}
+
+{% block secondtitle %}Twake, вас пригласили на следующее мероприятие.{% endblock %}
+
+{% block body %}
+
+    <b>Вы были приглашены на следующее мероприятие.</b>
+    <br>
+    <br>
+    <div style="border: 1px solid #000;padding: 16px;">
+
+        {% if event.title %}
+            <b>{{ event.title }}</b><br/><br/>
+        {% else %}
+            <b>Без названия</b><br/><br/>
+        {% endif %}
+
+        {% if event.location %}
+            <b>Где: </b> {{ event.location }}<br/><br/>
+        {% endif %}
+
+
+        <b>Когда: </b> {{ (event.from - (user_timezone_delay*60)) | date('F j, Y, g:i a') }}
+        - {{ (event.to - (user_timezone_delay*60)) | date('F j, Y, g:i a') }} ({{ user_timezone_text }})<br/><br/>
+
+        <b>Приглашённый: </b> {{ sender_fullname }} {{ sender_email }}<br/><br/>
+
+    </div>
+    <br>
+
+{% endblock %}

@@ -193,7 +193,10 @@ export default class App extends Component {
               <br />
               {LoginService.server_infos.help_link && (
                 <span>
-                  Please tell us what you were doing at :<br />
+                  {Languages.t('scenes.tell_us', 
+                  [], 
+                  "Please tell us what you were doing at :")}
+                  <br />
                   <a onClick={() => window.open(LoginService.server_infos.help_link)}>
                     {LoginService.server_infos.help_link}
                   </a>

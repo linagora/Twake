@@ -2,7 +2,7 @@
 
 .picker_container {
   position: relative;
-  border-radius: 8px;
+  border-radius: var(--default-border-radius-large);
   &.inline {
     transition: box-shadow 0.2s;
 

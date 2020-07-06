@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione.js';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
@@ -127,7 +127,13 @@ class PseudoMarkdownDictionary {
                 }
                 onClick={evt => {
                   if (object.action_id) {
-                    event_container.onAction('interactive_action', object.action_id, '', evt);
+                    event_container.onAction(
+                      'interactive_action',
+                      object.action_id,
+                      object.interactive_context || {},
+                      '',
+                      evt,
+                    );
                   }
                 }}
               >
@@ -145,7 +151,13 @@ class PseudoMarkdownDictionary {
               }
               onClick={evt => {
                 if (object.action_id) {
-                  event_container.onAction('interactive_action', object.action_id, '', evt);
+                  event_container.onAction(
+                    'interactive_action',
+                    object.action_id,
+                    object.interactive_context || {},
+                    '',
+                    evt,
+                  );
                 }
               }}
             >
@@ -173,6 +185,7 @@ class PseudoMarkdownDictionary {
               event_container.onAction(
                 'interactive_change',
                 object.passive_id,
+                object.interactive_context || {},
                 evt.target.value,
                 evt,
               );
@@ -192,6 +205,7 @@ class PseudoMarkdownDictionary {
               event_container.onAction(
                 'interactive_change',
                 object.passive_id || object.action_id,
+                object.interactive_context || {},
                 value,
                 evt,
               );
@@ -199,6 +213,7 @@ class PseudoMarkdownDictionary {
                 event_container.onAction(
                   'interactive_action',
                   object.action_id,
+                  object.interactive_context || {},
                   value,
                   evt.target.value,
                 );

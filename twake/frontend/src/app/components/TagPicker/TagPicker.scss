@@ -3,7 +3,7 @@
 .tagPicker .tag,
 .inline-tag {
   height: 22px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   background: $grey_dark;
   color: #fff;
   line-height: 22px;
@@ -85,7 +85,7 @@
     background-color: $primary;
     box-sizing: border-box;
     color: #fff;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin: 5px 0px;
     margin-right: 5px;
     height: 18px;

@@ -150,7 +150,7 @@
   color: $black;
   background: $grey_background;
   border: 2px solid $grey_light;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   margin-top: 16px;
   padding: 8px;
   padding-left: 32px;

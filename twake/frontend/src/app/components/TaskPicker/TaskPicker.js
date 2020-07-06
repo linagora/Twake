@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Button from 'components/Buttons/Button.js';
 import Languages from 'services/languages/languages.js';
@@ -210,7 +210,9 @@ export default class TaskPicker extends Component {
   render() {
     return (
       <div className="taskPicker">
-        {!this.state.currentBoard && <div className="title">Task</div>}
+        {!this.state.currentBoard && (
+          <div className="title">{Languages.t('scenes.apps.tasks.task')}</div>
+        )}
         {this.state.currentBoard && !this.state.currentList && (
           <div className="title">
             <LeftIcon
@@ -244,7 +246,11 @@ export default class TaskPicker extends Component {
           {this.props.mode == 'select_task' &&
             this.state.taskSelected &&
             this.state.taskSelected.id && (
-              <Button className="small" value="Sélectionner" onClick={() => this.submit()} />
+              <Button
+                className="small"
+                value={Languages.t('scenes.app.taskpicker.select', [], 'Sélectionner')}
+                onClick={() => this.submit()}
+              />
             )}
         </div>
       </div>

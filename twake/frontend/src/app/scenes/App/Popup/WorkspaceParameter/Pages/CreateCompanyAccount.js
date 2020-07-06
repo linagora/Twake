@@ -44,7 +44,8 @@ export default class CreateCompanyAccount extends Component {
               <b>Password:</b> {this.state.password}
               <br />
               <span className="text">
-                Send this information to your member to let him now its new credentials.
+                {Languages.t('scenes.apps.account.account.send_info',
+                [], "Send this information to your member to let him now its new credentials.")}
               </span>
             </div>
           ),
@@ -52,7 +53,7 @@ export default class CreateCompanyAccount extends Component {
       } else {
         AlertManager.alert(() => {}, {
           title: 'An error occurred',
-          text: 'Please try again.',
+          text: Languages.t('scenes.app.popup.createcompany.try_again', [], 'Please try again.'),
         });
       }
     });
@@ -82,26 +83,28 @@ export default class CreateCompanyAccount extends Component {
                   this.save();
                 }}
               >
-                Save account
+                {Languages.t('scenes.apps.account.account.save', [], "Save account")}
               </Button>
             </div>
           }
           title={
             <ObjectModalTitle>
-              {this.props.edit ? 'Edit temporary account' : 'Create temporary account'}
+              {this.props.edit ? Languages.t('scenes.app.popup.workspace.edit_temp', [],'Edit temporary account') : 
+              Languages.t('scenes.app.popup.workspace.create_temp', [], 'Create temporary account')}
             </ObjectModalTitle>
           }
         >
           <span className="text">
-            A temporary account works like a normal Twake account, but you generate its password and
-            you will be able to reset it if necessary.
+            {Languages.t('scenes.apps.account.message_temporary',
+            [], "A temporary account works like a normal Twake account, but you generate its password and you will be able to reset it if necessary.")}
             <br />
-            Your user can sign in at anytime using this same email and change its temporary account
-            to a normal account.
+            {Languages.t('scenes.apps.account.message_user_signin', [],
+            "Your user can sign in at anytime using this same email and change its temporary account to a normal account.")}
           </span>
 
           {!this.props.edit && [
-            <ObjectModalSectionTitle icon="user" name="Fullname" />,
+            <ObjectModalSectionTitle icon="user" name={Languages.t('scenes.apps.account.account.fullname',
+            [],"Fullname")} />,
             <Input
               className="full_width"
               placeholder="John Snow"
@@ -109,19 +112,23 @@ export default class CreateCompanyAccount extends Component {
             />,
           ]}
 
-          <ObjectModalSectionTitle icon="envelope" name="Email / Login" />
+          <ObjectModalSectionTitle icon="envelope" name={Languages.t('login.email_login',
+          [], "Email / Login")} />
           <Input className="full_width" disabled value={this.props.email} />
 
-          <ObjectModalSectionTitle icon="lock" name="Password" />
+          <ObjectModalSectionTitle icon="lock" name={Languages.t('scenes.apps.account.account.password',
+          [], "Password")} />
           <Input
             className="full_width"
-            placeholder="Password for your user"
+            placeholder={Languages.t('scenes.apps.account.account.password_for_user',
+            [], "Password for your user")}
             onChange={e => this.setState({ password: e.target.value })}
           />
 
           <br />
           <br />
-          <span className="text">Your password must contain at least 8 characters.</span>
+          <span className="text">{Languages.t('scenes.login.create_account.too_short_password',
+          [], "Your password must contain at least 8 characters.")}</span>
 
           <br />
           <br />

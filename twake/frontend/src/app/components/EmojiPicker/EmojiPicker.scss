@@ -3,7 +3,7 @@
 .emojiPicker {
   //min-height: 234px;
   text-align: center;
-  margin: 0px -8px;
+  margin: 0px -16px;
   margin-bottom: -16px;
 
   .menu.is_selected {
@@ -86,6 +86,7 @@
     border-radius: $base_border_radius;
     padding-top: 0px;
     vertical-align: top;
+    font-size: 18px;
   }
 
   .categories {

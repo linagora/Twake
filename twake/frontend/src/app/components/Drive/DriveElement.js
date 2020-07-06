@@ -213,7 +213,7 @@ export default class DriveElement extends React.Component {
       this.common_menu = [
         {
           type: 'menu',
-          text: 'Voir',
+          text: Languages.t('components.drive.elements.see', [], 'Voir'),
           onClick: () => {
             DriveService.viewDocument(this.state.element);
           },
@@ -255,7 +255,7 @@ export default class DriveElement extends React.Component {
       type: 'menu',
       text:
         this.state.element.url && this.state.element.extension == 'url'
-          ? 'Open link'
+          ? Languages.t('scenes.apps.drive.open_link', [], 'Open link')
           : Languages.t('scenes.apps.drive.download_button', [], 'Télécharger'),
       onClick: () => {
         var link = DriveService.getLink(this.state.element, undefined, 1);
@@ -272,7 +272,7 @@ export default class DriveElement extends React.Component {
       if (this.state.element.detached) {
         this.common_menu.push({
           type: 'menu',
-          text: 'Déplacer',
+          text: Languages.t('scenes.apps.drive.move_text2', [], 'Déplacer'),
           submenu_replace: true,
           submenu: [
             {
@@ -298,11 +298,19 @@ export default class DriveElement extends React.Component {
           this.common_menu = this.common_menu.concat([
             {
               type: 'menu',
-              text: 'Renommer...',
+              text: Languages.t('scenes.app.mainview.tabs.rename', [], 'Renommer'),
               submenu_replace: true,
               submenu: [
-                { type: 'title', text: 'Renommer' },
-                { type: 'text', text: 'Nom actuel : ' + this.state.element.name },
+                {
+                  type: 'title',
+                  text: Languages.t('scenes.app.mainview.tabs.rename', [], 'Renommer'),
+                },
+                {
+                  type: 'text',
+                  text:
+                    Languages.t('components.drive.elements.current_name', [], 'Nom actuel : ') +
+                    this.state.element.name,
+                },
                 {
                   type: 'react-element',
                   reactElement: () => (
@@ -331,7 +339,11 @@ export default class DriveElement extends React.Component {
                         <Button
                           disabled={(this.state.new_name || '').length <= 0}
                           type="submit"
-                          value={'Enregistrer'}
+                          value={Languages.t(
+                            'scenes.apps.messages.message.save_button',
+                            [],
+                            'Enregistrer',
+                          )}
                           onClick={() => {
                             this.rename();
                           }}
@@ -349,10 +361,17 @@ export default class DriveElement extends React.Component {
           this.common_menu = this.common_menu.concat([
             {
               type: 'menu',
-              text: 'Accès public...',
+              text: Languages.t('scenes.apps.drive.right_preview.public', [], 'Accès public...'),
               submenu_replace: true,
               submenu: [
-                { type: 'title', text: "Lien d'accès public" },
+                {
+                  type: 'title',
+                  text: Languages.t(
+                    'scenes.apps.drive.right_preview.public_link',
+                    [],
+                    "Lien d'accès public",
+                  ),
+                },
                 {
                   type: 'react-element',
                   reactElement: () => (
@@ -383,7 +402,11 @@ export default class DriveElement extends React.Component {
                                 );
                               });
                             }}
-                            value="Supprimer le lien"
+                            value={Languages.t(
+                              'components.drive.right_preview.suppress_link',
+                              [],
+                              'Supprimer le lien',
+                            )}
                           />
                         </div>
                       )}
@@ -397,7 +420,11 @@ export default class DriveElement extends React.Component {
                                 this.props.driveCollectionKey || this.driveCollectionKey,
                               );
                             }}
-                            value="Créer un lien d'accès"
+                            value={Languages.t(
+                              'components.drive.right_preview.create_link',
+                              [],
+                              "Créer un lien d'accès",
+                            )}
                           />
                         </div>
                       )}
@@ -411,7 +438,7 @@ export default class DriveElement extends React.Component {
           if (!(this.state.element.application_id && this.state.element.is_directory)) {
             this.common_menu.push({
               type: 'menu',
-              text: 'Déplacer...',
+              text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer'),
               submenu_replace: true,
               submenu: [
                 {
@@ -432,7 +459,11 @@ export default class DriveElement extends React.Component {
             if (this.state.element.application_id && this.state.element.is_directory) {
               this.common_menu.push({
                 type: 'menu',
-                text: 'Configurer le module...',
+                text: Languages.t(
+                  'components.drive.elements.configurate_mod',
+                  [],
+                  'Configurer le module...',
+                ),
                 onClick: () => {
                   var data = {
                     drive_element: this.state.element,
@@ -456,7 +487,14 @@ export default class DriveElement extends React.Component {
             this.common_menu.push(
               {
                 type: 'menu',
-                text: 'Gérer les versions' + versions_indicator + '...',
+                text:
+                  Languages.t(
+                    'components.drive.elements.manage_version',
+                    [],
+                    'Gérer les versions',
+                  ) +
+                  versions_indicator +
+                  '...',
                 onClick: () => {
                   MediumPopupManager.open(<VersionDetails file={this.state.element} />, {
                     size: { width: 600 },
@@ -465,10 +503,21 @@ export default class DriveElement extends React.Component {
               },
               {
                 type: 'menu',
-                text: 'Labels...',
+                text: Languages.t(
+                  'scenes.apps.drive.navigators.navigator_labels.title',
+                  [],
+                  'Labels',
+                ),
                 submenu_replace: true,
                 submenu: [
-                  { type: 'title', text: 'Labels' },
+                  {
+                    type: 'title',
+                    text: Languages.t(
+                      'scenes.apps.drive.navigators.navigator_labels.title',
+                      [],
+                      'Labels',
+                    ),
+                  },
                   {
                     type: 'react-element',
                     reactElement: level => (
@@ -503,7 +552,11 @@ export default class DriveElement extends React.Component {
 
           this.common_menu.push({
             type: 'menu',
-            text: 'Mettre à la corbeille',
+            text: Languages.t(
+              'scenes.apps.drive.right_preview.operations_delete',
+              [],
+              'Mettre à la corbeille',
+            ),
             className: 'error',
             onClick: () => {
               DriveService.remove(
@@ -515,7 +568,11 @@ export default class DriveElement extends React.Component {
         } else {
           this.common_menu.push({
             type: 'menu',
-            text: 'Restaurer',
+            text: Languages.t(
+              'scenes.apps.drive.right_preview.operations_restore',
+              [],
+              'Restaurer',
+            ),
             onClick: () => {
               DriveService.restore(
                 [this.props.data],
@@ -525,7 +582,11 @@ export default class DriveElement extends React.Component {
           });
           this.common_menu.push({
             type: 'menu',
-            text: 'Supprimer définitivement',
+            text: Languages.t(
+              'scenes.apps.drive.remove_definitely_menu',
+              [],
+              'Supprimer définitivement',
+            ),
             className: 'error',
             onClick: () => {
               AlertManager.confirm(() => {

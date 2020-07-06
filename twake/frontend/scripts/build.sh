@@ -63,20 +63,7 @@ then
     esac
   done
 
-  sed -i'' -e "s/version[^_A-Za-z].*/version = '$nv';/g" ./src/app/environment/environment.js
-  sed -i'' -e "s/version_detail[^_A-Za-z].*/version_detail = '$nvd';/g" ./src/app/environment/environment.js
-
-  rm ./src/app/environment/environment.js-e
-
-  rm ./public/public/dist/env.js
-  touch ./public/public/dist/env.js
-
-  sed -i'' -e "s/version_detail[^_A-Za-z].*/version_detail\" : \"$nvd\",/g" ./src/app/environment/environment.js
-
-  node "./scripts/envBuilding.js"
-
-
-
+  node "./scripts/envBuilding.js" $v $nvd $nv
 
 fi
 

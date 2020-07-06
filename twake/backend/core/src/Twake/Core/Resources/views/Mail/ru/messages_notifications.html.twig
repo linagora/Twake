@@ -1,0 +1,34 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}У вас {{ total_notifications }} непрочитанный(х) сообщение(я) в Twake{% endblock %}
+
+{% block secondtitle %}🔔 У вас {{ total_notifications }} непрочитанный(х) сообщение(я) в Twake{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    У вас <span class="badge"
+                   style="background: #ff2c2c;padding: 2px 5px;border-radius: 4px;color: #FFF;">{{ total_notifications }}</span> непрочитанный(х) сообщение(я) в Twake.
+    <br><br>
+    Последние сообщения :
+
+    {% for notification in notifications %}
+        <div class="card"
+             style="border-radius: 4px;padding: 10px;margin-top: 10px;box-shadow: 2px 2px 20px rgba(0,0,0,0.1);background: #ffffff;color: #000;border-left: 2px solid #0682d4;font-size: 14px;">
+            <span style="right: 0;font-size: 12px;color: #888;float: right;">{{ notification.delay }} hour(s) ago</span>
+            <b>{{ notification.title }}</b><br>
+            {{ notification.text }}
+        </div>
+    {% endfor %}
+
+    <br>
+    <br>
+    <a href="{{ twakeurl }}"
+       style="display: inline-block; color: #ffffff; background-color: #837dff; border: solid 1px #837dff; border-radius: 5px; box-sizing: border-box; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; border-color: #837dff;">
+        Открыть Twake
+    </a>
+    <br>
+    <br>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -31,24 +31,19 @@ export default class MainView extends Component {
       auto_scroll_activated: true,
     };
 
+    this.options = this.props.options || {};
+
     Languages.addListener(this);
     Collections.get('messages').addListener(this);
+    ChannelsService.addListener(this);
     MessagesService.addListener(this);
 
-    MessagesService.messageDetailsComponent = (
-      <MainView
-        ref={node => (MessagesService.mountedComponent = node)}
-        messageDetails
-        channel={this.props.channel}
-      />
-    );
-
-    this.parentMessageId =
-      (this.props.messageDetails ? MessagesService.currentShowedMessageId : '') || '';
+    this.parentMessageId = this.options.threadId || '';
   }
   componentWillUnmount() {
     Languages.removeListener(this);
     Collections.get('messages').removeListener(this);
+    ChannelsService.removeListener(this);
     MessagesService.removeListener(this);
 
     /*if(this.messages_collection_key){
@@ -66,21 +61,17 @@ export default class MainView extends Component {
     MessagesService.showMessage('');
   }
   onUpdate() {
-    this.messages_collection_key =
-      'messages_' +
-      this.props.channel.id +
-      '_' +
-      (this.props.messageDetails ? MessagesService.currentShowedMessageId : '');
+    this.messages_collection_key = 'messages_' + this.props.channel.id + '_' + this.parentMessageId;
   }
   sendMessage(val) {
     this.input.setValue('');
+
     MessagesService.iamWriting(this.props.channel.id, this.parentMessageId, false);
     MessagesService.sendMessage(
       val,
       {
         channel_id: this.props.channel.id,
-        parent_message_id:
-          (this.props.messageDetails ? MessagesService.currentShowedMessageId : '') || '',
+        parent_message_id: this.parentMessageId || '',
       },
       this.messages_collection_key,
     );
@@ -94,7 +85,7 @@ export default class MainView extends Component {
 
       var menu = [
         {
-          text: 'Select from computer',
+          text: Languages.t('scenes.apps.messages.select_computer', [], 'Select from computer'),
           onClick: () => {
             this.upload_zone.open();
           },
@@ -103,7 +94,7 @@ export default class MainView extends Component {
       var has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
       if (has_drive_app) {
         menu.push({
-          text: 'Select in Documents',
+          text: Languages.t('scenes.apps.messages.select_twake', [], 'Select in Documents'),
           submenu: [
             {
               type: 'react-element',
@@ -131,13 +122,16 @@ export default class MainView extends Component {
       channel: this.props.channel,
       parent_message:
         (this.props.messageDetails
-          ? Collections.get('messages').find(MessagesService.currentShowedMessageId)
+          ? Collections.get('messages').find(this.parentMessageId)
           : null) || null,
       from_icon: from_icon,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
+
   render() {
+    const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.id];
+
     //Add delay to make everything look more fast (loading all message add delay)
     if (!this.did_mount) {
       setTimeout(() => {
@@ -180,7 +174,7 @@ export default class MainView extends Component {
       .sort((a, b) => a.creation_date - b.creation_date);
 
     return (
-      <div className="app">
+      <div className="app" onClick={() => ChannelsService.readChannelIfNeeded(this.props.channel)}>
         <div className={'messages_app ' + (this.props.messageDetails ? 'in_modal ' : '')}>
           <UploadZone
             className="messages_main"
@@ -223,6 +217,7 @@ export default class MainView extends Component {
                 key={this.props.channel.id}
                 messagesCollectionKey={this.messages_collection_key}
                 channel={this.props.channel}
+                unreadAfter={unreadAfter}
                 parentMessageId={parentMessageId}
               />
 
@@ -271,11 +266,19 @@ export default class MainView extends Component {
                 onSend={val => {
                   this.sendMessage(val);
                 }}
+                onEditLastMessage={() => {
+                  MessagesService.startEditingLastMessage({
+                    channel_id: this.props.channel.id,
+                    parent_message_id:
+                      (this.props.messageDetails ? this.parentMessageId : undefined) || undefined,
+                  });
+                }}
                 triggerApp={(app, from_icon, evt) => this.triggerApp(app, from_icon, evt)}
                 onChange={() => {
                   MessagesService.iamWriting(this.props.channel.id, this.parentMessageId, true);
                 }}
-                disabled={MessagesService.currentShowedMessageId != this.parentMessageId}
+                disabled={this.parentMessageId != this.parentMessageId}
+                onFocus={() => MessagesService.startRespond(false)}
               />
             </DroppableZone>
           </UploadZone>

@@ -13,13 +13,13 @@ class Remote extends BaseController
     {
 
         //[REMOVE_ONPREMISE]
-        if ($this->container->getParameter('STANDALONE')) {
+        if ($this->container->getParameter('env.standalone')) {
 
             $remoteLicenceKey = $request->request->get("licenceKey", "");
             $remoteIp = $request->getClientIp();
 
             $licenceServer = "https://licences.twakeapp.com/api";
-            $licenceKey = $this->container->getParameter('LICENCE_KEY');
+            $licenceKey = $this->container->getParameter('env.licence_key');
             $data = Array(
                 "licenceKey" => $licenceKey,
                 "remoteLicenceKey" => $remoteLicenceKey,
@@ -49,13 +49,13 @@ class Remote extends BaseController
     {
         //[REMOVE_ONPREMISE]
 
-        if ($this->container->getParameter('STANDALONE')) {
+        if ($this->container->getParameter('env.standalone')) {
 
             $remoteLicenceKey = $request->request->get("licenceKey", "");
             $remoteIp = $request->getClientIp();
 
             $licenceServer = "https://licences.twakeapp.com/api";
-            $licenceKey = $this->container->getParameter('LICENCE_KEY');
+            $licenceKey = $this->container->getParameter('env.licence_key');
             $data = Array(
                 "licenceKey" => $licenceKey,
                 "remoteLicenceKey" => $remoteLicenceKey,

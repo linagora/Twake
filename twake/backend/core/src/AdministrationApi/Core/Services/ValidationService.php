@@ -23,7 +23,7 @@ class ValidationService
      */
     public function __construct(App $app)
     {
-        $this->token = $app->getContainer()->getParameter("admin_api_token");
+        $this->token = $app->getContainer()->getParameter('env.admin_api_token');
     }
 
     /**

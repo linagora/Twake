@@ -942,6 +942,12 @@ FORMS
 .right-margin {
   margin-right: 16px;
 }
+.top-margin {
+  margin-top: 16px;
+}
+.left-margin {
+  margin-left: 16px;
+}
 
 .small-bottom-margin {
   margin-bottom: 8px;
@@ -994,7 +1000,7 @@ FORMS
   display: inline-block;
   background: $grey_background;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   margin-right: 16px;
   font-size: 16px;
   margin-left: -6px;

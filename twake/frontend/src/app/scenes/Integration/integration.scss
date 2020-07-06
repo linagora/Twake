@@ -1,0 +1,61 @@
+.integration {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+
+  & > .integration-header {
+    padding: 8px;
+    transition: height 0.2s;
+    background: var(--primary);
+    display: flex;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+
+    svg {
+      color: #fff;
+    }
+
+    .logo {
+      flex: 1;
+      background-position: left;
+      background-repeat: no-repeat;
+      background-size: auto 60%;
+    }
+  }
+
+  & > .integrated-app {
+    flex: 1;
+    overflow: hidden;
+
+    & > .appPage {
+      height: 100%;
+      position: initial;
+    }
+  }
+}
+
+.integration-apps {
+  max-width: 290px;
+  margin-bottom: 8px;
+  .app {
+    opacity: 0.9;
+    display: inline-block;
+    text-align: center;
+    color: initial;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 8px;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .image {
+      width: 80px;
+      height: 80px;
+      background-size: contain;
+      background-position: center;
+    }
+  }
+}

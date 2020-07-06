@@ -10,7 +10,7 @@
   bottom: 4px;
   background: $secondary;
   color: #fff;
-  border-radius: 4px;
+  border-radius: var(--default-border-radius);
   padding: 16px;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 0 20px 0 rgba(0, 0, 0, 0.15);
   position: relative;
@@ -23,7 +23,7 @@
     font-size: 10px;
     padding: 2px 1px;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     line-height: 10px;
     position: absolute;
     right: 16px;

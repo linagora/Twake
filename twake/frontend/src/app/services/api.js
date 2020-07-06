@@ -111,7 +111,7 @@ export default class Api {
     var collection = null,
       collection_filter = null,
       collection_find_by = null;
-    if (source.collection) {
+    if (source.collection && collectionService.get) {
       collection = collectionService.get(source.collection);
       collection_find_by = source.collection_find_by || {};
       collection_filter =
@@ -154,9 +154,14 @@ export default class Api {
 
                 delete source.http;
                 delete source.http_data;
-                Api.search(source, this.searching_last_query[search_key], callback);
+                Api.search(
+                  source,
+                  this.searching_last_query[search_key],
+                  collectionService,
+                  callback,
+                );
               } else {
-                callback(res.data);
+                callback && callback(res.data);
               }
 
               this.searching_http[search_key] = false;
@@ -167,7 +172,7 @@ export default class Api {
         }
       } else {
         this.searching_http_timeout[search_key] = setTimeout(() => {
-          Api.search(source, query, callback);
+          Api.search(source, query, collectionService, callback);
         }, 500);
       }
     }

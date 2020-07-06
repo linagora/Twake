@@ -13,7 +13,7 @@ class ConnectorDefinition
       'name' => 'Jitsi',
       'simple_name' => 'jitsi',
       'description' => 'Jitsi allows you to create and join video calls directly from Twake.',
-      'icon_url' => 'https://connectors.albatros.twakeapp.com/icons/jitsi.png',
+      'icon_url' => 'jitsi.png',
       'website' => 'https://twake.app',
       'privileges' => [],
       'capabilities' =>
@@ -31,7 +31,7 @@ class ConnectorDefinition
           'commands' =>
           [
             [
-              'command' => '',
+              'command' => 'Meeting name',
               'description' => 'Create a Jisti call',
             ]
           ]

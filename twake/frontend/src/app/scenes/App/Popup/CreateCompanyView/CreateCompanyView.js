@@ -343,7 +343,9 @@ export default class CreateCompanyView extends Component {
                   </div>
                   <div className="text">
                     <div className="name">Google Calendar</div>
-                    <div className="description">Synchronize your calendars.</div>
+                    <div className="description">{Languages.t('scenes.app.popup.sync_calendar',
+                    [],
+                    "Synchronize your calendars.")}</div>
                   </div>
                 </div>
               );

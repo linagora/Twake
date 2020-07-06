@@ -1,0 +1,16 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Twake, новое уведомление от {{ application_name }} в {{ workspace_name }}{% endblock %}
+
+{% block secondtitle %}Twake, новое уведомление от {{ application_name }} в {{ workspace_name }}{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    У вас есть новое уведомление от <b>{{ application_name }}</b> в рабочем пространстве <b>{{ workspace_name }}</b>
+    <br><br>
+    {{ text }}
+    <br>
+
+{% endblock %}

@@ -81,8 +81,7 @@ export default class EventModification extends Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.event_title_placeholder',
             [],
-            'Titre',
-          )}
+            'Titre')}
           onChange={evt => {
             this.change('title', evt.target.value);
           }}

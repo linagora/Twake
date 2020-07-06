@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
@@ -8,6 +8,7 @@ import Workspace from './Components/Workspace.js';
 import PopupManager from 'services/popupManager/popupManager.js';
 import CreateWorkspacePage from 'scenes/App/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import WorkspaceAdd from 'components/Leftbar/Workspace/WorkspaceAdd.js';
+import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import './WorkspacesBar.scss';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -25,11 +26,13 @@ export default class WorkspacesBar extends Component {
     Languages.addListener(this);
     Workspaces.addListener(this);
     Groups.addListener(this);
+    WorkspaceUserRights.addListener(this);
   }
   componentWillUnmount() {
     Languages.removeListener(this);
     Workspaces.removeListener(this);
     Groups.removeListener(this);
+    WorkspaceUserRights.removeListener(this);
   }
   render() {
     if (Workspaces.getOrderedWorkspacesInGroup(Groups.currentGroupId).length == 0) {
@@ -47,7 +50,9 @@ export default class WorkspacesBar extends Component {
             />
           ))}
 
-          <WorkspaceAdd onClick={() => PopupManager.open(<CreateWorkspacePage />)} />
+          {!!WorkspaceUserRights.hasWorkspacePrivilege() && (
+            <WorkspaceAdd onClick={() => PopupManager.open(<CreateWorkspacePage />)} />
+          )}
         </PerfectScrollbar>
 
         <Group group={{ id: Groups.currentGroupId }} />

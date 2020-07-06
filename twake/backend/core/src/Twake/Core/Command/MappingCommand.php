@@ -21,6 +21,28 @@ class MappingCommand extends ContainerAwareCommand
     protected function execute()
     {
 
+        //Wait for es connection
+        error_log("\n⏳Waiting for ElasticSearch connection");
+        $connected = false;
+        $iteration = 0;
+        while(!$connected && $iteration < 12*3){
+          try{
+            $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('es.host'));
+            $connected = $test->getContent();
+          }catch(\Exception $e){
+            $connected = false;
+          }
+          if(!$connected){
+            error_log("... not found, retry in 5 seconds (timeout 180s)");
+            sleep(5);
+          }
+          $iteration++;
+        }
+        if(!$connected){
+          error_log("\n💥 Unable to join ElasticSearch !\n");
+          return;
+        }
+
         $mapping_workspace = Array(
             "_source" => Array(
                 "includes" => Array("id"),
@@ -194,31 +216,31 @@ class MappingCommand extends ContainerAwareCommand
         );
 
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/task";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/task";
         $this->updateMapping($url, $mapping_task, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/event";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/event";
         $this->updateMapping($url, $mapping_event, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/channel";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/channel";
         $this->updateMapping($url, $mapping_channel, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/group";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/group";
         $this->updateMapping($url, $mapping_group, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/mail";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/mail";
         $this->updateMapping($url, $mapping_mail, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/workspace";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/workspace";
         $this->updateMapping($url, $mapping_workspace, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/users";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/users";
         $this->updateMapping($url, $mapping_users, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/drive_file";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/drive_file";
         $this->updateMapping($url, $mapping_file, "/_mapping/_doc");
 
-        $url = $this->getApp()->getContainer()->getParameter('ELASTIC_SERVER') . "/message_bloc";
+        $url = $this->getApp()->getContainer()->getParameter('es.host') . "/message_bloc";
         $this->updateMapping($url, $mapping_message_bloc, "/_mapping/_doc");
 
     }
@@ -229,9 +251,10 @@ class MappingCommand extends ContainerAwareCommand
         error_log($url . $mapping_suffix);
 
         try {
-            $this->getApp()->getServices()->get("app.restclient")->put("http://" . $url, "");
+          $this->getApp()->getServices()->get("app.restclient")->put("http://" . $url, "");
         } catch (\Exception $e) {
-
+          error_log("no es");
+          error_log($e);
         }
 
         $mapping = json_encode($mapping);

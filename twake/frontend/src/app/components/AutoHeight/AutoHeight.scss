@@ -5,6 +5,22 @@
     padding: 16px;
     resize: none;
     font-size: 14px;
+    &::-webkit-input-placeholder {
+      /* Chrome/Opera/Safari */
+      white-space: nowrap;
+    }
+    &::-moz-placeholder {
+      /* Firefox 19+ */
+      white-space: nowrap;
+    }
+    &:-ms-input-placeholder {
+      /* IE 10+ */
+      white-space: nowrap;
+    }
+    &:-moz-placeholder {
+      /* Firefox 18- */
+      white-space: nowrap;
+    }
   }
 
   &.small,

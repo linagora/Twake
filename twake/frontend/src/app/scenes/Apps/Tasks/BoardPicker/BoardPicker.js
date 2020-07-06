@@ -58,7 +58,7 @@ export default class BoardPicker extends React.Component {
                   {board.emoji && <Emojione type={board.emoji} s32 className="board_emoji" />}
                   {board.title}
                 </div>
-                <div className="board_info">{board.active_tasks || '0'} tâches actives</div>
+                <div className="board_info">{board.active_tasks || '0'} {Languages.t('scenes.apps.tasks.active_tasks',[],'tâches actives')}</div>
               </div>
             );
           })}

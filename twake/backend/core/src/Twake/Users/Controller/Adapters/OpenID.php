@@ -27,27 +27,27 @@ class OpenID extends BaseController
 
         $this->get("app.user")->logout($request);
 
-        $logout_parameter = $this->getParameter("auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
-        $logout_url_suffix = $this->getParameter("auth.openid.logout_suffix") ?: "/logout";
+        $logout_parameter = $this->getParameter("defaults.auth.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
+        $logout_url_suffix = $this->getParameter("defaults.auth.openid.logout_suffix") ?: "/logout";
 
-        $logout_redirect_url = rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid/logout_success";
+        $logout_redirect_url = rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/openid/logout_success";
 
         if($message){
           $logout_redirect_url .= "?error_code=".str_replace('+', '%20', urlencode(json_encode($message)));
         }
 
         $redirect = "";
-        if(!$this->getParameter("auth.openid.disable_logout_redirect")){
+        if(!$this->getParameter("defaults.auth.openid.disable_logout_redirect")){
           $redirect =  "?" . $logout_parameter . "=" . urlencode($logout_redirect_url);
         }
 
-        $this->redirect($this->getParameter("auth.openid.provider_uri") . $logout_url_suffix . $redirect);
+        $this->redirect($this->getParameter("defaults.auth.openid.provider_uri") . $logout_url_suffix . $redirect);
     }
 
     function index(Request $request)
     {
 
-        if (!$this->getParameter("auth.openid.use")) {
+        if (!$this->getParameter("defaults.auth.openid.use")) {
             return new Response(["error" => "OpenID is not enabled on this instance"]);
         }
 
@@ -57,14 +57,14 @@ class OpenID extends BaseController
 
         try {
             $oidc = new OpenIDConnectClient(
-                $this->getParameter("auth.openid.provider_uri"),
-                $this->getParameter("auth.openid.client_id"),
-                $this->getParameter("auth.openid.client_secret")
+                $this->getParameter("defaults.auth.openid.provider_uri"),
+                $this->getParameter("defaults.auth.openid.client_id"),
+                $this->getParameter("defaults.auth.openid.client_secret")
             );
 
-            $oidc->providerConfigParam($this->getParameter("auth.openid.provider_config", []));
+            $oidc->providerConfigParam($this->getParameter("defaults.auth.openid.provider_config", []));
 
-            $oidc->setRedirectURL(rtrim($this->getParameter("SERVER_NAME"), "/") . "/ajax/users/openid");
+            $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/openid");
 
             $oidc->addScope(array('openid', 'email', 'profile'));
 
@@ -88,7 +88,7 @@ class OpenID extends BaseController
                 $data["email_verified"] = $oidc->requestUserInfo('email_verified');
                 $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
 
-                if ((empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) && !$this->getParameter("auth.openid.ignore_mail_verified")) {
+                if ((empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) && !$this->getParameter("defaults.auth.openid.ignore_mail_verified")) {
                     return $this->logout($request, ["error" => "Your mail is not verified"]);
                 }
 
@@ -136,7 +136,7 @@ class OpenID extends BaseController
 
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("SERVER_NAME"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
+        $this->redirect(rtrim($this->getParameter("env.server_name"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
 }

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';
@@ -39,7 +39,9 @@ export default class Login extends Component {
     // return(<WelcomePage/>)
     return (
       <div className={'loginPage ' + (this.props.willGoToApp ? 'willGoToApp ' : '')}>
-        <div className="twake_logo" />
+        {this.state.login.server_infos_loaded && !this.state.login.server_infos.branding.name && (
+          <div className="twake_logo" />
+        )}
 
         {['logged_out', 'signin', 'forgot_password'].indexOf(this.state.login.state) != -1 && (
           <InteractiveLoginBackground />

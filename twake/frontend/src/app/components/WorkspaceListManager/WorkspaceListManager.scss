@@ -45,7 +45,7 @@
       width: 16px;
       height: 16px;
       margin-top: 4px;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
 
       &.email {
         color: #444;
@@ -74,7 +74,7 @@
       .user_head {
         width: 24px;
         height: 24px;
-        border-radius: 8px;
+        border-radius: var(--default-border-radius-large);
 
         &.email {
           color: #444;

@@ -68,7 +68,7 @@ export default class AppsParameters extends Component {
               menu={[
                 {
                   type: 'menu',
-                  text: 'Vos applications',
+                  text: Languages.t('scenes.app.popup.workspaceparameter.pages.your_apps_label', [], 'Vos applications'),
                   emoji: ':control_knobs:',
                   selected: this.state.page == 1,
                   onClick: () => this.setPage(1),
@@ -82,7 +82,7 @@ export default class AppsParameters extends Component {
                 },
                 {
                   type: 'menu',
-                  text: 'Retour',
+                  text: Languages.t('general.back', [], 'Retour'),
                   icon: 'arrow-left',
                   onClick: () => popupManager.close(),
                 },

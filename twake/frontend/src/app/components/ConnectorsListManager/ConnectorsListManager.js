@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';
 import Input from 'components/Inputs/Input.js';
 import './ConnectorsListManager.scss';
+import Languages from 'services/languages/languages.js';
 
 export default class ConnectorsListManager extends React.Component {
   constructor(props) {
@@ -93,11 +94,11 @@ export default class ConnectorsListManager extends React.Component {
     return (
       <div className="connectorsListManager">
         <div className="menu-title no-separator">
-          <div className="text">Connecteurs</div>
+          <div className="text">{Languages.t('scenes.apps.tasks.connectors_menu', [], "Connecteurs")}</div>
         </div>
 
         {this.state.connectors_ids.length == 0 && (
-          <div className="menu-text">Aucun connecteurs.</div>
+          <div className="menu-text">{Languages.t('scenes.apps.tasks.no_connector', [], "Aucun connecteurs.")}</div>
         )}
         {this.state.connectors_ids.map(id => {
           return this.renderLine(id, true);
@@ -113,7 +114,7 @@ export default class ConnectorsListManager extends React.Component {
               type="text"
               style={{ marginBottom: 8 }}
               className="small full_width bottom-margin"
-              placeholder="Filtrer"
+              placeholder={Languages.t('components.listmanager.filter', [], "Filtrer")}
               style={{ margin: 0 }}
               onChange={evt => this.filter(evt.target.value)}
             />

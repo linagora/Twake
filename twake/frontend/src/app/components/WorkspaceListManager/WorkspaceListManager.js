@@ -7,6 +7,7 @@ import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
 import OutsideClickHandler from 'react-outside-click-handler';
 import './WorkspaceListManager.scss';
+import Languages from 'services/languages/languages.js';
 
 export default class WorkspaceListManager extends React.Component {
   constructor(props) {
@@ -176,7 +177,7 @@ export default class WorkspaceListManager extends React.Component {
           }
         >
           {all_workspaces && !this.props.noPlaceholder && (
-            <div className="menu-text no-workspaces">Aucun espace de travail.</div>
+            <div className="menu-text no-workspaces">{Languages.t('components.workspace.list_manager.no_workspace', [], "Aucun espace de travail.")}</div>
           )}
           {!all_workspaces &&
             this.state.workspaces_ids.map(id => {
@@ -191,7 +192,7 @@ export default class WorkspaceListManager extends React.Component {
                   onClick={() => this.setState({ editing: true })}
                 >
                   <Icon type="plus" className="m-icon-small" />{' '}
-                  {this.props.addText || 'Ajouter des espaces de travail'}
+                  {this.props.addText || Languages.t('components.workspace.list_manager.add', [], 'Ajouter des espaces de travail')}
                 </Button>
               )}
               {!!this.state.editing && (
@@ -219,7 +220,8 @@ export default class WorkspaceListManager extends React.Component {
                   autoFocus
                   small
                   position={'bottom'}
-                  placeholder="Ajouter des utilisateurs"
+                  placeholder={Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn', 
+                  [], "Ajouter des utilisateurs")}
                 />
               )}
 
@@ -229,7 +231,7 @@ export default class WorkspaceListManager extends React.Component {
                     className="small primary-text right-margin"
                     onClick={() => this.select(Workspaces.currentWorkspaceId)}
                   >
-                    <Icon type="suitcase-alt" className="m-icon-small" /> Espace courant
+                    <Icon type="suitcase-alt" className="m-icon-small" /> {Languages.t('components.workspace.list_manager.current_space', [], "Espace courant")}
                   </Button>
                 )}
               {!!this.props.showAddCurrentGroup &&
@@ -241,7 +243,7 @@ export default class WorkspaceListManager extends React.Component {
                     className="small primary-text right-margin"
                     onClick={() => this.select(Workspaces.currentGroupId)}
                   >
-                    <Icon type="building" className="m-icon-small" /> Entreprise courante
+                    <Icon type="building" className="m-icon-small" /> {Languages.t('components.workspace.list_manager.current_company', [], "Entreprise courante")}
                   </Button>
                 )}
               {!!this.props.showAddAll &&
@@ -254,7 +256,7 @@ export default class WorkspaceListManager extends React.Component {
                       Object.keys(Workspaces.user_workspaces || {}).map(id => this.select(id));
                     }}
                   >
-                    <Icon type="workspaces-alt" className="m-icon-small" /> Tous
+                    <Icon type="workspaces-alt" className="m-icon-small" /> {Languages.t('components.workspace.list_manager.all', [], "Tous")}
                   </Button>
                 )}
             </div>

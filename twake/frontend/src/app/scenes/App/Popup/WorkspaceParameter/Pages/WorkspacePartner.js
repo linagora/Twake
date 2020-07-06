@@ -259,7 +259,7 @@ export default class WorkspacePartner extends Component {
         menu = [
           {
             type: 'menu',
-            text: 'Edit temporary account',
+            text: Languages.t('scenes.app.popup.workspace.edit_temp', [],'Edit temporary account'),
             onClick: () => {
               MediumPopupManager.open(
                 <CreateCompanyAccount edit email={col.user.mail_verification_override_mail} />,
@@ -517,7 +517,7 @@ export default class WorkspacePartner extends Component {
                           menu={[
                             {
                               type: 'menu',
-                              text: 'Create temporary account',
+                              text: Languages.t('scenes.app.popup.workspace.create_temp', [], 'Create temporary account'),
                               onClick: () => {
                                 MediumPopupManager.open(<CreateCompanyAccount email={col.mail} />, {
                                   size: { width: 400 },
@@ -528,7 +528,11 @@ export default class WorkspacePartner extends Component {
                             {
                               type: 'menu',
                               className: 'danger',
-                              text: "Annuler l'invitation",
+                              text: Languages.t(
+                                'scenes.app.popup.workspaceparameter.pages.cancel_invitation',
+                                [],
+                                "Annuler l'invitation.",
+                              ),
                               onClick: () => {
                                 AlertManager.confirm(
                                   () => workspacesUsers.removeInvitation(col.mail),

@@ -1,0 +1,14 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Вы были удалены из рабочего пространства {{ workspace }}.{% endblock %}
+
+{% block secondtitle %}Вы были удалены из рабочего пространства {{ workspace }}.{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    Вы были удалены из рабочего пространства {{ workspace }} в группе {{ group }}.
+    <br>
+
+{% endblock %}

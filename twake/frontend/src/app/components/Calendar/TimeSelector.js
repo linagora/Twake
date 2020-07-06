@@ -3,6 +3,7 @@ import Input from 'components/Inputs/Input.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
+import Languages from 'services/languages/languages.js';
 
 export default class TimeSelector extends React.Component {
   constructor(props) {
@@ -100,7 +101,7 @@ export default class TimeSelector extends React.Component {
   render() {
     return (
       <div className={'time_selector ' + this.props.className} style={{ display: 'inline-block' }}>
-        <Tooltip position="top" tooltip="Invalide" overable={false} visible={this.state.error}>
+        <Tooltip position="top" tooltip={Languages.t('components.workspace.calendar.invalid', [], "Invalide")} overable={false} visible={this.state.error}>
           <Input
             onBlur={() => this.blur()}
             onFocus={() => (this.focus = true)}

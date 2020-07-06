@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete.js';
 import Icon from 'components/Icon/Icon.js';
+import Languages from 'services/languages/languages.js';
 import './Picker.scss';
 
 export default class Picker extends React.Component {
@@ -140,7 +141,10 @@ export default class Picker extends React.Component {
               renderItem={[() => {}]}
               regexHooked={[/(.*)/]}
               placeholder={
-                this.state.currentSelected.length ? '' : this.props.placeholder || 'Search'
+                this.state.currentSelected.length
+                  ? ''
+                  : this.props.placeholder ||
+                    Languages.t('scenes.apps.drive.left.search', [], 'Search')
               }
               onChange={evt => {
                 this.alreadyBackspace = false;

@@ -13,7 +13,7 @@ class Adapter_AWS implements AdapterInterface
     public function __construct($aws_config, $preview, $doctrine)
     {
 
-        $s3_config = $aws_config["S3"];
+        $s3_config = $aws_config;
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
@@ -149,7 +149,6 @@ class Adapter_AWS implements AdapterInterface
                 echo $object["Body"];
                 return true;
             } elseif ($destination == "original_stream") {
-                # add a file named 'goodbye.txt' from an open stream resource
                 $fp = tmpfile();
                 fwrite($fp, $object["Body"]);
                 rewind($fp);

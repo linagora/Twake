@@ -154,13 +154,43 @@ class Messages extends Observable {
     message.pinned = false;
     message.responses_count = 0;
     message.sender = UserService.getCurrentUserId();
-    message.creation_date = new Date().getTime() / 1000 + 60; //To be on the bottom
+
+    const max_message_time = Collections.get('messages')
+      .findBy({ channel_id: options.channel_id })
+      .map(i => i.creation_date)
+      .reduce((a, b) => a + b, 0);
+    message.creation_date = Math.max(max_message_time + 1, new Date().getTime() / 1000); //To be on the bottom
     message.content = val;
-    Collections.get('messages').save(message, collectionKey, () => {
+
+    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
+
+    Collections.get('messages').save(message, collectionKey, message => {
+      ChannelsService.markFrontAsRead(channel.id);
       ChannelsService.incrementChannel(channel);
     });
 
     CurrentUser.updateTutorialStatus('first_message_sent');
+  }
+
+  startEditingLastMessage(options) {
+    console.log(options);
+    let filter = {
+      channel_id: options.channel_id,
+      sender: CurrentUser.get().id,
+    };
+    if (options.parent_message_id !== undefined) {
+      filter.parent_message_id = options.parent_message_id;
+    }
+    const last_message = Collections.get('messages')
+      .findBy(filter)
+      .filter(a => a.message_type == 0 || a.message_type == null)
+      .sort((a, b) => b.creation_date - a.creation_date)[0];
+    if (
+      last_message &&
+      new Date().getTime() / 1000 - last_message.creation_date < 60 * 60 * 24 * 7
+    ) {
+      this.startEditing(last_message);
+    }
   }
 
   startEditing(message) {
@@ -184,7 +214,7 @@ class Messages extends Observable {
     if (!message.id) {
       return;
     }
-    this.respondedMessage = Collections.get('messages').edit();
+    this.respondedMessage = Collections.get('messages').editCopy({});
     this.respondedMessage.parent_message_id = message.id;
     this.notify();
   }
@@ -379,14 +409,9 @@ class Messages extends Observable {
   }
 
   showMessage(id) {
-    this.currentShowedMessageId = id;
-    this.notify();
-    if (this.messageDetailsComponent && this.currentShowedMessageId) {
-      MediumPopupManager.open(this.messageDetailsComponent, {
-        position: 'center',
-        size: { width: '50vw' },
-      });
-    }
+    const message = Collections.get('messages').find(id);
+    const channel = Collections.get('channels').find(message.channel_id);
+    ChannelsService.select(channel, true, { threadId: id });
   }
 
   scrollToMessage(channel, parent_id, id) {

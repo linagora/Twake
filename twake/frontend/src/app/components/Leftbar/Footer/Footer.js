@@ -4,6 +4,7 @@ import './Footer.scss';
 
 import Icon from 'components/Icon/Icon.js';
 import LoginService from 'services/login/login.js';
+import Languages from 'services/languages/languages.js';
 
 export default class Footer extends React.Component {
   constructor(props) {
@@ -38,7 +39,7 @@ export default class Footer extends React.Component {
           {this.props.onClickHelp && (
             <div className="help" onClick={this.props.onClickHelp}>
               <Icon type="question-circle" />
-              Help
+              {Languages.t('general.help', [], 'Help')}
             </div>
           )}
           {!this.onpremise && (

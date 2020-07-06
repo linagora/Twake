@@ -44,8 +44,8 @@ class Notifications
         $this->mailer = $app->getServices()->get("app.twake_mailer");
         $this->circle = $app->getServices()->get("app.restclient");
         $this->pushNotificationServer = $app->getContainer()->getParameter("PUSH_NOTIFICATION_SERVER");
-        $this->standalone = $app->getContainer()->getParameter("STANDALONE");
-        $this->licenceKey = $app->getContainer()->getParameter("LICENCE_KEY");
+        $this->standalone = $app->getContainer()->getParameter("env.standalone");
+        $this->licenceKey = $app->getContainer()->getParameter("env.licence_key");
         $this->emojione_client = new Client(new Ruleset());
     }
 

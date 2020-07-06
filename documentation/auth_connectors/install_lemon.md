@@ -2,7 +2,7 @@
 
 ### 1. Twake configuration
 
-Edit Twake PHP config `twake/backend/core/app/Configuration/Parameters.php`
+Edit Twake PHP config `twake/backend/core/app/Configuration/Parameters.php`, in defaults.auth.openid
 
 ```
 "openid" => [

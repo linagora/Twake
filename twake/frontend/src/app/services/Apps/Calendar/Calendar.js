@@ -20,6 +20,14 @@ class Calendar extends Observable {
     this.last_used_calendar = {};
     this.date = new Date();
 
+    this.generateMenu();
+    this.event_types_by_value = {};
+    this.event_types.map(item => {
+      this.event_types_by_value[item.value] = item;
+    });
+  }
+
+  generateMenu() {
     this.event_types = [
       {
         icon: 'calender',
@@ -42,10 +50,6 @@ class Calendar extends Observable {
         value: 'remind',
       },
     ];
-    this.event_types_by_value = {};
-    this.event_types.map(item => {
-      this.event_types_by_value[item.value] = item;
-    });
   }
 
   setDate(date) {
@@ -54,6 +58,7 @@ class Calendar extends Observable {
   }
 
   edit(_event) {
+    this.generateMenu();
     this.closePopups();
 
     this.edited = Collections.get('events').edit(_event.front_id ? _event : {});

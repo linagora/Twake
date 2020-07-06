@@ -170,7 +170,7 @@ export default class Board extends React.Component {
       lists = [
         {
           id: 'allusertasks_' + this.props.board.id.split('_')[1],
-          title: 'All',
+          title: Languages.t('components.workspace.list_manager.all', [], 'All'),
           all: true,
         },
       ];
@@ -294,7 +294,7 @@ export default class Board extends React.Component {
                     TasksService.openBoard(null);
                   }}
                 >
-                  All Boards
+                  {Languages.t('scenes.apps.board.all_boards', [], 'All Boards')}
                 </div>
               )}
               {current_board.emoji && (
@@ -315,13 +315,13 @@ export default class Board extends React.Component {
               onClick={evt => {
                 MenusManager.openMenu(
                   [
-                    { type: 'title', text: Languages.t('', [], 'Afficher en tant que') },
+                    { type: 'title', text: Languages.t('scenes.apps.board.display_as', [], 'Afficher en tant que') },
                     {
                       type: 'menu',
                       icon: current_board.view_mode == 'grid' ? 'check' : ' ',
                       className: current_board.view_mode == 'grid' ? 'primary' : ' ',
                       rightIcon: 'window-restore',
-                      text: Languages.t('', [], 'Kanban'),
+                      text: Languages.t('scenes.apps.board.kanban', [], 'Kanban'),
                       onClick: () => {
                         current_board.view_mode = 'grid';
                         Collections.get('boards').save(
@@ -335,7 +335,7 @@ export default class Board extends React.Component {
                       icon: current_board.view_mode == 'list' ? 'check' : ' ',
                       className: current_board.view_mode == 'list' ? 'primary' : ' ',
                       rightIcon: 'list-ul',
-                      text: Languages.t('', [], 'Liste'),
+                      text: Languages.t('scenes.apps.calendar.calendar.list_btn', [], 'Liste'),
                       onClick: () => {
                         current_board.view_mode = 'list';
                         Collections.get('boards').save(
@@ -350,7 +350,7 @@ export default class Board extends React.Component {
                       type: 'menu',
                       icon: this.state.archived == false ? 'check' : ' ',
                       className: this.state.archived == false ? 'primary' : ' ',
-                      text: Languages.t('', [], 'Tâches actives'),
+                      text: Languages.t('scenes.apps.board.active_tasks', [], 'Tâches actives'),
                       onClick: () => {
                         this.setState({ archived: false });
                       },
@@ -360,7 +360,7 @@ export default class Board extends React.Component {
                       icon: this.state.archived ? 'check' : ' ',
                       className: this.state.archived ? 'primary' : ' ',
                       text: Languages.t(
-                        '',
+                        'scenes.apps.board.archived_tasks',
                         [
                           Collections.get('tasks').findBy({
                             archived: true,

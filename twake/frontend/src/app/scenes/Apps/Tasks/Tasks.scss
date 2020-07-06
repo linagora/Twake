@@ -10,7 +10,7 @@
     width: 216px;
     height: 60px;
     border: 1px solid $grey_light;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-bottom: 16px;
     margin-right: 16px;
     display: inline-block;
@@ -54,7 +54,7 @@
   display: flex;
 
   .app_title {
-    img.emojione {
+    .emojione-container {
       margin-right: 6px;
       margin-top: -4px;
     }
@@ -87,7 +87,7 @@
     width: 216px;
     height: 90px;
     border: 1px solid $grey_light;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     margin-bottom: 16px;
     margin-right: 16px;
     display: inline-block;
@@ -141,7 +141,7 @@
     height: 42px;
     margin-right: 16px;
     margin-bottom: 16px;
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     cursor: pointer;
 
     .user_head {

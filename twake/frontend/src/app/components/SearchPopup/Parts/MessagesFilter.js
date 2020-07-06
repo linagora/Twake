@@ -7,6 +7,7 @@ import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Select from 'components/Select/Select.js';
 import Collections from 'services/Collections/Collections.js';
+import Languages from 'services/languages/languages.js';
 
 export default class EventsFilter extends React.Component {
   constructor(props) {
@@ -22,7 +23,7 @@ export default class EventsFilter extends React.Component {
       <div className="search_filters">
         {/*        <ObjectModalSectionTitle name="Chaînes de discussion" icon="building" /> */}
 
-        <ObjectModalSectionTitle name="Sender" icon="user" />
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.sender', [], "Sender")} icon="user" />
         <UserListManager
           noPlaceholder
           canRemoveMyself
@@ -38,7 +39,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle name="Mentions" icon="at" />
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.mentions', [], "Mentions")} icon="at" />
         <UserListManager
           noPlaceholder
           canRemoveMyself
@@ -52,7 +53,7 @@ export default class EventsFilter extends React.Component {
 
         {/*<ObjectModalSectionTitle name="Reactions" icon="thumbs-up" />*/}
 
-        <ObjectModalSectionTitle name="Création" icon="calendar-alt" />
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.creation', [], "Création")} icon="calendar-alt" />
         <DateSelectorInput
           withReset
           className=""
@@ -72,7 +73,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle name="Pinned" icon="map-pin" />
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.messages.message.pinned', [], "Pinned")} icon="map-pin" />
         <Checkbox
           small
           value={this.state.options.pinned}
@@ -80,19 +81,19 @@ export default class EventsFilter extends React.Component {
             this.state.options.pinned = value;
             this.setState({});
           }}
-          label="Only pinned messages"
+          label={Languages.t('components.searchpopup.only_pinned', [], "Only pinned messages")}
         />
 
-        <ObjectModalSectionTitle name="Type" icon="triangle" />
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.drive.navigators.new_file.create_file.type', [], "Type")} icon="triangle" />
         <Select
           className="small"
           options={[
             {
-              text: 'Tous',
+              text: Languages.t('components.workspace.list_manager.all', [], 'Tous'),
               value: false,
             },
             {
-              text: 'Fichiers',
+              text: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Fichiers'),
               value:
                 (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {})
                   .id || 'error_no_drive_app_found',
@@ -111,7 +112,7 @@ export default class EventsFilter extends React.Component {
           onClick={() => {
             this.props.onSearch(this.state.options || {});
           }}
-          value="Update search"
+          value={Languages.t('components.searchpopup.update_search', [], "Update search")}
         />
       </div>
     );

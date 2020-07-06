@@ -1,0 +1,14 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Вы были добавлены в рабочее пространство {{ workspace }} !{% endblock %}
+
+{% block secondtitle %}Вы были добавлены в рабочее пространство {{ workspace }} !{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    Вы были добавлены в рабочее пространство {{ workspace }} в группе {{ group }}.
+    <br>
+
+{% endblock %}

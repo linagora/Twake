@@ -61,7 +61,7 @@
     .week_number {
       color: $white;
       background: $grey_dark;
-      border-radius: 4px;
+      border-radius: var(--default-border-radius);
       padding: 1px 4px;
       font-size: 12px;
       vertical-align: middle;

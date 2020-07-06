@@ -29,7 +29,7 @@ Then create a password for this user.
 
 Go to backend/core/app/Configuration/Parameters.php
 
-Change auth.openid to:
+Change defaults.auth.openid to:
 
 ```
   "use" => true,

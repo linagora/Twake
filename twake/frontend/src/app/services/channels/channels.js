@@ -25,8 +25,12 @@ class Channels extends Observable {
 
     Globals.window.channel_service = this;
 
+    this.currentSideChannelFrontId = null;
+    this.currentSideChannelFrontIdByWorkspace = {};
+
+    this.currentSideChannelOptions = {};
     this.currentChannelFrontId = null;
-    this.currentChannelFrontIdByWorkspace = {};
+    this.currentChannelFrontIdByGroup = {};
 
     this.reached_initial_channel = false;
     this.old_channel_state = {};
@@ -34,6 +38,8 @@ class Channels extends Observable {
 
     this.current_tab_id = null;
     this.current_tab_id_by_channel_id = {};
+
+    this.channel_front_read_state = {};
 
     var that = this;
     Globals.window.addEventListener('focus', function(e) {
@@ -56,51 +62,71 @@ class Channels extends Observable {
     this.notify();
   }
 
-  select(channel) {
-    if (channel && channel.direct && !channel.id) {
-      this.openDiscussion(channel.members);
+  select(channel, side = false, sideOptions = {}) {
+    if (side) {
+      if (
+        this.currentSideChannelFrontId != channel.front_id &&
+        channel.id &&
+        !channel.application
+      ) {
+        this.readChannelIfNeeded(channel);
+        delete Notifications.marked_as_unread[channel.id];
+      }
+
+      this.currentSideChannelOptions = sideOptions;
+      this.currentSideChannelFrontId = channel.front_id;
+      this.currentSideChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
+    } else {
+      if (channel) {
+        this.channel_front_read_state[channel.id] = channel._user_last_access;
+      }
+
+      if (channel && channel.direct && !channel.id) {
+        this.openDiscussion(channel.members);
+      }
+
+      channel = Collections.get('channels').findByFrontId(channel.front_id);
+
+      if (!channel) {
+        return;
+      }
+
+      this.reached_initial_channel = true;
+
+      if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
+        this.readChannelIfNeeded(channel);
+        delete Notifications.marked_as_unread[channel.id];
+      }
+
+      if (this.currentChannelFrontId != channel.front_id) {
+        //Change url
+        this.updateURL(channel);
+      }
+
+      (channel.tabs || []).forEach(tab => {
+        Collections.get('channel_tabs').completeObject(tab);
+      });
+      Collections.get('channel_tabs').notify();
+
+      this.currentChannelFrontId = channel.front_id;
+      this.currentChannelFrontIdByGroup[Workspaces.currentGroupId] = channel.front_id;
+
+      this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
+
+      LocalStorage.setItem('autoload_channel', {
+        front_id: this.currentChannelFrontId,
+        type: channel.type,
+        id: channel.id,
+      });
     }
-
-    channel = Collections.get('channels').findByFrontId(channel.front_id);
-
-    if (!channel) {
-      return;
-    }
-
-    this.reached_initial_channel = true;
-
-    if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
-      this.readChannelIfNeeded(channel);
-      delete Notifications.marked_as_unread[channel.id];
-    }
-
-    if (this.currentChannelFrontId != channel.front_id) {
-      //Change url
-      this.updateURL(channel);
-    }
-
-    (channel.tabs || []).forEach(tab => {
-      Collections.get('channel_tabs').completeObject(tab);
-    });
-    Collections.get('channel_tabs').notify();
-
-    this.currentChannelFrontId = channel.front_id;
-    this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
-
-    this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
+    this.notify();
 
     MenusManager.closeMenu();
-
-    LocalStorage.setItem('autoload_channel', {
-      front_id: this.currentChannelFrontId,
-      type: channel.type,
-      id: channel.id,
-    });
-    this.notify();
   }
 
   initSelection() {
     var currentWorkspaceId = Workspaces.currentWorkspaceId;
+    var currentGroupId = Workspaces.currentGroupId;
 
     var find = Collections.get('channels').findByFrontId(this.currentChannelFrontId);
     if (
@@ -146,10 +172,20 @@ class Channels extends Observable {
       //Select previously selected channel
       if (
         Collections.get('channels').findByFrontId(
-          this.currentChannelFrontIdByWorkspace[currentWorkspaceId],
+          this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId],
         )
       ) {
-        this.select({ front_id: this.currentChannelFrontIdByWorkspace[currentWorkspaceId] });
+        this.select(
+          { front_id: this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId] },
+          true,
+        );
+      }
+
+      //Select previously selected channel
+      if (
+        Collections.get('channels').findByFrontId(this.currentChannelFrontIdByGroup[currentGroupId])
+      ) {
+        this.select({ front_id: this.currentChannelFrontIdByGroup[currentGroupId] });
         return;
       }
 
@@ -315,6 +351,8 @@ class Channels extends Observable {
   incrementChannel(channel) {
     channel._user_last_message_increment++;
     channel.messages_increment++;
+    channel.last_activity = new Date().getTime() / 1000;
+    channel._user_last_access = new Date().getTime() / 1000;
     Collections.get('channels').completeObject(channel);
   }
 
@@ -531,6 +569,11 @@ class Channels extends Observable {
       app_id: app_id,
       original_workspace: workspace_id,
     })[0];
+  }
+
+  markFrontAsRead(channel_id, date = undefined) {
+    this.channel_front_read_state[channel_id] = date || new Date().getTime() / 1000;
+    this.notify();
   }
 }
 

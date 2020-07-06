@@ -41,7 +41,7 @@ export default class InputWithClipBoard extends Component {
   }
   render() {
     return (
-      <Tooltip ref={obj => (this.tooltip = obj)} overable={false} tooltip="Copié">
+      <Tooltip ref={obj => (this.tooltip = obj)} overable={false} tooltip={Languages.t('components.input.copied', [], "Copié")}>
         <div className="inputWithClipBoard">
           <Input
             className="medium full_width"

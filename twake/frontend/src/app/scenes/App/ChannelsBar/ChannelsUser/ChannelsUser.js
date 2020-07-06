@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Emojione from 'components/Emojione/Emojione.js';
@@ -26,6 +26,7 @@ export default class ChannelsUser extends Component {
 
     this.state = {
       i18n: Languages,
+      channels: ChannelsService,
       workspaces: Workspaces,
       workspaces_users: WorkspacesUsers,
       workspaces_apps: WorkspacesApps,
@@ -47,6 +48,7 @@ export default class ChannelsUser extends Component {
     );
 
     Languages.addListener(this);
+    ChannelsService.addListener(this);
     Workspaces.addListener(this);
     WorkspacesUsers.addListener(this);
     Collections.get('workspaces').addListener(this);
@@ -54,6 +56,7 @@ export default class ChannelsUser extends Component {
   }
   componentWillUnmount() {
     Languages.removeListener(this);
+    ChannelsService.removeListener(this);
     Workspaces.removeListener(this);
     WorkspacesUsers.removeListener(this);
     Collections.get('workspaces').removeListener(this);
@@ -71,7 +74,7 @@ export default class ChannelsUser extends Component {
   }
   membersInWorkspace(members) {
     var yes = true;
-    members.forEach(member_id => {
+    (members || []).forEach(member_id => {
       yes =
         yes &&
         !!this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId)[member_id];
@@ -96,7 +99,7 @@ export default class ChannelsUser extends Component {
               users={[]}
               canRemoveMyself
               scope="all"
-              continueText="Continuer"
+              continueText={Languages.t('general.continue', [], 'Continuer')}
               onChange={ids => {
                 ChannelsService.openDiscussion(ids);
               }}
@@ -240,6 +243,23 @@ export default class ChannelsUser extends Component {
                   );
                 }),
             )
+            .filter(channel => {
+              //Remove private channels not from this company
+              let keep = false;
+              if (channel._user_last_message_increment - channel.messages_increment < 0) {
+                keep = true;
+              }
+              if (this.membersInWorkspace(channel.members) && channel.messages_increment > 0) {
+                keep = true;
+              }
+              if (this.state.channels.currentChannelFrontId == channel.front_id) {
+                keep = true;
+              }
+              if (channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60) {
+                keep = true;
+              }
+              return keep;
+            })
             .sort((a, b) => this.getSortingValue(b) - this.getSortingValue(a))
             .map(channel => {
               var users = [];

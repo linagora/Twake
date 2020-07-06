@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -9,6 +9,8 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Button from 'components/Buttons/Button.js';
 import Globals from 'services/Globals.js';
+
+const showed_messages = 5;
 
 export default class Responses extends Component {
   constructor() {
@@ -31,8 +33,9 @@ export default class Responses extends Component {
   }
   sendResponse() {
     this.setState({ response_message_raw: '' });
-    if (Globals.window.mixpanel_enabled)
+    if (Globals.window.mixpanel_enabled) {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
+    }
     MessagesService.sendMessage(
       this.state.response_message_raw,
       {
@@ -41,7 +44,7 @@ export default class Responses extends Component {
       },
       this.props.messagesCollectionKey,
     );
-    MessagesService.startRespond(false);
+    MessagesService.startRespond(this.props.parentMessage);
   }
   triggerApp(app, from_icon) {
     if (
@@ -60,9 +63,10 @@ export default class Responses extends Component {
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
   render() {
+    let previous_message = {};
     return (
       <div className="responses">
-        {this.props.parentMessage.responses_count > 5 && (
+        {this.props.parentMessage.responses_count > showed_messages && (
           <a
             className="action_link"
             onClick={() => MessagesService.showMessage(this.props.parentMessage.id)}
@@ -77,28 +81,31 @@ export default class Responses extends Component {
           </a>
         )}
 
-        {this.state.messages_repository
-          .findBy({
-            channel_id: this.props.channelId,
-            parent_message_id: this.props.parentMessage.id,
-            _user_ephemeral: undefined,
-          })
-          .sort((a, b) => a.creation_date - b.creation_date)
-          .slice(-5)
-          .map(message => {
-            if (!message) {
-              return '';
-            }
-            return (
-              <Message
-                key={message.front_id}
-                messagesCollectionKey={this.props.messagesCollectionKey}
-                previousMessage={{}}
-                message={message}
-                isResponse
-              />
-            );
-          })}
+        {showed_messages > 0 &&
+          this.state.messages_repository
+            .findBy({
+              channel_id: this.props.channelId,
+              parent_message_id: this.props.parentMessage.id,
+              _user_ephemeral: undefined,
+            })
+            .sort((a, b) => a.creation_date - b.creation_date)
+            .slice(-showed_messages)
+            .map(message => {
+              if (!message) {
+                return '';
+              }
+              const tmp_previous_message = previous_message;
+              previous_message = message;
+              return (
+                <Message
+                  key={message.front_id}
+                  messagesCollectionKey={this.props.messagesCollectionKey}
+                  previousMessage={tmp_previous_message}
+                  message={message}
+                  isResponse
+                />
+              );
+            })}
 
         {this.state.app_messages_service.respondedMessage.parent_message_id ==
           this.props.parentMessage.id && (
@@ -110,6 +117,7 @@ export default class Responses extends Component {
             }}
           >
             <Input
+              key={this.state.app_messages_service.respondedMessage.front_id}
               className="right-margin"
               localStorageIdentifier={this.props.channelId}
               onResize={this.props.measure}
@@ -122,6 +130,12 @@ export default class Responses extends Component {
               onChange={val => this.setState({ response_message_raw: val })}
               onSend={val => {
                 this.sendResponse();
+              }}
+              onEditLastMessage={() => {
+                MessagesService.startEditingLastMessage({
+                  channel_id: this.props.channelId,
+                  parent_message_id: this.props.parentMessage.id,
+                });
               }}
               onEscape={() => {
                 MessagesService.startRespond(false);
@@ -142,8 +156,8 @@ export default class Responses extends Component {
               }}
             />
             <Button
-              value={Languages.t('scenes.apps.messages.message.cancell_button', [], 'Annuler')}
-              className="small secondary"
+              value={Languages.t('scenes.apps.messages.message.cancel_button', [], 'Annuler')}
+              className="small secondary right-margin"
               onClick={() => {
                 if (this.input) {
                   this.input.setValue('');
@@ -155,17 +169,39 @@ export default class Responses extends Component {
           </div>
         )}
 
-        {this.state.app_messages_service.respondedMessage.parent_message_id !=
-          this.props.parentMessage.id &&
-          (this.props.parentMessage.responses_count > 0 || this.props.isLastMessage) && (
-            <a
-              className="action_link add_response"
-              onClick={() => MessagesService.startRespond(this.props.parentMessage)}
-            >
-              <Icon className="m-icon-small" type="corner-down-right-alt" />
-              {Languages.t('scenes.apps.messages.message.reply_button', [], 'Répondre')}
-            </a>
-          )}
+        <div className="thread_footer">
+          {showed_messages > 0 &&
+            this.state.app_messages_service.respondedMessage.parent_message_id !=
+              this.props.parentMessage.id &&
+            (this.props.parentMessage.responses_count > 0 || this.props.isLastMessage) && (
+              <a
+                className="action_link add_response"
+                onClick={() => MessagesService.startRespond(this.props.parentMessage)}
+              >
+                <Icon className="m-icon-small" type="corner-down-right-alt" />
+                {Languages.t('scenes.apps.messages.message.reply_button', [], 'Répondre')}
+              </a>
+            )}
+
+          {showed_messages > 0 &&
+            this.state.app_messages_service.respondedMessage.parent_message_id !=
+              this.props.parentMessage.id &&
+            (this.props.parentMessage.responses_count > 0 || this.props.isLastMessage) && (
+              <div className="show_responses_parent">
+                <a
+                  className="action_link show_responses left-margin"
+                  onClick={() => MessagesService.showMessage(this.props.parentMessage.id)}
+                >
+                  <Icon className="m-icon-small" type="arrow-from-right" />
+                  {Languages.t(
+                    'scenes.apps.messages.message.show_on_right',
+                    [],
+                    'Show on the right',
+                  )}
+                </a>
+              </div>
+            )}
+        </div>
       </div>
     );
   }

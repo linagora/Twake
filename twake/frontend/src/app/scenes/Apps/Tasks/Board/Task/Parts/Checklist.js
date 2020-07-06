@@ -3,6 +3,9 @@ import Icon from 'components/Icon/Icon.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputEnter from 'components/Inputs/InputEnter.js';
 import Button from 'components/Buttons/Button.js';
+import Languages from 'services/languages/languages.js';
+import { lang } from 'moment';
+import { listLanguages } from 'highlight.js';
 
 export default class Checklist extends React.Component {
   constructor() {
@@ -106,7 +109,8 @@ export default class Checklist extends React.Component {
               this.setState({});
             }}
           >
-            <Icon type="plus" className="m-icon-small" /> Ajouter une sous-tâche
+            <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.tasks.board.tasks.add_subtask',
+            [], "Ajouter une sous-tâche")}
           </Button>
         )}
       </div>

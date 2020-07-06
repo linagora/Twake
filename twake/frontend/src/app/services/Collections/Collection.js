@@ -224,8 +224,10 @@ export default class Collection extends Observable {
         var hidden = false;
         Object.keys(filters).forEach(filter_key => {
           var expected = filters[filter_key];
-          if (this.known_objects_by_front_id[fid][filter_key] != expected) {
-            hidden = true;
+          if (expected !== undefined) {
+            if (this.known_objects_by_front_id[fid][filter_key] != expected) {
+              hidden = true;
+            }
           }
         });
         return !hidden;

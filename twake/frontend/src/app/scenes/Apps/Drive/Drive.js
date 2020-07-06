@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -435,7 +435,7 @@ export default class Drive extends Component {
     addableFilesMenu.push({
       type: 'menu',
       icon: 'link-alt',
-      text: 'New link',
+      text: Languages.t('scenes.apps.drive.new_link_title', [], 'New link'),
       submenu_replace: true,
       submenu: [
         {
@@ -544,7 +544,7 @@ export default class Drive extends Component {
           },
           {
             type: 'menu',
-            text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer...'),
+            text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer'),
             submenu: [
               {
                 type: 'react-element',
@@ -717,7 +717,11 @@ export default class Drive extends Component {
                       onEnter={() => {
                         this.createFolder();
                       }}
-                      placeholder="Name"
+                      placeholder={Languages.t(
+                        'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
+                        [],
+                        'Name',
+                      )}
                       value={this.state.new_directory_name}
                       onChange={evt => this.setState({ new_directory_name: evt.target.value })}
                     />
@@ -799,7 +803,7 @@ export default class Drive extends Component {
                         : 0 || 0,
                       true,
                     )}{' '}
-                    utilisé dans ce dossier
+                    {Languages.t('scenes.apps.drive.used', [], 'utilisé dans ce dossier')}
                   </span>
                 )}
                 {!!in_trash && WorkspaceUserRights.hasWorkspacePrivilege() && (
@@ -842,15 +846,13 @@ export default class Drive extends Component {
 
             {in_trash && (
               <div className="smalltext drive_trash_info">
-                Vous êtes dans la corbeille,{' '}
                 <a
                   onClick={() => {
                     DriveService.toggleInTrash(this.drive_channel);
                   }}
                 >
-                  sortir de la corbeille
+                  {Languages.t('scenes.apps.drive.go_out_trash_menu', [], 'Sortir de la corbeille')}
                 </a>
-                .
               </div>
             )}
 

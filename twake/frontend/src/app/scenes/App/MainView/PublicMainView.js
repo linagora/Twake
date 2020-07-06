@@ -53,7 +53,8 @@ export default class MainView extends Component {
 
     var noapp = (
       <div>
-        <div className="no_channel_text">This public link is invalid or has expired.</div>
+        <div className="no_channel_text">{Languages.t('scenes.app.mainview.link_expired', 
+        [],"This public link is invalid or has expired.")}</div>
       </div>
     );
 
@@ -71,7 +72,7 @@ export default class MainView extends Component {
         </div>
         <div className="right">
           <a href="https://twakeapp.com" target="_BLANK">
-            <span className="nomobile">Créez votre espace de travail gratuitement sur </span>
+            <span className="nomobile">{Languages.t('scenes.app.mainview.create_account', [],"Créez votre espace de travail gratuitement sur ")}</span>
             Twake &nbsp; 👉
           </a>
         </div>

@@ -148,7 +148,7 @@ export default class CalendarSelector extends React.Component {
                 {
                   type: 'title',
                   text: Languages.t(
-                    'components.calendar.calendarselector.calendars',
+                    'scenes.apps.calendar.left.calendars',
                     [],
                     'Calendriers',
                   ),

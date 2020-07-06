@@ -6,6 +6,8 @@ import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 
 import StepCounter from 'components/StepCounter/StepCounter.js';
+import Languages from 'services/languages/languages.js';
+import { lang } from 'moment';
 
 export default class GroupInputs extends React.Component {
   constructor() {
@@ -84,9 +86,11 @@ export default class GroupInputs extends React.Component {
           <StepCounter current={3} total={4} />
           <div className="title">Create my company 3/4</div>
           <div className="subtitle">
-            Already working with digital tools? Import or integrate your tools now! 
+            {Languages.t('scenes.app.workspaces.create_company.importations.title_1',
+            [], "Already working with digital tools? Import or integrate your tools now!")}
             <br />
-            No worries, you can do this later!
+            {Languages.t('scenes.app.workspaces.create_company.importations.title_2',
+            [], "No worries, you can do this later!")}
           </div>
 
           <div className="body">
@@ -102,9 +106,9 @@ export default class GroupInputs extends React.Component {
           </div>
 
           <div className="footer">
-            <Button value="Back" inline />
+            <Button value={Languages.t('general.back', [], "Back")} inline />
 
-            <Button value="Continue" primary />
+            <Button value={Languages.t('general.continue', [],"Continue")} primary />
           </div>
         </div>
       </div>,

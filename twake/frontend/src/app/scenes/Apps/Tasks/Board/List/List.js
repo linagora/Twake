@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import {Draggable, Droppable} from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../Task/Task.js';
 import Icon from 'components/Icon/Icon.js';
 import MenusManager from 'services/Menus/MenusManager.js';
@@ -67,10 +67,21 @@ export default class List extends React.Component {
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {
         menu.push(
           {
-            text: Languages.t('', [], 'Participants prédéfinis...'),
+            text: Languages.t(
+              'scenes.apps.tasks.list_modal.predefined_participants',
+              [],
+              'Participants prédéfinis...',
+            ),
             submenu_replace: true,
             submenu: [
-              { type: 'title', text: Languages.t('', [], 'Participants prédéfinis') },
+              {
+                type: 'title',
+                text: Languages.t(
+                  'scenes.apps.tasks.list_modal.predefined_participants',
+                  [],
+                  'Participants prédéfinis',
+                ),
+              },
               {
                 type: 'react-element',
                 reactElement: () => {
@@ -103,7 +114,11 @@ export default class List extends React.Component {
 
           { type: 'separator' },
           {
-            text: Languages.t('', [], 'Archiver toutes les tâches'),
+            text: Languages.t(
+              'scenes.apps.tasks.list_modal.archive_all_tasks',
+              [],
+              'Archiver toutes les tâches',
+            ),
             hide: this.props.showArchived,
             onClick: () => {
               TasksService.archiveAllTasksInList(list, this.props.collectionKey);
@@ -111,7 +126,7 @@ export default class List extends React.Component {
           },
           {
             text: Languages.t(
-              '',
+              'scenes.apps.tasks.list_modal.remove_archived_tasks',
               [TasksService.getTasksInList(list.board_id, list.id, true).length],
               'Supprimer les archivées ($1)',
             ),

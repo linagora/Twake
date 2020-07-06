@@ -5,6 +5,7 @@ import './Drive.scss';
 import UIFile from './UI/File.js';
 import Loader from 'components/Loader/Loader.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import Languages from 'services/languages/languages.js';
 
 export default class File extends DriveElement {
   constructor(props) {
@@ -28,7 +29,7 @@ export default class File extends DriveElement {
           {this.state.loading && <Loader color="#CCC" className="file_loader" />}
           {!this.state.loading && (
             <span className="text" style={{ opacity: 0.5 }}>
-              File not found.
+              {Languages.t('scenes.apps.drive.preview_bloc.error_file', [], "File not found.")}
             </span>
           )}
         </div>

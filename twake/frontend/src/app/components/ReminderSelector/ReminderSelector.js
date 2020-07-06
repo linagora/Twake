@@ -4,6 +4,7 @@ import Input from 'components/Inputs/Input.js';
 import Icon from 'components/Icon/Icon.js';
 import Select from 'components/Select/Select.js';
 import './ReminderSelector.scss';
+import Languages from 'services/languages/languages.js';
 
 export default class ReminderSelector extends React.Component {
   constructor(props) {
@@ -121,8 +122,8 @@ export default class ReminderSelector extends React.Component {
                   this.update();
                 }}
                 options={[
-                  { text: 'Notification', value: 'push' },
-                  { text: 'E-Mail', value: 'mail' },
+                  { text: Languages.t('components.reminder.notification', [], 'Notification'), value: 'push' },
+                  { text: Languages.t('components.reminder.by_email', [], 'E-Mail'), value: 'mail' },
                 ]}
               />
 
@@ -152,10 +153,10 @@ export default class ReminderSelector extends React.Component {
                   this.update();
                 }}
                 options={[
-                  { text: 'minutes avant', value: 'minutes' },
-                  { text: 'heures avant', value: 'hours' },
-                  { text: 'jours avant', value: 'days' },
-                  { text: 'semaines avant', value: 'weeks' },
+                  { text: Languages.t('components.reminder.minutes_bef', [], 'minutes avant'), value: 'minutes' },
+                  { text: Languages.t('components.reminder.hours_bef', [], 'heures avant'), value: 'hours' },
+                  { text: Languages.t('components.reminder.days_bef', [], 'jours avant'), value: 'days' },
+                  { text: Languages.t('components.reminder.weeks_bef', [], 'semaines avant'), value: 'weeks' },
                 ]}
               />
 
@@ -170,7 +171,8 @@ export default class ReminderSelector extends React.Component {
         })}
 
         <Button small className="button secondary-text" onClick={() => this.add()}>
-          <Icon type="plus" className="m-icon-small" /> Ajouter un rappel
+          <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.calendar.modals.reminder_add',
+          [],"Ajouter un rappel")}
         </Button>
       </div>
     );

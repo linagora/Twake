@@ -2,7 +2,7 @@
   "name": "Twake-react",
   "version": "1.0.0",
   "repository": "git@gitlab.com:Twake/Twake-react.git",
-  "license": "Commercial",
+  "license": "AGPL-3.0",
   "author": "Romaric Mourgues <romaric.mourgues@twakeapp.com>",
   "main": "index.js",
   "scripts": {

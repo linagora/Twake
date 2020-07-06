@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import emojione from 'emojione';
 import Icon from 'components/Icon/Icon.js';
@@ -57,6 +57,16 @@ export default class Emojione extends React.Component {
       html = html.replace('/32/', '/64/');
     } else if (this.props.s128) {
       html = html.replace('/32/', '/128/');
+    }
+
+    //TODO check if on apple mac
+    var isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+    if (isMacLike) {
+      return (
+        <span className={'emojione-container emoji-text ' + (this.props.className || '')}>
+          {emojione.shortnameToUnicode(this.props.type)}
+        </span>
+      );
     }
 
     return (

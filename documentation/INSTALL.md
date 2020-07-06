@@ -1,28 +1,72 @@
-# Installing Twake (manual installation)
+# Install Twake
 
-### Dependencies
+### Run Twake on localhost
 
-`docker 19.03.8`, `docker-compose 1.25.5`, `yarn 1.6.0`, `node 10.16.3`, `webpack`
+#### Step 1
 
-Procedure here :
-
-[./install_dependencies.md](./install_dependencies.md)
-
-### Installation / update
+You will need docker-compose: [./install_docker_compose.md](./install_dependencies.md)
 
 ```
+sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch in local
+mkdir twake
 cd twake
-./install.sh
+curl https://github.com/TwakeApp/Twake/blob/master/twake/docker-compose.yml.dist --output docker-compose.yml
+docker-compose up -d
 ```
 
-### Start
+or
 
 ```
+# Using the git repository
+# sudo sysctl -w vm.max_map_count=262144 #For ElasticSearch in local
 cd twake
-./start.sh
+cp docker-compose.yml.dist docker-compose.yml
+docker-compose up -d
 ```
 
 Twake will be running on port 8000.
+
+#### Step 2
+
+Please wait 5-10 minutes on the first run to let the database be initialized. You can monitor the startup of Twake here: `docker-compose logs -f php`
+
+#### Step 3
+
+Open a browser on `http://localhost:8000` and click on subscribe. When your subscription will end, the link to activate your account will be available into `docker-compose logs -f php`.
+
+For instance, this is an example of activation link: http://localhost:8000/?verify_mail=1&m=my@mail.com&c=xxx-xxx-xxx&token=xxx
+
+#### Step 4
+
+Enjoy Twake on your server !
+
+You can use our online SaaS offer on https://twake.app and you can contact us for prices and on-premise solutions on contact@twakeapp.com .
+
+### Update Twake
+
+```
+cd twake
+docker-compose stop
+docker-compose pull
+docker-compose up -d
+```
+
+### Configuration files
+
+There are two configuration files available in the volume `configuration` :
+
+```
+configuration/Parameters.php
+configuration/environment.js
+```
+
+Once updated, you must do a `docker-compose restart`
+
+Default files can be found here :
+
+[/twake/backend/core/app/Configuration/Parameters.php.dist](Parameters.php)
+
+[/twake/frontend/src/app/environment/environment.js.dist](./install_dependencies.md)
 
 ### Use port 80 or 443 over https
 

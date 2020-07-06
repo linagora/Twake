@@ -4,6 +4,7 @@ import TimeSelector from 'components/Calendar/TimeSelector.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Icon from 'components/Icon/Icon.js';
 import './DateSelector.scss';
+import Languages from 'services/languages/languages.js';
 
 export default class DateSelector extends Component {
   constructor(props) {
@@ -127,7 +128,9 @@ export default class DateSelector extends Component {
             onChange={value => {
               this.change('all_day', value);
             }}
-            label="All day"
+            label={Languages.t('scenes.apps.calendar.event_edition.checkbox_all_day',
+            [],
+            "All day")}
           />
         </div>
       </div>

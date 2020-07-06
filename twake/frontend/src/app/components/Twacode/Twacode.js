@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import './Twacode.scss';
@@ -17,7 +17,7 @@ export default class Twacode extends React.Component {
     clearTimeout(this.loading_interaction_timeout);
   }
 
-  onAction(type, id, value, evt) {
+  onAction(type, id, context, value, evt) {
     //Button pressed
     if (type == 'interactive_action') {
       if (this.props.onAction) {
@@ -27,7 +27,7 @@ export default class Twacode extends React.Component {
           this.saved_stringified = '';
           this.setState({ loading_interaction: false });
         }, 5000);
-        this.props.onAction(type, id, JSON.parse(JSON.stringify(this.passives)), evt);
+        this.props.onAction(type, id, context, JSON.parse(JSON.stringify(this.passives)), evt);
       }
     }
 
@@ -35,7 +35,7 @@ export default class Twacode extends React.Component {
     if (type == 'interactive_change') {
       this.passives[id] = value;
       if (this.props.onPassiveChange) {
-        this.props.onPassiveChange(type, id, value);
+        this.props.onPassiveChange(type, id, context, value);
       }
     }
   }

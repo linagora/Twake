@@ -63,7 +63,7 @@
     height: 16px;
     border: 2px solid $secondary;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 50%;
   }
 }
 
@@ -80,7 +80,7 @@
     }
     .company_name {
       background: $grey_dark;
-      border-radius: 8px;
+      border-radius: var(--default-border-radius-large);
       width: 32px;
       margin: auto;
       height: 12px;

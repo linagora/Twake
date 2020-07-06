@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get install -y wget
 
-ADD ./site.conf /etc/nginx/sites-enabled/site
-ADD ./nginx.conf /etc/nginx/nginx.conf
+ADD docker/twake-nginx/site.conf /etc/nginx/sites-enabled/site
+ADD docker/twake-nginx/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
@@ -36,12 +36,29 @@ RUN apt-get update && apt-get install -y \
   python3-minimal python3-pkg-resources python3-virtualenv python3.4 \
   python3.4-minimal virtualenv zlib1g-dev
 
-#Crontab
-ADD crontab /etc/cron.d/twake-cron
-RUN chmod 0644 /etc/cron.d/twake-cron
-RUN touch /var/log/cron.log
+# Install frontend
+RUN apt-get update
+RUN apt-get -y install curl
+RUN apt-get -y install apt-transport-https ca-certificates
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update
+RUN apt-get -y install yarn
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+RUN yarn global add webpack
+RUN yarn global add webpack-cli
 
-COPY ./entrypoint.sh /
+WORKDIR /twake-react/
+
+COPY frontend /twake-react/
+RUN cp /twake-react/src/app/environment/environment.js.dist /twake-react/src/app/environment/environment.js
+RUN yarn install
+RUN yarn build-after-sh
+
+RUN cp /twake-react/src/app/environment/environment.js.dist /environment.js.dist
+
+COPY docker/twake-nginx/entrypoint.sh /
 RUN chmod 0777 /entrypoint.sh
 ENTRYPOINT /entrypoint.sh
 

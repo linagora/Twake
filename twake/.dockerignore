@@ -1,0 +1,4 @@
+docker-data/
+frontend/node_modules/
+frontend/build/
+docker/data/

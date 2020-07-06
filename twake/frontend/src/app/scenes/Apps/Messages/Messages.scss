@@ -19,6 +19,23 @@
     .message_bloc > .container {
       max-height: 30vh;
     }
+    .message .message_bloc_and_response.has_responses {
+      box-shadow: none;
+      border: 0px;
+    }
+  }
+
+  .message_bloc_and_response.has_responses {
+    .message_timeline {
+      text-align: left;
+      margin-left: -6px;
+      .time_container .time {
+        background: transparent;
+        color: $grey_dark;
+        padding: 0;
+        font-weight: normal;
+      }
+    }
   }
 
   &.in_modal {
@@ -43,6 +60,17 @@
       height: 22px;
       margin-bottom: 0px;
       z-index: 2;
+
+      &.new_messages {
+        &::before {
+          border-color: $primary;
+        }
+        .time_container {
+          .time {
+            background: $primary;
+          }
+        }
+      }
 
       .time_container {
         display: inline-block;
@@ -153,7 +181,7 @@
         }
         .load_after,
         .load_end {
-          border-radius: 4px 4px 0 0;
+          border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
         }
         .load_end {
           position: absolute;
@@ -242,7 +270,7 @@
           width: 16px;
           height: 16px;
           display: inline-block;
-          border-radius: 4px;
+          border-radius: var(--default-border-radius);
           margin-right: 5px;
           vertical-align: bottom;
           margin-left: 0px;
@@ -266,9 +294,13 @@
     min-width: 240px;
     width: 20%;
     margin-right: 15px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius-large);
     background: #f2f2f2;
     box-sizing: border-box;
     padding: 15px;
   }
+}
+
+.app_side .messages_app .messages_main .bottom_input {
+  box-shadow: none;
 }

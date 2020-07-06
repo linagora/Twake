@@ -28,7 +28,7 @@ export default class Confirm extends Component {
         <div className="bottom">
           <Button
             className="medium"
-            value="Close"
+            value={Languages.t('general.close', [], "Close")}
             onClick={() => this.state.AlertManager.confirmAlert()}
           />
         </div>

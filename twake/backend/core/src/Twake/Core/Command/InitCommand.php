@@ -38,6 +38,8 @@ class InitCommand extends ContainerAwareCommand
     protected function execute()
     {
 
+        //TODO use configuration to choose what app to use and what connectors to enable
+
         $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
         /**
@@ -70,6 +72,8 @@ class InitCommand extends ContainerAwareCommand
 
         // Création des applications    de base
         error_log("> Creating basic apps");
+
+        $configuration = $this->getApp()->getContainer()->getParameter("defaults.applications.twake_drive");
         $app = null;
         $app = $manager->getRepository("Twake\Market:Application")->findOneBy(Array("simple_name" => "twake_drive"));
         if (!$app) {
@@ -79,17 +83,18 @@ class InitCommand extends ContainerAwareCommand
         $app->setEsIndexed(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-drive.png");
         $app->setWebsite("https://twakeapp.com");
-        $app->setDescription("Application de stockage de fichier de Twake.");
+        $app->setDescription("Twake file storage application.");
         $app->setSimpleName("twake_drive");
         $app->setAppGroupName("twake");
-        $app->setPublic(true);
-        $app->setIsAvailableToPublic(true);
-        $app->setTwakeTeamValidation(true);
+        $app->setPublic(!!$configuration);
+        $app->setIsAvailableToPublic(!!$configuration);
+        $app->setTwakeTeamValidation(!!$configuration);
         $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true},"channel_tab":true,"app":true}', true));
-        $app->setDefault(true);
+        $app->setDefault(isset($configuration["default"]) && $configuration["default"]);
         $manager->persist($app);
         $manager->flush();
 
+        $configuration = $this->getApp()->getContainer()->getParameter("defaults.applications.twake_calendar");
         $app = null;
         $app = $manager->getRepository("Twake\Market:Application")->findOneBy(Array("simple_name" => "twake_calendar"));
         if (!$app) {
@@ -99,18 +104,19 @@ class InitCommand extends ContainerAwareCommand
         $app->setEsIndexed(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-calendar.png");
         $app->setWebsite("https://twakeapp.com");
-        $app->setDescription("Application calendrier partagé de Twake.");
+        $app->setDescription("Twake's shared calendar app.");
         $app->setSimpleName("twake_calendar");
         $app->setAppGroupName("twake");
-        $app->setPublic(true);
-        $app->setIsAvailableToPublic(true);
-        $app->setTwakeTeamValidation(true);
+        $app->setPublic(!!$configuration);
+        $app->setIsAvailableToPublic(!!$configuration);
+        $app->setTwakeTeamValidation(!!$configuration);
         $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},"channel_tab":true,*/
             '{"app":true}', true));
-        $app->setDefault(true);
+        $app->setDefault(isset($configuration["default"]) && $configuration["default"]);
         $manager->persist($app);
         $manager->flush();
 
+        $configuration = $this->getApp()->getContainer()->getParameter("defaults.applications.twake_tasks");
         $app = null;
         $app = $manager->getRepository("Twake\Market:Application")->findOneBy(Array("simple_name" => "twake_tasks"));
         if (!$app) {
@@ -120,15 +126,15 @@ class InitCommand extends ContainerAwareCommand
         $app->setEsIndexed(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-tasks.png");
         $app->setWebsite("https://twakeapp.com");
-        $app->setDescription("Application gestion de tâches de Twake.");
+        $app->setDescription("Twake task management application.");
         $app->setSimpleName("twake_tasks");
         $app->setAppGroupName("twake");
-        $app->setPublic(true);
-        $app->setIsAvailableToPublic(true);
-        $app->setTwakeTeamValidation(true);
+        $app->setPublic(!!$configuration);
+        $app->setIsAvailableToPublic(!!$configuration);
+        $app->setTwakeTeamValidation(!!$configuration);
         $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},*/
             '{"channel_tab":true, "app":true}', true));
-        $app->setDefault(true);
+        $app->setDefault(isset($configuration["default"]) && $configuration["default"]);
         $manager->persist($app);
         $manager->flush();
 

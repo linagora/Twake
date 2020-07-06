@@ -12,6 +12,7 @@ import workspacesUsers from './workspaces_users.js';
 import WorkspaceUserRights from './workspace_user_rights.js';
 import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
+import Languages from 'services/languages/languages.js';
 
 import Globals from 'services/Globals.js';
 
@@ -258,7 +259,7 @@ class Workspaces extends Observable {
       group_name: groupName,
       group_creation_data: groupCreationData,
       channels: [
-        { name: 'General', icon: ':mailbox:' },
+        { name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'), icon: ':mailbox:' },
         { name: 'Random', icon: ':beach_umbrella:' },
       ],
     };

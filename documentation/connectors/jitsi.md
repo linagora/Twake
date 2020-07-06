@@ -10,7 +10,7 @@ sudo docker-compose exec php php bin/console twake:init_connector jitsi enable d
 
 ## Configuration
 
-In your app/Configuration/Parameters.php, update the key `connectors.jitsi` with the following optionnal configuration :
+In your app/Configuration/Parameters.php, update the key `defaults.connectors.jitsi` with the following optionnal configuration :
 
 ```
 'jisti' => [

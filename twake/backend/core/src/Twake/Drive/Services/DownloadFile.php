@@ -25,7 +25,7 @@ class DownloadFile
         $this->resumable = $app->getServices()->get("driveupload.resumable");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
-        $this->parameter_drive_salt = $app->getContainer()->getParameter("DRIVE_SALT");
+        $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
         $this->oldFileSystem = $app->getServices()->get("app.drive.old.adapter_selector")->getFileSystem();
     }
 

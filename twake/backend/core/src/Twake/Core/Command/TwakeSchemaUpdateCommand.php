@@ -37,6 +37,32 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
      */
     protected function execute()
     {
+
+        //Wait for scylladb connection
+        error_log("\n⏳Waiting for ScyllaDB/Cassandra connection");
+        $connected = false;
+        $iteration = 0;
+        while(!$connected && $iteration < 12 * 6){
+          try{
+            $doctrine = $this->getApp()->getServices()->get('app.twake_doctrine');
+            $em = $doctrine->getManager();
+            $connection = $em->getConnection();
+            $connection = $connection->getWrappedConnection();
+            $connected = true;
+          }catch(\Exception $e){
+            $connected = false;
+          }
+          if(!$connected){
+            error_log("... not found, retry in 5 seconds (timeout 360s)");
+            sleep(5);
+          }
+          $iteration++;
+        }
+        if(!$connected){
+          error_log("\n💥 Unable to join ScyllaDB/Cassandra !\n");
+          return;
+        }
+
         $doctrine = $this->getApp()->getServices()->get('app.twake_doctrine');
         $em = $doctrine->getManager();
         $connection = $em->getConnection();
