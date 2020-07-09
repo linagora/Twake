@@ -4,7 +4,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import Tabs from 'components/Tabs/Tabs.js';
 import './ObjectModal.scss';
 
-export class ObjectModalTitle extends React.Component {
+export class ObjectModalTitle extends Component {
   render() {
     return (
       <div className={'modal_title ' + this.props.className} style={this.props.style}>
@@ -14,7 +14,7 @@ export class ObjectModalTitle extends React.Component {
   }
 }
 
-export class ObjectModalSectionTitle extends React.Component {
+export class ObjectModalSectionTitle extends Component {
   render() {
     return (
       <div className={'section_title ' + this.props.className} style={this.props.style}>
@@ -25,7 +25,7 @@ export class ObjectModalSectionTitle extends React.Component {
   }
 }
 
-export class ObjectModal extends React.Component {
+export class ObjectModal extends Component {
   constructor(props) {
     super();
     this.state = {};
@@ -67,9 +67,16 @@ export class ObjectModal extends React.Component {
 
         {!this.props.tabs && (
           <div className="body">
-            <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
-              {this.props.children}
-            </PerfectScrollbar>
+            {this.props.disabled && (
+              <div className="child-with-margin">
+                {this.props.children}
+              </div>
+            )}
+            {!this.props.disabled && (
+              <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
+                {this.props.children}
+              </PerfectScrollbar>
+            )}
           </div>
         )}
 
