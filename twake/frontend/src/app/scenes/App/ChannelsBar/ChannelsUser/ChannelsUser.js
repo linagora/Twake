@@ -44,7 +44,11 @@ export default class ChannelsUser extends Component {
           },
         ],
       },
+<<<<<<< HEAD
       'direct_messages_' + User.getCurrentUserId()
+=======
+      'direct_messages_' + User.getCurrentUserId(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     Languages.addListener(this);
@@ -88,7 +92,11 @@ export default class ChannelsUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.channelsuser.new_private_discussion',
           [],
+<<<<<<< HEAD
           'Nouvelle discussion privée'
+=======
+          'Nouvelle discussion privée',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       },
       {
@@ -119,7 +127,11 @@ export default class ChannelsUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.channelsuser.invite_collaborators',
             [],
+<<<<<<< HEAD
             'Inviter des collaborateurs'
+=======
+            'Inviter des collaborateurs',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           onClick: () => {
             PopupManager.open(<AddUser standalone />);
@@ -157,7 +169,11 @@ export default class ChannelsUser extends Component {
       .map(fid => {
         if (Collections.get('channels').known_objects_by_front_id[fid].members_count == 2) {
           members_already_in_last_discussions = members_already_in_last_discussions.concat(
+<<<<<<< HEAD
             Collections.get('channels').known_objects_by_front_id[fid].members
+=======
+            Collections.get('channels').known_objects_by_front_id[fid].members,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
         return Collections.get('channels').known_objects_by_front_id[fid];
@@ -169,11 +185,19 @@ export default class ChannelsUser extends Component {
           Object.values(channel.members || []).length &&
           Object.values(channel.members || [])
             .concat(Object.values(channel.ext_members || []))
+<<<<<<< HEAD
             .indexOf(User.getCurrentUserId()) >= 0
       );
 
     Object.keys(
       this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
+=======
+            .indexOf(User.getCurrentUserId()) >= 0,
+      );
+
+    Object.keys(
+      this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     )
       .filter(item => {
         var member = this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId)[
@@ -209,7 +233,11 @@ export default class ChannelsUser extends Component {
           text={Languages.t(
             'scenes.app.channelsbar.channelsuser.private_messages',
             [],
+<<<<<<< HEAD
             'Messages directs'
+=======
+            'Messages directs',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           onAdd={evt => {
             this.openConv(evt);
@@ -224,7 +252,11 @@ export default class ChannelsUser extends Component {
                 (WorkspacesApps.getApps()
                   .map(app => app.id)
                   .indexOf(channel.app_id) < 0 &&
+<<<<<<< HEAD
                   channel.app_group_id == Workspaces.currentGroupId)
+=======
+                  channel.app_group_id == Workspaces.currentGroupId),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )
             .concat(
               WorkspacesApps.getApps()
@@ -241,7 +273,11 @@ export default class ChannelsUser extends Component {
                       last_activity: new Date().getTime() / 1000,
                     }
                   );
+<<<<<<< HEAD
                 })
+=======
+                }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )
             .filter(channel => {
               //Remove private channels not from this company
@@ -287,14 +323,22 @@ export default class ChannelsUser extends Component {
                 popupManager.open(
                   <WorkspaceParameter initial_page={2} />,
                   true,
+<<<<<<< HEAD
                   'workspace_parameters'
+=======
+                  'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }}
             >
               {Languages.t(
                 'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters',
                 [],
+<<<<<<< HEAD
                 'Aucun message privé, invitez vos collaborateurs !'
+=======
+                'Aucun message privé, invitez vos collaborateurs !',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}{' '}
               <Emojione type=":smiley:" />
             </div>

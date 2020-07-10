@@ -30,6 +30,7 @@ Pursuant to this license, you are therefore free to use the software and modify
 it according to the GNU Affero General Public License version 3, provided that
 you comply with its requirements, notably:
 
+<<<<<<< HEAD
 - indicating, in a clear and unambiguous manner, that the software is a
   modification of original code;
 - retaining Appropriate Legal Notices in the source code and the user
@@ -37,6 +38,15 @@ you comply with its requirements, notably:
 - keeping any modifications of the software under the terms of the GNU Affero
   General Public License version 3, including its Additional Terms pursuant to
   its section 7, subsections (b), (c) and (e).
+=======
+ - indicating, in a clear and unambiguous manner, that the software is a
+   modification of original code;
+ - retaining Appropriate Legal Notices in the source code and the user
+   interface;
+ - keeping any modifications of the software under the terms of the GNU Affero
+   General Public License version 3, including its Additional Terms pursuant to
+   its section 7, subsections (b), (c) and (e).
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 Following are the applicable Additional Terms for use of Twake
 pursuant to section 7, subsections (b), (c) and (e) of the GNU Affero General
@@ -90,7 +100,11 @@ clearly legible), or using these trademarks to promote any products or services
 commercially, or on product packaging, websites, books, documentation or any
 other publication without a written, signed agreement with Linagora is strictly
 prohibited, and constitutes an infringement of Linagora intellectual property
+<<<<<<< HEAD
 rights over these trademarks. Using these trademarks in a way harmful,
+=======
+rights over these trademarks.  Using these trademarks in a way harmful,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 damaging or detrimental to the value of the Twake brand or any other Linagora
 trademarks, integrity, image, reputation, and/or goodwill, as determined by
 Linagora, is also strictly prohibited, and constitutes an infringement of
@@ -101,14 +115,23 @@ version 3, any violation of the hereabove Additional Terms, any infringement
 and/or misuse of any Twake or Linagora trade marks and/or a violation of the
 aforementioned Trademark Policy at <info@linagora.com>.
 
+<<<<<<< HEAD
     	GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November
     	2007
+=======
+		GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November
+		2007
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 Copyright © 2007 Free Software Foundation, Inc. <http://fsf.org/> Everyone is
 permitted to copy and distribute verbatim copies of this license document, but
 changing it is not allowed.
 
+<<<<<<< HEAD
     	Preamble
+=======
+		Preamble
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 The GNU Affero General Public License is a free, copyleft license for software
 and other kinds of works, specifically designed to ensure cooperation with the
@@ -155,9 +178,15 @@ Affero GPL which permits relicensing under this license.
 The precise terms and conditions for copying, distribution and modification
 follow.
 
+<<<<<<< HEAD
     	       TERMS AND CONDITIONS
 
 0. Definitions.
+=======
+		       TERMS AND CONDITIONS
+
+  0. Definitions.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 "This License" refers to version 3 of the GNU Affero General Public License.
 
@@ -194,10 +223,17 @@ that licensees may convey the work under this License, and how to view a copy
 of this License. If the interface presents a list of user commands or options,
 such as a menu, a prominent item in the list meets this criterion.
 
+<<<<<<< HEAD
 1. Source Code.
 
 The "source code" for a work means the preferred form of the work for making
 modifications to it. "Object code" means any non-source form of a work. A
+=======
+  1. Source Code.
+
+The "source code" for a work means the preferred form of the work for making
+modifications to it. "Object code" means any non-source form of a work.  A
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 "Standard Interface" means an interface that either is an official standard
 defined by a recognized standards body, or, in the case of interfaces specified
 for a particular programming language, one that is widely used among developers
@@ -230,7 +266,11 @@ automatically from other parts of the Corresponding Source.
 
 The Corresponding Source for a work in source code form is that same work.
 
+<<<<<<< HEAD
 2. Basic Permissions.
+=======
+  2. Basic Permissions.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 All rights granted under this License are granted for the term of copyright on
 the Program, and are irrevocable provided the stated conditions are met. This
@@ -254,7 +294,11 @@ Conveying under any other circumstances is permitted solely under the
 conditions stated below. Sublicensing is not allowed; section 10 makes it
 unnecessary.
 
+<<<<<<< HEAD
 3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+=======
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 No covered work shall be deemed part of an effective technological measure
 under any applicable law fulfilling obligations under article 11 of the WIPO
@@ -266,7 +310,11 @@ circumvention of technological measures to the extent such circumvention is
 effected by exercising rights under this License with respect to the covered
 work, and you disclaim any intention to limit operation or modification of the
 work as a means of enforcing, against the work's users, your or third parties'
+<<<<<<< HEAD
 legal rights to forbid circumvention of technological measures. 4. Conveying
+=======
+legal rights to forbid circumvention of technological measures.  4. Conveying
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 Verbatim Copies.
 
 You may convey verbatim copies of the Program's source code as you receive it,
@@ -279,23 +327,36 @@ all recipients a copy of this License along with the Program.
 You may charge any price or no price for each copy that you convey, and you may
 offer support or warranty protection for a fee.
 
+<<<<<<< HEAD
 5. Conveying Modified Source Versions.
+=======
+  5. Conveying Modified Source Versions.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 You may convey a work based on the Program, or the modifications to produce it
 from the Program, in the form of source code under the terms of section 4,
 provided that you also meet all of these conditions:
 
     a) The work must carry prominent notices stating that you modified it, and
+<<<<<<< HEAD
 
 giving a relevant date.
 
     b) The work must carry prominent notices stating that it is released under
 
+=======
+giving a relevant date.
+
+    b) The work must carry prominent notices stating that it is released under
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 this License and any conditions added under section 7. This requirement
 modifies the requirement in section 4 to "keep intact all notices".
 
     c) You must license the entire work, as a whole, under this License to
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 anyone who comes into possession of a copy. This License will therefore apply,
 along with any applicable section 7 additional terms, to the whole of the work,
 and all its parts, regardless of how they are packaged. This License gives no
@@ -303,7 +364,10 @@ permission to license the work in any other way, but it does not invalidate
 such permission if you have separately received it.
 
     d) If the work has interactive user interfaces, each must display
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 Appropriate Legal Notices; however, if the Program has interactive interfaces
 that do not display Appropriate Legal Notices, your work need not make them do
 so.
@@ -317,7 +381,11 @@ compilation's users beyond what the individual works permit. Inclusion of a
 covered work in an aggregate does not cause this License to apply to the other
 parts of the aggregate.
 
+<<<<<<< HEAD
 6. Conveying Non-Source Forms.
+=======
+  6. Conveying Non-Source Forms.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 You may convey a covered work in object code form under the terms of sections 4
 and 5, provided that you also convey the machine-readable Corresponding Source
@@ -378,7 +446,11 @@ authorization keys, or other information required to install and execute
 modified versions of a covered work in that User Product from a modified
 version of its Corresponding Source. The information must suffice to ensure
 that the continued functioning of the modified object code is in no case
+<<<<<<< HEAD
 prevented or interfered with solely because modification has been made. If you
+=======
+prevented or interfered with solely because modification has been made.  If you
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 convey an object code work under this section in, or with, or specifically for
 use in, a User Product, and the conveying occurs as part of a transaction in
 which the right of possession and use of the User Product is transferred to the
@@ -402,7 +474,11 @@ with this section must be in a format that is publicly documented (and with an
 implementation available to the public in source code form), and must require
 no special password or key for unpacking, reading or copying.
 
+<<<<<<< HEAD
 7. Additional Terms.
+=======
+  7. Additional Terms.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 "Additional permissions" are terms that supplement the terms of this License by
 making exceptions from one or more of its conditions. Additional permissions
@@ -424,20 +500,30 @@ covered work, you may (if authorized by the copyright holders of that material)
 supplement the terms of this License with terms:
 
     a) Disclaiming warranty or limiting liability differently from the terms of
+<<<<<<< HEAD
 
 sections 15 and 16 of this License; or
 
     b) Requiring preservation of specified reasonable legal notices or author
 
+=======
+sections 15 and 16 of this License; or
+
+    b) Requiring preservation of specified reasonable legal notices or author
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 attributions in that material or in the Appropriate Legal Notices displayed by
 works containing it; or
 
     c) Prohibiting misrepresentation of the origin of that material, or
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 requiring that modified versions of such material be marked in reasonable ways
 as different from the original version; or
 
     d) Limiting the use for publicity purposes of names of licensors or authors
+<<<<<<< HEAD
 
 of the material; or
 
@@ -447,6 +533,14 @@ names, trademarks, or service marks; or
 
     f) Requiring indemnification of licensors and authors of that material by
 
+=======
+of the material; or
+
+    e) Declining to grant rights under trademark law for use of some trade
+names, trademarks, or service marks; or
+
+    f) Requiring indemnification of licensors and authors of that material by
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 anyone who conveys the material (or modified versions of it) with contractual
 assumptions of liability to the recipient, for any liability that these
 contractual assumptions directly impose on those licensors and authors.
@@ -468,12 +562,20 @@ Additional terms, permissive or non-permissive, may be stated in the form of a
 separately written license, or stated as exceptions; the above requirements
 apply either way.
 
+<<<<<<< HEAD
 8. Termination.
+=======
+  8. Termination.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 You may not propagate or modify a covered work except as expressly provided
 under this License. Any attempt otherwise to propagate or modify it is void,
 and will automatically terminate your rights under this License (including any
+<<<<<<< HEAD
 patent licenses granted under the third paragraph of section 11). However, if
+=======
+patent licenses granted under the third paragraph of section 11).  However, if
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 you cease all violation of this License, then your license from a particular
 copyright holder is reinstated (a) provisionally, unless and until the
 copyright holder explicitly and finally terminates your license, and (b)
@@ -491,7 +593,11 @@ of parties who have received copies or rights from you under this License. If
 your rights have been terminated and not permanently reinstated, you do not
 qualify to receive new licenses for the same material under section 10.
 
+<<<<<<< HEAD
 9. Acceptance Not Required for Having Copies.
+=======
+  9. Acceptance Not Required for Having Copies.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 You are not required to accept this License in order to receive or run a copy
 of the Program. Ancillary propagation of a covered work occurring solely as a
@@ -502,7 +608,11 @@ copyright if you do not accept this License. Therefore, by modifying or
 propagating a covered work, you indicate your acceptance of this License to do
 so.
 
+<<<<<<< HEAD
 10. Automatic Licensing of Downstream Recipients.
+=======
+  10. Automatic Licensing of Downstream Recipients.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 Each time you convey a covered work, the recipient automatically receives a
 license from the original licensors, to run, modify and propagate that work,
@@ -527,7 +637,11 @@ counterclaim in a lawsuit) alleging that any patent claim is infringed by
 making, using, selling, offering for sale, or importing the Program or any
 portion of it.
 
+<<<<<<< HEAD
 11. Patents.
+=======
+  11. Patents.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 A "contributor" is a copyright holder who authorizes use under this License of
 the Program or a work on which the Program is based. The work thus licensed is
@@ -591,7 +705,11 @@ Nothing in this License shall be construed as excluding or limiting any implied
 license or other defenses to infringement that may otherwise be available to
 you under applicable patent law.
 
+<<<<<<< HEAD
 12. No Surrender of Others' Freedom.
+=======
+  12. No Surrender of Others' Freedom.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 If conditions are imposed on you (whether by court order, agreement or
 otherwise) that contradict the conditions of this License, they do not excuse
@@ -603,7 +721,11 @@ further conveying from those to whom you convey the Program, the only way you
 could satisfy both those terms and this License would be to refrain entirely
 from conveying the Program.
 
+<<<<<<< HEAD
 13. Remote Network Interaction; Use with the GNU General Public License.
+=======
+  13. Remote Network Interaction; Use with the GNU General Public License.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 Notwithstanding any other provision of this License, if you modify the Program,
 your modified version must prominently offer all users interacting with it
@@ -620,7 +742,11 @@ link or combine any covered work with a work licensed under version 3 of the
 GNU General Public License into a single combined work, and to convey the
 resulting work. The terms of this License will continue to apply to the part
 which is the covered work, but the work with which it is combined will remain
+<<<<<<< HEAD
 governed by version 3 of the GNU General Public License. 14. Revised Versions
+=======
+governed by version 3 of the GNU General Public License.  14. Revised Versions
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 of this License.
 
 The Free Software Foundation may publish revised and/or new versions of the GNU
@@ -645,7 +771,11 @@ Later license versions may give you additional or different permissions.
 However, no additional obligations are imposed on any author or copyright
 holder as a result of your choosing to follow a later version.
 
+<<<<<<< HEAD
 15. Disclaimer of Warranty.
+=======
+  15. Disclaimer of Warranty.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE
 LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER
@@ -656,7 +786,11 @@ QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE
 DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR
 CORRECTION.
 
+<<<<<<< HEAD
 16. Limitation of Liability.
+=======
+  16. Limitation of Liability.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY
 COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS
@@ -667,7 +801,11 @@ INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE
 PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY
 HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
+<<<<<<< HEAD
 17. Interpretation of Sections 15 and 16.
+=======
+  17. Interpretation of Sections 15 and 16.
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 If the disclaimer of warranty and limitation of liability provided above cannot
 be given local legal effect according to their terms, reviewing courts shall

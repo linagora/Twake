@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
@@ -30,7 +34,11 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { board_id: board.id },
+<<<<<<< HEAD
       this.props.tab.id
+=======
+      this.props.tab.id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     Menu.closeAll();
   }
@@ -56,7 +64,11 @@ export default class UnconfiguredTab extends Component {
           {Languages.t(
             'scenes.apps.tasks.unconfigured_tab',
             [],
+<<<<<<< HEAD
             "Cet onglet n'est pas encore configuré."
+=======
+            "Cet onglet n'est pas encore configuré.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 

@@ -38,8 +38,11 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
     protected function execute()
     {
 
+<<<<<<< HEAD
         @file_put_contents("/twake.status.db_init", "0");
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         //Wait for scylladb connection
         error_log("\n⏳Waiting for ScyllaDB/Cassandra connection");
         $connected = false;
@@ -364,8 +367,11 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
         error_log("Indexes = " . count($viable_indexes));
         error_log("Ignored cols = " . $ignored_cols);
 
+<<<<<<< HEAD
         @file_put_contents("/twake.status.db_init", "1");
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     }
 
     private function convertType($type)

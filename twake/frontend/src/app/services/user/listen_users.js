@@ -59,7 +59,11 @@ class ListenUsers {
 
     var that = this;
     if (this.listenerCount[idUser] == 1) {
+<<<<<<< HEAD
       ws.subscribe('users/' + idUser, function (uri, data) {
+=======
+      ws.subscribe('users/' + idUser, function(uri, data) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (idUser == UserService.getCurrentUserId()) {
           if (data.ping) {
             that.pong();

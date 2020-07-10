@@ -70,7 +70,11 @@ export default class CreateCompanyView extends Component {
               }
             }}
             placeholder={this.state.i18n.t(
+<<<<<<< HEAD
               'scenes.app.workspaces.create_company.company_name.placeholder'
+=======
+              'scenes.app.workspaces.create_company.company_name.placeholder',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             value={this.state.companyName}
             onChange={evt => this.setState({ companyName: evt.target.value })}
@@ -108,27 +112,47 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'company'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_type.company'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_type.company',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'public_organization'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_type.public_organization'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_type.public_organization',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'university_school'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_type.university_school'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_type.university_school',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'society_club_charity'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_type.society_club_charity'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_type.society_club_charity',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'other_group'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_type.other_group'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_type.other_group',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
           </select>
@@ -142,7 +166,11 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'less_3'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.less_3'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.less_3',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'4_10'}>
@@ -150,32 +178,56 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'10_50'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.10_50'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.10_50',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'50_100'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.50_100'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.50_100',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'100_500'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.100_500'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.100_500',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'500_1000'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.500_1000'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.500_1000',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'1000_5000'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.1000_5000'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.1000_5000',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'5000_more'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_size.5000_more'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_size.5000_more',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
           </select>
@@ -186,117 +238,209 @@ export default class CreateCompanyView extends Component {
           >
             <option value={''} disabled selected>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'food'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.food'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.food',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'bank'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.bank'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.bank',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'printing_paper'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.printing_paper'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.printing_paper',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'construction_building'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.construction_building'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.construction_building',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'real_estate'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.real_estate'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.real_estate',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'materials'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.materials'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.materials',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'chemistry'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.chemistry'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.chemistry',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'trade_commerce_distribution'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.trade_commerce_distribution'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.trade_commerce_distribution',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'publishing_communication_multimedia'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.publishing_communication_multimedia'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.publishing_communication_multimedia',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'electronics_electricity_energy'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.electronics_electricity_energy'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.electronics_electricity_energy',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'studies_and_advice'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.studies_and_advice'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.studies_and_advice',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'pharmaceutical_industry'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.pharmaceutical_industry'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.pharmaceutical_industry',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'it_telecom'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.it_telecom'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.it_telecom',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'machinery_automotive'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.machinery_automotive'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.machinery_automotive',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'business_services'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.business_services'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.business_services',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'entertainment'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.entertainment'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.entertainment',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'textile_clothing_shoes'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.textile_clothing_shoes'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.textile_clothing_shoes',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'transport_logistics'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.transport_logistics'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.transport_logistics',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'research'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.research'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.research',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'education'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.education'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.education',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'administration'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.administration'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.administration',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
             <option value={'other'}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.group_data.group_main_activity.other'
+=======
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.other',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </option>
           </select>
@@ -343,6 +487,7 @@ export default class CreateCompanyView extends Component {
                   </div>
                   <div className="text">
                     <div className="name">Google Calendar</div>
+<<<<<<< HEAD
                     <div className="description">
                       {Languages.t(
                         'scenes.app.popup.sync_calendar',
@@ -350,6 +495,11 @@ export default class CreateCompanyView extends Component {
                         'Synchronize your calendars.'
                       )}
                     </div>
+=======
+                    <div className="description">{Languages.t('scenes.app.popup.sync_calendar',
+                    [],
+                    "Synchronize your calendars.")}</div>
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </div>
                 </div>
               );
@@ -408,7 +558,11 @@ export default class CreateCompanyView extends Component {
             type: this.state.groupType || '',
             size: this.state.groupSize || '',
             main_activity: this.state.groupActivity || '',
+<<<<<<< HEAD
           }
+=======
+          },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     } else {

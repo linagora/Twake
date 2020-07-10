@@ -56,12 +56,20 @@ export default class UserParameter extends Component {
   changeThumbnail(event) {
     var that = this;
     event.preventDefault();
+<<<<<<< HEAD
     uploadService.getFilesTree(event, function (tree) {
+=======
+    uploadService.getFilesTree(event, function(tree) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var first = tree[Object.keys(tree)[0]];
       if (first.constructor.name != 'Object') {
         //A file
         var reader = new FileReader();
+<<<<<<< HEAD
         reader.onload = function (e) {
+=======
+        reader.onload = function(e) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           console.log(e);
           $(that.thumbnail).css({ backgroundImage: "url('" + e.target.result + "')" });
         };
@@ -115,7 +123,11 @@ export default class UserParameter extends Component {
                         'background-image':
                           "url('" +
                           userService.getThumbnail(
+<<<<<<< HEAD
                             Collections.get('users').find(userService.getCurrentUserId())
+=======
+                            Collections.get('users').find(userService.getCurrentUserId()),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           ) +
                           "')",
                       }}
@@ -131,7 +143,11 @@ export default class UserParameter extends Component {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
+<<<<<<< HEAD
                           'null'
+=======
+                          'null',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }}
                     >
@@ -152,7 +168,11 @@ export default class UserParameter extends Component {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
+<<<<<<< HEAD
                           this.state.thumbnail
+=======
+                          this.state.thumbnail,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }
                     }}
@@ -170,7 +190,11 @@ export default class UserParameter extends Component {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
+<<<<<<< HEAD
                           this.state.thumbnail
+=======
+                          this.state.thumbnail,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }
                     }}
@@ -183,7 +207,11 @@ export default class UserParameter extends Component {
                       currentUserService.updateidentity(
                         this.state.lastname,
                         this.state.firstname,
+<<<<<<< HEAD
                         this.state.thumbnail
+=======
+                        this.state.thumbnail,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       )
                     }
                     loading={this.state.currentUserService.loading}
@@ -220,7 +248,11 @@ export default class UserParameter extends Component {
                     currentUserService.updateidentity(
                       this.state.lastname,
                       this.state.firstname,
+<<<<<<< HEAD
                       this.state.thumbnail
+=======
+                      this.state.thumbnail,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )
                   }
                   loading={this.state.currentUserService.loading}
@@ -328,12 +360,20 @@ export default class UserParameter extends Component {
                             this.state.loginService.addNewMail(
                               this.state.mail,
                               thot => thot.setState({ subMenuOpened: 2 }),
+<<<<<<< HEAD
                               this
+=======
+                              this,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             );
                           }
                         }}
                         placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                           'scenes.app.workspaces.welcome_page.new_email'
+=======
+                          'scenes.app.workspaces.welcome_page.new_email',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         )}
                         value={this.state.mail}
                         onChange={evt => this.setState({ mail: evt.target.value })}
@@ -356,7 +396,11 @@ export default class UserParameter extends Component {
                                 thot => {
                                   thot.setState({ subMenuOpened: 0, mail: '', code: '' });
                                 },
+<<<<<<< HEAD
                                 this
+=======
+                                this,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               );
                             }
                           }}
@@ -379,7 +423,11 @@ export default class UserParameter extends Component {
                             style={{ display: 'block' }}
                           >
                             {this.state.i18n.t(
+<<<<<<< HEAD
                               'scenes.apps.account.account.email_add_modal.invalid_code'
+=======
+                              'scenes.apps.account.account.email_add_modal.invalid_code',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                           </span>
                         )}
@@ -396,11 +444,19 @@ export default class UserParameter extends Component {
                               this.state.loginService.addNewMail(
                                 this.state.mail,
                                 thot => thot.setState({ subMenuOpened: 2 }),
+<<<<<<< HEAD
                                 this
                               )
                             }
                             value={this.state.i18n.t(
                               'scenes.app.workspaces.welcome_page.add_new_email'
+=======
+                                this,
+                              )
+                            }
+                            value={this.state.i18n.t(
+                              'scenes.app.workspaces.welcome_page.add_new_email',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                             loading={this.state.loginService.loading}
                             loadingTimeout={1500}
@@ -422,11 +478,19 @@ export default class UserParameter extends Component {
                                 thot => {
                                   thot.setState({ subMenuOpened: 0, mail: '', code: '' });
                                 },
+<<<<<<< HEAD
                                 this
                               )
                             }
                             value={this.state.i18n.t(
                               'scenes.apps.account.account.email_add_modal.confirm'
+=======
+                                this,
+                              )
+                            }
+                            value={this.state.i18n.t(
+                              'scenes.apps.account.account.email_add_modal.confirm',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                             loading={this.state.loginService.loading}
                             loadingTimeout={1500}
@@ -452,7 +516,11 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                       'scenes.apps.account.account.password_modal.old_password'
+=======
+                      'scenes.apps.account.account.password_modal.old_password',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                     className={this.state.currentUserService.badOldPassword ? 'error' : ''}
                     type="password"
@@ -462,7 +530,11 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
+<<<<<<< HEAD
                           this.state.password1
+=======
+                          this.state.password1,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }
                     }}
@@ -471,7 +543,11 @@ export default class UserParameter extends Component {
                   {this.state.currentUserService.badOldPassword && (
                     <span className="text error">
                       {this.state.i18n.t(
+<<<<<<< HEAD
                         'scenes.apps.account.account.password_modal.bad_old_password'
+=======
+                        'scenes.apps.account.account.password_modal.bad_old_password',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       )}
                     </span>
                   )}
@@ -479,7 +555,11 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                       'scenes.apps.account.account.password_modal.password'
+=======
+                      'scenes.apps.account.account.password_modal.password',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                     className={this.state.currentUserService.badNewPassword ? 'error' : ''}
                     type="password"
@@ -489,7 +569,11 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
+<<<<<<< HEAD
                           this.state.password1
+=======
+                          this.state.password1,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }
                     }}
@@ -499,7 +583,11 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                       'scenes.apps.account.account.password_modal.password'
+=======
+                      'scenes.apps.account.account.password_modal.password',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                     className={this.state.currentUserService.badNewPassword ? 'error' : ''}
                     type="password"
@@ -509,7 +597,11 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
+<<<<<<< HEAD
                           this.state.password1
+=======
+                          this.state.password1,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }
                     }}
@@ -528,7 +620,11 @@ export default class UserParameter extends Component {
                       currentUserService.updatePassword(
                         this.state.oldPassword,
                         this.state.password,
+<<<<<<< HEAD
                         this.state.password1
+=======
+                        this.state.password1,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       )
                     }
                     loading={this.state.currentUserService.loading}
@@ -548,7 +644,11 @@ export default class UserParameter extends Component {
             {Languages.t(
               'scenes.app.popup.userparameter.personnal_workspaces_title',
               [],
+<<<<<<< HEAD
               'Vos espaces de travail'
+=======
+              'Vos espaces de travail',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 

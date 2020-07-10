@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import './RepetitionPopup.scss';
 import Input from 'components/Inputs/Input.js';
 import Select from 'components/Select/Select.js';
 import Languages from 'services/languages/languages.js';
+<<<<<<< HEAD
 import { RRule } from 'rrule';
+=======
+import {RRule} from 'rrule';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import moment from 'moment';
 import Radio from 'components/Inputs/Radio.js';
 import DatePicker from 'components/Calendar/DatePicker.js';
@@ -124,6 +132,7 @@ export default class RepetitionSelector extends React.Component {
             options={[
               {
                 text: Languages.t('components.calendar.repetition.monthly_on', [
+<<<<<<< HEAD
                   moment
                     .localeData()
                     .ordinal(
@@ -131,6 +140,15 @@ export default class RepetitionSelector extends React.Component {
                         moment(this.state.date).startOf('month').week() +
                         1
                     ),
+=======
+                  moment.localeData().ordinal(
+                    moment(this.state.date).week() -
+                      moment(this.state.date)
+                        .startOf('month')
+                        .week() +
+                      1,
+                  ),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   moment(this.state.date).format('dddd'),
                 ]),
                 value: 'select1',

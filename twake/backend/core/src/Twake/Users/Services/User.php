@@ -436,12 +436,16 @@ class User
             }
         }
 
+<<<<<<< HEAD
         $auto_validate_mail = $this->app->getContainer()->getParameter("defaults.auth.internal.disable_email_verification");
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         $verificationNumberMail = new VerificationNumberMail($mail);
         $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
 
+<<<<<<< HEAD
         if(!$auto_validate_mail){
 
           $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
@@ -454,6 +458,16 @@ class User
               $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
           }
 
+=======
+        $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+
+        if (!defined("TESTENV")) {
+            error_log("sign in code: " . $magic_link);
+        }
+
+        if ($sendEmail) {
+            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         }
 
         //Create the temporary user
@@ -514,11 +528,14 @@ class User
                 error_log($exception->getMessage());
             }
         }
+<<<<<<< HEAD
 
         if($auto_validate_mail){
           $this->verifyMail($mail, $verificationNumberMail->getToken(), $code, true);
         }
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         return $verificationNumberMail->getToken();
     }
 

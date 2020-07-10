@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
@@ -42,7 +46,11 @@ export default class CreateWorkspacePage extends Component {
             {Languages.t(
               'scenes.app.popup.createworkspacepage.add_subtitle',
               [],
+<<<<<<< HEAD
               'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !'
+=======
+              'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}{' '}
             <Emojione type=":grin:" />
           </div>
@@ -61,7 +69,11 @@ export default class CreateWorkspacePage extends Component {
             placeholder={Languages.t(
               'scenes.app.popup.createworkspacepage.placeholder_name',
               [],
+<<<<<<< HEAD
               "Nom de l'espace de travail"
+=======
+              "Nom de l'espace de travail",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             value={this.state.name}
             onChange={evt => this.setState({ name: evt.target.value })}
@@ -105,7 +117,11 @@ export default class CreateWorkspacePage extends Component {
       WorkspaceService.createWorkspace(
         this.state.name,
         this.state.members,
+<<<<<<< HEAD
         GroupService.currentGroupId
+=======
+        GroupService.currentGroupId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     } else {
       this.setState({ page: this.state.page + 1 });
@@ -132,7 +148,11 @@ export default class CreateWorkspacePage extends Component {
               {Languages.t(
                 'scenes.app.popup.createworkspacepage.create_new_workspace',
                 [],
+<<<<<<< HEAD
                 'Créer un nouvel espace de travail'
+=======
+                'Créer un nouvel espace de travail',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               {/* {this.state.page}/1*/}
             </div>

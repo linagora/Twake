@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon.js';
 import Collections from 'services/Collections/Collections.js';
@@ -7,11 +11,15 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+<<<<<<< HEAD
 import {
   ObjectModal,
   ObjectModalSectionTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
+=======
+import {ObjectModal, ObjectModalSectionTitle, ObjectModalTitle,} from 'components/ObjectModal/ObjectModal.js';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import UIFile from './UI/File.js';
 import 'moment-timezone';
 
@@ -59,9 +67,14 @@ export default class VersionDetails extends React.Component {
                 <div className="icon">
                   <Icon type="plus" className="m-icon-small iconWithBackground" />
                 </div>
+<<<<<<< HEAD
                 <div className="footerTitle">
                   {Languages.t('components.drive.new_versions', [], 'Ajouter une nouvelle version')}
                 </div>
+=======
+                <div className="footerTitle">{Languages.t('components.drive.new_versions', 
+                [], "Ajouter une nouvelle version")}</div>
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
             </div>
           </div>
@@ -113,11 +126,15 @@ export default class VersionDetails extends React.Component {
                       menu={[
                         {
                           type: 'menu',
+<<<<<<< HEAD
                           text: Languages.t(
                             'scenes.apps.drive.preview_bloc.operations_download',
                             [],
                             'Télécharger'
                           ),
+=======
+                          text: Languages.t('scenes.apps.drive.preview_bloc.operations_download', [], 'Télécharger'),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
                             console.log(link);

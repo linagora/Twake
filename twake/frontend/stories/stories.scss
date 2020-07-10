@@ -1,0 +1,11 @@
+@import '~components/constants.scss';
+@import '~scenes/ui.scss';
+@import '~scenes/ui_new.scss';
+
+#root {
+  background: #FFF;
+  max-height: 100vh;
+  overflow: scroll;
+  box-sizing: border-box;
+  height: 100vh;
+}

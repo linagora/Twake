@@ -364,7 +364,11 @@ class ManagerAdapter
                                 $match = true;
                             }
                         }
+<<<<<<< HEAD
                         if ($match && $result) {
+=======
+                        if ($match) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             $entities[] = [$result, 0];
                         }
                     }

@@ -149,7 +149,11 @@ class AceModeList {
     };
 
     this.modes = [];
+<<<<<<< HEAD
     var Mode = function (name, caption, extensions) {
+=======
+    var Mode = function(name, caption, extensions) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       this.name = name;
       this.caption = caption;
       this.mode = 'ace/mode/' + name;
@@ -157,7 +161,11 @@ class AceModeList {
       var re;
       if (/\^/.test(extensions)) {
         re =
+<<<<<<< HEAD
           extensions.replace(/\|(\^)?/g, function (a, b) {
+=======
+          extensions.replace(/\|(\^)?/g, function(a, b) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             return '$|' + (b ? '^' : '^.*\\.');
           }) + '$';
       } else {
@@ -167,7 +175,11 @@ class AceModeList {
       this.extRe = new RegExp(re, 'gi');
     };
 
+<<<<<<< HEAD
     Mode.prototype.supportsFile = function (filename) {
+=======
+    Mode.prototype.supportsFile = function(filename) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       return filename.match(this.extRe);
     };
 

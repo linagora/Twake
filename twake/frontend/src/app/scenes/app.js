@@ -7,7 +7,10 @@ import './ui.scss';
 import './ui_new.scss';
 
 import Login from 'scenes/Login/login.js';
+<<<<<<< HEAD
 import TwakeNotReady from 'scenes/Login/TwakeNotReady/TwakeNotReady';
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import AppPage from 'scenes/App/app.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WelcomePage from 'scenes/App/Popup/WelcomePage/WelcomePage.js';
@@ -33,7 +36,11 @@ export default class App extends Component {
     LoginService.removeListener(this);
   }
   animatedGradientBackground() {
+<<<<<<< HEAD
     var setGradientOfHour = function () {
+=======
+    var setGradientOfHour = function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       document.body.style.backgroundPosition =
         '0 ' + 100 * ((new Date().getHours() - 6) / 24) + '%';
     };
@@ -60,7 +67,11 @@ export default class App extends Component {
     });
   }
   shouldComponentUpdate(nextProps, nextState) {
+<<<<<<< HEAD
     if (this.page_state && nextState.login.state == 'app' && this.page_state != 'app') {
+=======
+    if (this.page_state && (nextState.login.state == 'app' && this.page_state != 'app')) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       nextState.willGoToApp = true;
       setTimeout(() => {
         console.log('go to app');
@@ -194,7 +205,13 @@ export default class App extends Component {
               <br />
               {LoginService.server_infos.help_link && (
                 <span>
+<<<<<<< HEAD
                   {Languages.t('scenes.tell_us', [], 'Please tell us what you were doing at :')}
+=======
+                  {Languages.t('scenes.tell_us', 
+                  [], 
+                  "Please tell us what you were doing at :")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   <br />
                   <a onClick={() => window.open(LoginService.server_infos.help_link)}>
                     {LoginService.server_infos.help_link}
@@ -211,9 +228,13 @@ export default class App extends Component {
       return page;
     }
 
+<<<<<<< HEAD
     if (this.state.login.server_infos_loaded && this.state.login.server_infos.ready != true) {
       page = [<TwakeNotReady key="twake_not_ready" ready={this.state.login.server_infos.ready} />];
     } else if (!this.state.login.firstInit || !this.state.login.server_infos_loaded) {
+=======
+    if (!this.state.login.firstInit || !this.state.login.server_infos_loaded) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       page = [<div className="white_full_background" key="white_full_background" />];
     } else {
       document.getElementById('app_loader').classList.remove('load');

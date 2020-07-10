@@ -118,10 +118,17 @@ class User {
               });
               this.search(query, callback, true, true);
             }
+<<<<<<< HEAD
           }
         );
       },
       didTimeout ? 0 : 1000
+=======
+          },
+        );
+      },
+      didTimeout ? 0 : 1000,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 

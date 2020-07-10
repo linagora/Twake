@@ -49,10 +49,17 @@ export default class EventDetails extends Component {
           Languages.t(
             'scenes.apps.calendar.modals.remove_event_alert_confirmation',
             [],
+<<<<<<< HEAD
             "Supprimer l'événement ?"
           )
         ),
       }
+=======
+            "Supprimer l'événement ?",
+          ),
+        ),
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   render() {
@@ -68,7 +75,11 @@ export default class EventDetails extends Component {
     var next = Math.min(from || to, to || from);
 
     var from_formatted = moment(from).format(
+<<<<<<< HEAD
       'ddd Do MMMM YYYY' + (event.all_day ? '' : ', ' + DateTimeUtils.getDefaultTimeFormat())
+=======
+      'ddd Do MMMM YYYY' + (event.all_day ? '' : ', ' + DateTimeUtils.getDefaultTimeFormat()),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     var to_formatted =
       (!event.type || event.type == 'event' || event.type == 'move') &&
@@ -80,7 +91,11 @@ export default class EventDetails extends Component {
               ? 'MMMM ' + (moment(to).format('YYYY') != moment(from).format('YYYY') ? 'YYYY' : '')
               : '') +
             (event.all_day ? '' : ', ')
+<<<<<<< HEAD
           : '') + (event.all_day ? '' : DateTimeUtils.getDefaultTimeFormat()) || '[]'
+=======
+          : '') + (event.all_day ? '' : DateTimeUtils.getDefaultTimeFormat()) || '[]',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
 
     from_formatted = (from_formatted || '').replace(' ' + new Date().getFullYear(), '');
@@ -156,7 +171,11 @@ export default class EventDetails extends Component {
                               'twake_user=' +
                               UserService.getCurrentUser().id +
                               '&twake_group=' +
+<<<<<<< HEAD
                               WorkspacesService.currentGroupId
+=======
+                              WorkspacesService.currentGroupId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           );
                         }}
                         className="subtitle location bottom-margin"
@@ -195,7 +214,11 @@ export default class EventDetails extends Component {
                 title: Languages.t(
                   'scenes.apps.calendar.modals.participants_event',
                   [],
+<<<<<<< HEAD
                   'Participants'
+=======
+                  'Participants',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 render: (
                   <div>
@@ -231,14 +254,22 @@ export default class EventDetails extends Component {
                     event={CalendarService.edited}
                     collectionKey={this.props.collectionKey}
                   />,
+<<<<<<< HEAD
                   { size: { width: 600 } }
+=======
+                  { size: { width: 600 } },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }}
             >
               {Languages.t(
                 'scenes.apps.calendar.modals.modify_event_button',
                 [],
+<<<<<<< HEAD
                 "Modifier l'évènement"
+=======
+                "Modifier l'évènement",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </Button>
           </div>

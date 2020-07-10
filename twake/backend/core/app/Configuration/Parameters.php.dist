@@ -141,7 +141,10 @@ class Parameters extends \Common\Configuration
               "connectors" => [
               ],
               "branding" => [
+<<<<<<< HEAD
                 "name" => "Twake",
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 "enable_newsletter" => false,
                 /*
                 "header" => [
@@ -180,7 +183,10 @@ class Parameters extends \Common\Configuration
               "auth" => [
                   "internal" => [
                       "use" => true,
+<<<<<<< HEAD
                       "disable_email_verification" => true
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ],
                   "openid" => [
                       "use" => false,

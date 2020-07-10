@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Icon from 'components/Icon/Icon.js';
 import Button from 'components/Buttons/Button.js';
 import './TagPicker.scss';
@@ -41,7 +45,11 @@ export default class TagPicker extends React.Component {
           },
           websockets: [{ uri: 'tags/' + Workspaces.currentWorkspaceId, options: { type: 'tags' } }],
         },
+<<<<<<< HEAD
         Workspaces.currentWorkspaceId
+=======
+        Workspaces.currentWorkspaceId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
   }
@@ -105,7 +113,11 @@ export default class TagPicker extends React.Component {
         menu,
         { x: evt.clientX, y: evt.clientY },
         this.props.menu_level,
+<<<<<<< HEAD
         'right'
+=======
+        'right',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     } else {
       MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'right');
@@ -160,9 +172,13 @@ export default class TagPicker extends React.Component {
 
     return (
       <div className={'tagPicker ' + (this.props.className || '')}>
+<<<<<<< HEAD
         {!this.props.readOnly && value.length == 0 && (
           <div className="tag notag">{Languages.t('components.tagpicker.notag', [], 'No tag')}</div>
         )}
+=======
+        {!this.props.readOnly && value.length == 0 && <div className="tag notag">{Languages.t('components.tagpicker.notag', [], 'No tag')}</div>}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
         {tag_list}
 
@@ -173,8 +189,12 @@ export default class TagPicker extends React.Component {
               this.addTags(evt);
             }}
           >
+<<<<<<< HEAD
             <Icon type="plus" className="m-icon-small" />{' '}
             {Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
+=======
+            <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           </Button>
         )}
 

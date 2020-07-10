@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -63,7 +67,11 @@ export default class MessageOptions extends Component {
                         MessagesService.react(
                           this.props.message,
                           emoji.shortname,
+<<<<<<< HEAD
                           this.props.messagesCollectionKey
+=======
+                          this.props.messagesCollectionKey,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       }}
                     />
@@ -80,7 +88,11 @@ export default class MessageOptions extends Component {
             position="top"
           >
             <ReactionIcon className="m-icon-small" />
+<<<<<<< HEAD
           </Menu>
+=======
+          </Menu>,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
 
@@ -95,7 +107,11 @@ export default class MessageOptions extends Component {
               onClick={() => MessagesService.startRespond(this.props.message)}
             >
               <Icon type="enter" className="m-icon-small" />
+<<<<<<< HEAD
             </div>
+=======
+            </div>,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
         if (!(this.props.message.hidden_data || {}).disable_pin) {
@@ -106,12 +122,20 @@ export default class MessageOptions extends Component {
                 MessagesService.pinMessage(
                   this.props.message,
                   !this.props.message.pinned,
+<<<<<<< HEAD
                   this.props.messagesCollectionKey
+=======
+                  this.props.messagesCollectionKey,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )
               }
             >
               <Icon type="map-pin-alt" className="m-icon-small" />
+<<<<<<< HEAD
             </div>
+=======
+            </div>,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
       }
@@ -141,7 +165,11 @@ export default class MessageOptions extends Component {
 
       var apps =
         WorkspacesApps.getApps().filter(
+<<<<<<< HEAD
           app => ((app.display || {}).messages_module || {}).action
+=======
+          app => ((app.display || {}).messages_module || {}).action,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ) || [];
       if (apps.length > 0) {
         menu.push({ type: 'separator' });
@@ -200,7 +228,11 @@ export default class MessageOptions extends Component {
             className: 'error',
             onClick: () => {
               AlertManager.confirm(() =>
+<<<<<<< HEAD
                 MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey)
+=======
+                MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             },
           });
@@ -218,7 +250,11 @@ export default class MessageOptions extends Component {
           position={'left'}
         >
           <EditIcon className="m-icon-small" />
+<<<<<<< HEAD
         </Menu>
+=======
+        </Menu>,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import './StepCounter.scss';
 
@@ -20,7 +24,11 @@ export default class StepCounter extends React.Component {
           key={'step-' + i}
           className={'step ' + (i <= this.props.current - 1 ? 'setSelected' : '')}
           style={{ flex: 1 / this.props.total }}
+<<<<<<< HEAD
         />
+=======
+        />,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
     return ret;

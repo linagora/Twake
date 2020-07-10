@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Languages from 'services/languages/languages.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import Button from 'components/Buttons/Button.js';
@@ -28,7 +32,11 @@ export default class Confirm extends Component {
         <div className="bottom">
           <Button
             className="medium"
+<<<<<<< HEAD
             value={Languages.t('general.close', [], 'Close')}
+=======
+            value={Languages.t('general.close', [], "Close")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             onClick={() => this.state.AlertManager.confirmAlert()}
           />
         </div>

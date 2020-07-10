@@ -89,7 +89,11 @@ class Workspaces extends Observable {
 
   closeWelcomePage(forever) {
     if (forever) {
+<<<<<<< HEAD
       Api.post('users/set/isNew', { value: false }, function (res) {});
+=======
+      Api.post('users/set/isNew', { value: false }, function(res) {});
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       Collections.get('users').updateObject({
         id: User.getCurrentUserId(),
         isNew: false,
@@ -215,7 +219,11 @@ class Workspaces extends Observable {
   getOrderedWorkspacesInGroup(group_id, no_filter) {
     var object = [];
     var that = this;
+<<<<<<< HEAD
     Object.keys(this.user_workspaces).forEach(function (e) {
+=======
+    Object.keys(this.user_workspaces).forEach(function(e) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (no_filter) {
         object.push(e);
         return;
@@ -237,7 +245,11 @@ class Workspaces extends Observable {
       }
       e['favoris'] = favoris;
     });
+<<<<<<< HEAD
     object = object.sort(function (a, b) {
+=======
+    object = object.sort(function(a, b) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (a.favoris != b.favoris) {
         return b.favoris - a.favoris;
       }
@@ -259,17 +271,25 @@ class Workspaces extends Observable {
       group_name: groupName,
       group_creation_data: groupCreationData,
       channels: [
+<<<<<<< HEAD
         {
           name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'),
           icon: ':mailbox:',
         },
+=======
+        { name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'), icon: ':mailbox:' },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         { name: 'Random', icon: ':beach_umbrella:' },
       ],
     };
     that.loading = true;
     that.notify();
     var that = this;
+<<<<<<< HEAD
     Api.post('workspace/create', data, function (res) {
+=======
+    Api.post('workspace/create', data, function(res) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var group_id = undefined;
       var workspace = undefined;
       if (res.data && res.data.workspace) {
@@ -309,8 +329,13 @@ class Workspaces extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
+<<<<<<< HEAD
     Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function (
       res
+=======
+    Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function(
+      res,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     ) {
       if (res.errors.length == 0) {
         var update = {
@@ -353,9 +378,15 @@ class Workspaces extends Observable {
         xhrFields: {
           withCredentials: true,
         },
+<<<<<<< HEAD
         xhr: function () {
           var myXhr = $.ajaxSettings.xhr();
           myXhr.onreadystatechange = function () {
+=======
+        xhr: function() {
+          var myXhr = $.ajaxSettings.xhr();
+          myXhr.onreadystatechange = function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             if (myXhr.readyState == XMLHttpRequest.DONE) {
               that.loading = false;
               var resp = JSON.parse(myXhr.responseText);
@@ -379,13 +410,21 @@ class Workspaces extends Observable {
     if (
       workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId) &&
       (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).filter(
+<<<<<<< HEAD
         userId => !workspacesUsers.isExterne(userId)
+=======
+        userId => !workspacesUsers.isExterne(userId),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ).length > 1
     ) {
       this.errorDeleteWorkspaceMember = true;
       this.notify();
     } else if (this.currentWorkspaceId) {
+<<<<<<< HEAD
       Api.post('workspace/delete', { workspaceId: this.currentWorkspaceId }, function (res) {
+=======
+      Api.post('workspace/delete', { workspaceId: this.currentWorkspaceId }, function(res) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         PopupManager.close();
       });
     }

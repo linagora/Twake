@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import Autobahn from 'services/autobahn/autobahn.js';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Number from 'services/utils/Numbers.js';
 import api from 'services/api.js';
 import Observable from 'services/observable.js';
@@ -125,7 +129,11 @@ class Websocket extends Observable {
   useOldMode(bool) {
     console.log('use old mode = ', bool);
     if (bool) {
+<<<<<<< HEAD
       console.log('no more old mode');
+=======
+      this.autobahn = Autobahn;
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     } else {
       this.autobahn = SocketCluster;
     }
@@ -242,7 +250,11 @@ class Websocket extends Observable {
           }, 2000);
         } else {
           var that = this;
+<<<<<<< HEAD
           var onopen = function (session) {
+=======
+          var onopen = function(session) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             that.is_reconnecting = false;
 
             that.disconnect();
@@ -278,7 +290,11 @@ class Websocket extends Observable {
                 } catch (err) {}
                 var unid = Number.unid();
                 that.subscribedKey[route] = unid;
+<<<<<<< HEAD
                 that.ws.subscribe(route, function (a, b) {
+=======
+                that.ws.subscribe(route, function(a, b) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   that.message(unid, a, b);
                 });
               }
@@ -314,12 +330,20 @@ class Websocket extends Observable {
               connection = that.autobahn.connect('ws://' + route + suffix);
             }
 
+<<<<<<< HEAD
             connection.on('socket/connect', function (session) {
+=======
+            connection.on('socket/connect', function(session) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               that.is_reconnecting = false;
 
               onopen(session);
             });
+<<<<<<< HEAD
             connection.on('socket/disconnect', function (error) {
+=======
+            connection.on('socket/disconnect', function(error) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               console.log(error);
               that.connectionError(error.reason, error.code);
               that.is_reconnecting = false;
@@ -338,11 +362,15 @@ class Websocket extends Observable {
   disconnect() {
     console.log('Network : Disconnected');
     if (this.ws) {
+<<<<<<< HEAD
       try {
         this.ws.close();
       } catch (err) {
         console.log(err);
       }
+=======
+      this.ws.close();
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       this.ws = null;
     }
   }

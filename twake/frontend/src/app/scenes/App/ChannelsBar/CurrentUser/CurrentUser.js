@@ -84,7 +84,11 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.change_my_status',
           [],
+<<<<<<< HEAD
           'Changer mon statut'
+=======
+          'Changer mon statut',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         emoji: (current_user.status_icon || {})[0] || ':smiley:',
         submenu_replace: true,
@@ -94,7 +98,11 @@ export default class CurrentUser extends Component {
             text: Languages.t(
               'scenes.app.channelsbar.currentuser.change_my_status',
               [],
+<<<<<<< HEAD
               'Changer mon statut'
+=======
+              'Changer mon statut',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
           },
           {
@@ -111,7 +119,11 @@ export default class CurrentUser extends Component {
                   placeholder={Languages.t(
                     'scenes.app.popup.appsparameters.pages.status_tilte',
                     [],
+<<<<<<< HEAD
                     'Status'
+=======
+                    'Status',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                   value={this.state.new_status}
                   onChange={value => {
@@ -137,7 +149,11 @@ export default class CurrentUser extends Component {
                     value={Languages.t(
                       'scenes.app.channelsbar.currentuser.update',
                       [],
+<<<<<<< HEAD
                       'Mettre à jour'
+=======
+                      'Mettre à jour',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                     onClick={() => {
                       this.updateStatus();
@@ -166,7 +182,11 @@ export default class CurrentUser extends Component {
             (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name,
             (Collections.get('groups').find(WorkspaceService.currentGroupId) || {}).name,
           ],
+<<<<<<< HEAD
           "Vous êtes dans l'espace de travail $1 du groupe $2."
+=======
+          "Vous êtes dans l'espace de travail $1 du groupe $2.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       },
     ];
@@ -177,7 +197,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.add_collaborators_menu',
             [],
+<<<<<<< HEAD
             'Ajouter des collaborateurs'
+=======
+            'Ajouter des collaborateurs',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           icon: 'user-plus',
           onClick: () => {
@@ -190,14 +214,22 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.collaborateurs',
             [],
+<<<<<<< HEAD
             'Collaborateurs'
+=======
+            'Collaborateurs',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           icon: 'users-alt',
           onClick: () => {
             popupManager.open(
               <WorkspaceParameter initial_page={2} />,
               true,
+<<<<<<< HEAD
               'workspace_parameters'
+=======
+              'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           },
         });
@@ -208,14 +240,22 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.add_apps',
             [],
+<<<<<<< HEAD
             'Chercher des applications'
+=======
+            'Chercher des applications',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           icon: 'apps',
           onClick: () => {
             popupManager.open(
               <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
               true,
+<<<<<<< HEAD
               'workspace_parameters'
+=======
+              'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           },
         });
@@ -233,7 +273,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.workspace_parameters',
             [],
+<<<<<<< HEAD
             "Paramètres de l'espace"
+=======
+            "Paramètres de l'espace",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           icon: 'cog',
           onClick: () => {
@@ -248,7 +292,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.invited_status',
             [],
+<<<<<<< HEAD
             'Vous êtes un invité.'
+=======
+            'Vous êtes un invité.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         },
         {
@@ -256,14 +304,22 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
             [],
+<<<<<<< HEAD
             "Quitter l'espace"
+=======
+            "Quitter l'espace",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           icon: 'plane-fly',
           className: 'error',
           onClick: () => {
             WorkspacesUsers.leaveWorkspace();
           },
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -274,7 +330,11 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.create_workspace_page',
           [],
+<<<<<<< HEAD
           'Créer un espace de travail'
+=======
+          'Créer un espace de travail',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         icon: 'plus',
         onClick: () => {
@@ -287,7 +347,11 @@ export default class CurrentUser extends Component {
       text: Languages.t(
         'scenes.app.channelsbar.currentuser.create_company_page',
         [],
+<<<<<<< HEAD
         'Créer une entreprise'
+=======
+        'Créer une entreprise',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ),
       icon: 'plus',
       onClick: () => {
@@ -315,7 +379,11 @@ export default class CurrentUser extends Component {
     MenusManager.openMenu(
       usermenu,
       { x: pos.x + pos.width / 2, y: pos.y + pos.height + 10 },
+<<<<<<< HEAD
       'bottom'
+=======
+      'bottom',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   onClickBell(evt) {
@@ -324,7 +392,11 @@ export default class CurrentUser extends Component {
     this.dont_disturb = NotificationParameters.transform_period(
       UserService.getCurrentUser().notifications_preferences.dont_disturb_between,
       UserService.getCurrentUser().notifications_preferences.dont_disturb_and,
+<<<<<<< HEAD
       -new Date().getTimezoneOffset() / 60
+=======
+      -new Date().getTimezoneOffset() / 60,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.notifications_state = NotificationParameters.getNotificationsStatus(current_user);
 
@@ -337,7 +409,11 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.user_parameter',
           [],
+<<<<<<< HEAD
           'Paramètres de notification'
+=======
+          'Paramètres de notification',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           popupManager.open(<UserParameter initial_page={3} />);
@@ -348,12 +424,20 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disabling_notifications',
           [],
+<<<<<<< HEAD
           'Désactiver pendant 1h'
+=======
+          'Désactiver pendant 1h',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           NotificationParameters.saveElements(
             { disable_until: parseInt(new Date().getTime() / 1000 + 60 * 60) },
+<<<<<<< HEAD
             true
+=======
+            true,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         },
       },
@@ -362,7 +446,11 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disabling_notifications_until',
           [],
+<<<<<<< HEAD
           "Désactiver jusqu'à demain 9h"
+=======
+          "Désactiver jusqu'à demain 9h",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           var a = new Date();
@@ -381,12 +469,20 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disable_notifications',
           [],
+<<<<<<< HEAD
           'Désactiver'
+=======
+          'Désactiver',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           NotificationParameters.saveElements(
             { disable_until: parseInt(new Date().getTime() / 1000 + 60 * 60 * 24 * 10000) },
+<<<<<<< HEAD
             true
+=======
+            true,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         },
       });
@@ -398,7 +494,11 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.reactivate_notifications',
           [],
+<<<<<<< HEAD
           'Réactiver'
+=======
+          'Réactiver',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           NotificationParameters.saveElements({ disable_until: 0 }, true);
@@ -406,7 +506,11 @@ export default class CurrentUser extends Component {
       });
 
       var disabled_until = new Date(
+<<<<<<< HEAD
         UserService.getCurrentUser().notifications_preferences.disable_until * 1000
+=======
+        UserService.getCurrentUser().notifications_preferences.disable_until * 1000,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
 
       if (this.notifications_state == 'off') {
@@ -415,7 +519,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifications_message',
             [],
+<<<<<<< HEAD
             'Vos notifications sont désactivées.'
+=======
+            'Vos notifications sont désactivées.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
       } else if (NotificationParameters.is_in_period(this.dont_disturb[0], this.dont_disturb[1])) {
@@ -428,7 +536,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information',
             [a, b],
+<<<<<<< HEAD
             "Vos notifications sont désactivées la nuit de $1 jusqu'à $2."
+=======
+            "Vos notifications sont désactivées la nuit de $1 jusqu'à $2.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
       } else if (
@@ -440,7 +552,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until',
             [disabled_until.getHours(), disabled_until.getMinutes()],
+<<<<<<< HEAD
             "Vos notifications sont désactivées jusqu'à $1:$2."
+=======
+            "Vos notifications sont désactivées jusqu'à $1:$2.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
       } else {
@@ -449,7 +565,11 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice',
             [],
+<<<<<<< HEAD
             "Vos notifications sont désactivées jusqu'à demain 9h."
+=======
+            "Vos notifications sont désactivées jusqu'à demain 9h.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
       }
@@ -462,7 +582,11 @@ export default class CurrentUser extends Component {
     MenusManager.openMenu(
       this.notifications_menu,
       { x: pos.x + pos.width - 5, y: pos.y + pos.height + 10 },
+<<<<<<< HEAD
       'bottom'
+=======
+      'bottom',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   render() {

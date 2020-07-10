@@ -70,7 +70,11 @@ class Drive extends Observable {
           },
         ],
       },
+<<<<<<< HEAD
       (prefix ? prefix : '') + this.current_collection_key_channels[channel]
+=======
+      (prefix ? prefix : '') + this.current_collection_key_channels[channel],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     return (prefix ? prefix : '') + this.current_collection_key_channels[channel];
   }
@@ -93,7 +97,11 @@ class Drive extends Observable {
         () => {
           this.changing_directory[channel] = false;
           this.changeCurrentDirectory(channel, directory, wid);
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       if (!tmp._searching) {
         this.changing_directory[channel] = false;
@@ -186,7 +194,11 @@ class Drive extends Observable {
             Collections.get('drive').updateObject(res.data);
             if (callback) callback(res.data);
           }
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       return { _searching: true };
     } else {
@@ -226,7 +238,11 @@ class Drive extends Observable {
               }, 2000);
             }
           }
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       return { _searching: true };
     }
@@ -246,7 +262,11 @@ class Drive extends Observable {
             this.addPathForElement(res, false);
           },
           false,
+<<<<<<< HEAD
           true
+=======
+          true,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
       element.path = [];
@@ -488,7 +508,11 @@ class Drive extends Observable {
               file.name
                 ? 'scenes.apps.drive.message_added_file'
                 : 'scenes.apps.drive.message_added_file_no_name',
+<<<<<<< HEAD
               [UserService.getFullName(CurrentUser.get()), file.name]
+=======
+              [UserService.getFullName(CurrentUser.get()), file.name],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
           },
           { type: 'br' },
@@ -560,14 +584,22 @@ class Drive extends Observable {
     }
 
     var apps = WorkspacesApps.getApps().filter(
+<<<<<<< HEAD
       app => ((app.display || {}).drive_module || {}).can_open_files
+=======
+      app => ((app.display || {}).drive_module || {}).can_open_files,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     //Primary exts
     apps.forEach(app => {
       if (
         ((app.display.drive_module.can_open_files || {}).main_ext || []).indexOf(
+<<<<<<< HEAD
           ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase()
+=======
+          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ) >= 0
       ) {
         if ((app.display.drive_module.can_open_files || {}).url) {
@@ -617,7 +649,11 @@ class Drive extends Observable {
     apps.forEach(app => {
       if (
         ((app.display.drive_module.can_open_files || {}).other_ext || []).indexOf(
+<<<<<<< HEAD
           ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase()
+=======
+          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ) >= 0
       ) {
         if ((app.display.drive_module.can_open_files || {}).url) {
@@ -657,7 +693,11 @@ class Drive extends Observable {
         url += '&workspace_id=' + Workspaces.currentWorkspaceId;
         url += '&group_id=' + Workspaces.currentGroupId;
         cb(url);
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 }

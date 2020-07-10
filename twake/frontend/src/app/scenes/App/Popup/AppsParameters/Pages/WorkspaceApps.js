@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -58,7 +62,11 @@ export default class WorkspaceApps extends Component {
 
           Collections.get('applications').notify();
         }
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -73,7 +81,11 @@ export default class WorkspaceApps extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.button_force',
             [],
+<<<<<<< HEAD
             "Forcer dans toute l'entreprise"
+=======
+            "Forcer dans toute l'entreprise",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           onClick: () => {
             AlertManager.confirm(() => WorkspacesApps.forceInEntreprise(app.id));
@@ -88,7 +100,11 @@ export default class WorkspaceApps extends Component {
                   label={Languages.t(
                     'scenes.app.popup.appsparameters.pages.automatique_label',
                     [],
+<<<<<<< HEAD
                     'Automatique'
+=======
+                    'Automatique',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                   value={ga.workspace_default}
                   onChange={state =>
@@ -104,7 +120,11 @@ export default class WorkspaceApps extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.automatique_option_information',
             [],
+<<<<<<< HEAD
             "Si vous activez 'Automatique', cette application sera automatiquement ajoutée dans les prochains espaces de travail de cette entreprise."
+=======
+            "Si vous activez 'Automatique', cette application sera automatiquement ajoutée dans les prochains espaces de travail de cette entreprise.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         },
         { type: 'separator' },
@@ -116,7 +136,11 @@ export default class WorkspaceApps extends Component {
         text: Languages.t(
           'scenes.app.popup.appsparameters.pages.remove_app_from_workspace',
           [],
+<<<<<<< HEAD
           "Supprimer de l'espace"
+=======
+          "Supprimer de l'espace",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         className: 'error',
         onClick: () => {
@@ -130,7 +154,11 @@ export default class WorkspaceApps extends Component {
         text: Languages.t(
           'scenes.app.popup.appsparameters.pages.remove_app_from_company',
           [],
+<<<<<<< HEAD
           "Supprimer de toute l'entreprise"
+=======
+          "Supprimer de toute l'entreprise",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         className: 'error',
         onClick: () => {
@@ -165,10 +193,17 @@ export default class WorkspaceApps extends Component {
       .filter(item => item.available_categories);
 
     var workspaces_app_ids = Object.keys(
+<<<<<<< HEAD
       WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId]
     );
     var workspace_apps = workspaces_app_ids.map(
       id => WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId][id]
+=======
+      WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId],
+    );
+    var workspace_apps = workspaces_app_ids.map(
+      id => WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId][id],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     var group_apps = Object.keys(WorkspacesApps.apps_by_group[workspaceService.currentGroupId])
       .filter(id => workspaces_app_ids.indexOf(id) < 0)
@@ -182,7 +217,11 @@ export default class WorkspaceApps extends Component {
           {Languages.t(
             'scenes.app.popup.appsparameters.pages.apps_title',
             [],
+<<<<<<< HEAD
             'Vos applications et connecteurs'
+=======
+            'Vos applications et connecteurs',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 
@@ -192,7 +231,11 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.developped_apps_subtitle',
                 [],
+<<<<<<< HEAD
                 "Applications développées par l'entreprise"
+=======
+                "Applications développées par l'entreprise",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -200,7 +243,11 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.apps_connectors_small_text',
                 [],
+<<<<<<< HEAD
                 'Créez et administrez vos applications et connecteurs.'
+=======
+                'Créez et administrez vos applications et connecteurs.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -215,7 +262,11 @@ export default class WorkspaceApps extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.current_informations_apps_connectors',
                   [],
+<<<<<<< HEAD
                   "Vous n'avez pas créé d'application pour le moment. Avant de créer une application ou un connecteur, vérifiez que celle-ci n'existe pas déjà dans notre marché d'applications."
+=======
+                  "Vous n'avez pas créé d'application pour le moment. Avant de créer une application ou un connecteur, vérifiez que celle-ci n'existe pas déjà dans notre marché d'applications.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
             )}
@@ -227,7 +278,11 @@ export default class WorkspaceApps extends Component {
                     title: Languages.t(
                       'scenes.app.popup.appsparameters.pages.application_title',
                       [],
+<<<<<<< HEAD
                       'Application'
+=======
+                      'Application',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                     dataIndex: 'name',
                     render: row => {
@@ -252,7 +307,11 @@ export default class WorkspaceApps extends Component {
                     title: Languages.t(
                       'scenes.app.popup.appsparameters.pages.status_tilte',
                       [],
+<<<<<<< HEAD
                       'État'
+=======
+                      'État',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                     width: 140,
                     dataIndex: 'public',
@@ -264,7 +323,11 @@ export default class WorkspaceApps extends Component {
                               {Languages.t(
                                 'scenes.app.popup.appsparameters.pages.interne_availability_application',
                                 [],
+<<<<<<< HEAD
                                 'Application interne'
+=======
+                                'Application interne',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               )}
                             </div>
                           )}
@@ -273,7 +336,11 @@ export default class WorkspaceApps extends Component {
                               {Languages.t(
                                 'scenes.app.popup.appsparameters.pages.waiting_availability_application',
                                 [],
+<<<<<<< HEAD
                                 'En attente...'
+=======
+                                'En attente...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               )}
                             </div>
                           )}
@@ -282,7 +349,11 @@ export default class WorkspaceApps extends Component {
                               {Languages.t(
                                 'scenes.app.popup.appsparameters.pages.public_availability_application',
                                 [],
+<<<<<<< HEAD
                                 'Application publique'
+=======
+                                'Application publique',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               )}
                             </div>
                           )}
@@ -294,7 +365,11 @@ export default class WorkspaceApps extends Component {
                     title: Languages.t(
                       'scenes.app.popup.appsparameters.pages.installation',
                       [],
+<<<<<<< HEAD
                       'Instal.'
+=======
+                      'Instal.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                     titleStyle: { textAlign: 'right' },
                     width: 60,
@@ -321,7 +396,11 @@ export default class WorkspaceApps extends Component {
                             value={Languages.t(
                               'scenes.app.popup.appsparameters.pages.show_button',
                               [],
+<<<<<<< HEAD
                               'Afficher'
+=======
+                              'Afficher',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                             style={{ marginTop: 0, width: 'auto' }}
                             onClick={() => {
@@ -342,7 +421,11 @@ export default class WorkspaceApps extends Component {
               value={Languages.t(
                 'scenes.app.popup.appsparameters.pages.create_app_button',
                 [],
+<<<<<<< HEAD
                 'Créer une application'
+=======
+                'Créer une application',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               onClick={() => {
                 this.setState({ edit_app_id: 'new' });

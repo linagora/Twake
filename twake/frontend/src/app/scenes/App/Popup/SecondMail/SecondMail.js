@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -73,7 +77,11 @@ export default class SecondMail extends Component {
                 {
                   this.state.users_repository
                     .find(userService.getCurrentUserId())
+<<<<<<< HEAD
                     .mails.find(function (element) {
+=======
+                    .mails.find(function(element) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       return element.main;
                     }).email
                 }
@@ -210,7 +218,11 @@ export default class SecondMail extends Component {
           thot => {
             thot.setState({ page: 1, mail: '', code: '' });
           },
+<<<<<<< HEAD
           this
+=======
+          this,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     } else if (this.state.page == 1) {
@@ -218,7 +230,11 @@ export default class SecondMail extends Component {
         this.state.loginService.addNewMail(
           this.state.mail,
           thot => thot.setState({ page: 2 }),
+<<<<<<< HEAD
           this
+=======
+          this,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     }

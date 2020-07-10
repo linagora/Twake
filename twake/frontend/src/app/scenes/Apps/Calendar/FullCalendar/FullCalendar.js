@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import '@fullcalendar/core';
 import '@fullcalendar/core/main.css';
 
+=======
+import React, {Component} from 'react';
+import ReactDOMServer from 'react-dom/server';
+
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
@@ -13,6 +19,10 @@ import listPlugin from '@fullcalendar/list';
 import FullCalendarPlugin from '@fullcalendar/react';
 import rrulePlugin from '@fullcalendar/rrule';
 
+<<<<<<< HEAD
+=======
+import '@fullcalendar/core/main.css';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/timegrid/main.css';
 import '@fullcalendar/list/main.css';
@@ -54,7 +64,13 @@ export default class FullCalendar extends Component {
       editable: true,
       selectable: true,
       selectHelper: true,
+<<<<<<< HEAD
       firstDay: moment().startOf('week').isoWeekday(),
+=======
+      firstDay: moment()
+        .startOf('week')
+        .isoWeekday(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       slotDuration: '00:30:00',
       snapDuration: '00:15:00',
       columnHeaderHtml: mom => {
@@ -66,13 +82,21 @@ export default class FullCalendar extends Component {
         );
       },
 
+<<<<<<< HEAD
       eventAllow: function (dropLocation, draggedEvent) {
+=======
+      eventAllow: function(dropLocation, draggedEvent) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         //        if(!that.state.calendar.calendars[draggedEvent.calendar]){
         //          return false;
         //        }
         return true;
       },
+<<<<<<< HEAD
       select: function (event) {
+=======
+      select: function(event) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         //Create event
         if (moment(event.end).diff(event.start) == 15 * 60 * 1000) {
           that.api.unselect();
@@ -89,19 +113,31 @@ export default class FullCalendar extends Component {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
+<<<<<<< HEAD
       eventResize: function (event) {
+=======
+      eventResize: function(event) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         event = event.event;
         if (that.props.onUpdate) {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
+<<<<<<< HEAD
       eventDrop: function (event) {
+=======
+      eventDrop: function(event) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         event = event.event;
         if (that.props.onUpdate) {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
+<<<<<<< HEAD
       eventClick: function (_event) {
+=======
+      eventClick: function(_event) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (this.disableUpdate) {
           console.log('click event');
           this.disableUpdate = false;
@@ -116,7 +152,11 @@ export default class FullCalendar extends Component {
 
         //if(!event.private_content){ViewsService.open();that.state.calendar.selectEvent(event);}
       },
+<<<<<<< HEAD
       eventRender: function (event) {
+=======
+      eventRender: function(event) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (event.event && event.event.id && event.isStart && !event.isMirror) {
           that.event_dom_elements[event.event.id] = event.el;
         }
@@ -312,11 +352,23 @@ export default class FullCalendar extends Component {
       from:
         (event.allDay
           ? moment(moment(event.start).format('YYYY-MM-DDT00:00:00+00:00')).valueOf()
+<<<<<<< HEAD
           : moment(event.start).utc().valueOf()) / 1000,
       to:
         (event.allDay
           ? moment(moment(event.end).format('YYYY-MM-DDT00:00:00+00:00')).valueOf()
           : moment(event.end).utc().valueOf()) /
+=======
+          : moment(event.start)
+              .utc()
+              .valueOf()) / 1000,
+      to:
+        (event.allDay
+          ? moment(moment(event.end).format('YYYY-MM-DDT00:00:00+00:00')).valueOf()
+          : moment(event.end)
+              .utc()
+              .valueOf()) /
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           1000 -
         (event.allDay ? 24 * 60 * 60 : 0),
       all_day: event.allDay,

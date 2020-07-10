@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -25,7 +29,11 @@ export default class ChannelUserAdd extends Component {
     var userWexterneId = (
       (channel.ext_members || [])
         .concat(Object.keys(WorkspacesUser.users_by_workspace[Workspaces.currentWorkspaceId]))
+<<<<<<< HEAD
         .filter(function (value, index, self) {
+=======
+        .filter(function(value, index, self) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           return self.indexOf(value) === index;
         })
         .filter(userId => WorkspacesUser.isExterne(userId))
@@ -42,7 +50,11 @@ export default class ChannelUserAdd extends Component {
                 {Languages.t(
                   'scenes.app.channelsbar.invite_autoadd',
                   [],
+<<<<<<< HEAD
                   'Invité ajouté automatiquement'
+=======
+                  'Invité ajouté automatiquement',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <UserListManager users={userWexterneId} scope="all" readOnly />
@@ -61,8 +73,13 @@ export default class ChannelUserAdd extends Component {
                 ? []
                 : (channel.members || []).concat(
                     (channel.ext_members || []).filter(userId =>
+<<<<<<< HEAD
                       WorkspacesUser.isAutoAddUser(userId)
                     ) || []
+=======
+                      WorkspacesUser.isAutoAddUser(userId),
+                    ) || [],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )
             }
             scope="all"
@@ -74,7 +91,11 @@ export default class ChannelUserAdd extends Component {
               channel.ext_members = ids_mails;
               Collections.get('channels').save(
                 channel,
+<<<<<<< HEAD
                 'channels_' + Workspaces.currentWorkspaceId
+=======
+                'channels_' + Workspaces.currentWorkspaceId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
               MenusManager.closeMenu();
             }}
@@ -83,7 +104,11 @@ export default class ChannelUserAdd extends Component {
             {Languages.t(
               'scenes.app.channelsbar.invated_access_right',
               [],
+<<<<<<< HEAD
               'Vous pouvez inviter des utilisateurs externe à votre espace de travail.'
+=======
+              'Vous pouvez inviter des utilisateurs externe à votre espace de travail.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
           {!channel.private && userWexterneId.length > 0 && (

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import MenusManager from 'services/Menus/MenusManager.js';
 import Icon from 'components/Icon/Icon.js';
@@ -29,7 +33,11 @@ export default class Select extends React.Component {
         };
       }),
       { x: pos.x + pos.width / 2, y: pos.y + pos.height },
+<<<<<<< HEAD
       'bottom'
+=======
+      'bottom',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   render() {

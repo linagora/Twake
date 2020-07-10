@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import DriveService from 'services/Apps/Drive/Drive.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -39,7 +43,11 @@ export default class FilePicker extends React.Component {
 
     if (this.drive_channel) {
       Collections.get('drive').removeSource(
+<<<<<<< HEAD
         this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+=======
+        this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
   }
@@ -100,7 +108,11 @@ export default class FilePicker extends React.Component {
     var allow_go_parent = true;
     var drive_channel = ChannelsService.getChannelForApp(
       (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {}).id,
+<<<<<<< HEAD
       Workspaces.currentWorkspaceId
+=======
+      Workspaces.currentWorkspaceId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     if (!drive_channel && (this.props.initialDirectory || {}).id == directory_id) {
       allow_go_parent = false;
@@ -159,11 +171,15 @@ export default class FilePicker extends React.Component {
               refInput={node => (node ? node.focus() : '')}
               type="text"
               defaultValue={''}
+<<<<<<< HEAD
               placeholder={Languages.t(
                 'scenes.apps.drive.navigators.navigator_content.directory_name',
                 [],
                 'Nom du dossier'
               )}
+=======
+              placeholder={Languages.t('scenes.apps.drive.navigators.navigator_content.directory_name',[],'Nom du dossier')}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               onKeyPress={e => {
                 if (e.key === 'Enter') {
                   DriveService.createDirectory(
@@ -173,7 +189,11 @@ export default class FilePicker extends React.Component {
                     DriveService.current_collection_key_channels[this.drive_channel],
                     res => {
                       this.changeCurrentDirectory(res);
+<<<<<<< HEAD
                     }
+=======
+                    },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                   this.setState({ creating_folder: false });
                 }
@@ -193,6 +213,7 @@ export default class FilePicker extends React.Component {
               </Button>
             )}
             {this.props.mode == 'select_location' && (
+<<<<<<< HEAD
               <Button
                 className="small"
                 value={Languages.t('components.drive.moove_here', [], 'Déplacer ici')}
@@ -205,6 +226,12 @@ export default class FilePicker extends React.Component {
                 value={Languages.t('scenes.app.taskpicker.select', [], 'Sélectionner')}
                 onClick={() => this.submit()}
               />
+=======
+              <Button className="small" value={Languages.t('components.drive.moove_here', [], "Déplacer ici")} onClick={() => this.submit()} />
+            )}
+            {this.props.mode == 'select_file' && this.state.current_selection.id && (
+              <Button className="small" value={Languages.t('scenes.app.taskpicker.select',[], "Sélectionner")} onClick={() => this.submit()} />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
         )}

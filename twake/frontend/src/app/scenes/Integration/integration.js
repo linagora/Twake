@@ -27,7 +27,11 @@ export default class Integration extends Component {
       return this.props.children;
     }
 
+<<<<<<< HEAD
     if (branding.style && branding.style.color) {
+=======
+    if (branding.style.color) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       document.documentElement.style.setProperty('--primary', branding.style.color);
       document.documentElement.style.setProperty(
         '--primary-background',
@@ -39,7 +43,11 @@ export default class Integration extends Component {
       );
       document.documentElement.style.setProperty('--secondary', '#38383d');
     }
+<<<<<<< HEAD
     if (branding.style && branding.style.default_border_radius) {
+=======
+    if (branding.style.default_border_radius) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       document.documentElement.style.setProperty(
         '--default-border-radius',
         branding.style.default_border_radius + 'px',

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
@@ -32,13 +36,21 @@ export default class Participants extends Component {
                 'aze',
                 ids_mails.map(id => {
                   return { user_id_or_mail: id };
+<<<<<<< HEAD
                 })
+=======
+                }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
               this.props.onChange &&
                 this.props.onChange(
                   ids_mails.map(id => {
                     return { user_id_or_mail: id };
+<<<<<<< HEAD
                   })
+=======
+                  }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               Menu.closeAll();
             }}

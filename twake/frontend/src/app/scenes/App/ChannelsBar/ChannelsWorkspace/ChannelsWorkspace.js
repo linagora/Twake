@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -104,7 +108,11 @@ export default class ChannelsWorkspace extends Component {
                   placeholder={Languages.t(
                     'scenes.app.channelsbar.channelsworkspace.group_name',
                     [],
+<<<<<<< HEAD
                     'Nom du groupe'
+=======
+                    'Nom du groupe',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                   onKeyPress={evt => {
                     if (evt.key === 'Enter') {
@@ -121,7 +129,11 @@ export default class ChannelsWorkspace extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.channelsworkspace.remove_group',
             [],
+<<<<<<< HEAD
             'Retirer le groupe'
+=======
+            'Retirer le groupe',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           className: 'danger',
           icon: 'trash',
@@ -129,7 +141,11 @@ export default class ChannelsWorkspace extends Component {
         },
       ],
       { x: evt.clientX, y: evt.clientY + 16 },
+<<<<<<< HEAD
       'bottom'
+=======
+      'bottom',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   addChannel(evt) {
@@ -139,7 +155,11 @@ export default class ChannelsWorkspace extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.channelsworkspace.create_channel',
           [],
+<<<<<<< HEAD
           'Créer une chaîne'
+=======
+          'Créer une chaîne',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       },
       {
@@ -172,7 +192,11 @@ export default class ChannelsWorkspace extends Component {
           Object.values(channel.members || []).length &&
           Object.values(channel.members || [])
             .concat(Object.values(channel.ext_members || []))
+<<<<<<< HEAD
             .indexOf(User.getCurrentUserId()) >= 0
+=======
+            .indexOf(User.getCurrentUserId()) >= 0,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
 
     var pinned_channels_preferences =
@@ -243,7 +267,11 @@ export default class ChannelsWorkspace extends Component {
           text={Languages.t(
             'scenes.app.channelsbar.channelsworkspace.channel_title',
             [],
+<<<<<<< HEAD
             'CHAÎNES'
+=======
+            'CHAÎNES',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           onAdd={
             WorkspaceUserRights.hasWorkspacePrivilege() &&
@@ -345,7 +373,11 @@ export default class ChannelsWorkspace extends Component {
               {Languages.t(
                 'scenes.app.channelsbar.channelsworkspace.no_channel',
                 [],
+<<<<<<< HEAD
                 'Aucune chaîne dans cet espace de travail !'
+=======
+                'Aucune chaîne dans cet espace de travail !',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           )}

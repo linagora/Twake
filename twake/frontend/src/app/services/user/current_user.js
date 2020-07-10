@@ -42,7 +42,11 @@ class CurrentUser extends Observable {
             ConfiguratorsManager.closeConfigurator(data.application);
           }
         }
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -102,7 +106,11 @@ class CurrentUser extends Observable {
     setTimeout(() => {
       var data = {
         preferences: JSON.parse(
+<<<<<<< HEAD
           JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences)
+=======
+          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       };
       var update = {
@@ -176,9 +184,15 @@ class CurrentUser extends Observable {
         headers: {
           'All-Cookies': JSON.stringify(cookies),
         },
+<<<<<<< HEAD
         xhr: function () {
           var myXhr = $.ajaxSettings.xhr();
           myXhr.onreadystatechange = function () {
+=======
+        xhr: function() {
+          var myXhr = $.ajaxSettings.xhr();
+          myXhr.onreadystatechange = function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             if (myXhr.readyState == XMLHttpRequest.DONE) {
               that.loading = false;
               var resp = JSON.parse(myXhr.responseText);
@@ -228,7 +242,11 @@ class CurrentUser extends Observable {
           text: Languages.t(
             'services.user.update_password_alert',
             [],
+<<<<<<< HEAD
             'Votre mot de passe a été mis à jour.'
+=======
+            'Votre mot de passe a été mis à jour.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
       } else {
@@ -245,7 +263,11 @@ class CurrentUser extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
+<<<<<<< HEAD
     Api.post('users/account/addmail', { mail: mail }, function (res) {
+=======
+    Api.post('users/account/addmail', { mail: mail }, function(res) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       that.loading = false;
 
       if (res.errors.indexOf('badmail') > -1) {

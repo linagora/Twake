@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
 
 import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+=======
+import React, {Component} from 'react';
+
+import {ObjectModalSectionTitle} from 'components/ObjectModal/ObjectModal.js';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
@@ -20,6 +26,7 @@ export default class EventsFilter extends React.Component {
   render() {
     return (
       <div className="search_filters">
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
@@ -28,15 +35,22 @@ export default class EventsFilter extends React.Component {
           )}
           icon="building"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.parameters.group_sections.workspaces', [], "Espaces de travails")} icon="building" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <WorkspaceListManager
           noPlaceholder
           showAddCurrentGroup
           showAddCurrentWorkspace
+<<<<<<< HEAD
           addText={Languages.t(
             'components.searchpopup.filter_ws',
             [],
             'Filtrer les espaces de travail'
           )}
+=======
+          addText={Languages.t('components.searchpopup.filter_ws', [], 'Filtrer les espaces de travail')}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           workspaces={this.state.options.workspaces || []}
           onUpdate={value => {
             this.state.options.workspaces = value;
@@ -44,10 +58,14 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.tags', [], 'Tags')}
           icon="label"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.tags', [], "Tags")} icon="label" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
         <TagPicker
           value={this.state.options.tags || []}
@@ -57,10 +75,14 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('scenes.apps.calendar.modals.part.participants', [], 'Participants')}
           icon="users-alt"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.calendar.modals.part.participants', [], "Participants")} icon="users-alt" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <UserListManager
           noPlaceholder
           canRemoveMyself
@@ -72,10 +94,14 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('scenes.apps.calendar.event_edition.deadline_tag', [], 'Deadline')}
           icon="calendar-alt"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.calendar.event_edition.deadline_tag', [], "Deadline")} icon="calendar-alt" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <DateSelectorInput
           withReset
           className=""
@@ -95,10 +121,14 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.creation', [], "Création")} icon="calendar-alt" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <DateSelectorInput
           withReset
           className=""
@@ -118,10 +148,14 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.last_modif', [], 'Dernière modification')}
           icon="calendar-alt"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.last_modif',[],"Dernière modification")} icon="calendar-alt" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <DateSelectorInput
           withReset
           className=""
@@ -147,7 +181,11 @@ export default class EventsFilter extends React.Component {
           onClick={() => {
             this.props.onSearch(this.state.options || {});
           }}
+<<<<<<< HEAD
           value={Languages.t('components.searchpopup.update_search', [], 'Update search')}
+=======
+          value={Languages.t('components.searchpopup.update_search', [], "Update search")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         />
       </div>
     );

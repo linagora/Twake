@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import DriveElement from 'components/Drive/DriveElement.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import Icon from 'components/Icon/Icon.js';
@@ -100,7 +104,11 @@ export default class PathElement extends DriveElement {
               </Menu>
             )}
         </div>
+<<<<<<< HEAD
       </DroppableZone>
+=======
+      </DroppableZone>,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     return list;

@@ -12,10 +12,17 @@ class ReactNative {
     var that = this;
     Globals.window.addEventListener(
       'message',
+<<<<<<< HEAD
       function (data) {
         that.receiveMessage(data);
       },
       false
+=======
+      function(data) {
+        that.receiveMessage(data);
+      },
+      false,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.callbacks = {};
 
@@ -30,7 +37,11 @@ class ReactNative {
     this.initPushRegistration();
     var that = this;
     that.improveLinks();
+<<<<<<< HEAD
     setInterval(function () {
+=======
+    setInterval(function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       that.improveLinks();
     }, 5000);
   }
@@ -41,7 +52,11 @@ class ReactNative {
     this.callbacks[unid] = callback;
 
     var that = this;
+<<<<<<< HEAD
     setTimeout(function () {
+=======
+    setTimeout(function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       delete that.callbacks[unid];
     }, 10 * 1000);
 
@@ -84,7 +99,11 @@ class ReactNative {
       link: link,
     };
 
+<<<<<<< HEAD
     this.callReactNative('openlink', req, function (data) {});
+=======
+    this.callReactNative('openlink', req, function(data) {});
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
   }
 
   isReactNative() {
@@ -97,7 +116,11 @@ class ReactNative {
     }
     Globals.window.open = this.openLink;
     $(document).off('click', 'a');
+<<<<<<< HEAD
     $(document).on('click', 'a', function (e) {
+=======
+    $(document).on('click', 'a', function(e) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var $this = $(this),
         target = '_blank'; // system open the device browser. _blank open inappbrowser
       if ($this.attr('href')) {
@@ -146,7 +169,11 @@ class ReactNative {
       destructiveButtonIndex: destructiveButtonIndex,
     };
 
+<<<<<<< HEAD
     this.callReactNative('actionsheet', req, function (data) {
+=======
+    this.callReactNative('actionsheet', req, function(data) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       console.log(data.data, data.data.index);
       console.log(callbacks);
       if (callbacks[data.data.index]) {
@@ -168,7 +195,11 @@ class ReactNative {
       no: no,
     };
 
+<<<<<<< HEAD
     this.callReactNative('confirm', req, function (data) {
+=======
+    this.callReactNative('confirm', req, function(data) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (data.data == 'yes') {
         if (callbackYes) callbackYes();
       } else {

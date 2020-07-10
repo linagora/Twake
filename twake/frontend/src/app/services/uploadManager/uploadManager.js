@@ -58,6 +58,7 @@ class UploadManager extends Observable {
     function newDirectoryApi(input, cb) {
       var fd = [],
         files = [];
+<<<<<<< HEAD
       var iterate = function (entries, path, resolve) {
         var promises = [];
         entries.forEach(function (entry) {
@@ -65,6 +66,15 @@ class UploadManager extends Observable {
             new Promise(function (resolve) {
               if ('getFilesAndDirectories' in entry) {
                 entry.getFilesAndDirectories().then(function (entries) {
+=======
+      var iterate = function(entries, path, resolve) {
+        var promises = [];
+        entries.forEach(function(entry) {
+          promises.push(
+            new Promise(function(resolve) {
+              if ('getFilesAndDirectories' in entry) {
+                entry.getFilesAndDirectories().then(function(entries) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   iterate(entries, entry.path + '/', resolve);
                 });
               } else {
@@ -75,13 +85,22 @@ class UploadManager extends Observable {
                 }
                 resolve();
               }
+<<<<<<< HEAD
             })
+=======
+            }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         });
         Promise.all(promises).then(resolve);
       };
+<<<<<<< HEAD
       input.getFilesAndDirectories().then(function (entries) {
         new Promise(function (resolve) {
+=======
+      input.getFilesAndDirectories().then(function(entries) {
+        new Promise(function(resolve) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           iterate(entries, '/', resolve);
         }).then(cb.bind(null, fd, files));
       });
@@ -91,7 +110,11 @@ class UploadManager extends Observable {
     function arrayApi(input, cb) {
       var fd = [],
         files = [];
+<<<<<<< HEAD
       [].slice.call(input.files).forEach(function (file) {
+=======
+      [].slice.call(input.files).forEach(function(file) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         fd.push(file);
         files.push(file.webkitRelativePath || file.name);
       });
@@ -106,7 +129,11 @@ class UploadManager extends Observable {
 
       function readEntries(entry, reader, oldEntries, cb) {
         var dirReader = reader || entry.createReader();
+<<<<<<< HEAD
         dirReader.readEntries(function (entries) {
+=======
+        dirReader.readEntries(function(entries) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           var newEntries = oldEntries ? oldEntries.concat(entries) : entries;
           if (entries.length) {
             setTimeout(readEntries.bind(null, entry, dirReader, newEntries, cb), 0);
@@ -118,6 +145,7 @@ class UploadManager extends Observable {
 
       function readDirectory(entry, path, resolve) {
         if (!path) path = entry.name;
+<<<<<<< HEAD
         readEntries(entry, 0, 0, function (entries) {
           var promises = [];
           entries.forEach(function (entry) {
@@ -125,19 +153,33 @@ class UploadManager extends Observable {
               new Promise(function (resolve) {
                 if (entry.isFile) {
                   entry.file(function (file) {
+=======
+        readEntries(entry, 0, 0, function(entries) {
+          var promises = [];
+          entries.forEach(function(entry) {
+            promises.push(
+              new Promise(function(resolve) {
+                if (entry.isFile) {
+                  entry.file(function(file) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     var p = path + '/' + file.name;
                     fd.push(file);
                     files.push(p);
                     resolve();
                   }, resolve.bind());
                 } else readDirectory(entry, path + '/' + entry.name, resolve);
+<<<<<<< HEAD
               })
+=======
+              }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           });
           Promise.all(promises).then(resolve.bind());
         });
       }
 
+<<<<<<< HEAD
       [].slice.call(items).forEach(function (entry) {
         entry = entry.webkitGetAsEntry();
         if (entry) {
@@ -145,6 +187,15 @@ class UploadManager extends Observable {
             new Promise(function (resolve) {
               if (entry.isFile) {
                 entry.file(function (file) {
+=======
+      [].slice.call(items).forEach(function(entry) {
+        entry = entry.webkitGetAsEntry();
+        if (entry) {
+          rootPromises.push(
+            new Promise(function(resolve) {
+              if (entry.isFile) {
+                entry.file(function(file) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   fd.push(file);
                   files.push(file.name);
                   resolve();
@@ -152,19 +203,32 @@ class UploadManager extends Observable {
               } else if (entry.isDirectory) {
                 readDirectory(entry, null, resolve);
               }
+<<<<<<< HEAD
             })
+=======
+            }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
       });
       Promise.all(rootPromises).then(cb.bind(null, fd, files));
     }
 
+<<<<<<< HEAD
     var cb = function (event, files, paths) {
       var tree = {};
       paths.forEach(function (path, file_index) {
         var dirs = tree;
         var real_file = files[file_index];
         path.split('/').forEach(function (dir, dir_index) {
+=======
+    var cb = function(event, files, paths) {
+      var tree = {};
+      paths.forEach(function(path, file_index) {
+        var dirs = tree;
+        var real_file = files[file_index];
+        path.split('/').forEach(function(dir, dir_index) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (dir.indexOf('.') == 0) {
             return;
           }

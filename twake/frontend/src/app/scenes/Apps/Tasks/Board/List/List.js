@@ -70,7 +70,11 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.predefined_participants',
               [],
+<<<<<<< HEAD
               'Participants prédéfinis...'
+=======
+              'Participants prédéfinis...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             submenu_replace: true,
             submenu: [
@@ -79,7 +83,11 @@ export default class List extends React.Component {
                 text: Languages.t(
                   'scenes.apps.tasks.list_modal.predefined_participants',
                   [],
+<<<<<<< HEAD
                   'Participants prédéfinis'
+=======
+                  'Participants prédéfinis',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
               },
               {
@@ -117,7 +125,11 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.archive_all_tasks',
               [],
+<<<<<<< HEAD
               'Archiver toutes les tâches'
+=======
+              'Archiver toutes les tâches',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             hide: this.props.showArchived,
             onClick: () => {
@@ -128,7 +140,11 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.remove_archived_tasks',
               [TasksService.getTasksInList(list.board_id, list.id, true).length],
+<<<<<<< HEAD
               'Supprimer les archivées ($1)'
+=======
+              'Supprimer les archivées ($1)',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             className: 'error',
             onClick: () => {
@@ -144,7 +160,11 @@ export default class List extends React.Component {
                 Collections.get('lists').remove(list, this.props.collectionKey);
               });
             },
+<<<<<<< HEAD
           }
+=======
+          },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     }
@@ -183,11 +203,19 @@ export default class List extends React.Component {
     var tasks = TasksService.getTasksInList(
       list.board_id,
       list.id,
+<<<<<<< HEAD
       this.props.showArchived ? true : false
     );
     TasksService.setElementIndexPool(
       'tasks_' + list.id,
       Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id })
+=======
+      this.props.showArchived ? true : false,
+    );
+    TasksService.setElementIndexPool(
+      'tasks_' + list.id,
+      Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id }),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     return (
@@ -232,7 +260,11 @@ export default class List extends React.Component {
                   type="list"
                   key={list.front_id}
                 >
+<<<<<<< HEAD
                   {(provided, snapshot) => (
+=======
+                  {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     <div
                       className={'droppable ' + (snapshot.isDraggingOver ? 'isDraggingOver ' : '')}
                       style={{}}
@@ -244,7 +276,11 @@ export default class List extends React.Component {
                           .sort(
                             (a, b) =>
                               TasksService.getElementIndex(a, 'tasks_' + a.list_id) -
+<<<<<<< HEAD
                               TasksService.getElementIndex(b, 'tasks_' + b.list_id)
+=======
+                              TasksService.getElementIndex(b, 'tasks_' + b.list_id),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           )
                           .map((item, index) => (
                             <Task

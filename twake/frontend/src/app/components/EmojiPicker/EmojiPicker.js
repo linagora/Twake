@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
 import Picker from 'components/Picker/Picker.js';
 import Emojione from 'components/Emojione/Emojione.js';
 import emojiService from 'services/emojis/emojis.js';
 import { List } from 'react-virtualized';
+=======
+import React, {Component} from 'react';
+import Picker from 'components/Picker/Picker.js';
+import Emojione from 'components/Emojione/Emojione.js';
+import emojiService from 'services/emojis/emojis.js';
+import {List} from 'react-virtualized';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import './EmojiPicker.scss';
 import Languages from 'services/languages/languages.js';
 
@@ -142,9 +150,13 @@ export default class EmojiPicker extends React.Component {
               return item.shortname;
             }}
             disableNavigationKey={true}
+<<<<<<< HEAD
             placeholder={
               Languages.t('scenes.apps.drive.left.search', [], 'Search') + ' EmojiOne...'
             }
+=======
+            placeholder={Languages.t('scenes.apps.drive.left.search', [], 'Search') + ' EmojiOne...'}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           />,
 
           <div className="scroller">
@@ -219,8 +231,12 @@ export default class EmojiPicker extends React.Component {
 
             {this.state.suggestions.length == 0 && (
               <div className="menu-text" style={{ marginTop: '20%', textAlign: 'center' }}>
+<<<<<<< HEAD
                 {Languages.t('components.user_picker.modal_no_result', [], 'Pas de résultats')}{' '}
                 <Emojione type={':confused:'} />
+=======
+                {Languages.t('components.user_picker.modal_no_result', [], "Pas de résultats")} <Emojione type={':confused:'} />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
             )}
           </div>,

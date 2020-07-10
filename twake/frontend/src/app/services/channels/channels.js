@@ -42,9 +42,15 @@ class Channels extends Observable {
     this.channel_front_read_state = {};
 
     var that = this;
+<<<<<<< HEAD
     Globals.window.addEventListener('focus', function (e) {
       that.readChannelIfNeeded(
         Collections.get('channels').findByFrontId(that.currentChannelFrontId)
+=======
+    Globals.window.addEventListener('focus', function(e) {
+      that.readChannelIfNeeded(
+        Collections.get('channels').findByFrontId(that.currentChannelFrontId),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     });
   }
@@ -172,12 +178,20 @@ class Channels extends Observable {
       //Select previously selected channel
       if (
         Collections.get('channels').findByFrontId(
+<<<<<<< HEAD
           this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId]
+=======
+          this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         )
       ) {
         this.select(
           { front_id: this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId] },
+<<<<<<< HEAD
           true
+=======
+          true,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
 
@@ -192,7 +206,11 @@ class Channels extends Observable {
       //Select workspace channel
       var candidates = Collections.get('channels').findBy(
         { original_workspace: currentWorkspaceId, application: false },
+<<<<<<< HEAD
         { channel_group_name: 'ASC' }
+=======
+        { channel_group_name: 'ASC' },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       if (candidates.length > 0) {
         this.select(candidates[0]);
@@ -314,7 +332,11 @@ class Channels extends Observable {
       preferences[channel.original_workspace].pinned_channels[channel.id] = true;
       preferences[channel.original_workspace].pinned_channels = Object.assign(
         {},
+<<<<<<< HEAD
         preferences[channel.original_workspace].pinned_channels
+=======
+        preferences[channel.original_workspace].pinned_channels,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -370,7 +392,11 @@ class Channels extends Observable {
       var icon_url = emojione.toImage(channel.icon);
       icon_url = icon_url.replace(
         'https://cdn.jsdelivr.net/emojione/assets/3.1/png/',
+<<<<<<< HEAD
         '/public/emojione/'
+=======
+        '/public/emojione/',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       icon_url = icon_url.replace(/.*(\/public)/, '$1');
       icon_url = icon_url.replace(/(.*\.png).*/, '$1');
@@ -533,7 +559,11 @@ class Channels extends Observable {
       if (res.data && res.data.object) {
         Collections.get('channels').save(
           res.data.object,
+<<<<<<< HEAD
           'direct_messages_' + UserService.getCurrentUserId()
+=======
+          'direct_messages_' + UserService.getCurrentUserId(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         this.select(res.data.object);
       }
@@ -554,11 +584,19 @@ class Channels extends Observable {
         if (res.data && res.data.object) {
           Collections.get('channels').save(
             res.data.object,
+<<<<<<< HEAD
             'direct_messages_' + UserService.getCurrentUserId()
           );
           this.select(res.data.object);
         }
       }
+=======
+            'direct_messages_' + UserService.getCurrentUserId(),
+          );
+          this.select(res.data.object);
+        }
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 

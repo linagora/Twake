@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import MenusManager from 'services/Menus/MenusManager.js';
 
@@ -53,7 +57,11 @@ export default class Menu extends React.Component {
     this.previous_menus_id = MenusManager.openMenu(
       this.props.menu,
       elementRect,
+<<<<<<< HEAD
       this.props.position
+=======
+      this.props.position,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     if (this.props.onOpen) this.props.onOpen();
   }

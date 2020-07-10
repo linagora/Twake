@@ -108,7 +108,11 @@ export default class MessagesScroller extends Component {
     this.animation_start = element.scrollTop;
     this.animation_change = to - this.animation_start;
     this.animation_startDate = +new Date();
+<<<<<<< HEAD
     const easeInOutQuad = function (t, b, c, d) {
+=======
+    const easeInOutQuad = function(t, b, c, d) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       t /= d / 2;
       if (t < 1) return (c / 2) * t * t + b;
       t--;
@@ -120,11 +124,19 @@ export default class MessagesScroller extends Component {
     }
     this.animation_index++;
 
+<<<<<<< HEAD
     that.animation_animateScroll = function (index) {
       const currentDate = +new Date();
       const currentTime = currentDate - that.animation_startDate;
       element.scrollTop = parseInt(
         easeInOutQuad(currentTime, that.animation_start, that.animation_change, duration)
+=======
+    that.animation_animateScroll = function(index) {
+      const currentDate = +new Date();
+      const currentTime = currentDate - that.animation_startDate;
+      element.scrollTop = parseInt(
+        easeInOutQuad(currentTime, that.animation_start, that.animation_change, duration),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       if (currentTime < duration) {
         if (index == that.animation_index) {

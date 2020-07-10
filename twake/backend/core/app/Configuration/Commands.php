@@ -8,7 +8,10 @@ class Commands
         "twake:schema:update" => "Twake\Core\Command\TwakeSchemaUpdateCommand",
         "twake:init" => "Twake\Core\Command\InitCommand",
         "twake:init_connector" => "BuiltInConnectors\Common\Command\InitConnector",
+<<<<<<< HEAD
         "twake:update_services_status" => "Twake\Core\Command\UpdateServicesStatusCommand",
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         "twake:routes" => "Twake\Core\Command\GetRoutesCommand",
         "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
         "twake:daily" => "Twake\Core\Command\DailyCommand",

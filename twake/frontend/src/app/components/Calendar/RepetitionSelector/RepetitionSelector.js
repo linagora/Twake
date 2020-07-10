@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Select from 'components/Select/Select.js';
 import Languages from 'services/languages/languages.js';
 import moment from 'moment';
@@ -37,6 +41,7 @@ export default class RepetitionSelector extends React.Component {
           'DTSTART:' +
           moment(this.state.date).format() +
           '\nRRULE:FREQ=WEEKLY;BYDAY=' +
+<<<<<<< HEAD
           moment(this.state.date).format('dd').toUpperCase(),
       },
       {
@@ -46,14 +51,40 @@ export default class RepetitionSelector extends React.Component {
             .ordinal(
               moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1
             ),
+=======
+          moment(this.state.date)
+            .format('dd')
+            .toUpperCase(),
+      },
+      {
+        text: Languages.t('components.calendar.repetition.monthly_on', [
+          moment.localeData().ordinal(
+            moment(this.state.date).week() -
+              moment(this.state.date)
+                .startOf('month')
+                .week() +
+              1,
+          ),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           moment(this.state.date).format('dddd'),
         ]),
         value:
           'DTSTART:' +
           moment(this.state.date).format() +
           '\nFREQ=MONTHLY;BYDAY=+' +
+<<<<<<< HEAD
           (moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1) +
           moment(this.state.date).format('dd').toUpperCase(),
+=======
+          (moment(this.state.date).week() -
+            moment(this.state.date)
+              .startOf('month')
+              .week() +
+            1) +
+          moment(this.state.date)
+            .format('dd')
+            .toUpperCase(),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       },
       {
         text: Languages.t('components.calendar.repetition.annually_on', [
@@ -111,7 +142,11 @@ export default class RepetitionSelector extends React.Component {
                   size: {
                     width: '400px',
                   },
+<<<<<<< HEAD
                 }
+=======
+                },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             }
             this.setState({ value: v });

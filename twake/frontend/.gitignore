@@ -6,7 +6,11 @@
 
 # testing
 /coverage
+<<<<<<< HEAD
 /src/app/environment/environment.ts
+=======
+/src/app/environment/environment.js
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 /src/app/environment/*-e
 
 # misc

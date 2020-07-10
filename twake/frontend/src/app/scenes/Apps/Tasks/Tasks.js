@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import UnconfiguredTab from './UnconfiguredTab.js';
 import Languages from 'services/languages/languages.js';
@@ -51,7 +55,11 @@ export default class Tasks extends Component {
           { uri: 'boards/' + this.props.channel.original_workspace, options: { type: 'board' } },
         ],
       },
+<<<<<<< HEAD
       this.boards_collection_key
+=======
+      this.boards_collection_key,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -81,7 +89,11 @@ export default class Tasks extends Component {
         'user'
       ) {
         var user_id = TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split(
+<<<<<<< HEAD
           '_'
+=======
+          '_',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         )[1];
         var user = Collections.get('users').find(user_id) || {};
         current_board = {
@@ -91,7 +103,11 @@ export default class Tasks extends Component {
         };
       } else {
         current_board = Collections.get('boards').find(
+<<<<<<< HEAD
           TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId]
+=======
+          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId],
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     }
@@ -131,6 +147,7 @@ export default class Tasks extends Component {
         {!loading && !current_board && (
           <div className="tasks_app">
             <div className="board_selector">
+<<<<<<< HEAD
               <div className="app_title">
                 {Languages.t('scenes.apps.tasks.boards', [], 'Boards')}
               </div>
@@ -138,6 +155,11 @@ export default class Tasks extends Component {
               <div className="app_subtitle">
                 {Languages.t('components.workspace.list_manager.all', [], 'All')}
               </div>
+=======
+              <div className="app_title">{Languages.t('scenes.apps.tasks.boards', [], 'Boards')}</div>
+
+              <div className="app_subtitle">{Languages.t('components.workspace.list_manager.all', [], 'All')}</div>
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
               {boards.map(board => {
                 return (
@@ -163,7 +185,11 @@ export default class Tasks extends Component {
                                   text: Languages.t(
                                     'scenes.apps.tasks.new_board.edit_title',
                                     [],
+<<<<<<< HEAD
                                     'Edit board'
+=======
+                                    'Edit board',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                   ),
                                 },
                                 {
@@ -187,7 +213,11 @@ export default class Tasks extends Component {
                                 AlertManager.confirm(() => {
                                   Collections.get('boards').remove(
                                     board,
+<<<<<<< HEAD
                                     this.boards_collection_key
+=======
+                                    this.boards_collection_key,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                   );
                                 });
                               },
@@ -198,7 +228,11 @@ export default class Tasks extends Component {
                               text: Languages.t(
                                 'scenes.apps.tasks.connectors_menu',
                                 [],
+<<<<<<< HEAD
                                 'Connecteurs...'
+=======
+                                'Connecteurs...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               ),
                               submenu: [
                                 {
@@ -207,7 +241,11 @@ export default class Tasks extends Component {
                                     var apps = WorkspacesApps.getApps().filter(
                                       app =>
                                         ((app.display || {}).tasks_module || {})
+<<<<<<< HEAD
                                           .can_connect_to_tasks
+=======
+                                          .can_connect_to_tasks,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                     );
                                     if (apps.length > 0) {
                                       return (
@@ -224,7 +262,11 @@ export default class Tasks extends Component {
                                             board.connectors = ids;
                                             Collections.get('boards').save(
                                               board,
+<<<<<<< HEAD
                                               this.boards_collection_key
+=======
+                                              this.boards_collection_key,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                             );
                                           }}
                                           onConfig={app => {
@@ -238,7 +280,11 @@ export default class Tasks extends Component {
                                         {Languages.t(
                                           'scenes.apps.tasks.no_connectors_menu_text',
                                           [],
+<<<<<<< HEAD
                                           "Vous n'avez aucun connecteur capable de se connecter à un calendrier."
+=======
+                                          "Vous n'avez aucun connecteur capable de se connecter à un calendrier.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                         )}
                                       </div>
                                     );
@@ -250,7 +296,11 @@ export default class Tasks extends Component {
                                   text: Languages.t(
                                     'scenes.apps.tasks.connectors_search_menu',
                                     [],
+<<<<<<< HEAD
                                     'Chercher des connecteurs...'
+=======
+                                    'Chercher des connecteurs...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                   ),
                                   onClick: () => {
                                     popupManager.open(
@@ -259,7 +309,11 @@ export default class Tasks extends Component {
                                         options={'open_search_apps'}
                                       />,
                                       true,
+<<<<<<< HEAD
                                       'workspace_parameters'
+=======
+                                      'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                     );
                                   },
                                 },
@@ -272,10 +326,14 @@ export default class Tasks extends Component {
                         </Menu>
                       )}
                     </div>
+<<<<<<< HEAD
                     <div className="board_info">
                       {board.active_tasks || '0'}{' '}
                       {Languages.t('scenes.apps.tasks.active_tasks', [], 'tâches actives')}
                     </div>
+=======
+                    <div className="board_info">{board.active_tasks || '0'} {Languages.t('scenes.apps.tasks.active_tasks',[],'tâches actives')}</div>
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </div>
                 );
               })}
@@ -306,7 +364,13 @@ export default class Tasks extends Component {
               )}
 
               <div className="app_title" style={{ marginTop: 16 }}>
+<<<<<<< HEAD
                 {Languages.t('scenes.apps.tasks.left.team', [], 'Team')}
+=======
+                {Languages.t('scenes.apps.tasks.left.team',
+                [],
+                'Team')}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
 
               {Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
@@ -333,7 +397,13 @@ export default class Tasks extends Component {
                 })}
 
               <div className="app_title" style={{ marginTop: 16 }}>
+<<<<<<< HEAD
                 {Languages.t('scenes.apps.tasks.my_tasks', [], 'Mes tâches')}
+=======
+                {Languages.t('scenes.apps.tasks.my_tasks',
+                [],
+                "Mes tâches")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
 
               <Board

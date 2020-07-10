@@ -1,0 +1,26 @@
+{
+  "presets": ["env", "stage-0", "react"],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": true
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "presets": ["env", "stage-0", "react"],
+      "plugins": [
+        [
+          "import",
+          {
+            "libraryName": "antd",
+            "style": true
+          }
+        ]
+      ]
+    }
+  }
+}

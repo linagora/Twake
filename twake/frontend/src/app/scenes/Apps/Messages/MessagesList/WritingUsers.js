@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -42,13 +46,21 @@ export default class WritingUsers extends Component {
     var phrase = Languages.t(
       'scenes.apps.messages.messageslist.get_writing_users',
       [],
+<<<<<<< HEAD
       "sont en train d'écrire..."
+=======
+      "sont en train d'écrire...",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     if (writing_users.length == 1) {
       phrase = Languages.t(
         'scenes.apps.messages.messageslist.get_writing_user',
         [],
+<<<<<<< HEAD
         "est en train d'écrire..."
+=======
+        "est en train d'écrire...",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Emojione from 'components/Emojione/Emojione.js';
 import MenusManager from 'services/Menus/MenusManager.js';

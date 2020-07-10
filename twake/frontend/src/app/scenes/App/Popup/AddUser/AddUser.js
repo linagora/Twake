@@ -50,7 +50,11 @@ export default class AddUser extends Component {
     var that = this;
     var notEmpty = false;
     that.state.collaborators = 0;
+<<<<<<< HEAD
     this.state.members.forEach(function (member, i) {
+=======
+    this.state.members.forEach(function(member, i) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (member.mail.length > 0) {
         notEmpty = true;
         that.state.input_to_show = i + 1;
@@ -132,7 +136,11 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.adresses_message',
                 [],
+<<<<<<< HEAD
                 "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement."
+=======
+                "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -145,7 +153,11 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.message_instruction',
                 [],
+<<<<<<< HEAD
                 'Utiliser le formulaire classique'
+=======
+                'Utiliser le formulaire classique',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>
           </div>
@@ -166,7 +178,11 @@ export default class AddUser extends Component {
                       value={item.mail}
                       key={'addMembers-' + index}
                       placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                         'scenes.app.workspaces.create_company.invitations.input_placeholder'
+=======
+                        'scenes.app.workspaces.create_company.invitations.input_placeholder',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       )}
                       onChange={e => this.onChangeMail({ mail: e.target.value }, index)}
                       onKeyDown={e => {
@@ -180,7 +196,11 @@ export default class AddUser extends Component {
                       label={Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.guest_status',
                         [],
+<<<<<<< HEAD
                         'Invité'
+=======
+                        'Invité',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       )}
                       value={item.externe == '1'}
                       onChange={state => this.onChangeMail({ externe: state ? '1' : '0' }, index)}
@@ -191,7 +211,11 @@ export default class AddUser extends Component {
             })}
             <div className="smalltext" style={{ opacity: 0.5 }}>
               {this.state.i18n.t(
+<<<<<<< HEAD
                 'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info'
+=======
+                'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -204,7 +228,11 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.adding_several_people',
                 [],
+<<<<<<< HEAD
                 'Ajouter plusieurs personnes à la fois'
+=======
+                'Ajouter plusieurs personnes à la fois',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>
           </div>
@@ -229,10 +257,17 @@ export default class AddUser extends Component {
               (this.state.members || []).map(item => (item || {}).mail || '').join('').length == 0
                 ? this.state.i18n.t(
                     'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
+<<<<<<< HEAD
                     'Skip'
                   )
                 : this.state.i18n.t(
                     'scenes.apps.parameters.group_sections.managers.invite_manager_button'
+=======
+                    'Skip',
+                  )
+                : this.state.i18n.t(
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )
             }
             loading={this.state.workspacesUsersService.loading || this.props.loading}

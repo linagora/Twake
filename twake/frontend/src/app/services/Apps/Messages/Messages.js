@@ -107,18 +107,33 @@ class Messages extends Observable {
           text: Languages.t(
             'services.apps.messages.no_command_possible',
             [value, app_name],
+<<<<<<< HEAD
             "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes."
+=======
+            "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           title: Languages.t(
             'services.apps.messages.no_app',
             [],
+<<<<<<< HEAD
             "Cette application n'existe pas."
+=======
+            "Cette application n'existe pas.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
         return;
       }
       var data = {
+<<<<<<< HEAD
         command: value.split(' ').slice(1).join(' '),
+=======
+        command: value
+          .split(' ')
+          .slice(1)
+          .join(' '),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         channel: channel,
         parent_message: options.parent_message_id
           ? Collections.get('messages').find(options.parent_message_id) || null
@@ -142,7 +157,11 @@ class Messages extends Observable {
       var parent = Collections.get('messages').find(message.parent_message_id);
       Collections.get('messages').completeObject(
         { responses_count: parent.responses_count + 1 },
+<<<<<<< HEAD
         parent.front_id
+=======
+        parent.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       Collections.get('messages').share(parent);
     }
@@ -238,7 +257,11 @@ class Messages extends Observable {
         .forEach(message => {
           Collections.get('messages').completeObject(
             { parent_message_id: message_container.id },
+<<<<<<< HEAD
             message.front_id
+=======
+            message.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
           moved.push(message);
         });
@@ -252,7 +275,11 @@ class Messages extends Observable {
       if (old_parent) {
         Collections.get('messages').completeObject(
           { responses_count: old_parent.responses_count - 1 },
+<<<<<<< HEAD
           old_parent.front_id
+=======
+          old_parent.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     }
@@ -262,7 +289,11 @@ class Messages extends Observable {
       new_parent = Collections.get('messages').find(message_container.id);
       Collections.get('messages').completeObject(
         { responses_count: new_parent.responses_count + 1 + Math.max(old_count, moved.length) },
+<<<<<<< HEAD
         new_parent.front_id
+=======
+        new_parent.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -277,7 +308,11 @@ class Messages extends Observable {
       if (parent.parent_message_id != '') {
         Collections.get('messages').updateObject(
           { parent_message_id: parent.parent_message_id },
+<<<<<<< HEAD
           message.front_id
+=======
+          message.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
 
@@ -320,7 +355,11 @@ class Messages extends Observable {
       var parent = Collections.get('messages').find(message.parent_message_id);
       Collections.get('messages').completeObject(
         { responses_count: parent.responses_count - 1 },
+<<<<<<< HEAD
         parent.front_id
+=======
+        parent.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       Collections.get('messages').share(parent);
     }

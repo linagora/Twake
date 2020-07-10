@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
@@ -67,7 +71,11 @@ export default class Tabs extends Component {
               placeholder={Languages.t(
                 'scenes.app.mainview.tabs.placeholder_name_tab',
                 [],
+<<<<<<< HEAD
                 "Nom de l'onglet"
+=======
+                "Nom de l'onglet",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               onKeyPress={e => {
                 if (e.key === 'Enter') {
@@ -178,14 +186,22 @@ export default class Tabs extends Component {
                   text: Languages.t(
                     'scenes.app.mainview.tabs.connectors_menu',
                     [],
+<<<<<<< HEAD
                     'Connecteurs...'
+=======
+                    'Connecteurs...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ),
                   submenu: [
                     {
                       type: 'react-element',
                       reactElement: level => {
                         var apps = WorkspacesApps.getApps().filter(
+<<<<<<< HEAD
                           app => (app.display || {}).channel
+=======
+                          app => (app.display || {}).channel,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                         if (apps.length > 0) {
                           return (
@@ -212,7 +228,11 @@ export default class Tabs extends Component {
                             {Languages.t(
                               'scenes.app.mainview.tabs.no_connected_connectors_for_channel',
                               [],
+<<<<<<< HEAD
                               "Vous n'avez aucun connecteur capable de se connecter à une chaîne."
+=======
+                              "Vous n'avez aucun connecteur capable de se connecter à une chaîne.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                           </div>
                         );
@@ -224,13 +244,21 @@ export default class Tabs extends Component {
                       text: Languages.t(
                         'scenes.app.mainview.tabs.searching_connectors',
                         [],
+<<<<<<< HEAD
                         'Chercher des connecteurs...'
+=======
+                        'Chercher des connecteurs...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       ),
                       onClick: () => {
                         popupManager.open(
                           <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
                           true,
+<<<<<<< HEAD
                           'workspace_parameters'
+=======
+                          'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       },
                     },
@@ -247,7 +275,11 @@ export default class Tabs extends Component {
   }
   render() {
     var current_channel = Collections.get('channels').findByFrontId(
+<<<<<<< HEAD
       this.state.channels.currentChannelFrontId
+=======
+      this.state.channels.currentChannelFrontId,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     if (current_channel.direct || current_channel.application) {
@@ -305,7 +337,11 @@ export default class Tabs extends Component {
             {Languages.t(
               'scenes.app.mainview.tabs.no_connected_connectors_for_tab',
               [],
+<<<<<<< HEAD
               "Vous n'avez aucun connecteur capable créer un onglet."
+=======
+              "Vous n'avez aucun connecteur capable créer un onglet.",
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
         ),
@@ -317,13 +353,21 @@ export default class Tabs extends Component {
       text: Languages.t(
         'scenes.app.mainview.tabs.searching_connectors',
         [],
+<<<<<<< HEAD
         'Chercher des connecteurs...'
+=======
+        'Chercher des connecteurs...',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ),
       onClick: () => {
         popupManager.open(
           <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
           true,
+<<<<<<< HEAD
           'workspace_parameters'
+=======
+          'workspace_parameters',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       },
     });

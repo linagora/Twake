@@ -20,7 +20,11 @@ class ListenWorkspace {
 
     var that = this;
     if (this.listenerCount[idWorkspace] == 1) {
+<<<<<<< HEAD
       ws.subscribe('workspace/' + idWorkspace, function (uri, data) {
+=======
+      ws.subscribe('workspace/' + idWorkspace, function(uri, data) {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (data.workspace) {
           data.workspace.id = idWorkspace;
           that.workspaces_repository.updateObject(data.workspace);

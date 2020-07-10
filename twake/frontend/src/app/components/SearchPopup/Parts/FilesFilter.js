@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
 
 import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+=======
+import React, {Component} from 'react';
+
+import {ObjectModalSectionTitle} from 'components/ObjectModal/ObjectModal.js';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
@@ -8,6 +14,10 @@ import Input from 'components/Inputs/Input.js';
 import WorkspaceListManager from 'components/WorkspaceListManager/WorkspaceListManager.js';
 import Languages from 'services/languages/languages.js';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 export default class FilesFilter extends React.Component {
   constructor(props) {
     super(props);
@@ -20,6 +30,7 @@ export default class FilesFilter extends React.Component {
   render() {
     return (
       <div className="search_filters">
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
@@ -28,15 +39,22 @@ export default class FilesFilter extends React.Component {
           )}
           icon="building"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.parameters.group_sections.workspaces', [], "Espaces de travails")} icon="building" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <WorkspaceListManager
           noPlaceholder
           showAddCurrentGroup
           showAddCurrentWorkspace
+<<<<<<< HEAD
           addText={Languages.t(
             'components.searchpopup.filter_ws',
             [],
             'Filtrer les espaces de travail'
           )}
+=======
+          addText={Languages.t('components.searchpopup.filter_ws', [], 'Filtrer les espaces de travail')}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           workspaces={this.state.options.workspaces || []}
           onUpdate={value => {
             this.state.options.workspaces = value;
@@ -44,10 +62,14 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.tags', [], 'Tags')}
           icon="label"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.tags', [], "Tags")} icon="label" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <TagPicker
           value={this.state.options.tags || []}
           onChange={values => {
@@ -56,6 +78,7 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.apps.badge_extension',
@@ -64,6 +87,9 @@ export default class FilesFilter extends React.Component {
           )}
           icon="triangle"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('scenes.apps.parameters.group_sections.apps.badge_extension', [], "Extension")} icon="triangle" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <Input
           style={{ width: 160 }}
           className="medium"
@@ -85,10 +111,14 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.size', [], 'Taille')}
           icon="weight"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.size', [], "Taille")} icon="weight" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <Input
           style={{ width: 80 }}
           className="medium"
@@ -138,10 +168,14 @@ export default class FilesFilter extends React.Component {
         />
         {' Mo'}
 
+<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />
+=======
+        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.creation', [], "Création")} icon="calendar-alt" />
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <DateSelectorInput
           withReset
           className=""
@@ -167,7 +201,11 @@ export default class FilesFilter extends React.Component {
           onClick={() => {
             this.props.onSearch(this.state.options || {});
           }}
+<<<<<<< HEAD
           value={Languages.t('components.searchpopup.update_search', [], 'Update search')}
+=======
+          value={Languages.t('components.searchpopup.update_search', [], "Update search")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         />
       </div>
     );

@@ -142,7 +142,11 @@ export default class Collection extends Observable {
             this.sources[key].did_first_load = true;
             this.did_load_first_time[key] = true;
             if (first_load_callback) first_load_callback(res);
+<<<<<<< HEAD
           }
+=======
+          },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
     };
@@ -200,7 +204,11 @@ export default class Collection extends Observable {
       res => {
         this.sources[source_key].http_loading = false;
         callback(res);
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -525,7 +533,11 @@ export default class Collection extends Observable {
       object = this.known_objects_by_front_id[object.front_id];
       this.objects_original_saved_by_front_id[object.front_id] = this.clearObjectState(
         object,
+<<<<<<< HEAD
         true
+=======
+        true,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
     return object;
@@ -559,7 +571,11 @@ export default class Collection extends Observable {
     } else {
       this.completeObject(
         this.objects_original_saved_by_front_id[object.front_id],
+<<<<<<< HEAD
         object.front_id
+=======
+        object.front_id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       delete this.objects_original_saved_by_front_id[object.front_id];
     }
@@ -595,7 +611,11 @@ export default class Collection extends Observable {
     var operation_time = new Date().getTime();
     this.known_objects_by_front_id[object.front_id].client_modification_time = operation_time;
     this.waiting_to_save_by_front_id[object.front_id] = JSON.parse(
+<<<<<<< HEAD
       JSON.stringify(this.known_objects_by_front_id[object.front_id])
+=======
+      JSON.stringify(this.known_objects_by_front_id[object.front_id]),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.doing_http_request++;
     this.completeObject({}, object.front_id);
@@ -604,7 +624,11 @@ export default class Collection extends Observable {
     var that = this;
 
     if (this.use_retry) {
+<<<<<<< HEAD
       this.timeout_fail[object.front_id] = setTimeout(function () {
+=======
+      this.timeout_fail[object.front_id] = setTimeout(function() {
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         that.retry(object);
       }, this.timer_send_fail);
     }
@@ -685,7 +709,11 @@ export default class Collection extends Observable {
     if (!this.waiting_to_delete_by_front_id[object.front_id]) {
       this.known_objects_by_front_id[object.front_id].client_modification_time = operation_time;
       this.waiting_to_delete_by_front_id[object.front_id] = JSON.parse(
+<<<<<<< HEAD
         JSON.stringify(this.known_objects_by_front_id[object.front_id])
+=======
+        JSON.stringify(this.known_objects_by_front_id[object.front_id]),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -700,7 +728,11 @@ export default class Collection extends Observable {
       this.object_buffer_add(
         this.waiting_to_delete_by_front_id[object.front_id],
         'remove',
+<<<<<<< HEAD
         source_key
+=======
+        source_key,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       return;
     }

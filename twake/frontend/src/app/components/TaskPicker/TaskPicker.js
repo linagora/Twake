@@ -44,7 +44,11 @@ export default class TaskPicker extends Component {
           { uri: 'boards/' + Workspaces.currentWorkspaceId, options: { type: 'board' } },
         ],
       },
+<<<<<<< HEAD
       this.tasks_collection_key
+=======
+      this.tasks_collection_key,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   componentWillUnmount() {
@@ -68,7 +72,11 @@ export default class TaskPicker extends Component {
           },
           websockets: [{ uri: 'board_lists/' + board.id, options: { type: 'list' } }],
         },
+<<<<<<< HEAD
         this.tasks_collection_key + '_' + board.id
+=======
+        this.tasks_collection_key + '_' + board.id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       Collections.get('tasks').addSource(
         {
@@ -78,7 +86,11 @@ export default class TaskPicker extends Component {
           },
           websockets: [{ uri: 'board_tasks/' + board.id, options: { type: 'task' } }],
         },
+<<<<<<< HEAD
         this.tasks_collection_key + '_' + board.id + '_tasks'
+=======
+        this.tasks_collection_key + '_' + board.id + '_tasks',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
     this.setState({ currentBoard: board });
@@ -128,7 +140,11 @@ export default class TaskPicker extends Component {
     console.log(Collections.get('lists').did_load_first_time);
     console.log(
       Collections.get('lists').findBy({ board_id: this.state.currentBoard.id }),
+<<<<<<< HEAD
       this.state.currentBoard.id
+=======
+      this.state.currentBoard.id,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     var loading = !Collections.get('lists').did_load_first_time[
       this.tasks_collection_key + '_' + this.state.currentBoard.id
@@ -146,7 +162,11 @@ export default class TaskPicker extends Component {
             .sort(
               (a, b) =>
                 TasksService.getElementIndex(a, 'lists_' + a.board_id) -
+<<<<<<< HEAD
                 TasksService.getElementIndex(b, 'lists_' + b.board_id)
+=======
+                TasksService.getElementIndex(b, 'lists_' + b.board_id),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )
             .map((item, index) => {
               return (
@@ -185,7 +205,11 @@ export default class TaskPicker extends Component {
             .sort(
               (a, b) =>
                 TasksService.getElementIndex(a, 'tasks_' + a.list_id) -
+<<<<<<< HEAD
                 TasksService.getElementIndex(b, 'tasks_' + b.list_id)
+=======
+                TasksService.getElementIndex(b, 'tasks_' + b.list_id),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )
             .map((item, index) => (
               <div

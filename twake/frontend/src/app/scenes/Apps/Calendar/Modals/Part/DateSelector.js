@@ -128,11 +128,17 @@ export default class DateSelector extends Component {
             onChange={value => {
               this.change('all_day', value);
             }}
+<<<<<<< HEAD
             label={Languages.t(
               'scenes.apps.calendar.event_edition.checkbox_all_day',
               [],
               'All day'
             )}
+=======
+            label={Languages.t('scenes.apps.calendar.event_edition.checkbox_all_day',
+            [],
+            "All day")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           />
         </div>
       </div>

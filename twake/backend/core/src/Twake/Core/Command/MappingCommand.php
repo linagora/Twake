@@ -20,7 +20,10 @@ class MappingCommand extends ContainerAwareCommand
 
     protected function execute()
     {
+<<<<<<< HEAD
         @file_put_contents("/twake.status.es_mapping", "0");
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
         //Wait for es connection
         error_log("\n⏳Waiting for ElasticSearch connection");
@@ -244,8 +247,11 @@ class MappingCommand extends ContainerAwareCommand
         $url = $this->getApp()->getContainer()->getParameter('es.host') . "/message_bloc";
         $this->updateMapping($url, $mapping_message_bloc, "/_mapping/_doc");
 
+<<<<<<< HEAD
         @file_put_contents("/twake.status.es_mapping", "1");
 
+=======
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     }
 
     private function updateMapping($url, $mapping, $mapping_suffix)

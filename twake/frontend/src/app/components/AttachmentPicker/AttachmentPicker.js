@@ -64,11 +64,15 @@ export default class AttachmentPicker extends Component {
                 additionalMenu = [
                   {
                     type: 'menu',
+<<<<<<< HEAD
                     text: Languages.t(
                       'components.attachmentpicker.remove_attach',
                       [],
                       'Remove attachment'
                     ),
+=======
+                    text: Languages.t('components.attachmentpicker.remove_attach', [], 'Remove attachment'),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     onClick: () => {
                       this.removeAttachment(att);
                     },
@@ -115,11 +119,15 @@ export default class AttachmentPicker extends Component {
                   {
                     type: 'menu',
                     icon: 'desktop',
+<<<<<<< HEAD
                     text: Languages.t(
                       'components.attachmentpicker.from_computer',
                       [],
                       'From computer'
                     ),
+=======
+                    text: Languages.t('components.attachmentpicker.from_computer', [], 'From computer'),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     onClick: () => {
                       this.upload_zone.open();
                       MenusManager.closeMenu();
@@ -128,11 +136,15 @@ export default class AttachmentPicker extends Component {
                   {
                     type: 'menu',
                     icon: 'folder',
+<<<<<<< HEAD
                     text: Languages.t(
                       'components.attachmentpicker.from_twake',
                       [],
                       'From Twake Documents'
                     ),
+=======
+                    text: Languages.t('components.attachmentpicker.from_twake', [], 'From Twake Documents'),
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     submenu: [
                       {
                         type: 'react-element',
@@ -174,12 +186,17 @@ export default class AttachmentPicker extends Component {
           >
             {' '}
             <Button className="small secondary-text right-margin">
+<<<<<<< HEAD
               <Icon type="plus" className="m-icon-small" />{' '}
               {Languages.t(
                 'components.attachmentpicker.add_attachment',
                 [],
                 'Ajouter des pièces jointes'
               )}
+=======
+              <Icon type="plus" className="m-icon-small" /> {Languages.t('components.attachmentpicker.add_attachment', 
+              [], "Ajouter des pièces jointes")}
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             </Button>
           </Menu>
         )}

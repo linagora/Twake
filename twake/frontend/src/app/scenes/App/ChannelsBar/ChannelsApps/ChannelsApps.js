@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
@@ -53,7 +57,11 @@ export default class ChannelsApps extends Component {
           channel.members.length &&
           (channel.members || [])
             .concat(channel.ext_members || [])
+<<<<<<< HEAD
             .indexOf(UserService.getCurrentUserId()) >= 0
+=======
+            .indexOf(UserService.getCurrentUserId()) >= 0,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
 
     var workspace_channels_by_app_id = {};

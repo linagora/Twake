@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { Component } from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import currentUserService from 'services/user/current_user.js';
@@ -34,7 +38,11 @@ export default class Notifications extends Component {
             {Languages.t(
               'scenes.app.popup.userparameter.pages.frequency_notif_subtitle',
               [],
+<<<<<<< HEAD
               'Fréquence des notifications'
+=======
+              'Fréquence des notifications',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -43,7 +51,11 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.keywords_notif_description',
               [],
+<<<<<<< HEAD
               'Ne recevez que des notifications correspondant à certains mots clés.'
+=======
+              'Ne recevez que des notifications correspondant à certains mots clés.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -61,13 +73,21 @@ export default class Notifications extends Component {
                   <div className="text bottom-margin">
                     {this.state.i18n.t(
                       'scenes.apps.account.notifications.keywords_activated_text',
+<<<<<<< HEAD
                       currentUserService.get().username
+=======
+                      currentUserService.get().username,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                   </div>
                   <AutoHeight
                     value={NotificationParameters.preferences.keywords}
                     placeholder={this.state.i18n.t(
+<<<<<<< HEAD
                       'scenes.apps.account.notifications.keywords_placeholder'
+=======
+                      'scenes.apps.account.notifications.keywords_placeholder',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )}
                     className="bottom-margin"
                     onChange={evt => {
@@ -95,12 +115,20 @@ export default class Notifications extends Component {
             label={Languages.t(
               'scenes.app.popup.userparameter.pages.no_night_disturbing_label',
               [],
+<<<<<<< HEAD
               'Ne pas déranger la nuit'
+=======
+              'Ne pas déranger la nuit',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description',
               [],
+<<<<<<< HEAD
               'Choisissez une période pendant laquelle vous ne recevez pas de notifications.'
+=======
+              'Choisissez une période pendant laquelle vous ne recevez pas de notifications.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -114,14 +142,22 @@ export default class Notifications extends Component {
                     NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
+<<<<<<< HEAD
                       -new Date().getTimezoneOffset() / 60
+=======
+                      -new Date().getTimezoneOffset() / 60,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )[0]
                   }
                   onChange={evt => {
                     NotificationParameters.preferences.dont_disturb_between = NotificationParameters.transform_period(
                       evt.target.value,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
+<<<<<<< HEAD
                       new Date().getTimezoneOffset() / 60
+=======
+                      new Date().getTimezoneOffset() / 60,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )[0];
                     NotificationParameters.notify();
                   }}
@@ -145,14 +181,22 @@ export default class Notifications extends Component {
                     NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
+<<<<<<< HEAD
                       -new Date().getTimezoneOffset() / 60
+=======
+                      -new Date().getTimezoneOffset() / 60,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )[1]
                   }
                   onChange={evt => {
                     NotificationParameters.preferences.dont_disturb_and = NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       evt.target.value,
+<<<<<<< HEAD
                       new Date().getTimezoneOffset() / 60
+=======
+                      new Date().getTimezoneOffset() / 60,
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     )[1];
                     NotificationParameters.notify();
                   }}
@@ -186,7 +230,11 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description',
               [],
+<<<<<<< HEAD
               'Configurez la fréquence des notifications mobile.'
+=======
+              'Configurez la fréquence des notifications mobile.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -204,7 +252,11 @@ export default class Notifications extends Component {
               <Radio
                 small
                 label={this.state.i18n.t(
+<<<<<<< HEAD
                   'scenes.apps.account.notifications.devices_option_inactive'
+=======
+                  'scenes.apps.account.notifications.devices_option_inactive',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 value={this.state.notifications_parameters.preferences.devices == 1}
                 onChange={checked => {
@@ -238,7 +290,11 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description',
               [],
+<<<<<<< HEAD
               'Configurez la fréquence des notifications mail.'
+=======
+              'Configurez la fréquence des notifications mail.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -293,12 +349,20 @@ export default class Notifications extends Component {
             label={Languages.t(
               'scenes.app.popup.userparameter.pages.notif_content_label',
               [],
+<<<<<<< HEAD
               'Contenu des notifications'
+=======
+              'Contenu des notifications',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.notif_content_description',
               [],
+<<<<<<< HEAD
               'Masquer le contenu des notifications mobile.'
+=======
+              'Masquer le contenu des notifications mobile.',
+>>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
