@@ -35,7 +35,7 @@ export default class NewDirectMessagesPopup extends Component {
               MediumPopupComponent.closeAll();
             }}
           >
-            {Languages.t('general.continue', [], 'Continuer')}
+            {Languages.t('general.continue', [], 'Continue')}
           </Button>
         }
       >

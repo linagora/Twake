@@ -13,8 +13,33 @@ export class ObjectModalTitle extends Component {
     );
   }
 }
-
+//ObjectModalSeparator
+export class ObjectModalSeparator extends Component {
+  render() {
+    return <div className="separator"></div>;
+  }
+}
+//ObjectModalSectionTitle
 export class ObjectModalSectionTitle extends Component {
+  render() {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <b>{this.props.title}</b>
+        <div>{this.props.action}</div>
+      </div>
+    );
+  }
+}
+
+// ObjectModalFormTitle
+export class ObjectModalFormTitle extends Component {
   render() {
     return (
       <div className={'section_title ' + this.props.className} style={this.props.style}>

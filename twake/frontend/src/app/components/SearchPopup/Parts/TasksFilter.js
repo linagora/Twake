@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
@@ -20,7 +20,7 @@ export default class EventsFilter extends React.Component {
   render() {
     return (
       <div className="search_filters">
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
             [],
@@ -44,7 +44,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.tags', [], 'Tags')}
           icon="label"
         />
@@ -57,7 +57,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.calendar.modals.part.participants', [], 'Participants')}
           icon="users-alt"
         />
@@ -72,7 +72,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.calendar.event_edition.deadline_tag', [], 'Deadline')}
           icon="calendar-alt"
         />
@@ -95,7 +95,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />
@@ -118,7 +118,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.last_modif', [], 'Dernière modification')}
           icon="calendar-alt"
         />
