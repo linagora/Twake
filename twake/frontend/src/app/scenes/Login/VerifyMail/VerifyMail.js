@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
@@ -33,11 +29,7 @@ export default class VerifyMail extends Component {
       },
       () => {
         this.setState({ status: 'error' });
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   componentWillUnmount() {
@@ -59,11 +51,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.verification_waiting',
                   [],
-<<<<<<< HEAD
                   'En attente de vérification...'
-=======
-                  'En attente de vérification...',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
             )}
@@ -74,11 +62,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.success',
                   [],
-<<<<<<< HEAD
                   'Votre e-mail a été vérifié avec succès!'
-=======
-                  'Votre e-mail a été vérifié avec succès!',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>,
               <a onClick={() => (document.location = '/')} className="blue_link">
@@ -92,11 +76,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.error_message',
                   [],
-<<<<<<< HEAD
                   "Une erreur s'est produite"
-=======
-                  "Une erreur s'est produite",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>,
               <a

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Observable from 'services/observable.js';
 import Confirm from 'components/Alert/Confirm.js';
@@ -72,11 +68,7 @@ class AlertService extends Observable {
     this.open(
       <Alert title={options.title} text={options.text} />,
       onCloseFunction,
-<<<<<<< HEAD
       onCloseFunction
-=======
-      onCloseFunction,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   confirm(onConfirm, onClose, options) {
@@ -94,11 +86,7 @@ class AlertService extends Observable {
     this.open(
       <Confirm title={options.title} text={options.text} />,
       onConfirmFunction,
-<<<<<<< HEAD
       onCloseFunction
-=======
-      onCloseFunction,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 }

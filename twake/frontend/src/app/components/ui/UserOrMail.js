@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import './elements.scss';
 import UsersService from 'services/user/user.js';
 import User from 'components/User/User.js';

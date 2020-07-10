@@ -26,10 +26,7 @@ class Login extends Observable {
     this.server_infos_loaded = false;
     this.server_infos = {
       branding: {},
-<<<<<<< HEAD
       ready: {},
-=======
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     };
 
     Globals.window.login = this;
@@ -37,20 +34,14 @@ class Login extends Observable {
     this.addmail_token = '';
     this.external_login_error = false;
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
   reset() {
     this.state = '';
     this.login_loading = false;
     this.login_error = false;
     this.currentUserId = null;
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
   changeState(state) {
     this.state = state;
     this.notify();
@@ -73,7 +64,6 @@ class Login extends Observable {
       this.server_infos = res.data;
       this.server_infos.branding = this.server_infos.branding ? this.server_infos.branding : {};
       this.server_infos_loaded = true;
-<<<<<<< HEAD
       Websocket.useOldMode(false);
       Websocket.setPublicKey(this.server_infos.websocket_public_key);
 
@@ -176,105 +166,6 @@ class Login extends Observable {
             that.startApp(res.data);
           }
         });
-=======
-      if (!this.server_infos.websocket_public_key) {
-        Websocket.useOldMode(true);
-      } else {
-        Websocket.useOldMode(false);
-      }
-      Websocket.setPublicKey(this.server_infos.websocket_public_key);
-      this.notify();
-    });
-
-    var logout =
-      WindowState.findGetParameter('logout') !== undefined
-        ? WindowState.findGetParameter('logout') === '1'
-        : false;
-    if (logout) {
-      this.logout(true);
-      WindowState.setUrl('/', true);
-      return;
-    }
-
-    var subscribe =
-      WindowState.findGetParameter('subscribe') !== undefined
-        ? WindowState.findGetParameter('subscribe') === '1'
-        : false;
-    if (subscribe) {
-      this.firstInit = true;
-      this.setPage('signin');
-      this.emailInit = WindowState.findGetParameter('mail') || '';
-      this.notify();
-      return;
-    }
-
-    var verifymail =
-      WindowState.findGetParameter('verify_mail') !== undefined
-        ? WindowState.findGetParameter('verify_mail') === '1'
-        : false;
-    if (verifymail) {
-      this.firstInit = true;
-      this.setPage('verify_mail');
-      this.notify();
-      return;
-    }
-
-    var external_login_result =
-      WindowState.findGetParameter('external_login') !== undefined
-        ? WindowState.findGetParameter('external_login')
-        : false;
-    try {
-      external_login_result = JSON.parse(external_login_result);
-    } catch (err) {
-      console.error(err);
-      external_login_result = false;
-    }
-    if (external_login_result) {
-      if (external_login_result.token && external_login_result.message == 'success') {
-        //Login with token
-        try {
-          const token = JSON.parse(external_login_result.token);
-          this.login(token.username, token.token, true, true);
-          this.firstInit = true;
-          return;
-        } catch (err) {
-          console.error(err);
-          this.external_login_error = 'Unknown error';
-        }
-      } else {
-        this.external_login_error = (external_login_result.message || {}).error || 'Unknown error';
-      }
-      this.firstInit = true;
-      this.notify();
-    }
-
-    var that = this;
-    Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function(res) {
-      that.firstInit = true;
-      if (res.errors.length > 0) {
-        if (
-          (res.errors.indexOf('redirect_to_openid') >= 0 ||
-            that.server_infos.auth_mode == 'openid') &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/openid');
-          return;
-        } else if (
-          (res.errors.indexOf('redirect_to_cas') >= 0 || that.server_infos.auth_mode == 'cas') &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/cas/login');
-          return;
-        }
-
-        that.state = 'logged_out';
-        that.notify();
-
-        WindowState.setTitle();
-        WindowState.setUrl('/', true);
-      } else {
-        that.startApp(res.data);
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       }
     });
   }
@@ -316,11 +207,7 @@ class Login extends Observable {
           _remember_me: rememberme,
           device: device,
         },
-<<<<<<< HEAD
         function (res) {
-=======
-        function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (res.data.status == 'connected') {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
@@ -363,11 +250,7 @@ class Login extends Observable {
         {
           device: device,
         },
-<<<<<<< HEAD
         function () {
-=======
-        function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (Globals.isReactNative) {
             that.reset();
             that.state = 'logged_out';
@@ -432,11 +315,7 @@ class Login extends Observable {
     this.login_loading = true;
     that.error_recover_nosuchmail = false;
     this.notify();
-<<<<<<< HEAD
     Api.post('users/recover/mail', data, function (res) {
-=======
-    Api.post('users/recover/mail', data, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (res.data.token) {
         that.recover_token = res.data.token;
         //that.changeState("RecoverPasswordCode");
@@ -463,11 +342,7 @@ class Login extends Observable {
     that.error_recover_badcode = false;
     this.login_loading = true;
     this.notify();
-<<<<<<< HEAD
     Api.post('users/recover/verify', data, function (res) {
-=======
-    Api.post('users/recover/verify', data, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (res.data.status == 'success') {
         that.recover_code = code;
         //                that.changeState("RecoverPasswordNewPassword");
@@ -505,11 +380,7 @@ class Login extends Observable {
     that.error_recover_badpasswords = false;
     that.error_recover_unknown = false;
     this.notify();
-<<<<<<< HEAD
     Api.post('users/recover/password', data, function (res) {
-=======
-    Api.post('users/recover/password', data, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (res.data.status == 'success') {
         funct(th);
 
@@ -543,11 +414,7 @@ class Login extends Observable {
     that.login_loading = true;
     that.doing_subscribe = true;
     this.notify();
-<<<<<<< HEAD
     Api.post('users/subscribe/mail', data, function (res) {
-=======
-    Api.post('users/subscribe/mail', data, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       that.login_loading = false;
       that.doing_subscribe = false;
       that.notify();
@@ -583,11 +450,7 @@ class Login extends Observable {
           mail: mail,
           device: device,
         },
-<<<<<<< HEAD
         function (res) {
-=======
-        function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (res.data.status == 'success') {
             success();
           } else {
@@ -609,11 +472,7 @@ class Login extends Observable {
     };
     that.login_loading = true;
     that.notify();
-<<<<<<< HEAD
     Api.post('users/subscribe/availability', data, function (res) {
-=======
-    Api.post('users/subscribe/availability', data, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       that.login_loading = false;
       if (res.data.status == 'success') {
         callback(th, 0);
@@ -640,11 +499,7 @@ class Login extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-<<<<<<< HEAD
     Api.post('users/account/addmail', { mail: mail }, function (res) {
-=======
-    Api.post('users/account/addmail', { mail: mail }, function(res) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       that.loading = false;
 
       if (res.errors.indexOf('badmail') > -1) {
@@ -663,11 +518,7 @@ class Login extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-<<<<<<< HEAD
     Api.post('users/account/addmailverify', { code: code, token: this.addmail_token }, function (
-=======
-    Api.post('users/account/addmailverify', { code: code, token: this.addmail_token }, function(
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       res,
     ) {
       that.loading = false;

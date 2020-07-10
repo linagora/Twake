@@ -70,11 +70,7 @@ export default class SecuredConnection {
       (uri, obj) => {
         this.receiveEvent(obj);
       },
-<<<<<<< HEAD
       websocket_id
-=======
-      websocket_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     ws.onReconnect(websocket_id, () => {
       this.close();
@@ -93,11 +89,7 @@ export default class SecuredConnection {
       (uri, obj) => {
         this.receiveEvent(obj);
       },
-<<<<<<< HEAD
       websocket_id
-=======
-      websocket_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     this.callback('close', {});

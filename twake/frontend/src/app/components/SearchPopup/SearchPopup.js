@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Search from 'services/search/search.js';
 import Collections from 'services/Collections/Collections.js';
 import UserService from 'services/user/user.js';
@@ -184,7 +180,6 @@ export default class SearchPopup extends React.Component {
               icon="search"
               className="full_width search_input"
               big
-<<<<<<< HEAD
               placeholder={
                 this.state.withFilters
                   ? Languages.t(
@@ -198,13 +193,6 @@ export default class SearchPopup extends React.Component {
                       'Recherche rapide'
                     )
               }
-=======
-              placeholder={this.state.withFilters ? Languages.t(
-                'scenes.app.mainview.advanced_search_placeholder',
-                [], 'Recherche avancée', ) : Languages.t(
-                'scenes.app.mainview.quick_search_placeholder',
-                [], 'Recherche rapide', )}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               value={Search.value}
               refInput={node => (this.input = node)}
               onChange={this.handleChange}
@@ -237,13 +225,9 @@ export default class SearchPopup extends React.Component {
                       this.setState({ withFilters: !this.state.withFilters });
                     }}
                   >
-<<<<<<< HEAD
                     {this.state.withFilters
                       ? Languages.t('components.searchpopup.hide_filters', [], 'hide filters')
                       : Languages.t('components.searchpopup.show_filters', [], 'show filters')}
-=======
-                    {this.state.withFilters ? Languages.t('components.searchpopup.hide_filters', [],'hide filters') : Languages.t('components.searchpopup.show_filters', [],'show filters')}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </a>
                 </div>
               )}
@@ -353,11 +337,7 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix +=
                           ' - ' +
                           moment(item.event.to * 1000).format(
-<<<<<<< HEAD
                             (dateTo != dateFrom ? 'L' : '') + 'LT'
-=======
-                            (dateTo != dateFrom ? 'L' : '') + 'LT',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           );
                         workspace_suffix += ')';
                       }
@@ -407,33 +387,21 @@ export default class SearchPopup extends React.Component {
                 })}
                 {!Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-<<<<<<< HEAD
                     {Languages.t(
                       'components.searchpopup.enter_text',
                       [],
                       'Enter some text to search Twake.'
                     )}
-=======
-                    {Languages.t('components.searchpopup.enter_text', [], "Enter some text to search Twake.")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </div>
                 )}
                 {Search.search_http_loading && Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 16 }}>
-<<<<<<< HEAD
                     {Languages.t('components.searchpopup.loading', [], 'Loading more results...')}
-=======
-                    {Languages.t('components.searchpopup.loading', [], "Loading more results...")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </div>
                 )}
                 {Search.value && this.state.total == 0 && !Search.search_http_loading && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-<<<<<<< HEAD
                     {Languages.t('components.user_picker.modal_no_result', [], 'No results found.')}
-=======
-                    {Languages.t('components.user_picker.modal_no_result', [], "No results found.")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </div>
                 )}
                 {this.state.total > 0 && Search.scroll_id && !Search.search_http_loading && (
@@ -443,11 +411,7 @@ export default class SearchPopup extends React.Component {
                         Search.loadMore();
                       }}
                     >
-<<<<<<< HEAD
                       {Languages.t('components.searchpopup.load_more', [], 'Load more results...')}
-=======
-                      {Languages.t('components.searchpopup.load_more', [], "Load more results...")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     </a>
                   </div>
                 )}

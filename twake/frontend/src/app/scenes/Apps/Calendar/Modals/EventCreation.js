@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
@@ -107,11 +103,7 @@ export default class EventCreation extends Component {
               placeholder={Languages.t(
                 'scenes.apps.calendar.modals.event_adresse_placeholder',
                 [],
-<<<<<<< HEAD
                 'Adresse'
-=======
-                'Adresse',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               onChange={evt => {
                 this.change('location', evt.target.value);
@@ -124,11 +116,7 @@ export default class EventCreation extends Component {
             onClick={() => {
               this.change(
                 'location',
-<<<<<<< HEAD
                 'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id
-=======
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             }}
           >
@@ -144,11 +132,7 @@ export default class EventCreation extends Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-<<<<<<< HEAD
             'Description'
-=======
-            'Description',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           onChange={evt => {
             this.change('description', evt.target.value);
@@ -186,11 +170,7 @@ export default class EventCreation extends Component {
                 event={CalendarService.edited}
                 collectionKey={this.props.collectionKey}
               />,
-<<<<<<< HEAD
               { size: { width: 600 } }
-=======
-              { size: { width: 600 } },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           }}
         >

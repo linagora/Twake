@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -83,11 +79,7 @@ export default class WorkspaceParameter extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.payments_subscriptions_title',
               [],
-<<<<<<< HEAD
               'Paiements et abonnements'
-=======
-              'Paiements et abonnements',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -110,11 +102,7 @@ export default class WorkspaceParameter extends Component {
             Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId).name,
             Collections.get('groups').find(WorkspaceService.currentGroupId).name,
           ],
-<<<<<<< HEAD
           "Vous êtes dans l'espace de travail $1 du groupe $2."
-=======
-          "Vous êtes dans l'espace de travail $1 du groupe $2.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         )}
         <br />
         <br />
@@ -124,11 +112,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_manager_current_status',
                 [],
-<<<<<<< HEAD
                 "Vous êtes Administrateur et Gérant de l'entreprise."
-=======
-                "Vous êtes Administrateur et Gérant de l'entreprise.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </span>
           )}
@@ -138,11 +122,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_current_status',
                 [],
-<<<<<<< HEAD
                 'Vous êtes Administrateur.'
-=======
-                'Vous êtes Administrateur.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </span>
           )}
@@ -152,11 +132,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.manager_current_status',
                 [],
-<<<<<<< HEAD
                 "Vous êtes Gérant de l'entreprise."
-=======
-                "Vous êtes Gérant de l'entreprise.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </span>
           )}
@@ -169,16 +145,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':house_with_garden:',
-<<<<<<< HEAD
         text: Languages.t(
           'scenes.apps.parameters.workspace_sections.workspace',
           [],
           'Espace de travail'
         ),
-=======
-        text: Languages.t('scenes.apps.parameters.workspace_sections.workspace', [],
-        'Espace de travail'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         selected: this.state.page == 1 ? 'selected' : '',
         onClick: () => {
           this.setPage(1);
@@ -187,16 +158,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':electric_plug:',
-<<<<<<< HEAD
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.apps_connectors_title',
           [],
           'Applications et connecteurs'
         ),
-=======
-        text: Languages.t('scenes.app.popup.workspaceparameter.pages.apps_connectors_title', [],
-        'Applications et connecteurs'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         selected: this.state.page == 3 ? 'selected' : '',
         onClick: () => {
           this.setPage(3);
@@ -206,16 +172,11 @@ export default class WorkspaceParameter extends Component {
     menu.push({
       type: 'menu',
       emoji: ':handshake:',
-<<<<<<< HEAD
       text: Languages.t(
         'scenes.app.popup.workspaceparameter.pages.collaborateurs',
         [],
         'Collaborateurs'
       ),
-=======
-      text: Languages.t('scenes.app.popup.workspaceparameter.pages.collaborateurs', [],
-      'Collaborateurs'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       selected: this.state.page == 2 ? 'selected' : '',
       onClick: () => {
         this.setPage(2);
@@ -227,16 +188,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':clipboard:',
-<<<<<<< HEAD
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.company_identity_title',
           [],
           "Identité de l'entreprise"
         ),
-=======
-        text: Languages.t('scenes.app.popup.workspaceparameter.pages.company_identity_title', [],
-        "Identité de l'entreprise"),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         selected: this.state.page == 4 ? 'selected' : '',
         onClick: () => {
           this.setPage(4);

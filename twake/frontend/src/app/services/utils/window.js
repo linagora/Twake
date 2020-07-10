@@ -23,11 +23,7 @@ class WindowState {
     location.search
       .substr(1)
       .split('&')
-<<<<<<< HEAD
       .forEach(function (item) {
-=======
-      .forEach(function(item) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         tmp = item.split('=');
         result[tmp[0]] = tmp[1];
       });
@@ -44,11 +40,7 @@ class WindowState {
     location.search
       .substr(1)
       .split('&')
-<<<<<<< HEAD
       .forEach(function (item) {
-=======
-      .forEach(function(item) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         tmp = item.split('=');
         if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
       });
@@ -81,11 +73,7 @@ class WindowState {
       text = 'Twake - ' + text;
     }
 
-<<<<<<< HEAD
     (function () {
-=======
-    (function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';

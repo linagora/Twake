@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -74,11 +70,7 @@ export default class WorkspacePartner extends Component {
     var that = this;
     that.state.collaborators = 0;
     var notEmpty = false;
-<<<<<<< HEAD
     this.state.members.forEach(function (member, i) {
-=======
-    this.state.members.forEach(function(member, i) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (member.mail.length > 0) {
         notEmpty = true;
         that.state.input_to_show = i + 1;
@@ -115,11 +107,7 @@ export default class WorkspacePartner extends Component {
               label={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.company_manager_label',
                 [],
-<<<<<<< HEAD
                 "Gérant de l'entreprise"
-=======
-                "Gérant de l'entreprise",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               value={
                 this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][col.id]
@@ -132,20 +120,12 @@ export default class WorkspacePartner extends Component {
                     text: Languages.t(
                       'scenes.app.popup.workspaceparameter.pages.modify_level',
                       [],
-<<<<<<< HEAD
                       "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)"
-=======
-                      "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                   },
                   () => {
                     workspacesUsers.updateManagerRole(col.id, state);
-<<<<<<< HEAD
                   }
-=======
-                  },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }}
             />
@@ -157,11 +137,7 @@ export default class WorkspacePartner extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.edit_level_user_text',
           [],
-<<<<<<< HEAD
           "Un utilisateur gérant d'entreprise peut accéder à l'administration complète de l'entreprise (paiements, membres de l'entreprise, identité de l'entreprise)."
-=======
-          "Un utilisateur gérant d'entreprise peut accéder à l'administration complète de l'entreprise (paiements, membres de l'entreprise, identité de l'entreprise).",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       },
     ];
@@ -188,20 +164,12 @@ export default class WorkspacePartner extends Component {
                     text: Languages.t(
                       'scenes.app.popup.workspaceparameter.pages.modify_level',
                       [],
-<<<<<<< HEAD
                       "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)"
-=======
-                      "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                   },
                   () => {
                     workspacesUsers.updateUserLevel(col.id, state);
-<<<<<<< HEAD
                   }
-=======
-                  },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )
               }
             />
@@ -213,11 +181,7 @@ export default class WorkspacePartner extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text',
           [],
-<<<<<<< HEAD
           "Un administrateur peut configurer l'espace de travail (identité de l'espace, applications, membres de l'espace)."
-=======
-          "Un administrateur peut configurer l'espace de travail (identité de l'espace, applications, membres de l'espace).",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       },
     ];
@@ -228,11 +192,7 @@ export default class WorkspacePartner extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.invite_button',
           [],
-<<<<<<< HEAD
           'Inviter dans cet espace'
-=======
-          'Inviter dans cet espace',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
         onClick: () => {
           workspacesUsers.addUserFromGroup(col.user.id, col.externe);
@@ -258,11 +218,7 @@ export default class WorkspacePartner extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
             [],
-<<<<<<< HEAD
             'Quitter cet espace'
-=======
-            'Quitter cet espace',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           className: 'error',
           onClick: () => {
@@ -276,20 +232,12 @@ export default class WorkspacePartner extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.withdraw_button',
             [],
-<<<<<<< HEAD
             'Retirer de cet espace'
-=======
-            'Retirer de cet espace',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           className: 'error',
           onClick: () => {
             AlertManager.confirm(() =>
-<<<<<<< HEAD
               this.state.workspacesUsers.removeUser(col.id, workspaceService.currentWorkspaceId)
-=======
-              this.state.workspacesUsers.removeUser(col.id, workspaceService.currentWorkspaceId),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           },
         });
@@ -311,21 +259,13 @@ export default class WorkspacePartner extends Component {
         menu = [
           {
             type: 'menu',
-<<<<<<< HEAD
             text: Languages.t('scenes.app.popup.workspace.edit_temp', [], 'Edit temporary account'),
-=======
-            text: Languages.t('scenes.app.popup.workspace.edit_temp', [],'Edit temporary account'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             onClick: () => {
               MediumPopupManager.open(
                 <CreateCompanyAccount edit email={col.user.mail_verification_override_mail} />,
                 {
                   size: { width: 400 },
-<<<<<<< HEAD
                 }
-=======
-                },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             },
           },
@@ -352,17 +292,10 @@ export default class WorkspacePartner extends Component {
     var adminLevelId = workspacesUsers.getAdminLevel().id;
     var non_pending_mails = [];
     Object.keys(
-<<<<<<< HEAD
       this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)
     ).map(key => {
       var user = this.state.workspacesUsers.getUsersByWorkspace(
         workspaceService.currentWorkspaceId
-=======
-      this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId),
-    ).map(key => {
-      var user = this.state.workspacesUsers.getUsersByWorkspace(
-        workspaceService.currentWorkspaceId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       )[key].user;
       if (user.mail_hash) {
         non_pending_mails.push(user.mail_hash);
@@ -374,11 +307,7 @@ export default class WorkspacePartner extends Component {
         id: user.id,
         user: user,
         externe: this.state.workspacesUsers.getUsersByWorkspace(
-<<<<<<< HEAD
           workspaceService.currentWorkspaceId
-=======
-          workspaceService.currentWorkspaceId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         )[key].externe,
         level: this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[
           key
@@ -432,11 +361,7 @@ export default class WorkspacePartner extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.collaborateurs',
             [],
-<<<<<<< HEAD
             'Collaborateurs'
-=======
-            'Collaborateurs',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 
@@ -445,11 +370,7 @@ export default class WorkspacePartner extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.worspace_subtitle',
               [],
-<<<<<<< HEAD
               'Espace de travail'
-=======
-              'Espace de travail',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -457,11 +378,7 @@ export default class WorkspacePartner extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text',
               [users.length],
-<<<<<<< HEAD
               'Collaborateurs dans cet espace de travail $1'
-=======
-              'Collaborateurs dans cet espace de travail $1',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -501,15 +418,9 @@ export default class WorkspacePartner extends Component {
                         {Languages.t(
                           'scenes.app.popup.workspaceparameter.pages.administrater_status',
                           [],
-<<<<<<< HEAD
                           'Administrateur'
                         )}
                       </div>
-=======
-                          'Administrateur',
-                        )}
-                      </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     );
                   }
                   if (col.groupLevel > 0 && col.groupLevel !== null) {
@@ -518,15 +429,9 @@ export default class WorkspacePartner extends Component {
                         {Languages.t(
                           'scenes.app.popup.workspaceparameter.pages.company_manager_status',
                           [],
-<<<<<<< HEAD
                           "Gérant d'entreprise"
                         )}
                       </div>
-=======
-                          "Gérant d'entreprise",
-                        )}
-                      </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     );
                   }
                   if (col.externe) {
@@ -535,15 +440,9 @@ export default class WorkspacePartner extends Component {
                         {Languages.t(
                           'scenes.app.popup.workspaceparameter.pages.guest_status',
                           [],
-<<<<<<< HEAD
                           'Invité'
                         )}
                       </div>
-=======
-                          'Invité',
-                        )}
-                      </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     );
                   }
                   return <div className="fix_text_padding_medium">{tags}</div>;
@@ -568,11 +467,7 @@ export default class WorkspacePartner extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail',
                 [pendingMail.length],
-<<<<<<< HEAD
                 'Collaborateurs invités par email '
-=======
-                'Collaborateurs invités par email ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
             <Table
@@ -597,11 +492,7 @@ export default class WorkspacePartner extends Component {
                             {Languages.t(
                               'scenes.app.popup.workspaceparameter.pages.extern_guest',
                               [],
-<<<<<<< HEAD
                               'Utilisateur invité'
-=======
-                              'Utilisateur invité',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                           </div>
                         </div>
@@ -626,15 +517,11 @@ export default class WorkspacePartner extends Component {
                           menu={[
                             {
                               type: 'menu',
-<<<<<<< HEAD
                               text: Languages.t(
                                 'scenes.app.popup.workspace.create_temp',
                                 [],
                                 'Create temporary account'
                               ),
-=======
-                              text: Languages.t('scenes.app.popup.workspace.create_temp', [], 'Create temporary account'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               onClick: () => {
                                 MediumPopupManager.open(<CreateCompanyAccount email={col.mail} />, {
                                   size: { width: 400 },
@@ -648,11 +535,7 @@ export default class WorkspacePartner extends Component {
                               text: Languages.t(
                                 'scenes.app.popup.workspaceparameter.pages.cancel_invitation',
                                 [],
-<<<<<<< HEAD
                                 "Annuler l'invitation."
-=======
-                                "Annuler l'invitation.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               ),
                               onClick: () => {
                                 AlertManager.confirm(
@@ -662,15 +545,9 @@ export default class WorkspacePartner extends Component {
                                     text: Languages.t(
                                       'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button',
                                       [],
-<<<<<<< HEAD
                                       "Annuler l'invitation par mail."
                                     ),
                                   }
-=======
-                                      "Annuler l'invitation par mail.",
-                                    ),
-                                  },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                 );
                               },
                             },
@@ -693,11 +570,7 @@ export default class WorkspacePartner extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.invitation_error',
               [],
-<<<<<<< HEAD
               "Une erreur s'est produite lors de l'invitation des personnes suivantes :\n"
-=======
-              "Une erreur s'est produite lors de l'invitation des personnes suivantes :\n",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             {workspacesUsers.errorUsersInvitation
               .filter(item => item)
@@ -708,11 +581,7 @@ export default class WorkspacePartner extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message',
                 [],
-<<<<<<< HEAD
                 "Vérifiez que le nom d'utilisateur ou le mail utilisé est valide."
-=======
-                "Vérifiez que le nom d'utilisateur ou le mail utilisé est valide.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           </div>
@@ -729,11 +598,7 @@ export default class WorkspacePartner extends Component {
               value={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
                 [],
-<<<<<<< HEAD
                 'Ajouter des collaborateurs'
-=======
-                'Ajouter des collaborateurs',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             />
           </div>
@@ -745,11 +610,7 @@ export default class WorkspacePartner extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.company_subtitle',
                 [],
-<<<<<<< HEAD
                 'Entreprise'
-=======
-                'Entreprise',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -757,11 +618,7 @@ export default class WorkspacePartner extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.other_collaboraters-small_text',
                 [usersInGroup.length],
-<<<<<<< HEAD
                 'Autres collaborateurs dans cette entreprise ($1)'
-=======
-                'Autres collaborateurs dans cette entreprise ($1)',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -800,15 +657,9 @@ export default class WorkspacePartner extends Component {
                           {Languages.t(
                             'scenes.app.popup.workspaceparameter.pages.company_manager_label',
                             [],
-<<<<<<< HEAD
                             "Gérant de l'entreprise"
                           )}
                         </div>
-=======
-                            "Gérant de l'entreprise",
-                          )}
-                        </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       );
                     }
                     if (col.externe) {
@@ -817,15 +668,9 @@ export default class WorkspacePartner extends Component {
                           {Languages.t(
                             'scenes.app.popup.workspaceparameter.pages.extern',
                             [],
-<<<<<<< HEAD
                             'Externe'
                           )}
                         </div>
-=======
-                            'Externe',
-                          )}
-                        </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       );
                     }
                     return <div className="fix_text_padding_medium">{tags}</div>;

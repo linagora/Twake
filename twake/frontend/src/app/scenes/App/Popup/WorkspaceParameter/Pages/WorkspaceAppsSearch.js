@@ -80,11 +80,7 @@ export default class WorkspaceAppsSearch extends Component {
                 value={Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.show_button',
                   [],
-<<<<<<< HEAD
                   'Afficher'
-=======
-                  'Afficher',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 disabled={this.state.loading}
                 loading={this.state.loading}
@@ -111,15 +107,9 @@ export default class WorkspaceAppsSearch extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.installed_app_information',
           [],
-<<<<<<< HEAD
           "Installer l'application dans cet espace de travail."
         ),
       }
-=======
-          "Installer l'application dans cet espace de travail.",
-        ),
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -152,11 +142,7 @@ export default class WorkspaceAppsSearch extends Component {
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.back_to_search_button',
                   [],
-<<<<<<< HEAD
                   'Retour à la recherche'
-=======
-                  'Retour à la recherche',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </a>
             </div>
@@ -167,11 +153,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.description',
                 [],
-<<<<<<< HEAD
                 'Description'
-=======
-                'Description',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -185,11 +167,7 @@ export default class WorkspaceAppsSearch extends Component {
 
             <div className="text markdown" style={{ marginTop: 10 }}>
               {PseudoMarkdownCompiler.compileToHTML(
-<<<<<<< HEAD
                 PseudoMarkdownCompiler.compileToJSON(application.description || '')
-=======
-                PseudoMarkdownCompiler.compileToJSON(application.description || ''),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -210,11 +188,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.write_access_subtitle',
                 [],
-<<<<<<< HEAD
                 'Accès en écriture'
-=======
-                'Accès en écriture',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
             <TagPicker
@@ -230,11 +204,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-<<<<<<< HEAD
                     'Aucun accès.'
-=======
-                    'Aucun accès.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </div>
               ))}
@@ -243,11 +213,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.read_access_subtitle',
                 [],
-<<<<<<< HEAD
                 'Accès en lecture'
-=======
-                'Accès en lecture',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
             <TagPicker
@@ -263,11 +229,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-<<<<<<< HEAD
                     'Aucun accès.'
-=======
-                    'Aucun accès.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </div>
               ))}
@@ -276,11 +238,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.webhooks_access_subtitle',
                 [],
-<<<<<<< HEAD
                 'Accès aux webhooks'
-=======
-                'Accès aux webhooks',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
             <TagPicker
@@ -296,11 +254,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-<<<<<<< HEAD
                     'Aucun accès.'
-=======
-                    'Aucun accès.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </div>
               ))}
@@ -312,11 +266,7 @@ export default class WorkspaceAppsSearch extends Component {
               value={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.install_button',
                 [],
-<<<<<<< HEAD
                 'Installer'
-=======
-                'Installer',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               disabled={this.state.loading}
               loading={this.state.loading}
@@ -340,11 +290,7 @@ export default class WorkspaceAppsSearch extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.apps_research_title',
             [],
-<<<<<<< HEAD
             'Rechercher des applications'
-=======
-            'Rechercher des applications',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 
@@ -359,11 +305,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.show_all_apps_text',
                 [],
-<<<<<<< HEAD
                 "Voir la liste d'applications"
-=======
-                "Voir la liste d'applications",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>
             <a key="goback" onClick={() => this.props.exit()}>
@@ -383,11 +325,7 @@ export default class WorkspaceAppsSearch extends Component {
             placeholder={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.research_by',
               [],
-<<<<<<< HEAD
               'Rechercher des applications par nom et catégories'
-=======
-              'Rechercher des applications par nom et catégories',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           />
         </div>
@@ -398,11 +336,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.apps_small_text',
                 [],
-<<<<<<< HEAD
                 'Applications de cet espace de travail'
-=======
-                'Applications de cet espace de travail',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -416,11 +350,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.apps_company_small_text',
                 [],
-<<<<<<< HEAD
                 'Applications de votre entreprise'
-=======
-                'Applications de votre entreprise',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -434,11 +364,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.developped_apps_small_text',
                 [],
-<<<<<<< HEAD
                 'Applications développées par votre entreprise'
-=======
-                'Applications développées par votre entreprise',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 
@@ -452,11 +378,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.all_apps_small_text',
                 [],
-<<<<<<< HEAD
                 'Toutes les applications'
-=======
-                'Toutes les applications',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
 

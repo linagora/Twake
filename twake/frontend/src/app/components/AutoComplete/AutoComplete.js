@@ -39,11 +39,7 @@ export default class AutoComplete extends Component {
     this.keyDown = this.keyDown.bind(this);
 
     var that = this;
-<<<<<<< HEAD
     window.addEventListener('keydown', function (evt) {
-=======
-    window.addEventListener('keydown', function(evt) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       evt = evt || window.event;
       var isEscape = false;
       if ('key' in evt) {
@@ -157,11 +153,7 @@ export default class AutoComplete extends Component {
   }
   search(query, i) {
     var that = this;
-<<<<<<< HEAD
     that.props.search[that.state.currentRegexUsed](query, function (results) {
-=======
-    that.props.search[that.state.currentRegexUsed](query, function(results) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       if (!that.is_open) {
         return;
       }
@@ -235,11 +227,7 @@ export default class AutoComplete extends Component {
 
     this.putTextAtCursor(
       this.props.renderItemChoosen[this.state.currentRegexUsed](item),
-<<<<<<< HEAD
       alreadyTypedLength
-=======
-      alreadyTypedLength,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     if (that.props.onSelect) {

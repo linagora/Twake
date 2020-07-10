@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import DriveElement from './DriveElement.js';
 import UIDirectory from './UI/Directory.js';
 import Loader from 'components/Loader/Loader.js';
@@ -36,15 +32,11 @@ export default class Directory extends DriveElement {
           {this.state.loading && <Loader color="#CCC" className="file_loader" />}
           {!this.state.loading && (
             <span className="text" style={{ opacity: 0.5 }}>
-<<<<<<< HEAD
               {Languages.t(
                 'components.drive.navigators.directory_not_found',
                 [],
                 'Directory not found.'
               )}
-=======
-              {Languages.t('components.drive.navigators.directory_not_found', [], "Directory not found.")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             </span>
           )}
         </div>

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import MenusManager from 'services/Menus/MenusManager.js';
 import MenuComponent from './MenuComponent.js';
@@ -126,11 +122,7 @@ export default class MenusBodyLayer extends React.Component {
         item.position.marginTop = Math.min(
           0,
           (item.position.marginTop || 0) -
-<<<<<<< HEAD
             (rect.bottom - Math.min(document.documentElement.clientHeight, max_bottom) + 5)
-=======
-            (rect.bottom - Math.min(document.documentElement.clientHeight, max_bottom) + 5),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         MenusManager.notify();
       }
@@ -148,11 +140,7 @@ export default class MenusBodyLayer extends React.Component {
     ) {
       item.position.marginLeft = Math.min(
         0,
-<<<<<<< HEAD
         (item.position.marginLeft || 0) - (rect.right - document.documentElement.clientWidth + 5)
-=======
-        (item.position.marginLeft || 0) - (rect.right - document.documentElement.clientWidth + 5),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       MenusManager.notify();
     }

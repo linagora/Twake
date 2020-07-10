@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Draggable from 'components/Draggable/Draggable.js';
 import DriveElement from './DriveElement.js';
 import './Drive.scss';
@@ -33,11 +29,7 @@ export default class File extends DriveElement {
           {this.state.loading && <Loader color="#CCC" className="file_loader" />}
           {!this.state.loading && (
             <span className="text" style={{ opacity: 0.5 }}>
-<<<<<<< HEAD
               {Languages.t('scenes.apps.drive.preview_bloc.error_file', [], 'File not found.')}
-=======
-              {Languages.t('scenes.apps.drive.preview_bloc.error_file', [], "File not found.")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             </span>
           )}
         </div>

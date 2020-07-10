@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import MenuManager from 'services/Menus/MenusManager.js';
@@ -55,13 +51,7 @@ export default class BoardEditor extends React.Component {
             className="full_width"
             focusOnDidMount
             menu_level={this.props.menuLevel}
-<<<<<<< HEAD
             placeholder={Languages.t('scenes.apps.tasks.board.place_holder', [], 'Board name')}
-=======
-            placeholder={Languages.t('scenes.apps.tasks.board.place_holder',
-            [],
-            "Board name")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             value={[this.state.emoji, this.state.name]}
             onEnter={() => this.save()}
             onChange={value => {

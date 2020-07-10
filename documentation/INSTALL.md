@@ -57,11 +57,7 @@ There are two configuration files available in the volume `configuration` :
 
 ```
 configuration/Parameters.php
-<<<<<<< HEAD
 configuration/environment.ts
-=======
-configuration/environment.js
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 ```
 
 Once updated, you must do a `docker-compose restart`
@@ -70,11 +66,7 @@ Default files can be found here :
 
 [/twake/backend/core/app/Configuration/Parameters.php.dist](Parameters.php)
 
-<<<<<<< HEAD
 [/twake/frontend/src/app/environment/environment.ts.dist](./install_dependencies.md)
-=======
-[/twake/frontend/src/app/environment/environment.js.dist](./install_dependencies.md)
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 ### Use port 80 or 443 over https
 
@@ -102,11 +94,7 @@ location /socketcluster/ {
 
 ### Configure domain name
 
-<<<<<<< HEAD
 You must edit configuration at `backend/core/app/Configuration/Parameters.php` and `frontend/src/app/environment/environment.ts`.
-=======
-You must edit configuration at `backend/core/app/Configuration/Parameters.php` and `frontend/src/app/environment/environment.js`.
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 Both configurations contains localhost:8000 route by default, replace by your own domain if needed.
 

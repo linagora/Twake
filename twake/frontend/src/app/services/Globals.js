@@ -5,11 +5,7 @@
 // var PushNotification = require('react-native-push-notification');
 // import { MixpanelInstance } from 'react-native-mixpanel';
 
-<<<<<<< HEAD
 import environment from 'environment/environment';
-=======
-import environment from 'environment/environment.js';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 // const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
 class Globals {
@@ -116,11 +112,7 @@ class Globals {
         })
           .then(response => {
             this.retrieveRequestCookies(response.headers['All-Cookies']);
-<<<<<<< HEAD
             response.text().then(function (text) {
-=======
-            response.text().then(function(text) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               if (callback) {
                 callback(text);
               }

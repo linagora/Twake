@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import './Channel.scss';
 
@@ -53,7 +49,6 @@ export default class Channel extends React.Component {
           )}
         </div>
         {this.props.notMember && (
-<<<<<<< HEAD
           <Tooltip
             className="not_member"
             tooltip={Languages.t(
@@ -63,9 +58,6 @@ export default class Channel extends React.Component {
             )}
             position="top"
           >
-=======
-          <Tooltip className="not_member" tooltip={Languages.t('scenes.apps.drive.drive_tour.left_bar.not_in_ws', [],"User not in current workspace")} position="top">
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             <Icon type="external-link-alt" />
           </Tooltip>
         )}
@@ -74,7 +66,6 @@ export default class Channel extends React.Component {
           <div className="group_count">{this.props.users.length}</div>
         )}
         {this.props.imported && (
-<<<<<<< HEAD
           <Tooltip
             className="imported"
             tooltip={Languages.t(
@@ -84,10 +75,6 @@ export default class Channel extends React.Component {
             )}
             position="top"
           >
-=======
-          <Tooltip className="imported" tooltip={Languages.t('scenes.apps.drive.drive_tour.left_bar.imported', 
-          [], "Imported from another workspace")} position="top">
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ({this.props.imported})
           </Tooltip>
         )}

@@ -3,10 +3,6 @@ import ReactDOM from 'react-dom';
 
 import App from 'scenes/app.js';
 import Integration from 'scenes/Integration/integration.js';
-<<<<<<< HEAD
-=======
-import registerServiceWorker from './registerServiceWorker';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import $ from 'jquery';
 import * as Sentry from '@sentry/browser';
 
@@ -28,7 +24,6 @@ window.getBoundingClientRect = element => {
 };
 
 if (process.env.NODE_ENV === 'production' && window.sentry_dsn) {
-<<<<<<< HEAD
   Sentry.init({
     dsn: window.sentry_dsn,
   });
@@ -43,15 +38,3 @@ export default class RootApp extends React.Component {
     );
   }
 }
-=======
-  Sentry.init({ dsn: window.sentry_dsn });
-}
-
-ReactDOM.render(
-  <Integration>
-    <App key="root" />
-  </Integration>,
-  document.getElementById('app'),
-);
-registerServiceWorker();
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a

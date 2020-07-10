@@ -38,11 +38,7 @@ export default class LoginView extends Component {
       <div className="center_box_container login_view skew_in_bottom">
         <div className="center_box white_box_with_shadow">
           <div className="title">
-<<<<<<< HEAD
             {!((LoginService.server_infos || {}).branding || {}).logo &&
-=======
-            {!((LoginService.server_infos || {}).branding || {}).name &&
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               this.state.i18n.t('scenes.login.home.title')}
           </div>
 

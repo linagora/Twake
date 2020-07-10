@@ -85,11 +85,7 @@ export default class Api {
         }
         callback(response);
       },
-<<<<<<< HEAD
       timeout
-=======
-      timeout,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -162,11 +158,7 @@ export default class Api {
                   source,
                   this.searching_last_query[search_key],
                   collectionService,
-<<<<<<< HEAD
                   callback
-=======
-                  callback,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               } else {
                 callback && callback(res.data);

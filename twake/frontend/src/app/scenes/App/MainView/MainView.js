@@ -112,7 +112,6 @@ export default class MainView extends Component {
   }
   render() {
     var current_side_channel = Collections.get('channels').findByFrontId(
-<<<<<<< HEAD
       this.state.channels.currentSideChannelFrontId
     );
     var current_channel = Collections.get('channels').findByFrontId(
@@ -120,15 +119,6 @@ export default class MainView extends Component {
     );
     var current_channel_tab = Collections.get('channel_tabs').find(
       this.state.channels.current_tab_id
-=======
-      this.state.channels.currentSideChannelFrontId,
-    );
-    var current_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentChannelFrontId,
-    );
-    var current_channel_tab = Collections.get('channel_tabs').find(
-      this.state.channels.current_tab_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     if (this.state.channels.current_tab_id) {
@@ -139,11 +129,7 @@ export default class MainView extends Component {
         ) {
           Collections.get('channel_tabs').completeObject(item);
           current_channel_tab = Collections.get('channel_tabs').find(
-<<<<<<< HEAD
             this.state.channels.current_tab_id
-=======
-            this.state.channels.current_tab_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
           return false;
         }
@@ -157,11 +143,7 @@ export default class MainView extends Component {
           {Languages.t(
             'scenes.app.mainview.instruction_current_tab',
             [],
-<<<<<<< HEAD
             'Commencez par sélectionner une chaîne sur votre gauche.'
-=======
-            'Commencez par sélectionner une chaîne sur votre gauche.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
       </div>

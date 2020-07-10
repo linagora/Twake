@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -47,11 +43,7 @@ export default class ChannelEditor extends Component {
     this.saved = true;
     Collections.get('channels').save(
       this.state.channel,
-<<<<<<< HEAD
       'channels_' + Workspaces.currentWorkspaceId
-=======
-      'channels_' + Workspaces.currentWorkspaceId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     MenusManager.closeMenu();
   }
@@ -68,16 +60,11 @@ export default class ChannelEditor extends Component {
           <InputWithIcon
             focusOnDidMount
             menu_level={this.props.level}
-<<<<<<< HEAD
             placeholder={Languages.t(
               'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
               [],
               'Name'
             )}
-=======
-            placeholder={Languages.t('scenes.apps.messages.left_bar.stream_modal.placeholder_name',
-            [], "Name")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             value={[this.state.channel.icon, this.state.channel.name]}
             onEnter={() => this.updateChan()}
             onChange={value => {

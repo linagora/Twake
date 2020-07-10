@@ -65,30 +65,18 @@ class search extends Observable {
           'search Ea',
           item.channel.id || '',
           item.message.parent_message_id || '',
-<<<<<<< HEAD
           item.message.id || ''
-=======
-          item.message.id || '',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         MessagesService.scrollToMessage(
           item.channel.id,
           item.message.parent_message_id,
-<<<<<<< HEAD
           item.message.id
-=======
-          item.message.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       } else {
         MessagesService.scrollToMessage(
           item.channel.id || '',
           '',
-<<<<<<< HEAD
           item.message.parent_message_id || ''
-=======
-          item.message.parent_message_id || '',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         /*MessagesService.scrollToMessage(
           item.channel.id || '',
@@ -142,20 +130,12 @@ class search extends Observable {
               if (item.file.is_directory) {
                 DriveService.changeCurrentDirectory(
                   channel.id + '_undefined_' + item.file.workspace_id,
-<<<<<<< HEAD
                   { id: item.file.id }
-=======
-                  { id: item.file.id },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               } else {
                 DriveService.changeCurrentDirectory(
                   channel.id + '_undefined_' + item.file.workspace_id,
-<<<<<<< HEAD
                   { id: item.file.parent_id }
-=======
-                  { id: item.file.parent_id },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }
               ChannelsService.select(channel);
@@ -223,11 +203,7 @@ class search extends Observable {
     if (item.type == 'message') {
       if (!item.workspace && (item.channel || {}).original_workspace) {
         item.workspace = Collections.get('workspaces').find(
-<<<<<<< HEAD
           (item.channel || {}).original_workspace
-=======
-          (item.channel || {}).original_workspace,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }
       if (item.workspace && item.channel) {
@@ -360,11 +336,7 @@ class search extends Observable {
 
             this.search_http_loading = false;
             this.notify();
-<<<<<<< HEAD
           }
-=======
-          },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       }, 500);
     }
@@ -419,11 +391,7 @@ class search extends Observable {
         if (present_word.trim() && new_word.trim().indexOf(present_word.trim()) >= 0) {
           object._search_text = object._search_text.replace(
             ' ' + present_word + ' ',
-<<<<<<< HEAD
             ' ' + new_word + ' '
-=======
-            ' ' + new_word + ' ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
           replaced = true;
         }
@@ -442,11 +410,7 @@ class search extends Observable {
         if (
           word &&
           Strings.removeAccents((object[key] || '').toLocaleLowerCase()).indexOf(
-<<<<<<< HEAD
             Strings.removeAccents(word.trim().toLocaleLowerCase())
-=======
-            Strings.removeAccents(word.trim().toLocaleLowerCase()),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ) >= 0
         ) {
           return true;

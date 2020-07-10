@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -49,11 +45,7 @@ export default class MainView extends Component {
           this.setState({});
           console.log('set state with ', this.state.group);
         }
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   render() {
@@ -61,7 +53,6 @@ export default class MainView extends Component {
 
     var noapp = (
       <div>
-<<<<<<< HEAD
         <div className="no_channel_text">
           {Languages.t(
             'scenes.app.mainview.link_expired',
@@ -69,10 +60,6 @@ export default class MainView extends Component {
             'This public link is invalid or has expired.'
           )}
         </div>
-=======
-        <div className="no_channel_text">{Languages.t('scenes.app.mainview.link_expired', 
-        [],"This public link is invalid or has expired.")}</div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       </div>
     );
 
@@ -90,7 +77,6 @@ export default class MainView extends Component {
         </div>
         <div className="right">
           <a href="https://twakeapp.com" target="_BLANK">
-<<<<<<< HEAD
             <span className="nomobile">
               {Languages.t(
                 'scenes.app.mainview.create_account',
@@ -98,9 +84,6 @@ export default class MainView extends Component {
                 'Créez votre espace de travail gratuitement sur '
               )}
             </span>
-=======
-            <span className="nomobile">{Languages.t('scenes.app.mainview.create_account', [],"Créez votre espace de travail gratuitement sur ")}</span>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             Twake &nbsp; 👉
           </a>
         </div>

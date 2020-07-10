@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 
 import { Draggable } from 'react-beautiful-dnd';
-=======
-import React, {Component} from 'react';
-
-import Languages from 'services/languages/languages.js';
-
-import {Draggable} from 'react-beautiful-dnd';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import './Task.scss';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
@@ -61,11 +53,7 @@ export default class Task extends React.Component {
               onClick={() => {
                 MediumPopupManager.open(
                   <TaskDetails task={task} collectionKey={this.props.collectionKey} />,
-<<<<<<< HEAD
                   { size: { width: 600 } }
-=======
-                  { size: { width: 600 } },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }}
               className={
@@ -144,11 +132,7 @@ export default class Task extends React.Component {
                         {parseInt(
                           (100 *
                             task.checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) /
-<<<<<<< HEAD
                             task.checklist.length
-=======
-                            task.checklist.length,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         )}
                         %
                       </span>

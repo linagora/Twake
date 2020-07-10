@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Loader from 'components/Loader/Loader.js';
 import Button from './Button.js';
@@ -38,11 +34,7 @@ export default class ButtonWithTimeout extends React.Component {
       }
       clearTimeout(this.timeout);
     } else if (!prevProps.loading && this.props.loading) {
-<<<<<<< HEAD
       this.timeout = setTimeout(function () {
-=======
-      this.timeout = setTimeout(function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         that.setState({ showLoader: true });
       }, this.props.loadingTimeout || 2000);
     }

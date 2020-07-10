@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Emojione from 'components/Emojione/Emojione.js';
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
@@ -172,20 +168,12 @@ export default class ComponentsTester extends React.Component {
                       mail: 'romaric.mourgues@g.a',
                       userimage: 'https://randomuser.me/api/portraits/women/40.jpg',
                     },
-<<<<<<< HEAD
                   ].filter(function (item) {
-=======
-                  ].filter(function(item) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     if (item.username.indexOf(text) !== -1) {
                       return true;
                     }
                     return false;
-<<<<<<< HEAD
                   })
-=======
-                  }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               },
               (text, cb) => {

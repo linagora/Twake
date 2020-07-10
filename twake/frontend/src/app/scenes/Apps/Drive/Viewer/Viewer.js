@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -28,11 +24,7 @@ export default class Viewer extends Component {
     Collections.get('drive').addListener(this);
     DriveService.addListener(this);
 
-<<<<<<< HEAD
     window.addEventListener('keydown', function (evt) {
-=======
-    window.addEventListener('keydown', function(evt) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       evt = evt || window.event;
       var isEscape = false;
       if ('key' in evt) {
@@ -69,11 +61,7 @@ export default class Viewer extends Component {
       this.viewed_document.id,
       url => {
         window.open(url);
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   previewFile(url, app) {
@@ -119,11 +107,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.edit_with_button',
                   [editor_candidate[0].name],
-<<<<<<< HEAD
                   'Editer avec $1'
-=======
-                  'Editer avec $1',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </Button>
             )}
@@ -180,11 +164,7 @@ export default class Viewer extends Component {
                   {Languages.t(
                     'scenes.apps.drive.viewer.no_preview_message',
                     [],
-<<<<<<< HEAD
                     'Impossible de visualiser ce type de fichier.'
-=======
-                    'Impossible de visualiser ce type de fichier.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </span>
               )}
@@ -192,28 +172,16 @@ export default class Viewer extends Component {
               {current.url && (
                 <div>
                   <a href={current.url} target="_blank" style={{ fontSize: 14 }}>
-<<<<<<< HEAD
                     {Languages.t('scenes.apps.drive.open_link', [], 'Open link in new window')}
-=======
-                    {Languages.t('scenes.apps.drive.open_link',
-                    [],
-                    "Open link in new window")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </a>
                   <br />
                   <br />
                   <a href="https://twake.app/download" target="_blank" style={{ fontSize: 12 }}>
-<<<<<<< HEAD
                     {Languages.t(
                       'scenes.apps.drive.viewer.download_desktop',
                       [],
                       'Download Twake Desktop to preview in app'
                     )}
-=======
-                  {Languages.t('scenes.apps.drive.viewer.download_desktop',
-                  [],
-                  "Download Twake Desktop to preview in app")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </a>
                 </div>
               )}
@@ -225,11 +193,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.loading_preview_message',
                   [],
-<<<<<<< HEAD
                   'Chargement...'
-=======
-                  'Chargement...',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </span>
             </div>

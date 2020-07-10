@@ -57,11 +57,7 @@ class Notifications extends Observable {
     if ('Notification' in window && Globals.window.Notification.requestPermission) {
       var request = Globals.window.Notification.requestPermission();
       if (request && request.then) {
-<<<<<<< HEAD
         request.then(function (result) {});
-=======
-        request.then(function(result) {});
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       }
     }
 
@@ -74,11 +70,7 @@ class Notifications extends Observable {
           { uri: 'notifications/' + User.getCurrentUserId(), options: { type: 'notifications' } },
         ],
       },
-<<<<<<< HEAD
       this.notifications_collection_key
-=======
-      this.notifications_collection_key,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     //This one receive notification badge updates
@@ -92,11 +84,7 @@ class Notifications extends Observable {
           this.updateBadge(
             'workspace',
             data.notification.workspace_id,
-<<<<<<< HEAD
             data.notification.hasnotifications ? 1 : 0
-=======
-            data.notification.hasnotifications ? 1 : 0,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
 
@@ -104,11 +92,7 @@ class Notifications extends Observable {
           this.updateBadge(
             'group',
             data.notification.group_id,
-<<<<<<< HEAD
             data.notification.hasnotifications ? 1 : 0
-=======
-            data.notification.hasnotifications ? 1 : 0,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
       }
@@ -128,11 +112,7 @@ class Notifications extends Observable {
     if (type == 'channel') {
       var old_count = (this.notification_by_channel[id] || {}).count;
       var channel = Collections.get('channels').findByFrontId(
-<<<<<<< HEAD
         ChannelsService.currentChannelFrontId
-=======
-        ChannelsService.currentChannelFrontId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ) || { id: ChannelsService.currentChannelFrontId };
       if (
         Globals.window.document.hasFocus() &&
@@ -167,11 +147,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-<<<<<<< HEAD
         count > (this.notification_by_group[id] || {}).count ? delay : 10
-=======
-        count > (this.notification_by_group[id] || {}).count ? delay : 10,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -192,11 +168,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-<<<<<<< HEAD
         count > (this.notification_by_workspace[id] || {}).count ? delay : 10
-=======
-        count > (this.notification_by_workspace[id] || {}).count ? delay : 10,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -221,11 +193,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-<<<<<<< HEAD
         count > (this.notification_by_channel[id] || {}).count ? delay : 10
-=======
-        count > (this.notification_by_channel[id] || {}).count ? delay : 10,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -289,11 +257,7 @@ class Notifications extends Observable {
         var channel = Collections.get('channels').find(id);
         Collections.get('channels').completeObject(
           { _user_last_message_increment: channel.messages_increment },
-<<<<<<< HEAD
           channel.front_id
-=======
-          channel.front_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       });
       this.notification_by_channel = {};
@@ -371,11 +335,7 @@ class Notifications extends Observable {
           body: emojione.shortnameToUnicode(notification.text),
         });
         var that = this;
-<<<<<<< HEAD
         n.onclick = function () {
-=======
-        n.onclick = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           that.last_notification_callback();
           Globals.window.focus();
           this.close();

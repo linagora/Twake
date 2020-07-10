@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Switch from 'components/Inputs/Switch.js';
@@ -90,7 +86,6 @@ export default class GroupInputs extends React.Component {
           <StepCounter current={3} total={4} />
           <div className="title">Create my company 3/4</div>
           <div className="subtitle">
-<<<<<<< HEAD
             {Languages.t(
               'scenes.app.workspaces.create_company.importations.title_1',
               [],
@@ -102,13 +97,6 @@ export default class GroupInputs extends React.Component {
               [],
               'No worries, you can do this later!'
             )}
-=======
-            {Languages.t('scenes.app.workspaces.create_company.importations.title_1',
-            [], "Already working with digital tools? Import or integrate your tools now!")}
-            <br />
-            {Languages.t('scenes.app.workspaces.create_company.importations.title_2',
-            [], "No worries, you can do this later!")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           </div>
 
           <div className="body">
@@ -124,15 +112,9 @@ export default class GroupInputs extends React.Component {
           </div>
 
           <div className="footer">
-<<<<<<< HEAD
             <Button value={Languages.t('general.back', [], 'Back')} inline />
 
             <Button value={Languages.t('general.continue', [], 'Continue')} primary />
-=======
-            <Button value={Languages.t('general.back', [], "Back")} inline />
-
-            <Button value={Languages.t('general.continue', [],"Continue")} primary />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           </div>
         </div>
       </div>,

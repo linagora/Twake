@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
 
 import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
-=======
-import React, {Component} from 'react';
-
-import {ObjectModalSectionTitle} from 'components/ObjectModal/ObjectModal.js';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
@@ -29,14 +23,10 @@ export default class EventsFilter extends React.Component {
       <div className="search_filters">
         {/*        <ObjectModalSectionTitle name="Chaînes de discussion" icon="building" /> */}
 
-<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.sender', [], 'Sender')}
           icon="user"
         />
-=======
-        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.sender', [], "Sender")} icon="user" />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <UserListManager
           noPlaceholder
           canRemoveMyself
@@ -52,14 +42,10 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.mentions', [], 'Mentions')}
           icon="at"
         />
-=======
-        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.mentions', [], "Mentions")} icon="at" />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <UserListManager
           noPlaceholder
           canRemoveMyself
@@ -73,14 +59,10 @@ export default class EventsFilter extends React.Component {
 
         {/*<ObjectModalSectionTitle name="Reactions" icon="thumbs-up" />*/}
 
-<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />
-=======
-        <ObjectModalSectionTitle name={Languages.t('components.searchpopup.creation', [], "Création")} icon="calendar-alt" />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <DateSelectorInput
           withReset
           className=""
@@ -100,14 +82,10 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-<<<<<<< HEAD
         <ObjectModalSectionTitle
           name={Languages.t('scenes.apps.messages.message.pinned', [], 'Pinned')}
           icon="map-pin"
         />
-=======
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.messages.message.pinned', [], "Pinned")} icon="map-pin" />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <Checkbox
           small
           value={this.state.options.pinned}
@@ -115,7 +93,6 @@ export default class EventsFilter extends React.Component {
             this.state.options.pinned = value;
             this.setState({});
           }}
-<<<<<<< HEAD
           label={Languages.t('components.searchpopup.only_pinned', [], 'Only pinned messages')}
         />
 
@@ -123,12 +100,6 @@ export default class EventsFilter extends React.Component {
           name={Languages.t('scenes.apps.drive.navigators.new_file.create_file.type', [], 'Type')}
           icon="triangle"
         />
-=======
-          label={Languages.t('components.searchpopup.only_pinned', [], "Only pinned messages")}
-        />
-
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.drive.navigators.new_file.create_file.type', [], "Type")} icon="triangle" />
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         <Select
           className="small"
           options={[
@@ -137,15 +108,11 @@ export default class EventsFilter extends React.Component {
               value: false,
             },
             {
-<<<<<<< HEAD
               text: Languages.t(
                 'scenes.apps.drive.navigators.navigator_content.files',
                 [],
                 'Fichiers'
               ),
-=======
-              text: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Fichiers'),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               value:
                 (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {})
                   .id || 'error_no_drive_app_found',
@@ -164,11 +131,7 @@ export default class EventsFilter extends React.Component {
           onClick={() => {
             this.props.onSearch(this.state.options || {});
           }}
-<<<<<<< HEAD
           value={Languages.t('components.searchpopup.update_search', [], 'Update search')}
-=======
-          value={Languages.t('components.searchpopup.update_search', [], "Update search")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         />
       </div>
     );

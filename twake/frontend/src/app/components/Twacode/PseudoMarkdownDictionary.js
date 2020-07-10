@@ -132,11 +132,7 @@ class PseudoMarkdownDictionary {
                       object.action_id,
                       object.interactive_context || {},
                       '',
-<<<<<<< HEAD
                       evt
-=======
-                      evt,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     );
                   }
                 }}
@@ -160,11 +156,7 @@ class PseudoMarkdownDictionary {
                     object.action_id,
                     object.interactive_context || {},
                     '',
-<<<<<<< HEAD
                     evt
-=======
-                    evt,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                 }
               }}
@@ -195,11 +187,7 @@ class PseudoMarkdownDictionary {
                 object.passive_id,
                 object.interactive_context || {},
                 evt.target.value,
-<<<<<<< HEAD
                 evt
-=======
-                evt,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             }}
           />
@@ -219,11 +207,7 @@ class PseudoMarkdownDictionary {
                 object.passive_id || object.action_id,
                 object.interactive_context || {},
                 value,
-<<<<<<< HEAD
                 evt
-=======
-                evt,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
               if (object.action_id) {
                 event_container.onAction(
@@ -231,11 +215,7 @@ class PseudoMarkdownDictionary {
                   object.action_id,
                   object.interactive_context || {},
                   value,
-<<<<<<< HEAD
                   evt.target.value
-=======
-                  evt.target.value,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }
             }}

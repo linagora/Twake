@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 
 import Collections from 'services/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-=======
-import React, {Component} from 'react';
-import Languages from 'services/languages/languages.js';
-
-import Collections from 'services/Collections/Collections.js';
-import {DragDropContext, Droppable} from 'react-beautiful-dnd';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import List from './List/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Loader from 'components/Loader/Loader.js';
@@ -52,11 +44,7 @@ export default class Board extends React.Component {
           },
           websockets: [{ uri: 'board_lists/' + this.props.board.id, options: { type: 'list' } }],
         },
-<<<<<<< HEAD
         this.board_collection_key
-=======
-        this.board_collection_key,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -70,11 +58,7 @@ export default class Board extends React.Component {
         },
         websockets: [{ uri: 'board_tasks/' + this.props.board.id, options: { type: 'task' } }],
       },
-<<<<<<< HEAD
       this.board_collection_key
-=======
-      this.board_collection_key,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   componentWillUnmount() {
@@ -120,7 +104,6 @@ export default class Board extends React.Component {
           {
             order: TasksService.newIndexAfter(
               'lists_' + this.props.board.id,
-<<<<<<< HEAD
               new_index - (new_index < event.source.index ? 1 : 0)
             ),
           },
@@ -129,16 +112,6 @@ export default class Board extends React.Component {
         TasksService.setElementIndexPool(
           'lists_' + this.props.board.id,
           Collections.get('lists').findBy({ board_id: this.props.board.id })
-=======
-              new_index - (new_index < event.source.index ? 1 : 0),
-            ),
-          },
-          list.front_id,
-        );
-        TasksService.setElementIndexPool(
-          'lists_' + this.props.board.id,
-          Collections.get('lists').findBy({ board_id: this.props.board.id }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         Collections.get('lists').save(list, this.board_collection_key);
       }
@@ -164,17 +137,10 @@ export default class Board extends React.Component {
                 (destination_index < event.source.index ||
                 destination_list_front_id != source_list_front_id
                   ? 1
-<<<<<<< HEAD
                   : 0)
             ),
           },
           task.front_id
-=======
-                  : 0),
-            ),
-          },
-          task.front_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         if (source_list && source_list.id) {
           TasksService.setElementIndexPool(
@@ -182,20 +148,12 @@ export default class Board extends React.Component {
             Collections.get('tasks').findBy({
               board_id: this.props.board.id,
               list_id: source_list.id,
-<<<<<<< HEAD
             })
-=======
-            }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
         }
         TasksService.setElementIndexPool(
           'tasks_' + list.id,
-<<<<<<< HEAD
           Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id })
-=======
-          Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
         Collections.get('tasks').save(task, this.board_collection_key);
       }
@@ -221,11 +179,7 @@ export default class Board extends React.Component {
       TasksService.getTasksInList(
         this.props.board.id,
         lists[0].id,
-<<<<<<< HEAD
         this.state.archived ? true : false
-=======
-        this.state.archived ? true : false,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ).forEach(task => {
         if (workspaces.indexOf(task.workspace_id) < 0) {
           workspaces.push(task.workspace_id);
@@ -277,21 +231,13 @@ export default class Board extends React.Component {
 
     TasksService.setElementIndexPool(
       'lists_' + this.props.board.id,
-<<<<<<< HEAD
       Collections.get('lists').findBy({ board_id: this.props.board.id })
-=======
-      Collections.get('lists').findBy({ board_id: this.props.board.id }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     var lists = lists.sort(
       (a, b) =>
         TasksService.getElementIndex(a, 'lists_' + a.board_id) -
-<<<<<<< HEAD
         TasksService.getElementIndex(b, 'lists_' + b.board_id)
-=======
-        TasksService.getElementIndex(b, 'lists_' + b.board_id),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     if (!this.user_mode) {
       lists.push({
@@ -369,14 +315,10 @@ export default class Board extends React.Component {
               onClick={evt => {
                 MenusManager.openMenu(
                   [
-<<<<<<< HEAD
                     {
                       type: 'title',
                       text: Languages.t('scenes.apps.board.display_as', [], 'Afficher en tant que'),
                     },
-=======
-                    { type: 'title', text: Languages.t('scenes.apps.board.display_as', [], 'Afficher en tant que') },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     {
                       type: 'menu',
                       icon: current_board.view_mode == 'grid' ? 'check' : ' ',
@@ -387,11 +329,7 @@ export default class Board extends React.Component {
                         current_board.view_mode = 'grid';
                         Collections.get('boards').save(
                           current_board,
-<<<<<<< HEAD
                           this.props.boardsCollectionKey
-=======
-                          this.props.boardsCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       },
                     },
@@ -405,11 +343,7 @@ export default class Board extends React.Component {
                         current_board.view_mode = 'list';
                         Collections.get('boards').save(
                           current_board,
-<<<<<<< HEAD
                           this.props.boardsCollectionKey
-=======
-                          this.props.boardsCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                       },
                     },
@@ -436,11 +370,7 @@ export default class Board extends React.Component {
                             board_id: current_board.id,
                           }).length,
                         ],
-<<<<<<< HEAD
                         'Tâches archivées ($1)'
-=======
-                        'Tâches archivées ($1)',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                       ),
                       onClick: () => {
                         this.setState({ archived: true });
@@ -448,11 +378,7 @@ export default class Board extends React.Component {
                     },
                   ],
                   { x: evt.clientX, y: evt.clientY },
-<<<<<<< HEAD
                   'bottom'
-=======
-                  'bottom',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               }}
             >
@@ -488,11 +414,7 @@ export default class Board extends React.Component {
                           TasksService.getTasksInList(
                             item.board_id,
                             item.id,
-<<<<<<< HEAD
                             this.state.archived ? true : false
-=======
-                            this.state.archived ? true : false,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           ).length +
                           ')'
                         );
@@ -530,11 +452,7 @@ export default class Board extends React.Component {
                   type="board"
                   className="droppable_list"
                 >
-<<<<<<< HEAD
                   {(provided, snapshot) => (
-=======
-                  {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}

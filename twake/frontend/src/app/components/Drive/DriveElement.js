@@ -55,11 +55,7 @@ export default class DriveElement extends React.Component {
       this.props.data.id,
       el => {
         this.setState({ element: el });
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.updateMenu();
   }
@@ -95,11 +91,7 @@ export default class DriveElement extends React.Component {
     DriveService.moveFile(
       objects,
       destination,
-<<<<<<< HEAD
       this.props.driveCollectionKey || this.driveCollectionKey
-=======
-      this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -177,11 +169,7 @@ export default class DriveElement extends React.Component {
         Workspaces.currentWorkspaceId,
         this.channel,
         parent_id,
-<<<<<<< HEAD
         'standalone'
-=======
-        'standalone',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       if (old_collection_key && old_collection_key != this.driveCollectionKey) {
         console.log('will update drive element remove source');
@@ -198,11 +186,7 @@ export default class DriveElement extends React.Component {
     DriveService.moveFile(
       [this.state.element.id],
       new_parent,
-<<<<<<< HEAD
       this.props.driveCollectionKey || this.driveCollectionKey
-=======
-      this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -246,11 +230,7 @@ export default class DriveElement extends React.Component {
           text: Languages.t(
             'scenes.apps.drive.viewer.edit_with_button',
             [editor_candidate[0].app.name],
-<<<<<<< HEAD
             'Editer avec $1'
-=======
-            'Editer avec $1',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           onClick: () => {
             var app = editor_candidate[0];
@@ -264,11 +244,7 @@ export default class DriveElement extends React.Component {
               this.state.element.id,
               url => {
                 window.open(url);
-<<<<<<< HEAD
               }
-=======
-              },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           },
         });
@@ -366,11 +342,7 @@ export default class DriveElement extends React.Component {
                           value={Languages.t(
                             'scenes.apps.messages.message.save_button',
                             [],
-<<<<<<< HEAD
                             'Enregistrer'
-=======
-                            'Enregistrer',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                           )}
                           onClick={() => {
                             this.rename();
@@ -397,11 +369,7 @@ export default class DriveElement extends React.Component {
                   text: Languages.t(
                     'scenes.apps.drive.right_preview.public_link',
                     [],
-<<<<<<< HEAD
                     "Lien d'accès public"
-=======
-                    "Lien d'accès public",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ),
                 },
                 {
@@ -430,22 +398,14 @@ export default class DriveElement extends React.Component {
                                 DriveService.updateAccess(
                                   this.state.element,
                                   { public_access: false },
-<<<<<<< HEAD
                                   this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                                  this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                                 );
                               });
                             }}
                             value={Languages.t(
                               'components.drive.right_preview.suppress_link',
                               [],
-<<<<<<< HEAD
                               'Supprimer le lien'
-=======
-                              'Supprimer le lien',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                           />
                         </div>
@@ -457,21 +417,13 @@ export default class DriveElement extends React.Component {
                               DriveService.updateAccess(
                                 this.state.element,
                                 { public_access: true },
-<<<<<<< HEAD
                                 this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                                this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                               );
                             }}
                             value={Languages.t(
                               'components.drive.right_preview.create_link',
                               [],
-<<<<<<< HEAD
                               "Créer un lien d'accès"
-=======
-                              "Créer un lien d'accès",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             )}
                           />
                         </div>
@@ -510,11 +462,7 @@ export default class DriveElement extends React.Component {
                 text: Languages.t(
                   'components.drive.elements.configurate_mod',
                   [],
-<<<<<<< HEAD
                   'Configurer le module...'
-=======
-                  'Configurer le module...',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 onClick: () => {
                   var data = {
@@ -524,11 +472,7 @@ export default class DriveElement extends React.Component {
                     this.state.element.application_id,
                     'configuration',
                     'drive',
-<<<<<<< HEAD
                     data
-=======
-                    data,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                 },
               });
@@ -547,11 +491,7 @@ export default class DriveElement extends React.Component {
                   Languages.t(
                     'components.drive.elements.manage_version',
                     [],
-<<<<<<< HEAD
                     'Gérer les versions'
-=======
-                    'Gérer les versions',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ) +
                   versions_indicator +
                   '...',
@@ -566,11 +506,7 @@ export default class DriveElement extends React.Component {
                 text: Languages.t(
                   'scenes.apps.drive.navigators.navigator_labels.title',
                   [],
-<<<<<<< HEAD
                   'Labels'
-=======
-                  'Labels',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 submenu_replace: true,
                 submenu: [
@@ -579,11 +515,7 @@ export default class DriveElement extends React.Component {
                     text: Languages.t(
                       'scenes.apps.drive.navigators.navigator_labels.title',
                       [],
-<<<<<<< HEAD
                       'Labels'
-=======
-                      'Labels',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ),
                   },
                   {
@@ -600,11 +532,7 @@ export default class DriveElement extends React.Component {
                             MenuManager.closeMenu();
                             DriveService.save(
                               this.state.element,
-<<<<<<< HEAD
                               this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                              this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                             );
                           }}
                         />
@@ -612,11 +540,7 @@ export default class DriveElement extends React.Component {
                     ),
                   },
                 ],
-<<<<<<< HEAD
               }
-=======
-              },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
           }
 
@@ -631,21 +555,13 @@ export default class DriveElement extends React.Component {
             text: Languages.t(
               'scenes.apps.drive.right_preview.operations_delete',
               [],
-<<<<<<< HEAD
               'Mettre à la corbeille'
-=======
-              'Mettre à la corbeille',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             className: 'error',
             onClick: () => {
               DriveService.remove(
                 [this.props.data],
-<<<<<<< HEAD
                 this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             },
           });
@@ -655,20 +571,12 @@ export default class DriveElement extends React.Component {
             text: Languages.t(
               'scenes.apps.drive.right_preview.operations_restore',
               [],
-<<<<<<< HEAD
               'Restaurer'
-=======
-              'Restaurer',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             onClick: () => {
               DriveService.restore(
                 [this.props.data],
-<<<<<<< HEAD
                 this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             },
           });
@@ -677,22 +585,14 @@ export default class DriveElement extends React.Component {
             text: Languages.t(
               'scenes.apps.drive.remove_definitely_menu',
               [],
-<<<<<<< HEAD
               'Supprimer définitivement'
-=======
-              'Supprimer définitivement',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             className: 'error',
             onClick: () => {
               AlertManager.confirm(() => {
                 DriveService.removeDefinitively(
                   [this.props.data],
-<<<<<<< HEAD
                   this.props.driveCollectionKey || this.driveCollectionKey
-=======
-                  this.props.driveCollectionKey || this.driveCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
               });
             },

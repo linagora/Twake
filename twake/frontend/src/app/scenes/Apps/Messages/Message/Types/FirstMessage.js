@@ -56,11 +56,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_message_text',
                 [],
-<<<<<<< HEAD
                 "C'est le premier message"
-=======
-                "C'est le premier message",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           </div>
@@ -111,11 +107,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_message_text',
                 [],
-<<<<<<< HEAD
                 "C'est le premier message"
-=======
-                "C'est le premier message",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           </div>
@@ -130,11 +122,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_channel_message_text',
                 [channel.name],
-<<<<<<< HEAD
                 "C'est le premier message du canal"
-=======
-                "C'est le premier message du canal",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           </div>

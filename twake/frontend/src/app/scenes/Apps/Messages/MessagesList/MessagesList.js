@@ -78,15 +78,9 @@ export default class MessagesList extends Component {
         this.setVisibleWindow(
           (tmp[0] || {}).id,
           (tmp[tmp.length - 1] || {}).id,
-<<<<<<< HEAD
           (tmp[tmp.length - 1] || {}).id
         );
       }
-=======
-          (tmp[tmp.length - 1] || {}).id,
-        );
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   componentDidMount() {
@@ -168,19 +162,11 @@ export default class MessagesList extends Component {
     }
     Mlist.states[this.key].window_min_id = Numbers.minTimeuuid(
       Mlist.states[this.key].window_min_id,
-<<<<<<< HEAD
       id
     );
     Mlist.states[this.key].window_max_id = Numbers.maxTimeuuid(
       Mlist.states[this.key].window_max_id,
       id
-=======
-      id,
-    );
-    Mlist.states[this.key].window_max_id = Numbers.maxTimeuuid(
-      Mlist.states[this.key].window_max_id,
-      id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   clearIdInWindow() {
@@ -291,11 +277,7 @@ export default class MessagesList extends Component {
             Mlist.states[this.key].visible_min_id = min;
           }
         }
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   showMessage(id) {
@@ -324,11 +306,7 @@ export default class MessagesList extends Component {
           text: Languages.t(
             'scenes.apps.messages.messageslist.no_message_alert',
             [],
-<<<<<<< HEAD
             'Impossible de trouver ce message.'
-=======
-            'Impossible de trouver ce message.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
         });
         this.scrollToBottom();
@@ -370,11 +348,7 @@ export default class MessagesList extends Component {
             {Languages.t(
               'scenes.apps.messages.messageslist.load_before_button',
               [],
-<<<<<<< HEAD
               'Charger avant'
-=======
-              'Charger avant',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </a>
           <br />
@@ -392,22 +366,14 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.min_window_id',
             [],
-<<<<<<< HEAD
             'Identifiant de fenêtre minimum : '
-=======
-            'Identifiant de fenêtre minimum : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {Mlist.states[this.key].window_min_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.max_windoq_id',
             [],
-<<<<<<< HEAD
             'Identifiant de fenêtre maximum : '
-=======
-            'Identifiant de fenêtre maximum : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {Mlist.states[this.key].window_max_id}
           <br />
@@ -415,33 +381,21 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.min_visible_id',
             [],
-<<<<<<< HEAD
             'Identifiant minimum visible : '
-=======
-            'Identifiant minimum visible : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {Mlist.states[this.key].visible_min_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.current_visible_id',
             [],
-<<<<<<< HEAD
             'Identifiant actuel visible : '
-=======
-            'Identifiant actuel visible : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {Mlist.states[this.key].visible_current_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.max_visible_id',
             [],
-<<<<<<< HEAD
             'Identifiant maximum visible : '
-=======
-            'Identifiant maximum visible : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {Mlist.states[this.key].visible_max_id}
           <br />
@@ -449,11 +403,7 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.number_visibled_messages',
             [],
-<<<<<<< HEAD
             'Nombre de messages visibles : '
-=======
-            'Nombre de messages visibles : ',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {
             Collections.get('messages')
@@ -469,11 +419,7 @@ export default class MessagesList extends Component {
                     Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
                     (m.id &&
                       Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
-<<<<<<< HEAD
                       Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0))
-=======
-                      Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0)),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               ).length
           }
           <br />
@@ -487,11 +433,7 @@ export default class MessagesList extends Component {
             {Languages.t(
               'scenes.apps.messages.messageslist.load_after_button',
               [],
-<<<<<<< HEAD
               'Charger après'
-=======
-              'Charger après',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </a>
         </div>
@@ -513,11 +455,7 @@ export default class MessagesList extends Component {
           (!m.id && Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
           (m.id &&
             Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
-<<<<<<< HEAD
             Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0)
-=======
-            Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       )
       .filter(message => !message._user_ephemeral)
       .sort((a, b) => a.creation_date - b.creation_date);
@@ -585,11 +523,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.load_before—button',
                 [],
-<<<<<<< HEAD
                 'Charger avant'
-=======
-                'Charger avant',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>
           )}
@@ -630,11 +564,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.load_after_button',
                 [],
-<<<<<<< HEAD
                 'Charger après'
-=======
-                'Charger après',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>,
             <a
@@ -647,11 +577,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.go_last_message_button',
                 [],
-<<<<<<< HEAD
                 'Aller au dernier message'
-=======
-                'Aller au dernier message',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </a>,
           ]}
@@ -677,11 +603,7 @@ export default class MessagesList extends Component {
                   backgroundImage:
                     "url('" +
                     UserService.getThumbnail(
-<<<<<<< HEAD
                       Collections.get('users').find(this.state.last_message.sender)
-=======
-                      Collections.get('users').find(this.state.last_message.sender),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                     ) +
                     "')",
                 }}
@@ -690,13 +612,8 @@ export default class MessagesList extends Component {
             {PseudoMarkdownCompiler.compileToSimpleHTML(
               MessagesService.prepareContent(
                 this.state.last_message.content,
-<<<<<<< HEAD
                 this.state.last_message.user_specific_content
               )
-=======
-                this.state.last_message.user_specific_content,
-              ),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
         )}

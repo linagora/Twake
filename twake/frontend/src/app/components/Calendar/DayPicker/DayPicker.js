@@ -34,13 +34,7 @@ export default class DayPicker extends React.Component {
   updateDay(date) {
     var searchedDate = date || moment();
     var days = [];
-<<<<<<< HEAD
     var first_day_of_month = moment(searchedDate).startOf('month').startOf('week');
-=======
-    var first_day_of_month = moment(searchedDate)
-      .startOf('month')
-      .startOf('week');
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     for (var i = 0; i < 35; i++) {
       days.push(moment(moment(first_day_of_month).add(i, 'days')));
     }
@@ -160,11 +154,7 @@ export default class DayPicker extends React.Component {
                 }
               >
                 {day.date()}
-<<<<<<< HEAD
               </div>
-=======
-              </div>,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             );
             return list;
           })}

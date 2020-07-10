@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -29,11 +25,7 @@ export default class BoardPicker extends React.Component {
         websockets: [{ uri: 'boards/' + Workspaces.getCurrentUserId, options: { type: 'board' } }],
       },
       this.boards_collection_key,
-<<<<<<< HEAD
       () => {}
-=======
-      () => {},
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   componentWillUnmount() {
@@ -66,14 +58,10 @@ export default class BoardPicker extends React.Component {
                   {board.emoji && <Emojione type={board.emoji} s32 className="board_emoji" />}
                   {board.title}
                 </div>
-<<<<<<< HEAD
                 <div className="board_info">
                   {board.active_tasks || '0'}{' '}
                   {Languages.t('scenes.apps.tasks.active_tasks', [], 'tâches actives')}
                 </div>
-=======
-                <div className="board_info">{board.active_tasks || '0'} {Languages.t('scenes.apps.tasks.active_tasks',[],'tâches actives')}</div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
             );
           })}

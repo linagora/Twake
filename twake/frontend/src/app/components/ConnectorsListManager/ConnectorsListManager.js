@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Collections from 'services/Collections/Collections.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import AddIcon from '@material-ui/icons/AddOutlined';
@@ -64,11 +60,7 @@ export default class ConnectorsListManager extends React.Component {
             className="m-icon-small remove"
             onClick={() => {
               this.state.connectors_ids = this.state.connectors_ids.filter(id =>
-<<<<<<< HEAD
                 typeof item == 'string' ? item != id : item.id != id
-=======
-                typeof item == 'string' ? item != id : item.id != id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
               this.setState({});
               this.props.onChange(this.state.connectors_ids);
@@ -102,7 +94,6 @@ export default class ConnectorsListManager extends React.Component {
     return (
       <div className="connectorsListManager">
         <div className="menu-title no-separator">
-<<<<<<< HEAD
           <div className="text">
             {Languages.t('scenes.apps.tasks.connectors_menu', [], 'Connecteurs')}
           </div>
@@ -112,13 +103,6 @@ export default class ConnectorsListManager extends React.Component {
           <div className="menu-text">
             {Languages.t('scenes.apps.tasks.no_connector', [], 'Aucun connecteurs.')}
           </div>
-=======
-          <div className="text">{Languages.t('scenes.apps.tasks.connectors_menu', [], "Connecteurs")}</div>
-        </div>
-
-        {this.state.connectors_ids.length == 0 && (
-          <div className="menu-text">{Languages.t('scenes.apps.tasks.no_connector', [], "Aucun connecteurs.")}</div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         )}
         {this.state.connectors_ids.map(id => {
           return this.renderLine(id, true);
@@ -134,11 +118,7 @@ export default class ConnectorsListManager extends React.Component {
               type="text"
               style={{ marginBottom: 8 }}
               className="small full_width bottom-margin"
-<<<<<<< HEAD
               placeholder={Languages.t('components.listmanager.filter', [], 'Filtrer')}
-=======
-              placeholder={Languages.t('components.listmanager.filter', [], "Filtrer")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               style={{ margin: 0 }}
               onChange={evt => this.filter(evt.target.value)}
             />

@@ -1,9 +1,5 @@
 import React from 'react';
-<<<<<<< HEAD
 import { Path } from 'react-svg';
-=======
-import {Path} from 'react-svg';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 const SvgComponent = props => (
   <svg

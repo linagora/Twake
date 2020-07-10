@@ -1,23 +1,15 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import Input from 'components/Inputs/Input.js';
 import Button from 'components/Buttons/Button.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
-<<<<<<< HEAD
 import {
   ObjectModal,
   ObjectModalSectionTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-=======
-import {ObjectModal, ObjectModalSectionTitle, ObjectModalTitle,} from 'components/ObjectModal/ObjectModal.js';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Api from 'services/api.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import './Pages.scss';
@@ -56,16 +48,11 @@ export default class CreateCompanyAccount extends Component {
               <b>Password:</b> {this.state.password}
               <br />
               <span className="text">
-<<<<<<< HEAD
                 {Languages.t(
                   'scenes.apps.account.account.send_info',
                   [],
                   'Send this information to your member to let him now its new credentials.'
                 )}
-=======
-                {Languages.t('scenes.apps.account.account.send_info',
-                [], "Send this information to your member to let him now its new credentials.")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </span>
             </div>
           ),
@@ -103,17 +90,12 @@ export default class CreateCompanyAccount extends Component {
                   this.save();
                 }}
               >
-<<<<<<< HEAD
                 {Languages.t('scenes.apps.account.account.save', [], 'Save account')}
-=======
-                {Languages.t('scenes.apps.account.account.save', [], "Save account")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </Button>
             </div>
           }
           title={
             <ObjectModalTitle>
-<<<<<<< HEAD
               {this.props.edit
                 ? Languages.t('scenes.app.popup.workspace.edit_temp', [], 'Edit temporary account')
                 : Languages.t(
@@ -121,15 +103,10 @@ export default class CreateCompanyAccount extends Component {
                     [],
                     'Create temporary account'
                   )}
-=======
-              {this.props.edit ? Languages.t('scenes.app.popup.workspace.edit_temp', [],'Edit temporary account') : 
-              Languages.t('scenes.app.popup.workspace.create_temp', [], 'Create temporary account')}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             </ObjectModalTitle>
           }
         >
           <span className="text">
-<<<<<<< HEAD
             {Languages.t(
               'scenes.apps.account.message_temporary',
               [],
@@ -148,18 +125,6 @@ export default class CreateCompanyAccount extends Component {
               icon="user"
               name={Languages.t('scenes.apps.account.account.fullname', [], 'Fullname')}
             />,
-=======
-            {Languages.t('scenes.apps.account.message_temporary',
-            [], "A temporary account works like a normal Twake account, but you generate its password and you will be able to reset it if necessary.")}
-            <br />
-            {Languages.t('scenes.apps.account.message_user_signin', [],
-            "Your user can sign in at anytime using this same email and change its temporary account to a normal account.")}
-          </span>
-
-          {!this.props.edit && [
-            <ObjectModalSectionTitle icon="user" name={Languages.t('scenes.apps.account.account.fullname',
-            [],"Fullname")} />,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             <Input
               className="full_width"
               placeholder="John Snow"
@@ -167,7 +132,6 @@ export default class CreateCompanyAccount extends Component {
             />,
           ]}
 
-<<<<<<< HEAD
           <ObjectModalSectionTitle
             icon="envelope"
             name={Languages.t('login.email_login', [], 'Email / Login')}
@@ -185,24 +149,11 @@ export default class CreateCompanyAccount extends Component {
               [],
               'Password for your user'
             )}
-=======
-          <ObjectModalSectionTitle icon="envelope" name={Languages.t('login.email_login',
-          [], "Email / Login")} />
-          <Input className="full_width" disabled value={this.props.email} />
-
-          <ObjectModalSectionTitle icon="lock" name={Languages.t('scenes.apps.account.account.password',
-          [], "Password")} />
-          <Input
-            className="full_width"
-            placeholder={Languages.t('scenes.apps.account.account.password_for_user',
-            [], "Password for your user")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             onChange={e => this.setState({ password: e.target.value })}
           />
 
           <br />
           <br />
-<<<<<<< HEAD
           <span className="text">
             {Languages.t(
               'scenes.login.create_account.too_short_password',
@@ -210,10 +161,6 @@ export default class CreateCompanyAccount extends Component {
               'Your password must contain at least 8 characters.'
             )}
           </span>
-=======
-          <span className="text">{Languages.t('scenes.login.create_account.too_short_password',
-          [], "Your password must contain at least 8 characters.")}</span>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
           <br />
           <br />

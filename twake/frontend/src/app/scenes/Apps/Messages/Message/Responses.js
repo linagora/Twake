@@ -42,11 +42,7 @@ export default class Responses extends Component {
         parent_message_id: this.props.parentMessage.id,
         channel_id: this.props.parentMessage.channel_id,
       },
-<<<<<<< HEAD
       this.props.messagesCollectionKey
-=======
-      this.props.messagesCollectionKey,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     MessagesService.startRespond(this.props.parentMessage);
   }
@@ -79,11 +75,7 @@ export default class Responses extends Component {
             {Languages.t(
               'scenes.apps.messages.message.show_responses_button',
               [],
-<<<<<<< HEAD
               'Afficher toutes les réponses'
-=======
-              'Afficher toutes les réponses',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}{' '}
             ({this.props.parentMessage.responses_count})
           </a>
@@ -204,11 +196,7 @@ export default class Responses extends Component {
                   {Languages.t(
                     'scenes.apps.messages.message.show_on_right',
                     [],
-<<<<<<< HEAD
                     'Show on the right'
-=======
-                    'Show on the right',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </a>
               </div>

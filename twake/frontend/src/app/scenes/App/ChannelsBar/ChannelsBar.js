@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'services/Collections/Collections.js';
@@ -72,11 +68,7 @@ export default class ChannelsBar extends Component {
             },
           ],
         },
-<<<<<<< HEAD
         'channels_' + Workspaces.currentWorkspaceId
-=======
-        'channels_' + Workspaces.currentWorkspaceId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
 
       ChannelsService.initSelection();

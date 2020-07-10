@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import Picker from 'components/Picker/Picker.js';
 import Icon from 'components/Icon/Icon.js';
 import './UserPicker.scss';
@@ -64,13 +60,9 @@ export default class UserPicker extends React.Component {
         ref={picker => {
           this.picker = picker;
         }}
-<<<<<<< HEAD
         title={
           this.props.title || Languages.t('components.drive.modify_uslist', [], 'Modify user list')
         }
-=======
-        title={this.props.title || Languages.t('components.drive.modify_uslist', [], 'Modify user list')}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         search={(text, cb) => {
           this.search(text, cb);
         }}

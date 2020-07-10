@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -75,11 +71,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.change_company_title',
         [],
-<<<<<<< HEAD
         'Changer de company'
-=======
-        'Changer de company',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ),
     });
     Groups.getOrderedGroups().map(item => {
@@ -90,11 +82,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.create_company_menu',
         [],
-<<<<<<< HEAD
         'Créer une entreprise'
-=======
-        'Créer une entreprise',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ),
       icon: 'plus',
       onClick: () => {
@@ -108,11 +96,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.grp_parameters',
         [group.name],
-<<<<<<< HEAD
         'Paramètres de $1'
-=======
-        'Paramètres de $1',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ),
       onClick: () => {
         popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');

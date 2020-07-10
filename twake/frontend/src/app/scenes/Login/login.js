@@ -54,32 +54,19 @@ export default class Login extends Component {
 
         <div className="white_background light_background" />
         <div className={'app_version_footer ' + (this.props.willGoToApp ? 'fade_out ' : '')}>
-<<<<<<< HEAD
           <div className="version_name fade_in">Twake {Globals.window.version_name}</div>
-=======
-          <div className="version_name fade_in">
-            Twake {Globals.window.version} {Globals.window.version_name}
-          </div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           <div style={{ height: 20 }}>
             {this.state.login.server_infos_loaded && this.state.login.server_infos.branding.name && (
               <div className="smalltext fade_in">
                 {this.state.login.server_infos.branding.name &&
                   this.state.i18n.t('scenes.login.footer.branding', [
                     this.state.login.server_infos.branding.name,
-<<<<<<< HEAD
                     this.state.login.server_infos.branding.link || 'twake.app',
-=======
-                    this.state.login.server_infos.branding.link,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ])}
                 <a target="_BLANK" href="https://twakeapp.com">
                   {this.state.i18n.t('scenes.login.footer.go_to_twake')}
                 </a>
-<<<<<<< HEAD
                 {' - ' + Globals.window.version}
-=======
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               </div>
             )}
             {this.state.login.server_infos_loaded && !this.state.login.server_infos.branding.name && (

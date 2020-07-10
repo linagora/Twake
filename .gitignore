@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ### PhpStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -140,6 +139,3 @@ docker-compose.yml
 /tests/code_coverage/
 /web/detached/*
 /drive/*
-=======
-*.DS_Store
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a

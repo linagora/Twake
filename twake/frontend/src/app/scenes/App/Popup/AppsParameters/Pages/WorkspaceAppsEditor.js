@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -65,15 +61,9 @@ export default class WorkspaceAppsEditor extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.app_update',
             [this.state.application.name, this.state.application.install_count || 0],
-<<<<<<< HEAD
             "Mettre à jour l'application $1 (application est utilisée $2 fois.)"
           ),
         }
-=======
-            "Mettre à jour l'application $1 (application est utilisée $2 fois.)",
-          ),
-        },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     } else {
       saveApp();
@@ -103,15 +93,9 @@ export default class WorkspaceAppsEditor extends Component {
         text: Languages.t(
           'scenes.app.popup.appsparameters.pages.remove_app',
           [this.state.application.name],
-<<<<<<< HEAD
           "Supprimer l'application $1 définitivement."
         ),
       }
-=======
-          "Supprimer l'application $1 définitivement.",
-        ),
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -127,11 +111,7 @@ export default class WorkspaceAppsEditor extends Component {
   render() {
     if (this.state.application.id != this.state.id) {
       this.state.application = JSON.parse(
-<<<<<<< HEAD
         JSON.stringify(Collections.get('applications').find(this.state.id) || {})
-=======
-        JSON.stringify(Collections.get('applications').find(this.state.id) || {}),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
 
@@ -182,11 +162,7 @@ export default class WorkspaceAppsEditor extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.alert_published_app',
               [],
-<<<<<<< HEAD
               'Votre application est publiée, vous ne pouvez pas la modifier.'
-=======
-              'Votre application est publiée, vous ne pouvez pas la modifier.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
         )}
@@ -196,20 +172,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages._app_identity',
               [],
-<<<<<<< HEAD
               "Identité de l'application"
-=======
-              "Identité de l'application",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.modify_public_data',
               [],
-<<<<<<< HEAD
               'Modifier les données publiques de votre application.'
-=======
-              'Modifier les données publiques de votre application.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none' }}>
@@ -218,11 +186,7 @@ export default class WorkspaceAppsEditor extends Component {
                 placeholder={Languages.t(
                   'scenes.app.popup.appsparameters.pages.amazing_app_name',
                   [],
-<<<<<<< HEAD
                   'My amazing app'
-=======
-                  'My amazing app',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 type="text"
                 disabled={this.state.loading || public_lock}
@@ -237,22 +201,14 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.grp_section_surname_label',
                   [],
-<<<<<<< HEAD
                   'Nom simplifié'
-=======
-                  'Nom simplifié',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.string_information',
                   [],
-<<<<<<< HEAD
                   "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message."
-=======
-                  "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <Input
@@ -271,11 +227,7 @@ export default class WorkspaceAppsEditor extends Component {
                   {Languages.t(
                     'scenes.app.popup.appsparameters.pages.grp_section_name-error',
                     [],
-<<<<<<< HEAD
                     'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.'
-=======
-                    'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </div>
               )}
@@ -284,11 +236,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.app_grp_label',
                   [],
-<<<<<<< HEAD
                   "Groupe d'applications"
-=======
-                  "Groupe d'applications",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <Input type="text" disabled={true} value={application.app_group_name} />
@@ -298,11 +246,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.optimal_format',
                   [],
-<<<<<<< HEAD
                   'Format optimal : 48x48px.'
-=======
-                  'Format optimal : 48x48px.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <Input
@@ -320,11 +264,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.categories_label',
                   [],
-<<<<<<< HEAD
                   'Catégories'
-=======
-                  'Catégories',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <TagPicker
@@ -361,22 +301,14 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.description_label',
                   [],
-<<<<<<< HEAD
                   'Description'
-=======
-                  'Description',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <AutoHeight
                 placeholder={Languages.t(
                   'scenes.app.popup.appsparameters.pages.description_label',
                   [],
-<<<<<<< HEAD
                   'Description'
-=======
-                  'Description',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 disabled={this.state.loading || public_lock}
                 onChange={evt => {
@@ -395,20 +327,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.api_parameters_label',
               [],
-<<<<<<< HEAD
               "Paramètres de l'API"
-=======
-              "Paramètres de l'API",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.api_data_description',
               [],
-<<<<<<< HEAD
               "Données utiles pour l'API Twake."
-=======
-              "Données utiles pour l'API Twake.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -416,11 +340,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.public_login_label',
                   [],
-<<<<<<< HEAD
                   'Identifiant public'
-=======
-                  'Identifiant public',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <InputWithClipBoard disabled={true} value={application.api_id} />
@@ -450,11 +370,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.url_reception_events_label',
                   [],
-<<<<<<< HEAD
                   'Url de reception des évènements'
-=======
-                  'Url de reception des évènements',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <Input
@@ -472,32 +388,20 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.autorised_ip_adresses_label',
                   [],
-<<<<<<< HEAD
                   'Adresses IP autorisée'
-=======
-                  'Adresses IP autorisée',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.filter_information',
                   [],
-<<<<<<< HEAD
                   "Ce filtre permet de limiter l'utilisation de votre clé API aux serveurs de votre connecteur uniquement."
-=======
-                  "Ce filtre permet de limiter l'utilisation de votre clé API aux serveurs de votre connecteur uniquement.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 <br />
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.allowed_ip_adresses_method',
                   [],
-<<<<<<< HEAD
                   'Utilisez * en développement pour autorisé toutes les adresses IP.'
-=======
-                  'Utilisez * en développement pour autorisé toutes les adresses IP.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <Input
@@ -519,20 +423,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.displayed_parameters_label',
               [],
-<<<<<<< HEAD
               "Paramètres d'affichage"
-=======
-              "Paramètres d'affichage",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.dispalyed_parameters_description',
               [],
-<<<<<<< HEAD
               "Permet de définir l'endroit où votre application sera visible."
-=======
-              "Permet de définir l'endroit où votre application sera visible.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 0 }}>
@@ -540,11 +436,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.configuration_label',
                   [],
-<<<<<<< HEAD
                   'Configuration'
-=======
-                  'Configuration',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0, opacity: 1 }}>
@@ -552,11 +444,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.json_configuration_information',
                   [],
-<<<<<<< HEAD
                   'Rendez-vous sur la documentation afin de générer votre configuration au format JSON.'
-=======
-                  'Rendez-vous sur la documentation afin de générer votre configuration au format JSON.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <AutoHeight
@@ -586,20 +474,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.app_privileges_label',
               [],
-<<<<<<< HEAD
               "Privilèges de l'application"
-=======
-              "Privilèges de l'application",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.app_privileges_information',
               [],
-<<<<<<< HEAD
               'Permet de définir ce que votre application peut modifier et lire.'
-=======
-              'Permet de définir ce que votre application peut modifier et lire.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 0 }}>
@@ -607,11 +487,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.write_privileges_label',
                   [],
-<<<<<<< HEAD
                   'Privilèges en écriture'
-=======
-                  'Privilèges en écriture',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <TagPicker
@@ -625,11 +501,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.capabilities = values.map(item =>
-<<<<<<< HEAD
                     typeof item == 'string' ? item : item.id
-=======
-                    typeof item == 'string' ? item : item.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                   this.setState({});
                 }}
@@ -639,11 +511,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.read_privileges_label',
                   [],
-<<<<<<< HEAD
                   'Privilèges en lecture'
-=======
-                  'Privilèges en lecture',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
               <TagPicker
@@ -657,11 +525,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.privileges = values.map(item =>
-<<<<<<< HEAD
                     typeof item == 'string' ? item : item.id
-=======
-                    typeof item == 'string' ? item : item.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                   this.setState({});
                 }}
@@ -681,11 +545,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.hooks = values.map(item =>
-<<<<<<< HEAD
                     typeof item == 'string' ? item : item.id
-=======
-                    typeof item == 'string' ? item : item.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                   this.setState({});
                 }}
@@ -699,20 +559,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.publication_label',
               [],
-<<<<<<< HEAD
               'Publication'
-=======
-              'Publication',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.publication_description',
               [],
-<<<<<<< HEAD
               'Déterminez la visibilité de votre application.'
-=======
-              'Déterminez la visibilité de votre application.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -720,11 +572,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.parameters_form_small_text',
                   [],
-<<<<<<< HEAD
                   "L'application non publiée ne fonctionnera que dans votre entreprise, si vous souhaitez la rendre disponible à tous les utilisateurs de Twake activez cette option."
-=======
-                  "L'application non publiée ne fonctionnera que dans votre entreprise, si vous souhaitez la rendre disponible à tous les utilisateurs de Twake activez cette option.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
 
@@ -734,11 +582,7 @@ export default class WorkspaceAppsEditor extends Component {
                   {Languages.t(
                     'scenes.app.popup.appsparameters.pages.available_publication_alert',
                     [],
-<<<<<<< HEAD
                     'La publication de votre application est actuellement en attente de validation par les équipes de Twake.'
-=======
-                    'La publication de votre application est actuellement en attente de validation par les équipes de Twake.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )}
                 </div>
               )}
@@ -747,11 +591,7 @@ export default class WorkspaceAppsEditor extends Component {
                 label={Languages.t(
                   'scenes.app.popup.appsparameters.pages.publish_app_label',
                   [],
-<<<<<<< HEAD
                   "Publier l'application"
-=======
-                  "Publier l'application",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 value={application.public}
                 onChange={value => {
@@ -768,20 +608,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.danger_zone_label',
               [],
-<<<<<<< HEAD
               'Zone dangereuse'
-=======
-              'Zone dangereuse',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.danger_zone_description',
               [],
-<<<<<<< HEAD
               "Supprimez l'application."
-=======
-              "Supprimez l'application.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -789,11 +621,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.danger_zone_small_text',
                   [],
-<<<<<<< HEAD
                   'Vous ne pouvez pas supprimer cette application si elle est publiée.'
-=======
-                  'Vous ne pouvez pas supprimer cette application si elle est publiée.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </div>
 
@@ -802,11 +630,7 @@ export default class WorkspaceAppsEditor extends Component {
                 value={Languages.t(
                   'scenes.app.popup.appsparameters.pages.remove_app_button',
                   [],
-<<<<<<< HEAD
                   "Supprimer l'application"
-=======
-                  "Supprimer l'application",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
                 disabled={this.state.loading || public_lock}
                 loading={this.state.loading}
@@ -823,11 +647,7 @@ export default class WorkspaceAppsEditor extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_simple_name_message',
                 [],
-<<<<<<< HEAD
                 'Le nom simplifié de votre application est déjà utilisé par une autre application, veuillez le changer.'
-=======
-                'Le nom simplifié de votre application est déjà utilisé par une autre application, veuillez le changer.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           )}
@@ -837,11 +657,7 @@ export default class WorkspaceAppsEditor extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_update_message',
                 [],
-<<<<<<< HEAD
                 "Une erreur s'est produite lors de la mise à jour de l'application."
-=======
-                "Une erreur s'est produite lors de la mise à jour de l'application.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           )}
@@ -860,11 +676,7 @@ export default class WorkspaceAppsEditor extends Component {
             value={Languages.t(
               'scenes.app.popup.appsparameters.pages.update_button',
               [],
-<<<<<<< HEAD
               'Mettre à jour'
-=======
-              'Mettre à jour',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             disabled={this.state.loading}
             loading={this.state.loading}

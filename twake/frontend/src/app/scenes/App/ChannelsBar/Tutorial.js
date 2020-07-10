@@ -52,15 +52,9 @@ export default class Tutorial extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.tutorial_alert',
           [],
-<<<<<<< HEAD
           'Ne plus jamais afficher ce cadre ?'
         ),
       }
-=======
-          'Ne plus jamais afficher ce cadre ?',
-        ),
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   render() {
@@ -91,11 +85,7 @@ export default class Tutorial extends Component {
               Languages.t(
                 'scenes.app.channelsbar.company_invitation_alert_title',
                 [],
-<<<<<<< HEAD
                 "Vous êtes invité dans l'entreprise "
-=======
-                "Vous êtes invité dans l'entreprise ",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               ),
               <b>{group.name}</b>,
             ]}
@@ -105,11 +95,7 @@ export default class Tutorial extends Component {
                 : Languages.t(
                     'scenes.app.channelsbar.company_invitation_alert_subtitle',
                     [],
-<<<<<<< HEAD
                     'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.'
-=======
-                    'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )
             }
             onClickFrame={e => {
@@ -128,22 +114,14 @@ export default class Tutorial extends Component {
             subtitle={Languages.t(
               'scenes.app.channelsbar.welcoming_message_subtitle',
               [],
-<<<<<<< HEAD
               'Devenez un pro de Twake en seulement quelques clics !'
-=======
-              'Devenez un pro de Twake en seulement quelques clics !',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             blocks={[
               {
                 text: Languages.t(
                   'scenes.app.channelsbar.initial_instructions_tutorial',
                   [],
-<<<<<<< HEAD
                   'Choisissez un prénom, un nom et une image de profil.'
-=======
-                  'Choisissez un prénom, un nom et une image de profil.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 emoji: ':woman_juggling:',
                 done: tutorial_status.has_identity,
@@ -155,11 +133,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.sending_message_instruction',
                   [],
-<<<<<<< HEAD
                   'Envoyer un premier message dans une discussion'
-=======
-                  'Envoyer un premier message dans une discussion',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 emoji: ':love_letter:',
                 done: tutorial_status.first_message_sent,
@@ -174,11 +148,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.installation_desktop_tutorial',
                   [],
-<<<<<<< HEAD
                   "Installer l'application desktop"
-=======
-                  "Installer l'application desktop",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 emoji: ':desktop:',
                 done: tutorial_status.has_desktop_app,
@@ -190,11 +160,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.invitation_collaboraors_tutorial',
                   [],
-<<<<<<< HEAD
                   'Invitez vos collaborateurs dans votre espace de travail.'
-=======
-                  'Invitez vos collaborateurs dans votre espace de travail.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
                 emoji: ':handshake:',
                 done: tutorial_status.did_invite_collaborators,
@@ -202,11 +168,7 @@ export default class Tutorial extends Component {
                   popupManager.open(
                     <WorkspaceParameter initial_page={2} />,
                     true,
-<<<<<<< HEAD
                     'workspace_parameters'
-=======
-                    'workspace_parameters',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   );
                 },
               },

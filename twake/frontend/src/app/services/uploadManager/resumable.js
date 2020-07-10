@@ -3,11 +3,7 @@ const window = {};
 window.setTimeout = (f, t) => setTimeout(f, t);
 
 window.define ||
-<<<<<<< HEAD
   ((window.define = function (c) {
-=======
-  ((window.define = function(c) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     try {
       delete window.define;
     } catch (g) {
@@ -26,17 +22,10 @@ const define = window.define;
  * Steffen Tiedemann Christensen, steffen@23company.com
  */
 
-<<<<<<< HEAD
 (function () {
   'use strict';
 
   var Resumable = function (opts) {
-=======
-(function() {
-  'use strict';
-
-  var Resumable = function(opts) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     if (!(this instanceof Resumable)) {
       return new Resumable(opts);
     }
@@ -97,11 +86,7 @@ const define = window.define;
       clearInput: true,
       chunkFormat: 'blob',
       setChunkTypeFromFile: false,
-<<<<<<< HEAD
       maxFilesErrorCallback: function (files, errorCount) {
-=======
-      maxFilesErrorCallback: function(files, errorCount) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var maxFiles = $.getOpt('maxFiles');
         alert(
           'Please upload no more than ' +
@@ -112,11 +97,7 @@ const define = window.define;
         );
       },
       minFileSize: 1,
-<<<<<<< HEAD
       minFileSizeErrorCallback: function (file, errorCount) {
-=======
-      minFileSizeErrorCallback: function(file, errorCount) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         alert(
           file.fileName ||
             file.name +
@@ -126,11 +107,7 @@ const define = window.define;
         );
       },
       maxFileSize: undefined,
-<<<<<<< HEAD
       maxFileSizeErrorCallback: function (file, errorCount) {
-=======
-      maxFileSizeErrorCallback: function(file, errorCount) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         alert(
           file.fileName ||
             file.name +
@@ -140,11 +117,7 @@ const define = window.define;
         );
       },
       fileType: [],
-<<<<<<< HEAD
       fileTypeErrorCallback: function (file, errorCount) {
-=======
-      fileTypeErrorCallback: function(file, errorCount) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         alert(
           file.fileName ||
             file.name +
@@ -155,20 +128,12 @@ const define = window.define;
       },
     };
     $.opts = opts || {};
-<<<<<<< HEAD
     $.getOpt = function (o) {
-=======
-    $.getOpt = function(o) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var $opt = this;
       // Get multiple option if passed an array
       if (o instanceof Array) {
         var options = {};
-<<<<<<< HEAD
         $h.each(o, function (option) {
-=======
-        $h.each(o, function(option) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           options[option] = $opt.getOpt(option);
         });
         return options;
@@ -202,17 +167,10 @@ const define = window.define;
     // fileSuccess(file), fileProgress(file), fileAdded(file, event), filesAdded(files, filesSkipped), fileRetry(file),
     // fileError(file, message), complete(), progress(), error(message, file), pause()
     $.events = [];
-<<<<<<< HEAD
     $.on = function (event, callback) {
       $.events.push(event.toLowerCase(), callback);
     };
     $.fire = function () {
-=======
-    $.on = function(event, callback) {
-      $.events.push(event.toLowerCase(), callback);
-    };
-    $.fire = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       // `arguments` is an object, not array, in FF, so:
       var args = [];
       for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
@@ -228,19 +186,11 @@ const define = window.define;
 
     // INTERNAL HELPER METHODS (handy, but ultimately not part of uploading)
     var $h = {
-<<<<<<< HEAD
       stopEvent: function (e) {
         e.stopPropagation();
         e.preventDefault();
       },
       each: function (o, callback) {
-=======
-      stopEvent: function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-      },
-      each: function(o, callback) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (typeof o.length !== 'undefined') {
           for (var i = 0; i < o.length; i++) {
             // Array or FileList
@@ -253,11 +203,7 @@ const define = window.define;
           }
         }
       },
-<<<<<<< HEAD
       generateUniqueIdentifier: function (file, event) {
-=======
-      generateUniqueIdentifier: function(file, event) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var custom = $.getOpt('generateUniqueIdentifier');
         if (typeof custom === 'function') {
           return custom(file, event);
@@ -266,17 +212,10 @@ const define = window.define;
         var size = file.size;
         return size + '-' + relativePath.replace(/[^0-9a-zA-Z_-]/gim, '');
       },
-<<<<<<< HEAD
       contains: function (array, test) {
         var result = false;
 
         $h.each(array, function (value) {
-=======
-      contains: function(array, test) {
-        var result = false;
-
-        $h.each(array, function(value) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (value == test) {
             result = true;
             return false;
@@ -286,11 +225,7 @@ const define = window.define;
 
         return result;
       },
-<<<<<<< HEAD
       formatSize: function (size) {
-=======
-      formatSize: function(size) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (size < 1024) {
           return size + ' bytes';
         } else if (size < 1024 * 1024) {
@@ -301,11 +236,7 @@ const define = window.define;
           return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
         }
       },
-<<<<<<< HEAD
       getTarget: function (request, params) {
-=======
-      getTarget: function(request, params) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var target = $.getOpt('target');
 
         if (request === 'test' && $.getOpt('testTarget')) {
@@ -323,11 +254,7 @@ const define = window.define;
       },
     };
 
-<<<<<<< HEAD
     var onDrop = function (event) {
-=======
-    var onDrop = function(event) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       $h.stopEvent(event);
 
       //handle dropped things as items if we can (this lets us deal with folders nicer in some cases)
@@ -339,11 +266,7 @@ const define = window.define;
         loadFiles(event.dataTransfer.files, event);
       }
     };
-<<<<<<< HEAD
     var preventDefault = function (e) {
-=======
-    var preventDefault = function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       e.preventDefault();
     };
 
@@ -358,11 +281,7 @@ const define = window.define;
       var entry;
       if (item.isFile) {
         // file provided
-<<<<<<< HEAD
         return item.file(function (file) {
-=======
-        return item.file(function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           file.relativePath = path + file.name;
           items.push(file);
           cb();
@@ -405,11 +324,7 @@ const define = window.define;
         return cb();
       }
       // invoke current function, pass the next part as continuation
-<<<<<<< HEAD
       items[0](function () {
-=======
-      items[0](function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         processCallbacks(items.slice(1), cb);
       });
     }
@@ -423,22 +338,14 @@ const define = window.define;
      */
     function processDirectory(directory, path, items, cb) {
       var dirReader = directory.createReader();
-<<<<<<< HEAD
       dirReader.readEntries(function (entries) {
-=======
-      dirReader.readEntries(function(entries) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (!entries.length) {
           // empty directory, skip
           return cb();
         }
         // process all conversion callbacks, finally invoke own one
         processCallbacks(
-<<<<<<< HEAD
           entries.map(function (entry) {
-=======
-          entries.map(function(entry) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             // bind all properties except for callback
             return processItem.bind(null, entry, path, items);
           }),
@@ -459,19 +366,11 @@ const define = window.define;
       $.fire('beforeAdd');
       var files = [];
       processCallbacks(
-<<<<<<< HEAD
         Array.prototype.map.call(items, function (item) {
           // bind all properties except for callback
           return processItem.bind(null, item, '', files);
         }),
         function () {
-=======
-        Array.prototype.map.call(items, function(item) {
-          // bind all properties except for callback
-          return processItem.bind(null, item, '', files);
-        }),
-        function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (files.length) {
             // at least one file found
             appendFilesFromFileList(files, event);
@@ -480,11 +379,7 @@ const define = window.define;
       );
     }
 
-<<<<<<< HEAD
     var appendFilesFromFileList = function (fileList, event) {
-=======
-    var appendFilesFromFileList = function(fileList, event) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       // check for uploading too many files
       var errorCount = 0;
       var o = $.getOpt([
@@ -509,31 +404,19 @@ const define = window.define;
       var files = [],
         filesSkipped = [],
         remaining = fileList.length;
-<<<<<<< HEAD
       var decreaseReamining = function () {
-=======
-      var decreaseReamining = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (!--remaining) {
           // all files processed, trigger event
           if (!files.length && !filesSkipped.length) {
             // no succeeded files, just skip
             return;
           }
-<<<<<<< HEAD
           window.setTimeout(function () {
-=======
-          window.setTimeout(function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             $.fire('filesAdded', files, filesSkipped);
           }, 0);
         }
       };
-<<<<<<< HEAD
       $h.each(fileList, function (file) {
-=======
-      $h.each(fileList, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var fileName = file.name;
         if (o.fileType.length > 0) {
           var fileTypeFound = false;
@@ -565,21 +448,13 @@ const define = window.define;
 
         function addFile(uniqueIdentifier) {
           if (!$.getFromUniqueIdentifier(uniqueIdentifier)) {
-<<<<<<< HEAD
             (function () {
-=======
-            (function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               file.uniqueIdentifier = uniqueIdentifier;
               var f = new ResumableFile($, file, uniqueIdentifier);
               $.files.push(f);
               files.push(f);
               f.container = typeof event != 'undefined' ? event.srcElement : null;
-<<<<<<< HEAD
               window.setTimeout(function () {
-=======
-              window.setTimeout(function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 $.fire('fileAdded', f, event);
               }, 0);
             })();
@@ -593,19 +468,11 @@ const define = window.define;
         if (uniqueIdentifier && typeof uniqueIdentifier.then === 'function') {
           // Promise or Promise-like object provided as unique identifier
           uniqueIdentifier.then(
-<<<<<<< HEAD
             function (uniqueIdentifier) {
               // unique identifier generation succeeded
               addFile(uniqueIdentifier);
             },
             function () {
-=======
-            function(uniqueIdentifier) {
-              // unique identifier generation succeeded
-              addFile(uniqueIdentifier);
-            },
-            function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               // unique identifier generation failed
               // skip further processing, only decrease file count
               decreaseReamining();
@@ -635,11 +502,7 @@ const define = window.define;
       var _error = uniqueIdentifier !== undefined;
 
       // Callback when something happens within the chunk
-<<<<<<< HEAD
       var chunkEvent = function (event, message) {
-=======
-      var chunkEvent = function(event, message) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         // event can be 'progress', 'success', 'error' or 'retry'
         switch (event) {
           case 'progress':
@@ -667,17 +530,10 @@ const define = window.define;
       // Main code to set up a file object with chunks,
       // packaged to be able to handle retries if needed.
       $.chunks = [];
-<<<<<<< HEAD
       $.abort = function () {
         // Stop current uploads
         var abortCount = 0;
         $h.each($.chunks, function (c) {
-=======
-      $.abort = function() {
-        // Stop current uploads
-        var abortCount = 0;
-        $h.each($.chunks, function(c) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (c.status() == 'uploading') {
             c.abort();
             abortCount++;
@@ -685,20 +541,12 @@ const define = window.define;
         });
         if (abortCount > 0) $.resumableObj.fire('fileProgress', $);
       };
-<<<<<<< HEAD
       $.cancel = function () {
-=======
-      $.cancel = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         // Reset this file to be void
         var _chunks = $.chunks;
         $.chunks = [];
         // Stop current uploads
-<<<<<<< HEAD
         $h.each(_chunks, function (c) {
-=======
-        $h.each(_chunks, function(c) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (c.status() == 'uploading') {
             c.abort();
             $.resumableObj.uploadNextChunk();
@@ -707,26 +555,15 @@ const define = window.define;
         $.resumableObj.removeFile($);
         $.resumableObj.fire('fileProgress', $);
       };
-<<<<<<< HEAD
       $.retry = function () {
         $.bootstrap();
         var firedRetry = false;
         $.resumableObj.on('chunkingComplete', function () {
-=======
-      $.retry = function() {
-        $.bootstrap();
-        var firedRetry = false;
-        $.resumableObj.on('chunkingComplete', function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (!firedRetry) $.resumableObj.upload();
           firedRetry = true;
         });
       };
-<<<<<<< HEAD
       $.bootstrap = function () {
-=======
-      $.bootstrap = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         $.abort();
         _error = false;
         // Rebuild stack of chunks from file
@@ -735,40 +572,23 @@ const define = window.define;
         var round = $.getOpt('forceChunkSize') ? Math.ceil : Math.floor;
         var maxOffset = Math.max(round($.file.size / $.getOpt('chunkSize')), 1);
         for (var offset = 0; offset < maxOffset; offset++) {
-<<<<<<< HEAD
           (function (offset) {
             window.setTimeout(function () {
-=======
-          (function(offset) {
-            window.setTimeout(function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               $.chunks.push(new ResumableChunk($.resumableObj, $, offset, chunkEvent));
               $.resumableObj.fire('chunkingProgress', $, offset / maxOffset);
             }, 0);
           })(offset);
         }
-<<<<<<< HEAD
         window.setTimeout(function () {
           $.resumableObj.fire('chunkingComplete', $);
         }, 0);
       };
       $.progress = function () {
-=======
-        window.setTimeout(function() {
-          $.resumableObj.fire('chunkingComplete', $);
-        }, 0);
-      };
-      $.progress = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (_error) return 1;
         // Sum up progress across everything
         var ret = 0;
         var error = false;
-<<<<<<< HEAD
         $h.each($.chunks, function (c) {
-=======
-        $h.each($.chunks, function(c) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (c.status() == 'error') error = true;
           ret += c.progress(true); // get chunk progress relative to entire file
         });
@@ -777,15 +597,9 @@ const define = window.define;
         $._prevProgress = ret;
         return ret;
       };
-<<<<<<< HEAD
       $.isUploading = function () {
         var uploading = false;
         $h.each($.chunks, function (chunk) {
-=======
-      $.isUploading = function() {
-        var uploading = false;
-        $h.each($.chunks, function(chunk) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (chunk.status() == 'uploading') {
             uploading = true;
             return false;
@@ -793,15 +607,9 @@ const define = window.define;
         });
         return uploading;
       };
-<<<<<<< HEAD
       $.isComplete = function () {
         var outstanding = false;
         $h.each($.chunks, function (chunk) {
-=======
-      $.isComplete = function() {
-        var outstanding = false;
-        $h.each($.chunks, function(chunk) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           var status = chunk.status();
           if (status == 'pending' || status == 'uploading' || chunk.preprocessState === 1) {
             outstanding = true;
@@ -810,22 +618,14 @@ const define = window.define;
         });
         return !outstanding;
       };
-<<<<<<< HEAD
       $.pause = function (pause) {
-=======
-      $.pause = function(pause) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (typeof pause === 'undefined') {
           $._pause = $._pause ? false : true;
         } else {
           $._pause = pause;
         }
       };
-<<<<<<< HEAD
       $.isPaused = function () {
-=======
-      $.isPaused = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         return $._pause;
       };
 
@@ -863,19 +663,11 @@ const define = window.define;
       $.xhr = null;
 
       // test() makes a GET request without any data to see if the chunk has already been uploaded in a previous session
-<<<<<<< HEAD
       $.test = function () {
         // Set up request and listen for event
         $.xhr = new XMLHttpRequest();
 
         var testHandler = function (e) {
-=======
-      $.test = function() {
-        // Set up request and listen for event
-        $.xhr = new XMLHttpRequest();
-
-        var testHandler = function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           $.tested = true;
           var status = $.status();
           if (status == 'success') {
@@ -894,11 +686,7 @@ const define = window.define;
         var parameterNamespace = $.getOpt('parameterNamespace');
         var customQuery = $.getOpt('query');
         if (typeof customQuery == 'function') customQuery = customQuery($.fileObj, $);
-<<<<<<< HEAD
         $h.each(customQuery, function (k, v) {
-=======
-        $h.each(customQuery, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           params.push(
             [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
           );
@@ -917,20 +705,12 @@ const define = window.define;
             ['relativePathParameterName', $.fileObj.relativePath],
             ['totalChunksParameterName', $.fileObj.chunks.length],
           ]
-<<<<<<< HEAD
             .filter(function (pair) {
-=======
-            .filter(function(pair) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               // include items that resolve to truthy values
               // i.e. exclude false, null, undefined and empty strings
               return $.getOpt(pair[0]);
             })
-<<<<<<< HEAD
             .map(function (pair) {
-=======
-            .map(function(pair) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               // map each key/value pair to its final form
               return [parameterNamespace + $.getOpt(pair[0]), encodeURIComponent(pair[1])].join(
                 '=',
@@ -946,31 +726,19 @@ const define = window.define;
         if (typeof customHeaders === 'function') {
           customHeaders = customHeaders($.fileObj, $);
         }
-<<<<<<< HEAD
         $h.each(customHeaders, function (k, v) {
-=======
-        $h.each(customHeaders, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           $.xhr.setRequestHeader(k, v);
         });
         $.xhr.send(null);
       };
 
-<<<<<<< HEAD
       $.preprocessFinished = function () {
-=======
-      $.preprocessFinished = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         $.preprocessState = 2;
         $.send();
       };
 
       // send() uploads the actual data in a POST call
-<<<<<<< HEAD
       $.send = function () {
-=======
-      $.send = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var preprocess = $.getOpt('preprocess');
         if (typeof preprocess === 'function') {
           switch ($.preprocessState) {
@@ -995,11 +763,7 @@ const define = window.define;
         // Progress
         $.xhr.upload.addEventListener(
           'progress',
-<<<<<<< HEAD
           function (e) {
-=======
-          function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             if (
               new Date() - $.lastProgressCallback >
               $.getOpt('throttleProgressCallbacks') * 1000
@@ -1016,11 +780,7 @@ const define = window.define;
         $.callback('progress');
 
         // Done (either done, failed or retry)
-<<<<<<< HEAD
         var doneHandler = function (e) {
-=======
-        var doneHandler = function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           var status = $.status();
           if (status == 'success' || status == 'error') {
             $.callback(status, $.message());
@@ -1054,20 +814,12 @@ const define = window.define;
           ['relativePathParameterName', $.fileObj.relativePath],
           ['totalChunksParameterName', $.fileObj.chunks.length],
         ]
-<<<<<<< HEAD
           .filter(function (pair) {
-=======
-          .filter(function(pair) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             // include items that resolve to truthy values
             // i.e. exclude false, null, undefined and empty strings
             return $.getOpt(pair[0]);
           })
-<<<<<<< HEAD
           .reduce(function (query, pair) {
-=======
-          .reduce(function(query, pair) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             // assign query key/value
             query[$.getOpt(pair[0])] = pair[1];
             return query;
@@ -1075,11 +827,7 @@ const define = window.define;
         // Mix in custom data
         var customQuery = $.getOpt('query');
         if (typeof customQuery == 'function') customQuery = customQuery($.fileObj, $);
-<<<<<<< HEAD
         $h.each(customQuery, function (k, v) {
-=======
-        $h.each(customQuery, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           query[k] = v;
         });
 
@@ -1102,11 +850,7 @@ const define = window.define;
         if ($.getOpt('method') === 'octet') {
           // Add data from the query options
           data = bytes;
-<<<<<<< HEAD
           $h.each(query, function (k, v) {
-=======
-          $h.each(query, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             params.push(
               [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
             );
@@ -1114,11 +858,7 @@ const define = window.define;
         } else {
           // Add data from the query options
           data = new FormData();
-<<<<<<< HEAD
           $h.each(query, function (k, v) {
-=======
-          $h.each(query, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             data.append(parameterNamespace + k, v);
             params.push(
               [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
@@ -1132,11 +872,7 @@ const define = window.define;
             );
           } else if ($.getOpt('chunkFormat') == 'base64') {
             var fr = new FileReader();
-<<<<<<< HEAD
             fr.onload = function (e) {
-=======
-            fr.onload = function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               data.append(parameterNamespace + $.getOpt('fileParameterName'), fr.result);
               $.xhr.send(data);
             };
@@ -1159,11 +895,7 @@ const define = window.define;
           customHeaders = customHeaders($.fileObj, $);
         }
 
-<<<<<<< HEAD
         $h.each(customHeaders, function (k, v) {
-=======
-        $h.each(customHeaders, function(k, v) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           $.xhr.setRequestHeader(k, v);
         });
 
@@ -1171,20 +903,12 @@ const define = window.define;
           $.xhr.send(data);
         }
       };
-<<<<<<< HEAD
       $.abort = function () {
-=======
-      $.abort = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         // Abort and reset
         if ($.xhr) $.xhr.abort();
         $.xhr = null;
       };
-<<<<<<< HEAD
       $.status = function () {
-=======
-      $.status = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         // Returns: 'pending', 'uploading', 'success', 'error'
         if ($.pendingRetry) {
           // if pending retry then that's effectively the same as actively uploading,
@@ -1213,17 +937,10 @@ const define = window.define;
           }
         }
       };
-<<<<<<< HEAD
       $.message = function () {
         return $.xhr ? $.xhr.responseText : '';
       };
       $.progress = function (relative) {
-=======
-      $.message = function() {
-        return $.xhr ? $.xhr.responseText : '';
-      };
-      $.progress = function(relative) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (typeof relative === 'undefined') relative = false;
         var factor = relative ? ($.endByte - $.startByte) / $.fileObjSize : 1;
         if ($.pendingRetry) return 0;
@@ -1243,22 +960,14 @@ const define = window.define;
     }
 
     // QUEUE
-<<<<<<< HEAD
     $.uploadNextChunk = function () {
-=======
-    $.uploadNextChunk = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var found = false;
 
       // In some cases (such as videos) it's really handy to upload the first
       // and last chunk of a file quickly; this let's the server check the file's
       // metadata and determine if there's even a point in continuing.
       if ($.getOpt('prioritizeFirstAndLastChunk')) {
-<<<<<<< HEAD
         $h.each($.files, function (file) {
-=======
-        $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           if (
             file.chunks.length &&
             file.chunks[0].status() == 'pending' &&
@@ -1282,15 +991,9 @@ const define = window.define;
       }
 
       // Now, simply look for the next, best thing to upload
-<<<<<<< HEAD
       $h.each($.files, function (file) {
         if (file.isPaused() === false) {
           $h.each(file.chunks, function (chunk) {
-=======
-      $h.each($.files, function(file) {
-        if (file.isPaused() === false) {
-          $h.each(file.chunks, function(chunk) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             if (chunk.status() == 'pending' && chunk.preprocessState === 0) {
               chunk.send();
               found = true;
@@ -1304,11 +1007,7 @@ const define = window.define;
 
       // The are no more outstanding chunks to upload, check is everything is done
       var outstanding = false;
-<<<<<<< HEAD
       $h.each($.files, function (file) {
-=======
-      $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (!file.isComplete()) {
           outstanding = true;
           return false;
@@ -1322,17 +1021,10 @@ const define = window.define;
     };
 
     // PUBLIC METHODS FOR RESUMABLE.JS
-<<<<<<< HEAD
     $.assignBrowse = function (domNodes, isDirectory) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
       $h.each(domNodes, function (domNode) {
-=======
-    $.assignBrowse = function(domNodes, isDirectory) {
-      if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
-
-      $h.each(domNodes, function(domNode) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var input;
         if (domNode.tagName === 'INPUT' && domNode.type === 'file') {
           input = domNode;
@@ -1342,11 +1034,7 @@ const define = window.define;
           input.style.display = 'none';
           domNode.addEventListener(
             'click',
-<<<<<<< HEAD
             function () {
-=======
-            function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               input.style.opacity = 0;
               input.style.display = 'block';
               input.focus();
@@ -1373,11 +1061,7 @@ const define = window.define;
           input.setAttribute(
             'accept',
             fileTypes
-<<<<<<< HEAD
               .map(function (e) {
-=======
-              .map(function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 return '.' + e;
               })
               .join(','),
@@ -1388,11 +1072,7 @@ const define = window.define;
         // When new files are added, simply append them to the overall list
         input.addEventListener(
           'change',
-<<<<<<< HEAD
           function (e) {
-=======
-          function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             appendFilesFromFileList(e.target.files, e);
             var clearInput = $.getOpt('clearInput');
             if (clearInput) {
@@ -1403,47 +1083,27 @@ const define = window.define;
         );
       });
     };
-<<<<<<< HEAD
     $.assignDrop = function (domNodes) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
       $h.each(domNodes, function (domNode) {
-=======
-    $.assignDrop = function(domNodes) {
-      if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
-
-      $h.each(domNodes, function(domNode) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         domNode.addEventListener('dragover', preventDefault, false);
         domNode.addEventListener('dragenter', preventDefault, false);
         domNode.addEventListener('drop', onDrop, false);
       });
     };
-<<<<<<< HEAD
     $.unAssignDrop = function (domNodes) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
       $h.each(domNodes, function (domNode) {
-=======
-    $.unAssignDrop = function(domNodes) {
-      if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
-
-      $h.each(domNodes, function(domNode) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         domNode.removeEventListener('dragover', preventDefault);
         domNode.removeEventListener('dragenter', preventDefault);
         domNode.removeEventListener('drop', onDrop);
       });
     };
-<<<<<<< HEAD
     $.isUploading = function () {
       var uploading = false;
       $h.each($.files, function (file) {
-=======
-    $.isUploading = function() {
-      var uploading = false;
-      $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (file.isUploading()) {
           uploading = true;
           return false;
@@ -1451,11 +1111,7 @@ const define = window.define;
       });
       return uploading;
     };
-<<<<<<< HEAD
     $.upload = function () {
-=======
-    $.upload = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       // Make sure we don't start too many uploads at once
       if ($.isUploading()) return;
       // Kick off the queue
@@ -1464,49 +1120,30 @@ const define = window.define;
         $.uploadNextChunk();
       }
     };
-<<<<<<< HEAD
     $.pause = function () {
       // Resume all chunks currently being uploaded
       $h.each($.files, function (file) {
-=======
-    $.pause = function() {
-      // Resume all chunks currently being uploaded
-      $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         file.abort();
       });
       $.fire('pause');
     };
-<<<<<<< HEAD
     $.cancel = function () {
-=======
-    $.cancel = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       $.fire('beforeCancel');
       for (var i = $.files.length - 1; i >= 0; i--) {
         $.files[i].cancel();
       }
       $.fire('cancel');
     };
-<<<<<<< HEAD
     $.progress = function () {
       var totalDone = 0;
       var totalSize = 0;
       // Resume all chunks currently being uploaded
       $h.each($.files, function (file) {
-=======
-    $.progress = function() {
-      var totalDone = 0;
-      var totalSize = 0;
-      // Resume all chunks currently being uploaded
-      $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         totalDone += file.progress() * file.size;
         totalSize += file.size;
       });
       return totalSize > 0 ? totalDone / totalSize : 0;
     };
-<<<<<<< HEAD
     $.addFile = function (file, event) {
       appendFilesFromFileList([file], event);
     };
@@ -1514,48 +1151,26 @@ const define = window.define;
       appendFilesFromFileList(files, event);
     };
     $.removeFile = function (file) {
-=======
-    $.addFile = function(file, event) {
-      appendFilesFromFileList([file], event);
-    };
-    $.addFiles = function(files, event) {
-      appendFilesFromFileList(files, event);
-    };
-    $.removeFile = function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       for (var i = $.files.length - 1; i >= 0; i--) {
         if ($.files[i] === file) {
           $.files.splice(i, 1);
         }
       }
     };
-<<<<<<< HEAD
     $.getFromUniqueIdentifier = function (uniqueIdentifier) {
       var ret = false;
       $h.each($.files, function (f) {
-=======
-    $.getFromUniqueIdentifier = function(uniqueIdentifier) {
-      var ret = false;
-      $h.each($.files, function(f) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         if (f.uniqueIdentifier == uniqueIdentifier) ret = f;
       });
       return ret;
     };
-<<<<<<< HEAD
     $.getSize = function () {
       var totalSize = 0;
       $h.each($.files, function (file) {
-=======
-    $.getSize = function() {
-      var totalSize = 0;
-      $h.each($.files, function(file) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         totalSize += file.size;
       });
       return totalSize;
     };
-<<<<<<< HEAD
     $.handleDropEvent = function (e) {
       onDrop(e);
     };
@@ -1564,39 +1179,14 @@ const define = window.define;
       e.target.value = '';
     };
     $.updateQuery = function (query) {
-=======
-    $.handleDropEvent = function(e) {
-      onDrop(e);
-    };
-    $.handleChangeEvent = function(e) {
-      appendFilesFromFileList(e.target.files, e);
-      e.target.value = '';
-    };
-    $.updateQuery = function(query) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       $.opts.query = query;
     };
 
     return this;
   };
 
-<<<<<<< HEAD
   // Browser: Expose to window
   window.Resumable = Resumable;
-=======
-  // Node.js-style export for Node and Component
-  if (typeof module != 'undefined') {
-    module.exports = Resumable;
-  } else if (typeof define === 'function' && define.amd) {
-    // AMD/requirejs: Define the module
-    define(function() {
-      return Resumable;
-    });
-  } else {
-    // Browser: Expose to window
-    window.Resumable = Resumable;
-  }
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 })();
 
 export default window.Resumable;

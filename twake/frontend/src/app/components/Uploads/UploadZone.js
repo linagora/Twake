@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import UploadManager from './UploadManager.js';
 import Emojione from 'components/Emojione/Emojione.js';
@@ -77,11 +73,7 @@ export default class UploadZone extends React.Component {
       this.props.parent,
       this.props.uploadOptions,
       this.props.driveCollectionKey,
-<<<<<<< HEAD
       this.props.onUploaded
-=======
-      this.props.onUploaded,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
   change(event) {
@@ -186,7 +178,6 @@ export default class UploadZone extends React.Component {
           <div className="dashed">
             <div className={'centered ' + (this.state.dragover ? 'skew_in_top ' : '')}>
               <Emojione type=":page_facing_up:" s128 />
-<<<<<<< HEAD
               <div className="title">
                 {Languages.t('components.upload.upload_doc', [], 'Envoyer des documents')}
               </div>
@@ -197,10 +188,6 @@ export default class UploadZone extends React.Component {
                   'Relachez vos fichiers pour les télécharger.'
                 )}
               </div>
-=======
-              <div className="title">{Languages.t('components.upload.upload_doc', [], "Envoyer des documents")}</div>
-              <div className="text">{Languages.t('components.upload.drop_files', [], "Relachez vos fichiers pour les télécharger.")}</div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             </div>
           </div>
         </div>

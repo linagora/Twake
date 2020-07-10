@@ -26,11 +26,7 @@ export default class TwacodeTester extends Component {
         content: Languages.t(
           'scenes.app.popup.appsparameters.pages.call_event_handlers',
           ['interactive_action', id, +JSON.stringify(passives)],
-<<<<<<< HEAD
           "Gestionnaire d'événement d'appels de type $1 et d'événement '$2', avec les passifs : $3"
-=======
-          "Gestionnaire d'événement d'appels de type $1 et d'événement '$2', avec les passifs : $3",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         ),
       });
       this.setState({});
@@ -54,11 +50,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages._appareance_message_twakcode',
               [],
-<<<<<<< HEAD
               "Testez l'apparence de vos messages Twacode"
-=======
-              "Testez l'apparence de vos messages Twacode",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -66,11 +58,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.instruction_message_twakecode',
               [],
-<<<<<<< HEAD
               'Commencez par écrire votre message sous le format JSON.'
-=======
-              'Commencez par écrire votre message sous le format JSON.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -108,11 +96,7 @@ export default class TwacodeTester extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.error_Json_Ttwakecode',
                   [],
-<<<<<<< HEAD
                   'Il y a une erreur dans votre JSON.'
-=======
-                  'Il y a une erreur dans votre JSON.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </span>
             )}
@@ -138,11 +122,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.message_data_next_event',
               [],
-<<<<<<< HEAD
               'Données passives qui seront envoyées dans le prochain Événement'
-=======
-              'Données passives qui seront envoyées dans le prochain Événement',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 

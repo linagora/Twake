@@ -102,15 +102,9 @@ class Groups extends Observable {
         xhrFields: {
           withCredentials: true,
         },
-<<<<<<< HEAD
         xhr: function () {
           var myXhr = $.ajaxSettings.xhr();
           myXhr.onreadystatechange = function () {
-=======
-        xhr: function() {
-          var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function() {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             if (myXhr.readyState == XMLHttpRequest.DONE) {
               that.loading = false;
               var resp = JSON.parse(myXhr.responseText);

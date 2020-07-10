@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -44,20 +40,12 @@ export default class WorkspaceIdentity extends Component {
   changeLogo(event) {
     var that = this;
     event.preventDefault();
-<<<<<<< HEAD
     uploadService.getFilesTree(event, function (tree) {
-=======
-    uploadService.getFilesTree(event, function(tree) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       var first = tree[Object.keys(tree)[0]];
       if (first.constructor.name != 'Object') {
         //A file
         var reader = new FileReader();
-<<<<<<< HEAD
         reader.onload = function (e) {
-=======
-        reader.onload = function(e) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           console.log(e);
           $(that.workspaceLogo).css({ backgroundImage: "url('" + e.target.result + "')" });
         };
@@ -82,11 +70,7 @@ export default class WorkspaceIdentity extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.title',
             [],
-<<<<<<< HEAD
             "Paramètres de l'espace de travail"
-=======
-            "Paramètres de l'espace de travail",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 
@@ -95,11 +79,7 @@ export default class WorkspaceIdentity extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle',
               [],
-<<<<<<< HEAD
               "Préférences d'affichage"
-=======
-              "Préférences d'affichage",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
           </div>
 
@@ -107,20 +87,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.name_label',
               [],
-<<<<<<< HEAD
               "Nom de l'espace"
-=======
-              "Nom de l'espace",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.name_description',
               [],
-<<<<<<< HEAD
               'Modifiez le nom de cet espace de travail'
-=======
-              'Modifiez le nom de cet espace de travail',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             focusOnOpen={this.inputWorkspaceName}
           >
@@ -161,20 +133,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.logo_subtitle',
               [],
-<<<<<<< HEAD
               'Logo'
-=======
-              'Logo',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.logo_modify_description',
               [],
-<<<<<<< HEAD
               "Modifiez l'image de cet espace de travail"
-=======
-              "Modifiez l'image de cet espace de travail",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             focusOnOpen={this.inputWorkspaceName}
           >
@@ -204,11 +168,7 @@ export default class WorkspaceIdentity extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.weight_max_small_text',
                 [],
-<<<<<<< HEAD
                 'Poids maximum 5 mo.'
-=======
-                'Poids maximum 5 mo.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               <br />
               <a
@@ -220,11 +180,7 @@ export default class WorkspaceIdentity extends Component {
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.remove_button',
                   [],
-<<<<<<< HEAD
                   'Supprimer'
-=======
-                  'Supprimer',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </a>
             </div>
@@ -244,20 +200,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace',
               [],
-<<<<<<< HEAD
               "Supprimer l'espace"
-=======
-              "Supprimer l'espace",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description',
               [],
-<<<<<<< HEAD
               'Supprimer cet espace de travail'
-=======
-              'Supprimer cet espace de travail',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             )}
             focusOnOpen={this.inputDeleteWorkspace}
           >
@@ -295,11 +243,7 @@ export default class WorkspaceIdentity extends Component {
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.error_workspace_member',
                   [],
-<<<<<<< HEAD
                   "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération"
-=======
-                  "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 )}
               </span>
             )}

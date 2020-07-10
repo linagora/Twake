@@ -1,12 +1,7 @@
 {
-<<<<<<< HEAD
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 2017,
-=======
-  "parserOptions": {
-    "ecmaVersion": 6,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
@@ -15,8 +10,4 @@
   "rules": {
     "semi": "error"
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a

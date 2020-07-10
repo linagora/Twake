@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import UsersService from 'services/user/user.js';
 import AutoComplete from 'components/AutoComplete/AutoComplete.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
@@ -33,11 +29,7 @@ export default class UserListManager extends React.Component {
 
     var user_ids = props.users
       .map(item => item.id || item)
-<<<<<<< HEAD
       .filter(function (item, pos) {
-=======
-      .filter(function(item, pos) {
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         var here = anti_duplicates.indexOf(item) < 0;
         anti_duplicates.push(item);
         return here;
@@ -67,11 +59,7 @@ export default class UserListManager extends React.Component {
     }
     if (this.props.scope == 'workspace') {
       var list = Object.keys(
-<<<<<<< HEAD
         WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
-=======
-        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       ).map(id => WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[id]);
       if (this.props.disableExterne) {
         list = list.filter(el => !el.externe);
@@ -95,11 +83,7 @@ export default class UserListManager extends React.Component {
             return false;
           }
           return true;
-<<<<<<< HEAD
         })
-=======
-        }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
     }
     if (this.props.scope == 'all') {
@@ -121,11 +105,7 @@ export default class UserListManager extends React.Component {
               return false;
             }
             return true;
-<<<<<<< HEAD
           })
-=======
-          }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       });
     }
@@ -160,11 +140,7 @@ export default class UserListManager extends React.Component {
               className="m-icon-small remove"
               onClick={() => {
                 this.state.users_ids = this.state.users_ids.filter(id =>
-<<<<<<< HEAD
                   typeof item == 'string' ? item != id : item.id != id
-=======
-                  typeof item == 'string' ? item != id : item.id != id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 );
                 this.setState({});
                 if (this.props.onUpdate) this.props.onUpdate(this.state.users_ids);
@@ -211,13 +187,9 @@ export default class UserListManager extends React.Component {
           }
         >
           {this.state.users_ids.length == 0 && !this.props.noPlaceholder && (
-<<<<<<< HEAD
             <div className="menu-text no-users">
               {Languages.t('components.userlistmanager.no_users', [], 'Aucun utilisateur.')}
             </div>
-=======
-            <div className="menu-text no-users">{Languages.t('components.userlistmanager.no_users', [], 'Aucun utilisateur.')}</div>
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           {this.state.users_ids
             .slice(0, this.props.max || 100)
@@ -240,17 +212,12 @@ export default class UserListManager extends React.Component {
                   className="small secondary-text right-margin"
                   onClick={() => this.setState({ editing: true })}
                 >
-<<<<<<< HEAD
                   <Icon type="plus" className="m-icon-small" />{' '}
                   {Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],
                     'Ajouter des utilisateurs'
                   )}
-=======
-                  <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn', 
-                  [], "Ajouter des utilisateurs")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 </Button>
               )}
               {!!this.state.editing && (
@@ -278,15 +245,11 @@ export default class UserListManager extends React.Component {
                   autoFocus
                   small
                   position={'bottom'}
-<<<<<<< HEAD
                   placeholder={Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],
                     'Ajouter des utilisateurs'
                   )}
-=======
-                  placeholder={Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn', [], "Ajouter des utilisateurs")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 />
               )}
 
@@ -296,7 +259,6 @@ export default class UserListManager extends React.Component {
                     className="small primary-text right-margin"
                     onClick={() => this.select(UsersService.getCurrentUser())}
                   >
-<<<<<<< HEAD
                     <Icon type="user" className="m-icon-small" />{' '}
                     {Languages.t('components.users_picker.add_me', [], "M'ajouter")}
                   </Button>
@@ -308,21 +270,10 @@ export default class UserListManager extends React.Component {
                 Object.keys(
                   WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
                 ).length < 20 && (
-=======
-                    <Icon type="user" className="m-icon-small" /> {Languages.t('components.users_picker.add_me', [], "M'ajouter")}
-                  </Button>
-                )}
-              {!!this.props.showAddAll &&
-                Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
-                  .length > this.state.users_ids.length &&
-                Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
-                  .length < 20 && (
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   <Button
                     className="small primary-text"
                     onClick={() => {
                       Object.keys(
-<<<<<<< HEAD
                         WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
                       ).map(id =>
                         this.select(
@@ -341,21 +292,6 @@ export default class UserListManager extends React.Component {
                       [],
                       'Ajouter tout le monde'
                     )}
-=======
-                        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
-                      ).map(id =>
-                        this.select(
-                          (
-                            WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[id] ||
-                            {}
-                          ).user,
-                        ),
-                      );
-                    }}
-                  >
-                    <Icon type="users-alt" className="m-icon-small" /> {Languages.t('scenes.apps.parameters.workspace_sections.members.invite_all', 
-                    [],"Ajouter tout le monde")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   </Button>
                 )}
             </div>
@@ -365,11 +301,7 @@ export default class UserListManager extends React.Component {
             <div className="menu-custom" style={{ height: 40 }}>
               {this.props.onCancel && (
                 <Button
-<<<<<<< HEAD
                   value={Languages.t('general.cancel', [], 'Annuler')}
-=======
-                  value={Languages.t('general.cancel',[],"Annuler")}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   className="secondary"
                   style={{ float: 'left' }}
                   onClick={() => {
@@ -383,14 +315,10 @@ export default class UserListManager extends React.Component {
               {this.props.onChange && (
                 <Button
                   style={{ float: 'right' }}
-<<<<<<< HEAD
                   value={
                     this.props.continueText ||
                     Languages.t('scenes.apps.messages.message.save_button', [], 'Enregistrer')
                   }
-=======
-                  value={this.props.continueText || Languages.t('scenes.apps.messages.message.save_button', [], 'Enregistrer')}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   onClick={() => this.props.onChange(this.state.users_ids)}
                 />
               )}

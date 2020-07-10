@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
@@ -49,15 +45,9 @@ export default class EventModification extends Component {
         text: Languages.t(
           'scenes.apps.calendar.modals.remove_event_text',
           [],
-<<<<<<< HEAD
           "Supprimer l'événement ?"
         ),
       }
-=======
-          "Supprimer l'événement ?",
-        ),
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -91,12 +81,8 @@ export default class EventModification extends Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.event_title_placeholder',
             [],
-<<<<<<< HEAD
             'Titre'
           )}
-=======
-            'Titre')}
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           onChange={evt => {
             this.change('title', evt.target.value);
           }}
@@ -134,11 +120,7 @@ export default class EventModification extends Component {
               placeholder={Languages.t(
                 'scenes.apps.calendar.modals.event_adresse_placeholder',
                 [],
-<<<<<<< HEAD
                 'Adresse'
-=======
-                'Adresse',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               onChange={evt => {
                 this.change('location', evt.target.value);
@@ -151,11 +133,7 @@ export default class EventModification extends Component {
             onClick={() => {
               this.change(
                 'location',
-<<<<<<< HEAD
                 'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id
-=======
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               );
             }}
           >
@@ -171,11 +149,7 @@ export default class EventModification extends Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.event_description_placeholder',
             [],
-<<<<<<< HEAD
             'Description'
-=======
-            'Description',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
           onChange={evt => {
             this.change('description', evt.target.value);
@@ -239,11 +213,7 @@ export default class EventModification extends Component {
           {Languages.t(
             'scenes.apps.calendar.modals.remove_event_button',
             [],
-<<<<<<< HEAD
             "Supprimer l'événement"
-=======
-            "Supprimer l'événement",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </Button>
 

@@ -114,20 +114,12 @@ export default class Channel extends Component {
                 ? Languages.t(
                     'scenes.app.channelsbar.modify_channel_title_private',
                     [],
-<<<<<<< HEAD
                     'Modifier la chaîne privée'
-=======
-                    'Modifier la chaîne privée',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   )
                 : Languages.t(
                     'scenes.app.channelsbar.modify_channel_title_public',
                     [],
-<<<<<<< HEAD
                     'Modifier la chaîne publique'
-=======
-                    'Modifier la chaîne publique',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   ),
             },
             {
@@ -145,11 +137,7 @@ export default class Channel extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.access_private_channel_menu',
             [],
-<<<<<<< HEAD
             'Gérer les accès à la chaîne privée'
-=======
-            'Gérer les accès à la chaîne privée',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           ),
           submenu_replace: true,
           submenu: [
@@ -158,11 +146,7 @@ export default class Channel extends Component {
               text: Languages.t(
                 'scenes.app.channelsbar.access_private_channel_title',
                 [],
-<<<<<<< HEAD
                 'Accès à la chaîne privée'
-=======
-                'Accès à la chaîne privée',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               ),
             },
             {
@@ -180,11 +164,7 @@ export default class Channel extends Component {
                         channel.members = ids;
                         Collections.get('channels').save(
                           channel,
-<<<<<<< HEAD
                           'channels_' + Workspaces.currentWorkspaceId
-=======
-                          'channels_' + Workspaces.currentWorkspaceId,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                         );
                         MenusManager.closeMenu();
                       }}
@@ -201,11 +181,7 @@ export default class Channel extends Component {
               text: Languages.t(
                 'scenes.app.channelsbar.user_management_private_channel',
                 [],
-<<<<<<< HEAD
                 'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.'
-=======
-                'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               ),
             },
           ],
@@ -218,11 +194,7 @@ export default class Channel extends Component {
             text: Languages.t(
               'scenes.app.channelsbar.extern_members_management_menu',
               [],
-<<<<<<< HEAD
               'Gérer les membres externes'
-=======
-              'Gérer les membres externes',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
             ),
             submenu_replace: true,
             submenu: [
@@ -231,11 +203,7 @@ export default class Channel extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.extern_members_title',
                   [],
-<<<<<<< HEAD
                   'Membres externes'
-=======
-                  'Membres externes',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                 ),
               },
               {

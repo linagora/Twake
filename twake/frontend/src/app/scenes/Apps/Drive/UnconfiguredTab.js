@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Languages from 'services/languages/languages.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
@@ -34,11 +30,7 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { directory_id: dir.id },
-<<<<<<< HEAD
       this.props.tab.id
-=======
-      this.props.tab.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.props.onFinish();
     Menu.closeAll();
@@ -59,11 +51,7 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { file_id: file.id, directory_id: file.id, icon: icon },
-<<<<<<< HEAD
       this.props.tab.id
-=======
-      this.props.tab.id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     this.props.onFinish();
     Menu.closeAll();
@@ -76,11 +64,7 @@ export default class UnconfiguredTab extends Component {
           {Languages.t(
             'scenes.apps.drive.unconfigured_tab',
             [],
-<<<<<<< HEAD
             "Cet onglet n'est pas encore configuré."
-=======
-            "Cet onglet n'est pas encore configuré.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           )}
         </div>
 

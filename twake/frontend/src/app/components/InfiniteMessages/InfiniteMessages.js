@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
 import Button from 'components/Buttons/Button.js';
 import './InfiniteMessages.scss';
@@ -103,11 +99,7 @@ export default class InfiniteMessages extends Component {
     this.scrollToBottom();
     var dom_fake_separator_top_visible = Math.max(
       0,
-<<<<<<< HEAD
       this.dom_infinite_messages.clientHeight - this.dom_visualized_messages_top.clientHeight
-=======
-      this.dom_infinite_messages.clientHeight - this.dom_visualized_messages_top.clientHeight,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
     if (dom_fake_separator_top_visible == 0) {
       this.dom_fake_separator_top.style.display = 'none';
@@ -125,11 +117,7 @@ export default class InfiniteMessages extends Component {
           this.dom_anything_on_top.clientHeight +
             (this.did_update_messages_data.bloc_bottom_height -
               (this.did_update_messages_data.scroll_height -
-<<<<<<< HEAD
                 this.did_update_messages_data.scroll_top))
-=======
-                this.did_update_messages_data.scroll_top)),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
         );
       } else if (this.did_update_messages_data.direction == 'bottom_auto_add') {
         //Nothing
@@ -275,11 +263,7 @@ export default class InfiniteMessages extends Component {
       'get previous messages before ',
       this.messages_min.id,
       ' min was ',
-<<<<<<< HEAD
       (this.no_more_before || {}).id
-=======
-      (this.no_more_before || {}).id,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
 
     this.number_of_messages_to_load = 2 * (this.dom_infinite_messages.clientHeight / 20);
@@ -294,11 +278,7 @@ export default class InfiniteMessages extends Component {
       }
 
       var top_list = this.state.messages.filter(
-<<<<<<< HEAD
         m => this.compare(m, this.messages_min) >= 0 && this.compare(m, this.messages_med) <= 0
-=======
-        m => this.compare(m, this.messages_min) >= 0 && this.compare(m, this.messages_med) <= 0,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
       top_list = res.concat(top_list);
 
@@ -359,11 +339,7 @@ export default class InfiniteMessages extends Component {
           top_list = top_list.concat(res);
 
           this.state.messages = this.props.messages.filter(
-<<<<<<< HEAD
             m => this.compare(m, this.on_load_min) > 0
-=======
-            m => this.compare(m, this.on_load_min) > 0,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
 
           this.max_known = this.state.messages[this.state.messages.length - 1];
@@ -385,11 +361,7 @@ export default class InfiniteMessages extends Component {
           this.setState({ messages: this.state.messages });
         } else {
           var top_list = this.state.messages.filter(
-<<<<<<< HEAD
             m => this.compare(m, this.messages_med) > 0 && this.compare(m, this.messages_max) <= 0
-=======
-            m => this.compare(m, this.messages_med) > 0 && this.compare(m, this.messages_max) <= 0,
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
           );
           top_list = top_list.concat(res);
 
@@ -412,11 +384,7 @@ export default class InfiniteMessages extends Component {
         }
 
         this.is_getting_bottom_messages = false;
-<<<<<<< HEAD
       }
-=======
-      },
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 

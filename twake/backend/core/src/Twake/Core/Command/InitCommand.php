@@ -38,11 +38,7 @@ class InitCommand extends ContainerAwareCommand
     protected function execute()
     {
 
-<<<<<<< HEAD
         @file_put_contents("/twake.status.init", "0");
-=======
-        //TODO use configuration to choose what app to use and what connectors to enable
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 
         $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
@@ -142,11 +138,8 @@ class InitCommand extends ContainerAwareCommand
         $manager->persist($app);
         $manager->flush();
 
-<<<<<<< HEAD
         @file_put_contents("/twake.status.init", "1");
 
-=======
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     }
 
 }

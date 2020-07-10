@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { Component } from 'react';
-=======
-import React, {Component} from 'react';
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
 import './CalendarSelector.scss';
 import Collections from 'services/Collections/Collections.js';
 import Select from 'components/Select/Select.js';
@@ -46,11 +42,7 @@ export default class CalendarSelector extends React.Component {
         },
       ],
       { x: evt.clientX, y: evt.clientY, width: 150 },
-<<<<<<< HEAD
       'bottom'
-=======
-      'bottom',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
     );
   }
 
@@ -68,11 +60,7 @@ export default class CalendarSelector extends React.Component {
               workspace_id: cal.workspace_id,
             };
           })
-<<<<<<< HEAD
           .filter(item => item)
-=======
-          .filter(item => item),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
       );
   }
 
@@ -120,11 +108,7 @@ export default class CalendarSelector extends React.Component {
               {Languages.t(
                 'components.calendar.calendarselector.no_workspace_calendar',
                 [],
-<<<<<<< HEAD
                 "Aucun calendrier d'espace de travail."
-=======
-                "Aucun calendrier d'espace de travail.",
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           )}
@@ -134,11 +118,7 @@ export default class CalendarSelector extends React.Component {
               {Languages.t(
                 'components.calendar.calendarselector.external_workspace',
                 [],
-<<<<<<< HEAD
                 'Depuis un espace de travail externe.'
-=======
-                'Depuis un espace de travail externe.',
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
             </div>
           )}
@@ -167,15 +147,7 @@ export default class CalendarSelector extends React.Component {
               options={[
                 {
                   type: 'title',
-<<<<<<< HEAD
                   text: Languages.t('scenes.apps.calendar.left.calendars', [], 'Calendriers'),
-=======
-                  text: Languages.t(
-                    'scenes.apps.calendar.left.calendars',
-                    [],
-                    'Calendriers',
-                  ),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
                   className: 'no-background',
                 },
               ].concat(
@@ -189,11 +161,7 @@ export default class CalendarSelector extends React.Component {
                     ),
                     value: item.id,
                   };
-<<<<<<< HEAD
                 })
-=======
-                }),
->>>>>>> 9a2d09a38ed3114eba780cb02f4bac4cddc5334a
               )}
               onChange={v => {
                 var list = this.props.value.map(item => item.calendar_id);
