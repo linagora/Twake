@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './elements.scss';
 
 export default class UserConnectionDot extends React.Component {

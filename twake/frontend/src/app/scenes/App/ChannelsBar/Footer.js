@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
@@ -41,7 +41,7 @@ export default class Footer extends Component {
             PopupManager.open(
               <WorkspaceParameter initial_page={5} />,
               true,
-              'workspace_parameters',
+              'workspace_parameters'
             );
           }
         }}

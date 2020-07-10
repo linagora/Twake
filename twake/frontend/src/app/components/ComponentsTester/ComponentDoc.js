@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import './ComponentDoc.scss';
 

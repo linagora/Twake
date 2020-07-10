@@ -98,7 +98,7 @@ export default class Message extends Component {
         : PseudoMarkdownCompiler.compileToText(this.props.message.content);
     MessagesService.editMessage(
       this.state.app_messages_service.edited_message_raw[this.props.message.front_id],
-      this.props.messagesCollectionKey,
+      this.props.messagesCollectionKey
     );
     this.state.app_messages_service.edited_message_raw[this.props.message.front_id] = undefined;
     this.setState({});
@@ -200,7 +200,7 @@ export default class Message extends Component {
           MessagesService.setCurrentEphemeral(
             app,
             this.props.message,
-            this.props.messagesCollectionKey,
+            this.props.messagesCollectionKey
           );
         }
         if (
@@ -299,7 +299,7 @@ export default class Message extends Component {
                     }}
                     content={MessagesService.prepareContent(
                       this.props.message.content,
-                      this.props.message.user_specific_content,
+                      this.props.message.user_specific_content
                     )}
                     id={this.props.message.front_id}
                     isApp={this.props.message.message_type == 1}
@@ -356,7 +356,7 @@ export default class Message extends Component {
                       value={Languages.t(
                         'scenes.apps.messages.message.save_button',
                         [],
-                        'Enregistrer',
+                        'Enregistrer'
                       )}
                       className="small right-margin"
                       onClick={() => this.editMessage()}
@@ -365,7 +365,7 @@ export default class Message extends Component {
                       value={Languages.t(
                         'scenes.apps.messages.message.cancel_button',
                         [],
-                        'Annuler',
+                        'Annuler'
                       )}
                       className="small secondary"
                       style={{ marginRight: 10 }}
@@ -384,12 +384,12 @@ export default class Message extends Component {
                       {Object.keys(this.props.message.reactions)
                         .sort(
                           (a, b) =>
-                            this.props.message.reactions[b] - this.props.message.reactions[a],
+                            this.props.message.reactions[b] - this.props.message.reactions[a]
                         )
                         .map(reaction => {
                           var value = (this.props.message.reactions[reaction] || {}).count || 0;
                           var members = Object.values(
-                            (this.props.message.reactions[reaction] || {}).users || [],
+                            (this.props.message.reactions[reaction] || {}).users || []
                           );
                           if (value <= 0) {
                             return '';
@@ -418,7 +418,7 @@ export default class Message extends Component {
                                   MessagesService.react(
                                     this.props.message,
                                     reaction,
-                                    this.props.messagesCollectionKey,
+                                    this.props.messagesCollectionKey
                                   );
                                 }}
                                 onMouseOver={() => {

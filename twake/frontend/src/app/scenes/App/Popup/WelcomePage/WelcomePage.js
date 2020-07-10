@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione.js';
 import Collections from 'services/Collections/Collections.js';
@@ -69,7 +69,7 @@ export default class WelcomePage extends Component {
           <div className="otherMail text">
             <div className="label">
               {this.state.i18n.t(
-                'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails',
+                'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails'
               )}
             </div>
             <a
@@ -81,13 +81,13 @@ export default class WelcomePage extends Component {
                       this.retry();
                       this.setState({ page: 1 });
                     }}
-                  />,
+                  />
                 )
               }
             >
               {this.state.i18n.t(
                 'scenes.app.workspaces.welcome_page.add_secondary_emails',
-                'workspace_parameters',
+                'workspace_parameters'
               )}
             </a>
           </div>

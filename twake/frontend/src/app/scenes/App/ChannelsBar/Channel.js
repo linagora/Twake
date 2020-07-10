@@ -114,12 +114,12 @@ export default class Channel extends Component {
                 ? Languages.t(
                     'scenes.app.channelsbar.modify_channel_title_private',
                     [],
-                    'Modifier la chaîne privée',
+                    'Modifier la chaîne privée'
                   )
                 : Languages.t(
                     'scenes.app.channelsbar.modify_channel_title_public',
                     [],
-                    'Modifier la chaîne publique',
+                    'Modifier la chaîne publique'
                   ),
             },
             {
@@ -137,7 +137,7 @@ export default class Channel extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.access_private_channel_menu',
             [],
-            'Gérer les accès à la chaîne privée',
+            'Gérer les accès à la chaîne privée'
           ),
           submenu_replace: true,
           submenu: [
@@ -146,7 +146,7 @@ export default class Channel extends Component {
               text: Languages.t(
                 'scenes.app.channelsbar.access_private_channel_title',
                 [],
-                'Accès à la chaîne privée',
+                'Accès à la chaîne privée'
               ),
             },
             {
@@ -164,7 +164,7 @@ export default class Channel extends Component {
                         channel.members = ids;
                         Collections.get('channels').save(
                           channel,
-                          'channels_' + Workspaces.currentWorkspaceId,
+                          'channels_' + Workspaces.currentWorkspaceId
                         );
                         MenusManager.closeMenu();
                       }}
@@ -181,7 +181,7 @@ export default class Channel extends Component {
               text: Languages.t(
                 'scenes.app.channelsbar.user_management_private_channel',
                 [],
-                'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.',
+                'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.'
               ),
             },
           ],
@@ -194,7 +194,7 @@ export default class Channel extends Component {
             text: Languages.t(
               'scenes.app.channelsbar.extern_members_management_menu',
               [],
-              'Gérer les membres externes',
+              'Gérer les membres externes'
             ),
             submenu_replace: true,
             submenu: [
@@ -203,7 +203,7 @@ export default class Channel extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.extern_members_title',
                   [],
-                  'Membres externes',
+                  'Membres externes'
                 ),
               },
               {

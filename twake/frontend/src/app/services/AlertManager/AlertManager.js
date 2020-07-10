@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Observable from 'services/observable.js';
 import Confirm from 'components/Alert/Confirm.js';
@@ -68,7 +68,7 @@ class AlertService extends Observable {
     this.open(
       <Alert title={options.title} text={options.text} />,
       onCloseFunction,
-      onCloseFunction,
+      onCloseFunction
     );
   }
   confirm(onConfirm, onClose, options) {
@@ -86,7 +86,7 @@ class AlertService extends Observable {
     this.open(
       <Confirm title={options.title} text={options.text} />,
       onConfirmFunction,
-      onCloseFunction,
+      onCloseFunction
     );
   }
 }

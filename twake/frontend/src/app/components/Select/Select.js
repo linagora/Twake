@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import MenusManager from 'services/Menus/MenusManager.js';
 import Icon from 'components/Icon/Icon.js';
@@ -29,7 +29,7 @@ export default class Select extends React.Component {
         };
       }),
       { x: pos.x + pos.width / 2, y: pos.y + pos.height },
-      'bottom',
+      'bottom'
     );
   }
   render() {

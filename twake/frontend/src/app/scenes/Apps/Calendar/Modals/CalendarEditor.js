@@ -33,9 +33,7 @@ export default class CalendarEditor extends Component {
           className="medium bottom-margin full_width"
           focusOnDidMount
           menu_level={this.props.level}
-          placeholder={Languages.t('scenes.apps.calendar.calendar_modal.placeholder',
-          [],
-          "Name")}
+          placeholder={Languages.t('scenes.apps.calendar.calendar_modal.placeholder', [], 'Name')}
           value={[this.state.calendar.color, this.state.calendar.title]}
           onEnter={() => this.save()}
           onChange={value => {

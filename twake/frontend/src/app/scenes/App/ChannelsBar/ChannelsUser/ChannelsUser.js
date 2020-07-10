@@ -44,7 +44,7 @@ export default class ChannelsUser extends Component {
           },
         ],
       },
-      'direct_messages_' + User.getCurrentUserId(),
+      'direct_messages_' + User.getCurrentUserId()
     );
 
     Languages.addListener(this);
@@ -88,7 +88,7 @@ export default class ChannelsUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.channelsuser.new_private_discussion',
           [],
-          'Nouvelle discussion privée',
+          'Nouvelle discussion privée'
         ),
       },
       {
@@ -119,7 +119,7 @@ export default class ChannelsUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.channelsuser.invite_collaborators',
             [],
-            'Inviter des collaborateurs',
+            'Inviter des collaborateurs'
           ),
           onClick: () => {
             PopupManager.open(<AddUser standalone />);
@@ -157,7 +157,7 @@ export default class ChannelsUser extends Component {
       .map(fid => {
         if (Collections.get('channels').known_objects_by_front_id[fid].members_count == 2) {
           members_already_in_last_discussions = members_already_in_last_discussions.concat(
-            Collections.get('channels').known_objects_by_front_id[fid].members,
+            Collections.get('channels').known_objects_by_front_id[fid].members
           );
         }
         return Collections.get('channels').known_objects_by_front_id[fid];
@@ -169,11 +169,11 @@ export default class ChannelsUser extends Component {
           Object.values(channel.members || []).length &&
           Object.values(channel.members || [])
             .concat(Object.values(channel.ext_members || []))
-            .indexOf(User.getCurrentUserId()) >= 0,
+            .indexOf(User.getCurrentUserId()) >= 0
       );
 
     Object.keys(
-      this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
+      this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
     )
       .filter(item => {
         var member = this.state.workspaces_users.getUsersByWorkspace(Workspaces.currentWorkspaceId)[
@@ -209,7 +209,7 @@ export default class ChannelsUser extends Component {
           text={Languages.t(
             'scenes.app.channelsbar.channelsuser.private_messages',
             [],
-            'Messages directs',
+            'Messages directs'
           )}
           onAdd={evt => {
             this.openConv(evt);
@@ -224,7 +224,7 @@ export default class ChannelsUser extends Component {
                 (WorkspacesApps.getApps()
                   .map(app => app.id)
                   .indexOf(channel.app_id) < 0 &&
-                  channel.app_group_id == Workspaces.currentGroupId),
+                  channel.app_group_id == Workspaces.currentGroupId)
             )
             .concat(
               WorkspacesApps.getApps()
@@ -241,7 +241,7 @@ export default class ChannelsUser extends Component {
                       last_activity: new Date().getTime() / 1000,
                     }
                   );
-                }),
+                })
             )
             .filter(channel => {
               //Remove private channels not from this company
@@ -287,14 +287,14 @@ export default class ChannelsUser extends Component {
                 popupManager.open(
                   <WorkspaceParameter initial_page={2} />,
                   true,
-                  'workspace_parameters',
+                  'workspace_parameters'
                 );
               }}
             >
               {Languages.t(
                 'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters',
                 [],
-                'Aucun message privé, invitez vos collaborateurs !',
+                'Aucun message privé, invitez vos collaborateurs !'
               )}{' '}
               <Emojione type=":smiley:" />
             </div>

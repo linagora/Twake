@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -24,7 +24,7 @@ export default class Viewer extends Component {
     Collections.get('drive').addListener(this);
     DriveService.addListener(this);
 
-    window.addEventListener('keydown', function(evt) {
+    window.addEventListener('keydown', function (evt) {
       evt = evt || window.event;
       var isEscape = false;
       if ('key' in evt) {
@@ -61,7 +61,7 @@ export default class Viewer extends Component {
       this.viewed_document.id,
       url => {
         window.open(url);
-      },
+      }
     );
   }
   previewFile(url, app) {
@@ -107,7 +107,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.edit_with_button',
                   [editor_candidate[0].name],
-                  'Editer avec $1',
+                  'Editer avec $1'
                 )}
               </Button>
             )}
@@ -164,7 +164,7 @@ export default class Viewer extends Component {
                   {Languages.t(
                     'scenes.apps.drive.viewer.no_preview_message',
                     [],
-                    'Impossible de visualiser ce type de fichier.',
+                    'Impossible de visualiser ce type de fichier.'
                   )}
                 </span>
               )}
@@ -172,16 +172,16 @@ export default class Viewer extends Component {
               {current.url && (
                 <div>
                   <a href={current.url} target="_blank" style={{ fontSize: 14 }}>
-                    {Languages.t('scenes.apps.drive.open_link',
-                    [],
-                    "Open link in new window")}
+                    {Languages.t('scenes.apps.drive.open_link', [], 'Open link in new window')}
                   </a>
                   <br />
                   <br />
                   <a href="https://twake.app/download" target="_blank" style={{ fontSize: 12 }}>
-                  {Languages.t('scenes.apps.drive.viewer.download_desktop',
-                  [],
-                  "Download Twake Desktop to preview in app")}
+                    {Languages.t(
+                      'scenes.apps.drive.viewer.download_desktop',
+                      [],
+                      'Download Twake Desktop to preview in app'
+                    )}
                   </a>
                 </div>
               )}
@@ -193,7 +193,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.loading_preview_message',
                   [],
-                  'Chargement...',
+                  'Chargement...'
                 )}
               </span>
             </div>

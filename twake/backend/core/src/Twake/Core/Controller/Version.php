@@ -14,6 +14,8 @@ class Version extends BaseController
     function getVersion(Request $request)
     {
 
+        $ready = $this->get("app.update_services_status")->execute();
+
         $auth = [];
         if ($this->getParameter("defaults.auth.internal.use")) {
             $auth[] = "internal";
@@ -26,6 +28,7 @@ class Version extends BaseController
         }
 
         $data = Array(
+            "ready" => $ready,
             "auth_mode" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
             "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161",

@@ -71,7 +71,11 @@ class AdministrationGroups
         $members = Array();
 
         foreach ($members_tab as $member) {
-            $members[] = $member->getUser()->getAsArray();
+            try{
+                $members[] = $member->getUser()->getAsArray();
+            }catch(\Exception $err){
+              
+            }
         }
 
         return $members;
@@ -188,4 +192,3 @@ class AdministrationGroups
     }
 
 }
-

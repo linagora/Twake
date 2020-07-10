@@ -44,7 +44,7 @@ export default class TaskPicker extends Component {
           { uri: 'boards/' + Workspaces.currentWorkspaceId, options: { type: 'board' } },
         ],
       },
-      this.tasks_collection_key,
+      this.tasks_collection_key
     );
   }
   componentWillUnmount() {
@@ -68,7 +68,7 @@ export default class TaskPicker extends Component {
           },
           websockets: [{ uri: 'board_lists/' + board.id, options: { type: 'list' } }],
         },
-        this.tasks_collection_key + '_' + board.id,
+        this.tasks_collection_key + '_' + board.id
       );
       Collections.get('tasks').addSource(
         {
@@ -78,7 +78,7 @@ export default class TaskPicker extends Component {
           },
           websockets: [{ uri: 'board_tasks/' + board.id, options: { type: 'task' } }],
         },
-        this.tasks_collection_key + '_' + board.id + '_tasks',
+        this.tasks_collection_key + '_' + board.id + '_tasks'
       );
     }
     this.setState({ currentBoard: board });
@@ -128,7 +128,7 @@ export default class TaskPicker extends Component {
     console.log(Collections.get('lists').did_load_first_time);
     console.log(
       Collections.get('lists').findBy({ board_id: this.state.currentBoard.id }),
-      this.state.currentBoard.id,
+      this.state.currentBoard.id
     );
     var loading = !Collections.get('lists').did_load_first_time[
       this.tasks_collection_key + '_' + this.state.currentBoard.id
@@ -146,7 +146,7 @@ export default class TaskPicker extends Component {
             .sort(
               (a, b) =>
                 TasksService.getElementIndex(a, 'lists_' + a.board_id) -
-                TasksService.getElementIndex(b, 'lists_' + b.board_id),
+                TasksService.getElementIndex(b, 'lists_' + b.board_id)
             )
             .map((item, index) => {
               return (
@@ -185,7 +185,7 @@ export default class TaskPicker extends Component {
             .sort(
               (a, b) =>
                 TasksService.getElementIndex(a, 'tasks_' + a.list_id) -
-                TasksService.getElementIndex(b, 'tasks_' + b.list_id),
+                TasksService.getElementIndex(b, 'tasks_' + b.list_id)
             )
             .map((item, index) => (
               <div

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import MenusManager from 'services/Menus/MenusManager.js';
 
@@ -53,7 +53,7 @@ export default class Menu extends React.Component {
     this.previous_menus_id = MenusManager.openMenu(
       this.props.menu,
       elementRect,
-      this.props.position,
+      this.props.position
     );
     if (this.props.onOpen) this.props.onOpen();
   }

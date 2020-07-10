@@ -65,7 +65,7 @@ export default class MultipleSecuredConnections {
       (event, data) => {
         this.event(route, event, data);
       },
-      http_options,
+      http_options
     );
   }
 

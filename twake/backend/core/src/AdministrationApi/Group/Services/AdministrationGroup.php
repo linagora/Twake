@@ -59,8 +59,9 @@ class AdministrationGroup
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
         foreach ($result["result"] as $group) {
-            //var_dump($file->getAsArray());
-            $this->list_group["group"][] = Array($group[0]->getAsArray(), $group[1][0]);;
+            if($group && $group[0]){
+                $this->list_group["group"][] = Array($group[0]->getAsArray(), $group[1][0]);
+            }
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);

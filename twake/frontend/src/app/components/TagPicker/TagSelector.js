@@ -171,10 +171,10 @@ export default class TagSelector extends React.Component {
     }
 
     res = res
-      .filter(function(item) {
+      .filter(function (item) {
         if (
           Strings.removeAccents(item.name.toLowerCase().replace(/ +/, '')).indexOf(
-            Strings.removeAccents(text.toLowerCase().replace(/ +/, '')),
+            Strings.removeAccents(text.toLowerCase().replace(/ +/, ''))
           ) !== -1
         ) {
           return true;

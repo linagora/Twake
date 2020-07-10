@@ -76,7 +76,7 @@ class Emojis {
         //Add default emoji + all diversities
         if (!this.searcheableEmojis[keyword]) this.searcheableEmojis[keyword] = [];
         this.searcheableEmojis[keyword] = this.searcheableEmojis[keyword].concat(
-          Object.keys(this.emojisReduced[emoji_id]).map(key => this.emojisReduced[emoji_id][key]),
+          Object.keys(this.emojisReduced[emoji_id]).map(key => this.emojisReduced[emoji_id][key])
         );
       });
     });

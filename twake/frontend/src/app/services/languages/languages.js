@@ -49,12 +49,8 @@ class Languages extends Observable {
 
   getNavigatorLanguage() {
     var language = this.language;
-    this.available.forEach(function(ln) {
-      if (
-        Globals.getDefaultLanguage()
-          .toLocaleLowerCase()
-          .indexOf(ln) >= 0
-      ) {
+    this.available.forEach(function (ln) {
+      if (Globals.getDefaultLanguage().toLocaleLowerCase().indexOf(ln) >= 0) {
         language = ln;
       }
     });
@@ -99,7 +95,7 @@ class Languages extends Observable {
       Api.post(
         'users/account/language',
         { language: language, sentByLanguageService: true },
-        function(res) {},
+        function (res) {}
       );
     }
   }

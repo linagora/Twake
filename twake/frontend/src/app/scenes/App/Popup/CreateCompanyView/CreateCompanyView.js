@@ -70,7 +70,7 @@ export default class CreateCompanyView extends Component {
               }
             }}
             placeholder={this.state.i18n.t(
-              'scenes.app.workspaces.create_company.company_name.placeholder',
+              'scenes.app.workspaces.create_company.company_name.placeholder'
             )}
             value={this.state.companyName}
             onChange={evt => this.setState({ companyName: evt.target.value })}
@@ -108,27 +108,27 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'company'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_type.company',
+                'scenes.app.workspaces.create_company.group_data.group_type.company'
               )}
             </option>
             <option value={'public_organization'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_type.public_organization',
+                'scenes.app.workspaces.create_company.group_data.group_type.public_organization'
               )}
             </option>
             <option value={'university_school'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_type.university_school',
+                'scenes.app.workspaces.create_company.group_data.group_type.university_school'
               )}
             </option>
             <option value={'society_club_charity'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_type.society_club_charity',
+                'scenes.app.workspaces.create_company.group_data.group_type.society_club_charity'
               )}
             </option>
             <option value={'other_group'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_type.other_group',
+                'scenes.app.workspaces.create_company.group_data.group_type.other_group'
               )}
             </option>
           </select>
@@ -142,7 +142,7 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'less_3'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.less_3',
+                'scenes.app.workspaces.create_company.group_data.group_size.less_3'
               )}
             </option>
             <option value={'4_10'}>
@@ -150,32 +150,32 @@ export default class CreateCompanyView extends Component {
             </option>
             <option value={'10_50'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.10_50',
+                'scenes.app.workspaces.create_company.group_data.group_size.10_50'
               )}
             </option>
             <option value={'50_100'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.50_100',
+                'scenes.app.workspaces.create_company.group_data.group_size.50_100'
               )}
             </option>
             <option value={'100_500'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.100_500',
+                'scenes.app.workspaces.create_company.group_data.group_size.100_500'
               )}
             </option>
             <option value={'500_1000'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.500_1000',
+                'scenes.app.workspaces.create_company.group_data.group_size.500_1000'
               )}
             </option>
             <option value={'1000_5000'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.1000_5000',
+                'scenes.app.workspaces.create_company.group_data.group_size.1000_5000'
               )}
             </option>
             <option value={'5000_more'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_size.5000_more',
+                'scenes.app.workspaces.create_company.group_data.group_size.5000_more'
               )}
             </option>
           </select>
@@ -186,117 +186,117 @@ export default class CreateCompanyView extends Component {
           >
             <option value={''} disabled selected>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity'
               )}
             </option>
             <option value={'food'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.food',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.food'
               )}
             </option>
             <option value={'bank'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.bank',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.bank'
               )}
             </option>
             <option value={'printing_paper'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.printing_paper',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.printing_paper'
               )}
             </option>
             <option value={'construction_building'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.construction_building',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.construction_building'
               )}
             </option>
             <option value={'real_estate'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.real_estate',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.real_estate'
               )}
             </option>
             <option value={'materials'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.materials',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.materials'
               )}
             </option>
             <option value={'chemistry'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.chemistry',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.chemistry'
               )}
             </option>
             <option value={'trade_commerce_distribution'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.trade_commerce_distribution',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.trade_commerce_distribution'
               )}
             </option>
             <option value={'publishing_communication_multimedia'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.publishing_communication_multimedia',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.publishing_communication_multimedia'
               )}
             </option>
             <option value={'electronics_electricity_energy'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.electronics_electricity_energy',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.electronics_electricity_energy'
               )}
             </option>
             <option value={'studies_and_advice'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.studies_and_advice',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.studies_and_advice'
               )}
             </option>
             <option value={'pharmaceutical_industry'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.pharmaceutical_industry',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.pharmaceutical_industry'
               )}
             </option>
             <option value={'it_telecom'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.it_telecom',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.it_telecom'
               )}
             </option>
             <option value={'machinery_automotive'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.machinery_automotive',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.machinery_automotive'
               )}
             </option>
             <option value={'business_services'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.business_services',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.business_services'
               )}
             </option>
             <option value={'entertainment'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.entertainment',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.entertainment'
               )}
             </option>
             <option value={'textile_clothing_shoes'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.textile_clothing_shoes',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.textile_clothing_shoes'
               )}
             </option>
             <option value={'transport_logistics'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.transport_logistics',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.transport_logistics'
               )}
             </option>
             <option value={'research'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.research',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.research'
               )}
             </option>
             <option value={'education'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.education',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.education'
               )}
             </option>
             <option value={'administration'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.administration',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.administration'
               )}
             </option>
             <option value={'other'}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.group_data.group_main_activity.other',
+                'scenes.app.workspaces.create_company.group_data.group_main_activity.other'
               )}
             </option>
           </select>
@@ -343,9 +343,13 @@ export default class CreateCompanyView extends Component {
                   </div>
                   <div className="text">
                     <div className="name">Google Calendar</div>
-                    <div className="description">{Languages.t('scenes.app.popup.sync_calendar',
-                    [],
-                    "Synchronize your calendars.")}</div>
+                    <div className="description">
+                      {Languages.t(
+                        'scenes.app.popup.sync_calendar',
+                        [],
+                        'Synchronize your calendars.'
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -404,7 +408,7 @@ export default class CreateCompanyView extends Component {
             type: this.state.groupType || '',
             size: this.state.groupSize || '',
             main_activity: this.state.groupActivity || '',
-          },
+          }
         );
       }
     } else {

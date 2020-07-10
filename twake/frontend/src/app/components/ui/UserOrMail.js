@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './elements.scss';
 import UsersService from 'services/user/user.js';
 import User from 'components/User/User.js';

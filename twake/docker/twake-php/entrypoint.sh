@@ -15,9 +15,10 @@ fi
 
 exec "$@"
 
-chmod -R 777 /var/www
+chmod -R 777 /var/www &
 chmod -R 777 /tmp/
-chmod -R 777 /twake-core/
+rm -R /tmp/*
+chmod -R 777 /twake-core/ &
 
 if test -f "/configuration/Parameters.php"; then
   cp /configuration/Parameters.php /twake-core/app/Configuration/Parameters.php
@@ -25,10 +26,7 @@ else
   cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
 fi
 
-php bin/console twake:schema:update
-php bin/console twake:mapping
-php bin/console twake:init
-php bin/console twake:init_connector
+(php bin/console twake:schema:update; php bin/console twake:init; php bin/console twake:init_connector; php bin/console twake:mapping) &
 
 cron -f &
 docker-php-entrypoint php-fpm

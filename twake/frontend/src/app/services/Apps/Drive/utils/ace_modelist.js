@@ -149,7 +149,7 @@ class AceModeList {
     };
 
     this.modes = [];
-    var Mode = function(name, caption, extensions) {
+    var Mode = function (name, caption, extensions) {
       this.name = name;
       this.caption = caption;
       this.mode = 'ace/mode/' + name;
@@ -157,7 +157,7 @@ class AceModeList {
       var re;
       if (/\^/.test(extensions)) {
         re =
-          extensions.replace(/\|(\^)?/g, function(a, b) {
+          extensions.replace(/\|(\^)?/g, function (a, b) {
             return '$|' + (b ? '^' : '^.*\\.');
           }) + '$';
       } else {
@@ -167,7 +167,7 @@ class AceModeList {
       this.extRe = new RegExp(re, 'gi');
     };
 
-    Mode.prototype.supportsFile = function(filename) {
+    Mode.prototype.supportsFile = function (filename) {
       return filename.match(this.extRe);
     };
 

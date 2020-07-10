@@ -21,6 +21,9 @@ services:
       - 15672:15672
   php:
     image: twaketech/twake-php
+    build:
+      context: .
+      dockerfile: docker/twake-php/Dockerfile
     volumes:
       - ./backend/core/:/twake-core:cached
       - ./docker-data/fpm/:/etc/docker-data/fpm/
@@ -51,6 +54,9 @@ services:
       - 9200:9200
   nginx:
     image: twaketech/twake-nginx
+    build:
+      context: .
+      dockerfile: docker/twake-nginx/Dockerfile
     ports:
       - 8000:80
     links:

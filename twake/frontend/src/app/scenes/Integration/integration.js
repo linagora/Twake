@@ -27,7 +27,7 @@ export default class Integration extends Component {
       return this.props.children;
     }
 
-    if (branding.style.color) {
+    if (branding.style && branding.style.color) {
       document.documentElement.style.setProperty('--primary', branding.style.color);
       document.documentElement.style.setProperty(
         '--primary-background',
@@ -39,7 +39,7 @@ export default class Integration extends Component {
       );
       document.documentElement.style.setProperty('--secondary', '#38383d');
     }
-    if (branding.style.default_border_radius) {
+    if (branding.style && branding.style.default_border_radius) {
       document.documentElement.style.setProperty(
         '--default-border-radius',
         branding.style.default_border_radius + 'px',

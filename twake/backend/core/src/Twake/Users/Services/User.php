@@ -436,18 +436,24 @@ class User
             }
         }
 
+        $auto_validate_mail = $this->app->getContainer()->getParameter("defaults.auth.internal.disable_email_verification");
+
         $verificationNumberMail = new VerificationNumberMail($mail);
         $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
 
-        $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+        if(!$auto_validate_mail){
 
-        if (!defined("TESTENV")) {
-            error_log("sign in code: " . $magic_link);
-        }
+          $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
-        if ($sendEmail) {
-            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
+          if (!defined("TESTENV")) {
+              error_log("sign in code: " . $magic_link);
+          }
+
+          if ($sendEmail) {
+              $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
+          }
+
         }
 
         //Create the temporary user
@@ -508,6 +514,11 @@ class User
                 error_log($exception->getMessage());
             }
         }
+
+        if($auto_validate_mail){
+          $this->verifyMail($mail, $verificationNumberMail->getToken(), $code, true);
+        }
+
         return $verificationNumberMail->getToken();
     }
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione.js';

@@ -1,4 +1,3 @@
-import Autobahn from 'services/autobahn/autobahn.js';
 import Number from 'services/utils/Numbers.js';
 import api from 'services/api.js';
 import Observable from 'services/observable.js';
@@ -126,7 +125,7 @@ class Websocket extends Observable {
   useOldMode(bool) {
     console.log('use old mode = ', bool);
     if (bool) {
-      this.autobahn = Autobahn;
+      console.log('no more old mode');
     } else {
       this.autobahn = SocketCluster;
     }
@@ -243,7 +242,7 @@ class Websocket extends Observable {
           }, 2000);
         } else {
           var that = this;
-          var onopen = function(session) {
+          var onopen = function (session) {
             that.is_reconnecting = false;
 
             that.disconnect();
@@ -279,7 +278,7 @@ class Websocket extends Observable {
                 } catch (err) {}
                 var unid = Number.unid();
                 that.subscribedKey[route] = unid;
-                that.ws.subscribe(route, function(a, b) {
+                that.ws.subscribe(route, function (a, b) {
                   that.message(unid, a, b);
                 });
               }
@@ -315,12 +314,12 @@ class Websocket extends Observable {
               connection = that.autobahn.connect('ws://' + route + suffix);
             }
 
-            connection.on('socket/connect', function(session) {
+            connection.on('socket/connect', function (session) {
               that.is_reconnecting = false;
 
               onopen(session);
             });
-            connection.on('socket/disconnect', function(error) {
+            connection.on('socket/disconnect', function (error) {
               console.log(error);
               that.connectionError(error.reason, error.code);
               that.is_reconnecting = false;
@@ -339,7 +338,11 @@ class Websocket extends Observable {
   disconnect() {
     console.log('Network : Disconnected');
     if (this.ws) {
-      this.ws.close();
+      try {
+        this.ws.close();
+      } catch (err) {
+        console.log(err);
+      }
       this.ws = null;
     }
   }

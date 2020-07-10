@@ -29,7 +29,7 @@ class DroppableManager {
       //console.log("not dragging right now");
       return;
     }
-    $.each(this.drop, function(i, el) {
+    $.each(this.drop, function (i, el) {
       if (el && el.callback) {
         el.callback(that.draggingData);
       }
