@@ -145,4 +145,4 @@ RUN chmod 0777 /entrypoint.sh
 #For exec
 WORKDIR /twake-core/
 
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /entrypoint.sh "$DEV"

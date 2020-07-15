@@ -227,7 +227,9 @@ class Login extends Observable {
   }
 
   logout(no_reload) {
-    var identity_provider = CurrentUser.get() ? CurrentUser.get().identity_provider : 'internal';
+    var identity_provider = CurrentUser.get()
+      ? (CurrentUser.get() || {}).identity_provider
+      : 'internal';
 
     this.currentUserId = null;
 

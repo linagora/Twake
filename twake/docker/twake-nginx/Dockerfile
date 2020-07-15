@@ -62,7 +62,7 @@ RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist
 
 COPY docker/twake-nginx/entrypoint.sh /
 RUN chmod 0777 /entrypoint.sh
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /entrypoint.sh "$DEV"
 
 EXPOSE 80
 EXPOSE 443

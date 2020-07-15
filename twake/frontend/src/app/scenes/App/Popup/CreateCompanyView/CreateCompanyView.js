@@ -390,7 +390,7 @@ export default class CreateCompanyView extends Component {
       }
     } else {
       if (
-        (['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0 ||
+        (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
           (((LoginService.server_infos || {}).auth || {}).internal || {})
             .disable_email_verification) &&
         this.state.page == 3
@@ -419,7 +419,7 @@ export default class CreateCompanyView extends Component {
     } else {
       //Pass usage form
       if (
-        (['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0 ||
+        (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
           (((LoginService.server_infos || {}).auth || {}).internal || {})
             .disable_email_verification) &&
         this.state.page == 1
