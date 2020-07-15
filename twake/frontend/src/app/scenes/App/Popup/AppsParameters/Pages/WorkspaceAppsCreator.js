@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -74,7 +74,7 @@ export default class WorkspaceAppsCreator extends Component {
           {Languages.t(
             'scenes.app.popup.appsparameters.pages.new_app_title',
             [],
-            'Nouvelle application',
+            'Nouvelle application'
           )}
         </div>
 
@@ -84,7 +84,7 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.creation_app_instruction',
               [],
-              'Veuillez confirmer les informations suivantes avant de créer votre application.',
+              'Veuillez confirmer les informations suivantes avant de créer votre application.'
             )}
           </div>
 
@@ -92,14 +92,14 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.app_name_label',
               [],
-              'Nom de votre application',
+              'Nom de votre application'
             )}
           </div>
           <Input
             placeholder={Languages.t(
               'scenes.app.popup.appsparameters.pages.amazing_app_name',
               [],
-              'My amazing app',
+              'My amazing app'
             )}
             type="text"
             disabled={this.state.loading}
@@ -118,21 +118,21 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.app_surname',
               [],
-              'Nom simplifié de votre application',
+              'Nom simplifié de votre application'
             )}
           </div>
           <div className="smalltext" style={{ paddingBottom: 0 }}>
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.app_informations',
               [],
-              "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
+              "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message."
             )}
           </div>
           <Input
             placeholder={Languages.t(
               'scenes.app.popup.appsparameters.pages.amazing_app_name',
               [],
-              'my_amazing_app',
+              'my_amazing_app'
             )}
             type="text"
             disabled={this.state.loading}
@@ -149,7 +149,7 @@ export default class WorkspaceAppsCreator extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_message',
                 [],
-                'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.',
+                'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.'
               )}
             </div>
           )}
@@ -159,14 +159,14 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.company_label',
               [],
-              'Entreprise propriétaire',
+              'Entreprise propriétaire'
             )}
           </div>
           <div className="smalltext" style={{ paddingBottom: 0 }}>
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.app_modification_right',
               [],
-              'Tous les gérants de cette entreprise pourront modifier cette application.',
+              'Tous les gérants de cette entreprise pourront modifier cette application.'
             )}
           </div>
           <Input type="text" value={group.name} disabled />
@@ -175,20 +175,20 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.user_grp_app',
               [],
-              "Groupe d'applications (laisser vide si non utilisé)",
+              "Groupe d'applications (laisser vide si non utilisé)"
             )}
           </div>
           <div className="smalltext">
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.information_grp_of_app',
               [],
-              "Cette chaine de caractère permet de grouper cette application avec d'autres applications du même type.",
+              "Cette chaine de caractère permet de grouper cette application avec d'autres applications du même type."
             )}
             <br />
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.divided_connector',
               [],
-              'Si votre connecteur se divise en plusieurs modules optionnels, créez une application par module et regroupez les grâce à ce champ.',
+              'Si votre connecteur se divise en plusieurs modules optionnels, créez une application par module et regroupez les grâce à ce champ.'
             )}
             <br />
           </div>
@@ -197,7 +197,7 @@ export default class WorkspaceAppsCreator extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.warning_futur_modification',
               [],
-              'Attention, ce champ ne peut pas être modifié ultérieurement.',
+              'Attention, ce champ ne peut pas être modifié ultérieurement.'
             )}
           </div>
           <Input
@@ -218,7 +218,7 @@ export default class WorkspaceAppsCreator extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_check_needed',
                 [],
-                'Une erreur est survenue, vérifiez vos informations.',
+                'Une erreur est survenue, vérifiez vos informations.'
               )}
             </div>
           )}
@@ -237,7 +237,7 @@ export default class WorkspaceAppsCreator extends Component {
             value={Languages.t(
               'scenes.app.popup.appsparameters.pages.create_my_app',
               [],
-              'Créer mon application',
+              'Créer mon application'
             )}
             disabled={this.state.loading}
             loading={this.state.loading}

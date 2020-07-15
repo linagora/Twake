@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Loader from 'components/Loader/Loader.js';
 import Button from './Button.js';
@@ -34,7 +34,7 @@ export default class ButtonWithTimeout extends React.Component {
       }
       clearTimeout(this.timeout);
     } else if (!prevProps.loading && this.props.loading) {
-      this.timeout = setTimeout(function() {
+      this.timeout = setTimeout(function () {
         that.setState({ showLoader: true });
       }, this.props.loadingTimeout || 2000);
     }

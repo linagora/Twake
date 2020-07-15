@@ -20,7 +20,7 @@ class ListenGroups {
 
     var that = this;
     if (this.listenerCount[idGroup] == 1) {
-      ws.subscribe('group/' + idGroup, function(uri, data) {
+      ws.subscribe('group/' + idGroup, function (uri, data) {
         data = data.data;
         if (data.group) {
           data.group.id = idGroup;

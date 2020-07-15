@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import DriveElement from 'components/Drive/DriveElement.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import Icon from 'components/Icon/Icon.js';
@@ -100,7 +100,7 @@ export default class PathElement extends DriveElement {
               </Menu>
             )}
         </div>
-      </DroppableZone>,
+      </DroppableZone>
     );
 
     return list;

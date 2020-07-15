@@ -3,7 +3,7 @@ const window = {};
 window.setTimeout = (f, t) => setTimeout(f, t);
 
 window.define ||
-  ((window.define = function(c) {
+  ((window.define = function (c) {
     try {
       delete window.define;
     } catch (g) {
@@ -22,10 +22,10 @@ const define = window.define;
  * Steffen Tiedemann Christensen, steffen@23company.com
  */
 
-(function() {
+(function () {
   'use strict';
 
-  var Resumable = function(opts) {
+  var Resumable = function (opts) {
     if (!(this instanceof Resumable)) {
       return new Resumable(opts);
     }
@@ -86,7 +86,7 @@ const define = window.define;
       clearInput: true,
       chunkFormat: 'blob',
       setChunkTypeFromFile: false,
-      maxFilesErrorCallback: function(files, errorCount) {
+      maxFilesErrorCallback: function (files, errorCount) {
         var maxFiles = $.getOpt('maxFiles');
         alert(
           'Please upload no more than ' +
@@ -97,7 +97,7 @@ const define = window.define;
         );
       },
       minFileSize: 1,
-      minFileSizeErrorCallback: function(file, errorCount) {
+      minFileSizeErrorCallback: function (file, errorCount) {
         alert(
           file.fileName ||
             file.name +
@@ -107,7 +107,7 @@ const define = window.define;
         );
       },
       maxFileSize: undefined,
-      maxFileSizeErrorCallback: function(file, errorCount) {
+      maxFileSizeErrorCallback: function (file, errorCount) {
         alert(
           file.fileName ||
             file.name +
@@ -117,7 +117,7 @@ const define = window.define;
         );
       },
       fileType: [],
-      fileTypeErrorCallback: function(file, errorCount) {
+      fileTypeErrorCallback: function (file, errorCount) {
         alert(
           file.fileName ||
             file.name +
@@ -128,12 +128,12 @@ const define = window.define;
       },
     };
     $.opts = opts || {};
-    $.getOpt = function(o) {
+    $.getOpt = function (o) {
       var $opt = this;
       // Get multiple option if passed an array
       if (o instanceof Array) {
         var options = {};
-        $h.each(o, function(option) {
+        $h.each(o, function (option) {
           options[option] = $opt.getOpt(option);
         });
         return options;
@@ -167,10 +167,10 @@ const define = window.define;
     // fileSuccess(file), fileProgress(file), fileAdded(file, event), filesAdded(files, filesSkipped), fileRetry(file),
     // fileError(file, message), complete(), progress(), error(message, file), pause()
     $.events = [];
-    $.on = function(event, callback) {
+    $.on = function (event, callback) {
       $.events.push(event.toLowerCase(), callback);
     };
-    $.fire = function() {
+    $.fire = function () {
       // `arguments` is an object, not array, in FF, so:
       var args = [];
       for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
@@ -186,11 +186,11 @@ const define = window.define;
 
     // INTERNAL HELPER METHODS (handy, but ultimately not part of uploading)
     var $h = {
-      stopEvent: function(e) {
+      stopEvent: function (e) {
         e.stopPropagation();
         e.preventDefault();
       },
-      each: function(o, callback) {
+      each: function (o, callback) {
         if (typeof o.length !== 'undefined') {
           for (var i = 0; i < o.length; i++) {
             // Array or FileList
@@ -203,7 +203,7 @@ const define = window.define;
           }
         }
       },
-      generateUniqueIdentifier: function(file, event) {
+      generateUniqueIdentifier: function (file, event) {
         var custom = $.getOpt('generateUniqueIdentifier');
         if (typeof custom === 'function') {
           return custom(file, event);
@@ -212,10 +212,10 @@ const define = window.define;
         var size = file.size;
         return size + '-' + relativePath.replace(/[^0-9a-zA-Z_-]/gim, '');
       },
-      contains: function(array, test) {
+      contains: function (array, test) {
         var result = false;
 
-        $h.each(array, function(value) {
+        $h.each(array, function (value) {
           if (value == test) {
             result = true;
             return false;
@@ -225,7 +225,7 @@ const define = window.define;
 
         return result;
       },
-      formatSize: function(size) {
+      formatSize: function (size) {
         if (size < 1024) {
           return size + ' bytes';
         } else if (size < 1024 * 1024) {
@@ -236,7 +236,7 @@ const define = window.define;
           return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
         }
       },
-      getTarget: function(request, params) {
+      getTarget: function (request, params) {
         var target = $.getOpt('target');
 
         if (request === 'test' && $.getOpt('testTarget')) {
@@ -254,7 +254,7 @@ const define = window.define;
       },
     };
 
-    var onDrop = function(event) {
+    var onDrop = function (event) {
       $h.stopEvent(event);
 
       //handle dropped things as items if we can (this lets us deal with folders nicer in some cases)
@@ -266,7 +266,7 @@ const define = window.define;
         loadFiles(event.dataTransfer.files, event);
       }
     };
-    var preventDefault = function(e) {
+    var preventDefault = function (e) {
       e.preventDefault();
     };
 
@@ -281,7 +281,7 @@ const define = window.define;
       var entry;
       if (item.isFile) {
         // file provided
-        return item.file(function(file) {
+        return item.file(function (file) {
           file.relativePath = path + file.name;
           items.push(file);
           cb();
@@ -324,7 +324,7 @@ const define = window.define;
         return cb();
       }
       // invoke current function, pass the next part as continuation
-      items[0](function() {
+      items[0](function () {
         processCallbacks(items.slice(1), cb);
       });
     }
@@ -338,14 +338,14 @@ const define = window.define;
      */
     function processDirectory(directory, path, items, cb) {
       var dirReader = directory.createReader();
-      dirReader.readEntries(function(entries) {
+      dirReader.readEntries(function (entries) {
         if (!entries.length) {
           // empty directory, skip
           return cb();
         }
         // process all conversion callbacks, finally invoke own one
         processCallbacks(
-          entries.map(function(entry) {
+          entries.map(function (entry) {
             // bind all properties except for callback
             return processItem.bind(null, entry, path, items);
           }),
@@ -366,11 +366,11 @@ const define = window.define;
       $.fire('beforeAdd');
       var files = [];
       processCallbacks(
-        Array.prototype.map.call(items, function(item) {
+        Array.prototype.map.call(items, function (item) {
           // bind all properties except for callback
           return processItem.bind(null, item, '', files);
         }),
-        function() {
+        function () {
           if (files.length) {
             // at least one file found
             appendFilesFromFileList(files, event);
@@ -379,7 +379,7 @@ const define = window.define;
       );
     }
 
-    var appendFilesFromFileList = function(fileList, event) {
+    var appendFilesFromFileList = function (fileList, event) {
       // check for uploading too many files
       var errorCount = 0;
       var o = $.getOpt([
@@ -404,19 +404,19 @@ const define = window.define;
       var files = [],
         filesSkipped = [],
         remaining = fileList.length;
-      var decreaseReamining = function() {
+      var decreaseReamining = function () {
         if (!--remaining) {
           // all files processed, trigger event
           if (!files.length && !filesSkipped.length) {
             // no succeeded files, just skip
             return;
           }
-          window.setTimeout(function() {
+          window.setTimeout(function () {
             $.fire('filesAdded', files, filesSkipped);
           }, 0);
         }
       };
-      $h.each(fileList, function(file) {
+      $h.each(fileList, function (file) {
         var fileName = file.name;
         if (o.fileType.length > 0) {
           var fileTypeFound = false;
@@ -448,13 +448,13 @@ const define = window.define;
 
         function addFile(uniqueIdentifier) {
           if (!$.getFromUniqueIdentifier(uniqueIdentifier)) {
-            (function() {
+            (function () {
               file.uniqueIdentifier = uniqueIdentifier;
               var f = new ResumableFile($, file, uniqueIdentifier);
               $.files.push(f);
               files.push(f);
               f.container = typeof event != 'undefined' ? event.srcElement : null;
-              window.setTimeout(function() {
+              window.setTimeout(function () {
                 $.fire('fileAdded', f, event);
               }, 0);
             })();
@@ -468,11 +468,11 @@ const define = window.define;
         if (uniqueIdentifier && typeof uniqueIdentifier.then === 'function') {
           // Promise or Promise-like object provided as unique identifier
           uniqueIdentifier.then(
-            function(uniqueIdentifier) {
+            function (uniqueIdentifier) {
               // unique identifier generation succeeded
               addFile(uniqueIdentifier);
             },
-            function() {
+            function () {
               // unique identifier generation failed
               // skip further processing, only decrease file count
               decreaseReamining();
@@ -502,7 +502,7 @@ const define = window.define;
       var _error = uniqueIdentifier !== undefined;
 
       // Callback when something happens within the chunk
-      var chunkEvent = function(event, message) {
+      var chunkEvent = function (event, message) {
         // event can be 'progress', 'success', 'error' or 'retry'
         switch (event) {
           case 'progress':
@@ -530,10 +530,10 @@ const define = window.define;
       // Main code to set up a file object with chunks,
       // packaged to be able to handle retries if needed.
       $.chunks = [];
-      $.abort = function() {
+      $.abort = function () {
         // Stop current uploads
         var abortCount = 0;
-        $h.each($.chunks, function(c) {
+        $h.each($.chunks, function (c) {
           if (c.status() == 'uploading') {
             c.abort();
             abortCount++;
@@ -541,12 +541,12 @@ const define = window.define;
         });
         if (abortCount > 0) $.resumableObj.fire('fileProgress', $);
       };
-      $.cancel = function() {
+      $.cancel = function () {
         // Reset this file to be void
         var _chunks = $.chunks;
         $.chunks = [];
         // Stop current uploads
-        $h.each(_chunks, function(c) {
+        $h.each(_chunks, function (c) {
           if (c.status() == 'uploading') {
             c.abort();
             $.resumableObj.uploadNextChunk();
@@ -555,15 +555,15 @@ const define = window.define;
         $.resumableObj.removeFile($);
         $.resumableObj.fire('fileProgress', $);
       };
-      $.retry = function() {
+      $.retry = function () {
         $.bootstrap();
         var firedRetry = false;
-        $.resumableObj.on('chunkingComplete', function() {
+        $.resumableObj.on('chunkingComplete', function () {
           if (!firedRetry) $.resumableObj.upload();
           firedRetry = true;
         });
       };
-      $.bootstrap = function() {
+      $.bootstrap = function () {
         $.abort();
         _error = false;
         // Rebuild stack of chunks from file
@@ -572,23 +572,23 @@ const define = window.define;
         var round = $.getOpt('forceChunkSize') ? Math.ceil : Math.floor;
         var maxOffset = Math.max(round($.file.size / $.getOpt('chunkSize')), 1);
         for (var offset = 0; offset < maxOffset; offset++) {
-          (function(offset) {
-            window.setTimeout(function() {
+          (function (offset) {
+            window.setTimeout(function () {
               $.chunks.push(new ResumableChunk($.resumableObj, $, offset, chunkEvent));
               $.resumableObj.fire('chunkingProgress', $, offset / maxOffset);
             }, 0);
           })(offset);
         }
-        window.setTimeout(function() {
+        window.setTimeout(function () {
           $.resumableObj.fire('chunkingComplete', $);
         }, 0);
       };
-      $.progress = function() {
+      $.progress = function () {
         if (_error) return 1;
         // Sum up progress across everything
         var ret = 0;
         var error = false;
-        $h.each($.chunks, function(c) {
+        $h.each($.chunks, function (c) {
           if (c.status() == 'error') error = true;
           ret += c.progress(true); // get chunk progress relative to entire file
         });
@@ -597,9 +597,9 @@ const define = window.define;
         $._prevProgress = ret;
         return ret;
       };
-      $.isUploading = function() {
+      $.isUploading = function () {
         var uploading = false;
-        $h.each($.chunks, function(chunk) {
+        $h.each($.chunks, function (chunk) {
           if (chunk.status() == 'uploading') {
             uploading = true;
             return false;
@@ -607,9 +607,9 @@ const define = window.define;
         });
         return uploading;
       };
-      $.isComplete = function() {
+      $.isComplete = function () {
         var outstanding = false;
-        $h.each($.chunks, function(chunk) {
+        $h.each($.chunks, function (chunk) {
           var status = chunk.status();
           if (status == 'pending' || status == 'uploading' || chunk.preprocessState === 1) {
             outstanding = true;
@@ -618,14 +618,14 @@ const define = window.define;
         });
         return !outstanding;
       };
-      $.pause = function(pause) {
+      $.pause = function (pause) {
         if (typeof pause === 'undefined') {
           $._pause = $._pause ? false : true;
         } else {
           $._pause = pause;
         }
       };
-      $.isPaused = function() {
+      $.isPaused = function () {
         return $._pause;
       };
 
@@ -663,11 +663,11 @@ const define = window.define;
       $.xhr = null;
 
       // test() makes a GET request without any data to see if the chunk has already been uploaded in a previous session
-      $.test = function() {
+      $.test = function () {
         // Set up request and listen for event
         $.xhr = new XMLHttpRequest();
 
-        var testHandler = function(e) {
+        var testHandler = function (e) {
           $.tested = true;
           var status = $.status();
           if (status == 'success') {
@@ -686,7 +686,7 @@ const define = window.define;
         var parameterNamespace = $.getOpt('parameterNamespace');
         var customQuery = $.getOpt('query');
         if (typeof customQuery == 'function') customQuery = customQuery($.fileObj, $);
-        $h.each(customQuery, function(k, v) {
+        $h.each(customQuery, function (k, v) {
           params.push(
             [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
           );
@@ -705,12 +705,12 @@ const define = window.define;
             ['relativePathParameterName', $.fileObj.relativePath],
             ['totalChunksParameterName', $.fileObj.chunks.length],
           ]
-            .filter(function(pair) {
+            .filter(function (pair) {
               // include items that resolve to truthy values
               // i.e. exclude false, null, undefined and empty strings
               return $.getOpt(pair[0]);
             })
-            .map(function(pair) {
+            .map(function (pair) {
               // map each key/value pair to its final form
               return [parameterNamespace + $.getOpt(pair[0]), encodeURIComponent(pair[1])].join(
                 '=',
@@ -726,19 +726,19 @@ const define = window.define;
         if (typeof customHeaders === 'function') {
           customHeaders = customHeaders($.fileObj, $);
         }
-        $h.each(customHeaders, function(k, v) {
+        $h.each(customHeaders, function (k, v) {
           $.xhr.setRequestHeader(k, v);
         });
         $.xhr.send(null);
       };
 
-      $.preprocessFinished = function() {
+      $.preprocessFinished = function () {
         $.preprocessState = 2;
         $.send();
       };
 
       // send() uploads the actual data in a POST call
-      $.send = function() {
+      $.send = function () {
         var preprocess = $.getOpt('preprocess');
         if (typeof preprocess === 'function') {
           switch ($.preprocessState) {
@@ -763,7 +763,7 @@ const define = window.define;
         // Progress
         $.xhr.upload.addEventListener(
           'progress',
-          function(e) {
+          function (e) {
             if (
               new Date() - $.lastProgressCallback >
               $.getOpt('throttleProgressCallbacks') * 1000
@@ -780,7 +780,7 @@ const define = window.define;
         $.callback('progress');
 
         // Done (either done, failed or retry)
-        var doneHandler = function(e) {
+        var doneHandler = function (e) {
           var status = $.status();
           if (status == 'success' || status == 'error') {
             $.callback(status, $.message());
@@ -814,12 +814,12 @@ const define = window.define;
           ['relativePathParameterName', $.fileObj.relativePath],
           ['totalChunksParameterName', $.fileObj.chunks.length],
         ]
-          .filter(function(pair) {
+          .filter(function (pair) {
             // include items that resolve to truthy values
             // i.e. exclude false, null, undefined and empty strings
             return $.getOpt(pair[0]);
           })
-          .reduce(function(query, pair) {
+          .reduce(function (query, pair) {
             // assign query key/value
             query[$.getOpt(pair[0])] = pair[1];
             return query;
@@ -827,7 +827,7 @@ const define = window.define;
         // Mix in custom data
         var customQuery = $.getOpt('query');
         if (typeof customQuery == 'function') customQuery = customQuery($.fileObj, $);
-        $h.each(customQuery, function(k, v) {
+        $h.each(customQuery, function (k, v) {
           query[k] = v;
         });
 
@@ -850,7 +850,7 @@ const define = window.define;
         if ($.getOpt('method') === 'octet') {
           // Add data from the query options
           data = bytes;
-          $h.each(query, function(k, v) {
+          $h.each(query, function (k, v) {
             params.push(
               [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
             );
@@ -858,7 +858,7 @@ const define = window.define;
         } else {
           // Add data from the query options
           data = new FormData();
-          $h.each(query, function(k, v) {
+          $h.each(query, function (k, v) {
             data.append(parameterNamespace + k, v);
             params.push(
               [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
@@ -872,7 +872,7 @@ const define = window.define;
             );
           } else if ($.getOpt('chunkFormat') == 'base64') {
             var fr = new FileReader();
-            fr.onload = function(e) {
+            fr.onload = function (e) {
               data.append(parameterNamespace + $.getOpt('fileParameterName'), fr.result);
               $.xhr.send(data);
             };
@@ -895,7 +895,7 @@ const define = window.define;
           customHeaders = customHeaders($.fileObj, $);
         }
 
-        $h.each(customHeaders, function(k, v) {
+        $h.each(customHeaders, function (k, v) {
           $.xhr.setRequestHeader(k, v);
         });
 
@@ -903,12 +903,12 @@ const define = window.define;
           $.xhr.send(data);
         }
       };
-      $.abort = function() {
+      $.abort = function () {
         // Abort and reset
         if ($.xhr) $.xhr.abort();
         $.xhr = null;
       };
-      $.status = function() {
+      $.status = function () {
         // Returns: 'pending', 'uploading', 'success', 'error'
         if ($.pendingRetry) {
           // if pending retry then that's effectively the same as actively uploading,
@@ -937,10 +937,10 @@ const define = window.define;
           }
         }
       };
-      $.message = function() {
+      $.message = function () {
         return $.xhr ? $.xhr.responseText : '';
       };
-      $.progress = function(relative) {
+      $.progress = function (relative) {
         if (typeof relative === 'undefined') relative = false;
         var factor = relative ? ($.endByte - $.startByte) / $.fileObjSize : 1;
         if ($.pendingRetry) return 0;
@@ -960,14 +960,14 @@ const define = window.define;
     }
 
     // QUEUE
-    $.uploadNextChunk = function() {
+    $.uploadNextChunk = function () {
       var found = false;
 
       // In some cases (such as videos) it's really handy to upload the first
       // and last chunk of a file quickly; this let's the server check the file's
       // metadata and determine if there's even a point in continuing.
       if ($.getOpt('prioritizeFirstAndLastChunk')) {
-        $h.each($.files, function(file) {
+        $h.each($.files, function (file) {
           if (
             file.chunks.length &&
             file.chunks[0].status() == 'pending' &&
@@ -991,9 +991,9 @@ const define = window.define;
       }
 
       // Now, simply look for the next, best thing to upload
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         if (file.isPaused() === false) {
-          $h.each(file.chunks, function(chunk) {
+          $h.each(file.chunks, function (chunk) {
             if (chunk.status() == 'pending' && chunk.preprocessState === 0) {
               chunk.send();
               found = true;
@@ -1007,7 +1007,7 @@ const define = window.define;
 
       // The are no more outstanding chunks to upload, check is everything is done
       var outstanding = false;
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         if (!file.isComplete()) {
           outstanding = true;
           return false;
@@ -1021,10 +1021,10 @@ const define = window.define;
     };
 
     // PUBLIC METHODS FOR RESUMABLE.JS
-    $.assignBrowse = function(domNodes, isDirectory) {
+    $.assignBrowse = function (domNodes, isDirectory) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
-      $h.each(domNodes, function(domNode) {
+      $h.each(domNodes, function (domNode) {
         var input;
         if (domNode.tagName === 'INPUT' && domNode.type === 'file') {
           input = domNode;
@@ -1034,7 +1034,7 @@ const define = window.define;
           input.style.display = 'none';
           domNode.addEventListener(
             'click',
-            function() {
+            function () {
               input.style.opacity = 0;
               input.style.display = 'block';
               input.focus();
@@ -1061,7 +1061,7 @@ const define = window.define;
           input.setAttribute(
             'accept',
             fileTypes
-              .map(function(e) {
+              .map(function (e) {
                 return '.' + e;
               })
               .join(','),
@@ -1072,7 +1072,7 @@ const define = window.define;
         // When new files are added, simply append them to the overall list
         input.addEventListener(
           'change',
-          function(e) {
+          function (e) {
             appendFilesFromFileList(e.target.files, e);
             var clearInput = $.getOpt('clearInput');
             if (clearInput) {
@@ -1083,27 +1083,27 @@ const define = window.define;
         );
       });
     };
-    $.assignDrop = function(domNodes) {
+    $.assignDrop = function (domNodes) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
-      $h.each(domNodes, function(domNode) {
+      $h.each(domNodes, function (domNode) {
         domNode.addEventListener('dragover', preventDefault, false);
         domNode.addEventListener('dragenter', preventDefault, false);
         domNode.addEventListener('drop', onDrop, false);
       });
     };
-    $.unAssignDrop = function(domNodes) {
+    $.unAssignDrop = function (domNodes) {
       if (typeof domNodes.length == 'undefined') domNodes = [domNodes];
 
-      $h.each(domNodes, function(domNode) {
+      $h.each(domNodes, function (domNode) {
         domNode.removeEventListener('dragover', preventDefault);
         domNode.removeEventListener('dragenter', preventDefault);
         domNode.removeEventListener('drop', onDrop);
       });
     };
-    $.isUploading = function() {
+    $.isUploading = function () {
       var uploading = false;
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         if (file.isUploading()) {
           uploading = true;
           return false;
@@ -1111,7 +1111,7 @@ const define = window.define;
       });
       return uploading;
     };
-    $.upload = function() {
+    $.upload = function () {
       // Make sure we don't start too many uploads at once
       if ($.isUploading()) return;
       // Kick off the queue
@@ -1120,83 +1120,73 @@ const define = window.define;
         $.uploadNextChunk();
       }
     };
-    $.pause = function() {
+    $.pause = function () {
       // Resume all chunks currently being uploaded
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         file.abort();
       });
       $.fire('pause');
     };
-    $.cancel = function() {
+    $.cancel = function () {
       $.fire('beforeCancel');
       for (var i = $.files.length - 1; i >= 0; i--) {
         $.files[i].cancel();
       }
       $.fire('cancel');
     };
-    $.progress = function() {
+    $.progress = function () {
       var totalDone = 0;
       var totalSize = 0;
       // Resume all chunks currently being uploaded
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         totalDone += file.progress() * file.size;
         totalSize += file.size;
       });
       return totalSize > 0 ? totalDone / totalSize : 0;
     };
-    $.addFile = function(file, event) {
+    $.addFile = function (file, event) {
       appendFilesFromFileList([file], event);
     };
-    $.addFiles = function(files, event) {
+    $.addFiles = function (files, event) {
       appendFilesFromFileList(files, event);
     };
-    $.removeFile = function(file) {
+    $.removeFile = function (file) {
       for (var i = $.files.length - 1; i >= 0; i--) {
         if ($.files[i] === file) {
           $.files.splice(i, 1);
         }
       }
     };
-    $.getFromUniqueIdentifier = function(uniqueIdentifier) {
+    $.getFromUniqueIdentifier = function (uniqueIdentifier) {
       var ret = false;
-      $h.each($.files, function(f) {
+      $h.each($.files, function (f) {
         if (f.uniqueIdentifier == uniqueIdentifier) ret = f;
       });
       return ret;
     };
-    $.getSize = function() {
+    $.getSize = function () {
       var totalSize = 0;
-      $h.each($.files, function(file) {
+      $h.each($.files, function (file) {
         totalSize += file.size;
       });
       return totalSize;
     };
-    $.handleDropEvent = function(e) {
+    $.handleDropEvent = function (e) {
       onDrop(e);
     };
-    $.handleChangeEvent = function(e) {
+    $.handleChangeEvent = function (e) {
       appendFilesFromFileList(e.target.files, e);
       e.target.value = '';
     };
-    $.updateQuery = function(query) {
+    $.updateQuery = function (query) {
       $.opts.query = query;
     };
 
     return this;
   };
 
-  // Node.js-style export for Node and Component
-  if (typeof module != 'undefined') {
-    module.exports = Resumable;
-  } else if (typeof define === 'function' && define.amd) {
-    // AMD/requirejs: Define the module
-    define(function() {
-      return Resumable;
-    });
-  } else {
-    // Browser: Expose to window
-    window.Resumable = Resumable;
-  }
+  // Browser: Expose to window
+  window.Resumable = Resumable;
 })();
 
 export default window.Resumable;

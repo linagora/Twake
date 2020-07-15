@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './PopupComponent.scss';
 import popupManager from 'services/popupManager/popupManager.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';

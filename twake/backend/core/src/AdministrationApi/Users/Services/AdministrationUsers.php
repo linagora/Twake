@@ -45,12 +45,14 @@ class AdministrationUsers
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user) {
-            $user_tab = $user[0]->getAsArray();
-            $user_tab['mail'] = $this->getUserMails($user[0])[0];
-            $user_tab['phone_number'] = $user[0]->getPhone();
-            $user_tab['creation_date'] = $user[0]->getCreationDate();
+            if($user && $user[0]){
+                $user_tab = $user[0]->getAsArray();
+                $user_tab['mail'] = $this->getUserMails($user[0])[0];
+                $user_tab['phone_number'] = $user[0]->getPhone();
+                $user_tab['creation_date'] = $user[0]->getCreationDate();
 
-            $this->list_user["users"][] = Array($user_tab, $user[1][0]);;
+                $this->list_user["users"][] = Array($user_tab, $user[1][0]);
+            }
         }
         $this->list_user["scroll_id"] = $scroll_id;
 
@@ -68,6 +70,8 @@ class AdministrationUsers
         foreach ($mails_tab as $mail) {
             $mails[] = $mail->getMail();
         }
+
+        $mails[] = $user->getEmail()." (not verified)";
 
         return $mails;
     }

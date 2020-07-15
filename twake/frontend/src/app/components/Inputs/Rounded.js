@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import PlusIcon from '@material-ui/icons/AddOutlined';
 

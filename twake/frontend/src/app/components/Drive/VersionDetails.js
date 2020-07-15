@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon.js';
 import Collections from 'services/Collections/Collections.js';
@@ -7,7 +7,11 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
-import {ObjectModal, ObjectModalSectionTitle, ObjectModalTitle,} from 'components/ObjectModal/ObjectModal.js';
+import {
+  ObjectModal,
+  ObjectModalSectionTitle,
+  ObjectModalTitle,
+} from 'components/ObjectModal/ObjectModal.js';
 import UIFile from './UI/File.js';
 import 'moment-timezone';
 
@@ -55,8 +59,9 @@ export default class VersionDetails extends React.Component {
                 <div className="icon">
                   <Icon type="plus" className="m-icon-small iconWithBackground" />
                 </div>
-                <div className="footerTitle">{Languages.t('components.drive.new_versions', 
-                [], "Ajouter une nouvelle version")}</div>
+                <div className="footerTitle">
+                  {Languages.t('components.drive.new_versions', [], 'Ajouter une nouvelle version')}
+                </div>
               </div>
             </div>
           </div>
@@ -108,7 +113,11 @@ export default class VersionDetails extends React.Component {
                       menu={[
                         {
                           type: 'menu',
-                          text: Languages.t('scenes.apps.drive.preview_bloc.operations_download', [], 'Télécharger'),
+                          text: Languages.t(
+                            'scenes.apps.drive.preview_bloc.operations_download',
+                            [],
+                            'Télécharger'
+                          ),
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
                             console.log(link);

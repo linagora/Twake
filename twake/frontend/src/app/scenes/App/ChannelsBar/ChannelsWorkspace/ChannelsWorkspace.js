@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -104,7 +104,7 @@ export default class ChannelsWorkspace extends Component {
                   placeholder={Languages.t(
                     'scenes.app.channelsbar.channelsworkspace.group_name',
                     [],
-                    'Nom du groupe',
+                    'Nom du groupe'
                   )}
                   onKeyPress={evt => {
                     if (evt.key === 'Enter') {
@@ -121,7 +121,7 @@ export default class ChannelsWorkspace extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.channelsworkspace.remove_group',
             [],
-            'Retirer le groupe',
+            'Retirer le groupe'
           ),
           className: 'danger',
           icon: 'trash',
@@ -129,7 +129,7 @@ export default class ChannelsWorkspace extends Component {
         },
       ],
       { x: evt.clientX, y: evt.clientY + 16 },
-      'bottom',
+      'bottom'
     );
   }
   addChannel(evt) {
@@ -139,7 +139,7 @@ export default class ChannelsWorkspace extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.channelsworkspace.create_channel',
           [],
-          'Créer une chaîne',
+          'Créer une chaîne'
         ),
       },
       {
@@ -172,7 +172,7 @@ export default class ChannelsWorkspace extends Component {
           Object.values(channel.members || []).length &&
           Object.values(channel.members || [])
             .concat(Object.values(channel.ext_members || []))
-            .indexOf(User.getCurrentUserId()) >= 0,
+            .indexOf(User.getCurrentUserId()) >= 0
       );
 
     var pinned_channels_preferences =
@@ -243,7 +243,7 @@ export default class ChannelsWorkspace extends Component {
           text={Languages.t(
             'scenes.app.channelsbar.channelsworkspace.channel_title',
             [],
-            'CHAÎNES',
+            'CHAÎNES'
           )}
           onAdd={
             WorkspaceUserRights.hasWorkspacePrivilege() &&
@@ -345,7 +345,7 @@ export default class ChannelsWorkspace extends Component {
               {Languages.t(
                 'scenes.app.channelsbar.channelsworkspace.no_channel',
                 [],
-                'Aucune chaîne dans cet espace de travail !',
+                'Aucune chaîne dans cet espace de travail !'
               )}
             </div>
           )}

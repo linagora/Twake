@@ -39,7 +39,7 @@ export default class AutoComplete extends Component {
     this.keyDown = this.keyDown.bind(this);
 
     var that = this;
-    window.addEventListener('keydown', function(evt) {
+    window.addEventListener('keydown', function (evt) {
       evt = evt || window.event;
       var isEscape = false;
       if ('key' in evt) {
@@ -153,7 +153,7 @@ export default class AutoComplete extends Component {
   }
   search(query, i) {
     var that = this;
-    that.props.search[that.state.currentRegexUsed](query, function(results) {
+    that.props.search[that.state.currentRegexUsed](query, function (results) {
       if (!that.is_open) {
         return;
       }
@@ -227,7 +227,7 @@ export default class AutoComplete extends Component {
 
     this.putTextAtCursor(
       this.props.renderItemChoosen[this.state.currentRegexUsed](item),
-      alreadyTypedLength,
+      alreadyTypedLength
     );
 
     if (that.props.onSelect) {

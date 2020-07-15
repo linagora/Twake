@@ -12,10 +12,10 @@ class ReactNative {
     var that = this;
     Globals.window.addEventListener(
       'message',
-      function(data) {
+      function (data) {
         that.receiveMessage(data);
       },
-      false,
+      false
     );
     this.callbacks = {};
 
@@ -30,7 +30,7 @@ class ReactNative {
     this.initPushRegistration();
     var that = this;
     that.improveLinks();
-    setInterval(function() {
+    setInterval(function () {
       that.improveLinks();
     }, 5000);
   }
@@ -41,7 +41,7 @@ class ReactNative {
     this.callbacks[unid] = callback;
 
     var that = this;
-    setTimeout(function() {
+    setTimeout(function () {
       delete that.callbacks[unid];
     }, 10 * 1000);
 
@@ -84,7 +84,7 @@ class ReactNative {
       link: link,
     };
 
-    this.callReactNative('openlink', req, function(data) {});
+    this.callReactNative('openlink', req, function (data) {});
   }
 
   isReactNative() {
@@ -97,7 +97,7 @@ class ReactNative {
     }
     Globals.window.open = this.openLink;
     $(document).off('click', 'a');
-    $(document).on('click', 'a', function(e) {
+    $(document).on('click', 'a', function (e) {
       var $this = $(this),
         target = '_blank'; // system open the device browser. _blank open inappbrowser
       if ($this.attr('href')) {
@@ -146,7 +146,7 @@ class ReactNative {
       destructiveButtonIndex: destructiveButtonIndex,
     };
 
-    this.callReactNative('actionsheet', req, function(data) {
+    this.callReactNative('actionsheet', req, function (data) {
       console.log(data.data, data.data.index);
       console.log(callbacks);
       if (callbacks[data.data.index]) {
@@ -168,7 +168,7 @@ class ReactNative {
       no: no,
     };
 
-    this.callReactNative('confirm', req, function(data) {
+    this.callReactNative('confirm', req, function (data) {
       if (data.data == 'yes') {
         if (callbackYes) callbackYes();
       } else {

@@ -55,18 +55,9 @@ export default class Calendar extends Component {
 
     this.setLoadedRange(
       'both',
-      moment(CalendarService.date)
-        .startOf('month')
-        .toDate()
-        .getTime() /
-        1000 -
-        60 * 60 * 24 * 31,
-      moment(CalendarService.date)
-        .startOf('month')
-        .toDate()
-        .getTime() /
-        1000 +
-        2 * 60 * 60 * 24 * 31,
+      moment(CalendarService.date).startOf('month').toDate().getTime() / 1000 - 60 * 60 * 24 * 31,
+      moment(CalendarService.date).startOf('month').toDate().getTime() / 1000 +
+        2 * 60 * 60 * 24 * 31
     );
 
     Collections.get('calendars').addListener(this);
@@ -87,7 +78,7 @@ export default class Calendar extends Component {
       this.calendar_collection_key,
       () => {
         this.onFirstLoad();
-      },
+      }
     );
 
     if (Collections.get('calendars').did_load_first_time[this.calendar_collection_key]) {
@@ -134,7 +125,7 @@ export default class Calendar extends Component {
           },
         ],
       },
-      this.calendar_collection_key,
+      this.calendar_collection_key
     );
   }
   setLoadedRange(key, min, max) {
@@ -179,18 +170,9 @@ export default class Calendar extends Component {
     }
     var range = this.loaded_date_range['both'];
     var requested_min =
-      moment(CalendarService.date)
-        .startOf('month')
-        .toDate()
-        .getTime() /
-        1000 -
-      60 * 60 * 24 * 31;
+      moment(CalendarService.date).startOf('month').toDate().getTime() / 1000 - 60 * 60 * 24 * 31;
     var requested_max =
-      moment(CalendarService.date)
-        .startOf('month')
-        .toDate()
-        .getTime() /
-        1000 +
+      moment(CalendarService.date).startOf('month').toDate().getTime() / 1000 +
       2 * 60 * 60 * 24 * 31;
     if (
       !range.min ||
@@ -221,7 +203,7 @@ export default class Calendar extends Component {
           calendar_list: calendar_list,
           mode: 'both',
         },
-        () => {},
+        () => {}
       );
     }
   }
@@ -263,7 +245,7 @@ export default class Calendar extends Component {
                 text: Languages.t(
                   'scenes.apps.calendar.modify_calendar_menu',
                   [],
-                  'Modifier le calendrier',
+                  'Modifier le calendrier'
                 ),
                 submenu_replace: true,
                 submenu: [
@@ -272,7 +254,7 @@ export default class Calendar extends Component {
                     text: Languages.t(
                       'scenes.apps.calendar.edit_calendar_title',
                       [],
-                      'Éditer le calendrier',
+                      'Éditer le calendrier'
                     ),
                   },
                   {
@@ -301,9 +283,9 @@ export default class Calendar extends Component {
                       text: Languages.t(
                         'scenes.apps.calendar.remove_calendar_confirmation',
                         [],
-                        'Supprimer le calendrier et ses événements définitivement ?',
+                        'Supprimer le calendrier et ses événements définitivement ?'
                       ),
-                    },
+                    }
                   );
                 },
               },
@@ -316,7 +298,7 @@ export default class Calendar extends Component {
                     type: 'react-element',
                     reactElement: level => {
                       var apps = WorkspacesApps.getApps().filter(
-                        app => ((app.display || {}).calendar_module || {}).can_connect_to_calendar,
+                        app => ((app.display || {}).calendar_module || {}).can_connect_to_calendar
                       );
                       if (apps.length > 0) {
                         return (
@@ -343,7 +325,7 @@ export default class Calendar extends Component {
                           {Languages.t(
                             'scenes.apps.calendar.no_connectors_menu_text',
                             [],
-                            "Vous n'avez aucun connecteur capable de se connecter à un calendrier.",
+                            "Vous n'avez aucun connecteur capable de se connecter à un calendrier."
                           )}
                         </div>
                       );
@@ -355,13 +337,13 @@ export default class Calendar extends Component {
                     text: Languages.t(
                       'scenes.apps.calendar.connectors_search_menu',
                       [],
-                      'Chercher des connecteurs...',
+                      'Chercher des connecteurs...'
                     ),
                     onClick: () => {
                       popupManager.open(
                         <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
                         true,
-                        'workspace_parameters',
+                        'workspace_parameters'
                       );
                     },
                   },
@@ -381,7 +363,7 @@ export default class Calendar extends Component {
           text: Languages.t(
             'scenes.apps.calendar.no_calendar_text',
             [],
-            "Vous n'avez défini aucun calendrier pour cet espace de travail.",
+            "Vous n'avez défini aucun calendrier pour cet espace de travail."
           ),
         },
       ];
@@ -421,7 +403,7 @@ export default class Calendar extends Component {
         if (!download) {
           AlertManager.alert(() => {}, { text: <InputWithClipBoard value={token} /> });
         }
-      },
+      }
     );
   }
 
@@ -453,7 +435,7 @@ export default class Calendar extends Component {
 
         var not_mine =
           (event.participants || []).filter(
-            part => part.user_id_or_mail == UserService.getCurrentUserId(),
+            part => part.user_id_or_mail == UserService.getCurrentUserId()
           ).length == 0;
         if (this.state.filter == 'mine') {
           if (not_mine) {
@@ -492,7 +474,7 @@ export default class Calendar extends Component {
           var htmlEl = this.calendar.getDomElement(CalendarService.edited);
           if (htmlEl) {
             MediumPopupManager.updateHighlight(
-              this.completeRect(window.getBoundingClientRect(htmlEl)),
+              this.completeRect(window.getBoundingClientRect(htmlEl))
             );
           }
         }, 200);
@@ -536,7 +518,7 @@ export default class Calendar extends Component {
                     label={Languages.t(
                       'scenes.apps.calendar.my_calendar_label',
                       [],
-                      'Mon calendrier',
+                      'Mon calendrier'
                     )}
                     small
                     className=""
@@ -547,7 +529,7 @@ export default class Calendar extends Component {
                     label={Languages.t(
                       'scenes.apps.calendar.workspace_label',
                       [],
-                      'Cet espace de travail',
+                      'Cet espace de travail'
                     )}
                     small
                     className=""
@@ -563,7 +545,7 @@ export default class Calendar extends Component {
             text: Languages.t(
               'scenes.apps.calendar.ics_subscription_menu',
               [],
-              "Obtenir un lien d'abonnement ICS",
+              "Obtenir un lien d'abonnement ICS"
             ),
             onClick: () => {
               this.export(false);
@@ -574,7 +556,7 @@ export default class Calendar extends Component {
             text: Languages.t(
               'scenes.apps.calendar.ics_download_menu',
               [],
-              'Télécharger un fichier ICS',
+              'Télécharger un fichier ICS'
             ),
             onClick: () => {
               this.export(true);
@@ -594,7 +576,7 @@ export default class Calendar extends Component {
           text: Languages.t(
             'scenes.apps.calendar.add_calendar_menu',
             [],
-            'Ajouter un calendrier...',
+            'Ajouter un calendrier...'
           ),
           submenu_replace: true,
           submenu: [
@@ -603,7 +585,7 @@ export default class Calendar extends Component {
               text: Languages.t(
                 'scenes.apps.calendar.create_calendar_title',
                 [],
-                'Créer un calendrier',
+                'Créer un calendrier'
               ),
             },
             {
@@ -638,7 +620,7 @@ export default class Calendar extends Component {
                     workspace: Languages.t(
                       'scenes.apps.calendar.workspace',
                       [],
-                      'Espace de travail',
+                      'Espace de travail'
                     ),
                   }[this.state.filter]
                 }
@@ -758,7 +740,7 @@ export default class Calendar extends Component {
                     margin: 5,
                     no_background: true,
                     size: { width: 440 },
-                  },
+                  }
                 );
               }, 100);
             }}
@@ -777,7 +759,7 @@ export default class Calendar extends Component {
                   var e = this.calendar.getDomElement(updated);
                   e &&
                     MediumPopupManager.updateHighlight(
-                      this.completeRect(window.getBoundingClientRect(e)),
+                      this.completeRect(window.getBoundingClientRect(e))
                     );
                 }, 100);
               }
@@ -807,7 +789,7 @@ export default class Calendar extends Component {
                       margin: 5,
                       no_background: true,
                       size: { width: 440 },
-                    },
+                    }
                   );
                 }, 100);
               }
@@ -829,13 +811,13 @@ export default class Calendar extends Component {
                     event={CalendarService.edited}
                     collectionKey={this.calendar_collection_key}
                   />,
-                  { size: { width: 600 } },
+                  { size: { width: 600 } }
                 );
               }, 100);
             }}
           />
         </div>
-      </div>,
+      </div>
     );
 
     return list;

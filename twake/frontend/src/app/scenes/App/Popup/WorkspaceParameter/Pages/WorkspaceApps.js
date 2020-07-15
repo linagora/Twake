@@ -61,7 +61,7 @@ export default class WorkspaceApps extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.forced_apps_text',
             [],
-            "Forcer dans toute l'entreprise",
+            "Forcer dans toute l'entreprise"
           ),
           onClick: () => {
             AlertManager.confirm(() => WorkspacesApps.forceInEntreprise(app.id));
@@ -76,7 +76,7 @@ export default class WorkspaceApps extends Component {
                   label={Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.automatique_label',
                     [],
-                    'Automatique',
+                    'Automatique'
                   )}
                   value={ga.workspace_default}
                   onChange={state =>
@@ -92,7 +92,7 @@ export default class WorkspaceApps extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.automatique_option_text',
             [],
-            "Si vous activez 'Automatique', cette application sera automatiquement ajoutée dans les prochains espaces de travail de cette entreprise.",
+            "Si vous activez 'Automatique', cette application sera automatiquement ajoutée dans les prochains espaces de travail de cette entreprise."
           ),
         },
         { type: 'separator' },
@@ -104,7 +104,7 @@ export default class WorkspaceApps extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.remove_from_workspace_text',
           [],
-          "Supprimer de l'espace",
+          "Supprimer de l'espace"
         ),
         className: 'error',
         onClick: () => {
@@ -118,7 +118,7 @@ export default class WorkspaceApps extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.remove_from_company_text',
           [],
-          "Supprimer de toute l'entreprise",
+          "Supprimer de toute l'entreprise"
         ),
         className: 'error',
         onClick: () => {
@@ -157,10 +157,10 @@ export default class WorkspaceApps extends Component {
       .filter(item => item.available_categories);
 
     var workspaces_app_ids = Object.keys(
-      WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId],
+      WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId]
     );
     var workspace_apps = workspaces_app_ids.map(
-      id => WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId][id],
+      id => WorkspacesApps.apps_by_workspace[workspaceService.currentWorkspaceId][id]
     );
     var group_apps = Object.keys(WorkspacesApps.apps_by_group[workspaceService.currentGroupId])
       .filter(id => workspaces_app_ids.indexOf(id) < 0)
@@ -174,7 +174,7 @@ export default class WorkspaceApps extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.apps_connectors_title',
             [],
-            'Applications et connecteurs',
+            'Applications et connecteurs'
           )}
         </div>
 
@@ -183,7 +183,7 @@ export default class WorkspaceApps extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle',
               [],
-              'Applications installées',
+              'Applications installées'
             )}
           </div>
 
@@ -193,7 +193,7 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.no_app_information',
                 [],
-                "Vous n'avez aucune application dans cet espace de travail",
+                "Vous n'avez aucune application dans cet espace de travail"
               )}
               .
             </div>
@@ -204,7 +204,7 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.installed_apps_information',
                 [workspace_apps.length],
-                'Applications installées dans cet espaces de travail $1',
+                'Applications installées dans cet espaces de travail $1'
               )}
             </div>
           )}
@@ -248,8 +248,8 @@ export default class WorkspaceApps extends Component {
                               Languages.t(
                                 'scenes.app.popup.workspaceparameter.pages.configure_button',
                                 [],
-                                'Configurer',
-                              ),
+                                'Configurer'
+                              )
                             )}
                             style={{ marginTop: 0, marginBottom: 0, width: 'auto' }}
                             onClick={() => {
@@ -259,14 +259,14 @@ export default class WorkspaceApps extends Component {
                                 Languages.t(
                                   'scenes.app.popup.workspaceparameter.pages.configuration_notif',
                                   [],
-                                  'configuration',
+                                  'configuration'
                                 ),
                                 Languages.t(
                                   'scenes.app.popup.workspaceparameter.pages.worspace_notif',
                                   [],
-                                  'workspace',
+                                  'workspace'
                                 ),
-                                {},
+                                {}
                               );
                             }}
                           />
@@ -288,7 +288,7 @@ export default class WorkspaceApps extends Component {
                           row,
                           WorkspacesApps.apps_by_group[workspaceService.currentGroupId][row.id] ||
                             {},
-                          true,
+                          true
                         )}
                       </div>
                     );
@@ -307,7 +307,7 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.installed_apps_message',
                 [group_apps.length],
-                "Applications installées dans d'autres espaces de l'entreprise $1",
+                "Applications installées dans d'autres espaces de l'entreprise $1"
               )}
             </div>
           )}
@@ -377,7 +377,7 @@ export default class WorkspaceApps extends Component {
             value={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.researching_apps_button',
               [],
-              'Rechercher des applications...',
+              'Rechercher des applications...'
             )}
             onClick={() => {
               this.setState({ add_new_app: true });
@@ -392,7 +392,7 @@ export default class WorkspaceApps extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle',
                 [],
-                "Applications développées par l'entreprise",
+                "Applications développées par l'entreprise"
               )}
             </div>
 
@@ -401,12 +401,12 @@ export default class WorkspaceApps extends Component {
               label={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.your_apps_label',
                 [],
-                'Vos applications',
+                'Vos applications'
               )}
               description={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.your_apps_description',
                 [],
-                'Créez et administrez vos applications et connecteurs.',
+                'Créez et administrez vos applications et connecteurs.'
               )}
             >
               <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -415,7 +415,7 @@ export default class WorkspaceApps extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.access_apps',
                     [],
-                    'Accédez à vos applications et connecteurs',
+                    'Accédez à vos applications et connecteurs'
                   )}
                 </a>
               </div>

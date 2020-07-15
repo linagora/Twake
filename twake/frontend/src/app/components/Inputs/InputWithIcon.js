@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione.js';
 import MenusManager from 'services/Menus/MenusManager.js';
