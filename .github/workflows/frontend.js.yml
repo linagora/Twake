@@ -25,7 +25,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install -g yarn
-    - run: cd twake/frontend/
-    - run: yarn install
-    - run: yarn build
-    - run: yarn test
+    - run: cd twake/frontend/ && yarn install
+    - run: cd twake/frontend/ && yarn build
+    - run: cd twake/frontend/ && yarn test
