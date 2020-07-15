@@ -28,6 +28,7 @@ services:
       dockerfile: docker/twake-php/Dockerfile
     volumes:
       - ./backend/core/:/twake-core:cached
+      - ./docker-data/drive/:/twake-core/drive/
       - ./docker-data/fpm/:/etc/docker-data/fpm/
     depends_on:
       - scylladb
