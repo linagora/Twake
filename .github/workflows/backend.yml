@@ -14,11 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build the stack
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
       - run: cd twake && docker-compose up -d
-
-      - name: Test backend
       - run: cd twake && docker-compose exec -T php php composer.phar install
       - run: cd twake && docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
       - run: cd twake && docker-compose exec -T php php bin/console twake:mapping #Test if es is live
