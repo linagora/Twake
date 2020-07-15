@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -73,7 +73,7 @@ export default class SecondMail extends Component {
                 {
                   this.state.users_repository
                     .find(userService.getCurrentUserId())
-                    .mails.find(function(element) {
+                    .mails.find(function (element) {
                       return element.main;
                     }).email
                 }
@@ -210,7 +210,7 @@ export default class SecondMail extends Component {
           thot => {
             thot.setState({ page: 1, mail: '', code: '' });
           },
-          this,
+          this
         );
       }
     } else if (this.state.page == 1) {
@@ -218,7 +218,7 @@ export default class SecondMail extends Component {
         this.state.loginService.addNewMail(
           this.state.mail,
           thot => thot.setState({ page: 2 }),
-          this,
+          this
         );
       }
     }

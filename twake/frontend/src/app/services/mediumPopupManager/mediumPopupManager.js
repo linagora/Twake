@@ -14,7 +14,7 @@ class MediumPopupManager extends Observable {
     this.mountedComponent = null;
   }
   updateHighlight(highlight) {
-    this.position.highlight = highlight;
+    if (this.position) this.position.highlight = highlight;
     this.notify();
   }
   open(component, position, canClose, clearState) {

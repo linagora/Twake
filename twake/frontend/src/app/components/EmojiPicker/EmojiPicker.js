@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Picker from 'components/Picker/Picker.js';
 import Emojione from 'components/Emojione/Emojione.js';
 import emojiService from 'services/emojis/emojis.js';
-import {List} from 'react-virtualized';
+import { List } from 'react-virtualized';
 import './EmojiPicker.scss';
 import Languages from 'services/languages/languages.js';
 
@@ -142,7 +142,9 @@ export default class EmojiPicker extends React.Component {
               return item.shortname;
             }}
             disableNavigationKey={true}
-            placeholder={Languages.t('scenes.apps.drive.left.search', [], 'Search') + ' EmojiOne...'}
+            placeholder={
+              Languages.t('scenes.apps.drive.left.search', [], 'Search') + ' EmojiOne...'
+            }
           />,
 
           <div className="scroller">
@@ -217,7 +219,8 @@ export default class EmojiPicker extends React.Component {
 
             {this.state.suggestions.length == 0 && (
               <div className="menu-text" style={{ marginTop: '20%', textAlign: 'center' }}>
-                {Languages.t('components.user_picker.modal_no_result', [], "Pas de résultats")} <Emojione type={':confused:'} />
+                {Languages.t('components.user_picker.modal_no_result', [], 'Pas de résultats')}{' '}
+                <Emojione type={':confused:'} />
               </div>
             )}
           </div>,

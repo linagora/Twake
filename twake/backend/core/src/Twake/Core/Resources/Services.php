@@ -20,7 +20,8 @@ class Services extends BaseServices
         "app.accessmanager" => "AccessManager",
         "app.exportversion" => "ExportManager",
         "app.string_cleaner" => "StringCleaner",
-        "app.session_handler" => "DoctrineAdapter/SessionHandler"
+        "app.session_handler" => "DoctrineAdapter/SessionHandler",
+        "app.update_services_status" => "UpdateServicesStatus"
     ];
 
 }

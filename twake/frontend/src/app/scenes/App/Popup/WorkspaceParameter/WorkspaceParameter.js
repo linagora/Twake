@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -79,7 +79,7 @@ export default class WorkspaceParameter extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.payments_subscriptions_title',
               [],
-              'Paiements et abonnements',
+              'Paiements et abonnements'
             )}
           </div>
 
@@ -102,7 +102,7 @@ export default class WorkspaceParameter extends Component {
             Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId).name,
             Collections.get('groups').find(WorkspaceService.currentGroupId).name,
           ],
-          "Vous êtes dans l'espace de travail $1 du groupe $2.",
+          "Vous êtes dans l'espace de travail $1 du groupe $2."
         )}
         <br />
         <br />
@@ -112,7 +112,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_manager_current_status',
                 [],
-                "Vous êtes Administrateur et Gérant de l'entreprise.",
+                "Vous êtes Administrateur et Gérant de l'entreprise."
               )}
             </span>
           )}
@@ -122,7 +122,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_current_status',
                 [],
-                'Vous êtes Administrateur.',
+                'Vous êtes Administrateur.'
               )}
             </span>
           )}
@@ -132,7 +132,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.manager_current_status',
                 [],
-                "Vous êtes Gérant de l'entreprise.",
+                "Vous êtes Gérant de l'entreprise."
               )}
             </span>
           )}
@@ -145,8 +145,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':house_with_garden:',
-        text: Languages.t('scenes.apps.parameters.workspace_sections.workspace', [],
-        'Espace de travail'),
+        text: Languages.t(
+          'scenes.apps.parameters.workspace_sections.workspace',
+          [],
+          'Espace de travail'
+        ),
         selected: this.state.page == 1 ? 'selected' : '',
         onClick: () => {
           this.setPage(1);
@@ -155,8 +158,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':electric_plug:',
-        text: Languages.t('scenes.app.popup.workspaceparameter.pages.apps_connectors_title', [],
-        'Applications et connecteurs'),
+        text: Languages.t(
+          'scenes.app.popup.workspaceparameter.pages.apps_connectors_title',
+          [],
+          'Applications et connecteurs'
+        ),
         selected: this.state.page == 3 ? 'selected' : '',
         onClick: () => {
           this.setPage(3);
@@ -166,8 +172,11 @@ export default class WorkspaceParameter extends Component {
     menu.push({
       type: 'menu',
       emoji: ':handshake:',
-      text: Languages.t('scenes.app.popup.workspaceparameter.pages.collaborateurs', [],
-      'Collaborateurs'),
+      text: Languages.t(
+        'scenes.app.popup.workspaceparameter.pages.collaborateurs',
+        [],
+        'Collaborateurs'
+      ),
       selected: this.state.page == 2 ? 'selected' : '',
       onClick: () => {
         this.setPage(2);
@@ -179,8 +188,11 @@ export default class WorkspaceParameter extends Component {
       menu.push({
         type: 'menu',
         emoji: ':clipboard:',
-        text: Languages.t('scenes.app.popup.workspaceparameter.pages.company_identity_title', [],
-        "Identité de l'entreprise"),
+        text: Languages.t(
+          'scenes.app.popup.workspaceparameter.pages.company_identity_title',
+          [],
+          "Identité de l'entreprise"
+        ),
         selected: this.state.page == 4 ? 'selected' : '',
         onClick: () => {
           this.setPage(4);

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
@@ -9,7 +9,11 @@ import TasksService from 'services/Apps/Tasks/Tasks.js';
 import TaskEditor from './TaskEditor.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import Checklist from './Parts/Checklist.js';
-import {ObjectModal, ObjectModalSectionTitle, ObjectModalTitle,} from 'components/ObjectModal/ObjectModal.js';
+import {
+  ObjectModal,
+  ObjectModalSectionTitle,
+  ObjectModalTitle,
+} from 'components/ObjectModal/ObjectModal.js';
 import Twacode from 'components/Twacode/Twacode.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 import moment from 'moment';
@@ -72,7 +76,7 @@ export default class TaskDetails extends React.Component {
           console.log(task);
         }}
       />,
-      { size: { width: 600 } },
+      { size: { width: 600 } }
     );
   }
   render() {
@@ -137,9 +141,8 @@ export default class TaskDetails extends React.Component {
             <ObjectModalTitle>{task.title || ''}</ObjectModalTitle>
             {list.title && (
               <div className="text">
-                {Languages.t('scenes.apps.tasks.board.tasks.in_list',
-                [],
-                "In list")} <a>{list.title}</a>
+                {Languages.t('scenes.apps.tasks.board.tasks.in_list', [], 'In list')}{' '}
+                <a>{list.title}</a>
               </div>
             )}
           </div>
@@ -158,16 +161,18 @@ export default class TaskDetails extends React.Component {
           task.description.original_str &&
           task.description.original_str.trim() && (
             <div className="text allow_selection" style={{ marginTop: -16 }}>
-              <ObjectModalSectionTitle name={Languages.t('scenes.apps.tasks.task.description',
-              [],
-              "Description")} icon="align-left" />
+              <ObjectModalSectionTitle
+                name={Languages.t('scenes.apps.tasks.task.description', [], 'Description')}
+                icon="align-left"
+              />
               <Twacode className="allow_selection" content={task.description} />
             </div>
           )}
 
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.tasks.board.tasks.subtask',
-        [],
-        "Sous-tâches")} icon="check-square" />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.apps.tasks.board.tasks.subtask', [], 'Sous-tâches')}
+          icon="check-square"
+        />
         <Checklist
           value={task.checklist}
           readOnly={task.archived}
@@ -176,9 +181,10 @@ export default class TaskDetails extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.tasks.task.assignees',
-        [],
-        "Assignés")} icon="users-alt" />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.apps.tasks.task.assignees', [], 'Assignés')}
+          icon="users-alt"
+        />
         <UserListManager
           readOnly={task.archived}
           showAddMe
@@ -193,7 +199,7 @@ export default class TaskDetails extends React.Component {
             this.changeParticipants(
               ids_mails.map(id => {
                 return { user_id_or_mail: id };
-              }),
+              })
             );
             Menu.closeAll();
           }}
@@ -205,16 +211,23 @@ export default class TaskDetails extends React.Component {
         />
         <AttachmentPicker readOnly attachments={task.attachments} />
 
-        <ObjectModalSectionTitle name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')} icon="bell" />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')}
+          icon="bell"
+        />
         <span className="text">
           {!!task.start && task.start > 0 && (
-            <span>{Languages.t('scenes.apps.tasks.board.starts',
-            [],"Démarre le")} {moment(new Date(task.start * 1000)).format('L LT')}. </span>
+            <span>
+              {Languages.t('scenes.apps.tasks.board.starts', [], 'Démarre le')}{' '}
+              {moment(new Date(task.start * 1000)).format('L LT')}.{' '}
+            </span>
           )}
           <br />
           {!!task.before && task.before > 0 && (
-            <span>{Languages.t('scenes.apps.tasks.board.ends',
-            [],"À terminer avant le")} {moment(new Date(task.before * 1000)).format('L LT')}. </span>
+            <span>
+              {Languages.t('scenes.apps.tasks.board.ends', [], 'À terminer avant le')}{' '}
+              {moment(new Date(task.before * 1000)).format('L LT')}.{' '}
+            </span>
           )}
         </span>
 

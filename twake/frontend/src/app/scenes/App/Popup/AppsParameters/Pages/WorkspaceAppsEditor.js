@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -61,9 +61,9 @@ export default class WorkspaceAppsEditor extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.app_update',
             [this.state.application.name, this.state.application.install_count || 0],
-            "Mettre à jour l'application $1 (application est utilisée $2 fois.)",
+            "Mettre à jour l'application $1 (application est utilisée $2 fois.)"
           ),
-        },
+        }
       );
     } else {
       saveApp();
@@ -93,9 +93,9 @@ export default class WorkspaceAppsEditor extends Component {
         text: Languages.t(
           'scenes.app.popup.appsparameters.pages.remove_app',
           [this.state.application.name],
-          "Supprimer l'application $1 définitivement.",
+          "Supprimer l'application $1 définitivement."
         ),
-      },
+      }
     );
   }
 
@@ -111,7 +111,7 @@ export default class WorkspaceAppsEditor extends Component {
   render() {
     if (this.state.application.id != this.state.id) {
       this.state.application = JSON.parse(
-        JSON.stringify(Collections.get('applications').find(this.state.id) || {}),
+        JSON.stringify(Collections.get('applications').find(this.state.id) || {})
       );
     }
 
@@ -162,7 +162,7 @@ export default class WorkspaceAppsEditor extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.alert_published_app',
               [],
-              'Votre application est publiée, vous ne pouvez pas la modifier.',
+              'Votre application est publiée, vous ne pouvez pas la modifier.'
             )}
           </div>
         )}
@@ -172,12 +172,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages._app_identity',
               [],
-              "Identité de l'application",
+              "Identité de l'application"
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.modify_public_data',
               [],
-              'Modifier les données publiques de votre application.',
+              'Modifier les données publiques de votre application.'
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none' }}>
@@ -186,7 +186,7 @@ export default class WorkspaceAppsEditor extends Component {
                 placeholder={Languages.t(
                   'scenes.app.popup.appsparameters.pages.amazing_app_name',
                   [],
-                  'My amazing app',
+                  'My amazing app'
                 )}
                 type="text"
                 disabled={this.state.loading || public_lock}
@@ -201,14 +201,14 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.grp_section_surname_label',
                   [],
-                  'Nom simplifié',
+                  'Nom simplifié'
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.string_information',
                   [],
-                  "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
+                  "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message."
                 )}
               </div>
               <Input
@@ -227,7 +227,7 @@ export default class WorkspaceAppsEditor extends Component {
                   {Languages.t(
                     'scenes.app.popup.appsparameters.pages.grp_section_name-error',
                     [],
-                    'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.',
+                    'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.'
                   )}
                 </div>
               )}
@@ -236,7 +236,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.app_grp_label',
                   [],
-                  "Groupe d'applications",
+                  "Groupe d'applications"
                 )}
               </div>
               <Input type="text" disabled={true} value={application.app_group_name} />
@@ -246,7 +246,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.optimal_format',
                   [],
-                  'Format optimal : 48x48px.',
+                  'Format optimal : 48x48px.'
                 )}
               </div>
               <Input
@@ -264,7 +264,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.categories_label',
                   [],
-                  'Catégories',
+                  'Catégories'
                 )}
               </div>
               <TagPicker
@@ -301,14 +301,14 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.description_label',
                   [],
-                  'Description',
+                  'Description'
                 )}
               </div>
               <AutoHeight
                 placeholder={Languages.t(
                   'scenes.app.popup.appsparameters.pages.description_label',
                   [],
-                  'Description',
+                  'Description'
                 )}
                 disabled={this.state.loading || public_lock}
                 onChange={evt => {
@@ -327,12 +327,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.api_parameters_label',
               [],
-              "Paramètres de l'API",
+              "Paramètres de l'API"
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.api_data_description',
               [],
-              "Données utiles pour l'API Twake.",
+              "Données utiles pour l'API Twake."
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -340,7 +340,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.public_login_label',
                   [],
-                  'Identifiant public',
+                  'Identifiant public'
                 )}
               </div>
               <InputWithClipBoard disabled={true} value={application.api_id} />
@@ -370,7 +370,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.url_reception_events_label',
                   [],
-                  'Url de reception des évènements',
+                  'Url de reception des évènements'
                 )}
               </div>
               <Input
@@ -388,20 +388,20 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.autorised_ip_adresses_label',
                   [],
-                  'Adresses IP autorisée',
+                  'Adresses IP autorisée'
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.filter_information',
                   [],
-                  "Ce filtre permet de limiter l'utilisation de votre clé API aux serveurs de votre connecteur uniquement.",
+                  "Ce filtre permet de limiter l'utilisation de votre clé API aux serveurs de votre connecteur uniquement."
                 )}
                 <br />
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.allowed_ip_adresses_method',
                   [],
-                  'Utilisez * en développement pour autorisé toutes les adresses IP.',
+                  'Utilisez * en développement pour autorisé toutes les adresses IP.'
                 )}
               </div>
               <Input
@@ -423,12 +423,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.displayed_parameters_label',
               [],
-              "Paramètres d'affichage",
+              "Paramètres d'affichage"
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.dispalyed_parameters_description',
               [],
-              "Permet de définir l'endroit où votre application sera visible.",
+              "Permet de définir l'endroit où votre application sera visible."
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 0 }}>
@@ -436,7 +436,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.configuration_label',
                   [],
-                  'Configuration',
+                  'Configuration'
                 )}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0, opacity: 1 }}>
@@ -444,7 +444,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.json_configuration_information',
                   [],
-                  'Rendez-vous sur la documentation afin de générer votre configuration au format JSON.',
+                  'Rendez-vous sur la documentation afin de générer votre configuration au format JSON.'
                 )}
               </div>
               <AutoHeight
@@ -474,12 +474,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.app_privileges_label',
               [],
-              "Privilèges de l'application",
+              "Privilèges de l'application"
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.app_privileges_information',
               [],
-              'Permet de définir ce que votre application peut modifier et lire.',
+              'Permet de définir ce que votre application peut modifier et lire.'
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 0 }}>
@@ -487,7 +487,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.write_privileges_label',
                   [],
-                  'Privilèges en écriture',
+                  'Privilèges en écriture'
                 )}
               </div>
               <TagPicker
@@ -501,7 +501,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.capabilities = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
+                    typeof item == 'string' ? item : item.id
                   );
                   this.setState({});
                 }}
@@ -511,7 +511,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.read_privileges_label',
                   [],
-                  'Privilèges en lecture',
+                  'Privilèges en lecture'
                 )}
               </div>
               <TagPicker
@@ -525,7 +525,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.privileges = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
+                    typeof item == 'string' ? item : item.id
                   );
                   this.setState({});
                 }}
@@ -545,7 +545,7 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.hooks = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
+                    typeof item == 'string' ? item : item.id
                   );
                   this.setState({});
                 }}
@@ -559,12 +559,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.publication_label',
               [],
-              'Publication',
+              'Publication'
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.publication_description',
               [],
-              'Déterminez la visibilité de votre application.',
+              'Déterminez la visibilité de votre application.'
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -572,7 +572,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.parameters_form_small_text',
                   [],
-                  "L'application non publiée ne fonctionnera que dans votre entreprise, si vous souhaitez la rendre disponible à tous les utilisateurs de Twake activez cette option.",
+                  "L'application non publiée ne fonctionnera que dans votre entreprise, si vous souhaitez la rendre disponible à tous les utilisateurs de Twake activez cette option."
                 )}
               </div>
 
@@ -582,7 +582,7 @@ export default class WorkspaceAppsEditor extends Component {
                   {Languages.t(
                     'scenes.app.popup.appsparameters.pages.available_publication_alert',
                     [],
-                    'La publication de votre application est actuellement en attente de validation par les équipes de Twake.',
+                    'La publication de votre application est actuellement en attente de validation par les équipes de Twake.'
                   )}
                 </div>
               )}
@@ -591,7 +591,7 @@ export default class WorkspaceAppsEditor extends Component {
                 label={Languages.t(
                   'scenes.app.popup.appsparameters.pages.publish_app_label',
                   [],
-                  "Publier l'application",
+                  "Publier l'application"
                 )}
                 value={application.public}
                 onChange={value => {
@@ -608,12 +608,12 @@ export default class WorkspaceAppsEditor extends Component {
             label={Languages.t(
               'scenes.app.popup.appsparameters.pages.danger_zone_label',
               [],
-              'Zone dangereuse',
+              'Zone dangereuse'
             )}
             description={Languages.t(
               'scenes.app.popup.appsparameters.pages.danger_zone_description',
               [],
-              "Supprimez l'application.",
+              "Supprimez l'application."
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -621,7 +621,7 @@ export default class WorkspaceAppsEditor extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.danger_zone_small_text',
                   [],
-                  'Vous ne pouvez pas supprimer cette application si elle est publiée.',
+                  'Vous ne pouvez pas supprimer cette application si elle est publiée.'
                 )}
               </div>
 
@@ -630,7 +630,7 @@ export default class WorkspaceAppsEditor extends Component {
                 value={Languages.t(
                   'scenes.app.popup.appsparameters.pages.remove_app_button',
                   [],
-                  "Supprimer l'application",
+                  "Supprimer l'application"
                 )}
                 disabled={this.state.loading || public_lock}
                 loading={this.state.loading}
@@ -647,7 +647,7 @@ export default class WorkspaceAppsEditor extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_simple_name_message',
                 [],
-                'Le nom simplifié de votre application est déjà utilisé par une autre application, veuillez le changer.',
+                'Le nom simplifié de votre application est déjà utilisé par une autre application, veuillez le changer.'
               )}
             </div>
           )}
@@ -657,7 +657,7 @@ export default class WorkspaceAppsEditor extends Component {
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_update_message',
                 [],
-                "Une erreur s'est produite lors de la mise à jour de l'application.",
+                "Une erreur s'est produite lors de la mise à jour de l'application."
               )}
             </div>
           )}
@@ -676,7 +676,7 @@ export default class WorkspaceAppsEditor extends Component {
             value={Languages.t(
               'scenes.app.popup.appsparameters.pages.update_button',
               [],
-              'Mettre à jour',
+              'Mettre à jour'
             )}
             disabled={this.state.loading}
             loading={this.state.loading}

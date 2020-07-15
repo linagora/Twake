@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
@@ -53,7 +53,7 @@ export default class ChannelsApps extends Component {
           channel.members.length &&
           (channel.members || [])
             .concat(channel.ext_members || [])
-            .indexOf(UserService.getCurrentUserId()) >= 0,
+            .indexOf(UserService.getCurrentUserId()) >= 0
       );
 
     var workspace_channels_by_app_id = {};

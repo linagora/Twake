@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Archive from '../Icons/archive.js';
 import Code from '../Icons/code.js';

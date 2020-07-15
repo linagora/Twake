@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import './DriveMultiSelector.scss';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
@@ -241,7 +241,7 @@ export default class DriveMultiSelector extends React.Component {
           this.currentSelection[element_id] = true;
           this.currentSelectionCount++;
         }
-      },
+      }
     );
   }
   render() {

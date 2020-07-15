@@ -33,7 +33,7 @@ class WorkspacesApps extends Observable {
   getApps() {
     return (
       Object.keys(this.apps_by_workspace[Workspaces.currentWorkspaceId] || {}).map(
-        id => this.apps_by_workspace[Workspaces.currentWorkspaceId][id],
+        id => this.apps_by_workspace[Workspaces.currentWorkspaceId][id]
       ) || []
     );
   }
@@ -164,7 +164,7 @@ class WorkspacesApps extends Observable {
       this.apps_by_group[res.workspace_app.group_id][res.workspace_app.app.id] = app_link;
       Collections.get('applications').completeObject(
         res.workspace_app.app,
-        res.workspace_app.app.front_id,
+        res.workspace_app.app.front_id
       );
     } else if (res.type == 'remove') {
       delete this.apps_by_workspace[res.workspace_app.workspace_id][res.workspace_app.app.id];
@@ -191,7 +191,7 @@ class WorkspacesApps extends Observable {
     if (Globals.window.mixpanel_enabled)
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Activate App', { id: id });
 
-    Api.post('workspace/apps/enable', data, function(res) {});
+    Api.post('workspace/apps/enable', data, function (res) {});
 
     this.notify();
   }
@@ -215,7 +215,7 @@ class WorkspacesApps extends Observable {
     if (Globals.window.mixpanel_enabled)
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Remove App', { id: id });
 
-    Api.post('workspace/apps/disable', data, function(res) {});
+    Api.post('workspace/apps/disable', data, function (res) {});
 
     this.notify();
   }
@@ -236,7 +236,7 @@ class WorkspacesApps extends Observable {
       ][id].app;
     }
 
-    Api.post('workspace/group/application/force', data, function(res) {});
+    Api.post('workspace/group/application/force', data, function (res) {});
 
     this.notify();
   }
@@ -261,7 +261,7 @@ class WorkspacesApps extends Observable {
       delete this.apps_by_workspace[Workspaces.currentWorkspaceId][id];
     }
 
-    Api.post('workspace/group/application/remove', data, function(res) {});
+    Api.post('workspace/group/application/remove', data, function (res) {});
 
     this.notify();
   }
@@ -281,7 +281,7 @@ class WorkspacesApps extends Observable {
       this.apps_by_group[Groups.currentGroupId][id].workspace_default = state;
     }
 
-    Api.post('workspace/group/workspacedefault/set', data, function(res) {});
+    Api.post('workspace/group/workspacedefault/set', data, function (res) {});
 
     this.notify();
   }

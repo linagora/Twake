@@ -171,9 +171,13 @@ export default class Signin extends Component {
             {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
             <Emojione type=":raised_hand:" />
           </div>
-          <div className="subtitle">
-            {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
-          </div>
+          {(!LoginService.server_infos.branding.name ||
+            LoginService.server_infos.branding.enable_newsletter) &&
+            ((LoginService.server_infos || {}).branding || {}).enable_newsletter !== false && (
+              <div className="subtitle">
+                {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
+              </div>
+            )}
 
           <Input
             id="lastname_create"

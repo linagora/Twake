@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './MediumPopupComponent.scss';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 
@@ -26,7 +26,7 @@ export default class MediumPopupComponent extends React.Component {
     if (this.component) {
       var screen = window.screen;
       var size = JSON.parse(
-        JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {}),
+        JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {})
       );
       size.x = size.x || size.left;
       size.y = size.y || size.top;
@@ -64,7 +64,7 @@ export default class MediumPopupComponent extends React.Component {
     var position = JSON.parse(JSON.stringify(MediumPopupManager.position));
     var screen = window.screen;
     var component_size = JSON.parse(
-      JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {}),
+      JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {})
     );
     component_size.x = component_size.x || component_size.left;
     component_size.y = component_size.y || component_size.top;
@@ -157,7 +157,10 @@ export default class MediumPopupComponent extends React.Component {
             className="component"
             style={comp_style}
             onClick={evt => {
-              if(evt.target.parentNode.tagName.toLowerCase() != "a" && evt.target.parentNode.tagName.toLowerCase() != "button"){
+              if (
+                evt.target.parentNode.tagName.toLowerCase() != 'a' &&
+                evt.target.parentNode.tagName.toLowerCase() != 'button'
+              ) {
                 evt.stopPropagation();
                 evt.preventDefault();
               }

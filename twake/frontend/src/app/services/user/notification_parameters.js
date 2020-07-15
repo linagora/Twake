@@ -29,7 +29,7 @@ class NotificationParameters extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
-    Api.post('users/account/get_notifications', {}, function(res) {
+    Api.post('users/account/get_notifications', {}, function (res) {
       that.preferences = res.data;
       that.original_preferences = JSON.parse(JSON.stringify(that.preferences));
 
@@ -89,7 +89,7 @@ class NotificationParameters extends Observable {
 
     this.loading = true;
     var that = this;
-    Api.post('users/account/set_notifications', data, function(res) {
+    Api.post('users/account/set_notifications', data, function (res) {
       that.loading = false;
       ws.publish('users/' + Login.currentUserId, {
         user: {
@@ -104,7 +104,7 @@ class NotificationParameters extends Observable {
           text: Languages.t(
             'services.user.notification_parameters_update_alert',
             [],
-            'Les paramètres de notification ont été mis à jour.',
+            'Les paramètres de notification ont été mis à jour.'
           ),
         });
       }
@@ -131,7 +131,7 @@ class NotificationParameters extends Observable {
     var l = this.transform_period(
       preferences.dont_disturb_between,
       preferences.dont_disturb_and,
-      -new Date().getTimezoneOffset() / 60,
+      -new Date().getTimezoneOffset() / 60
     );
     if (this.is_in_period(l[0], l[1])) {
       return true;
@@ -146,7 +146,7 @@ class NotificationParameters extends Observable {
     this.dont_disturb = this.transform_period(
       (user.notifications_preferences || {}).dont_disturb_between,
       (user.notifications_preferences || {}).dont_disturb_and,
-      -new Date().getTimezoneOffset() / 60,
+      -new Date().getTimezoneOffset() / 60
     );
     var notifications_state = 'on';
     if (

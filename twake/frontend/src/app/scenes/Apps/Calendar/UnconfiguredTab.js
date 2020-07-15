@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Menu from 'components/Menus/Menu.js';
@@ -29,7 +29,7 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { calendars: this.state.selected },
-      this.props.tab.id,
+      this.props.tab.id
     );
     Menu.closeAll();
   }
@@ -45,7 +45,7 @@ export default class UnconfiguredTab extends Component {
           {Languages.t(
             'scenes.apps.calendar.unconfigured_tab',
             [],
-            "Cet onglet n'est pas encore configuré.",
+            "Cet onglet n'est pas encore configuré."
           )}
         </div>
 

@@ -78,9 +78,9 @@ export default class MessagesList extends Component {
         this.setVisibleWindow(
           (tmp[0] || {}).id,
           (tmp[tmp.length - 1] || {}).id,
-          (tmp[tmp.length - 1] || {}).id,
+          (tmp[tmp.length - 1] || {}).id
         );
-      },
+      }
     );
   }
   componentDidMount() {
@@ -162,11 +162,11 @@ export default class MessagesList extends Component {
     }
     Mlist.states[this.key].window_min_id = Numbers.minTimeuuid(
       Mlist.states[this.key].window_min_id,
-      id,
+      id
     );
     Mlist.states[this.key].window_max_id = Numbers.maxTimeuuid(
       Mlist.states[this.key].window_max_id,
-      id,
+      id
     );
   }
   clearIdInWindow() {
@@ -277,7 +277,7 @@ export default class MessagesList extends Component {
             Mlist.states[this.key].visible_min_id = min;
           }
         }
-      },
+      }
     );
   }
   showMessage(id) {
@@ -306,7 +306,7 @@ export default class MessagesList extends Component {
           text: Languages.t(
             'scenes.apps.messages.messageslist.no_message_alert',
             [],
-            'Impossible de trouver ce message.',
+            'Impossible de trouver ce message.'
           ),
         });
         this.scrollToBottom();
@@ -348,7 +348,7 @@ export default class MessagesList extends Component {
             {Languages.t(
               'scenes.apps.messages.messageslist.load_before_button',
               [],
-              'Charger avant',
+              'Charger avant'
             )}
           </a>
           <br />
@@ -366,14 +366,14 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.min_window_id',
             [],
-            'Identifiant de fenêtre minimum : ',
+            'Identifiant de fenêtre minimum : '
           )}
           {Mlist.states[this.key].window_min_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.max_windoq_id',
             [],
-            'Identifiant de fenêtre maximum : ',
+            'Identifiant de fenêtre maximum : '
           )}
           {Mlist.states[this.key].window_max_id}
           <br />
@@ -381,21 +381,21 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.min_visible_id',
             [],
-            'Identifiant minimum visible : ',
+            'Identifiant minimum visible : '
           )}
           {Mlist.states[this.key].visible_min_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.current_visible_id',
             [],
-            'Identifiant actuel visible : ',
+            'Identifiant actuel visible : '
           )}
           {Mlist.states[this.key].visible_current_id}
           <br />
           {Languages.t(
             'scenes.apps.messages.messageslist.max_visible_id',
             [],
-            'Identifiant maximum visible : ',
+            'Identifiant maximum visible : '
           )}
           {Mlist.states[this.key].visible_max_id}
           <br />
@@ -403,7 +403,7 @@ export default class MessagesList extends Component {
           {Languages.t(
             'scenes.apps.messages.messageslist.number_visibled_messages',
             [],
-            'Nombre de messages visibles : ',
+            'Nombre de messages visibles : '
           )}
           {
             Collections.get('messages')
@@ -419,7 +419,7 @@ export default class MessagesList extends Component {
                     Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
                     (m.id &&
                       Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
-                      Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0)),
+                      Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0))
               ).length
           }
           <br />
@@ -433,7 +433,7 @@ export default class MessagesList extends Component {
             {Languages.t(
               'scenes.apps.messages.messageslist.load_after_button',
               [],
-              'Charger après',
+              'Charger après'
             )}
           </a>
         </div>
@@ -455,7 +455,7 @@ export default class MessagesList extends Component {
           (!m.id && Mlist.states[this.key].visible_max_id == Mlist.states[this.key].max_id) ||
           (m.id &&
             Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_min_id) >= 0 &&
-            Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0),
+            Numbers.compareTimeuuid(m.id, Mlist.states[this.key].visible_max_id) <= 0)
       )
       .filter(message => !message._user_ephemeral)
       .sort((a, b) => a.creation_date - b.creation_date);
@@ -523,7 +523,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.load_before—button',
                 [],
-                'Charger avant',
+                'Charger avant'
               )}
             </a>
           )}
@@ -564,7 +564,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.load_after_button',
                 [],
-                'Charger après',
+                'Charger après'
               )}
             </a>,
             <a
@@ -577,7 +577,7 @@ export default class MessagesList extends Component {
               {Languages.t(
                 'scenes.apps.messages.messageslist.go_last_message_button',
                 [],
-                'Aller au dernier message',
+                'Aller au dernier message'
               )}
             </a>,
           ]}
@@ -603,7 +603,7 @@ export default class MessagesList extends Component {
                   backgroundImage:
                     "url('" +
                     UserService.getThumbnail(
-                      Collections.get('users').find(this.state.last_message.sender),
+                      Collections.get('users').find(this.state.last_message.sender)
                     ) +
                     "')",
                 }}
@@ -612,8 +612,8 @@ export default class MessagesList extends Component {
             {PseudoMarkdownCompiler.compileToSimpleHTML(
               MessagesService.prepareContent(
                 this.state.last_message.content,
-                this.state.last_message.user_specific_content,
-              ),
+                this.state.last_message.user_specific_content
+              )
             )}
           </div>
         )}

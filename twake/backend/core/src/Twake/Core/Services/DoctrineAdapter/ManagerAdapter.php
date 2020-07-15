@@ -364,7 +364,7 @@ class ManagerAdapter
                                 $match = true;
                             }
                         }
-                        if ($match) {
+                        if ($match && $result) {
                             $entities[] = [$result, 0];
                         }
                     }

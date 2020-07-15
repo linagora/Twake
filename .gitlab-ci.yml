@@ -1,0 +1,55 @@
+image: node:9.4.0
+image: docker
+
+services:
+    - docker:19.03-dind
+
+before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
+    - apk add --update --no-cache curl jq py3-configobj py3-pip py3-setuptools python3 python3-dev
+    - apk add build-base libffi-dev openssl-dev
+    - pip install docker-compose
+    - cd twake
+    - mv docker-compose.yml.dist.tests docker-compose.yml
+
+stages:
+    - test
+
+test:
+    stage: test
+    only:
+        refs:
+            - schedules #permet d'executer le test selon le schedule
+    script:
+      - docker-compose up -d
+      - docker ps #To get the name of the existing container (juste pour info)
+      - docker-compose exec -T nginx yarn install
+      - docker-compose exec -T nginx yarn dev-build
+      - docker-compose exec -T php chmod -R 777 /tmp/
+      - docker-compose exec -T php php composer.phar install
+      - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+      - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+      - docker-compose exec -T php php bin/console twake:init #Test in we can do things
+    when: always
+
+
+manual_test:
+    stage: test
+    script:
+      - docker-compose up -d
+      - docker ps #To get the name of the existing container (juste pour info)
+      - docker-compose exec -T nginx yarn install
+      - docker-compose exec -T nginx yarn dev-build
+      - docker-compose exec -T php chmod -R 777 /tmp/
+      - docker-compose exec -T php php composer.phar install
+      - docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+      - docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+      - docker-compose exec -T php php bin/console twake:init #Test in we can do things
+    when: manual
+
+front_test:
+    stage: test
+    script:
+        - docker-compose up -d nginx
+        - docker-compose exec -T nginx yarn install
+        - docker-compose exec -T nginx yarn dev-build
+    when: manual

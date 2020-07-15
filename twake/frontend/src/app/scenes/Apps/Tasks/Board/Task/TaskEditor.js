@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
@@ -13,7 +13,7 @@ import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.j
 import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import {ObjectModal, ObjectModalSectionTitle} from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal, ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 
@@ -96,8 +96,10 @@ export default class TaskEditor extends React.Component {
           </div>
         }
       >
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.calendar.modals.title_placeholder',
-        [], "Titre")} style={{ marginTop: 0 }} />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.apps.calendar.modals.title_placeholder', [], 'Titre')}
+          style={{ marginTop: 0 }}
+        />
         <Input
           autoFocus
           value={task.title || ''}
@@ -119,11 +121,14 @@ export default class TaskEditor extends React.Component {
           />
         </div>
 
-        <ObjectModalSectionTitle name={Languages.t(
+        <ObjectModalSectionTitle
+          name={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-            'Description',
-          )} icon="align-left" />
+            'Description'
+          )}
+          icon="align-left"
+        />
         <Input
           autoHeight
           medium
@@ -131,7 +136,7 @@ export default class TaskEditor extends React.Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-            'Description',
+            'Description'
           )}
           onChange={evt => {
             this.change('description', evt.target.value);
@@ -139,9 +144,10 @@ export default class TaskEditor extends React.Component {
           className="full_width"
         />
 
-        <ObjectModalSectionTitle name={Languages.t('scenes.apps.tasks.board.tasks.subtask',
-        [],
-        "Sous-tâches")} icon="check-square" />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.apps.tasks.board.tasks.subtask', [], 'Sous-tâches')}
+          icon="check-square"
+        />
         <Checklist
           value={task.checklist}
           onChange={val => {
@@ -167,7 +173,7 @@ export default class TaskEditor extends React.Component {
               'participants',
               ids_mails.map(id => {
                 return { user_id_or_mail: id };
-              }),
+              })
             );
             Menu.closeAll();
           }}
@@ -182,7 +188,10 @@ export default class TaskEditor extends React.Component {
           onChange={attachments => this.change('attachments', attachments)}
         />
 
-        <ObjectModalSectionTitle name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')} icon="bell" />
+        <ObjectModalSectionTitle
+          name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')}
+          icon="bell"
+        />
 
         <Checkbox
           value={task.before > 0}
@@ -190,9 +199,7 @@ export default class TaskEditor extends React.Component {
             this.change('before', v ? new Date().setHours(10, 0, 0) / 1000 + 60 * 60 * 24 * 7 : 0);
           }}
           className="small"
-          label={Languages.t('scenes.apps.tasks.board.tasks.use_deadline',
-          [],
-          "Use deadline")}
+          label={Languages.t('scenes.apps.tasks.board.tasks.use_deadline', [], 'Use deadline')}
         />
         <br />
         {!!task.before && task.before > 0 && (
@@ -223,9 +230,7 @@ export default class TaskEditor extends React.Component {
             this.change('start', v ? new Date().setHours(10, 0, 0) / 1000 + 60 * 60 * 24 : 0);
           }}
           className="small"
-          label={Languages.t('scenes.apps.tasks.board.tasks.use_starttime',
-          [],
-          "Use start time")}
+          label={Languages.t('scenes.apps.tasks.board.tasks.use_starttime', [], 'Use start time')}
         />
         <br />
         {!!task.start && task.start > 0 && (

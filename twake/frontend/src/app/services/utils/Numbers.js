@@ -32,8 +32,8 @@ export default class Numbers {
           .replace(/\r|\n/g, '')
           .replace(/([\da-fA-F]{2}) ?/g, '0x$1 ')
           .replace(/ +$/, '')
-          .split(' '),
-      ),
+          .split(' ')
+      )
     );
   }
 
@@ -62,7 +62,7 @@ export default class Numbers {
     // orion elenzil
     // 20080905
 
-    var getValueOfDigit = function(digit, alphabet) {
+    var getValueOfDigit = function (digit, alphabet) {
       var pos = alphabet.indexOf(digit);
       return pos;
     };

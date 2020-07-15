@@ -42,7 +42,7 @@ class CurrentUser extends Observable {
             ConfiguratorsManager.closeConfigurator(data.application);
           }
         }
-      },
+      }
     );
   }
 
@@ -102,7 +102,7 @@ class CurrentUser extends Observable {
     setTimeout(() => {
       var data = {
         preferences: JSON.parse(
-          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences),
+          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences)
         ),
       };
       var update = {
@@ -176,9 +176,9 @@ class CurrentUser extends Observable {
         headers: {
           'All-Cookies': JSON.stringify(cookies),
         },
-        xhr: function() {
+        xhr: function () {
           var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function() {
+          myXhr.onreadystatechange = function () {
             if (myXhr.readyState == XMLHttpRequest.DONE) {
               that.loading = false;
               var resp = JSON.parse(myXhr.responseText);
@@ -228,7 +228,7 @@ class CurrentUser extends Observable {
           text: Languages.t(
             'services.user.update_password_alert',
             [],
-            'Votre mot de passe a été mis à jour.',
+            'Votre mot de passe a été mis à jour.'
           ),
         });
       } else {
@@ -245,7 +245,7 @@ class CurrentUser extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-    Api.post('users/account/addmail', { mail: mail }, function(res) {
+    Api.post('users/account/addmail', { mail: mail }, function (res) {
       that.loading = false;
 
       if (res.errors.indexOf('badmail') > -1) {

@@ -3,7 +3,7 @@ import Globals from 'services/Globals.js';
 class Electron {
   constructor() {
     if (this.isElectron()) {
-      document.addEventListener('keydown', function(e) {
+      document.addEventListener('keydown', function (e) {
         if (e.which === 123) {
           Globals.window.electron.remote.getCurrentWindow().toggleDevTools();
         } else if (e.which === 116) {

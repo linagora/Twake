@@ -85,7 +85,7 @@ class Tasks extends Observable {
     var next_value = this.index_calculation_pools[key][index + 1] || '';
     var letters = '0abcdefghijklmnopqrstuvwxyz'.split('');
 
-    String.prototype.replaceAt = function(index, replacement) {
+    String.prototype.replaceAt = function (index, replacement) {
       return this.substr(0, index) + replacement + this.substr(index + replacement.length);
     };
 

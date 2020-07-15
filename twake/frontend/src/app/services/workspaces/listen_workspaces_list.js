@@ -8,7 +8,7 @@ class ListenWorkspacesList {
   constructor() {}
 
   startListen() {
-    ws.subscribe('workspaces_of_user/' + User.getCurrentUserId(), function(uri, data) {
+    ws.subscribe('workspaces_of_user/' + User.getCurrentUserId(), function (uri, data) {
       console.log('recieve from ' + uri, data);
       if (data.workspace) {
         if (data.type == 'remove') {

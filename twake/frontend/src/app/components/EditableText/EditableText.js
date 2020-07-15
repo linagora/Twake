@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './EditableText.scss';
 
 import Input from 'components/Inputs/Input.js';

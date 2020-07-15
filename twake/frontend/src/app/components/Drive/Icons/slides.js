@@ -1,5 +1,5 @@
 import React from 'react';
-import {G, Path} from 'react-svg';
+import { G, Path } from 'react-svg';
 
 const SvgComponent = props => (
   <svg

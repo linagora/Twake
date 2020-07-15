@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenWorkspaces from 'services/workspaces/listen_workspace.js';
