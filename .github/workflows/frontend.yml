@@ -28,4 +28,3 @@ jobs:
     - run: cd twake/frontend/ && yarn install
     - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
     - run: cd twake/frontend/ && yarn build
-    - run: cd twake/frontend/ && yarn test
