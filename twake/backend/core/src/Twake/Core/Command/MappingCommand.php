@@ -21,12 +21,13 @@ class MappingCommand extends ContainerAwareCommand
     protected function execute()
     {
         @file_put_contents("/twake.status.es_mapping", "0");
+        @file_put_contents("/twake.status.no_es", "0");
 
         //Wait for es connection
         error_log("\n⏳Waiting for ElasticSearch connection");
         $connected = false;
         $iteration = 0;
-        while(!$connected && $iteration < 12*3){
+        while(!$connected && $iteration < 15){
           try{
             $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('es.host'));
             $connected = $test->getContent();
@@ -40,6 +41,7 @@ class MappingCommand extends ContainerAwareCommand
           $iteration++;
         }
         if(!$connected){
+          @file_put_contents("/twake.status.no_es", "1");
           error_log("\n💥 Unable to join ElasticSearch !\n");
           return;
         }

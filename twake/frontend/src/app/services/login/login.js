@@ -143,14 +143,14 @@ class Login extends Observable {
           if (res.errors.length > 0) {
             if (
               (res.errors.indexOf('redirect_to_openid') >= 0 ||
-                that.server_infos.auth_mode == 'openid') &&
+                ((that.server_infos.auth || {}).openid || {}).use) &&
               !that.external_login_error
             ) {
               document.location = Api.route('users/openid');
               return;
             } else if (
               (res.errors.indexOf('redirect_to_cas') >= 0 ||
-                that.server_infos.auth_mode == 'cas') &&
+                ((that.server_infos.auth || {}).cas || {}).use) &&
               !that.external_login_error
             ) {
               document.location = Api.route('users/cas/login');

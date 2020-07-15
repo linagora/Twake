@@ -36,6 +36,8 @@ export default class TwakeNotReady extends Component<Props> {
           "(if you don't use ES, remove the key es.host in php parameters and restart the server)";
       } else if (!this.props.ready.elasticsearch_mapping) {
         status = '(3/4) Initialize ES...';
+        comment =
+          "(if you don't use ES, remove the key es.host in php parameters and restart the server)";
       } else if (!this.props.ready.init) {
         status = '(4/4) Initialize connectors and default data...';
       } else {

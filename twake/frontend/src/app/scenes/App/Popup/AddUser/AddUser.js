@@ -117,7 +117,7 @@ export default class AddUser extends Component {
               onChange={e => {
                 this.setState({ all_import: e.target.value });
               }}
-              style={{ minHeight: 100, marginTop: 0 }}
+              style={{ minHeight: 100, marginTop: 0, maxHeight: '50vh' }}
               placeholder={'james@acme.com, jane@acme.com'}
             />
 
@@ -132,7 +132,7 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.adresses_message',
                 [],
-                "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement."
+                "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
               )}
             </div>
 
@@ -145,7 +145,7 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.message_instruction',
                 [],
-                'Utiliser le formulaire classique'
+                'Utiliser le formulaire classique',
               )}
             </a>
           </div>
@@ -166,7 +166,7 @@ export default class AddUser extends Component {
                       value={item.mail}
                       key={'addMembers-' + index}
                       placeholder={this.state.i18n.t(
-                        'scenes.app.workspaces.create_company.invitations.input_placeholder'
+                        'scenes.app.workspaces.create_company.invitations.input_placeholder',
                       )}
                       onChange={e => this.onChangeMail({ mail: e.target.value }, index)}
                       onKeyDown={e => {
@@ -180,7 +180,7 @@ export default class AddUser extends Component {
                       label={Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.guest_status',
                         [],
-                        'Invité'
+                        'Invité',
                       )}
                       value={item.externe == '1'}
                       onChange={state => this.onChangeMail({ externe: state ? '1' : '0' }, index)}
@@ -191,7 +191,7 @@ export default class AddUser extends Component {
             })}
             <div className="smalltext" style={{ opacity: 0.5 }}>
               {this.state.i18n.t(
-                'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info'
+                'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info',
               )}
             </div>
 
@@ -204,7 +204,7 @@ export default class AddUser extends Component {
               {Languages.t(
                 'scenes.app.popup.adduser.adding_several_people',
                 [],
-                'Ajouter plusieurs personnes à la fois'
+                'Ajouter plusieurs personnes à la fois',
               )}
             </a>
           </div>
@@ -226,13 +226,18 @@ export default class AddUser extends Component {
               this.finish();
             }}
             value={
-              (this.state.members || []).map(item => (item || {}).mail || '').join('').length == 0
+              !(
+                ((this.state.members || []).map(item => (item || {}).mail || '').join('').length >
+                  0 &&
+                  !this.state.multi) ||
+                (this.state.all_import && this.state.multi)
+              )
                 ? this.state.i18n.t(
                     'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
-                    'Skip'
+                    'Skip',
                   )
                 : this.state.i18n.t(
-                    'scenes.apps.parameters.group_sections.managers.invite_manager_button'
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button',
                   )
             }
             loading={this.state.workspacesUsersService.loading || this.props.loading}

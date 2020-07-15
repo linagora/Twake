@@ -18,18 +18,26 @@ class Version extends BaseController
 
         $auth = [];
         if ($this->getParameter("defaults.auth.internal.use")) {
-            $auth[] = "internal";
+            $auth["internal"] = [
+              "disable_email_verification" => $this->getParameter("defaults.auth.internal.disable_email_verification"),
+              "use" => true,
+            ];
         }
         if ($this->getParameter("defaults.auth.cas.use")) {
-            $auth[] = "cas";
+            $auth["cas"] = [
+              "use" => true,
+            ];
         }
         if ($this->getParameter("defaults.auth.openid.use")) {
-            $auth[] = "openid";
+            $auth["openid"] = [
+              "use" => true,
+            ];
         }
 
         $data = Array(
             "ready" => $ready,
-            "auth_mode" => $auth,
+            "auth_mode" => array_keys($auth),
+            "auth" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
             "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161",
             "websocket_public_key" => $this->container->getParameter("websocket.pusher_public"),

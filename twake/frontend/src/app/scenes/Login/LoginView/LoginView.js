@@ -20,13 +20,11 @@ export default class LoginView extends Component {
   }
   componentDidMount() {
     if (
-      ((LoginService.server_infos || {}).auth_mode || []).length > 0 &&
-      ((LoginService.server_infos || {}).auth_mode || []).indexOf('internal') < 0 &&
+      ((LoginService.server_infos || {}).auth || []).length > 0 &&
+      ((LoginService.server_infos || {}).auth || []).indexOf('internal') < 0 &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(
-        ((LoginService.server_infos || {}).auth_mode || [])[0],
-      );
+      LoginService.loginWithExternalProvider(((LoginService.server_infos || {}).auth || [])[0]);
     }
   }
   componentWillUnmount() {
@@ -55,7 +53,7 @@ export default class LoginView extends Component {
             />
           )}
 
-          {((login.server_infos || {}).auth_mode || []).indexOf('cas') >= 0 && (
+          {Object.keys((login.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -70,7 +68,7 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {((login.server_infos || {}).auth_mode || []).indexOf('openid') >= 0 && (
+          {Object.keys((login.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -91,8 +89,8 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {(((login.server_infos || {}).auth_mode || []).indexOf('internal') >= 0 ||
-            ((login.server_infos || {}).auth_mode || []).length == 0) && (
+          {(Object.keys((login.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
+            ((login.server_infos || {}).auth || []).length == 0) && (
             <div class="internal-login">
               <Input
                 id="username"

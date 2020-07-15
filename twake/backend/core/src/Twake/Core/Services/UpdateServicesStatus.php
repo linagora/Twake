@@ -41,7 +41,8 @@ class UpdateServicesStatus
           $status = ";";
 
           //Check ES
-          if(!$this->app->getContainer()->getParameter("es.host")){
+          $es_not_found = @file_get_contents("/twake.status.no_es") === "1";
+          if($es_not_found || !$this->app->getContainer()->getParameter("es.host")){
             $status .= "elasticsearch_connection;elasticsearch_mapping;";
           }else{
             $test = $this->app->getServices()->get("app.restclient")->get("http://" . $this->app->getContainer()->getParameter('es.host'));
