@@ -67,7 +67,7 @@ class Login extends Observable {
       Websocket.useOldMode(false);
       Websocket.setPublicKey(this.server_infos.websocket_public_key);
 
-      if (this.server_infos.ready !== true) {
+      if (this.server_infos.ready !== true && this.server_infos.ready !== undefined) {
         this.state = 'logged_out';
         this.notify();
         setTimeout(() => {

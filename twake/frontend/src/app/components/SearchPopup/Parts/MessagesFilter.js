@@ -8,6 +8,7 @@ import Checkbox from 'components/Inputs/Checkbox.js';
 import Select from 'components/Select/Select.js';
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
+import ChannelsService from 'services/channels/channels.js';
 
 export default class EventsFilter extends React.Component {
   constructor(props) {
@@ -19,9 +20,31 @@ export default class EventsFilter extends React.Component {
   }
 
   render() {
+    const currentChannel =
+      Collections.get('channels').findByFrontId(ChannelsService.currentChannelFrontId) || {};
     return (
       <div className="search_filters">
-        {/*        <ObjectModalSectionTitle name="Chaînes de discussion" icon="building" /> */}
+        {!currentChannel.app_id && (
+          <div>
+            <ObjectModalSectionTitle
+              name={Languages.t('components.searchpopup.channel', [], 'Channel')}
+              icon="list"
+            />
+            <Checkbox
+              small
+              value={this.state.options.channel_id}
+              onChange={value => {
+                this.state.options.channel_id = value ? [currentChannel.id] : null;
+                this.setState({});
+              }}
+              label={Languages.t(
+                'components.searchpopup.only_current_channel',
+                [],
+                'Only current channel',
+              )}
+            />
+          </div>
+        )}
 
         <ObjectModalSectionTitle
           name={Languages.t('components.searchpopup.sender', [], 'Sender')}
@@ -111,7 +134,7 @@ export default class EventsFilter extends React.Component {
               text: Languages.t(
                 'scenes.apps.drive.navigators.navigator_content.files',
                 [],
-                'Fichiers'
+                'Fichiers',
               ),
               value:
                 (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {})

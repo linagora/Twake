@@ -21,7 +21,6 @@ class GlobalSearch extends BaseController
 
         $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
 
-
         $this->get("administration.counter")->incrementCounter("total_quicksearch", 1);
 
         $data = Array("data" => $globalresult);
@@ -36,7 +35,7 @@ class GlobalSearch extends BaseController
         $repository = "Twake\GlobalSearch:Bloc";
 
         $options = $request->request->get("options");
-        $channels = $request->request->get("channel_id");
+        $channels = $options["channel_id"] ?: $request->request->get("channel_id");
 
         if (isset($scroll_id) && isset($repository)) {
             $options["scroll_id"] = $scroll_id;

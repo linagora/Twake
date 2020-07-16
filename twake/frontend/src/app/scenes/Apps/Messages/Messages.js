@@ -73,7 +73,7 @@ export default class MainView extends Component {
         channel_id: this.props.channel.id,
         parent_message_id: this.parentMessageId || '',
       },
-      this.messages_collection_key
+      this.messages_collection_key,
     );
     if (this.message_list_node) {
       this.message_list_node.scrollToBottom();
@@ -118,12 +118,12 @@ export default class MainView extends Component {
     if ((((app.display || {}).messages_module || {}).in_plus || {}).should_wait_for_popup) {
       WorkspacesApps.openAppPopup(app.id);
     }
+
     var data = {
       channel: this.props.channel,
       parent_message:
-        (this.props.messageDetails
-          ? Collections.get('messages').find(this.parentMessageId)
-          : null) || null,
+        (this.parentMessageId ? Collections.get('messages').find(this.parentMessageId) : null) ||
+        null,
       from_icon: from_icon,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
@@ -227,7 +227,7 @@ export default class MainView extends Component {
                     {Languages.t(
                       'scenes.apps.messages.just_you',
                       [],
-                      'Visible uniquement par vous'
+                      'Visible uniquement par vous',
                     )}
                   </div>
                   {ephemerals_messages.map(message => {

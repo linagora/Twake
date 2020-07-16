@@ -1,21 +1,42 @@
 @import '~components/constants.scss';
 
-.current_user {
+.current-company-header {
   display: flex;
-  margin-left: 16px;
-  margin-right: 16px;
+  margin-left: 12px;
+  margin-right: 12px;
   width: auto;
   box-sizing: border-box;
 
-  .image {
-    padding-right: 8px;
+  .notifications {
     cursor: pointer;
+    color: var(--black-alpha-1);
+    font-size: 16px;
+
+    .bell {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      height: 24px;
+
+      &:hover {
+        background: $grey_light;
+        border-radius: var(--default-border-radius);
+      }
+
+      &.disabled {
+        color: $red;
+      }
+      &.sleep {
+        color: $yellow;
+      }
+    }
   }
 
-  .content {
+  .current-company {
     flex: 1;
     overflow: hidden;
-    height: 42px;
+    height: 48px;
+    cursor: pointer;
 
     .name {
       display: flex;
@@ -24,7 +45,7 @@
       .text {
         height: 22px;
         font-size: 16px;
-        color: $black;
+        color: var(--secondary);
         letter-spacing: 0;
         line-height: 22px;
         font-weight: 700;
@@ -38,22 +59,37 @@
         font-size: 20px;
         min-width: 24px;
         margin-left: -4px;
+        color: var(--secondary);
       }
     }
 
-    .subname {
+    .user-info {
       display: flex;
-      color: $grey_dark;
+      color: var(--black-alpha-2);
+      align-items: center;
+
+      .status {
+        position: relative;
+        display: inline-block;
+        margin-right: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 6px;
+        background: $green;
+        border: 1px solid $grey_background;
+
+        &.grey {
+          background: $grey_dark;
+        }
+        &.red {
+          background: $red;
+        }
+      }
 
       .icon {
         display: flex;
         align-items: center;
         padding-right: 2px;
-        .emojione {
-          width: 12px;
-          height: 12px;
-          margin-top: -2px;
-        }
         cursor: pointer;
       }
 
@@ -64,29 +100,12 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        cursor: pointer;
+        margin-left: 4px;
       }
 
-      .bell {
-        display: flex;
-        align-items: center;
-        margin-left: 2px;
-        cursor: pointer;
-
-        &:hover {
-          background: $grey_light;
-          border-radius: var(--default-border-radius);
-        }
-
-        .bell-icon {
-          font-size: 14px;
-        }
-        &.disabled {
-          color: $red;
-        }
-        &.sleep {
-          color: $yellow;
-        }
+      .emojione-container {
+        margin-right: 4px;
+        display: inline-block;
       }
     }
   }

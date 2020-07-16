@@ -42,11 +42,16 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $workspace_ent = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->find($workspace);
 
         $users_to_notify = [];
+        $users_to_notify_mention = [];
 
         foreach ($members as $member) {
 
+            $mention = strpos(json_encode($message->getContent()), $member->getUserId()) !== false;
+            $mention = $mention || strpos(json_encode($message->getContent()), "@here") !== false;
+            $mention = $mention || strpos(json_encode($message->getContent()), "@all") !== false;
+
             $muted = $member->getMuted();
-            if ($muted && strpos(json_encode($message->getContent()), $member->getUserId()) !== false) {
+            if ($muted && $mention) {
                 $muted = false;
             }
 
@@ -65,7 +70,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
                 }
 
-                $users_to_notify[] = $user;
+                if($mention){
+                  $users_to_notify_mention[] = $user;
+                }else{
+                  $users_to_notify[] = $user;
+                }
 
             } else {
                 $member->setLastMessagesIncrement($channel->getMessagesIncrement());
@@ -83,6 +92,21 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $users_to_notify,
             "channel_" . $channel->getId(),
             $message_as_text,
+            $message ? $message->getId() : "",
+            Array(),
+            Array("push"),
+            true
+        );
+
+        $this->notificationSystem->pushNotification(
+            null,
+            $sender_application,
+            $sender_user,
+            $workspace_ent,
+            $channel,
+            $users_to_notify_mention,
+            "channel_" . $channel->getId(),
+            "@mentionned: ".$message_as_text,
             $message ? $message->getId() : "",
             Array(),
             Array("push"),

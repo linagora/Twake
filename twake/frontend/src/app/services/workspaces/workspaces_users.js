@@ -242,16 +242,18 @@ class WorkspacesUsers extends Observable {
   }
 
   removeUser(id, workspaceId, cb) {
+    const openedWorkspaceId = workspaceService.currentWorkspaceId;
     var that = this;
     this.loading = true;
-    var user = this.users_by_workspace[workspaceId][id];
-    delete this.users_by_workspace[workspaceId][id];
     this.notify();
 
     Api.post('workspace/members/remove', { ids: [id], workspaceId: workspaceId }, function (res) {
-      if (id == CurrentUser.get().id && workspaceService.currentWorkspaceId == workspaceId) {
+      if (id == CurrentUser.get().id && openedWorkspaceId == workspaceId) {
         Globals.window.location.reload();
       }
+
+      var user = that.users_by_workspace[workspaceId][id];
+      delete that.users_by_workspace[workspaceId][id];
 
       that.loading = false;
       that.notify();
@@ -308,7 +310,7 @@ class WorkspacesUsers extends Observable {
                 Languages.t(
                   'services.workspaces.not_added',
                   [],
-                  "Les utilisateurs suivants n'ont pas été ajoutés : "
+                  "Les utilisateurs suivants n'ont pas été ajoutés : ",
                 ) + (res.data.not_added || []).join(', '),
             });
           }
@@ -318,7 +320,7 @@ class WorkspacesUsers extends Observable {
         if (cb) {
           cb(thot);
         }
-      }
+      },
     );
   }
   addUserFromGroup(id, externe, cb, thot) {
@@ -358,7 +360,7 @@ class WorkspacesUsers extends Observable {
         if (cb) {
           cb();
         }
-      }
+      },
     );
   }
   isExterne(userIdOrMail, workspaceId = null) {
@@ -405,7 +407,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
-        }
+        },
       );
     } else if (this.users_by_group[groupId][userId] && !this.updateRoleUserLoading[userId]) {
       var that = this;
@@ -422,7 +424,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
-        }
+        },
       );
     }
   }
@@ -452,7 +454,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateLevelUserLoading[userId] = false;
           that.notify();
-        }
+        },
       );
     }
   }
@@ -463,7 +465,7 @@ class WorkspacesUsers extends Observable {
         data =>
           (data.user.username + ' ' + data.user.firstname + ' ' + data.user.lastname)
             .toLocaleLowerCase()
-            .indexOf(query.toLocaleLowerCase()) >= 0
+            .indexOf(query.toLocaleLowerCase()) >= 0,
       )
       .map(data => data.user);
     cb(results);
@@ -488,18 +490,21 @@ class WorkspacesUsers extends Observable {
     }
     if (has_other_admin) {
       AlertManager.confirm(() => {
-        that.removeUser(User.getCurrentUserId(), workspaceService.currentWorkspaceId);
-        workspaceService.removeFromUser(
-          Collections.get('workspaces').find(workspaceService.currentWorkspaceId)
-        );
-        popupManager.closeAll();
+        try {
+          that.removeUser(User.getCurrentUserId(), workspaceService.currentWorkspaceId);
+          workspaceService.removeFromUser(
+            Collections.get('workspaces').find(workspaceService.currentWorkspaceId),
+          );
+        } catch (err) {
+          console.log(err);
+        }
       });
     } else {
       AlertManager.alert(() => {}, {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing',
           [],
-          "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail."
+          "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
         ),
       });
     }

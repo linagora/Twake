@@ -6,8 +6,8 @@
   color: var(--black-alpha-2);
   margin-top: 24px;
   margin-bottom: 8px;
-  margin-left: 16px;
-  margin-right: 16px;
+  margin-left: 12px;
+  margin-right: 12px;
   text-transform: uppercase;
   display: flex;
 
@@ -36,7 +36,6 @@
   .add {
     cursor: pointer;
     float: right;
-    width: 20px;
     text-align: center;
     font-size: 18px;
     display: flex;
@@ -52,10 +51,10 @@
 .channel {
   height: 28px;
   width: auto;
-  margin-left: 16px;
-  margin-right: 16px;
+  margin-left: 12px;
+  margin-right: 12px;
   border-radius: var(--default-border-radius);
-  max-width: 200px;
+  max-width: 216px;
   box-sizing: border-box;
   font-size: 14px;
   font-weight: 500;
@@ -283,8 +282,8 @@
 /** Channel drop zones **/
 
 .channel_dropzone {
-  margin-left: 16px;
-  margin-right: 16px;
+  margin-left: 12px;
+  margin-right: 12px;
   width: auto;
   height: 0px;
   background: $grey_light;

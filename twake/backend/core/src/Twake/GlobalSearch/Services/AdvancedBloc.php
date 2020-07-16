@@ -17,16 +17,12 @@ class AdvancedBloc
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->blocservice = $app->getServices()->get("globalsearch.messagebloc");
         $this->workspaceservice = $app->getServices()->get("app.workspaces");
-
     }
 
     public function AdvancedBloc($current_user_id, $options, $channels)
     {
-
         $this->globalresult = Array();
-
         $this->SearchInBloc($current_user_id, $options, $channels);
-
         return $this->globalresult;
     }
 

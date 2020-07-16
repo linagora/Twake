@@ -1,9 +1,15 @@
 @import '~components/constants.scss';
 
+.electron {
+  .channels_view {
+    padding-top: 24px;
+  }
+}
+
 .channels_view {
   background: $grey_background;
   width: 220px;
-  padding-top: 20px;
+  padding-top: 12px;
   display: flex;
   flex-direction: column;
 

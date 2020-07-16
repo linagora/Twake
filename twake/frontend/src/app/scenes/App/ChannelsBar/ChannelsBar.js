@@ -68,7 +68,7 @@ export default class ChannelsBar extends Component {
             },
           ],
         },
-        'channels_' + Workspaces.currentWorkspaceId
+        'channels_' + Workspaces.currentWorkspaceId,
       );
 
       ChannelsService.initSelection();
@@ -87,18 +87,6 @@ export default class ChannelsBar extends Component {
     return (
       <div className="channels_view fade_in">
         <CurrentUser />
-
-        {(no_workspace || WorkspaceUserRights.isInvite()) && (
-          <div className="current_group">
-            <div className={'group_image ' + (WorkspaceUserRights.isInvite() ? 'invite' : '')}>
-              <GroupSwitch imageOnly group={group} />
-              {WorkspaceUserRights.isInvite() && Languages.t('components.workspace.group.guest')}
-            </div>
-            <span>
-              {group.name} • {workspace.name}
-            </span>
-          </div>
-        )}
 
         <PerfectScrollbar component="div">
           <ChannelsApps />

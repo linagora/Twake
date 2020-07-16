@@ -211,7 +211,11 @@ export default class App extends Component {
       return page;
     }
 
-    if (this.state.login.server_infos_loaded && this.state.login.server_infos.ready != true) {
+    if (
+      this.state.login.server_infos_loaded &&
+      this.state.login.server_infos.ready != true &&
+      this.state.login.server_infos.ready !== undefined
+    ) {
       page = [<TwakeNotReady key="twake_not_ready" ready={this.state.login.server_infos.ready} />];
     } else if (!this.state.login.firstInit || !this.state.login.server_infos_loaded) {
       page = [<div className="white_full_background" key="white_full_background" />];
