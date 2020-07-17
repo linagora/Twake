@@ -66,6 +66,9 @@ class CurrentUser extends Observable {
 
   updateTutorialStatus(key, set_false) {
     var user = this.get();
+    if(!user){
+      return;
+    }
     if (!user.tutorial_status || user.tutorial_status.length == 0) {
       user.tutorial_status = {};
     }

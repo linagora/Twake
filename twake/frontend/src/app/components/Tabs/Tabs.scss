@@ -13,6 +13,7 @@
     height: 100%;
     width: 50px;
     z-index: 1;
+    pointer-events: none;
     background: linear-gradient(to right, #ffffff00 0%, #ffffffff 100%);
   }
 

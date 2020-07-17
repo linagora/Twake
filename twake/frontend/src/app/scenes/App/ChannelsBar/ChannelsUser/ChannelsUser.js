@@ -8,17 +8,15 @@ import User from 'services/user/user.js';
 import UserService from 'services/user/user.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import PopupManager from 'services/popupManager/popupManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
 import ChannelUI from 'components/Leftbar/Channel/Channel.js';
 import Channel from '../Channel.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MenusManager from 'services/Menus/MenusManager.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import NewDirectMessagesPopup from 'scenes/App/ChannelsBar/NewDirectMessagesPopup.js';
 
 export default class ChannelsUser extends Component {
   constructor() {
@@ -81,58 +79,14 @@ export default class ChannelsUser extends Component {
     });
     return yes;
   }
-  openConv(evt) {
-    var new_conv_menu = [
-      {
-        type: 'title',
-        text: Languages.t(
-          'scenes.app.channelsbar.channelsuser.new_private_discussion',
-          [],
-          'Nouvelle discussion privée'
-        ),
-      },
-      {
-        type: 'react-element',
-        reactElement: (
-          <div style={{ margin: '0 -16px' }}>
-            <UserListManager
-              users={[]}
-              canRemoveMyself
-              scope="all"
-              continueText={Languages.t('general.continue', [], 'Continuer')}
-              onChange={ids => {
-                ChannelsService.openDiscussion(ids);
-              }}
-            />
-          </div>
-        ),
-        /*<UserPicker title="Select recipients" value={this.state.users_picker_value} onChange={(list)=>this.setState({users_picker_value: list})}/>*/
-      },
-    ];
 
-    if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-      new_conv_menu = new_conv_menu.concat([
-        { type: 'separator' },
-        {
-          type: 'menu',
-          icon: 'plus',
-          text: Languages.t(
-            'scenes.app.channelsbar.channelsuser.invite_collaborators',
-            [],
-            'Inviter des collaborateurs'
-          ),
-          onClick: () => {
-            PopupManager.open(<AddUser standalone />);
-          },
-        },
-      ]);
-    }
-
-    var pos = window.getBoundingClientRect(this.add_node);
-    pos.x = pos.x || pos.left;
-    pos.y = pos.y || pos.top;
-    MenusManager.openMenu(new_conv_menu, { x: pos.x + pos.width, y: pos.y }, 'right');
+  openConv() {
+    return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
+      position: 'center',
+      size: { width: '400px' },
+    });
   }
+
   render() {
     if (
       !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
@@ -208,11 +162,10 @@ export default class ChannelsUser extends Component {
           refAdd={node => (this.add_node = node)}
           text={Languages.t(
             'scenes.app.channelsbar.channelsuser.private_messages',
-            [],
-            'Messages directs'
+            'Direct messages'
           )}
-          onAdd={evt => {
-            this.openConv(evt);
+          onAdd={() => {
+            this.openConv();
           }}
         />
 
@@ -293,8 +246,7 @@ export default class ChannelsUser extends Component {
             >
               {Languages.t(
                 'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters',
-                [],
-                'Aucun message privé, invitez vos collaborateurs !'
+                'No private message, invite your collaborators !',
               )}{' '}
               <Emojione type=":smiley:" />
             </div>
