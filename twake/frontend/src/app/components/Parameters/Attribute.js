@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Number from 'services/utils/Numbers.js';
 import AttributesManager from './AttributesManager.js';

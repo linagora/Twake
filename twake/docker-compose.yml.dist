@@ -23,6 +23,7 @@ services:
     image: twaketech/twake-php
     volumes:
       - ./configuration/backend/:/configuration/
+      - ./docker-data/drive/:/twake-core/drive/
     depends_on:
       - rabbitmq
       - scylladb

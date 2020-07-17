@@ -89,7 +89,7 @@ class Workspaces extends Observable {
 
   closeWelcomePage(forever) {
     if (forever) {
-      Api.post('users/set/isNew', { value: false }, function(res) {});
+      Api.post('users/set/isNew', { value: false }, function (res) {});
       Collections.get('users').updateObject({
         id: User.getCurrentUserId(),
         isNew: false,
@@ -215,7 +215,7 @@ class Workspaces extends Observable {
   getOrderedWorkspacesInGroup(group_id, no_filter) {
     var object = [];
     var that = this;
-    Object.keys(this.user_workspaces).forEach(function(e) {
+    Object.keys(this.user_workspaces).forEach(function (e) {
       if (no_filter) {
         object.push(e);
         return;
@@ -237,7 +237,7 @@ class Workspaces extends Observable {
       }
       e['favoris'] = favoris;
     });
-    object = object.sort(function(a, b) {
+    object = object.sort(function (a, b) {
       if (a.favoris != b.favoris) {
         return b.favoris - a.favoris;
       }
@@ -259,14 +259,17 @@ class Workspaces extends Observable {
       group_name: groupName,
       group_creation_data: groupCreationData,
       channels: [
-        { name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'), icon: ':mailbox:' },
+        {
+          name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'),
+          icon: ':mailbox:',
+        },
         { name: 'Random', icon: ':beach_umbrella:' },
       ],
     };
     that.loading = true;
     that.notify();
     var that = this;
-    Api.post('workspace/create', data, function(res) {
+    Api.post('workspace/create', data, function (res) {
       var group_id = undefined;
       var workspace = undefined;
       if (res.data && res.data.workspace) {
@@ -306,8 +309,8 @@ class Workspaces extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
-    Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function(
-      res,
+    Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function (
+      res
     ) {
       if (res.errors.length == 0) {
         var update = {
@@ -350,9 +353,9 @@ class Workspaces extends Observable {
         xhrFields: {
           withCredentials: true,
         },
-        xhr: function() {
+        xhr: function () {
           var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function() {
+          myXhr.onreadystatechange = function () {
             if (myXhr.readyState == XMLHttpRequest.DONE) {
               that.loading = false;
               var resp = JSON.parse(myXhr.responseText);
@@ -376,13 +379,13 @@ class Workspaces extends Observable {
     if (
       workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId) &&
       (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).filter(
-        userId => !workspacesUsers.isExterne(userId),
+        userId => !workspacesUsers.isExterne(userId)
       ).length > 1
     ) {
       this.errorDeleteWorkspaceMember = true;
       this.notify();
     } else if (this.currentWorkspaceId) {
-      Api.post('workspace/delete', { workspaceId: this.currentWorkspaceId }, function(res) {
+      Api.post('workspace/delete', { workspaceId: this.currentWorkspaceId }, function (res) {
         PopupManager.close();
       });
     }

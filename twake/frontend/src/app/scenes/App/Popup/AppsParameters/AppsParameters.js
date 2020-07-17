@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -68,7 +68,11 @@ export default class AppsParameters extends Component {
               menu={[
                 {
                   type: 'menu',
-                  text: Languages.t('scenes.app.popup.workspaceparameter.pages.your_apps_label', [], 'Vos applications'),
+                  text: Languages.t(
+                    'scenes.app.popup.workspaceparameter.pages.your_apps_label',
+                    [],
+                    'Vos applications'
+                  ),
                   emoji: ':control_knobs:',
                   selected: this.state.page == 1,
                   onClick: () => this.setPage(1),

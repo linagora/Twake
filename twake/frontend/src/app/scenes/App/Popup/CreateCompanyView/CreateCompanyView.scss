@@ -34,6 +34,7 @@
     right: 0;
     margin: auto;
     .center_box {
+      max-height: 80vh;
       transform: translateX(-50%) translateY(-50%);
       height: auto;
       width: 400px;

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import UploadManager from './UploadManager.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';

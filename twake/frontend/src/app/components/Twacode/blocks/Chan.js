@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione.js';
 

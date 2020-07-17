@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import FolderIcon from '@material-ui/icons/FolderOutlined';
 import Menu from 'components/Menus/Menu.js';

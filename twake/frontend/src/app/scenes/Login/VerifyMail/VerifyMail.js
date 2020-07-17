@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
@@ -29,7 +29,7 @@ export default class VerifyMail extends Component {
       },
       () => {
         this.setState({ status: 'error' });
-      },
+      }
     );
   }
   componentWillUnmount() {
@@ -51,7 +51,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.verification_waiting',
                   [],
-                  'En attente de vérification...',
+                  'En attente de vérification...'
                 )}
               </div>
             )}
@@ -62,7 +62,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.success',
                   [],
-                  'Votre e-mail a été vérifié avec succès!',
+                  'Votre e-mail a été vérifié avec succès!'
                 )}
               </div>,
               <a onClick={() => (document.location = '/')} className="blue_link">
@@ -76,7 +76,7 @@ export default class VerifyMail extends Component {
                 {Languages.t(
                   'scenes.login.verifymail.error_message',
                   [],
-                  "Une erreur s'est produite",
+                  "Une erreur s'est produite"
                 )}
               </div>,
               <a

@@ -26,7 +26,7 @@ export default class Strings {
       size = (5 + 1) * 4;
     }
     return;
-    element.addEventListener('keyup', function(e) {
+    element.addEventListener('keyup', function (e) {
       var target = e.target,
         position = target.selectionEnd,
         length = target.value.length;

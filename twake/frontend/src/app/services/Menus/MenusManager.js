@@ -20,7 +20,7 @@ class MenusManager extends Observable {
     this.max_level = 0;
 
     var that = this;
-    Globals.window.addEventListener('keydown', function(evt) {
+    Globals.window.addEventListener('keydown', function (evt) {
       evt = evt || window.event;
       var isEscape = false;
       if ('key' in evt) {

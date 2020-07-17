@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Select from 'components/Select/Select.js';
 import Languages from 'services/languages/languages.js';
 import moment from 'moment';
@@ -37,33 +37,23 @@ export default class RepetitionSelector extends React.Component {
           'DTSTART:' +
           moment(this.state.date).format() +
           '\nRRULE:FREQ=WEEKLY;BYDAY=' +
-          moment(this.state.date)
-            .format('dd')
-            .toUpperCase(),
+          moment(this.state.date).format('dd').toUpperCase(),
       },
       {
         text: Languages.t('components.calendar.repetition.monthly_on', [
-          moment.localeData().ordinal(
-            moment(this.state.date).week() -
-              moment(this.state.date)
-                .startOf('month')
-                .week() +
-              1,
-          ),
+          moment
+            .localeData()
+            .ordinal(
+              moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1
+            ),
           moment(this.state.date).format('dddd'),
         ]),
         value:
           'DTSTART:' +
           moment(this.state.date).format() +
           '\nFREQ=MONTHLY;BYDAY=+' +
-          (moment(this.state.date).week() -
-            moment(this.state.date)
-              .startOf('month')
-              .week() +
-            1) +
-          moment(this.state.date)
-            .format('dd')
-            .toUpperCase(),
+          (moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1) +
+          moment(this.state.date).format('dd').toUpperCase(),
       },
       {
         text: Languages.t('components.calendar.repetition.annually_on', [
@@ -121,7 +111,7 @@ export default class RepetitionSelector extends React.Component {
                   size: {
                     width: '400px',
                   },
-                },
+                }
               );
             }
             this.setState({ value: v });

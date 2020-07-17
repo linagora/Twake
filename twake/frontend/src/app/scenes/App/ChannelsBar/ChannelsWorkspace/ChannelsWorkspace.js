@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -12,7 +12,8 @@ import Channel from '../Channel.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MenusManager from 'services/Menus/MenusManager.js';
-import ChannelEditor from '../ChannelEditor.js';
+import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import ChannelWorkspaceEditor from 'app/scenes/App/ChannelsBar/ChannelWorkspaceEditor.js';
 import InputEnter from 'components/Inputs/InputEnter.js';
 
 export default class ChannelsWorkspace extends Component {
@@ -132,28 +133,14 @@ export default class ChannelsWorkspace extends Component {
       'bottom',
     );
   }
-  addChannel(evt) {
-    var menu = [
+  addChannel() {
+    return MediumPopupComponent.open(
+      <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
       {
-        type: 'title',
-        text: Languages.t(
-          'scenes.app.channelsbar.channelsworkspace.create_channel',
-          [],
-          'Créer une chaîne',
-        ),
+        position: 'center',
+        size: { width: '400px' },
       },
-      {
-        type: 'react-element',
-        reactElement: level => {
-          return <ChannelEditor level={level} />;
-        },
-      },
-    ];
-
-    var pos = window.getBoundingClientRect(this.add_node);
-    pos.x = pos.x || pos.left;
-    pos.y = pos.y || pos.top;
-    MenusManager.openMenu(menu, { x: pos.x + pos.width, y: pos.y }, 'right');
+    );
   }
   render() {
     var workspace = Collections.get('workspaces').known_objects_by_id[
@@ -247,8 +234,8 @@ export default class ChannelsWorkspace extends Component {
           )}
           onAdd={
             WorkspaceUserRights.hasWorkspacePrivilege() &&
-            (evt => {
-              this.addChannel(evt);
+            (() => {
+              this.addChannel();
             })
           }
         />

@@ -64,7 +64,7 @@ export default class Drive extends Component {
     if (this.drive_channel) {
       console.log('unmount drive remove source');
       Collections.get('drive').removeSource(
-        this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+        this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
       );
     }
   }
@@ -153,13 +153,13 @@ export default class Drive extends Component {
     }
 
     DriveService.addPathForElement(
-      this.state.app_drive_service.current_directory_channels[this.drive_channel],
+      this.state.app_drive_service.current_directory_channels[this.drive_channel]
     );
 
     var path = JSON.parse(
       JSON.stringify(
-        this.state.app_drive_service.current_directory_channels[this.drive_channel].path || [],
-      ),
+        this.state.app_drive_service.current_directory_channels[this.drive_channel].path || []
+      )
     );
 
     if (!path || path.length == 0) {
@@ -201,7 +201,7 @@ export default class Drive extends Component {
               this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
             }
             channel={this.drive_channel}
-          />,
+          />
         );
         return list;
       });
@@ -215,7 +215,7 @@ export default class Drive extends Component {
       this.state.workspaces.currentWorkspaceId,
       this.state.new_directory_name,
       this.state.app_drive_service.current_directory_channels[this.drive_channel],
-      this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+      this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
     );
     this.setState({ new_directory_name: '' });
   }
@@ -237,7 +237,7 @@ export default class Drive extends Component {
       name,
       DriveService.current_directory_channels[this.drive_channel],
       { download_content_from_url: url },
-      DriveService.current_collection_key_channels[this.drive_channel],
+      DriveService.current_collection_key_channels[this.drive_channel]
     );
     MenusManager.closeMenu();
   }
@@ -255,7 +255,7 @@ export default class Drive extends Component {
       name,
       DriveService.current_directory_channels[this.drive_channel],
       { url: url },
-      DriveService.current_collection_key_channels[this.drive_channel],
+      DriveService.current_collection_key_channels[this.drive_channel]
     );
     MenusManager.closeMenu();
   }
@@ -359,7 +359,7 @@ export default class Drive extends Component {
                 };
                 WorkspacesApps.notifyApp(file.application_id, 'configuration', 'drive', data);
               },
-              { application_id: app.id, external_storage: true },
+              { application_id: app.id, external_storage: true }
             );
           },
         });
@@ -370,7 +370,7 @@ export default class Drive extends Component {
         text: Languages.t(
           'scenes.apps.drive.no_storage_app_alert',
           [],
-          "Vous n'avez aucune application vous permettant de créer un fichier.",
+          "Vous n'avez aucune application vous permettant de créer un fichier."
         ),
       });
     }
@@ -492,7 +492,7 @@ export default class Drive extends Component {
         text: Languages.t(
           'scenes.apps.drive.no_file_alert',
           [],
-          "Vous n'avez aucune application vous permettant de créer un fichier.",
+          "Vous n'avez aucune application vous permettant de créer un fichier."
         ),
       });
     }
@@ -500,7 +500,7 @@ export default class Drive extends Component {
     var selection_length = Object.keys(
       SelectionsManager.selected_per_type[
         this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-      ] || {},
+      ] || {}
     ).length;
     var general_menu = [];
 
@@ -529,7 +529,7 @@ export default class Drive extends Component {
               Object.keys(
                 SelectionsManager.selected_per_type[
                   this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-                ] || {},
+                ] || {}
               ).forEach(item => {
                 var el = Collections.get('drive').find(item);
                 if (el) {
@@ -561,9 +561,9 @@ export default class Drive extends Component {
                             this.state.app_drive_service.current_collection_key_channels[
                               this.drive_channel
                             ]
-                          ] || {},
+                          ] || {}
                         ),
-                        new_parent,
+                        new_parent
                       )
                     }
                   />
@@ -595,15 +595,15 @@ export default class Drive extends Component {
             var elements = Object.keys(
               SelectionsManager.selected_per_type[
                 this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-              ] || {},
+              ] || {}
             ).map(id => Collections.get('drive').find(id));
             if (elements.length > 0) {
               DriveService.remove(
                 elements,
-                this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
               );
               SelectionsManager.unselectAll(
-                this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
               );
             }
           },
@@ -616,15 +616,15 @@ export default class Drive extends Component {
             var elements = Object.keys(
               SelectionsManager.selected_per_type[
                 this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-              ] || {},
+              ] || {}
             ).map(id => Collections.get('drive').find(id));
             if (elements.length > 0) {
               DriveService.restore(
                 elements,
-                this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
               );
               SelectionsManager.unselectAll(
-                this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
               );
             }
           },
@@ -635,7 +635,7 @@ export default class Drive extends Component {
           text: Languages.t(
             'scenes.apps.drive.remove_definitely_menu',
             [],
-            'Supprimer définitivement',
+            'Supprimer définitivement'
           ),
           className: 'error',
           onClick: () => {
@@ -643,15 +643,15 @@ export default class Drive extends Component {
               var elements = Object.keys(
                 SelectionsManager.selected_per_type[
                   this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-                ] || {},
+                ] || {}
               ).map(id => Collections.get('drive').find(id));
               if (elements.length > 0) {
                 DriveService.removeDefinitively(
                   elements,
-                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
                 );
                 SelectionsManager.unselectAll(
-                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
                 );
               }
             });
@@ -678,7 +678,7 @@ export default class Drive extends Component {
         text: Languages.t(
           'scenes.apps.drive.import_from_computer_menu',
           [],
-          "Importer depuis l'ordinateur",
+          "Importer depuis l'ordinateur"
         ),
         icon: 'desktop',
         onClick: () => {
@@ -720,7 +720,7 @@ export default class Drive extends Component {
                       placeholder={Languages.t(
                         'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
                         [],
-                        'Name',
+                        'Name'
                       )}
                       value={this.state.new_directory_name}
                       onChange={evt => this.setState({ new_directory_name: evt.target.value })}
@@ -757,7 +757,7 @@ export default class Drive extends Component {
           text: Languages.t(
             'scenes.apps.drive.new_external_storage',
             [],
-            'Ajouter un stockage externe',
+            'Ajouter un stockage externe'
           ),
           submenu: externalStorageMenu,
         },
@@ -793,15 +793,15 @@ export default class Drive extends Component {
                     {Numbers.humanFileSize(
                       Collections.get('drive').find(
                         this.state.app_drive_service.current_directory_channels[this.drive_channel]
-                          .id,
+                          .id
                       )
                         ? Collections.get('drive').find(
                             this.state.app_drive_service.current_directory_channels[
                               this.drive_channel
-                            ].id,
+                            ].id
                           ).size
                         : 0 || 0,
-                      true,
+                      true
                     )}{' '}
                     {Languages.t('scenes.apps.drive.used', [], 'utilisé dans ce dossier')}
                   </span>
@@ -817,7 +817,7 @@ export default class Drive extends Component {
                         SelectionsManager.unselectAll(
                           this.state.app_drive_service.current_collection_key_channels[
                             this.drive_channel
-                          ],
+                          ]
                         );
                       });
                     }}
@@ -940,7 +940,7 @@ export default class Drive extends Component {
 
           {!in_trash && !WorkspaceUserRights.isNotConnected() && <MainPlus menu={plus_menu} />}
         </div>
-      </div>,
+      </div>
     );
 
     return list;

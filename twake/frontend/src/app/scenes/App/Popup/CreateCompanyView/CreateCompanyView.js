@@ -322,6 +322,17 @@ export default class CreateCompanyView extends Component {
     }
     if (this.state.page == 3) {
       return (
+        <AddUser
+          inline
+          onChange={members => this.setState({ members: members })}
+          previous={() => this.previous()}
+          finish={() => this.next()}
+          loading={this.state.workspaces.loading}
+        />
+      );
+    }
+    if (this.state.page == 4) {
+      return (
         <div
           className="importTools"
           onKeyDown={e => {
@@ -343,9 +354,13 @@ export default class CreateCompanyView extends Component {
                   </div>
                   <div className="text">
                     <div className="name">Google Calendar</div>
-                    <div className="description">{Languages.t('scenes.app.popup.sync_calendar',
-                    [],
-                    "Synchronize your calendars.")}</div>
+                    <div className="description">
+                      {Languages.t(
+                        'scenes.app.popup.sync_calendar',
+                        [],
+                        'Synchronize your calendars.',
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -365,17 +380,6 @@ export default class CreateCompanyView extends Component {
         </div>
       );
     }
-    if (this.state.page == 4) {
-      return (
-        <AddUser
-          inline
-          onChange={members => this.setState({ members: members })}
-          previous={() => this.previous()}
-          finish={() => this.next()}
-          loading={this.state.workspaces.loading}
-        />
-      );
-    }
   }
   previous() {
     if (this.state.page <= 1) {
@@ -385,14 +389,19 @@ export default class CreateCompanyView extends Component {
         WorkspaceService.initSelection();
       }
     } else {
-      if (this.state.page == 4) {
-        this.state.page = 3;
+      if (
+        (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
+          (((LoginService.server_infos || {}).auth || {}).internal || {})
+            .disable_email_verification) &&
+        this.state.page == 3
+      ) {
+        this.state.page = 2;
       }
       this.setState({ page: this.state.page - 1 });
     }
   }
   next() {
-    if (this.state.page >= 4) {
+    if (this.state.page >= 3) {
       if (!this.did_create_workspace) {
         this.did_create_workspace = true;
         this.state.workspaces.createWorkspace(
@@ -410,15 +419,14 @@ export default class CreateCompanyView extends Component {
     } else {
       //Pass usage form
       if (
-        ['openid', 'cas'].indexOf(CurrentUser.get().identity_provider) >= 0 &&
+        (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
+          (((LoginService.server_infos || {}).auth || {}).internal || {})
+            .disable_email_verification) &&
         this.state.page == 1
       ) {
         this.state.page = 2;
       }
 
-      if (this.state.page == 2) {
-        this.state.page = 3;
-      }
       this.setState({ page: this.state.page + 1 });
     }
   }
@@ -438,9 +446,9 @@ export default class CreateCompanyView extends Component {
           }
         >
           <div className="center_box ">
-            <StepCounter total={4} current={this.state.page} />
+            <StepCounter total={3} current={this.state.page} />
             <div className="title">
-              {this.state.i18n.t('scenes.app.workspaces.create_company.title')} {this.state.page}/4
+              {this.state.i18n.t('scenes.app.workspaces.create_company.title')} {this.state.page}/3
             </div>
             {this.displayStep()}
           </div>

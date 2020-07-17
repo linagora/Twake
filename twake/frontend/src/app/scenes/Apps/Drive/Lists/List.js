@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import React, { Component } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Languages from 'services/languages/languages.js';
 
 import Directory from 'components/Drive/Directory.js';
@@ -25,7 +25,10 @@ class DelayedElement extends Component {
       type: 'menu',
       text: Languages.t('scenes.apps.tasks.modals.attachments', [], 'Attachments'),
       submenu: [
-        { type: 'title', text: Languages.t('scenes.apps.tasks.modals.attachments', [], 'Attachments') },
+        {
+          type: 'title',
+          text: Languages.t('scenes.apps.tasks.modals.attachments', [], 'Attachments'),
+        },
         {
           type: 'react-element',
           reactElement: () => (

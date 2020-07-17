@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Observable from 'services/observable.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';

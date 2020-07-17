@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import DriveService from 'services/Apps/Drive/Drive.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -39,7 +39,7 @@ export default class FilePicker extends React.Component {
 
     if (this.drive_channel) {
       Collections.get('drive').removeSource(
-        this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
+        this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
       );
     }
   }
@@ -100,7 +100,7 @@ export default class FilePicker extends React.Component {
     var allow_go_parent = true;
     var drive_channel = ChannelsService.getChannelForApp(
       (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {}).id,
-      Workspaces.currentWorkspaceId,
+      Workspaces.currentWorkspaceId
     );
     if (!drive_channel && (this.props.initialDirectory || {}).id == directory_id) {
       allow_go_parent = false;
@@ -159,7 +159,11 @@ export default class FilePicker extends React.Component {
               refInput={node => (node ? node.focus() : '')}
               type="text"
               defaultValue={''}
-              placeholder={Languages.t('scenes.apps.drive.navigators.navigator_content.directory_name',[],'Nom du dossier')}
+              placeholder={Languages.t(
+                'scenes.apps.drive.navigators.navigator_content.directory_name',
+                [],
+                'Nom du dossier'
+              )}
               onKeyPress={e => {
                 if (e.key === 'Enter') {
                   DriveService.createDirectory(
@@ -169,7 +173,7 @@ export default class FilePicker extends React.Component {
                     DriveService.current_collection_key_channels[this.drive_channel],
                     res => {
                       this.changeCurrentDirectory(res);
-                    },
+                    }
                   );
                   this.setState({ creating_folder: false });
                 }
@@ -189,10 +193,18 @@ export default class FilePicker extends React.Component {
               </Button>
             )}
             {this.props.mode == 'select_location' && (
-              <Button className="small" value={Languages.t('components.drive.moove_here', [], "Déplacer ici")} onClick={() => this.submit()} />
+              <Button
+                className="small"
+                value={Languages.t('components.drive.moove_here', [], 'Déplacer ici')}
+                onClick={() => this.submit()}
+              />
             )}
             {this.props.mode == 'select_file' && this.state.current_selection.id && (
-              <Button className="small" value={Languages.t('scenes.app.taskpicker.select',[], "Sélectionner")} onClick={() => this.submit()} />
+              <Button
+                className="small"
+                value={Languages.t('scenes.app.taskpicker.select', [], 'Sélectionner')}
+                onClick={() => this.submit()}
+              />
             )}
           </div>
         )}

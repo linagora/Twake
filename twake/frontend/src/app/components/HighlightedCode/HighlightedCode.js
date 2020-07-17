@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/railscasts.css'; //monokai-sublime
 

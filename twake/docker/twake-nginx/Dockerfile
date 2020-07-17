@@ -10,8 +10,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get install -y wget
 
-ADD docker/twake-nginx/site.conf /etc/nginx/sites-enabled/site
-ADD docker/twake-nginx/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
@@ -36,6 +34,10 @@ RUN apt-get update && apt-get install -y \
   python3-minimal python3-pkg-resources python3-virtualenv python3.4 \
   python3.4-minimal virtualenv zlib1g-dev
 
+
+ADD docker/twake-nginx/site.conf /etc/nginx/sites-enabled/site
+ADD docker/twake-nginx/nginx.conf /etc/nginx/nginx.conf
+
 # Install frontend
 RUN apt-get update
 RUN apt-get -y install curl
@@ -52,15 +54,15 @@ RUN yarn global add webpack-cli
 WORKDIR /twake-react/
 
 COPY frontend /twake-react/
-RUN cp /twake-react/src/app/environment/environment.js.dist /twake-react/src/app/environment/environment.js
-RUN yarn install
-RUN yarn build-after-sh
+RUN cp /twake-react/src/app/environment/environment.ts.dist /twake-react/src/app/environment/environment.ts
+RUN yarn install --network-timeout 1000000000
+RUN yarn build
 
-RUN cp /twake-react/src/app/environment/environment.js.dist /environment.js.dist
+RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist
 
 COPY docker/twake-nginx/entrypoint.sh /
 RUN chmod 0777 /entrypoint.sh
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /entrypoint.sh "$DEV"
 
 EXPOSE 80
 EXPOSE 443

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import DraggableManager from './DraggableManager.js';
 import Number from 'services/utils/Numbers.js';

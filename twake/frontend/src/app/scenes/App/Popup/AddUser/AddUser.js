@@ -50,7 +50,7 @@ export default class AddUser extends Component {
     var that = this;
     var notEmpty = false;
     that.state.collaborators = 0;
-    this.state.members.forEach(function(member, i) {
+    this.state.members.forEach(function (member, i) {
       if (member.mail.length > 0) {
         notEmpty = true;
         that.state.input_to_show = i + 1;
@@ -117,7 +117,7 @@ export default class AddUser extends Component {
               onChange={e => {
                 this.setState({ all_import: e.target.value });
               }}
-              style={{ minHeight: 100, marginTop: 0 }}
+              style={{ minHeight: 100, marginTop: 0, maxHeight: '50vh' }}
               placeholder={'james@acme.com, jane@acme.com'}
             />
 
@@ -226,7 +226,12 @@ export default class AddUser extends Component {
               this.finish();
             }}
             value={
-              (this.state.members || []).map(item => (item || {}).mail || '').join('').length == 0
+              !(
+                ((this.state.members || []).map(item => (item || {}).mail || '').join('').length >
+                  0 &&
+                  !this.state.multi) ||
+                (this.state.all_import && this.state.multi)
+              )
                 ? this.state.i18n.t(
                     'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
                     'Skip',

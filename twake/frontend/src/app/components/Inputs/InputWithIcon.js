@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione.js';
 import MenusManager from 'services/Menus/MenusManager.js';
@@ -145,7 +145,7 @@ export default class InputWithIcon extends React.Component {
       icon = this.allChanEmojies[0];
     }
     return (
-      <div className="input_with_emoji">
+      <div className="full_width input_with_emoji">
         <div
           className="emoji"
           ref={node => (this.emoji_dom = node)}
@@ -157,6 +157,7 @@ export default class InputWithIcon extends React.Component {
         </div>
         <Input
           className="full_width medium"
+          autoFocus
           refInput={obj => (this.input = obj)}
           type="text"
           placeholder={this.props.placeholder}

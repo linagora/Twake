@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import './Inputs.scss';
 import CheckIcon from '@material-ui/icons/CheckOutlined';

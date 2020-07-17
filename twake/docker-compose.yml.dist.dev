@@ -21,8 +21,14 @@ services:
       - 15672:15672
   php:
     image: twaketech/twake-php
+    environment:
+      - DEV=dev
+    build:
+      context: .
+      dockerfile: docker/twake-php/Dockerfile
     volumes:
       - ./backend/core/:/twake-core:cached
+      - ./docker-data/drive/:/twake-core/drive/
       - ./docker-data/fpm/:/etc/docker-data/fpm/
     depends_on:
       - scylladb
@@ -33,6 +39,8 @@ services:
       - scylladb
   websockets:
     image: twaketech/twake-websockets
+    environment:
+      - DEV=dev
     volumes:
       - ./backend/websockets_server:/WebsocketsServer
   elasticsearch:
@@ -51,6 +59,11 @@ services:
       - 9200:9200
   nginx:
     image: twaketech/twake-nginx
+    environment:
+      - DEV=dev
+    build:
+      context: .
+      dockerfile: docker/twake-nginx/Dockerfile
     ports:
       - 8000:80
     links:

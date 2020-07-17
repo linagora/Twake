@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Switch from 'components/Inputs/Switch.js';
@@ -86,11 +86,17 @@ export default class GroupInputs extends React.Component {
           <StepCounter current={3} total={4} />
           <div className="title">Create my company 3/4</div>
           <div className="subtitle">
-            {Languages.t('scenes.app.workspaces.create_company.importations.title_1',
-            [], "Already working with digital tools? Import or integrate your tools now!")}
+            {Languages.t(
+              'scenes.app.workspaces.create_company.importations.title_1',
+              [],
+              'Already working with digital tools? Import or integrate your tools now!'
+            )}
             <br />
-            {Languages.t('scenes.app.workspaces.create_company.importations.title_2',
-            [], "No worries, you can do this later!")}
+            {Languages.t(
+              'scenes.app.workspaces.create_company.importations.title_2',
+              [],
+              'No worries, you can do this later!'
+            )}
           </div>
 
           <div className="body">
@@ -106,9 +112,9 @@ export default class GroupInputs extends React.Component {
           </div>
 
           <div className="footer">
-            <Button value={Languages.t('general.back', [], "Back")} inline />
+            <Button value={Languages.t('general.back', [], 'Back')} inline />
 
-            <Button value={Languages.t('general.continue', [],"Continue")} primary />
+            <Button value={Languages.t('general.continue', [], 'Continue')} primary />
           </div>
         </div>
       </div>,

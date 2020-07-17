@@ -1199,7 +1199,9 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Install the desktop application',
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Invite your collaborators into your workspace.',
+  'scenes.app.channelsbar.public_channel_label': 'Public channel',
   'scenes.app.channelsbar.private_channel_label': 'Private channel',
+  'scenes.app.channelsbar.private_channel_message': 'This is a public channel, all the workspace will be invited !',
   'scenes.app.channelsbar.save_channel_button': 'Save',
   'scenes.app.channelsbar.sending_message_instruction': 'Send a first message in a discussion',
   'scenes.app.channelsbar.tutorial_alert': 'Never show this frame again?',

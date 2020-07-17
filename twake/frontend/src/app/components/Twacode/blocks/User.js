@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import UserService from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
 

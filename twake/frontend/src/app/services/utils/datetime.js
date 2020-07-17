@@ -14,7 +14,7 @@ class DateTime extends Observable {
 
     this.observableName = 'dateTimeService';
     this.locale = this.cleanLocal(
-      Globals.window.navigator.userLanguage || Globals.window.navigator.language || 'en',
+      Globals.window.navigator.userLanguage || Globals.window.navigator.language || 'en'
     );
   }
   getCurrentLanguage() {
@@ -155,7 +155,7 @@ class DateTime extends Observable {
         (UserService.getCurrentUser() || {}).language ||
           Globals.window.navigator.language ||
           Globals.window.navigator.userLanguage ||
-          'en',
+          'en'
       ) >= 0
     ) {
       return 'H:mm';
@@ -163,9 +163,7 @@ class DateTime extends Observable {
     return 'LT';
   }
   isDateFirstInFormat() {
-    var numbers = moment()
-      .format('L')
-      .split('/');
+    var numbers = moment().format('L').split('/');
     if (numbers[0] == new Date().getDate()) {
       return true;
     } else {
