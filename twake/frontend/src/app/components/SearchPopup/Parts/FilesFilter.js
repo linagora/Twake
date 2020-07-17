@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
@@ -20,7 +20,7 @@ export default class FilesFilter extends React.Component {
   render() {
     return (
       <div className="search_filters">
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
             [],
@@ -44,7 +44,7 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.tags', [], 'Tags')}
           icon="label"
         />
@@ -56,7 +56,7 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t(
             'scenes.apps.parameters.group_sections.apps.badge_extension',
             [],
@@ -85,7 +85,7 @@ export default class FilesFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.size', [], 'Taille')}
           icon="weight"
         />
@@ -138,7 +138,7 @@ export default class FilesFilter extends React.Component {
         />
         {' Mo'}
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />

@@ -7,7 +7,7 @@ import Button from 'components/Buttons/Button.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import {
   ObjectModal,
-  ObjectModalSectionTitle,
+  ObjectModalFormTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
 import Api from 'services/api.js';
@@ -121,7 +121,7 @@ export default class CreateCompanyAccount extends Component {
           </span>
 
           {!this.props.edit && [
-            <ObjectModalSectionTitle
+            <ObjectModalFormTitle
               icon="user"
               name={Languages.t('scenes.apps.account.account.fullname', [], 'Fullname')}
             />,
@@ -132,13 +132,13 @@ export default class CreateCompanyAccount extends Component {
             />,
           ]}
 
-          <ObjectModalSectionTitle
+          <ObjectModalFormTitle
             icon="envelope"
             name={Languages.t('login.email_login', [], 'Email / Login')}
           />
           <Input className="full_width" disabled value={this.props.email} />
 
-          <ObjectModalSectionTitle
+          <ObjectModalFormTitle
             icon="lock"
             name={Languages.t('scenes.apps.account.account.password', [], 'Password')}
           />

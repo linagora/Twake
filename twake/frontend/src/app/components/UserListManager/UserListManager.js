@@ -21,8 +21,12 @@ export default class UserListManager extends React.Component {
     this.state = {
       filtered: [],
       input: '',
+      editing: this.props.autoFocus,
     };
     this.updateStateFromProps(props, true);
+  }
+  componentDidMount() {
+    this.setState({ editing: props.autoFocus });
   }
   updateStateFromProps(props, force, nextState) {
     var anti_duplicates = [];
