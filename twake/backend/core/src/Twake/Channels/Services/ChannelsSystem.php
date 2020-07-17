@@ -7,7 +7,7 @@ use Twake\Core\Services\StringCleaner;
 use Twake\Discussion\Entity\Channel;
 use App\App;
 
-class ChannelsSystem extends ChannelSystemAbstract
+class ChannelsSystem extends ChannelSystemAbstract 
 {
 
     public function __construct(App $app)
