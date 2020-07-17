@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Icon from 'components/Icon/Icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Tabs from 'components/Tabs/Tabs.js';
 import './ObjectModal.scss';
 
-export class ObjectModalTitle extends React.Component {
+export class ObjectModalTitle extends Component {
   render() {
     return (
       <div className={'modal_title ' + this.props.className} style={this.props.style}>
@@ -13,8 +13,33 @@ export class ObjectModalTitle extends React.Component {
     );
   }
 }
+//ObjectModalSeparator
+export class ObjectModalSeparator extends Component {
+  render() {
+    return <div className="separator"></div>;
+  }
+}
+//ObjectModalSectionTitle
+export class ObjectModalSectionTitle extends Component {
+  render() {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <b>{this.props.title}</b>
+        <div>{this.props.action}</div>
+      </div>
+    );
+  }
+}
 
-export class ObjectModalSectionTitle extends React.Component {
+// ObjectModalFormTitle
+export class ObjectModalFormTitle extends Component {
   render() {
     return (
       <div className={'section_title ' + this.props.className} style={this.props.style}>
@@ -25,7 +50,7 @@ export class ObjectModalSectionTitle extends React.Component {
   }
 }
 
-export class ObjectModal extends React.Component {
+export class ObjectModal extends Component {
   constructor(props) {
     super();
     this.state = {};
@@ -67,9 +92,16 @@ export class ObjectModal extends React.Component {
 
         {!this.props.tabs && (
           <div className="body">
-            <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
-              {this.props.children}
-            </PerfectScrollbar>
+            {this.props.disabled && (
+              <div className="child-with-margin">
+                {this.props.children}
+              </div>
+            )}
+            {!this.props.disabled && (
+              <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
+                {this.props.children}
+              </PerfectScrollbar>
+            )}
           </div>
         )}
 

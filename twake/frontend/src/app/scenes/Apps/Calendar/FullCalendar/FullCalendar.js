@@ -1,5 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOMServer from 'react-dom/server';
+
+import '@fullcalendar/core';
+import '@fullcalendar/core/main.css';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -10,7 +13,6 @@ import listPlugin from '@fullcalendar/list';
 import FullCalendarPlugin from '@fullcalendar/react';
 import rrulePlugin from '@fullcalendar/rrule';
 
-import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/timegrid/main.css';
 import '@fullcalendar/list/main.css';
@@ -52,9 +54,7 @@ export default class FullCalendar extends Component {
       editable: true,
       selectable: true,
       selectHelper: true,
-      firstDay: moment()
-        .startOf('week')
-        .isoWeekday(),
+      firstDay: moment().startOf('week').isoWeekday(),
       slotDuration: '00:30:00',
       snapDuration: '00:15:00',
       columnHeaderHtml: mom => {
@@ -66,13 +66,13 @@ export default class FullCalendar extends Component {
         );
       },
 
-      eventAllow: function(dropLocation, draggedEvent) {
+      eventAllow: function (dropLocation, draggedEvent) {
         //        if(!that.state.calendar.calendars[draggedEvent.calendar]){
         //          return false;
         //        }
         return true;
       },
-      select: function(event) {
+      select: function (event) {
         //Create event
         if (moment(event.end).diff(event.start) == 15 * 60 * 1000) {
           that.api.unselect();
@@ -89,19 +89,19 @@ export default class FullCalendar extends Component {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
-      eventResize: function(event) {
+      eventResize: function (event) {
         event = event.event;
         if (that.props.onUpdate) {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
-      eventDrop: function(event) {
+      eventDrop: function (event) {
         event = event.event;
         if (that.props.onUpdate) {
           that.props.onUpdate(that.fcToCollection(event), that.event_dom_elements[event.id]);
         }
       },
-      eventClick: function(_event) {
+      eventClick: function (_event) {
         if (this.disableUpdate) {
           console.log('click event');
           this.disableUpdate = false;
@@ -116,7 +116,7 @@ export default class FullCalendar extends Component {
 
         //if(!event.private_content){ViewsService.open();that.state.calendar.selectEvent(event);}
       },
-      eventRender: function(event) {
+      eventRender: function (event) {
         if (event.event && event.event.id && event.isStart && !event.isMirror) {
           that.event_dom_elements[event.event.id] = event.el;
         }
@@ -312,15 +312,11 @@ export default class FullCalendar extends Component {
       from:
         (event.allDay
           ? moment(moment(event.start).format('YYYY-MM-DDT00:00:00+00:00')).valueOf()
-          : moment(event.start)
-              .utc()
-              .valueOf()) / 1000,
+          : moment(event.start).utc().valueOf()) / 1000,
       to:
         (event.allDay
           ? moment(moment(event.end).format('YYYY-MM-DDT00:00:00+00:00')).valueOf()
-          : moment(event.end)
-              .utc()
-              .valueOf()) /
+          : moment(event.end).utc().valueOf()) /
           1000 -
         (event.allDay ? 24 * 60 * 60 : 0),
       all_day: event.allDay,

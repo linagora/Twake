@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import MenusManager from 'services/Menus/MenusManager.js';
 import ColorPicker from 'components/ColorPicker/ColorPicker.js';

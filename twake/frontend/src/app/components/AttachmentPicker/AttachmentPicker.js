@@ -64,7 +64,11 @@ export default class AttachmentPicker extends Component {
                 additionalMenu = [
                   {
                     type: 'menu',
-                    text: Languages.t('components.attachmentpicker.remove_attach', [], 'Remove attachment'),
+                    text: Languages.t(
+                      'components.attachmentpicker.remove_attach',
+                      [],
+                      'Remove attachment'
+                    ),
                     onClick: () => {
                       this.removeAttachment(att);
                     },
@@ -111,7 +115,11 @@ export default class AttachmentPicker extends Component {
                   {
                     type: 'menu',
                     icon: 'desktop',
-                    text: Languages.t('components.attachmentpicker.from_computer', [], 'From computer'),
+                    text: Languages.t(
+                      'components.attachmentpicker.from_computer',
+                      [],
+                      'From computer'
+                    ),
                     onClick: () => {
                       this.upload_zone.open();
                       MenusManager.closeMenu();
@@ -120,7 +128,11 @@ export default class AttachmentPicker extends Component {
                   {
                     type: 'menu',
                     icon: 'folder',
-                    text: Languages.t('components.attachmentpicker.from_twake', [], 'From Twake Documents'),
+                    text: Languages.t(
+                      'components.attachmentpicker.from_twake',
+                      [],
+                      'From Twake Documents'
+                    ),
                     submenu: [
                       {
                         type: 'react-element',
@@ -162,8 +174,12 @@ export default class AttachmentPicker extends Component {
           >
             {' '}
             <Button className="small secondary-text right-margin">
-              <Icon type="plus" className="m-icon-small" /> {Languages.t('components.attachmentpicker.add_attachment', 
-              [], "Ajouter des pièces jointes")}
+              <Icon type="plus" className="m-icon-small" />{' '}
+              {Languages.t(
+                'components.attachmentpicker.add_attachment',
+                [],
+                'Ajouter des pièces jointes'
+              )}
             </Button>
           </Menu>
         )}

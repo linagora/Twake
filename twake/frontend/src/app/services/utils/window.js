@@ -23,7 +23,7 @@ class WindowState {
     location.search
       .substr(1)
       .split('&')
-      .forEach(function(item) {
+      .forEach(function (item) {
         tmp = item.split('=');
         result[tmp[0]] = tmp[1];
       });
@@ -40,7 +40,7 @@ class WindowState {
     location.search
       .substr(1)
       .split('&')
-      .forEach(function(item) {
+      .forEach(function (item) {
         tmp = item.split('=');
         if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
       });
@@ -73,7 +73,7 @@ class WindowState {
       text = 'Twake - ' + text;
     }
 
-    (function() {
+    (function () {
       var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';

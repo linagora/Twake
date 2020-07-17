@@ -73,7 +73,7 @@ export default class MainView extends Component {
         channel_id: this.props.channel.id,
         parent_message_id: this.parentMessageId || '',
       },
-      this.messages_collection_key,
+      this.messages_collection_key
     );
     if (this.message_list_node) {
       this.message_list_node.scrollToBottom();
@@ -227,7 +227,7 @@ export default class MainView extends Component {
                     {Languages.t(
                       'scenes.apps.messages.just_you',
                       [],
-                      'Visible uniquement par vous',
+                      'Visible uniquement par vous'
                     )}
                   </div>
                   {ephemerals_messages.map(message => {

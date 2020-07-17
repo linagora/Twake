@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
 import './MainPlus.scss';

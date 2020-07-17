@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Icon from 'components/Icon/Icon.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputEnter from 'components/Inputs/InputEnter.js';
@@ -23,8 +23,7 @@ export default class Checklist extends React.Component {
     var progress =
       checklist.length > 0
         ? parseInt(
-            (100 * checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) /
-              checklist.length,
+            (100 * checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) / checklist.length
           )
         : 0;
 
@@ -109,8 +108,8 @@ export default class Checklist extends React.Component {
               this.setState({});
             }}
           >
-            <Icon type="plus" className="m-icon-small" /> {Languages.t('scenes.apps.tasks.board.tasks.add_subtask',
-            [], "Ajouter une sous-tâche")}
+            <Icon type="plus" className="m-icon-small" />{' '}
+            {Languages.t('scenes.apps.tasks.board.tasks.add_subtask', [], 'Ajouter une sous-tâche')}
           </Button>
         )}
       </div>

@@ -11,9 +11,10 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
-import ChannelEditor from './ChannelEditor.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import ChannelUserAdd from './ChannelUserAdd.js';
+import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import ChannelWorkspaceEditor from 'app/scenes/App/ChannelsBar/ChannelWorkspaceEditor.js';
 
 import ChannelUI from 'components/Leftbar/Channel/Channel.js';
 
@@ -105,88 +106,25 @@ export default class Channel extends Component {
         { type: 'separator' },
         {
           type: 'menu',
-          text: Languages.t('scenes.app.channelsbar.modify_channel_menu', [], 'Modifier la chaîne'),
-          submenu_replace: true,
-          submenu: [
-            {
-              type: 'title',
-              text: channel.private
-                ? Languages.t(
-                    'scenes.app.channelsbar.modify_channel_title_private',
-                    [],
-                    'Modifier la chaîne privée',
-                  )
-                : Languages.t(
-                    'scenes.app.channelsbar.modify_channel_title_public',
-                    [],
-                    'Modifier la chaîne publique',
-                  ),
-            },
-            {
-              type: 'react-element',
-              reactElement: level => {
-                return <ChannelEditor channel={channel} level={level} />;
+          text: Languages.t('scenes.app.channelsbar.modify_channel_menu', 'Modifier la chaîne'),
+          onClick: () => {
+            MediumPopupComponent.open(
+              <ChannelWorkspaceEditor
+                title={
+                  channel.private
+                    ? 'scenes.app.channelsbar.modify_channel_title_private'
+                    : 'scenes.app.channelsbar.modify_channel_title_public'
+                }
+                channel={channel}
+              />,
+              {
+                position: 'center',
+                size: { width: '400px' },
               },
-            },
-          ],
+            );
+          },
         },
       ]);
-      if (channel.private) {
-        menu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.access_private_channel_menu',
-            [],
-            'Gérer les accès à la chaîne privée',
-          ),
-          submenu_replace: true,
-          submenu: [
-            {
-              type: 'title',
-              text: Languages.t(
-                'scenes.app.channelsbar.access_private_channel_title',
-                [],
-                'Accès à la chaîne privée',
-              ),
-            },
-            {
-              type: 'react-element',
-              reactElement: () => {
-                return (
-                  <div style={{ margin: '0px -8px' }}>
-                    <UserListManager
-                      users={(channel.members || []).map(id => {
-                        return { id: id };
-                      })}
-                      disableExterne={true}
-                      scope="workspace"
-                      onChange={ids => {
-                        channel.members = ids;
-                        Collections.get('channels').save(
-                          channel,
-                          'channels_' + Workspaces.currentWorkspaceId,
-                        );
-                        MenusManager.closeMenu();
-                      }}
-                      onCancel={() => {
-                        MenusManager.closeMenu();
-                      }}
-                    />
-                  </div>
-                );
-              },
-            },
-            {
-              type: 'text',
-              text: Languages.t(
-                'scenes.app.channelsbar.user_management_private_channel',
-                [],
-                'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.',
-              ),
-            },
-          ],
-        });
-      }
       if (!channel.app_id) {
         menu = menu.concat([
           {
@@ -215,8 +153,6 @@ export default class Channel extends Component {
             ],
           },
         ]);
-      }
-      if (!channel.app_id) {
         menu.push({
           type: 'menu',
           className: 'error',

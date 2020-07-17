@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -42,13 +42,13 @@ export default class WritingUsers extends Component {
     var phrase = Languages.t(
       'scenes.apps.messages.messageslist.get_writing_users',
       [],
-      "sont en train d'écrire...",
+      "sont en train d'écrire..."
     );
     if (writing_users.length == 1) {
       phrase = Languages.t(
         'scenes.apps.messages.messageslist.get_writing_user',
         [],
-        "est en train d'écrire...",
+        "est en train d'écrire..."
       );
     }
 

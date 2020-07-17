@@ -58,13 +58,13 @@ class UploadManager extends Observable {
     function newDirectoryApi(input, cb) {
       var fd = [],
         files = [];
-      var iterate = function(entries, path, resolve) {
+      var iterate = function (entries, path, resolve) {
         var promises = [];
-        entries.forEach(function(entry) {
+        entries.forEach(function (entry) {
           promises.push(
-            new Promise(function(resolve) {
+            new Promise(function (resolve) {
               if ('getFilesAndDirectories' in entry) {
-                entry.getFilesAndDirectories().then(function(entries) {
+                entry.getFilesAndDirectories().then(function (entries) {
                   iterate(entries, entry.path + '/', resolve);
                 });
               } else {
@@ -75,13 +75,13 @@ class UploadManager extends Observable {
                 }
                 resolve();
               }
-            }),
+            })
           );
         });
         Promise.all(promises).then(resolve);
       };
-      input.getFilesAndDirectories().then(function(entries) {
-        new Promise(function(resolve) {
+      input.getFilesAndDirectories().then(function (entries) {
+        new Promise(function (resolve) {
           iterate(entries, '/', resolve);
         }).then(cb.bind(null, fd, files));
       });
@@ -91,7 +91,7 @@ class UploadManager extends Observable {
     function arrayApi(input, cb) {
       var fd = [],
         files = [];
-      [].slice.call(input.files).forEach(function(file) {
+      [].slice.call(input.files).forEach(function (file) {
         fd.push(file);
         files.push(file.webkitRelativePath || file.name);
       });
@@ -106,7 +106,7 @@ class UploadManager extends Observable {
 
       function readEntries(entry, reader, oldEntries, cb) {
         var dirReader = reader || entry.createReader();
-        dirReader.readEntries(function(entries) {
+        dirReader.readEntries(function (entries) {
           var newEntries = oldEntries ? oldEntries.concat(entries) : entries;
           if (entries.length) {
             setTimeout(readEntries.bind(null, entry, dirReader, newEntries, cb), 0);
@@ -118,33 +118,33 @@ class UploadManager extends Observable {
 
       function readDirectory(entry, path, resolve) {
         if (!path) path = entry.name;
-        readEntries(entry, 0, 0, function(entries) {
+        readEntries(entry, 0, 0, function (entries) {
           var promises = [];
-          entries.forEach(function(entry) {
+          entries.forEach(function (entry) {
             promises.push(
-              new Promise(function(resolve) {
+              new Promise(function (resolve) {
                 if (entry.isFile) {
-                  entry.file(function(file) {
+                  entry.file(function (file) {
                     var p = path + '/' + file.name;
                     fd.push(file);
                     files.push(p);
                     resolve();
                   }, resolve.bind());
                 } else readDirectory(entry, path + '/' + entry.name, resolve);
-              }),
+              })
             );
           });
           Promise.all(promises).then(resolve.bind());
         });
       }
 
-      [].slice.call(items).forEach(function(entry) {
+      [].slice.call(items).forEach(function (entry) {
         entry = entry.webkitGetAsEntry();
         if (entry) {
           rootPromises.push(
-            new Promise(function(resolve) {
+            new Promise(function (resolve) {
               if (entry.isFile) {
-                entry.file(function(file) {
+                entry.file(function (file) {
                   fd.push(file);
                   files.push(file.name);
                   resolve();
@@ -152,19 +152,19 @@ class UploadManager extends Observable {
               } else if (entry.isDirectory) {
                 readDirectory(entry, null, resolve);
               }
-            }),
+            })
           );
         }
       });
       Promise.all(rootPromises).then(cb.bind(null, fd, files));
     }
 
-    var cb = function(event, files, paths) {
+    var cb = function (event, files, paths) {
       var tree = {};
-      paths.forEach(function(path, file_index) {
+      paths.forEach(function (path, file_index) {
         var dirs = tree;
         var real_file = files[file_index];
-        path.split('/').forEach(function(dir, dir_index) {
+        path.split('/').forEach(function (dir, dir_index) {
           if (dir.indexOf('.') == 0) {
             return;
           }

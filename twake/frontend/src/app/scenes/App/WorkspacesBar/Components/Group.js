@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
@@ -71,7 +71,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.change_company_title',
         [],
-        'Changer de company',
+        'Changer de company'
       ),
     });
     Groups.getOrderedGroups().map(item => {
@@ -82,7 +82,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.create_company_menu',
         [],
-        'Créer une entreprise',
+        'Créer une entreprise'
       ),
       icon: 'plus',
       onClick: () => {
@@ -96,7 +96,7 @@ export default class Group extends Component {
       text: Languages.t(
         'scenes.app.workspacesbar.components.grp_parameters',
         [group.name],
-        'Paramètres de $1',
+        'Paramètres de $1'
       ),
       onClick: () => {
         popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');

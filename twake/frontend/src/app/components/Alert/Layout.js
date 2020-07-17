@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Alert.scss';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 

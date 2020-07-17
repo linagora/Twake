@@ -84,7 +84,7 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.change_my_status',
           [],
-          'Changer mon statut',
+          'Changer mon statut'
         ),
         emoji: (current_user.status_icon || {})[0] || ':smiley:',
         submenu_replace: true,
@@ -94,7 +94,7 @@ export default class CurrentUser extends Component {
             text: Languages.t(
               'scenes.app.channelsbar.currentuser.change_my_status',
               [],
-              'Changer mon statut',
+              'Changer mon statut'
             ),
           },
           {
@@ -111,7 +111,7 @@ export default class CurrentUser extends Component {
                   placeholder={Languages.t(
                     'scenes.app.popup.appsparameters.pages.status_tilte',
                     [],
-                    'Status',
+                    'Status'
                   )}
                   value={this.state.new_status}
                   onChange={value => {
@@ -137,7 +137,7 @@ export default class CurrentUser extends Component {
                     value={Languages.t(
                       'scenes.app.channelsbar.currentuser.update',
                       [],
-                      'Mettre à jour',
+                      'Mettre à jour'
                     )}
                     onClick={() => {
                       this.updateStatus();
@@ -166,7 +166,7 @@ export default class CurrentUser extends Component {
             (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name,
             (Collections.get('groups').find(WorkspaceService.currentGroupId) || {}).name,
           ],
-          "Vous êtes dans l'espace de travail $1 du groupe $2.",
+          "Vous êtes dans l'espace de travail $1 du groupe $2."
         ),
       },
     ];
@@ -177,7 +177,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.add_collaborators_menu',
             [],
-            'Ajouter des collaborateurs',
+            'Ajouter des collaborateurs'
           ),
           icon: 'user-plus',
           onClick: () => {
@@ -190,14 +190,14 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.collaborateurs',
             [],
-            'Collaborateurs',
+            'Collaborateurs'
           ),
           icon: 'users-alt',
           onClick: () => {
             popupManager.open(
               <WorkspaceParameter initial_page={2} />,
               true,
-              'workspace_parameters',
+              'workspace_parameters'
             );
           },
         });
@@ -208,14 +208,14 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.add_apps',
             [],
-            'Chercher des applications',
+            'Chercher des applications'
           ),
           icon: 'apps',
           onClick: () => {
             popupManager.open(
               <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
               true,
-              'workspace_parameters',
+              'workspace_parameters'
             );
           },
         });
@@ -233,7 +233,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.workspace_parameters',
             [],
-            "Paramètres de l'espace",
+            "Paramètres de l'espace"
           ),
           icon: 'cog',
           onClick: () => {
@@ -248,7 +248,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.invited_status',
             [],
-            'Vous êtes un invité.',
+            'Vous êtes un invité.'
           ),
         },
         {
@@ -256,14 +256,14 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
             [],
-            "Quitter l'espace",
+            "Quitter l'espace"
           ),
           icon: 'plane-fly',
           className: 'error',
           onClick: () => {
             WorkspacesUsers.leaveWorkspace();
           },
-        },
+        }
       );
     }
 
@@ -274,7 +274,7 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.create_workspace_page',
           [],
-          'Créer un espace de travail',
+          'Créer un espace de travail'
         ),
         icon: 'plus',
         onClick: () => {
@@ -287,7 +287,7 @@ export default class CurrentUser extends Component {
       text: Languages.t(
         'scenes.app.channelsbar.currentuser.create_company_page',
         [],
-        'Créer une entreprise',
+        'Créer une entreprise'
       ),
       icon: 'plus',
       onClick: () => {
@@ -315,7 +315,7 @@ export default class CurrentUser extends Component {
     MenusManager.openMenu(
       usermenu,
       { x: pos.x + pos.width / 2, y: pos.y + pos.height + 10 },
-      'bottom',
+      'bottom'
     );
   }
   onClickBell(evt) {
@@ -324,7 +324,7 @@ export default class CurrentUser extends Component {
     this.dont_disturb = NotificationParameters.transform_period(
       UserService.getCurrentUser().notifications_preferences.dont_disturb_between,
       UserService.getCurrentUser().notifications_preferences.dont_disturb_and,
-      -new Date().getTimezoneOffset() / 60,
+      -new Date().getTimezoneOffset() / 60
     );
     this.notifications_state = NotificationParameters.getNotificationsStatus(current_user);
 
@@ -337,7 +337,7 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.user_parameter',
           [],
-          'Paramètres de notification',
+          'Paramètres de notification'
         ),
         onClick: () => {
           popupManager.open(<UserParameter initial_page={3} />);
@@ -348,12 +348,12 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disabling_notifications',
           [],
-          'Désactiver pendant 1h',
+          'Désactiver pendant 1h'
         ),
         onClick: () => {
           NotificationParameters.saveElements(
             { disable_until: parseInt(new Date().getTime() / 1000 + 60 * 60) },
-            true,
+            true
           );
         },
       },
@@ -362,7 +362,7 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disabling_notifications_until',
           [],
-          "Désactiver jusqu'à demain 9h",
+          "Désactiver jusqu'à demain 9h"
         ),
         onClick: () => {
           var a = new Date();
@@ -381,12 +381,12 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.disable_notifications',
           [],
-          'Désactiver',
+          'Désactiver'
         ),
         onClick: () => {
           NotificationParameters.saveElements(
             { disable_until: parseInt(new Date().getTime() / 1000 + 60 * 60 * 24 * 10000) },
-            true,
+            true
           );
         },
       });
@@ -398,7 +398,7 @@ export default class CurrentUser extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.reactivate_notifications',
           [],
-          'Réactiver',
+          'Réactiver'
         ),
         onClick: () => {
           NotificationParameters.saveElements({ disable_until: 0 }, true);
@@ -406,7 +406,7 @@ export default class CurrentUser extends Component {
       });
 
       var disabled_until = new Date(
-        UserService.getCurrentUser().notifications_preferences.disable_until * 1000,
+        UserService.getCurrentUser().notifications_preferences.disable_until * 1000
       );
 
       if (this.notifications_state == 'off') {
@@ -415,7 +415,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifications_message',
             [],
-            'Vos notifications sont désactivées.',
+            'Vos notifications sont désactivées.'
           ),
         });
       } else if (NotificationParameters.is_in_period(this.dont_disturb[0], this.dont_disturb[1])) {
@@ -428,7 +428,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information',
             [a, b],
-            "Vos notifications sont désactivées la nuit de $1 jusqu'à $2.",
+            "Vos notifications sont désactivées la nuit de $1 jusqu'à $2."
           ),
         });
       } else if (
@@ -440,7 +440,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until',
             [disabled_until.getHours(), disabled_until.getMinutes()],
-            "Vos notifications sont désactivées jusqu'à $1:$2.",
+            "Vos notifications sont désactivées jusqu'à $1:$2."
           ),
         });
       } else {
@@ -449,7 +449,7 @@ export default class CurrentUser extends Component {
           text: Languages.t(
             'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice',
             [],
-            "Vos notifications sont désactivées jusqu'à demain 9h.",
+            "Vos notifications sont désactivées jusqu'à demain 9h."
           ),
         });
       }
@@ -462,7 +462,7 @@ export default class CurrentUser extends Component {
     MenusManager.openMenu(
       this.notifications_menu,
       { x: pos.x + pos.width - 5, y: pos.y + pos.height + 10 },
-      'bottom',
+      'bottom'
     );
   }
   render() {

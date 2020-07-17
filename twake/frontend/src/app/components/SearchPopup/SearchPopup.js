@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Search from 'services/search/search.js';
 import Collections from 'services/Collections/Collections.js';
 import UserService from 'services/user/user.js';
@@ -180,11 +180,19 @@ export default class SearchPopup extends React.Component {
               icon="search"
               className="full_width search_input"
               big
-              placeholder={this.state.withFilters ? Languages.t(
-                'scenes.app.mainview.advanced_search_placeholder',
-                [], 'Recherche avancée', ) : Languages.t(
-                'scenes.app.mainview.quick_search_placeholder',
-                [], 'Recherche rapide', )}
+              placeholder={
+                this.state.withFilters
+                  ? Languages.t(
+                      'scenes.app.mainview.advanced_search_placeholder',
+                      [],
+                      'Recherche avancée'
+                    )
+                  : Languages.t(
+                      'scenes.app.mainview.quick_search_placeholder',
+                      [],
+                      'Recherche rapide'
+                    )
+              }
               value={Search.value}
               refInput={node => (this.input = node)}
               onChange={this.handleChange}
@@ -217,7 +225,9 @@ export default class SearchPopup extends React.Component {
                       this.setState({ withFilters: !this.state.withFilters });
                     }}
                   >
-                    {this.state.withFilters ? Languages.t('components.searchpopup.hide_filters', [],'hide filters') : Languages.t('components.searchpopup.show_filters', [],'show filters')}
+                    {this.state.withFilters
+                      ? Languages.t('components.searchpopup.hide_filters', [], 'hide filters')
+                      : Languages.t('components.searchpopup.show_filters', [], 'show filters')}
                   </a>
                 </div>
               )}
@@ -327,7 +337,7 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix +=
                           ' - ' +
                           moment(item.event.to * 1000).format(
-                            (dateTo != dateFrom ? 'L' : '') + 'LT',
+                            (dateTo != dateFrom ? 'L' : '') + 'LT'
                           );
                         workspace_suffix += ')';
                       }
@@ -377,17 +387,21 @@ export default class SearchPopup extends React.Component {
                 })}
                 {!Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-                    {Languages.t('components.searchpopup.enter_text', [], "Enter some text to search Twake.")}
+                    {Languages.t(
+                      'components.searchpopup.enter_text',
+                      [],
+                      'Enter some text to search Twake.'
+                    )}
                   </div>
                 )}
                 {Search.search_http_loading && Search.value && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 16 }}>
-                    {Languages.t('components.searchpopup.loading', [], "Loading more results...")}
+                    {Languages.t('components.searchpopup.loading', [], 'Loading more results...')}
                   </div>
                 )}
                 {Search.value && this.state.total == 0 && !Search.search_http_loading && (
                   <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-                    {Languages.t('components.user_picker.modal_no_result', [], "No results found.")}
+                    {Languages.t('components.user_picker.modal_no_result', [], 'No results found.')}
                   </div>
                 )}
                 {this.state.total > 0 && Search.scroll_id && !Search.search_http_loading && (
@@ -397,7 +411,7 @@ export default class SearchPopup extends React.Component {
                         Search.loadMore();
                       }}
                     >
-                      {Languages.t('components.searchpopup.load_more', [], "Load more results...")}
+                      {Languages.t('components.searchpopup.load_more', [], 'Load more results...')}
                     </a>
                   </div>
                 )}

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Input from './Input.js';
 import Icon from 'components/Icon/Icon.js';

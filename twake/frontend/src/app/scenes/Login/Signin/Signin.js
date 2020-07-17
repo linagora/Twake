@@ -171,9 +171,13 @@ export default class Signin extends Component {
             {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
             <Emojione type=":raised_hand:" />
           </div>
-          <div className="subtitle">
-            {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
-          </div>
+          {(!LoginService.server_infos.branding.name ||
+            LoginService.server_infos.branding.enable_newsletter) &&
+            ((LoginService.server_infos || {}).branding || {}).enable_newsletter !== false && (
+              <div className="subtitle">
+                {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
+              </div>
+            )}
 
           <Input
             id="lastname_create"
@@ -246,7 +250,10 @@ export default class Signin extends Component {
         </div>
       );
     }
-    if (this.state.page == 3) {
+    if (
+      this.state.page == 3 &&
+      !(((LoginService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+    ) {
       var mail_inputs = 0;
       var last_not_empty = 0;
       return (
@@ -278,6 +285,18 @@ export default class Signin extends Component {
             loading={this.state.login.login_loading}
             loadingTimeout={2000}
           />
+        </div>
+      );
+    }
+    if (
+      this.state.page == 3 &&
+      (((LoginService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+    ) {
+      return (
+        <div className="">
+          <div className="subtitle">
+            <Emojione type=":hourglass:" />{' '}
+          </div>
         </div>
       );
     }
@@ -333,20 +352,7 @@ export default class Signin extends Component {
         );
       }
     } else if (this.state.page == 2) {
-      // LoginService.subscribe(
-      //   this.state.username,
-      //   this.state.password,
-      //   this.state.name,
-      //   this.state.forename,
-      //   this.state.email,
-      //   this.state.tel,
-      //   this.state.captcha,
-      //   this.sub,
-      //   this
-      // );
       this.subscribeMail();
-    } else if (this.state.page == 3) {
-      //LoginService.subscribeWithCode(this.state.username,this.state.password,this.state.name,this.state.firstname,this.state.phone,this.state.code);
     } else {
       this.setState({ page: this.state.page + 1 });
     }

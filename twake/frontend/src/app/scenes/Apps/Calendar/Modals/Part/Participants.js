@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
@@ -32,13 +32,13 @@ export default class Participants extends Component {
                 'aze',
                 ids_mails.map(id => {
                   return { user_id_or_mail: id };
-                }),
+                })
               );
               this.props.onChange &&
                 this.props.onChange(
                   ids_mails.map(id => {
                     return { user_id_or_mail: id };
-                  }),
+                  })
                 );
               Menu.closeAll();
             }}

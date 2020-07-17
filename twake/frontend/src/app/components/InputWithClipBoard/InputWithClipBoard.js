@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import './InputWithClipBoard.scss';
@@ -41,7 +41,11 @@ export default class InputWithClipBoard extends Component {
   }
   render() {
     return (
-      <Tooltip ref={obj => (this.tooltip = obj)} overable={false} tooltip={Languages.t('components.input.copied', [], "Copié")}>
+      <Tooltip
+        ref={obj => (this.tooltip = obj)}
+        overable={false}
+        tooltip={Languages.t('components.input.copied', [], 'Copié')}
+      >
         <div className="inputWithClipBoard">
           <Input
             className="medium full_width"

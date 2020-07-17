@@ -248,7 +248,7 @@ class WorkspacesUsers extends Observable {
     delete this.users_by_workspace[workspaceId][id];
     this.notify();
 
-    Api.post('workspace/members/remove', { ids: [id], workspaceId: workspaceId }, function(res) {
+    Api.post('workspace/members/remove', { ids: [id], workspaceId: workspaceId }, function (res) {
       if (id == CurrentUser.get().id && workspaceService.currentWorkspaceId == workspaceId) {
         Globals.window.location.reload();
       }
@@ -271,7 +271,7 @@ class WorkspacesUsers extends Observable {
         list: mails.join(';'),
         workspaceId: workspaceService.currentWorkspaceId,
       },
-      function(res) {
+      function (res) {
         if (res.errors.length == 0) {
           if (
             ((res.data.added || {}).pending || []).length +
@@ -308,7 +308,7 @@ class WorkspacesUsers extends Observable {
                 Languages.t(
                   'services.workspaces.not_added',
                   [],
-                  "Les utilisateurs suivants n'ont pas été ajoutés : ",
+                  "Les utilisateurs suivants n'ont pas été ajoutés : "
                 ) + (res.data.not_added || []).join(', '),
             });
           }
@@ -318,7 +318,7 @@ class WorkspacesUsers extends Observable {
         if (cb) {
           cb(thot);
         }
-      },
+      }
     );
   }
   addUserFromGroup(id, externe, cb, thot) {
@@ -335,7 +335,7 @@ class WorkspacesUsers extends Observable {
     var that = this;
     this.loading = true;
     var index = that.membersPending
-      .map(function(e) {
+      .map(function (e) {
         return e.mail;
       })
       .indexOf(mail);
@@ -349,7 +349,7 @@ class WorkspacesUsers extends Observable {
         workspaceId: workspaceService.currentWorkspaceId,
         mail: mail,
       },
-      function(res) {
+      function (res) {
         if (res.errors.length > 0) {
           that.membersPending.push(old);
         }
@@ -358,7 +358,7 @@ class WorkspacesUsers extends Observable {
         if (cb) {
           cb();
         }
-      },
+      }
     );
   }
   isExterne(userIdOrMail, workspaceId = null) {
@@ -405,7 +405,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
-        },
+        }
       );
     } else if (this.users_by_group[groupId][userId] && !this.updateRoleUserLoading[userId]) {
       var that = this;
@@ -422,7 +422,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
-        },
+        }
       );
     }
   }
@@ -452,7 +452,7 @@ class WorkspacesUsers extends Observable {
           }
           that.updateLevelUserLoading[userId] = false;
           that.notify();
-        },
+        }
       );
     }
   }
@@ -463,7 +463,7 @@ class WorkspacesUsers extends Observable {
         data =>
           (data.user.username + ' ' + data.user.firstname + ' ' + data.user.lastname)
             .toLocaleLowerCase()
-            .indexOf(query.toLocaleLowerCase()) >= 0,
+            .indexOf(query.toLocaleLowerCase()) >= 0
       )
       .map(data => data.user);
     cb(results);
@@ -490,7 +490,7 @@ class WorkspacesUsers extends Observable {
       AlertManager.confirm(() => {
         that.removeUser(User.getCurrentUserId(), workspaceService.currentWorkspaceId);
         workspaceService.removeFromUser(
-          Collections.get('workspaces').find(workspaceService.currentWorkspaceId),
+          Collections.get('workspaces').find(workspaceService.currentWorkspaceId)
         );
         popupManager.closeAll();
       });
@@ -499,7 +499,7 @@ class WorkspacesUsers extends Observable {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing',
           [],
-          "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
+          "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail."
         ),
       });
     }

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Emojione from 'components/Emojione/Emojione.js';
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
@@ -168,12 +168,12 @@ export default class ComponentsTester extends React.Component {
                       mail: 'romaric.mourgues@g.a',
                       userimage: 'https://randomuser.me/api/portraits/women/40.jpg',
                     },
-                  ].filter(function(item) {
+                  ].filter(function (item) {
                     if (item.username.indexOf(text) !== -1) {
                       return true;
                     }
                     return false;
-                  }),
+                  })
                 );
               },
               (text, cb) => {

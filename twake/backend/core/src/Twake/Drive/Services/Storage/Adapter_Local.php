@@ -18,9 +18,9 @@ class Adapter_Local implements AdapterInterface
 
     public function __construct($local_config, $preview, $doctrine)
     {
-        $this->root = $local_config["storage"]["location"];
-        $this->preview_root = $local_config["storage"]["preview_location"];
-        $this->pre_public_path = $local_config["storage"]["preview_public_path"];
+        $this->root = $local_config["location"];
+        $this->preview_root = $local_config["preview_location"];
+        $this->pre_public_path = $local_config["preview_public_path"];
         $this->preview = $preview;
         $this->doctrine = $doctrine;
     }

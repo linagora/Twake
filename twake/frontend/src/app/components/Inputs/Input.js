@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 
