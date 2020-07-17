@@ -22,7 +22,7 @@ class User
     /** @var App */
     private $app;
 
-    /* @var Translate $translate */
+    /* @var Translate $translate  */
     var $translate;
     /** @var ManagerAdapter */
     private $em;
