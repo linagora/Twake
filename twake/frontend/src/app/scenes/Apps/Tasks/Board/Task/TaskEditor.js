@@ -13,7 +13,7 @@ import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.j
 import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import { ObjectModal, ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 
@@ -96,7 +96,7 @@ export default class TaskEditor extends React.Component {
           </div>
         }
       >
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.calendar.modals.title_placeholder', [], 'Titre')}
           style={{ marginTop: 0 }}
         />
@@ -121,7 +121,7 @@ export default class TaskEditor extends React.Component {
           />
         </div>
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
@@ -144,7 +144,7 @@ export default class TaskEditor extends React.Component {
           className="full_width"
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.tasks.board.tasks.subtask', [], 'Sous-tâches')}
           icon="check-square"
         />
@@ -155,7 +155,7 @@ export default class TaskEditor extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.calendar.modals.part.participants', [], 'Participants')}
           icon="users-alt"
         />
@@ -179,7 +179,7 @@ export default class TaskEditor extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.tasks.modals.attachments', [], 'Pièces jointes')}
           icon="paperclip"
         />
@@ -188,7 +188,7 @@ export default class TaskEditor extends React.Component {
           onChange={attachments => this.change('attachments', attachments)}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')}
           icon="bell"
         />

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { ObjectModalSectionTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
@@ -46,7 +46,7 @@ export default class EventsFilter extends React.Component {
           </div>
         )}
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.sender', [], 'Sender')}
           icon="user"
         />
@@ -65,7 +65,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.mentions', [], 'Mentions')}
           icon="at"
         />
@@ -80,9 +80,9 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        {/*<ObjectModalSectionTitle name="Reactions" icon="thumbs-up" />*/}
+        {/*<ObjectModalFormTitle name="Reactions" icon="thumbs-up" />*/}
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('components.searchpopup.creation', [], 'Création')}
           icon="calendar-alt"
         />
@@ -105,7 +105,7 @@ export default class EventsFilter extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.messages.message.pinned', [], 'Pinned')}
           icon="map-pin"
         />
@@ -119,7 +119,7 @@ export default class EventsFilter extends React.Component {
           label={Languages.t('components.searchpopup.only_pinned', [], 'Only pinned messages')}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.drive.navigators.new_file.create_file.type', [], 'Type')}
           icon="triangle"
         />

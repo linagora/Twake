@@ -151,9 +151,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         if ($channel->getPrivate() && !$object["private"]) {
             $add_everybody = true;
         }
-        if (!$channel->getPrivate() && $object["private"]) {
-            $members = [];
-        }
+
         $channel->setPrivate($object["private"]);
 
         $this->entity_manager->persist($channel);

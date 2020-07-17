@@ -11,7 +11,7 @@ import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.j
 import Checklist from './Parts/Checklist.js';
 import {
   ObjectModal,
-  ObjectModalSectionTitle,
+  ObjectModalFormTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
 import Twacode from 'components/Twacode/Twacode.js';
@@ -161,7 +161,7 @@ export default class TaskDetails extends React.Component {
           task.description.original_str &&
           task.description.original_str.trim() && (
             <div className="text allow_selection" style={{ marginTop: -16 }}>
-              <ObjectModalSectionTitle
+              <ObjectModalFormTitle
                 name={Languages.t('scenes.apps.tasks.task.description', [], 'Description')}
                 icon="align-left"
               />
@@ -169,7 +169,7 @@ export default class TaskDetails extends React.Component {
             </div>
           )}
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.tasks.board.tasks.subtask', [], 'Sous-tâches')}
           icon="check-square"
         />
@@ -181,7 +181,7 @@ export default class TaskDetails extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.tasks.task.assignees', [], 'Assignés')}
           icon="users-alt"
         />
@@ -205,13 +205,13 @@ export default class TaskDetails extends React.Component {
           }}
         />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.apps.tasks.modals.attachments', [], 'Pièces jointes')}
           icon="paperclip"
         />
         <AttachmentPicker readOnly attachments={task.attachments} />
 
-        <ObjectModalSectionTitle
+        <ObjectModalFormTitle
           name={Languages.t('scenes.app.header.alt_notifications', [], 'Notifications')}
           icon="bell"
         />
