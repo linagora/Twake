@@ -19,7 +19,7 @@ rm -R /tmp/*
 chmod -R 777 /twake-core/ &
 
 if [ "$1" = "dev" ]
-then 
+then
   if test -f "/twake-core/app/Configuration/Parameters.php"; then
     echo "Configuration exists, doing nothing."
   else
