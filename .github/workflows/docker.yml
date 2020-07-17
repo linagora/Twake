@@ -1,0 +1,30 @@
+name: docker-build
+
+on:
+  push:
+    branches: [master, "feature/*"]
+    paths:
+      - "twake/docker/"
+  pull_request:
+    branches: [master, "feature/*"]
+    paths:
+      - "twake/docker/"
+
+jobs:
+  build-nginx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake && docker build -t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile .
+
+  build-php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake && docker build -t twaketech/twake-php -f docker/twake-php/Dockerfile .
+
+  build-websockets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake && docker build -t twaketech/twake-websockets -f docker/twake-websockets/Dockerfile .
