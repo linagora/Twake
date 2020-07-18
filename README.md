@@ -3,9 +3,9 @@
 # Twake - Ultimate collaborative Workspace
 
 ![Licence](https://img.shields.io/badge/license-AGPL3-blue?style=flat)
-![docker-build](https://github.com/TwakeApp/Twake/workflows/docker-build/badge.svg?branch=master&style=flat)
-![frontend-build](https://github.com/TwakeApp/Twake/workflows/frontend-build/badge.svg?branch=master&style=flat)
-![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=master&style=flat)
+![docker-build](https://github.com/TwakeApp/Twake/workflows/docker-build/badge.svg?branch=main&style=flat)
+![frontend-build](https://github.com/TwakeApp/Twake/workflows/frontend-build/badge.svg?branch=main&style=flat)
+![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
 
 ![Docker](https://img.shields.io/docker/pulls/twaketech/twake-php?style=flat)
 [![Docs](https://img.shields.io/badge/docs-up--to--date-blueviolet?style=flat)](https://doc.twake.app)
