@@ -2,11 +2,11 @@ name: docker-build
 
 on:
   push:
-    branches: [master, "feature/*"]
+    branches: [main, "feature/*"]
     paths:
       - "twake/docker/**"
   pull_request:
-    branches: [master, "feature/*"]
+    branches: [main, "feature/*"]
     paths:
       - "twake/docker/**"
 
