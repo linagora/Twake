@@ -1,0 +1,53 @@
+{% extends "Mail/all_style.html.twig" %}
+
+{% block content %}
+
+    <table class="main"
+           style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 0 0 4px 4px;">
+
+        <tr>
+            <td class="wrapper"
+                style="font-family: sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 24px;border-radius: 6px;color: #444;">
+
+                <div style="font-size: 22px;text-align: center;margin:auto;margin-bottom: 32px;max-width: 80%;color: #837dff;font-weight: bold;">{% block secondtitle %}Hello !{% endblock %}</div>
+
+                {% block body %}{% endblock %}
+
+                <br><br>
+                До встречи в Twake,
+                <br>
+                команда Twake
+                <br>
+                <a style="color: #837dff;" href="{{ twakeurl }}">{{ twakeurl }}</a>
+
+            </td>
+        </tr>
+
+    </table>
+
+    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+        <table border="0" cellpadding="0" cellspacing="0"
+               style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+            <tr>
+                <td class="content-block"
+                    style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">
+                    {{ twakeaddress }}
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="content-block powered-by"
+                    style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                    Это электронное письмо было отправлено {{ mail }}. Сходите на Twake, чтобы увидеть больше.<br>
+                    Вы получаете это электронное письмо, потому что у вас есть аккаунт в <a href="{{ twakeurl }}"
+                                                                                  style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">{{ twakeurl }}</a>
+                    или потому что вас пригласил другой пользователь. Если вы хотите получать меньше писем, перейдите 
+                    в настройки своего аккаунта.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+{% endblock %}
+

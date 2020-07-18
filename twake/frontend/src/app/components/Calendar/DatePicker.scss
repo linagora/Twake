@@ -1,0 +1,18 @@
+.date_selector {
+  .reset_date {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    right: 8px;
+    top: 12px;
+    background: #eee;
+    border-radius: var(--default-border-radius-large);
+    font-size: 12px;
+    color: #444;
+    cursor: pointer;
+
+    &:hover {
+      background: #ddd;
+    }
+  }
+}

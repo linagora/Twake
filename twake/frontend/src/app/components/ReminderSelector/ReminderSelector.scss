@@ -1,0 +1,10 @@
+@import '~components/constants.scss';
+
+.reminderSelector {
+  .remove_icon {
+    cursor: pointer;
+    &:hover {
+      color: $red;
+    }
+  }
+}

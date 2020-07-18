@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "app/*": ["./src/app/*"],
+      "environment/*": ["./src/app/environment/*"],
+      "common/*": ["./src/app/common/*"],
+      "components/*": ["./src/app/components/*"],
+      "services/*": ["./src/app/services/*"],
+      "scenes/*": ["./src/app/scenes/*"],
+      "apps/*": ["./src/app/apps/*"]
+    }
+  }
+}

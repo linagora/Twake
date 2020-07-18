@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Twake</title>
+    <meta name="description" content="Go to Twake application" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="apple-itunes-app" content="app-id=1257653795" />
+    <style>
+      #app,
+      #root {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #root {
+        z-index: 0;
+      }
+
+      #app {
+        z-index: 1;
+      }
+
+      #app_loader {
+        pointer-events: none;
+        opacity: 0;
+        transition: 0.2s;
+      }
+      #app_loader.load {
+        opacity: 1;
+        transition: 0.8s;
+      }
+    </style>
+    <link rel="manifest" href="/manifest.json" />
+  </head>
+  <body id="body" style="margin: 0; padding: 0;">
+    <div id="root"></div>
+    <img
+      id="app_loader"
+      style="z-index:1;position:absolute;margin:auto;left:0;right:0;top:0;bottom:0;width:48px;height:48px;"
+      src="/public/img/load_app.png"
+    />
+
+    <script type="text/javascript">
+      window.electron_config = {};
+      if (
+        typeof require != "undefined" &&
+        typeof require("electron") != "undefined"
+      ) {
+        window.electron = require("electron");
+        if (
+          window.electron.remote &&
+          window.electron.remote.BrowserWindow &&
+          window.electron.remote.BrowserWindow.getAllWindows() &&
+          window.electron.remote.BrowserWindow.getAllWindows()[0]
+        ) {
+          window.electron_config = window.electron.remote.BrowserWindow.getAllWindows()[0];
+        }
+        document.getElementById("body").className = "electron";
+      }
+    </script>
+    <script async src="https://cdn.headwayapp.co/widget.js"></script>
+    <script async type="text/javascript" src="/public/js/mixpanel.js"></script>
+  </body>
+</html>

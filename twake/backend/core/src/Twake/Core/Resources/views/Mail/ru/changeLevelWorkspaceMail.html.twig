@@ -1,0 +1,14 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}Ваш статус в {{ workspace }} изменился{% endblock %}
+
+{% block secondtitle %}Ваш статус в {{ workspace }} изменился{% endblock %}
+
+{% block body %}
+
+    <b>Здравствуйте {{ username|capitalize }},</b>
+    <br>
+    Ваш статус в {{ workspace }} (group {{ group }}) был изменён на {{ level }}
+    <br>
+
+{% endblock %}

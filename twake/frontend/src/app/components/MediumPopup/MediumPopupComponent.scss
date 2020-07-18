@@ -1,0 +1,40 @@
+@import '~components/constants.scss';
+
+.mediumPopupComponent {
+  .background {
+    position: absolute;
+    z-index: 8;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #0000002e;
+  }
+
+  .componentContainer {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0px;
+    height: 0px;
+    z-index: 9;
+    transition: top 0.2s, bottom 0.2s, left 0.2s, right 0.2s;
+
+    .component {
+      max-height: 80vh;
+      transform: translateX(-50%) translateY(-50%);
+      position: relative;
+      height: auto;
+      min-width: 325px;
+      background: #fff;
+      z-index: 1;
+      box-shadow: 0 2px 32px rgba(0, 0, 0, 0.2);
+      border-radius: var(--default-border-radius);
+      padding: 16px;
+      box-sizing: border-box;
+    }
+  }
+}

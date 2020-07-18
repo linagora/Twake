@@ -1,0 +1,38 @@
+<html dir="ltr" mozdisallowselectionprint moznomarginboxes>
+<head>
+  <style>
+    audio {
+      position: absolute;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-shadow: 0 2px 32px rgba(0,0,0,0.2);
+      max-width: 80vw;
+      max-height: 80vh;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <audio style="width: 100%" controls id="audio" controls controlsList="nodownload" disablePictureInPicture>
+    Your browser does not support HTML5 audio.
+  </audio>
+
+  <script type="text/javascript">
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    document.getElementById("audio").src = getUrlParameter("link");
+
+  </script>
+</body>

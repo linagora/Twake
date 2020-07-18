@@ -1,0 +1,35 @@
+{% extends "Mail/en/all.html.twig" %}
+
+{% block title %}You have been invited in the workspace {{ workspace }} {% endblock %}
+
+{% block secondtitle %}You have been invited in the workspace {{ workspace }} of the group {{ group }}{% endblock %}
+
+{% block body %}
+
+    Здравствуйте,
+    <br>
+    <b>{{ sender_user|capitalize }}</b> ({{ sender_user_mail }}) только что пригласил вас на рабочее пространство
+    <b>{{ workspace }}</b> в группе {{ group }}.
+    <br><br>
+
+    <br>
+    <center>
+        <a href="{{ twakeurl }}?subscribe=1&mail={{ mail }}"
+           style="display: inline-block; color: #ffffff; background-color: #837dff; border: solid 1px #837dff; border-radius: 5px; box-sizing: border-box; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; border-color: #837dff;">
+            Присоединиться к рабочему пространству сейчас !
+        </a>
+        <div style="display:none">
+            <br/>{{ twakeurl }}?subscribe=1&mail={{ mail }}
+        </div>
+    </center>
+    <br>
+    <br>
+
+    Приглашаем Вас создать новый аккаунт, так как мы не знаем этого адреса электронной почты.
+    <br>
+    <br>
+    Если у вас уже есть аккаунт Twake, добавьте
+    <b>{{ mail }}</b> в списке ваших адресов электронной почты, вы будете автоматически добавлены в это рабочее пространство.
+
+
+{% endblock %}

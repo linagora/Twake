@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <script src='https://{{ jitsi_domain }}/external_api.js'></script>
+
+    <title></title>
+</head>
+<body>
+    <style>
+        html, body, iframe {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <div id="meet">
+
+    </div>
+
+    <script type="text/javascript">
+        const domain = '{{ jitsi_domain }}';
+
+        window.history.pushState({"pageTitle":document.title},"", document.location.pathname);
+
+        var username = localStorage.getItem("username");
+        var thumbnail = localStorage.getItem("thumbnail");
+        {% if user %}
+            username = '{{ user.username }}';
+            localStorage.setItem("username", username);
+            thumbnail = '{{ user.thumbnail }}';
+            localStorage.setItem("thumbnail", thumbnail);
+        {% endif %}
+
+        const options = {
+            roomName: '{{id}}',
+        };
+        const api = new JitsiMeetExternalAPI(domain, options);
+
+        //To set name of a participant
+        api.executeCommand('displayName', '@'+username);
+        //To set an avatar
+        if(thumbnail){
+            api.executeCommand('avatarUrl', thumbnail);
+        }
+
+        // api.addEventListener("participantJoined", function(object){
+        //     console.log(object);
+        //     console.log("nombre de participants",api.getNumberOfParticipants());
+        // });
+
+    </script>
+
+</body>
+</html>

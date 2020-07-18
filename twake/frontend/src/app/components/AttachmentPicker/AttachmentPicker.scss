@@ -1,0 +1,41 @@
+@import '~components/constants.scss';
+
+.attachmentPicker {
+  .attachment {
+    display: inline-block;
+    font-size: 12px;
+    color: $black;
+    border: solid 1px $grey_light;
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: var(--default-border-radius-large);
+    padding: 4px;
+    padding-right: 8px;
+    line-height: 24px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+
+    &.attachment_file {
+      border: 0;
+      padding: 0;
+      height: auto;
+    }
+  }
+
+  i.app-icon {
+    margin-right: 4px;
+    margin-left: 4px;
+    font-size: 14px;
+    position: relative;
+    top: -1px;
+    vertical-align: top;
+  }
+
+  .remove {
+    opacity: 0.5;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

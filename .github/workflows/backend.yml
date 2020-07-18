@@ -1,0 +1,23 @@
+name: backend-build
+
+on:
+  push:
+    branches: [master, "feature/*"]
+    paths:
+      - "twake/backend/core/**"
+  pull_request:
+    branches: [master, "feature/*"]
+    paths:
+      - "twake/backend/core/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
+      - run: cd twake && docker-compose up -d
+      - run: cd twake && docker-compose exec -T php php composer.phar install
+      - run: cd twake && docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
+      - run: cd twake && docker-compose exec -T php php bin/console twake:mapping #Test if es is live
+      - run: cd twake && docker-compose exec -T php php bin/console twake:init #Test in we can do things

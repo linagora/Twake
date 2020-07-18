@@ -1,0 +1,168 @@
+import React from 'react';
+
+import Globals from 'services/Globals.js';
+
+class WindowState {
+  constructor() {
+    if (!Globals.isReactNative) {
+      this.original = document.title;
+    }
+    this.focused = true;
+    Globals.window.windowService = this;
+  }
+
+  allGetParameter() {
+    console.log(location.search);
+
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    var result = {},
+      tmp = [];
+    location.search
+      .substr(1)
+      .split('&')
+      .forEach(function (item) {
+        tmp = item.split('=');
+        result[tmp[0]] = tmp[1];
+      });
+    return result;
+  }
+
+  findGetParameter(parameterName) {
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    var result = null,
+      tmp = [];
+    location.search
+      .substr(1)
+      .split('&')
+      .forEach(function (item) {
+        tmp = item.split('=');
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      });
+    return result;
+  }
+
+  setNotificationsInTitle(count) {
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    document.title =
+      (count ? ' (' + count + ') ' : '') + document.title.replace(/^\([0-9]+\) */, '');
+  }
+
+  setTitle(text, icon) {
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    if (!icon) {
+      icon = '/favicon.png';
+    }
+
+    if (!text) {
+      text = 'Twake';
+    }
+
+    if (text != 'Twake') {
+      text = 'Twake - ' + text;
+    }
+
+    (function () {
+      var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'shortcut icon';
+      link.href = icon;
+      document.getElementsByTagName('head')[0].appendChild(link);
+      document.title = text;
+    })();
+  }
+
+  setUrl(url, removeParameters) {
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    if (!removeParameters) {
+      var parameters = this.allGetParameter();
+
+      if (Object.keys(parameters || {}).length > 0) {
+        url =
+          url +
+          '?' +
+          Object.keys(parameters)
+            .map(k => (k ? k + '=' + parameters[k] : ''))
+            .join('&');
+      }
+    }
+
+    Globals.window.history.pushState({ pageTitle: document.title }, '', url);
+  }
+
+  nameToUrl(str) {
+    if (Globals.isReactNative) {
+      return str;
+    }
+
+    str = str.trim();
+    str = str.replace(/[ -/]+/g, '_');
+    str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    str = str.replace(/[^@a-zA-Z0-9_]/g, '');
+    return str;
+  }
+
+  reduceUUID4(id) {
+    if (!id) {
+      return undefined;
+    }
+    id = id.replace(/(.)\1{2,3}/g, '$1i');
+    id = id.replace(/(.)\1{1,2}/g, '$1h');
+    return id.replace(/-/g, 'g');
+  }
+
+  expandUUID4(id) {
+    if (!id) {
+      return undefined;
+    }
+    id = id.replace(/(.)i/g, '$1$1$1');
+    id = id.replace(/(.)h/g, '$1$1');
+    id = id.replace(/[^0-9a-g]/g, '');
+    return id.replace(/g/g, '-') || undefined;
+  }
+
+  getInfoFromUrl() {
+    if (Globals.isReactNative) {
+      return;
+    }
+
+    var result = {};
+    var url = document.location.pathname;
+    if (url) {
+      if (url.indexOf('/private/') == 0) {
+        var channel_id = url.split('-').pop();
+        result.channel_id = this.expandUUID4(channel_id);
+        if (!result.channel_id) {
+          result = {};
+        }
+      } else {
+        var list = url.split('-');
+        var channel_id = list.pop();
+        var workspace_id = list.pop();
+        result.channel_id = this.expandUUID4(channel_id);
+        result.workspace_id = this.expandUUID4(workspace_id);
+        if (!result.workspace_id || !result.channel_id) {
+          result = {};
+        }
+      }
+    }
+    return result;
+  }
+}
+
+var windowState = new WindowState();
+export default windowState;
