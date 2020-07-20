@@ -23,15 +23,15 @@ export default class Signin extends Component {
       phone: '',
       code: '',
       newsletter: true,
-
       page: 1,
-
       invalidForm: false,
       patternRegMail: new RegExp(
         "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
       ),
       mailAvailable: true,
       usernameAvailable: true,
+      errorMail: false,
+      errorUsername: false,
       errorPassword: false,
       errorCode: false,
     };
@@ -64,17 +64,24 @@ export default class Signin extends Component {
             <Emojione type=":smile:" />
           </div>
 
+          {this.state.login.error_subscribe_username && this.state.username && (
+            <div className={'error text bottom-margin'}>
+              {this.state.i18n.t('scenes.login.create_account.username_already_exist')}
+            </div>
+          )}
+          {this.state.username && this.state.errorUsername && (
+            <div className={'text error bottom-margin'}>
+              {this.state.i18n.t('scenes.login.create_account.fill_in_username')}
+            </div>
+          )}
           <Input
+            onBlur={() => this.updateFieldError("errorUsername", () => this.checkUsername())}
             refInput={ref => {
               this.input = ref;
             }}
             id="username_create"
             className={
-              'bottom-margin medium full_width ' +
-              (this.state.login.error_subscribe_username ||
-              (!this.state.username && this.state.invalidForm)
-                ? 'error'
-                : '')
+              'bottom-margin medium full_width ' + (this.state.errorUsername ? 'error' : '')
             }
             onKeyDown={e => {
               if (e.keyCode == 13) {
@@ -85,25 +92,23 @@ export default class Signin extends Component {
             value={this.state.username}
             onChange={evt => this.setState({ username: evt.target.value })}
           />
-          {this.state.login.error_subscribe_username && this.state.username && (
-            <div className={'error text bottom-margin'}>
-              {this.state.i18n.t('scenes.login.create_account.username_already_exist')}
-            </div>
-          )}
-          {!this.state.username && this.state.invalidForm && (
-            <div className={'text error bottom-margin'}>
-              {this.state.i18n.t('scenes.login.create_account.fill_in_username')}
-            </div>
-          )}
 
+          {this.state.login.error_subscribe_mailalreadyused && this.state.email && (
+            <div className="text error bottom-margin">
+              {this.state.i18n.t('scenes.login.create_account.email_used')}
+            </div>
+          )}
+          {this.state.errorMail && (
+            <div className={'text error bottom-margin'}>
+              {this.state.i18n.t('scenes.login.create_account.fill_in_email')}
+            </div>
+          )}
           <Input
+            onBlur={() => this.updateFieldError("errorMail", () => this.checkMail())}
             id="email_create"
             className={
               'bottom-margin medium full_width ' +
-              (this.state.login.error_subscribe_mailalreadyusedEmail ||
-              this.state.login.error_subscribe_mailalreadyused
-                ? 'error'
-                : '')
+              (this.state.login.error_subscribe_mailalreadyused ? 'error' : '')
             }
             onKeyDown={e => {
               if (e.keyCode == 13) {
@@ -114,23 +119,18 @@ export default class Signin extends Component {
             value={this.state.email}
             onChange={evt => this.setState({ email: evt.target.value })}
           />
-          {this.state.login.error_subscribe_mailalreadyused && this.state.email && (
-            <div className="text error bottom-margin">
-              {this.state.i18n.t('scenes.login.create_account.email_used')}
-            </div>
-          )}
-          {!this.state.email && this.state.invalidForm && (
-            <div className={'text error bottom-margin'}>
-              {this.state.i18n.t('scenes.login.create_account.fill_in_email')}
-            </div>
-          )}
 
+          {this.state.errorPassword && (
+            <div className={'text error bottom-margin'}>
+              {this.state.i18n.t('scenes.login.create_account.too_short_password')}
+            </div>
+          )}
           <Input
+            onBlur={() => this.updateFieldError("errorPassword", () => this.checkPassword())}
             id="password_create"
             type="password"
             className={
-              'bottom-margin medium full_width ' +
-              (this.state.password.length < 8 && this.state.invalidForm ? 'error' : '')
+              'bottom-margin medium full_width ' + (this.state.errorPassword ? 'error' : '')
             }
             onKeyDown={e => {
               if (e.keyCode == 13) {
@@ -141,12 +141,6 @@ export default class Signin extends Component {
             value={this.state.password}
             onChange={evt => this.setState({ password: evt.target.value })}
           />
-          {this.state.password.length < 8 && this.state.invalidForm && (
-            <div className={'text error bottom-margin'}>
-              {this.state.i18n.t('scenes.login.create_account.too_short_password')}
-            </div>
-          )}
-
           <div className="bottom">
             <a className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
@@ -301,20 +295,27 @@ export default class Signin extends Component {
       );
     }
   }
-  checkForm() {
-    if (this.state.password.length < 8) {
-      this.state.errorPassword = true;
-    } else {
-      this.state.errorPassword = false;
-    }
 
-    return (
-      this.state.patternRegMail.test(this.state.email.toLocaleLowerCase()) &&
-      this.state.email.length > 0 &&
-      this.state.username.length > 0 &&
-      this.state.password.length >= 8
-    );
+  updateFieldError(stateName, test) {
+    this.setState({[stateName]: !test()});
   }
+
+  checkUsername = () => {
+    return !(this.state.username.length <= 1);
+  };
+
+  checkMail = () => {
+    return !!(this.state.patternRegMail.test(this.state.email.toLocaleLowerCase()));
+  };
+
+  checkPassword = () => {
+    return this.state.password.length >= 8;
+  };
+
+  checkForm() {
+    return (this.checkUsername() && this.checkMail() && this.checkPassword()); 
+  }
+
   previous() {
     if (this.state.page <= 1) {
       this.state.login.changeState('logged_out');
@@ -370,7 +371,6 @@ export default class Signin extends Component {
   checkAvailable(that, numError) {
     switch (numError) {
       case 0:
-        // Fine no pb
         that.setState({ page: 2 });
         break;
       case 1:
@@ -387,7 +387,6 @@ export default class Signin extends Component {
         that.setState({ usernameAvailable: false });
         break;
       default:
-        //console.log("you should not see that");
         break;
     }
   }
