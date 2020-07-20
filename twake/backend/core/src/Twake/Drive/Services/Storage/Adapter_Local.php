@@ -44,7 +44,7 @@ class Adapter_Local implements AdapterInterface
                         //Remove old preview
                         if ($file->hasPreviewLink()) {
                             try {
-                                $pre_path = $this->root . "/" . "public/uploads/previews/" . $file->getPath() . ".png";
+                                $pre_path = $this->preview_root . "/" . "public/uploads/previews/" . $file->getPath() . ".png";
                                 @unlink($pre_path);
                             } catch (\Exception $e) {
                                 //error_log($e->getMessage());
