@@ -213,19 +213,6 @@ export default class UserParameter extends Component {
                   <option value="ja">中国</option>
                   <option value="ru">Русский</option>
                 </select>
-                <ButtonWithTimeout
-                  className="small buttonValidation"
-                  disabled={this.state.currentUserService.loading}
-                  onClick={() =>
-                    currentUserService.updateidentity(
-                      this.state.lastname,
-                      this.state.firstname,
-                      this.state.thumbnail
-                    )
-                  }
-                  loading={this.state.currentUserService.loading}
-                  value={this.state.i18n.t('general.update')}
-                />
               </div>
             </Attribute>
           </div>

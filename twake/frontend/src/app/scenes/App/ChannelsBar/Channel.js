@@ -178,7 +178,7 @@ export default class Channel extends Component {
     var users = [];
 
     if (this.mode == 'app') {
-      name = Languages.t('app_name_' + this.props.app.simple_name, [], this.props.app.name);
+      name = Languages.t('app.name.' + this.props.app.simple_name, [], this.props.app.name);
       icon = WorkspacesApps.getAppIcon(this.props.app);
       if ((icon || '').indexOf('http') === 0) {
         emoji = icon;
@@ -187,7 +187,7 @@ export default class Channel extends Component {
     }
 
     if (this.mode == 'direct_app') {
-      name = Languages.t('app_name_' + this.props.app.simple_name, [], this.props.app.name);
+      name = Languages.t('app.name.' + this.props.app.simple_name, [], this.props.app.name);
       emoji = this.props.app.icon_url;
     }
 
