@@ -24,6 +24,7 @@ services:
     volumes:
       - ./configuration/backend/:/configuration/
       - ./docker-data/drive/:/twake-core/drive/
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
     depends_on:
       - rabbitmq
       - scylladb
@@ -59,3 +60,4 @@ services:
     volumes:
       - ./configuration/frontend/:/configuration
       - ./docker-data/logs/nginx/:/var/log/nginx
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
