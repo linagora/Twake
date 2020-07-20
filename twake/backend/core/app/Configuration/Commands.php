@@ -11,7 +11,6 @@ class Commands
         "twake:update_services_status" => "Twake\Core\Command\UpdateServicesStatusCommand",
         "twake:routes" => "Twake\Core\Command\GetRoutesCommand",
         "twake:tasks_check_reminders" => "Twake\Tasks\Command\TaskReminderCheckerCommand",
-        "twake:daily" => "Twake\Core\Command\DailyCommand",
         "twake:reindex" => "Twake\Core\Command\ReindexCommand",
         "twake:mapping" => "Twake\Core\Command\MappingCommand",
         "twake:calendar_check" => "Twake\Calendar\Command\ReminderCheckerCommand",

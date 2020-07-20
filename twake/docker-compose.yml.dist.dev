@@ -30,6 +30,7 @@ services:
       - ./backend/core/:/twake-core:cached
       - ./docker-data/drive/:/twake-core/drive/
       - ./docker-data/fpm/:/etc/docker-data/fpm/
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
     depends_on:
       - scylladb
       - rabbitmq
@@ -75,3 +76,4 @@ services:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
       - ./frontend/:/twake-react/
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
