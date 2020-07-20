@@ -75,6 +75,7 @@ export default class Input extends React.Component {
           this.onKeyDown(evt);
         }}
         className={'input ' + (className || '')}
+        onBlur={this.props.onBlur}
       />
     );
   }
