@@ -104,7 +104,7 @@ export default class DateSelector extends Component {
             )}
           </div>
           {(!event.type || event.type == 'event' || event.type == 'move') && [
-            <span className="middle">à</span>,
+            <span className="middle">{Languages.t('scenes.apps.calendar.event_view.article_until')}</span>,
             <div className="end">
               {!event.all_day && (
                 <TimeSelector
