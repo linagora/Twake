@@ -333,7 +333,7 @@ export default {
   'scenes.apps.calendar.event_view.no_reminder': 'Pas de rappel',
   'scenes.apps.calendar.event_view.article_the': 'le',
   'scenes.apps.calendar.event_view.article_at': 'à',
-  'scenes.apps.calendar.event_view.article_until': "jusqu'à",
+  'scenes.apps.calendar.event_view.article_until': "à",
   'scenes.apps.calendar.event_view.details': 'Détails',
   'scenes.apps.calendar.event_view.no_event_selected': 'Aucun événement sélectionné',
   'scenes.apps.calendar.event_view.description': 'Description',
@@ -1155,9 +1155,9 @@ export default {
   'general.open': 'Ouvrir',
   'scenes.apps.account.thumbnail.max_weight': 'Poids maximum 5 mo',
   'scenes.apps.account.account.email_add_modal.confirm': 'Confirmer cet email',
-  app_name_twake_calendar: 'Calendrier',
-  app_name_twake_drive: 'Documents',
-  app_name_twake_tasks: 'Tâches',
+  'app.name.twake_calendar': 'Calendrier',
+  'app.name.twake_drive': 'Documents',
+  'app.name.twake_tasks': 'Tâches',
   'components.calendar.repetition.everyday': 'Tous les jours',
   'components.calendar.repetition.does_not_repeat': 'Une seule fois',
   'components.calendar.repetition.weekly_on': 'Toutes les semaines le $1',
@@ -1186,7 +1186,7 @@ export default {
   'components.calendar.repetition.day5': 'V',
   'components.calendar.repetition.day6': 'S',
   'scenes.login.create_account.fullname': 'Nom complet',
-  app_name_: '',
+  'app.name.': '',
   'scenes.app.channelsbar.currentuser.': '',
   'scenes.app.channelsbar.currentuser.add_apps': 'Chercher des applications',
   'scenes.app.channelsbar.currentuser.add_collaboraters_menu': '',
@@ -1293,6 +1293,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': "Groupe d'applications",
   'scenes.app.popup.appsparameters.pages.app_informations':
     "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
+  'scenes.app.popup.appsparameters.pages.app_name_label': 'Nom de l\'application',
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Tous les gérants de cette entreprise pourront modifier cette application.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
