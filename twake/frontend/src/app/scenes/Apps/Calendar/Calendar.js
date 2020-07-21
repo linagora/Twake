@@ -138,8 +138,7 @@ export default class Calendar extends Component {
   }
   componentDidMount() {
     LocalStorage.getItem('calendar_view', res => {
-      console.log('getitem : ', res);
-      if (res) {
+      if (res && this.calendar) {
         this.setState({ view: res });
         this.calendar.view(res);
       }
