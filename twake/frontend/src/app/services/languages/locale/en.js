@@ -1103,11 +1103,11 @@ export default {
     'Change your first name, last name and profile image visible to other Twake users.',
   'scenes.apps.account.preference': 'Preferences',
   'general.open': 'Open',
-  'scenes.apps.account.thumbnail.max_weight': 'Maximum weight 5 mo',
+  'scenes.apps.account.thumbnail.max_weight': 'Maximum size 5 mb',
   'scenes.apps.account.account.email_add_modal.confirm': 'Confirm this e-mail',
-  app_name_twake_calendar: 'Calendar',
-  app_name_twake_drive: 'Documents',
-  app_name_twake_tasks: 'Tasks',
+  'app.name.twake_calendar': 'Calendar',
+  'app.name.twake_drive': 'Documents',
+  'app.name.twake_tasks': 'Tasks',
   'components.calendar.repetition.everyday': 'Daily',
   'components.calendar.repetition.does_not_repeat': 'Does not repeat',
   'components.calendar.repetition.weekly_on': 'Weekly on $1',
@@ -1238,6 +1238,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': 'Application group',
   'scenes.app.popup.appsparameters.pages.app_informations':
     'This string identifies your application and will be used in message commands.',
+  'scenes.app.popup.appsparameters.pages.app_name_label': 'Application name',
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'All managers of this company will be able to edit this application.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
@@ -1520,7 +1521,7 @@ export default {
   'scenes.apps.drive.folder_subtitle': 'Folders',
   'scenes.apps.drive.go_out_trash_menu': 'Get out of the trash',
   'scenes.apps.drive.go_trash_menu': 'Go to trash',
-  'scenes.apps.drive.import_from_computer_menu': 'Import from the computer',
+  'scenes.apps.drive.import_from_computer_menu': 'Import from computer',
   'scenes.apps.drive.move_text': 'Move',
   'scenes.apps.drive.new_file_menu': 'New file',
   'scenes.apps.drive.new_file_title': 'New file',

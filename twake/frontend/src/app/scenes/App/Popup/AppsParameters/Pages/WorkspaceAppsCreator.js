@@ -91,8 +91,7 @@ export default class WorkspaceAppsCreator extends Component {
           <div className="label for_input">
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.app_name_label',
-              [],
-              'Nom de votre application'
+              'Application name'
             )}
           </div>
           <Input
