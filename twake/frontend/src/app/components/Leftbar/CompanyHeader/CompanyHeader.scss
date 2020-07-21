@@ -90,6 +90,7 @@
         display: flex;
         align-items: center;
         padding-right: 2px;
+        margin-right: 4px;
         cursor: pointer;
       }
 
@@ -100,7 +101,6 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        margin-left: 4px;
       }
 
       .emojione-container {
