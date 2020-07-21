@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 name: update-saas-frontend
-=======
-name: Invalidate Cloudfront Distribution
->>>>>>> fd995bff700ea1695e77812e693c7b80f3391932
 on:
   push:
     branches: [main]
@@ -10,7 +6,6 @@ on:
       - "twake/frontend/**"
 
 jobs:
-<<<<<<< HEAD
   build-frontend:
     runs-on: ubuntu-latest
 
@@ -18,10 +13,6 @@ jobs:
       matrix:
         node-version: [10.x]
 
-=======
-  deploy:
-    runs-on: ubuntu-latest
->>>>>>> fd995bff700ea1695e77812e693c7b80f3391932
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -31,8 +22,8 @@ jobs:
       - run: npm install -g yarn
       - run: cd twake/frontend/ && yarn install
       - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
+      - run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
       - run: cd twake/frontend/ && yarn build
-<<<<<<< HEAD
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v1
         with:
@@ -50,8 +41,6 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: frontend-build
-=======
->>>>>>> fd995bff700ea1695e77812e693c7b80f3391932
 
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
@@ -61,11 +50,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "eu-west-3" # optional: defaults to us-east-1
-<<<<<<< HEAD
           SOURCE_DIR: "frontend-build" # optional: defaults to entire repository
-=======
-          SOURCE_DIR: "" # optional: defaults to entire repository
->>>>>>> fd995bff700ea1695e77812e693c7b80f3391932
 
       - uses: awact/cloudfront-action@0.1.2
         env:
