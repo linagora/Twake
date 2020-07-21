@@ -55,7 +55,7 @@ class RabbitMQ implements QueueManager
     public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
         $list = [];
-        $callback = function ($msg) use ($max_messages, $list) {
+        $callback = function ($msg) use ($max_messages, &$list) {
             $list[] = $msg;
             if (count($list) >= $max_messages) {
                 $this->stop_consume = true;
@@ -67,12 +67,12 @@ class RabbitMQ implements QueueManager
         $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
         $channel->basic_qos(null, $max_messages, null);
         $channel->basic_consume($route, '', false, !$should_ack, false, false, $callback);
-        while ($channel->is_consuming() && !$this->stop_consume) {
-            try {
-                $channel->wait(null, false, 10);
-            } catch (Exception $err) {
-                //Timeout
-            }
+        try {
+          while ($channel->is_consuming() && !$this->stop_consume) {
+                  $channel->wait(null, false, 5);
+          }
+        } catch (\Exception $err) {
+          error_log($err->getMessage());
         }
         return $list;
     }
@@ -86,7 +86,7 @@ class RabbitMQ implements QueueManager
     {
         $channel = $this->getChannel();
         $channel->queue_declare($route, false, true, false, false, ["x-message-ttl" => 24 * 60 * 60 * 1000]);
-        $channel->ack($message->delivery_info['delivery_tag']);
+        $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
     }
 
     public function close()

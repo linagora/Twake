@@ -11,7 +11,7 @@ class Parameters extends \Common\Configuration
     {
         $this->configuration = [
             "env" => [
-              "type"  =>  "dev",
+              "type"  =>  "prod",
               "timer" => false,
               "admin_api_token" => "",
               "licence_key" => "",
@@ -34,7 +34,7 @@ class Parameters extends \Common\Configuration
                 "user" => "root",
                 "password" => "root",
                 "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
-                "dev" => true
+                "dev" => false
             ],
             "es" => [
               "host" => "elasticsearch:9200"
