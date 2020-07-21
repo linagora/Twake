@@ -91,13 +91,10 @@ END;
         return preg_replace("/[^a-z0-9@\.\-\_\/\:]/", "", strtolower($this->removeAccents($str)));
     }
 
-
     public function verifyMail($mail)
     {
         if (strpos($mail, "@yopmail") > 0 || strpos($mail, "@mailinator") > 0) {
-            if (strpos($mail, "citigo54") === false) {
-                return false;
-            }
+            return false;
         }
         return preg_match("/^[A-Za-z0-9.\-_]{1,250}@[A-Za-z0-9.\-_]{2,250}\.[A-Za-z0-9]{2,16}$/", $mail);
     }
