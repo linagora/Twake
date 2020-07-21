@@ -22,6 +22,7 @@ jobs:
       - run: npm install -g yarn
       - run: cd twake/frontend/ && yarn install
       - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
+      - run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
       - run: cd twake/frontend/ && yarn build
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v1
