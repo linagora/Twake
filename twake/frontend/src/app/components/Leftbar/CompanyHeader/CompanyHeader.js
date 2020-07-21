@@ -38,7 +38,7 @@ export default class CompanyHeader extends React.Component {
               }
             />
 
-            {!!user.status_icon && <Emojione type={user.status_icon[0]} />}
+            {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon[0]} />}
 
             <span className="text">{'@' + user.username}</span>
           </div>

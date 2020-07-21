@@ -1,4 +1,4 @@
-name: Invalidate Cloudfront Distribution
+name: update-saas-frontend
 on:
   push:
     branches: [main]
@@ -6,8 +6,13 @@ on:
       - "twake/frontend/**"
 
 jobs:
-  deploy:
+  build-frontend:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -18,6 +23,23 @@ jobs:
       - run: cd twake/frontend/ && yarn install
       - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
       - run: cd twake/frontend/ && yarn build
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: frontend-build
+          path: twake/frontend/build/
+
+  deploy:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download frontend-build artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: frontend-build
 
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
@@ -27,7 +49,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "eu-west-3" # optional: defaults to us-east-1
-          SOURCE_DIR: "" # optional: defaults to entire repository
+          SOURCE_DIR: "frontend-build" # optional: defaults to entire repository
 
       - uses: awact/cloudfront-action@0.1.2
         env:
