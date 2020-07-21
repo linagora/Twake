@@ -53,7 +53,7 @@ export default class ChannelsApps extends Component {
           channel.members.length &&
           (channel.members || [])
             .concat(channel.ext_members || [])
-            .indexOf(UserService.getCurrentUserId()) >= 0
+            .indexOf(UserService.getCurrentUserId()) >= 0,
       );
 
     var workspace_channels_by_app_id = {};
@@ -65,13 +65,6 @@ export default class ChannelsApps extends Component {
 
     return (
       <div className={'apps_channels'}>
-        {Object.keys(workspace_channels_by_app_id).length > 0 && (
-          <ChannelCategory
-            text={Languages.t('scenes.app.channelsbar.channelsapps.apps', [], 'APPLICATIONS')}
-            style={{ marginTop: '14px' }}
-          />
-        )}
-
         <div>
           {Object.keys(workspace_channels_by_app_id).map(id => {
             var channel = workspace_channels_by_app_id[id];
