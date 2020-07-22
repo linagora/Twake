@@ -31,7 +31,7 @@ export class ObjectModalSectionTitle extends Component {
           justifyContent: 'space-between',
         }}
       >
-        <b>{this.props.title}</b>
+        <b>{this.props.title || this.props.children}</b>
         <div>{this.props.action}</div>
       </div>
     );
@@ -71,7 +71,7 @@ export class ObjectModal extends Component {
           )}
         </div>
 
-        <div className="title">{this.props.title}</div>
+        <div className={!this.props.noCloseButton ? 'title' : ''}>{this.props.title}</div>
 
         {this.props.tabs && (
           <Tabs

@@ -20,6 +20,7 @@ export default {
   'general.unarchive': 'Unarchive',
   'general.from_other_workspace': 'From workspace $1',
   'general.help': 'Help',
+  'general.send': 'Send message',
   twake_not_on_device: "Twake doesn't work on your device.",
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',

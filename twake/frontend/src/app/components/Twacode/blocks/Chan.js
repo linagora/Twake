@@ -5,7 +5,7 @@ import Emojione from 'components/Emojione/Emojione.js';
 export default class CHan extends React.Component {
   render() {
     if (!this.props.id || !Collections.get('channels').find(this.props.id)) {
-      return <div className="channel_twacode unknown">#{this.props.name}</div>;
+      return <span>#{this.props.name}</span>;
     }
 
     var chan = Collections.get('channels').find(this.props.id);
