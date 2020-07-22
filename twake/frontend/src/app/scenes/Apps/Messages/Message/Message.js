@@ -22,6 +22,9 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import Globals from 'services/Globals.js';
 import './Message.scss';
+import MenusManager from 'services/Menus/MenusManager.js';
+import UserCard from 'app/components/UserCard/UserCard.js';
+import ChannelsService from 'services/channels/channels.js';
 
 import FirstMessage from './Types/FirstMessage.js';
 
@@ -37,6 +40,7 @@ export default class Message extends Component {
       is_hover: false,
       is_selected: false,
       loading_interaction: false,
+      userCard: false,
     };
 
     Languages.addListener(this);
@@ -84,6 +88,26 @@ export default class Message extends Component {
     return true;
   }
 
+  displayUserCard(user) {
+    console.log(`userCard: '${this.state.userCard}'`);
+    this.setState({ userCard: !this.state.userCard });
+
+    let box = window.getBoundingClientRect(this.user_details);
+    MenusManager.openMenu(
+      [
+        {
+          type: 'react-element',
+          reactElement: () => (
+            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+          ),
+        },
+      ],
+      box,
+      null,
+      {margin: 8}
+    );
+  }
+
   dropMessage(message) {
     if (Globals.window.mixpanel_enabled) {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
@@ -98,7 +122,7 @@ export default class Message extends Component {
         : PseudoMarkdownCompiler.compileToText(this.props.message.content);
     MessagesService.editMessage(
       this.state.app_messages_service.edited_message_raw[this.props.message.front_id],
-      this.props.messagesCollectionKey
+      this.props.messagesCollectionKey,
     );
     this.state.app_messages_service.edited_message_raw[this.props.message.front_id] = undefined;
     this.setState({});
@@ -200,7 +224,7 @@ export default class Message extends Component {
           MessagesService.setCurrentEphemeral(
             app,
             this.props.message,
-            this.props.messagesCollectionKey
+            this.props.messagesCollectionKey,
           );
         }
         if (
@@ -259,7 +283,13 @@ export default class Message extends Component {
                       </div>
                     )}
                     {!(this.props.message.hidden_data || {}).custom_title && user && (
-                      <div className="user_fullname">{User.getFullName(user)}</div>
+                      <div
+                        ref={node => (this.user_details = node)}
+                        onClick={() => this.displayUserCard(user)}
+                        className="user_fullname"
+                      >
+                        {User.getFullName(user)}
+                      </div>
                     )}
                     {user && user.status_icon && user.status_icon[0] && (
                       <div className="user_status">
@@ -299,7 +329,7 @@ export default class Message extends Component {
                     }}
                     content={MessagesService.prepareContent(
                       this.props.message.content,
-                      this.props.message.user_specific_content
+                      this.props.message.user_specific_content,
                     )}
                     id={this.props.message.front_id}
                     isApp={this.props.message.message_type == 1}
@@ -356,7 +386,7 @@ export default class Message extends Component {
                       value={Languages.t(
                         'scenes.apps.messages.message.save_button',
                         [],
-                        'Enregistrer'
+                        'Enregistrer',
                       )}
                       className="small right-margin"
                       onClick={() => this.editMessage()}
@@ -365,7 +395,7 @@ export default class Message extends Component {
                       value={Languages.t(
                         'scenes.apps.messages.message.cancel_button',
                         [],
-                        'Annuler'
+                        'Annuler',
                       )}
                       className="small secondary"
                       style={{ marginRight: 10 }}
@@ -384,12 +414,12 @@ export default class Message extends Component {
                       {Object.keys(this.props.message.reactions)
                         .sort(
                           (a, b) =>
-                            this.props.message.reactions[b] - this.props.message.reactions[a]
+                            this.props.message.reactions[b] - this.props.message.reactions[a],
                         )
                         .map(reaction => {
                           var value = (this.props.message.reactions[reaction] || {}).count || 0;
                           var members = Object.values(
-                            (this.props.message.reactions[reaction] || {}).users || []
+                            (this.props.message.reactions[reaction] || {}).users || [],
                           );
                           if (value <= 0) {
                             return '';
@@ -418,7 +448,7 @@ export default class Message extends Component {
                                   MessagesService.react(
                                     this.props.message,
                                     reaction,
-                                    this.props.messagesCollectionKey
+                                    this.props.messagesCollectionKey,
                                   );
                                 }}
                                 onMouseOver={() => {
@@ -533,11 +563,11 @@ export default class Message extends Component {
           onDragStart={evt => {}}
           minMove={10}
           className={'message fade_in'}
-          onDoubleClick={() => {
+          /*onDoubleClick={() => {
             if (canDropIn) {
               MessagesService.showMessage(this.props.message.id);
             }
-          }}
+          }}*/
           deactivated={!canDrag}
         >
           {message}
