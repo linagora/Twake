@@ -276,6 +276,9 @@ class Login extends Observable {
   }
 
   startApp(user) {
+    if (!window.mixpanel) {
+      Globals.window.mixpanel_enabled = false;
+    }
     if (Globals.window.mixpanel_enabled) {
       window.mixpanel.identify(user.id);
       window.mixpanel.people.set({
