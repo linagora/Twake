@@ -15,29 +15,6 @@ use Common\Http\Request;
 
 class WorkspaceData extends BaseController
 {
-    /**
-     * Get workspace data
-     */
-    public function getDetails(Request $request)
-    {
-
-        $response = Array("errors" => Array(), "data" => Array());
-
-        $workspaceId = $request->request->get("workspaceId");
-
-        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
-
-        if (!$ws) {
-            $response["errors"][] = "notallowed";
-        } else {
-            $response["data"] = $ws->getAsArray();
-            $mw = $this->get("app.workspace_members");
-            $response["data"]["total_members"] = count($mw->getMembers($workspaceId)) + count($mw->getPendingMembers($workspaceId)) - 1;
-            $response["data"]["isArchived"] = $ws->getisArchived();
-        }
-
-        return new Response($response);
-    }
 
     public function setName(Request $request)
     {

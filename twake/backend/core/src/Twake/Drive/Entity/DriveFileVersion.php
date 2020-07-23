@@ -52,6 +52,11 @@ class DriveFileVersion
     private $size;
 
     /**
+     * @ORM\Column(type="twake_bigint")
+     */
+    private $file_size;
+
+    /**
      * @ORM\Column(type="twake_datetime")
      */
     private $date_added;
@@ -144,7 +149,7 @@ class DriveFileVersion
      */
     public function getSize()
     {
-        return $this->size;
+        return $this->file_size || $this->size; //Size is the old 32bit integer...
     }
 
     /**
@@ -152,7 +157,7 @@ class DriveFileVersion
      */
     public function setSize($size)
     {
-        $this->size = $size;
+        $this->file_size = $size;
     }
 
     /**
@@ -178,7 +183,7 @@ class DriveFileVersion
             "name" => $this->getFileName(),
             "file_id" => $this->getFileId(),
             "added" => $this->date_added->getTimestamp(),
-            "size" => $this->size,
+            "size" => $this->getSize(),
             //"user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : "",
             "creator" => $this->getUserId(),
             "data" => $this->getData()

@@ -54,7 +54,7 @@ export default class Channel extends React.Component {
             tooltip={Languages.t(
               'scenes.apps.drive.drive_tour.left_bar.not_in_ws',
               [],
-              'User not in current workspace'
+              'User not in current workspace',
             )}
             position="top"
           >
@@ -71,7 +71,7 @@ export default class Channel extends React.Component {
             tooltip={Languages.t(
               'scenes.apps.drive.drive_tour.left_bar.imported',
               [],
-              'Imported from another workspace'
+              'Imported from another workspace',
             )}
             position="top"
           >
