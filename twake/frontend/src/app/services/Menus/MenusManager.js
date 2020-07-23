@@ -69,7 +69,7 @@ class MenusManager extends Observable {
       options = {};
     }
 
-    var position = this.bestPosition(domRect, positionType);
+    var position = this.bestPosition(domRect, positionType, {margin: options.margin || 0});
 
     this.menus.push({
       menu: menu,
@@ -122,12 +122,27 @@ class MenusManager extends Observable {
     }, 200);
   }
 
-  bestPosition(rect, position) {
+  bestPosition(rect, position, options) {
     if (Globals.isReactNative) {
       return {};
     }
 
-    var x = rect.right || rect.x;
+    options = options || {};
+    options.margin = options.margin || 0;
+
+    rect = {
+      left: rect.left - options.margin,
+      x: rect.x - options.margin,
+      top: rect.top - options.margin,
+      y: rect.y - options.margin,
+      right: rect.right + options.margin,
+      bottom: rect.bottom + options.margin,
+      width: rect.width + 2*options.margin,
+      height: rect.height + 2*options.margin,
+    };
+
+
+    var x = (rect.right || rect.x);
     var y = rect.y;
 
     if (position == 'top' || position == 'bottom' || position == 'center') {

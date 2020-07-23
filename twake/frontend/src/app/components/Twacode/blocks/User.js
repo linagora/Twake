@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import UserService from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
+import ChannelsService from 'services/channels/channels.js';
 
 export default class User extends React.Component {
   componentWillMount() {
@@ -13,13 +14,13 @@ export default class User extends React.Component {
   }
   render() {
     if (!this.props.id) {
-      return <div className="user_twacode unknown">@{this.props.username}</div>;
+      return <span>@{this.props.username}</span>;
     }
     var id = this.props.id;
     var user = Collections.get('users').find(id);
     if (user) {
       return (
-        <div className="user_twacode">
+        <div className="user_twacode" onClick={() => ChannelsService.openDiscussion([user.id])}>
           <div
             className="userimage"
             style={{ backgroundImage: "url('" + UserService.getThumbnail(user) + "')" }}
@@ -29,7 +30,7 @@ export default class User extends React.Component {
       );
     } else {
       UserService.asyncGet(id);
-      return <div className="user_twacode unknown">@{this.props.username}</div>;
+      return <span>@{this.props.username}</span>;
     }
   }
 }
