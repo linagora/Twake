@@ -1,6 +1,6 @@
 #! /bin/sh
 
-v=$(cat src/app/environment/environment.ts|grep "version_detail");
+v=$(cat src/app/environment/version.ts|grep "version_detail");
 v=$(echo $v|sed "s/^.*'\([^']*\)'.*/\1/");
 echo "Current version : $v";
 
@@ -12,7 +12,10 @@ else
   b=$(echo Q$(( ($(date +%-m)-1)/3+1 )))
 fi
 
-c=$(git rev-list --all --count);
+git remote add script-counter https://github.com/TwakeApp/Twake
+git fetch script-counter
+c=$(git rev-list script-counter/main --count);
+git remote rm script-counter
 
 nvd="$a.$b.$c";
 nv="$a.$b";

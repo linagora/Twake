@@ -6,6 +6,7 @@
 // import { MixpanelInstance } from 'react-native-mixpanel';
 
 import environment from 'environment/environment';
+import version from 'environment/version';
 // const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
 class Globals {
@@ -20,6 +21,9 @@ class Globals {
 
     Object.keys(environment).forEach(key => {
       this.window[key] = environment[key];
+    });
+    Object.keys(version).forEach(key => {
+      this.window[key] = version[key];
     });
 
     this.version_detail = window.version_detail;
