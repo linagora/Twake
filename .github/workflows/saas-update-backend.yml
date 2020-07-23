@@ -1,4 +1,4 @@
-name: docker-build
+name: update-saas-backend
 
 # Deploy backend only if push on "main"
 on:
@@ -7,6 +7,7 @@ on:
     paths:
       - "twake/docker/**"
       - "twake/backend/**"
+      - ".github/workflows/**"
 
 jobs:
   deploy-php:
@@ -19,7 +20,7 @@ jobs:
           name: twaketech/twake-php
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          context: twake
+          workdir: twake
           buildoptions: "-t twaketech/twake-php -f docker/twake-php/Dockerfile"
 
   deploy-websockets:
@@ -32,5 +33,5 @@ jobs:
           name: twaketech/twake-websockets
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          context: twake
+          workdir: twake
           buildoptions: "-t twaketech/twake-websockets -f docker/twake-websockets/Dockerfile"
