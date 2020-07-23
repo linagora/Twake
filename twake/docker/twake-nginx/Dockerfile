@@ -50,6 +50,8 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 RUN yarn global add webpack
 RUN yarn global add webpack-cli
+RUN apt-get update
+RUN apt-get -y install git
 
 WORKDIR /twake-react/
 

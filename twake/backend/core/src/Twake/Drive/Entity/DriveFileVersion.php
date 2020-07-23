@@ -149,7 +149,7 @@ class DriveFileVersion
      */
     public function getSize()
     {
-        return $this->file_size || $this->size; //Size is the old 32bit integer...
+        return $this->file_size ?: $this->size; //Size is the old 32bit integer...
     }
 
     /**
