@@ -20,6 +20,7 @@ jobs:
           name: twaketech/twake-php
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          context: twake
 
   deploy-websockets:
     runs-on: ubuntu-latest
@@ -32,3 +33,4 @@ jobs:
           name: twaketech/twake-websockets
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          context: twake
