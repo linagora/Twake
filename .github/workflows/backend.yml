@@ -1,10 +1,6 @@
 name: backend-build
 
 on:
-  push:
-    branches: [main, "feature/*"]
-    paths:
-      - "twake/backend/core/**"
   pull_request:
     branches: [main, "feature/*"]
     paths:
