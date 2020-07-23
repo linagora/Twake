@@ -33,7 +33,7 @@ class ManagerAdapter
             "ssl" => $app->getContainer()->getParameter("db.ssl"),
             "encryption_key" => $app->getContainer()->getParameter("db.encryption_key"),
         );
-        $this->dev_mode = $app->getContainer()->getParameter("db.dev") || (defined("TESTENV") && TESTENV); // If false no entity generation
+        $this->dev_mode = true; // If false no entity generation
         $this->manager = null;
 
         $this->circle = $app->getServices()->get("app.restclient");

@@ -33,8 +33,7 @@ class Parameters extends \Common\Configuration
                 "dbname" => "twake",
                 "user" => "root",
                 "password" => "root",
-                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
-                "dev" => true
+                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0"
             ],
             "es" => [
               "host" => "elasticsearch:9200"
