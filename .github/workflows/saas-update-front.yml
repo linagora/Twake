@@ -8,6 +8,7 @@ on:
     paths:
       - "twake/frontend/**"
       - "twake/docker/**"
+      - ".github/workflows/**"
   pull_request:
     branches: ["feature/*"]
     paths:
@@ -83,5 +84,5 @@ jobs:
           name: twaketech/twake-nginx
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          context: twake
+          workdir: twake
           buildoptions: "-t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile"
