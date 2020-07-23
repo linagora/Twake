@@ -84,3 +84,4 @@ jobs:
           name: twaketech/twake-nginx
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          context: twake

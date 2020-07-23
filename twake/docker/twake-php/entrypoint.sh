@@ -26,9 +26,6 @@ then
     cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
   fi
 else
-  php composer.phar dump-autoload --optimize
-  php composer.phar dump-autoload --classmap-authoritative
-  php composer.phar dump-autoload --apcu
   if test -f "/configuration/Parameters.php"; then
     cp /configuration/Parameters.php /twake-core/app/Configuration/Parameters.php
   else
@@ -36,7 +33,7 @@ else
   fi
 fi
 
-(php bin/console twake:schema:update; php bin/console twake:init; php bin/console twake:init_connector; php bin/console twake:mapping) &
+(php composer.phar dump-autoload --optimize;  php composer.phar dump-autoload --classmap-authoritative; php composer.phar dump-autoload --apcu; php bin/console twake:schema:update; php bin/console twake:init; php bin/console twake:init_connector; php bin/console twake:mapping) &
 
 cron -f &
 docker-php-entrypoint php-fpm

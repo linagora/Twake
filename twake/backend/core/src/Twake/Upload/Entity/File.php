@@ -109,11 +109,9 @@ class File
      */
     public function getPublicURL($size = 0)
     {
-
         if ($this->aws_public_link) {
             return $this->aws_public_link . "";
         }
-
         if (!$this->size_exists($size)) {
             return "";
         }
