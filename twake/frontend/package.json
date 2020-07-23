@@ -5,7 +5,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js; scripts/build-version.sh patch",
+    "build": "scripts/build-version.sh patch && node scripts/build.js",
     "change-version": "scripts/build-version.sh",
     "test": "node scripts/test.js"
   },
