@@ -23,7 +23,6 @@ class Routing extends BaseRouting
         "set/isNew" => ["handler" => "Workspace:setIsNew", "methods" => ["POST"], "security" => ["user_connected_security"]],
 # Edit workspace data
 
-        "data/details" => ["handler" => "WorkspaceData:getDetails", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "data/name" => ["handler" => "WorkspaceData:setName", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "data/logo" => ["handler" => "WorkspaceData:setLogo", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "data/wallpaper" => ["handler" => "WorkspaceData:setWallpaper", "methods" => ["POST"], "security" => ["user_connected_security"]],

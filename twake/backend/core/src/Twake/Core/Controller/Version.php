@@ -39,10 +39,8 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
-            "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161",
-            "websocket_public_key" => $this->container->getParameter("websocket.pusher_public"),
-            "version" => "1.2.2-0",
-            "last_compatible_mobile_version" => "1.2.000"
+            "help_link" => "https://community.twake.app",
+            "websocket_public_key" => $this->container->getParameter("websocket.pusher_public")
         );
 
         if ($this->container->hasParameter("defaults.branding")) {

@@ -33,9 +33,8 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         $membersRepo = $this->doctrine->getRepository("Twake\Channels:ChannelMember");
         $userRepo = $this->doctrine->getRepository("Twake\Users:User");
-        /**
-         * @var $members ChannelMember[]
-         */
+
+        //TODO:scale:1 This will cause an issue on really big channels
         $members = $membersRepo->findBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId()));
 
         $workspace = $channel->getOriginalWorkspaceId();
