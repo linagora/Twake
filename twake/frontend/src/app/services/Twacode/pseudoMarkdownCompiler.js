@@ -241,8 +241,6 @@ class PseudoMarkdownCompiler {
 
     var result = [];
 
-    console.log(link_found);
-
     if (link_found.length == 0) {
       return [string];
     } else {

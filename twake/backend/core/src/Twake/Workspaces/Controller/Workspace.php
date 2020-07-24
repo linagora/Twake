@@ -32,10 +32,6 @@ class Workspace extends BaseController
             $response["errors"][] = "notallowed";
         } else {
 
-            if ($ws->getGroup() != null) {
-                $this->get("app.groups")->stopFreeOffer($ws->getGroup()->getId());
-            }
-
             $response["data"] = $ws->getAsArray();
 
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
@@ -53,7 +49,6 @@ class Workspace extends BaseController
 
             $wp = $workspaceRepository->find($workspaceId);
             if ($wp->getGroup() != null) {
-
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
                 $level = $this->get("app.group_managers")->getLevel($group, $this->getUser()->getId());
@@ -61,28 +56,15 @@ class Workspace extends BaseController
                 $privileges = $this->get("app.group_managers")->getPrivileges($level);
                 $response["data"]["group"]["level"] = $privileges;
 
-                $limit = $this->get("app.pricing_plan")->getLimitation($group->getId(), "maxWorkspace", PHP_INT_MAX);
+                $response["data"]["apps"] = $this->get("app.workspaces_apps")->getApps($workspaceId);
 
-                $nbWorkspace = [];
-                $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
-                foreach ($_nbWorkspace as $ws) {
-                    if (!$ws->getis_deleted()) {
-                        $nbWorkspace[] = $ws;
-                    }
+                if($wp->getMemberCount() < 50){
+                    $response["data"]["members"] = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId());
+                }else{
+                    $response["data"]["members"] = [];
                 }
 
-                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $wp->getGroup()));
-                $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
-                $limitApps = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "apps", PHP_INT_MAX);
-
-                $response["data"]["apps"] = $this->get("app.workspaces_apps")->getApps($workspaceId);
-                $response["data"]["members"] = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId());
-
                 $response["data"]["maxWorkspace"] = $limit;
-                $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
-                $response["data"]["maxUser"] = $limitUser;
-                $response["data"]["maxApps"] = $limitApps;
-                $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
         }
         return new Response($response);
@@ -460,4 +442,6 @@ class Workspace extends BaseController
         }
         return new Response($response);
     }
+
+    
 }

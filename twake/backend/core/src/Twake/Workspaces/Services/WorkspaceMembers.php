@@ -146,8 +146,11 @@ class WorkspaceMembers
             $member->setExterne($asExterne);
             $member->setAutoAddExterne($autoAddExterne);
 
-
-            $workspace->setMemberCount($workspace->getMemberCount() + 1);
+            if($asExterne){
+                $workspace->setGuestCount($workspace->getGuestCount() + 1);
+            }else{
+                $workspace->setMemberCount($workspace->getMemberCount() + 1);
+            }
 
             $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
@@ -156,6 +159,7 @@ class WorkspaceMembers
                 $groupmember = new GroupUser($workspace->getGroup(), $user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
+                $workspace->getGroup()->setMemberCount($workspace->getGroup()->getMemberCount() + 1);
             } else {
                 $groupmember->increaseNbWorkspace();
             }
@@ -164,6 +168,7 @@ class WorkspaceMembers
             $this->doctrine->persist($workspace);
             $this->doctrine->persist($member);
             $this->doctrine->persist($groupmember);
+            $this->doctrine->persist($workspace->getGroup());
             $this->doctrine->flush();
 
 
@@ -315,6 +320,8 @@ class WorkspaceMembers
                 $userByMail = new WorkspaceUserByMail($workspace, $mail);
                 $userByMail->setExterne($asExterne);
                 $userByMail->setAutoAddExterne($autoAddExterne);
+                $workspace->setPendingCount($workspace->getPendingCount()+1);
+                $this->doctrine->persist($workspace);
                 $this->doctrine->persist($userByMail);
                 $this->doctrine->flush();
                 $retour = "mail";
@@ -344,7 +351,11 @@ class WorkspaceMembers
             $mail = $this->string_cleaner->simplifyMail($mail);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
-            $workspaceUserByMailRepository->removeBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            foreach($mails as $mailguest){         
+                $doctrine->remove($mailguest);       
+                $workspace->setPendingCount($workspace->getPendingCount() - 1);
+            }
 
             $userRepository = $this->doctrine->getRepository("Twake\Users:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
@@ -449,26 +460,12 @@ class WorkspaceMembers
 
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
 
-            /*$datatopush = Array(
-                "type" => "CHANGE_MEMBERS",
-                "data" => Array(
-                    "id" => $userId,
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
-
-            $datatopush = Array(
-                "action" => "RM",
-                "data" => Array(
-                    "id" => $user->getId(),
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());*/
-
             if ($member) {
-                $workspace->setMemberCount($workspace->getMemberCount() - 1);
+                if($member->getExterne()){
+                    $workspace->setGuestCount($workspace->getGuestCount() - 1);
+                }else{
+                    $workspace->setMemberCount($workspace->getMemberCount() - 1);
+                }
                 $this->doctrine->persist($workspace);
                 $this->doctrine->remove($member);
             }
@@ -576,7 +573,7 @@ class WorkspaceMembers
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null, $order = Array("user" => "DESC"), $max = 0, $offset = 0)
+    public function getMembers($workspaceId, $currentUserId = null, $order = Array("user" => "DESC"), $max = 100, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")

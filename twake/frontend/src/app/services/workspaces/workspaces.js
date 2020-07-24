@@ -75,7 +75,7 @@ class Workspaces extends Observable {
         this.select(firstWorkspace);
       }
 
-      if (Collections.get('users').known_objects_by_id[User.getCurrentUserId()].isNew) {
+      if (Collections.get('users').known_objects_by_id[User.getCurrentUserId()].is_new) {
         this.openWelcomePage(this.welcomePage);
       }
     });
@@ -153,8 +153,7 @@ class Workspaces extends Observable {
           WorkspaceUserRights.currentUserRightsByGroup[res.data.group.id] =
             res.data.group.level || [];
           WorkspaceUserRights.notify();
-
-          workspacesUsers.load(workspace.id, false, { members: res.data.members });
+          workspacesUsers.load(workspace.id, false, { members: res.data.members || [] });
           workspacesApps.load(workspace.id, false, { apps: res.data.apps });
         } else {
           this.removeFromUser(workspace);
@@ -310,7 +309,7 @@ class Workspaces extends Observable {
     this.notify();
     var that = this;
     Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function (
-      res
+      res,
     ) {
       if (res.errors.length == 0) {
         var update = {
@@ -379,7 +378,7 @@ class Workspaces extends Observable {
     if (
       workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId) &&
       (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).filter(
-        userId => !workspacesUsers.isExterne(userId)
+        userId => !workspacesUsers.isExterne(userId),
       ).length > 1
     ) {
       this.errorDeleteWorkspaceMember = true;
@@ -389,6 +388,10 @@ class Workspaces extends Observable {
         PopupManager.close();
       });
     }
+  }
+
+  getCurrentWorkspace() {
+    return Collections.get('workspaces').find(this.currentWorkspaceId) || {};
   }
 }
 

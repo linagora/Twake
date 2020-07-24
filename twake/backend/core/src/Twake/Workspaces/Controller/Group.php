@@ -105,7 +105,7 @@ class Group extends BaseController
                 $list[] = $temp;
             }
             $response["data"] = Array("users" => $list);
-            $response["data"]["nbuser"] = $nb;
+            $response["data"]["nbuser"] = max($nb, count($list));
         }
 
         return new Response($response);
@@ -177,24 +177,5 @@ class Group extends BaseController
         return new Response($response);
     }
 
-    public function runFreeOffer(Request $request)
-    {
-        $response = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $groupId = $request->request->get("groupId");
-
-        $res = $this->get("app.groups")->runFreeOffer($groupId, $this->getUser()->getId());
-
-        if ($res) {
-            $response["data"] = "success";
-        } else {
-            $response["errors"] = ["error"];
-        }
-
-
-        return new Response($response);
-    }
+    
 }
