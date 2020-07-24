@@ -57,7 +57,8 @@ class Workspace extends BaseController
                 $response["data"]["group"]["level"] = $privileges;
 
                 $response["data"]["apps"] = $this->get("app.workspaces_apps")->getApps($workspaceId);
-
+                
+                $this->get("app.workspace_members")->updateCountersIfEmpty($workspaceId);
                 if($wp->getMemberCount() < 50){
                     $response["data"]["members"] = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId());
                 }else{

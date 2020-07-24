@@ -663,4 +663,29 @@ class WorkspaceMembers
 
         return $workspaces;
     }
+
+    public function updateCountersIfEmpty($workspaceId){
+        $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+        $workspace = $workspaceRepository->find($workspaceId);
+
+        $update = false;
+
+        if($workspace->getMemberCount() === 0){
+            $workspace->setMemberCount(count($this->getMembers($workspaceId)));
+            $update = true;
+        }
+
+        if($workspace->getPendingCount() === 0){
+            $count = count($this->getPendingMembers($workspaceId));
+            $workspace->setPendingCount($count);
+            $update = $update || ($count > 0);
+        }
+
+        if($update){
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+        }
+
+    }
+
 }
