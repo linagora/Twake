@@ -167,12 +167,6 @@ class WorkspacesUsers extends Observable {
 
     if (options.group_users) {
       loadMembers(options.group_users);
-    } else {
-      Api.post('workspace/group/getUsers', { groupId: group_id }, res => {
-        if (res.data && res.data.users) {
-          loadGroupUsers(res.data);
-        }
-      });
     }
   }
   canShowUserInWorkspaceList(member) {
