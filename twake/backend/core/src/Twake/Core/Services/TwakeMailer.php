@@ -114,11 +114,22 @@ class TwakeMailer
                 ->setAuthMode($this->mail_parameters["sender"]["auth_mode"]);
             $this->mailer = new \Swift_Mailer($transport);
         }
-
-        $privateKey = $this->mail_parameters["dkim"]["private_key"];
-        $domainName = $this->mail_parameters["dkim"]["domain_name"];
-        $selector = $this->mail_parameters["dkim"]["selector"];
-        $signer = new Swift_Signers_DKIMSigner($privateKey, $domainName, $selector);
+        
+        if(isset($this->mail_parameters["dkim"]) && 
+           isset($this->mail_parameters["dkim"]["private_key"]) && $this->mail_parameters["dkim"]["private_key"] !== "" &&
+           isset($this->mail_parameters["dkim"]["domain_name"]) && $this->mail_parameters["dkim"]["domain_name"] !== "" &&
+           isset($this->mail_parameters["dkim"]["selector"]) && $this->mail_parameters["dkim"]["selector"] !== ""){
+            $is_DKIM = true;
+        }else{
+            $is_DKIM = false;
+        }
+        
+        if($is_DKIM){
+            $privateKey = $this->mail_parameters["dkim"]["private_key"];
+            $domainName = $this->mail_parameters["dkim"]["domain_name"];
+            $selector = $this->mail_parameters["dkim"]["selector"];
+            $signer = new Swift_Signers_DKIMSigner($privateKey, $domainName, $selector);
+        }
 
         $this->app->getProviders()->getContainer()['swiftmailer.options'] = $this->mail_parameters["sender"];
 
@@ -145,9 +156,10 @@ class TwakeMailer
             }
         }
 
-
-        $message->attachSigner($signer);
-
+        if($is_DKIM){
+            $message->attachSigner($signer);
+        }
+        
         $this->mailer->send($message);
 
         //[/REMOVE_ONPREMISE]
