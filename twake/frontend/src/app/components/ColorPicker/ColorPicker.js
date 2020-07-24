@@ -3,7 +3,7 @@ import './ColorPicker.scss';
 import CheckIcon from '@material-ui/icons/CheckOutlined';
 
 export default class ColorPicker extends React.Component {
-  colors = [
+  static colors = [
     '#D50000',
     '#E67C73',
     '#F4511E',
