@@ -616,7 +616,7 @@ class WorkspaceMembers
         return false;
     }
 
-    public function getPendingMembers($workspaceId, $currentUserId = null)
+    public function getPendingMembers($workspaceId, $currentUserId = null, $max = 100, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -630,7 +630,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspace));
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspace), null, $order, $max, $offset);
 
             return $mails;
         }

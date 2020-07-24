@@ -54,6 +54,7 @@ class Routing extends BaseRouting
 # Edit members
 
         "members/list" => ["handler" => "WorkspaceMembers:getMembers", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "members/pending" => ["handler" => "WorkspaceMembers:getPending", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "members/addlist" => ["handler" => "WorkspaceMembers:addList", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "members/removemail" => ["handler" => "WorkspaceMembers:removeMail", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "members/remove" => ["handler" => "WorkspaceMembers:removeMembers", "methods" => ["POST"], "security" => ["user_connected_security"]],
