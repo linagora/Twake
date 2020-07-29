@@ -2,7 +2,6 @@
 
 # Twake - Ultimate collaborative Workspace
 
-![Licence](https://img.shields.io/badge/license-AGPL3-blue?style=flat)
 ![update-saas-backend](https://github.com/TwakeApp/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
 ![update-saas-frontend](https://github.com/TwakeApp/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
 ![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
@@ -58,4 +57,4 @@ Install Twake on your machine with docker-compose using the install documentatio
 
 ## License
 
-Twake is licensed under [Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
+Twake is licensed under [Affero GPL v3 with clause](https://github.com/TwakeApp/Twake/blob/main/LICENSE.md)
