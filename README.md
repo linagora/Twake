@@ -57,4 +57,4 @@ Install Twake on your machine with docker-compose using the install documentatio
 
 ## License
 
-Twake is licensed under [Affero GPL v3 with clause](https://github.com/TwakeApp/Twake/blob/main/LICENSE.md)
+Twake is licensed under [Affero GPL v3 with additional terms](https://github.com/TwakeApp/Twake/blob/main/LICENSE.md)
