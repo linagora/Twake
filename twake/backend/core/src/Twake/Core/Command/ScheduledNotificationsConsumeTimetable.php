@@ -24,6 +24,7 @@ class ScheduledNotificationsConsumeTimetable extends ContainerAwareCommand
 
         while (date("U") < $limit) {
             $service->consumeShards(60);
+            usleep(100000);
         }
     }
 
