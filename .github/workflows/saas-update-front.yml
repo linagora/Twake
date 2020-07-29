@@ -90,3 +90,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
           buildoptions: "-t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile"
+          tags: "latest"
