@@ -205,7 +205,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "firstname", "lastname", "username", "language", "creation_date"
+                    "firstname", "lastname", "username", "language", "creation_date", "groups_id", "workspaces_id"
                 )
             ),
             "properties" => Array(
@@ -214,7 +214,9 @@ class MappingCommand extends ContainerAwareCommand
                 "lastname" => Array("type" => "text"),
                 "username" => Array("type" => "text"),
                 "language" => Array("type" => "keyword"),
-                "creation_date" => Array("type" => "date")
+                "creation_date" => Array("type" => "date"),
+                "workspaces_id" => Array("type" => "keyword"),
+                "groups_id" => Array("type" => "keyword"),
             )
         );
 

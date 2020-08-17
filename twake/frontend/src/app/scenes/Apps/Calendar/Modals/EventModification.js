@@ -16,6 +16,7 @@ import Select from 'components/Select/Select.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import Icon from 'components/Icon/Icon.js';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Modals.scss';
 
 export default class EventModification extends Component {
@@ -45,9 +46,9 @@ export default class EventModification extends Component {
         text: Languages.t(
           'scenes.apps.calendar.modals.remove_event_text',
           [],
-          "Supprimer l'événement ?"
+          "Supprimer l'événement ?",
         ),
-      }
+      },
     );
   }
 
@@ -74,90 +75,92 @@ export default class EventModification extends Component {
     });
 
     return (
-      <div className="eventModal event_modification">
-        <Input
-          autoFocus
-          value={event.title || ''}
-          placeholder={Languages.t(
-            'scenes.apps.calendar.modals.event_title_placeholder',
-            [],
-            'Titre'
-          )}
-          onChange={evt => {
-            this.change('title', evt.target.value);
-          }}
-          className="full_width bottom-margin"
-          big
-        />
-
-        <div className="bottom-margin date_and_type">
-          <Select
-            medium
-            value={event.type || 'event'}
-            onChange={value => {
-              this.change('type', value);
+      <PerfectScrollbar options={{ suppressScrollX: true }}>
+        <div className="eventModal event_modification">
+          <Input
+            autoFocus
+            value={event.title || ''}
+            placeholder={Languages.t(
+              'scenes.apps.calendar.modals.event_title_placeholder',
+              [],
+              'Titre',
+            )}
+            onChange={evt => {
+              this.change('title', evt.target.value);
             }}
-            options={CalendarService.event_types}
-            className="right-margin"
+            className="full_width bottom-margin"
+            big
           />
-          <DateSelector
-            event={event}
-            onChange={(from, to, all_day, repetition_definition) => {
-              this.change('from', from, false);
-              this.change('to', to, false);
-              this.change('all_day', all_day, false);
-              this.change('repetition_definition', repetition_definition);
-            }}
-          />
-        </div>
 
-        <div style={{ display: 'flex' }} className="full_width">
-          <div style={{ flex: 1, display: 'flex' }}>
-            <InputIcon
-              icon={(event.location || '').slice(0, 4) == 'http' ? 'link' : 'location-point'}
+          <div className="bottom-margin date_and_type">
+            <Select
               medium
-              value={event.location || ''}
-              placeholder={Languages.t(
-                'scenes.apps.calendar.modals.event_adresse_placeholder',
-                [],
-                'Adresse'
-              )}
-              onChange={evt => {
-                this.change('location', evt.target.value);
+              value={event.type || 'event'}
+              onChange={value => {
+                this.change('type', value);
               }}
-              className="full_width bottom-margin right-margin"
+              options={CalendarService.event_types}
+              className="right-margin"
+            />
+            <DateSelector
+              event={event}
+              onChange={(from, to, all_day, repetition_definition) => {
+                this.change('from', from, false);
+                this.change('to', to, false);
+                this.change('all_day', all_day, false);
+                this.change('repetition_definition', repetition_definition);
+              }}
             />
           </div>
-          <Button
-            className="button medium default bottom-margin"
-            onClick={() => {
-              this.change(
-                'location',
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id
-              );
+
+          <div style={{ display: 'flex' }} className="full_width">
+            <div style={{ flex: 1, display: 'flex' }}>
+              <InputIcon
+                icon={(event.location || '').slice(0, 4) == 'http' ? 'link' : 'location-point'}
+                medium
+                value={event.location || ''}
+                placeholder={Languages.t(
+                  'scenes.apps.calendar.modals.event_adresse_placeholder',
+                  [],
+                  'Adresse',
+                )}
+                onChange={evt => {
+                  this.change('location', evt.target.value);
+                }}
+                className="full_width bottom-margin right-margin"
+              />
+            </div>
+            <Button
+              className="button medium default bottom-margin"
+              onClick={() => {
+                this.change(
+                  'location',
+                  'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' +
+                    event.front_id,
+                );
+              }}
+            >
+              <Icon type="video" />
+            </Button>
+          </div>
+
+          <InputIcon
+            autoHeight
+            icon="align-left-justify"
+            medium
+            value={event.description || ''}
+            placeholder={Languages.t(
+              'scenes.apps.calendar.modals.event_description_placeholder',
+              [],
+              'Description',
+            )}
+            onChange={evt => {
+              this.change('description', evt.target.value);
             }}
-          >
-            <Icon type="video" />
-          </Button>
-        </div>
+            className="full_width bottom-margin"
+          />
 
-        <InputIcon
-          autoHeight
-          icon="align-left-justify"
-          medium
-          value={event.description || ''}
-          placeholder={Languages.t(
-            'scenes.apps.calendar.modals.event_description_placeholder',
-            [],
-            'Description'
-          )}
-          onChange={evt => {
-            this.change('description', evt.target.value);
-          }}
-          className="full_width bottom-margin"
-        />
-
-        {/*
+          {/*
       <span className="right-margin">
         <Checkbox small value={event.available} onChange={(value)=>{this.change("available", value)}} label="Afficher comme disponible"/>
       </span>
@@ -165,68 +168,69 @@ export default class EventModification extends Component {
       <br/>
       */}
 
-        <CalendarSelector
-          medium
-          value={event.workspaces_calendars || []}
-          onChange={workspaces_calendars => {
-            this.change('workspaces_calendars', workspaces_calendars);
-          }}
-          calendarList={calendar_list}
-          className=""
-        />
+          <CalendarSelector
+            medium
+            value={event.workspaces_calendars || []}
+            onChange={workspaces_calendars => {
+              this.change('workspaces_calendars', workspaces_calendars);
+            }}
+            calendarList={calendar_list}
+            className=""
+          />
 
-        <div className="separator" />
+          <div className="separator" />
 
-        <Participants
-          participants={event.participants}
-          owner={event.owner}
-          onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
-        />
+          <Participants
+            participants={event.participants}
+            owner={event.owner}
+            onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
+          />
 
-        <div className="separator" />
+          <div className="separator" />
 
-        <AttachmentPicker
-          attachments={event.attachments}
-          onChange={attachments => this.change('attachments', attachments)}
-        />
+          <AttachmentPicker
+            attachments={event.attachments}
+            onChange={attachments => this.change('attachments', attachments)}
+          />
 
-        <div className="separator" />
+          <div className="separator" />
 
-        <div className="bottom-margin">
-          <b>{Languages.t('scenes.apps.calendar.modals.reminders', [], 'Rappels')}</b>
+          <div className="bottom-margin">
+            <b>{Languages.t('scenes.apps.calendar.modals.reminders', [], 'Rappels')}</b>
+          </div>
+
+          <ReminderSelector
+            reminders={event.notifications || []}
+            onChange={reminders => this.change('notifications', reminders)}
+          />
+
+          <div className="separator" />
+
+          <Button
+            className="button medium danger medium"
+            style={{ width: 'auto' }}
+            onClick={() => {
+              this.remove();
+            }}
+          >
+            {Languages.t(
+              'scenes.apps.calendar.modals.remove_event_button',
+              [],
+              "Supprimer l'événement",
+            )}
+          </Button>
+
+          <Button
+            className="button medium btn-primary medium"
+            style={{ width: 'auto', float: 'right' }}
+            onClick={() => {
+              this.save();
+            }}
+          >
+            {Languages.t('scenes.apps.calendar.modals.save_event_button', [], 'Enregistrer')}
+          </Button>
         </div>
-
-        <ReminderSelector
-          reminders={event.notifications || []}
-          onChange={reminders => this.change('notifications', reminders)}
-        />
-
-        <div className="separator" />
-
-        <Button
-          className="button medium danger medium"
-          style={{ width: 'auto' }}
-          onClick={() => {
-            this.remove();
-          }}
-        >
-          {Languages.t(
-            'scenes.apps.calendar.modals.remove_event_button',
-            [],
-            "Supprimer l'événement"
-          )}
-        </Button>
-
-        <Button
-          className="button medium btn-primary medium"
-          style={{ width: 'auto', float: 'right' }}
-          onClick={() => {
-            this.save();
-          }}
-        >
-          {Languages.t('scenes.apps.calendar.modals.save_event_button', [], 'Enregistrer')}
-        </Button>
-      </div>
+      </PerfectScrollbar>
     );
   }
 }

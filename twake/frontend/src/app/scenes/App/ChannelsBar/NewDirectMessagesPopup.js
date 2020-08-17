@@ -24,7 +24,7 @@ export default class NewDirectMessagesPopup extends Component {
           </ObjectModalTitle>
         }
         onClose={() => MediumPopupComponent.closeAll()}
-        disabled={true}
+        noScrollBar={true}
         footer={
           <Button
             className="small primary"

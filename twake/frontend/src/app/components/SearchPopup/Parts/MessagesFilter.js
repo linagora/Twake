@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
-import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
+import {
+  ObjectModalFormTitle,
+  ObjectModalSectionTitle,
+} from 'components/ObjectModal/ObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';

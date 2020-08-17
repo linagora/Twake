@@ -69,12 +69,11 @@ class Group extends BaseController
 
     public function getUploader()
     {
-        $aws = $this->getParameter('aws');
-        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+        $storage = $this->getParameter('storage');
+        if (isset($storage["S3"]["use"]) && $storage["S3"]["use"]) {
             return $this->get("app.aws_uploader");
         }
-        $openstack = $this->getParameter('openstack');
-        if (isset($openstack["use"]) && $openstack["use"]) {
+        if (isset($storage["use"]) && $storage["use"]) {
             return $this->get("app.openstack_uploader");
         }
         return $this->get("app.uploader");

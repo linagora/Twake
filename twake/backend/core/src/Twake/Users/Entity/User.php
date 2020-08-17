@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 class User extends SearchableObject
 {
 
-
     protected $es_type = "users";
 
     /**
@@ -576,6 +575,8 @@ class User extends SearchableObject
             "lastname" => $this->getLastName(),
             "language" => $this->getLanguage(),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->format('Y-m-d') : null),
+            "groups_id" => [], //TODO
+            "workspaces_id" => [], //TODO
         );
         return $return;
     }

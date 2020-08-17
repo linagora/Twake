@@ -31,7 +31,7 @@ export class ObjectModalSectionTitle extends Component {
           justifyContent: 'space-between',
         }}
       >
-        <b>{this.props.title || this.props.children}</b>
+        <b>{this.props.title || this.props.children}</b>
         <div>{this.props.action}</div>
       </div>
     );
@@ -92,12 +92,10 @@ export class ObjectModal extends Component {
 
         {!this.props.tabs && (
           <div className="body">
-            {this.props.disabled && (
-              <div className="child-with-margin">
-                {this.props.children}
-              </div>
+            {!!this.props.noScrollBar && (
+              <div className="child-with-margin">{this.props.children}</div>
             )}
-            {!this.props.disabled && (
+            {!this.props.noScrollBar && (
               <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
                 {this.props.children}
               </PerfectScrollbar>

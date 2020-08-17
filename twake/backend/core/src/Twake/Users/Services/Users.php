@@ -23,6 +23,11 @@ class Users
     public function search($options = Array())
     {
         $name = $options["name"];
+
+        $scope = $options["scope"];
+        $workspace_id = $options["workspace_id"];
+        $group_id = $options["group_id"];
+        
         $should = Array();
 
         if (isset($name)) {
@@ -91,13 +96,14 @@ class Users
         $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
 
         if ($user) {
-            $this->list_users["users"][] = $user;
+            $this->list_users["users"][] = Array($user->getAsArray(), 0);
         }
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user) {
-            //var_dump($file->getAsArray());
-            $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);;
+            if($user[0]){
+                $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);
+            }
         }
 
         $this->list_users["scroll_id"] = $scroll_id;

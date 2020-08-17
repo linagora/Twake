@@ -1,15 +1,14 @@
 @import '~components/constants.scss';
 
-.electron #app {
+.electron #root {
   &:before {
     content: '';
     position: absolute;
     top: 0px;
-    height: 16px;
-    -webkit-app-region: drag;
     width: 100%;
-    left: 0;
+    height: 16px;
     z-index: 1;
+    -webkit-app-region: drag;
   }
 }
 

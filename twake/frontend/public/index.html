@@ -46,17 +46,24 @@
     <div id="root"></div>
     <img
       id="app_loader"
-      style="z-index:1;position:absolute;margin:auto;left:0;right:0;top:0;bottom:0;width:48px;height:48px;"
+      style="
+        z-index: 1;
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 48px;
+        height: 48px;
+      "
       src="/public/img/load_app.png"
     />
 
     <script type="text/javascript">
       window.electron_config = {};
-      if (
-        typeof require != "undefined" &&
-        typeof require("electron") != "undefined"
-      ) {
-        window.electron = require("electron");
+      if (typeof require != 'undefined' && typeof require('electron') != 'undefined') {
+        window.electron = require('electron');
         if (
           window.electron.remote &&
           window.electron.remote.BrowserWindow &&
@@ -65,7 +72,7 @@
         ) {
           window.electron_config = window.electron.remote.BrowserWindow.getAllWindows()[0];
         }
-        document.getElementById("body").className = "electron";
+        document.getElementById('body').className = 'electron';
       }
     </script>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
