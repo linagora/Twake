@@ -59,9 +59,14 @@ class User extends SearchableObject
     protected $thumbnail;
 
     /**
-     * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\WorkspaceUser", mappedBy="User")
+     * @ORM\Column(name="workspaces", type="twake_text")
      */
     protected $workspaces;
+
+    /**
+     * @ORM\Column(name="groups", type="twake_text")
+     */
+    protected $groups;
 
     /**
      * @var int
@@ -334,18 +339,6 @@ class User extends SearchableObject
         $this->thumbnail = $thumbnail;
     }
 
-    public function getWorkspaces()
-    {
-
-        $workspaces = Array();
-
-        for ($i = 0; $i < count($this->workspaces); ++$i) {
-            $workspaces[] = $this->workspaces[$i]->getWorkspace();
-        }
-
-        return $workspaces;
-    }
-
     public function isActive()
     {
         $this->lastactivity = date("U");
@@ -579,6 +572,26 @@ class User extends SearchableObject
             "workspaces_id" => [], //TODO
         );
         return $return;
+    }
+
+    public function setGroups($ids)
+    {
+        $this->groups = json_encode($ids);
+    }
+
+    public function setWorkspaces($ids)
+    {
+        $this->workspaces = json_encode($ids);
+    }
+
+    public function getGroups()
+    {
+        return json_decode($this->groups, 1);
+    }
+
+    public function getWorkspaces()
+    {
+        return json_decode($this->workspaces, 1);
     }
 
     /**

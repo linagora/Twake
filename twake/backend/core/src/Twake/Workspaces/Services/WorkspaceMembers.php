@@ -2,6 +2,7 @@
 
 namespace Twake\Workspaces\Services;
 
+use Twake\Users\Entity\User;
 use Twake\Workspaces\Entity\GroupUser;
 use Twake\Workspaces\Entity\WorkspaceUser;
 use Twake\Workspaces\Entity\WorkspaceUserByMail;
@@ -686,6 +687,13 @@ class WorkspaceMembers
             $this->doctrine->flush();
         }
 
+    }
+
+    public function updateUser(User $user, $workspaces_ids, $groups_ids){
+        $user->setWorkspaces($workspaces_ids);
+        $user->setGroups($groups_ids);
+        $this->doctrine->persist($user);
+        $this->doctrine->flush();
     }
 
 }
