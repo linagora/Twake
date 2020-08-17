@@ -43,7 +43,7 @@ export default class NewDirectMessagesPopup extends Component {
           users={[]}
           canRemoveMyself
           noPlaceholder
-          scope="all"
+          scope="group"
           autoFocus
           onUpdate={ids => {
             this.setState({ newUserDiscussion: ids });

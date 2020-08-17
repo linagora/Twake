@@ -56,7 +56,9 @@ class User {
     return thumbnail;
   }
 
-  search(query, callback, noHttp, didTimeout) {
+  search(query, options, callback, noHttp, didTimeout) {
+    const scope = options.scope;
+
     if (query == 'me') {
       query = this.getCurrentUser().username;
     }
@@ -109,7 +111,15 @@ class User {
       () => {
         Api.post(
           'users/all/search',
-          { query: query, language_preference: this.getCurrentUser().language },
+          {
+            options: {
+              scope: scope,
+              name: query,
+              workspace_id: options.workspace_id,
+              group_id: options.group_id,
+              language_preference: this.getCurrentUser().language,
+            },
+          },
           res => {
             this.searching = false;
             if (res.data && res.data.users) {
@@ -118,10 +128,10 @@ class User {
               });
               this.search(query, callback, true, true);
             }
-          }
+          },
         );
       },
-      didTimeout ? 0 : 1000
+      didTimeout ? 0 : 1000,
     );
   }
 

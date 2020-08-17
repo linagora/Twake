@@ -24,7 +24,7 @@ export default class EventsFilter extends React.Component {
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
             [],
-            'Espaces de travails'
+            'Espaces de travails',
           )}
           icon="building"
         />
@@ -35,7 +35,7 @@ export default class EventsFilter extends React.Component {
           addText={Languages.t(
             'components.searchpopup.filter_ws',
             [],
-            'Filtrer les espaces de travail'
+            'Filtrer les espaces de travail',
           )}
           workspaces={this.state.options.workspaces || []}
           onUpdate={value => {
@@ -63,7 +63,7 @@ export default class EventsFilter extends React.Component {
         <UserListManager
           noPlaceholder
           canRemoveMyself
-          scope="all"
+          scope="workspace"
           users={this.state.options.participants || []}
           onUpdate={value => {
             this.state.options.participants = value;

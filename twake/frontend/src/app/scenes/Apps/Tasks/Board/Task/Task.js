@@ -53,7 +53,7 @@ export default class Task extends React.Component {
               onClick={() => {
                 MediumPopupManager.open(
                   <TaskDetails task={task} collectionKey={this.props.collectionKey} />,
-                  { size: { width: 600 } }
+                  { size: { width: 600 } },
                 );
               }}
               className={
@@ -132,7 +132,7 @@ export default class Task extends React.Component {
                         {parseInt(
                           (100 *
                             task.checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) /
-                            task.checklist.length
+                            task.checklist.length,
                         )}
                         %
                       </span>

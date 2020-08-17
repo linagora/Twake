@@ -56,7 +56,7 @@ export default class EventsFilter extends React.Component {
         <UserListManager
           noPlaceholder
           canRemoveMyself
-          scope="all"
+          scope="workspace"
           users={this.state.options.sender ? [this.state.options.sender] : []}
           onUpdate={value => {
             if (value.length > 1) {
@@ -75,7 +75,7 @@ export default class EventsFilter extends React.Component {
         <UserListManager
           noPlaceholder
           canRemoveMyself
-          scope="all"
+          scope="workspace"
           users={this.state.options.mentions || []}
           onUpdate={value => {
             this.state.options.mentions = value;
