@@ -167,12 +167,6 @@ class WorkspacesUsers extends Observable {
 
     if (options.group_users) {
       loadMembers(options.group_users);
-    } else {
-      Api.post('workspace/group/getUsers', { groupId: group_id }, res => {
-        if (res.data && res.data.users) {
-          loadGroupUsers(res.data);
-        }
-      });
     }
   }
   canShowUserInWorkspaceList(member) {
@@ -460,16 +454,13 @@ class WorkspacesUsers extends Observable {
   }
 
   searchUserInWorkspace(query, cb) {
-    var results = Object.values(this.users_by_workspace[workspaceService.currentWorkspaceId])
-      .filter(
-        data =>
-          (data.user.username + ' ' + data.user.firstname + ' ' + data.user.lastname)
-            .toLocaleLowerCase()
-            .indexOf(query.toLocaleLowerCase()) >= 0,
-      )
-      .map(data => data.user);
-    cb(results);
-    return results;
+    User.search(
+      query,
+      { scope: 'workspace', workspace_id: workspaceService.currentWorkspaceId },
+      results => {
+        cb(results);
+      },
+    );
   }
 
   leaveWorkspace() {

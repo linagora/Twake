@@ -24,7 +24,7 @@ export default class NewDirectMessagesPopup extends Component {
           </ObjectModalTitle>
         }
         onClose={() => MediumPopupComponent.closeAll()}
-        disabled={true}
+        noScrollBar={true}
         footer={
           <Button
             className="small primary"
@@ -43,7 +43,7 @@ export default class NewDirectMessagesPopup extends Component {
           users={[]}
           canRemoveMyself
           noPlaceholder
-          scope="all"
+          scope="group"
           autoFocus
           onUpdate={ids => {
             this.setState({ newUserDiscussion: ids });

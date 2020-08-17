@@ -76,10 +76,16 @@ class Group extends SearchableObject
      * @ORM\Column(name="isblocked", type="twake_boolean")
      */
     private $isblocked = false;
+
     /**
      * @ORM\Column(name="isprivate", type="twake_boolean")
      */
     private $isprivate = false;
+
+    /**
+     * @ORM\Column(name="member_count", type="twake_bigint")
+     */
+    private $member_count = false;
 
 
     public function __construct($name)
@@ -303,6 +309,24 @@ class Group extends SearchableObject
         $this->on_creation_data = json_encode($on_creation_data);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMemberCount()
+    {
+        if (!$this->member_count || $this->member_count < 0) {
+            return 0;
+        }
+        return $this->member_count;
+    }
+
+    /**
+     * @param mixed $member_count
+     */
+    public function setMemberCount($member_count)
+    {
+        $this->member_count = $member_count;
+    }
 
     public function getAsArray()
     {
@@ -313,7 +337,8 @@ class Group extends SearchableObject
             "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
             "logo" => (($this->getLogo() != null) ? $this->getLogo()->getPublicURL(2) : ""),
             "isBlocked" => $this->getIsBlocked(),
-            "free_offer_end" => $this->getFreeOfferEnd()
+            "free_offer_end" => $this->getFreeOfferEnd(),
+            "total_members" => $this->member_count
         );
     }
 

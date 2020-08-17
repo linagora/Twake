@@ -61,37 +61,14 @@ export default class UserListManager extends React.Component {
       callback([]);
       return;
     }
-    if (this.props.scope == 'workspace') {
-      var list = Object.keys(
-        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
-      ).map(id => WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[id]);
-      if (this.props.disableExterne) {
-        list = list.filter(el => !el.externe);
-      }
-      var res = list
-        .filter(el => {
-          return (
-            (el.user.username + ' ' + el.user.firstname + ' ' + el.user.lastname)
-              .toLocaleLowerCase()
-              .indexOf(text.toLocaleLowerCase()) >= 0
-          );
-        })
-        .map(el => el.user);
-      callback(
-        res.filter(item => {
-          if (
-            (this.props.hideUsersIds || []).indexOf(item.id) >= 0 ||
-            this.state.users_ids.indexOf(item.id) >= 0 ||
-            this.state.users_ids.indexOf(item) >= 0
-          ) {
-            return false;
-          }
-          return true;
-        })
-      );
-    }
-    if (this.props.scope == 'all') {
-      UsersService.search(text, res => {
+    UsersService.search(
+      text,
+      {
+        scope: this.props.scope,
+        workspace_id: Workspaces.currentWorkspaceId,
+        group_id: Workspaces.currentGroupId,
+      },
+      res => {
         res = res.filter(el => {
           return (
             (el.username + ' ' + el.firstname + ' ' + el.lastname)
@@ -109,10 +86,10 @@ export default class UserListManager extends React.Component {
               return false;
             }
             return true;
-          })
+          }),
         );
-      });
-    }
+      },
+    );
   }
   componentWillUpdate(nextProps, nextState) {
     this.updateStateFromProps(nextProps, false, nextState);
@@ -144,7 +121,7 @@ export default class UserListManager extends React.Component {
               className="m-icon-small remove"
               onClick={() => {
                 this.state.users_ids = this.state.users_ids.filter(id =>
-                  typeof item == 'string' ? item != id : item.id != id
+                  typeof item == 'string' ? item != id : item.id != id,
                 );
                 this.setState({});
                 if (this.props.onUpdate) this.props.onUpdate(this.state.users_ids);
@@ -220,7 +197,7 @@ export default class UserListManager extends React.Component {
                   {Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],
-                    'Ajouter des utilisateurs'
+                    'Ajouter des utilisateurs',
                   )}
                 </Button>
               )}
@@ -252,7 +229,7 @@ export default class UserListManager extends React.Component {
                   placeholder={Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],
-                    'Ajouter des utilisateurs'
+                    'Ajouter des utilisateurs',
                   )}
                 />
               )}
@@ -269,24 +246,24 @@ export default class UserListManager extends React.Component {
                 )}
               {!!this.props.showAddAll &&
                 Object.keys(
-                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
+                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
                 ).length > this.state.users_ids.length &&
                 Object.keys(
-                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
+                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
                 ).length < 20 && (
                   <Button
                     className="small primary-text"
                     onClick={() => {
                       Object.keys(
-                        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {}
+                        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
                       ).map(id =>
                         this.select(
                           (
                             WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[
                               id
                             ] || {}
-                          ).user
-                        )
+                          ).user,
+                        ),
                       );
                     }}
                   >
@@ -294,7 +271,7 @@ export default class UserListManager extends React.Component {
                     {Languages.t(
                       'scenes.apps.parameters.workspace_sections.members.invite_all',
                       [],
-                      'Ajouter tout le monde'
+                      'Ajouter tout le monde',
                     )}
                   </Button>
                 )}

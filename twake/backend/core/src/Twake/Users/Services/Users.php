@@ -23,6 +23,11 @@ class Users
     public function search($options = Array())
     {
         $name = $options["name"];
+
+        $scope = $options["scope"] ?: "all";
+        $workspace_id = $options["workspace_id"];
+        $group_id = $options["group_id"];
+        
         $should = Array();
 
         if (isset($name)) {
@@ -57,6 +62,29 @@ class Users
             );
         }
 
+        $match = null;
+
+        if($scope == "workspace"){
+            $match = Array(
+                "workspaces_id" => $workspace_id
+            );
+        }
+
+        if($scope == "group"){
+            $match = Array(
+                "groups_id" => $group_id
+            );
+        }
+
+        $search_bool = Array(
+            "should" => $should,
+            "minimum_should_match" => 1
+        );
+        if($match){
+            $search_bool["filter"] = [
+                "match" => $match
+            ];
+        }
 
         $options = Array(
             "repository" => "Twake\Users:User",
@@ -65,10 +93,7 @@ class Users
             "query" => Array(
                 "bool" => Array(
                     "must" => Array(
-                        "bool" => Array(
-                            "should" => $should,
-                            "minimum_should_match" => 1
-                        )
+                        "bool" => $search_bool
                     )
                 )
             ),
@@ -87,17 +112,20 @@ class Users
 
         $scroll_id = $result["scroll_id"];
 
-        $userRepository = $this->em->getRepository("Twake\Users:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
+        if($scope === "all"){
+            $userRepository = $this->em->getRepository("Twake\Users:User");
+            $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
 
-        if ($user) {
-            $this->list_users["users"][] = $user;
+            if ($user) {
+                $this->list_users["users"][] = Array($user->getAsArray(), 0);
+            }
         }
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user) {
-            //var_dump($file->getAsArray());
-            $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);;
+            if($user[0]){
+                $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);
+            }
         }
 
         $this->list_users["scroll_id"] = $scroll_id;
@@ -123,43 +151,5 @@ class Users
             return $entity ? $user : $user->getAsArray();
         }
         return false;
-    }
-
-    public function searchUsersByUsername($username, $restrictions, $groupId, $workspaceId)
-    {
-        if ($username == "")
-            return "empty username";
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-
-        $users = $userRepository->findByName($username);
-
-        if ($restrictions == "all") {
-            return $users;
-        }
-        $res = [];
-        if ($restrictions == "group") {
-            $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
-
-            foreach ($users as $user) {
-                $groupuser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $groupId));
-                if ($groupuser) {
-                    $res[] = $user;
-                }
-            }
-        }
-
-        if ($restrictions == "workspace") {
-            $workspaceUsers = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-
-            foreach ($users as $user) {
-                $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspaceId, "user" => $user));
-                if ($workspaceUser) {
-                    $res[] = $user;
-                }
-            }
-        }
-
-        return $res;
-
     }
 }

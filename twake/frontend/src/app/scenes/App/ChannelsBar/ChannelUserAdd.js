@@ -42,10 +42,10 @@ export default class ChannelUserAdd extends Component {
                 {Languages.t(
                   'scenes.app.channelsbar.invite_autoadd',
                   [],
-                  'Invité ajouté automatiquement'
+                  'Invité ajouté automatiquement',
                 )}
               </div>
-              <UserListManager users={userWexterneId} scope="all" readOnly />
+              <UserListManager users={userWexterneId} readOnly />
             </div>
           )}
           <UserListManager
@@ -61,11 +61,11 @@ export default class ChannelUserAdd extends Component {
                 ? []
                 : (channel.members || []).concat(
                     (channel.ext_members || []).filter(userId =>
-                      WorkspacesUser.isAutoAddUser(userId)
-                    ) || []
+                      WorkspacesUser.isAutoAddUser(userId),
+                    ) || [],
                   )
             }
-            scope="all"
+            scope="group"
             allowMails
             onCancel={() => {
               MenusManager.closeMenu();
@@ -74,7 +74,7 @@ export default class ChannelUserAdd extends Component {
               channel.ext_members = ids_mails;
               Collections.get('channels').save(
                 channel,
-                'channels_' + Workspaces.currentWorkspaceId
+                'channels_' + Workspaces.currentWorkspaceId,
               );
               MenusManager.closeMenu();
             }}
@@ -83,7 +83,7 @@ export default class ChannelUserAdd extends Component {
             {Languages.t(
               'scenes.app.channelsbar.invated_access_right',
               [],
-              'Vous pouvez inviter des utilisateurs externe à votre espace de travail.'
+              'Vous pouvez inviter des utilisateurs externe à votre espace de travail.',
             )}
           </div>
           {!channel.private && userWexterneId.length > 0 && (

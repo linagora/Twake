@@ -420,7 +420,7 @@ class ManagerAdapter
                 $scroll_id = $res["_scroll_id"];
             }
 
-
+            $result = [];
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
 
@@ -437,6 +437,7 @@ class ManagerAdapter
                 }
             }
             $result = Array("repository" => $repository, "scroll_id" => $scroll_id, "result" => $result);
+
         }
         return $result;
 

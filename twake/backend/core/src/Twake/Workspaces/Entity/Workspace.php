@@ -73,6 +73,16 @@ class Workspace extends SearchableObject
     private $member_count = 0;
 
     /**
+     * @ORM\Column(name="guest_count", type="integer")
+     */
+    private $guest_count = 0;
+
+    /**
+     * @ORM\Column(name="pending_count", type="integer")
+     */
+    private $pending_count = 0;
+
+    /**
      * @ORM\Column(type="twake_datetime")
      */
     private $date_added;
@@ -294,6 +304,32 @@ class Workspace extends SearchableObject
     {
         $this->member_count = $member_count;
     }
+    
+    public function getGuestCount()
+    {
+        if (!$this->guest_count || $this->guest_count < 0) {
+            return 0;
+        }
+        return $this->guest_count;
+    }
+    
+    public function setGuestCount($guest_count)
+    {
+        $this->guest_count = $guest_count;
+    }
+    
+    public function getPendingCount()
+    {
+        if (!$this->pending_count || $this->pending_count < 0) {
+            return 0;
+        }
+        return $this->pending_count;
+    }
+    
+    public function setPendingCount($pending_count)
+    {
+        $this->pending_count = $pending_count;
+    }
 
     /**
      * @return mixed
@@ -376,10 +412,12 @@ class Workspace extends SearchableObject
             "color" => $this->getColor(),
             "group" => (($this->getGroup()) ? $this->getGroup()->getAsArray() : null),
             "name" => $this->getName(),
-            "total_members" => $this->getMemberCount() - 1, //Remove Twake bot
-            "uniqueName" => $this->getUniqueName(),
-            "isArchived" => $this->getisArchived(),
-            "isNew" => $this->getisNew()
+            "total_members" => $this->getMemberCount(),
+            "total_guests" => $this->getGuestCount(),
+            "total_pending" => $this->getPendingCount(),
+            "unique_name" => $this->getUniqueName(),
+            "is_archived" => $this->getisArchived(),
+            "is_new" => $this->getisNew()
         );
     }
 

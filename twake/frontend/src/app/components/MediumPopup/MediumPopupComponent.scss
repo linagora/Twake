@@ -35,6 +35,12 @@
       border-radius: var(--default-border-radius);
       padding: 16px;
       box-sizing: border-box;
+
+      & > .scrollbar-container {
+        margin: -16px;
+        padding: 16px;
+        max-height: calc(80vh - 200px);
+      }
     }
   }
 }
