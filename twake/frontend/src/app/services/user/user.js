@@ -26,6 +26,7 @@ class User {
   }
 
   getFullName(user) {
+    user = user || {};
     var name = user.username;
     if (user.firstname && user.firstname != '') {
       name = user.firstname;
