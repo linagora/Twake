@@ -103,24 +103,54 @@ class WorkspacesUsers extends Observable {
       this.offset_by_group_id[group_id] = [0, false];
     }
 
-    var data = {
-      twake_bot: true,
-      workspaceId: workspace_id,
-      max: this.offset_by_workspace_id[workspace_id][0] == 0 ? 100 : 40,
-      offset: this.offset_by_workspace_id[workspace_id],
-    };
-
     ws.subscribe('workspace_users/' + workspace_id, (route, res) => {
       this.recieveWS(res);
     });
 
     var loadMembers = data => {
+      (data.members || []).forEach(item => {
+        if (
+          !that.offset_by_workspace_id[workspace_id][1] ||
+          Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
+        ) {
+          that.offset_by_workspace_id[workspace_id][1] = item.user.id;
+        }
+        that.offset_by_workspace_id[workspace_id][0]++;
+
+        Collections.get('users').completeObject(item.user, item.user.front_id);
+
+        that.users_by_group[group_id][item.user.id] = item;
+        that.users_by_workspace[workspace_id][item.user.id] = item;
+      });
+
+      if (data.mails) {
+        that.membersPending = data.mails || [];
+        that.notify();
+      }
+
       if (data.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
         CurrentUser.updateTutorialStatus('did_invite_collaborators');
       }
     };
 
+    var data = {
+      workspaceId: workspace_id,
+      max: this.offset_by_workspace_id[workspace_id][0] == 0 ? 100 : 40,
+    };
+
     if (options.members) {
+      loadMembers(options.members || []);
+    } else {
+      Api.post('workspace/members/list', data, res => {
+        if (res.data) {
+          loadMembers({ members: res.data });
+        }
+      });
+      Api.post('workspace/members/pending', data, res => {
+        if (res.data) {
+          loadMembers({ mails: res.data });
+        }
+      });
       loadMembers(options.members || []);
     }
 
