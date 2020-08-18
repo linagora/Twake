@@ -162,6 +162,9 @@ class UsersConnections extends BaseController
                 $workspaces_ids[] = $value["id"];
                 $groups_ids[] = $value["group"]["id"];
             }
+
+            $workspaces_ids = array_values(array_unique($workspaces_ids));
+            $groups_ids = array_values(array_unique($groups_ids));
             
             $this->get("app.workspace_members")->updateUser($this->getUser(), $workspaces_ids, $groups_ids);
 

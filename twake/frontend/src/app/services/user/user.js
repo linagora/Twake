@@ -57,6 +57,8 @@ class User {
   }
 
   search(query, options, callback, noHttp, didTimeout) {
+    callback = callback || (() => {});
+
     const scope = options.scope;
 
     if (query == 'me') {
@@ -101,7 +103,7 @@ class User {
     }
     if (this.searching) {
       this.timeout_search = setTimeout(() => {
-        this.search(query, callback, false, true);
+        this.search(query, options, callback, false, true);
       }, 1000);
       return;
     }
@@ -126,7 +128,7 @@ class User {
               res.data.users.forEach(item => {
                 this.users_repository.updateObject(item[0]);
               });
-              this.search(query, callback, true, true);
+              this.search(query, options, callback, true, true);
             }
           },
         );

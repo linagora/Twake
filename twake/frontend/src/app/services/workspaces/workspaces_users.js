@@ -115,37 +115,13 @@ class WorkspacesUsers extends Observable {
     });
 
     var loadMembers = data => {
-      data.members.forEach(item => {
-        if (
-          !that.offset_by_workspace_id[workspace_id][1] ||
-          Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
-        ) {
-          that.offset_by_workspace_id[workspace_id][1] = item.user.id;
-        }
-        that.offset_by_workspace_id[workspace_id][0]++;
-
-        Collections.get('users').completeObject(item.user, item.user.front_id);
-
-        that.users_by_group[group_id][item.user.id] = item;
-        that.users_by_workspace[workspace_id][item.user.id] = item;
-      });
-
-      that.membersPending = data.mails;
-      that.notify();
-
-      if (data.members.length > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
+      if (data.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
         CurrentUser.updateTutorialStatus('did_invite_collaborators');
       }
     };
 
     if (options.members) {
-      loadMembers(options.members);
-    } else {
-      Api.post('workspace/members/list', data, res => {
-        if (res.data && res.data.members) {
-          loadMembers(res.data);
-        }
-      });
+      loadMembers(options.members || []);
     }
 
     var loadGroupUsers = data => {

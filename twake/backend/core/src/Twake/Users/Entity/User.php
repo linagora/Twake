@@ -568,8 +568,8 @@ class User extends SearchableObject
             "lastname" => $this->getLastName(),
             "language" => $this->getLanguage(),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->format('Y-m-d') : null),
-            "groups_id" => [], //TODO
-            "workspaces_id" => [], //TODO
+            "groups_id" => $this->getGroups(),
+            "workspaces_id" => $this->getWorkspaces()
         );
         return $return;
     }
