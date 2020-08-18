@@ -40,6 +40,7 @@ class User {
   }
 
   getThumbnail(user) {
+    user = user || {};
     var thumbnail = '';
     if (!user.thumbnail || user.thumbnail == '') {
       var output = 0;

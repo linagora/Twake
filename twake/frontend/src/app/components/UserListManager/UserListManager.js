@@ -71,6 +71,7 @@ export default class UserListManager extends React.Component {
       res => {
         res = res.filter(el => {
           return (
+            !!el &&
             (el.username + ' ' + el.firstname + ' ' + el.lastname)
               .toLocaleLowerCase()
               .indexOf(this.state.input.toLocaleLowerCase()) >= 0
@@ -102,7 +103,7 @@ export default class UserListManager extends React.Component {
       return '';
     }
 
-    if (item.email) {
+    if (item.email && !item.thumbnail) {
       item = item.email;
     }
 

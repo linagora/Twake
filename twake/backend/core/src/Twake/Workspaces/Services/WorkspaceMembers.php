@@ -693,6 +693,7 @@ class WorkspaceMembers
     public function updateUser(User $user, $workspaces_ids, $groups_ids){
         $user->setWorkspaces($workspaces_ids);
         $user->setGroups($groups_ids);
+        $user->setEsIndexed(false);
         $this->doctrine->persist($user);
         $this->doctrine->flush();
     }

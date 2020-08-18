@@ -169,11 +169,11 @@ export default class ComponentsTester extends React.Component {
                       userimage: 'https://randomuser.me/api/portraits/women/40.jpg',
                     },
                   ].filter(function (item) {
-                    if (item.username.indexOf(text) !== -1) {
+                    if (item && item.username.indexOf(text) !== -1) {
                       return true;
                     }
                     return false;
-                  })
+                  }),
                 );
               },
               (text, cb) => {
@@ -183,7 +183,7 @@ export default class ComponentsTester extends React.Component {
             max={[5, 5]}
             renderItemChoosen={[
               item => {
-                return '@' + item.username + ' ';
+                return '@' + (item || {}).username + ' ';
               },
               item => {
                 return item.shortname + ' ';

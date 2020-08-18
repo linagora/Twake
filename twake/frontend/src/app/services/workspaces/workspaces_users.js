@@ -298,7 +298,7 @@ class WorkspacesUsers extends Observable {
       this.users_by_workspace[workspaceService.currentWorkspaceId][id] = this.users_by_group[
         groupService.currentGroupId
       ][id];
-      var username = Collections.get('users').find(id).username;
+      var username = (Collections.get('users').find(id) || {}).username || '';
       this.addUser([username + '|' + (externe ? 1 : 0)], cb, thot);
       this.notify();
     }

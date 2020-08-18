@@ -73,6 +73,7 @@ export default class UserPicker extends React.Component {
           return this.renderItem(item, true);
         }}
         renderItemSimply={item => {
+          item = item || {};
           return item.username;
         }}
         max={10}

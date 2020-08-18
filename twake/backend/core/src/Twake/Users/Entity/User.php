@@ -553,9 +553,12 @@ class User extends SearchableObject
             "status_icon" => $this->getStatusIcon(),
             "front_id" => $this->getFrontId(),
             "timezone_offset" => $this->timezone,
+            "email" => $this->getEmail(),
             "mail_hash" => md5(trim(strtolower($this->getEmail()))),
             "mail_verification_override" => $this->getMailVerified() ? null : $this->getMailVerificationOverride(),
-            "mail_verification_override_mail" => $this->getMailVerified() ? null : $this->getEmail()
+            "mail_verification_override_mail" => $this->getMailVerified() ? null : $this->getEmail(),
+            "groups_id" => $this->getGroups(),
+            "workspaces_id" => $this->getWorkspaces()
         );
         return $return;
     }
