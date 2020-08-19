@@ -38,7 +38,7 @@ jobs:
         run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
       - run: cd twake/frontend/ && yarn build
       - name: Upload frontend build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1
         with:
           name: frontend-build
           path: twake/frontend/build/
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Download frontend-build artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v1
         with:
           name: frontend-build
 
