@@ -344,21 +344,11 @@ class Groups
     public function countUsersGroup($groupId)
     {
         $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-        $groupManagerRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
-
         $group = $groupRepository->find($groupId);
-        $groupLinks = $groupManagerRepository->findBy(Array("group" => $group));
-        $count = 0;
-        foreach ($groupLinks as $link) {
-            if ($link->getNbWorkspace() > 0) {
-                $count++;
-            }
-        }
-        return $count;
-
+        return $group->getMemberCount();
     }
 
-    public function getUsersGroup($groupId, $onlyExterne, $limit, $offset, $currentUserId = null)
+    public function getUsersGroup($groupId, $onlyExterne, $limit = 100, $offset = 0, $currentUserId = null)
     {
         if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")) {
 
@@ -366,7 +356,7 @@ class Groups
             $groupManagerRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
 
             $group = $groupRepository->find($groupId);
-            $groupLinks = $groupManagerRepository->findBy(Array("group" => $group));
+            $groupLinks = $groupManagerRepository->findBy(Array("group" => $group), null, $max, $offset);
             $users = Array();
             foreach ($groupLinks as $link) {
                 if (!$onlyExterne || $link->getExterne()) {
@@ -402,46 +392,6 @@ class Groups
         }
 
         return false;
-    }
-
-    public function runFreeOffer($groupId, $currentUserId, $offerLength = 5184000)
-    {
-        if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")) {
-
-            $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-            $group = $groupRepository->find($groupId);
-            if ($group->getPricingPlan()->getLabel() != "free" || $group->getFreeOfferEnd() > 0) {
-                return false; //Need to be in a free group already
-            }
-
-            $pricingPlanRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
-            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "standard"));
-
-            $group->setPricingPlan($pricingPlan);
-            $group->setFreeOfferEnd(date("U") + $offerLength);
-
-            $this->doctrine->persist($group);
-            $this->doctrine->flush();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function stopFreeOffer($groupId)
-    {
-        $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-        $group = $groupRepository->find($groupId);
-        if ($group->getPricingPlan()->getLabel() != "free" && $group->getFreeOfferEnd() > 0 && $group->getFreeOfferEnd() - date("U") < 0) {
-            $pricingPlanRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
-            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "free"));
-
-            $group->setPricingPlan($pricingPlan);
-
-            $this->doctrine->persist($group);
-            $this->doctrine->flush();
-        }
     }
 
 }

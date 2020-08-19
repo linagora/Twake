@@ -150,13 +150,23 @@ class UsersConnections extends BaseController
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
 
             $workspaces = Array();
+            $workspaces_ids = Array();
+            $groups_ids = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray();
                 $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
 
                 $workspaces[] = $value;
+
+                $workspaces_ids[] = $value["id"];
+                $groups_ids[] = $value["group"]["id"];
             }
+
+            $workspaces_ids = array_values(array_unique($workspaces_ids));
+            $groups_ids = array_values(array_unique($groups_ids));
+            
+            $this->get("app.workspace_members")->updateUser($this->getUser(), $workspaces_ids, $groups_ids);
 
             $mails = $this->get("app.user")->getSecondaryMails($this->getUser()->getId());
 

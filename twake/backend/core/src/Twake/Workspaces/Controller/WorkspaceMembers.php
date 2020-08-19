@@ -16,12 +16,9 @@ use Common\Http\Request;
 
 class WorkspaceMembers extends BaseController
 {
-    /**
-     * Get list of workspace members
-     */
+    
     public function getMembers(Request $request)
     {
-
         $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
@@ -29,8 +26,35 @@ class WorkspaceMembers extends BaseController
         $max = $request->request->get("max", null);
         $offset = $request->request->get("offset", null);
 
-        $all_info = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
-        $response["data"] = $all_info;
+        $all_info = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
+        $response["data"] = [];
+
+        foreach($all_info as $user){
+            $user["user"] = $user["user"]->getAsArray();
+            $response["data"][] = $user;
+        }
+
+        return new Response($response);
+    }
+
+    public function getPending(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $workspaceId = $request->request->get("workspaceId");
+        $order = $request->request->get("order", null);
+        $max = $request->request->get("max", null);
+        $offset = $request->request->get("offset", null);
+
+        $all_info = $this->get("app.workspace_members")->getPendingMembers($workspaceId, $this->getUser()->getId(), $max, $offset);
+        $response["data"] = [];
+
+        foreach($all_info as $mail){
+            $response["data"][] = Array(
+                "mail" => $mail->getMail(),
+                "externe" => $mail->getExterne()
+            );
+        }
 
         return new Response($response);
     }

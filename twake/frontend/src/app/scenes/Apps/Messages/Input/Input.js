@@ -167,7 +167,7 @@ export default class Input extends Component {
 
     var addon_menu = [];
     var apps = WorkspacesApps.getApps().filter(
-      app => ((app.display || {}).messages_module || {}).in_plus
+      app => ((app.display || {}).messages_module || {}).in_plus,
     );
     if (apps.length > 0) {
       apps.map(app => {
@@ -196,7 +196,7 @@ export default class Input extends Component {
               {Languages.t(
                 'scenes.apps.messages.input.no_email_module_menu_text',
                 [],
-                "Vous n'avez aucun module de messagerie."
+                "Vous n'avez aucun module de messagerie.",
               )}
             </div>,
             <div className="menu-separator" />,
@@ -206,7 +206,7 @@ export default class Input extends Component {
                 popupManager.open(
                   <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
                   true,
-                  'workspace_parameters'
+                  'workspace_parameters',
                 )
               }
             >
@@ -214,7 +214,7 @@ export default class Input extends Component {
                 {Languages.t(
                   'scenes.apps.messages.input.search_module_text',
                   [],
-                  'Chercher des modules...'
+                  'Chercher des modules...',
                 )}
               </div>
             </div>,
@@ -253,6 +253,7 @@ export default class Input extends Component {
             max={[5, 5, 5, 20]}
             renderItemChoosen={[
               item => {
+                item = item || {};
                 return '@' + item.username + ' ';
               },
               item => {
@@ -271,6 +272,7 @@ export default class Input extends Component {
             ]}
             renderItem={[
               item => {
+                item = item || {};
                 return [
                   <div className="icon">
                     <User user={item} small />
@@ -315,7 +317,7 @@ export default class Input extends Component {
             placeholder={Languages.t(
               'scenes.apps.messages.input.autocompletes_placeholder',
               [],
-              'Écrivez un message, utilisez @ pour citer un utilisateur.'
+              'Écrivez un message, utilisez @ pour citer un utilisateur.',
             )}
             autoHeight
             value={this.state.content}
@@ -373,7 +375,7 @@ export default class Input extends Component {
             {!this.props.disableApps &&
               (
                 WorkspacesApps.getApps().filter(
-                  app => ((app.display || {}).messages_module || {}).right_icon
+                  app => ((app.display || {}).messages_module || {}).right_icon,
                 ) || []
               ).map(app => {
                 return (

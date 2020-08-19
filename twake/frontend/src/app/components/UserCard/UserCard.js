@@ -16,7 +16,7 @@ export default class UserCard extends Component {
           </div>
           <div className="texts">
             <div className="text-ellipsis title">{UserServices.getFullName(this.props.user)}</div>
-            <div className="text-ellipsis">{'@' + this.props.user.username}</div>
+            <div className="text-ellipsis">{'@' + (this.props.user || {}).username}</div>
           </div>
         </div>
         <div className="footer">

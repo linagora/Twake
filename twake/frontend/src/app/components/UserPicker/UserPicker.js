@@ -48,7 +48,7 @@ export default class UserPicker extends React.Component {
     );
   }
   search(text, cb) {
-    UsersService.search(text, res => {
+    UsersService.search(text, { scope: this.props.scope || 'all' }, res => {
       cb(res);
     });
     //cb(Collections.get("users").findBy({}))
@@ -73,6 +73,7 @@ export default class UserPicker extends React.Component {
           return this.renderItem(item, true);
         }}
         renderItemSimply={item => {
+          item = item || {};
           return item.username;
         }}
         max={10}

@@ -12,7 +12,7 @@ export default class CompanyHeader extends React.Component {
     super();
   }
   render() {
-    var user = this.props.user;
+    var user = this.props.user || {};
     var notifications_disabled = this.props.notificationsDisabled;
     var status = this.props.status;
     return (

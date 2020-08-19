@@ -69,12 +69,11 @@ class Group extends BaseController
 
     public function getUploader()
     {
-        $aws = $this->getParameter('aws');
-        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+        $storage = $this->getParameter('storage');
+        if (isset($storage["S3"]["use"]) && $storage["S3"]["use"]) {
             return $this->get("app.aws_uploader");
         }
-        $openstack = $this->getParameter('openstack');
-        if (isset($openstack["use"]) && $openstack["use"]) {
+        if (isset($storage["use"]) && $storage["use"]) {
             return $this->get("app.openstack_uploader");
         }
         return $this->get("app.uploader");
@@ -105,7 +104,7 @@ class Group extends BaseController
                 $list[] = $temp;
             }
             $response["data"] = Array("users" => $list);
-            $response["data"]["nbuser"] = $nb;
+            $response["data"]["nbuser"] = max($nb, count($list));
         }
 
         return new Response($response);
@@ -177,24 +176,5 @@ class Group extends BaseController
         return new Response($response);
     }
 
-    public function runFreeOffer(Request $request)
-    {
-        $response = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $groupId = $request->request->get("groupId");
-
-        $res = $this->get("app.groups")->runFreeOffer($groupId, $this->getUser()->getId());
-
-        if ($res) {
-            $response["data"] = "success";
-        } else {
-            $response["errors"] = ["error"];
-        }
-
-
-        return new Response($response);
-    }
+    
 }

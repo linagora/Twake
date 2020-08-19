@@ -83,7 +83,10 @@ export default class ChannelTemplateEditor extends Component {
         <div>
           <ObjectModalSeparator />
           <ObjectModalSectionTitle
-            title={Languages.t('scenes.apps.calendar.event_edition.title_participants', 'Participants')}
+            title={Languages.t(
+              'scenes.apps.calendar.event_edition.title_participants',
+              'Participants',
+            )}
             action={
               <Button
                 className="button small primary-text"
@@ -102,14 +105,14 @@ export default class ChannelTemplateEditor extends Component {
           />
           {(this.state.channel.private && (
             <UserListManager
-              users={this.state.channel.members ? this.state.channel.members : [] }
+              users={this.state.channel.members ? this.state.channel.members : []}
               onUpdate={ids => {
                 this.setChannelKey({ members: ids });
                 this.newChannel();
               }}
               canRemoveMyself
               noPlaceholder
-              scope="workspace"
+              scope="group"
             />
           )) || (
             <div

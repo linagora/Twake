@@ -103,19 +103,12 @@ class WorkspacesUsers extends Observable {
       this.offset_by_group_id[group_id] = [0, false];
     }
 
-    var data = {
-      twake_bot: true,
-      workspaceId: workspace_id,
-      max: this.offset_by_workspace_id[workspace_id][0] == 0 ? 100 : 40,
-      offset: this.offset_by_workspace_id[workspace_id],
-    };
-
     ws.subscribe('workspace_users/' + workspace_id, (route, res) => {
       this.recieveWS(res);
     });
 
     var loadMembers = data => {
-      data.members.forEach(item => {
+      (data.members || []).forEach(item => {
         if (
           !that.offset_by_workspace_id[workspace_id][1] ||
           Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
@@ -130,22 +123,35 @@ class WorkspacesUsers extends Observable {
         that.users_by_workspace[workspace_id][item.user.id] = item;
       });
 
-      that.membersPending = data.mails;
-      that.notify();
+      if (data.mails) {
+        that.membersPending = data.mails || [];
+        that.notify();
+      }
 
-      if (data.members.length > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
+      if (data.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
         CurrentUser.updateTutorialStatus('did_invite_collaborators');
       }
     };
 
+    var data = {
+      workspaceId: workspace_id,
+      max: this.offset_by_workspace_id[workspace_id][0] == 0 ? 100 : 40,
+    };
+
     if (options.members) {
-      loadMembers(options.members);
+      loadMembers(options.members || []);
     } else {
       Api.post('workspace/members/list', data, res => {
-        if (res.data && res.data.members) {
-          loadMembers(res.data);
+        if (res.data) {
+          loadMembers({ members: res.data });
         }
       });
+      Api.post('workspace/members/pending', data, res => {
+        if (res.data) {
+          loadMembers({ mails: res.data });
+        }
+      });
+      loadMembers(options.members || []);
     }
 
     var loadGroupUsers = data => {
@@ -167,12 +173,6 @@ class WorkspacesUsers extends Observable {
 
     if (options.group_users) {
       loadMembers(options.group_users);
-    } else {
-      Api.post('workspace/group/getUsers', { groupId: group_id }, res => {
-        if (res.data && res.data.users) {
-          loadGroupUsers(res.data);
-        }
-      });
     }
   }
   canShowUserInWorkspaceList(member) {
@@ -328,7 +328,7 @@ class WorkspacesUsers extends Observable {
       this.users_by_workspace[workspaceService.currentWorkspaceId][id] = this.users_by_group[
         groupService.currentGroupId
       ][id];
-      var username = Collections.get('users').find(id).username;
+      var username = (Collections.get('users').find(id) || {}).username || '';
       this.addUser([username + '|' + (externe ? 1 : 0)], cb, thot);
       this.notify();
     }
@@ -460,16 +460,13 @@ class WorkspacesUsers extends Observable {
   }
 
   searchUserInWorkspace(query, cb) {
-    var results = Object.values(this.users_by_workspace[workspaceService.currentWorkspaceId])
-      .filter(
-        data =>
-          (data.user.username + ' ' + data.user.firstname + ' ' + data.user.lastname)
-            .toLocaleLowerCase()
-            .indexOf(query.toLocaleLowerCase()) >= 0,
-      )
-      .map(data => data.user);
-    cb(results);
-    return results;
+    User.search(
+      query,
+      { scope: 'workspace', workspace_id: workspaceService.currentWorkspaceId },
+      results => {
+        cb(results);
+      },
+    );
   }
 
   leaveWorkspace() {

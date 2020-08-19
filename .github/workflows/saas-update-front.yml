@@ -17,6 +17,8 @@ on:
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
+    env:
+      FRONTEND_ENV: ${{secrets.FRONTEND_ENV}}
 
     strategy:
       matrix:
@@ -31,10 +33,12 @@ jobs:
       - run: npm install -g yarn
       - run: cd twake/frontend/ && yarn install
       - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
-      - run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
+      - run: cp twake/frontend/src/app/environment/environment.ts.dist twake/frontend/src/app/environment/environment.ts
+      - if: ${{env.FRONTEND_ENV}}
+        run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
       - run: cd twake/frontend/ && yarn build
       - name: Upload frontend build artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: frontend-build
           path: twake/frontend/build/
@@ -51,7 +55,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Download frontend-build artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: frontend-build
 

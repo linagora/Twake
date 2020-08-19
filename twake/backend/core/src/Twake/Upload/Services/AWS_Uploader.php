@@ -14,11 +14,10 @@ class AWS_Uploader extends Uploader
     public function __construct(App $app)
     {
 
-        $aws_config = $app->getContainer()->getParameter("aws");
+        $s3_config = $app->getContainer()->getParameter("storage.S3");
 
         parent::__construct($app);
 
-        $s3_config = $aws_config["S3"];
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = $s3_config["buckets_prefix"];

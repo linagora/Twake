@@ -26,6 +26,7 @@ class User {
   }
 
   getFullName(user) {
+    user = user || {};
     var name = user.username;
     if (user.firstname && user.firstname != '') {
       name = user.firstname;
@@ -40,6 +41,7 @@ class User {
   }
 
   getThumbnail(user) {
+    user = user || {};
     var thumbnail = '';
     if (!user.thumbnail || user.thumbnail == '') {
       var output = 0;
@@ -56,7 +58,11 @@ class User {
     return thumbnail;
   }
 
-  search(query, callback, noHttp, didTimeout) {
+  search(query, options, callback, noHttp, didTimeout) {
+    callback = callback || (() => {});
+
+    const scope = options.scope;
+
     if (query == 'me') {
       query = this.getCurrentUser().username;
     }
@@ -99,7 +105,7 @@ class User {
     }
     if (this.searching) {
       this.timeout_search = setTimeout(() => {
-        this.search(query, callback, false, true);
+        this.search(query, options, callback, false, true);
       }, 1000);
       return;
     }
@@ -109,19 +115,27 @@ class User {
       () => {
         Api.post(
           'users/all/search',
-          { query: query, language_preference: this.getCurrentUser().language },
+          {
+            options: {
+              scope: scope,
+              name: query,
+              workspace_id: options.workspace_id,
+              group_id: options.group_id,
+              language_preference: this.getCurrentUser().language,
+            },
+          },
           res => {
             this.searching = false;
             if (res.data && res.data.users) {
               res.data.users.forEach(item => {
                 this.users_repository.updateObject(item[0]);
               });
-              this.search(query, callback, true, true);
+              this.search(query, options, callback, true, true);
             }
-          }
+          },
         );
       },
-      didTimeout ? 0 : 1000
+      didTimeout ? 0 : 1000,
     );
   }
 

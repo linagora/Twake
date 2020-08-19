@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
-import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
+import {
+  ObjectModalFormTitle,
+  ObjectModalSectionTitle,
+} from 'components/ObjectModal/ObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
@@ -53,7 +56,7 @@ export default class EventsFilter extends React.Component {
         <UserListManager
           noPlaceholder
           canRemoveMyself
-          scope="all"
+          scope="workspace"
           users={this.state.options.sender ? [this.state.options.sender] : []}
           onUpdate={value => {
             if (value.length > 1) {
@@ -72,7 +75,7 @@ export default class EventsFilter extends React.Component {
         <UserListManager
           noPlaceholder
           canRemoveMyself
-          scope="all"
+          scope="workspace"
           users={this.state.options.mentions || []}
           onUpdate={value => {
             this.state.options.mentions = value;

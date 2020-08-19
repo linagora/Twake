@@ -46,7 +46,6 @@ class Routing extends BaseRouting
         // Get and search
         "all/get" => ["handler" => "Users:getById", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "all/search" => ["handler" => "Users:search", "methods" => ["POST"], "security" => ["user_connected_security"]],
-        "all/search/username" => ["handler" => "Users:searchUsersByUsername", "methods" => ["POST"], "security" => ["user_connected_security"]],
         // CAS
         "cas/login" => ["handler" => "Adapters/CAS:login", "methods" => ["GET"]],
         "cas/verify" => ["handler" => "Adapters/CAS:verify", "methods" => ["GET"]],
