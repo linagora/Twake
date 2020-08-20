@@ -19,6 +19,7 @@ class Version extends BaseController
         $auth = [];
         if ($this->getParameter("defaults.auth.internal.use")) {
             $auth["internal"] = [
+              "disable_account_creation" => $this->getParameter("defaults.auth.internal.disable_account_creation"),
               "disable_email_verification" => $this->getParameter("defaults.auth.internal.disable_email_verification"),
               "use" => true,
             ];
