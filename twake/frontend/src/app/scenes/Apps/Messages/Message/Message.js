@@ -89,23 +89,24 @@ export default class Message extends Component {
   }
 
   displayUserCard(user) {
-    console.log(`userCard: '${this.state.userCard}'`);
-    this.setState({ userCard: !this.state.userCard });
+    if (!this.props.message.application_id) {
+      let box = window.getBoundingClientRect(this.user_details);
+      this.setState({ userCard: !this.state.userCard });
 
-    let box = window.getBoundingClientRect(this.user_details);
-    MenusManager.openMenu(
-      [
-        {
-          type: 'react-element',
-          reactElement: () => (
-            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
-          ),
-        },
-      ],
-      box,
-      null,
-      {margin: 8}
-    );
+      MenusManager.openMenu(
+        [
+          {
+            type: 'react-element',
+            reactElement: () => (
+              <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+            ),
+          },
+        ],
+        box,
+        null,
+        { margin: 8 },
+      );
+    }
   }
 
   dropMessage(message) {
