@@ -468,13 +468,15 @@ export default class WorkspacePartner extends Component {
                   render: col => (
                     <div className="absolute_position">
                       <div className="fix_text_padding_medium text-complete-width">{col.mail}</div>
-                      <div className="tag green">
-                        {Languages.t(
-                          'scenes.app.popup.workspaceparameter.pages.extern_guest',
-                          [],
-                          'Utilisateur invité',
-                        )}
-                      </div>
+                      {!!col.externe && (
+                        <div className="tag green">
+                          {Languages.t(
+                            'scenes.app.popup.workspaceparameter.pages.extern_guest',
+                            [],
+                            'Utilisateur invité',
+                          )}
+                        </div>
+                      )}
                     </div>
                   ),
                 },

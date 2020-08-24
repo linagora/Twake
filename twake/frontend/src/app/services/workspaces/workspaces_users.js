@@ -129,6 +129,7 @@ class WorkspacesUsers extends Observable {
           that.users_by_group[group_id][item.user.id] = item;
           that.users_by_workspace[workspace_id][item.user.id] = item;
         });
+        that.notify();
       }
 
       if (data.mails) {
