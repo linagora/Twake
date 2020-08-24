@@ -51,15 +51,14 @@ export default class Tooltip extends Component {
   }
   componentDidMount() {
     var that = this;
-    if (this.children) {
+    if (this.parent && this.children) {
       window.tooltip = this.tooltip;
-      console.log('client height ' + this.children.clientHeight);
-      this.children.addEventListener('mouseover', () => {
+      this.parent.addEventListener('mouseenter', () => {
         if (this.props.overable != false) {
           that.open();
         }
       });
-      this.children.addEventListener('mouseout', () => {
+      this.parent.addEventListener('mouseleave', () => {
         if (this.props.overable != false) {
           that.close();
         }
@@ -68,7 +67,10 @@ export default class Tooltip extends Component {
   }
   render() {
     return (
-      <div className={'tooltip ' + (this.props.className || '')}>
+      <div
+        className={'tooltip ' + (this.props.className || '')}
+        ref={parent => (this.parent = parent)}
+      >
         <div
           style={{
             top: this.state.top,
