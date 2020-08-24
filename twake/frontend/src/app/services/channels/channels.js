@@ -44,7 +44,7 @@ class Channels extends Observable {
     var that = this;
     Globals.window.addEventListener('focus', function (e) {
       that.readChannelIfNeeded(
-        Collections.get('channels').findByFrontId(that.currentChannelFrontId)
+        Collections.get('channels').findByFrontId(that.currentChannelFrontId),
       );
     });
   }
@@ -172,12 +172,12 @@ class Channels extends Observable {
       //Select previously selected channel
       if (
         Collections.get('channels').findByFrontId(
-          this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId]
+          this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId],
         )
       ) {
         this.select(
           { front_id: this.currentSideChannelFrontIdByWorkspace[currentWorkspaceId] },
-          true
+          true,
         );
       }
 
@@ -192,7 +192,7 @@ class Channels extends Observable {
       //Select workspace channel
       var candidates = Collections.get('channels').findBy(
         { original_workspace: currentWorkspaceId, application: false },
-        { channel_group_name: 'ASC' }
+        { channel_group_name: 'ASC' },
       );
       if (candidates.length > 0) {
         this.select(candidates[0]);
@@ -314,7 +314,7 @@ class Channels extends Observable {
       preferences[channel.original_workspace].pinned_channels[channel.id] = true;
       preferences[channel.original_workspace].pinned_channels = Object.assign(
         {},
-        preferences[channel.original_workspace].pinned_channels
+        preferences[channel.original_workspace].pinned_channels,
       );
     }
 
@@ -368,12 +368,7 @@ class Channels extends Observable {
     }
     if (channel && channel.icon) {
       var icon_url = emojione.toImage(channel.icon);
-      icon_url = icon_url.replace(
-        'https://cdn.jsdelivr.net/emojione/assets/3.1/png/',
-        '/public/emojione/'
-      );
-      icon_url = icon_url.replace(/.*(\/public)/, '$1');
-      icon_url = icon_url.replace(/(.*\.png).*/, '$1');
+      icon_url = icon_url.replace(/.*src=("|')(.*\.png).*/, '$2');
       WindowService.setTitle(channel.name, icon_url);
     } else if (channel && channel.application && channel.app_id) {
       //Workspace chan
@@ -533,7 +528,7 @@ class Channels extends Observable {
       if (res.data && res.data.object) {
         Collections.get('channels').save(
           res.data.object,
-          'direct_messages_' + UserService.getCurrentUserId()
+          'direct_messages_' + UserService.getCurrentUserId(),
         );
         this.select(res.data.object);
       }
@@ -554,11 +549,11 @@ class Channels extends Observable {
         if (res.data && res.data.object) {
           Collections.get('channels').save(
             res.data.object,
-            'direct_messages_' + UserService.getCurrentUserId()
+            'direct_messages_' + UserService.getCurrentUserId(),
           );
           this.select(res.data.object);
         }
-      }
+      },
     );
   }
 
