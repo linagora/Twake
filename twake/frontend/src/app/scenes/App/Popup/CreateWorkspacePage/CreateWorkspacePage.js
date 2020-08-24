@@ -42,7 +42,7 @@ export default class CreateWorkspacePage extends Component {
             {Languages.t(
               'scenes.app.popup.createworkspacepage.add_subtitle',
               [],
-              'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !'
+              'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !',
             )}{' '}
             <Emojione type=":grin:" />
           </div>
@@ -61,13 +61,13 @@ export default class CreateWorkspacePage extends Component {
             placeholder={Languages.t(
               'scenes.app.popup.createworkspacepage.placeholder_name',
               [],
-              "Nom de l'espace de travail"
+              "Nom de l'espace de travail",
             )}
             value={this.state.name}
             onChange={evt => this.setState({ name: evt.target.value })}
           />
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -105,7 +105,7 @@ export default class CreateWorkspacePage extends Component {
       WorkspaceService.createWorkspace(
         this.state.name,
         this.state.members,
-        GroupService.currentGroupId
+        GroupService.currentGroupId,
       );
     } else {
       this.setState({ page: this.state.page + 1 });
@@ -132,7 +132,7 @@ export default class CreateWorkspacePage extends Component {
               {Languages.t(
                 'scenes.app.popup.createworkspacepage.create_new_workspace',
                 [],
-                'Créer un nouvel espace de travail'
+                'Créer un nouvel espace de travail',
               )}
               {/* {this.state.page}/1*/}
             </div>

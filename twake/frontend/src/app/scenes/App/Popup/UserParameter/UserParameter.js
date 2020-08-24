@@ -115,7 +115,7 @@ export default class UserParameter extends Component {
                         'background-image':
                           "url('" +
                           userService.getThumbnail(
-                            Collections.get('users').find(userService.getCurrentUserId())
+                            Collections.get('users').find(userService.getCurrentUserId()),
                           ) +
                           "')",
                       }}
@@ -126,12 +126,13 @@ export default class UserParameter extends Component {
                     <br />
                     <a
                       className="red"
+                      href="#"
                       onClick={() => {
                         this.setState({ thumbnail: 'null' });
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
-                          'null'
+                          'null',
                         );
                       }}
                     >
@@ -152,7 +153,7 @@ export default class UserParameter extends Component {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
-                          this.state.thumbnail
+                          this.state.thumbnail,
                         );
                       }
                     }}
@@ -170,20 +171,21 @@ export default class UserParameter extends Component {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
-                          this.state.thumbnail
+                          this.state.thumbnail,
                         );
                       }
                     }}
                     onChange={ev => this.setState({ lastname: ev.target.value })}
                   />
                   <ButtonWithTimeout
+                    href="#"
                     className="small buttonValidation"
                     disabled={this.state.currentUserService.loading}
                     onClick={() =>
                       currentUserService.updateidentity(
                         this.state.lastname,
                         this.state.firstname,
-                        this.state.thumbnail
+                        this.state.thumbnail,
                       )
                     }
                     loading={this.state.currentUserService.loading}
@@ -247,6 +249,7 @@ export default class UserParameter extends Component {
                   )}
 
                   <ButtonWithTimeout
+                    href="#"
                     className="small buttonValidation"
                     disabled={this.state.currentUserService.loading}
                     onClick={() => currentUserService.updateUserName(this.state.username)}
@@ -293,7 +296,7 @@ export default class UserParameter extends Component {
                     })}
 
                   {this.state.subMenuOpened < 1 && (
-                    <a onClick={() => this.setState({ subMenuOpened: 1 })}>
+                    <a href="#" onClick={() => this.setState({ subMenuOpened: 1 })}>
                       {this.state.i18n.t('scenes.app.workspaces.welcome_page.add_secondary_emails')}
                     </a>
                   )}
@@ -315,12 +318,12 @@ export default class UserParameter extends Component {
                             this.state.loginService.addNewMail(
                               this.state.mail,
                               thot => thot.setState({ subMenuOpened: 2 }),
-                              this
+                              this,
                             );
                           }
                         }}
                         placeholder={this.state.i18n.t(
-                          'scenes.app.workspaces.welcome_page.new_email'
+                          'scenes.app.workspaces.welcome_page.new_email',
                         )}
                         value={this.state.mail}
                         onChange={evt => this.setState({ mail: evt.target.value })}
@@ -343,7 +346,7 @@ export default class UserParameter extends Component {
                                 thot => {
                                   thot.setState({ subMenuOpened: 0, mail: '', code: '' });
                                 },
-                                this
+                                this,
                               );
                             }
                           }}
@@ -366,28 +369,33 @@ export default class UserParameter extends Component {
                             style={{ display: 'block' }}
                           >
                             {this.state.i18n.t(
-                              'scenes.apps.account.account.email_add_modal.invalid_code'
+                              'scenes.apps.account.account.email_add_modal.invalid_code',
                             )}
                           </span>
                         )}
 
                       {this.state.subMenuOpened == 1 && (
                         <div className="form_bottom">
-                          <a className="cancel" onClick={() => this.setState({ subMenuOpened: 0 })}>
+                          <a
+                            href="#"
+                            className="cancel"
+                            onClick={() => this.setState({ subMenuOpened: 0 })}
+                          >
                             {this.state.i18n.t('general.cancel')}
                           </a>
                           <ButtonWithTimeout
+                            href="#"
                             className="small buttonValidation"
                             disabled={this.state.loginService.loading}
                             onClick={() =>
                               this.state.loginService.addNewMail(
                                 this.state.mail,
                                 thot => thot.setState({ subMenuOpened: 2 }),
-                                this
+                                this,
                               )
                             }
                             value={this.state.i18n.t(
-                              'scenes.app.workspaces.welcome_page.add_new_email'
+                              'scenes.app.workspaces.welcome_page.add_new_email',
                             )}
                             loading={this.state.loginService.loading}
                             loadingTimeout={1500}
@@ -396,10 +404,15 @@ export default class UserParameter extends Component {
                       )}
                       {this.state.subMenuOpened == 2 && (
                         <div className="form_bottom">
-                          <a className="cancel" onClick={() => this.setState({ subMenuOpened: 0 })}>
+                          <a
+                            href="#"
+                            className="cancel"
+                            onClick={() => this.setState({ subMenuOpened: 0 })}
+                          >
                             {this.state.i18n.t('general.cancel')}
                           </a>
                           <ButtonWithTimeout
+                            href="#"
                             className="small buttonValidation"
                             disabled={this.state.loginService.loading}
                             onClick={() =>
@@ -409,11 +422,11 @@ export default class UserParameter extends Component {
                                 thot => {
                                   thot.setState({ subMenuOpened: 0, mail: '', code: '' });
                                 },
-                                this
+                                this,
                               )
                             }
                             value={this.state.i18n.t(
-                              'scenes.apps.account.account.email_add_modal.confirm'
+                              'scenes.apps.account.account.email_add_modal.confirm',
                             )}
                             loading={this.state.loginService.loading}
                             loadingTimeout={1500}
@@ -439,7 +452,7 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
-                      'scenes.apps.account.account.password_modal.old_password'
+                      'scenes.apps.account.account.password_modal.old_password',
                     )}
                     className={this.state.currentUserService.badOldPassword ? 'error' : ''}
                     type="password"
@@ -449,7 +462,7 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
-                          this.state.password1
+                          this.state.password1,
                         );
                       }
                     }}
@@ -458,7 +471,7 @@ export default class UserParameter extends Component {
                   {this.state.currentUserService.badOldPassword && (
                     <span className="text error">
                       {this.state.i18n.t(
-                        'scenes.apps.account.account.password_modal.bad_old_password'
+                        'scenes.apps.account.account.password_modal.bad_old_password',
                       )}
                     </span>
                   )}
@@ -466,7 +479,7 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
-                      'scenes.apps.account.account.password_modal.password'
+                      'scenes.apps.account.account.password_modal.password',
                     )}
                     className={this.state.currentUserService.badNewPassword ? 'error' : ''}
                     type="password"
@@ -476,7 +489,7 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
-                          this.state.password1
+                          this.state.password1,
                         );
                       }
                     }}
@@ -486,7 +499,7 @@ export default class UserParameter extends Component {
                   <Input
                     disabled={this.state.currentUserService.loading}
                     placeholder={this.state.i18n.t(
-                      'scenes.apps.account.account.password_modal.password'
+                      'scenes.apps.account.account.password_modal.password',
                     )}
                     className={this.state.currentUserService.badNewPassword ? 'error' : ''}
                     type="password"
@@ -496,7 +509,7 @@ export default class UserParameter extends Component {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
-                          this.state.password1
+                          this.state.password1,
                         );
                       }
                     }}
@@ -509,13 +522,14 @@ export default class UserParameter extends Component {
                   )}
 
                   <ButtonWithTimeout
+                    href="#"
                     className="small buttonValidation"
                     disabled={this.state.currentUserService.loading}
                     onClick={() =>
                       currentUserService.updatePassword(
                         this.state.oldPassword,
                         this.state.password,
-                        this.state.password1
+                        this.state.password1,
                       )
                     }
                     loading={this.state.currentUserService.loading}
@@ -535,7 +549,7 @@ export default class UserParameter extends Component {
             {Languages.t(
               'scenes.app.popup.userparameter.personnal_workspaces_title',
               [],
-              'Vos espaces de travail'
+              'Vos espaces de travail',
             )}
           </div>
 

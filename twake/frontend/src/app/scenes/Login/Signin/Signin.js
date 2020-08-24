@@ -75,7 +75,7 @@ export default class Signin extends Component {
             </div>
           )}
           <Input
-            onBlur={() => this.updateFieldError("errorUsername", () => this.checkUsername())}
+            onBlur={() => this.updateFieldError('errorUsername', () => this.checkUsername())}
             refInput={ref => {
               this.input = ref;
             }}
@@ -104,7 +104,7 @@ export default class Signin extends Component {
             </div>
           )}
           <Input
-            onBlur={() => this.updateFieldError("errorMail", () => this.checkMail())}
+            onBlur={() => this.updateFieldError('errorMail', () => this.checkMail())}
             id="email_create"
             className={
               'bottom-margin medium full_width ' +
@@ -126,7 +126,7 @@ export default class Signin extends Component {
             </div>
           )}
           <Input
-            onBlur={() => this.updateFieldError("errorPassword", () => this.checkPassword())}
+            onBlur={() => this.updateFieldError('errorPassword', () => this.checkPassword())}
             id="password_create"
             type="password"
             className={
@@ -142,7 +142,7 @@ export default class Signin extends Component {
             onChange={evt => this.setState({ password: evt.target.value })}
           />
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -228,7 +228,7 @@ export default class Signin extends Component {
             ]}
 
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -297,7 +297,7 @@ export default class Signin extends Component {
   }
 
   updateFieldError(stateName, test) {
-    this.setState({[stateName]: !test()});
+    this.setState({ [stateName]: !test() });
   }
 
   checkUsername = () => {
@@ -305,7 +305,7 @@ export default class Signin extends Component {
   };
 
   checkMail = () => {
-    return !!(this.state.patternRegMail.test(this.state.email.toLocaleLowerCase()));
+    return !!this.state.patternRegMail.test(this.state.email.toLocaleLowerCase());
   };
 
   checkPassword = () => {
@@ -313,7 +313,7 @@ export default class Signin extends Component {
   };
 
   checkForm() {
-    return (this.checkUsername() && this.checkMail() && this.checkPassword()); 
+    return this.checkUsername() && this.checkMail() && this.checkPassword();
   }
 
   previous() {
