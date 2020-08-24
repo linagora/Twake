@@ -116,7 +116,7 @@ export default class SecondMail extends Component {
           </div>
           <div className="bottom">
             <div className="return">
-              <a className="blue_link" onClick={() => this.previous()}>
+              <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('scenes.app.workspaces.welcome_page.done')}
               </a>
             </div>
@@ -175,7 +175,7 @@ export default class SecondMail extends Component {
           </div>
           <div className="bottom">
             <div className="return">
-              <a className="blue_link" onClick={() => this.previous()}>
+              <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
             </div>
@@ -210,7 +210,7 @@ export default class SecondMail extends Component {
           thot => {
             thot.setState({ page: 1, mail: '', code: '' });
           },
-          this
+          this,
         );
       }
     } else if (this.state.page == 1) {
@@ -218,7 +218,7 @@ export default class SecondMail extends Component {
         this.state.loginService.addNewMail(
           this.state.mail,
           thot => thot.setState({ page: 2 }),
-          this
+          this,
         );
       }
     }

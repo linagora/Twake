@@ -80,7 +80,7 @@ export default class WorkspaceAppsSearch extends Component {
                 value={Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.show_button',
                   [],
-                  'Afficher'
+                  'Afficher',
                 )}
                 disabled={this.state.loading}
                 loading={this.state.loading}
@@ -107,9 +107,9 @@ export default class WorkspaceAppsSearch extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.installed_app_information',
           [],
-          "Installer l'application dans cet espace de travail."
+          "Installer l'application dans cet espace de travail.",
         ),
-      }
+      },
     );
   }
 
@@ -138,11 +138,11 @@ export default class WorkspaceAppsSearch extends Component {
 
           <div className="group_section">
             <div className="text">
-              <a key="goback" onClick={() => this.setState({ current_app_id: null })}>
+              <a href="#" key="goback" onClick={() => this.setState({ current_app_id: null })}>
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.back_to_search_button',
                   [],
-                  'Retour à la recherche'
+                  'Retour à la recherche',
                 )}
               </a>
             </div>
@@ -153,7 +153,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.description',
                 [],
-                'Description'
+                'Description',
               )}
             </div>
 
@@ -167,7 +167,7 @@ export default class WorkspaceAppsSearch extends Component {
 
             <div className="text markdown" style={{ marginTop: 10 }}>
               {PseudoMarkdownCompiler.compileToHTML(
-                PseudoMarkdownCompiler.compileToJSON(application.description || '')
+                PseudoMarkdownCompiler.compileToJSON(application.description || ''),
               )}
             </div>
 
@@ -188,7 +188,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.write_access_subtitle',
                 [],
-                'Accès en écriture'
+                'Accès en écriture',
               )}
             </div>
             <TagPicker
@@ -204,7 +204,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-                    'Aucun accès.'
+                    'Aucun accès.',
                   )}
                 </div>
               ))}
@@ -213,7 +213,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.read_access_subtitle',
                 [],
-                'Accès en lecture'
+                'Accès en lecture',
               )}
             </div>
             <TagPicker
@@ -229,7 +229,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-                    'Aucun accès.'
+                    'Aucun accès.',
                   )}
                 </div>
               ))}
@@ -238,7 +238,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.webhooks_access_subtitle',
                 [],
-                'Accès aux webhooks'
+                'Accès aux webhooks',
               )}
             </div>
             <TagPicker
@@ -254,7 +254,7 @@ export default class WorkspaceAppsSearch extends Component {
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
                     [],
-                    'Aucun accès.'
+                    'Aucun accès.',
                   )}
                 </div>
               ))}
@@ -266,7 +266,7 @@ export default class WorkspaceAppsSearch extends Component {
               value={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.install_button',
                 [],
-                'Installer'
+                'Installer',
               )}
               disabled={this.state.loading}
               loading={this.state.loading}
@@ -290,7 +290,7 @@ export default class WorkspaceAppsSearch extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.apps_research_title',
             [],
-            'Rechercher des applications'
+            'Rechercher des applications',
           )}
         </div>
 
@@ -305,10 +305,10 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.show_all_apps_text',
                 [],
-                "Voir la liste d'applications"
+                "Voir la liste d'applications",
               )}
             </a>
-            <a key="goback" onClick={() => this.props.exit()}>
+            <a href="#" key="goback" onClick={() => this.props.exit()}>
               {Languages.t('scenes.app.popup.workspaceparameter.pages.back_button', [], 'Retour')}
             </a>
           </div>
@@ -325,7 +325,7 @@ export default class WorkspaceAppsSearch extends Component {
             placeholder={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.research_by',
               [],
-              'Rechercher des applications par nom et catégories'
+              'Rechercher des applications par nom et catégories',
             )}
           />
         </div>
@@ -336,7 +336,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.apps_small_text',
                 [],
-                'Applications de cet espace de travail'
+                'Applications de cet espace de travail',
               )}
             </div>
 
@@ -350,7 +350,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.apps_company_small_text',
                 [],
-                'Applications de votre entreprise'
+                'Applications de votre entreprise',
               )}
             </div>
 
@@ -364,7 +364,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.developped_apps_small_text',
                 [],
-                'Applications développées par votre entreprise'
+                'Applications développées par votre entreprise',
               )}
             </div>
 
@@ -378,7 +378,7 @@ export default class WorkspaceAppsSearch extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.all_apps_small_text',
                 [],
-                'Toutes les applications'
+                'Toutes les applications',
               )}
             </div>
 

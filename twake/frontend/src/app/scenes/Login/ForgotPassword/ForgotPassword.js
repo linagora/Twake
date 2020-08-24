@@ -22,7 +22,7 @@ export default class ForgotPassword extends Component {
 
       invalidForm: false,
       patternRegMail: new RegExp(
-        "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+        "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
       ),
       mailAvailable: true,
       usernameAvailable: true,
@@ -88,7 +88,7 @@ export default class ForgotPassword extends Component {
           )}
 
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -144,7 +144,7 @@ export default class ForgotPassword extends Component {
           )}
 
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -218,7 +218,7 @@ export default class ForgotPassword extends Component {
             )}
 
           <div className="bottom">
-            <a className="returnBtn blue_link" onClick={() => this.previous()}>
+            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
             <ButtonWithTimeout
@@ -247,7 +247,7 @@ export default class ForgotPassword extends Component {
           </div>
 
           <div className="bottom">
-            <a className="returnBtn" />
+            <a href="#" className="returnBtn" />
             <ButtonWithTimeout
               className="medium"
               disabled={this.state.exiting}
