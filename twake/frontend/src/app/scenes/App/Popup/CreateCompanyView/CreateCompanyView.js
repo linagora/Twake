@@ -77,7 +77,7 @@ export default class CreateCompanyView extends Component {
           />
           <div className="bottom">
             <div className="returnBtn">
-              <a className="blue_link" onClick={() => this.previous()}>
+              <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
             </div>
@@ -302,7 +302,7 @@ export default class CreateCompanyView extends Component {
           </select>
           <div className="bottom">
             <div className="returnBtn">
-              <a className="blue_link" onClick={() => this.previous()}>
+              <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
             </div>
@@ -368,7 +368,7 @@ export default class CreateCompanyView extends Component {
           </div>
           <div className="bottom">
             <div className="returnBtn">
-              <a className="blue_link" onClick={() => this.previous()}>
+              <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
             </div>

@@ -344,9 +344,6 @@ export default class WorkspacePartner extends Component {
     var pendingMail = [];
     this.state.workspacesUsers.membersPending.map(pending => {
       var mail = (pending.mail || '').toLocaleLowerCase().trim();
-      console.log(mail);
-      console.log(non_pending_mails);
-      console.log(CryptoJS.MD5(mail));
       if (
         non_pending_mails.indexOf(mail) < 0 &&
         non_pending_mails.indexOf(CryptoJS.MD5(mail) + '') < 0
@@ -388,29 +385,6 @@ export default class WorkspacePartner extends Component {
                 title: 'Name',
                 dataIndex: 'name',
                 render: col => {
-                  return (
-                    <div
-                      className="absolute_position"
-                      style={{ paddingRight: 8, boxSizing: 'border-box' }}
-                    >
-                      <div
-                        class="user_image"
-                        style={{
-                          backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
-                        }}
-                      />
-                      <div className="fix_text_padding_medium text-complete-width">
-                        {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
-                      </div>
-                    </div>
-                  );
-                },
-              },
-              {
-                title: 'Status',
-                width: 300,
-                dataIndex: 'level',
-                render: col => {
                   var tags = [];
                   if (col.isAdmin) {
                     tags.push(
@@ -445,7 +419,24 @@ export default class WorkspacePartner extends Component {
                       </div>,
                     );
                   }
-                  return <div className="fix_text_padding_medium">{tags}</div>;
+
+                  return (
+                    <div
+                      className="absolute_position"
+                      style={{ paddingRight: 8, boxSizing: 'border-box' }}
+                    >
+                      <div
+                        class="user_image"
+                        style={{
+                          backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
+                        }}
+                      />
+                      <div className="fix_text_padding_medium text-complete-width">
+                        {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
+                      </div>
+                      <div style={{ paddingTop: 8 }}>{tags}</div>
+                    </div>
+                  );
                 },
               },
               {
@@ -477,29 +468,17 @@ export default class WorkspacePartner extends Component {
                   render: col => (
                     <div className="absolute_position">
                       <div className="fix_text_padding_medium text-complete-width">{col.mail}</div>
+                      {!!col.externe && (
+                        <div className="tag green">
+                          {Languages.t(
+                            'scenes.app.popup.workspaceparameter.pages.extern_guest',
+                            [],
+                            'Utilisateur invité',
+                          )}
+                        </div>
+                      )}
                     </div>
                   ),
-                },
-                {
-                  title: 'Status',
-                  width: 160,
-                  dataIndex: 'level',
-                  render: col => {
-                    if (col.externe) {
-                      return (
-                        <div className="fix_text_padding_medium">
-                          <div className="tag green">
-                            {Languages.t(
-                              'scenes.app.popup.workspaceparameter.pages.extern_guest',
-                              [],
-                              'Utilisateur invité',
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return '';
-                  },
                 },
                 {
                   title: '',

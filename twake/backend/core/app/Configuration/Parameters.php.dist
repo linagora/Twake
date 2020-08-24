@@ -179,6 +179,7 @@ class Parameters extends \Common\Configuration
               "auth" => [
                   "internal" => [
                       "use" => true,
+                      "disable_account_creation" => false,
                       "disable_email_verification" => true
                   ],
                   "openid" => [

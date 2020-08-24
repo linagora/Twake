@@ -42,7 +42,7 @@ export default class Responses extends Component {
         parent_message_id: this.props.parentMessage.id,
         channel_id: this.props.parentMessage.channel_id,
       },
-      this.props.messagesCollectionKey
+      this.props.messagesCollectionKey,
     );
     MessagesService.startRespond(this.props.parentMessage);
   }
@@ -75,7 +75,7 @@ export default class Responses extends Component {
             {Languages.t(
               'scenes.apps.messages.message.show_responses_button',
               [],
-              'Afficher toutes les réponses'
+              'Afficher toutes les réponses',
             )}{' '}
             ({this.props.parentMessage.responses_count})
           </a>
@@ -88,6 +88,7 @@ export default class Responses extends Component {
               parent_message_id: this.props.parentMessage.id,
               _user_ephemeral: undefined,
             })
+            .filter(a => !a._user_ephemeral) //If you want to make ephemeral messages visibles, carefull, nothing prevent making visibles other users ephemerals messages
             .sort((a, b) => a.creation_date - b.creation_date)
             .slice(-showed_messages)
             .map(message => {
@@ -196,7 +197,7 @@ export default class Responses extends Component {
                   {Languages.t(
                     'scenes.apps.messages.message.show_on_right',
                     [],
-                    'Show on the right'
+                    'Show on the right',
                   )}
                 </a>
               </div>

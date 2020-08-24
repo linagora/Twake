@@ -142,14 +142,15 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
               </Button>
-
-              <a
-                onClick={() => this.state.login.changeState('signin')}
-                id="create_btn"
-                className="blue_link"
-              >
-                {this.state.i18n.t('scenes.login.home.create_account')}
-              </a>
+              {!LoginService.server_infos.auth.internal.disable_account_creation && (
+                <a
+                  onClick={() => this.state.login.changeState('signin')}
+                  id="create_btn"
+                  className="blue_link"
+                >
+                  {this.state.i18n.t('scenes.login.home.create_account')}
+                </a>
+              )}
 
               <a
                 onClick={() => this.state.login.changeState('forgot_password')}

@@ -108,20 +108,29 @@ class WorkspacesUsers extends Observable {
     });
 
     var loadMembers = data => {
-      (data.members || []).forEach(item => {
-        if (
-          !that.offset_by_workspace_id[workspace_id][1] ||
-          Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
-        ) {
-          that.offset_by_workspace_id[workspace_id][1] = item.user.id;
-        }
-        that.offset_by_workspace_id[workspace_id][0]++;
+      if (!data) {
+        return;
+      }
+      if (typeof data.members === 'object' && data.members.members) {
+        data = data.members;
+      }
+      if (data.members) {
+        (data.members || []).forEach(item => {
+          if (
+            !that.offset_by_workspace_id[workspace_id][1] ||
+            Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
+          ) {
+            that.offset_by_workspace_id[workspace_id][1] = item.user.id;
+          }
+          that.offset_by_workspace_id[workspace_id][0]++;
 
-        Collections.get('users').completeObject(item.user, item.user.front_id);
+          Collections.get('users').completeObject(item.user, item.user.front_id);
 
-        that.users_by_group[group_id][item.user.id] = item;
-        that.users_by_workspace[workspace_id][item.user.id] = item;
-      });
+          that.users_by_group[group_id][item.user.id] = item;
+          that.users_by_workspace[workspace_id][item.user.id] = item;
+        });
+        that.notify();
+      }
 
       if (data.mails) {
         that.membersPending = data.mails || [];
