@@ -15,6 +15,7 @@ export default class MessagesScroller extends Component {
     this.ignoreNextScrollUntil = 0;
     this.scrollHeight = 0;
     this.fixedToBottom = true;
+    this.sentScrollEvent = false;
 
     this.contentChanged = this.contentChanged.bind(this);
   }
@@ -73,9 +74,12 @@ export default class MessagesScroller extends Component {
       this.props.onFixedBottomChange && this.props.onFixedBottomChange(false);
       if (
         Globals.window.mixpanel_enabled &&
-        this.node.scrollHeight - this.node.scrollTop - this.node.clientHeight > 200
-      )
+        this.node.scrollHeight - this.node.scrollTop - this.node.clientHeight > 200 &&
+        !this.sentScrollEvent
+      ) {
+        this.sentScrollEvent = true;
         Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Scroll Event');
+      }
     }
   }
   scrollTo(position) {
@@ -124,7 +128,7 @@ export default class MessagesScroller extends Component {
       const currentDate = +new Date();
       const currentTime = currentDate - that.animation_startDate;
       element.scrollTop = parseInt(
-        easeInOutQuad(currentTime, that.animation_start, that.animation_change, duration)
+        easeInOutQuad(currentTime, that.animation_start, that.animation_change, duration),
       );
       if (currentTime < duration) {
         if (index == that.animation_index) {
