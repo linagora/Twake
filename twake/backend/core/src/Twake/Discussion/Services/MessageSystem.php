@@ -22,6 +22,7 @@ class MessageSystem
         $this->websockets_service = $app->getServices()->get("app.websockets");
         $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
+        $this->queues = $app->getServices()->get('app.queues')->getAdapter();
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -465,7 +466,16 @@ class MessageSystem
             $this->em->flush();
 
             if ($channel && $did_create) {
-                $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message);
+                try{
+                    $this->queues->push("message_dispatch_queue", [
+                        "channel" => $channel->getId(),
+                        "message_id" => $message->getId(),
+                        "application_id" => $application ? $application->getId() : null,
+                        "user_id" => $user ? $user->getId() : null,
+                    ]);
+                }catch(\Exception $err){
+                    error_log($err->getMessage());
+                }
             }
 
 
@@ -515,6 +525,19 @@ class MessageSystem
             }
         }
         return $array;
+    }
+
+    public function dispatchMessage($channel, $application_id, $user_id, $message_id){
+
+        $message = $this->doctrine->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
+
+        if($message){
+            $sender_application = $this->doctrine->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id));
+            $sender_user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id));
+
+            $this->message_notifications_center_service->newElement($channel, $sender_application, $sender_user, $this->mdToText($message->getContent()), $message);
+        }
+
     }
 
     private function share($message)
