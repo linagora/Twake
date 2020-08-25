@@ -12,10 +12,13 @@ else
   b=$(echo Q$(( ($(date +%-m)-1)/3+1 )))
 fi
 
+git clone https://github.com/TwakeApp/Twake counter-clone
+cd counter-clone
 git remote add script-counter https://github.com/TwakeApp/Twake
 git fetch script-counter
 c=$(git rev-list script-counter/main --count);
 git remote rm script-counter
+cd ..
 
 nvd="$a.$b.$c";
 nv="$a.$b";
