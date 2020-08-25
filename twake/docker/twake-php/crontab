@@ -8,6 +8,7 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # m h dom mon dow user  command
+* *     * * *   root    cd /twake-core/; php bin/console twake:message_dispatch_queue
 * *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue;
 * *	    * * *	  root	  cd /twake-core/; php bin/console twake:mails_queue;
 
