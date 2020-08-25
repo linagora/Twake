@@ -529,6 +529,7 @@ class MessageSystem
 
     public function dispatchMessage($channel, $application_id, $user_id, $message_id){
 
+
         $message = $this->em->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
 
         if($message){
