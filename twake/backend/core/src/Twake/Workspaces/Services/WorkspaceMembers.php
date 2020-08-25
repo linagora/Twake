@@ -351,10 +351,13 @@ class WorkspaceMembers
         ) {
             $mail = $this->string_cleaner->simplifyMail($mail);
 
+            $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
             $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspaceId, "mail" => $mail));
             foreach($mails as $mailguest){         
-                $doctrine->remove($mailguest);       
+                $this->doctrine->remove($mailguest);       
                 $workspace->setPendingCount($workspace->getPendingCount() - 1);
             }
 
@@ -373,9 +376,12 @@ class WorkspaceMembers
             }
 
             $this->doctrine->flush();
+
+            return "ok";
+
         }
 
-        return "not allowed //";
+        return "not allowed";
     }
 
     public function removeMember($workspaceId, $userId, $currentUserId = null)
