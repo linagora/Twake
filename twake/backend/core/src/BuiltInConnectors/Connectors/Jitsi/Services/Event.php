@@ -67,9 +67,9 @@ class Event
 
         if ($type == "interactive_message_action" && $event == "create") {
 
-            $room_id = $group["id"]."__".$original_message["channel_id"];
-
             $original_message = $message;
+
+            $room_id = $group["id"]."__".$original_message["channel_id"];
 
             $url = rtrim($this->main_service->getServerBaseUrl(), "/") . "/jitsi/call/twake_" . str_replace("-", "_", $room_id);
 
