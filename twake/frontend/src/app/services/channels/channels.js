@@ -465,14 +465,15 @@ class Channels extends Observable {
     } else if (channel.direct) {
       //Private chan
       var name = [];
-      channel.members.forEach(id => {
-        if (channel.members.length == 1 || id != CurrentUser.get().id) {
-          var user = Collections.get('users').find(id);
-          if (user) {
-            name.push('@' + user.username);
+      channel &&
+        channel.members.forEach(id => {
+          if (channel.members.length == 1 || id != CurrentUser.get().id) {
+            var user = Collections.get('users').find(id);
+            if (user) {
+              name.push('@' + user.username);
+            }
           }
-        }
-      });
+        });
       if (name.length == 0) {
         this._url_timeout = setTimeout(() => {
           this.updateURL();

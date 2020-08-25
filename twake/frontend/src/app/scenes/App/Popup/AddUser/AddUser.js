@@ -214,6 +214,7 @@ export default class AddUser extends Component {
           {this.props.inline && (
             <a
               className="returnBtn blue_link"
+              href="#"
               onClick={() => this.props.previous && this.props.previous()}
             >
               {this.state.i18n.t('general.back')}

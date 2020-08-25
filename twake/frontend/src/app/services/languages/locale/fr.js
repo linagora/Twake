@@ -333,7 +333,7 @@ export default {
   'scenes.apps.calendar.event_view.no_reminder': 'Pas de rappel',
   'scenes.apps.calendar.event_view.article_the': 'le',
   'scenes.apps.calendar.event_view.article_at': 'à',
-  'scenes.apps.calendar.event_view.article_until': "à",
+  'scenes.apps.calendar.event_view.article_until': 'à',
   'scenes.apps.calendar.event_view.details': 'Détails',
   'scenes.apps.calendar.event_view.no_event_selected': 'Aucun événement sélectionné',
   'scenes.apps.calendar.event_view.description': 'Description',
@@ -1293,7 +1293,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': "Groupe d'applications",
   'scenes.app.popup.appsparameters.pages.app_informations':
     "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
-  'scenes.app.popup.appsparameters.pages.app_name_label': 'Nom de l\'application',
+  'scenes.app.popup.appsparameters.pages.app_name_label': "Nom de l'application",
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Tous les gérants de cette entreprise pourront modifier cette application.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
@@ -1613,6 +1613,8 @@ export default {
   'scenes.apps.messages.message.modify_button': 'Modifier',
   'scenes.apps.messages.message.personal_message': 'Vous seul pouvez voir ce message.',
   'scenes.apps.messages.message.pinned': 'Épinglé',
+  'scenes.apps.messages.message.unpin_button': 'Désépingler le message',
+  'scenes.apps.messages.message.pin_button': 'Épingler le message',
   'scenes.apps.messages.message.remove_button': 'Supprimer',
   'scenes.apps.messages.message.reply_button': 'Répondre',
   'scenes.apps.messages.message.show_on_right': 'Afficher à droite',

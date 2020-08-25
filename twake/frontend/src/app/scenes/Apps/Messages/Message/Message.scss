@@ -27,7 +27,8 @@
       margin: -4px;
       margin-bottom: 8px;
 
-      .sender {
+      .sender,
+      .user-avatar {
         min-width: 16px;
       }
 
@@ -127,15 +128,10 @@
           margin-right: 5px;
         }
 
-        &:hover,
-        &.is_selected {
-          //background: #00000008;
-        }
-
         .sender {
           .user-image {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
 
             &.is_app {
               border-radius: 2px;
@@ -146,15 +142,15 @@
 
       .sender {
         position: relative;
-        margin-right: 4px;
-        min-width: 24px;
+        margin-right: 6px;
 
         .user-image {
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           background-size: cover;
           background-position: center;
-          border-radius: var(--default-border-radius);
+          border-radius: 50%;
+          margin-left: 5px;
 
           &.is_app {
             border-radius: var(--default-border-radius);
@@ -264,8 +260,28 @@
         }
       }
 
+      .handler-icon {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: -20px;
+        z-index: 1;
+        transform: translateY(-50%);
+
+        background: #ffffff;
+        color: $primary;
+
+        border-radius: 50%;
+        border: 1px solid var(--grey-background);
+        box-shadow: $small_box_shadow;
+
+        width: 28px;
+        height: 28px;
+      }
+
       &:hover > .container > .message_container .message_options,
-      &.is_selected > .container > .message_container .message_options {
+      &.is_selected > .container > .message_container .message_options,
+      &:hover > .handler-icon {
         display: flex;
       }
 
@@ -351,7 +367,6 @@
           }
 
           &.is_selected {
-            border: 1px solid $primary;
             color: $primary;
             background: $primary_background;
           }

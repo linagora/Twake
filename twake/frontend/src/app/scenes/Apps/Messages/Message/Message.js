@@ -25,6 +25,7 @@ import './Message.scss';
 import MenusManager from 'services/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 import ChannelsService from 'services/channels/channels.js';
+import DragIndicatorRoundedIcon from '@material-ui/icons/DragIndicatorRounded';
 
 import FirstMessage from './Types/FirstMessage.js';
 
@@ -38,6 +39,7 @@ export default class Message extends Component {
       users_repository: Collections.get('users'),
       app_messages_service: MessagesService,
       is_hover: false,
+      is_hover_handler: false,
       is_selected: false,
       loading_interaction: false,
       userCard: false,
@@ -259,10 +261,16 @@ export default class Message extends Component {
             className={'message_bloc ' + className}
             onMouseOver={() => this.setState({ was_hover: true })}
           >
-            <div key="sender" className="sender">
+            {this.state.was_hover && (
+              <DragIndicatorRoundedIcon
+                className={'js-drag-handler handler-icon ' + (app ? 'is_app ' : '')}
+              />
+            )}
+
+            <div className="sender">
               {show_user && user && (
                 <div
-                  className={'user-image js-drag-handler ' + (app ? 'is_app ' : '')}
+                  className={'user-image ' + (app ? 'is_app ' : '')}
                   style={{
                     backgroundImage:
                       "url('" +
@@ -272,7 +280,7 @@ export default class Message extends Component {
                   }}
                 />
               )}
-              {!show_user && <div className="date js-drag-handler"></div>}
+              {!show_user && <div></div>}
             </div>
             <div key="container" className="container">
               <div className="message_container">

@@ -63,7 +63,7 @@ export default class MessageOptions extends Component {
                         MessagesService.react(
                           this.props.message,
                           emoji.shortname,
-                          this.props.messagesCollectionKey
+                          this.props.messagesCollectionKey,
                         );
                       }}
                     />
@@ -80,40 +80,8 @@ export default class MessageOptions extends Component {
             position="top"
           >
             <ReactionIcon className="m-icon-small" />
-          </Menu>
+          </Menu>,
         );
-      }
-
-      if (!this.props.message.parent_message_id) {
-        if (
-          !(this.props.message.hidden_data || {}).disable_responses &&
-          !this.props.disableResponses
-        ) {
-          list.push(
-            <div
-              className="option_button"
-              onClick={() => MessagesService.startRespond(this.props.message)}
-            >
-              <Icon type="enter" className="m-icon-small" />
-            </div>
-          );
-        }
-        if (!(this.props.message.hidden_data || {}).disable_pin) {
-          list.push(
-            <div
-              className={'option_button ' + (this.props.message.pinned && 'selected')}
-              onClick={() =>
-                MessagesService.pinMessage(
-                  this.props.message,
-                  !this.props.message.pinned,
-                  this.props.messagesCollectionKey
-                )
-              }
-            >
-              <Icon type="map-pin-alt" className="m-icon-small" />
-            </div>
-          );
-        }
       }
     }
 
@@ -141,7 +109,7 @@ export default class MessageOptions extends Component {
 
       var apps =
         WorkspacesApps.getApps().filter(
-          app => ((app.display || {}).messages_module || {}).action
+          app => ((app.display || {}).messages_module || {}).action,
         ) || [];
       if (apps.length > 0) {
         menu.push({ type: 'separator' });
@@ -178,6 +146,42 @@ export default class MessageOptions extends Component {
           WorkspaceUserRights.hasWorkspacePrivilege() &&
           (this.props.message.hidden_data || {}).allow_delete == 'administrators')
       ) {
+        if (!(this.props.message.hidden_data || {}).disable_pin) {
+          menu.push({
+            type: 'menu',
+            text: Languages.t(
+              !this.props.message.pinned
+                ? 'scenes.apps.messages.message.pin_button'
+                : 'scenes.apps.messages.message.unpin_button',
+              'Pin message',
+            ),
+            className: 'option_button',
+            onClick: () => {
+              MessagesService.pinMessage(
+                this.props.message,
+                !this.props.message.pinned,
+                this.props.messagesCollectionKey,
+              );
+            },
+          });
+        }
+
+        if (!this.props.message.parent_message_id) {
+          if (
+            !(this.props.message.hidden_data || {}).disable_responses &&
+            !this.props.disableResponses
+          ) {
+            menu.push({
+              type: 'menu',
+              text: Languages.t('scenes.apps.messages.message.reply_button'),
+              className: 'option_button',
+              onClick: () => {
+                MessagesService.startRespond(this.props.message);
+              },
+            });
+          }
+        }
+
         if (
           menu.length > 0 &&
           (!this.props.message.application_id || !this.props.message.responses_count)
@@ -200,7 +204,7 @@ export default class MessageOptions extends Component {
             className: 'error',
             onClick: () => {
               AlertManager.confirm(() =>
-                MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey)
+                MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey),
               );
             },
           });
@@ -218,7 +222,7 @@ export default class MessageOptions extends Component {
           position={'left'}
         >
           <EditIcon className="m-icon-small" />
-        </Menu>
+        </Menu>,
       );
     }
 
