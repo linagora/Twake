@@ -10905,9 +10905,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rrule@^2.6.4:
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.4.tgz#7f4f31fda12bc7249bb176c891109a9bc448e035"
+rrule@^2.6.5:
+  version "2.6.5"
+  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.5.tgz#712eb58681f13d2d78d44da68480c1be744efaea"
   dependencies:
     tslib "^1.10.0"
   optionalDependencies:

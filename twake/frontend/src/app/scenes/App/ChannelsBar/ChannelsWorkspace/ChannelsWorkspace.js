@@ -250,7 +250,7 @@ export default class ChannelsWorkspace extends Component {
           onDrop={data => ChannelsService.pinChannel(data.data)}
         />
 
-        {!non_pinned_channels_by_groups[''] && (
+        {!!WorkspaceUserRights.hasWorkspacePrivilege() && !non_pinned_channels_by_groups[''] && (
           <ChannelDroppableZone
             text={'Add here'}
             onDrop={data => {
@@ -294,14 +294,16 @@ export default class ChannelsWorkspace extends Component {
                 {non_pinned_channels_by_groups[id].map(channel => (
                   <Channel key={channel.front_id} channel={channel} />
                 ))}
-                <ChannelDroppableZone
-                  text={'Add here'}
-                  onDrop={data => {
-                    ChannelsService.pinChannel(data.data, false);
-                    console.log(data);
-                    this.moveChannelToGroup(data.data, id);
-                  }}
-                />
+                {!!WorkspaceUserRights.hasWorkspacePrivilege() && (
+                  <ChannelDroppableZone
+                    text={'Add here'}
+                    onDrop={data => {
+                      ChannelsService.pinChannel(data.data, false);
+                      console.log(data);
+                      this.moveChannelToGroup(data.data, id);
+                    }}
+                  />
+                )}
               </div>
             );
           })}
@@ -315,15 +317,16 @@ export default class ChannelsWorkspace extends Component {
           />
         )}
 
-        {Object.keys(non_pinned_channels_by_groups).length > 0 && (
-          <ChannelDroppableZone
-            text={'New group'}
-            onDrop={data => {
-              ChannelsService.pinChannel(data.data, false);
-              this.moveChannelToGroup(data.data, false);
-            }}
-          />
-        )}
+        {!!WorkspaceUserRights.hasWorkspacePrivilege() &&
+          Object.keys(non_pinned_channels_by_groups).length > 0 && (
+            <ChannelDroppableZone
+              text={'New group'}
+              onDrop={data => {
+                ChannelsService.pinChannel(data.data, false);
+                this.moveChannelToGroup(data.data, false);
+              }}
+            />
+          )}
 
         {(Collections.get('channels').sources['channels_' + Workspaces.currentWorkspaceId] || {})
           .did_first_load &&

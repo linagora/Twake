@@ -27,3 +27,4 @@ yarn-error.log*
 /public/public/dist/
 /storybook-static/
 /build/
+/counter-clone/
