@@ -529,11 +529,12 @@ class MessageSystem
 
     public function dispatchMessage($channel, $application_id, $user_id, $message_id){
 
-        $message = $this->doctrine->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
+
+        $message = $this->em->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
 
         if($message){
-            $sender_application = $this->doctrine->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id));
-            $sender_user = $this->doctrine->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id));
+            $sender_application = $application_id ? $this->em->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id)) : null;
+            $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
 
             $this->message_notifications_center_service->newElement($channel, $sender_application, $sender_user, $this->mdToText($message->getContent()), $message);
         }
