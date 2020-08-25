@@ -20,7 +20,7 @@ Twake offers all the features for collaboration :
 - Todo list
 - Video call
 
-<a href="https://twakeapp.com"><img width=800 src="https://twake.app/medias/features/chat.png"/></a>
+<a href="https://twakeapp.com"><img width=800 src="https://twake.app/medias/features/chat.jpg"/></a>
 
 ## Demo
 
