@@ -156,7 +156,7 @@ input, textarea {
 
 /* Buttons */
 /*
-input[type=submit], button {
+input[type=button], button {
   border: 0;
   border-radius: $base_border_radius;
   height: 34px;
@@ -182,45 +182,45 @@ input[type=submit], button {
     padding: 5px 10px;
   }
 }
-input[type=submit]:hover, button:hover {
+input[type=button]:hover, button:hover {
   background: #007ED9;
 }
-input[type=submit]:disabled, button:disabled {
+input[type=button]:disabled, button:disabled {
   background: $primary !important;
   cursor: auto !important;
   opacity: 0.5;
 }
 
-input[type=submit].btn-danger, button.btn-danger {
+input[type=button].btn-danger, button.btn-danger {
   background: #E91010;
 }
-input[type=submit].btn-danger:hover, button.btn-danger:hover {
+input[type=button].btn-danger:hover, button.btn-danger:hover {
   background: #D90000;
 }
-input[type=submit].btn-danger:disabled, button.btn-danger:disabled {
+input[type=button].btn-danger:disabled, button.btn-danger:disabled {
   background: #E91010 !important;
   cursor: auto !important;
 }
 
-input[type=submit].secondary, button.secondary {
+input[type=button].secondary, button.secondary {
   background: #EEEEEE;
   color: #000;
 }
-input[type=submit].secondary:hover, button.secondary:hover {
+input[type=button].secondary:hover, button.secondary:hover {
   background: #DEDEDE;
 }
-input[type=submit].secondary:disabled, button.secondary:disabled {
+input[type=button].secondary:disabled, button.secondary:disabled {
   background: #EEEEEE !important;
   cursor: auto !important;
 }
 
-input[type=submit].secondary, button.secondary {
+input[type=button].secondary, button.secondary {
   background: #AAA;
 }
-input[type=submit].secondary:hover, button.secondary:hover {
+input[type=button].secondary:hover, button.secondary:hover {
   background: #999;
 }
-input[type=submit].secondary:disabled, button.secondary:disabled {
+input[type=button].secondary:disabled, button.secondary:disabled {
   background: #AAA !important;
   cursor: auto !important;
 }*/

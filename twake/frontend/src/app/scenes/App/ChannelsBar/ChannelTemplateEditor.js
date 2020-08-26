@@ -130,7 +130,7 @@ export default class ChannelTemplateEditor extends Component {
           <div className="menu-buttons">
             <Button
               disabled={this.state.channel.name.length <= 0 && !this.state.channel.app_id}
-              type="submit"
+              type="button"
               value={
                 this.state.channel.id
                   ? Languages.t('scenes.app.channelsbar.save_channel_button', 'Save')

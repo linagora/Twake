@@ -198,7 +198,7 @@
     "redux": "^4.0.5",
     "resolve": "1.15.0",
     "resolve-url-loader": "3.1.1",
-    "rrule": "^2.6.5",
+    "rrule": "=2.6.4",
     "sass-loader": "8.0.2",
     "semver": "6.3.0",
     "socketcluster-client": "^16.0.1",

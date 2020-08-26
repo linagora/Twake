@@ -39,7 +39,7 @@
     padding: 8px 10px;
     padding-top: 10px;
 
-    input[type=submit], button {
+    input[type=button], button {
       height: 28px;
       padding: 0px 16px;
       line-height: 0px;
@@ -171,11 +171,11 @@
     }
   }
 
-  input[type=submit], button {
+  input[type=button], button {
     height: 28px;
   }
 
-  input[type=submit]:disabled, button:disabled {
+  input[type=button]:disabled, button:disabled {
     background: #AAA !important;
   }
 }

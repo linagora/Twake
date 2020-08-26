@@ -101,6 +101,32 @@ export default class Channel extends Component {
       });
     }
 
+    /**
+     * Pinned channel preference
+     */
+    var pinned_channels_preferences =
+      (
+        ((Collections.get('users').find(UserService.getCurrentUserId()) || {})
+          .workspaces_preferences || {})[Workspaces.currentWorkspaceId] || {}
+      ).pinned_channels || {};
+    if (!pinned_channels_preferences[channel.id]) {
+      menu.push({
+        type: 'menu',
+        text: 'Star this channel',
+        onClick: () => {
+          ChannelsService.pinChannel(channel, true);
+        },
+      });
+    } else {
+      menu.push({
+        type: 'menu',
+        text: 'Unstar this channel',
+        onClick: () => {
+          ChannelsService.pinChannel(channel, false);
+        },
+      });
+    }
+
     if (!channel.direct && WorkspaceUserRights.hasWorkspacePrivilege()) {
       menu = menu.concat([
         { type: 'separator' },
