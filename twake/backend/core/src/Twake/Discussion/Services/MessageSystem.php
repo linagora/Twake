@@ -458,15 +458,15 @@ class MessageSystem
             }
 
 
-            $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
-            if ($channel && $did_create && !$init_channel) {
+            if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
                 $this->em->persist($channel);
             }
 
             $this->em->flush();
 
-            if ($channel && $did_create) {
+            $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
+            if ($channel && $did_create && !$init_channel) {
                 $channel->setLastActivity(new \DateTime());
                 $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
                 
@@ -538,7 +538,7 @@ class MessageSystem
         if($message){
             $sender_application = $application_id ? $this->em->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id)) : null;
             $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
-            $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
+            $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
 
             $this->message_notifications_center_service->newElement($channel, $sender_application, $sender_user, $this->mdToText($message->getContent()), $message);
         }
