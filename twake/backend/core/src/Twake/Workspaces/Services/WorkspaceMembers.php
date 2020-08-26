@@ -302,7 +302,9 @@ class WorkspaceMembers
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                $mOk = $this->addMember($workspaceId, $userMail->getUser(), $asExterne, $autoAddExterne);
+                $user_id = $userMail->getUserId();
+                $user = $userRepository->find($user_id);
+                $mOk = $this->addMember($workspaceId, $user, $asExterne, $autoAddExterne);
                 if ($mOk) {
                     return "user";
                 }
@@ -351,10 +353,13 @@ class WorkspaceMembers
         ) {
             $mail = $this->string_cleaner->simplifyMail($mail);
 
+            $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
             $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspaceId, "mail" => $mail));
             foreach($mails as $mailguest){         
-                $doctrine->remove($mailguest);       
+                $this->doctrine->remove($mailguest);       
                 $workspace->setPendingCount($workspace->getPendingCount() - 1);
             }
 
@@ -369,13 +374,18 @@ class WorkspaceMembers
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                return "mail " . $this->removeMember($workspaceId, $userMail->getUser()->getId());
+                $user_id = $userMail->getUserId();
+                $user = $userRepository->find($user_id);
+                return "mail " . $this->removeMember($workspaceId, $user);
             }
 
             $this->doctrine->flush();
+
+            return "ok";
+
         }
 
-        return "not allowed //";
+        return "not allowed";
     }
 
     public function removeMember($workspaceId, $userId, $currentUserId = null)

@@ -572,7 +572,7 @@ export default class WorkspacePartner extends Component {
               onClick={() => {
                 popupManager.open(<AddUser standalone />);
               }}
-              type="submit"
+              type="button"
               class="medium"
               value={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',

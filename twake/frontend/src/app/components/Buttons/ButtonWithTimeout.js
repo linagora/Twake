@@ -48,7 +48,7 @@ export default class ButtonWithTimeout extends React.Component {
         <Button
           id={this.props.id}
           refButton={node => (this.input = node)}
-          type="submit"
+          type="button"
           style={this.props.style}
           medium={this.props.medium}
           small={this.props.small}

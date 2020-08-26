@@ -57,7 +57,7 @@ export default class LoginView extends Component {
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
-                type="submit"
+                type="button"
                 className="medium full_width "
                 style={{ marginBottom: 8 }}
                 disabled={this.state.login.login_loading}
@@ -72,7 +72,7 @@ export default class LoginView extends Component {
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
-                type="submit"
+                type="button"
                 className="medium full_width "
                 style={{ marginBottom: 8 }}
                 disabled={this.state.login.login_loading}
@@ -132,7 +132,7 @@ export default class LoginView extends Component {
 
               <Button
                 id="login_btn"
-                type="submit"
+                type="button"
                 className="medium full_width "
                 style={{ marginBottom: 8 }}
                 disabled={this.state.login.login_loading}
