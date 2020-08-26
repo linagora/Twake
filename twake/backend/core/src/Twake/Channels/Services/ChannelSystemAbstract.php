@@ -298,10 +298,10 @@ class ChannelSystemAbstract
                         $did_something = true;
                     } else {
                         $secondMail = $this->entity_manager->getRepository("Twake\Users:Mail")->findOneBy(Array("mail" => $mail));
-                        if ($secondMail && !in_array($secondMail->getUser()->getId(), $current_ext)) {
+                        if ($secondMail && !in_array($secondMail->getUserId(), $current_ext)) {
                             // c'est un email secondaire
-                            $user = $secondMail->getUser();
-                            $_ext_members[array_search($mail, $_ext_members)] = $user->getId();
+                            $user_id = $secondMail->getUserId();
+                            $_ext_members[array_search($mail, $_ext_members)] = $user_id;
                             $this->addUserToChannel($user, $channel_entity);
                             $did_something = true;
                         } else {

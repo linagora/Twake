@@ -61,8 +61,12 @@ class AdministrationUsers
 
     public function getUserMails($user)
     {
-        $mailsRepository = $this->em->getRepository("Twake\Users:Mail");
+        if(is_string($user)){
+            $usersRepository = $this->em->getRepository("Twake\Users:User");
+            $user = $usersRepository->findBy(Array("user_id" => $user));
+        }
 
+        $mailsRepository = $this->em->getRepository("Twake\Users:Mail");
         $mails_tab = $mailsRepository->findBy(Array("user_id" => $user));
 
         $mails = array();
@@ -195,9 +199,9 @@ class AdministrationUsers
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $mail) {
             $mail = $mail[0];
-            $user = $mail->getUser();
+            $user_id = $mail->getUserId();
             $user_tab = $user->getAsArray();
-            $user_tab['mail'] = $this->getUserMails($user)[0];
+            $user_tab['mail'] = $this->getUserMails($user_id)[0];
             $user_tab['phone_number'] = $user->getPhone();
             $user_tab['creation_date'] = $user->getCreationDate();
 

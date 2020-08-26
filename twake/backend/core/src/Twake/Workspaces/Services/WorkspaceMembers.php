@@ -302,7 +302,9 @@ class WorkspaceMembers
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                $mOk = $this->addMember($workspaceId, $userMail->getUser(), $asExterne, $autoAddExterne);
+                $user_id = $userMail->getUserId();
+                $user = $userRepository->find($user_id);
+                $mOk = $this->addMember($workspaceId, $user, $asExterne, $autoAddExterne);
                 if ($mOk) {
                     return "user";
                 }
@@ -372,7 +374,9 @@ class WorkspaceMembers
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                return "mail " . $this->removeMember($workspaceId, $userMail->getUser()->getId());
+                $user_id = $userMail->getUserId();
+                $user = $userRepository->find($user_id);
+                return "mail " . $this->removeMember($workspaceId, $user);
             }
 
             $this->doctrine->flush();
