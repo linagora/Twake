@@ -458,8 +458,7 @@ class MessageSystem
             }
 
 
-            $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
-            if ($channel && $did_create && !$init_channel) {
+            if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
                 $this->em->persist($channel);
             }
