@@ -24,13 +24,6 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
     public function newElement($channel, $sender_application = null, $sender_user = null, $message_as_text = "", $message = null)
     {
 
-        if (is_string($channel)) {
-            $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel));
-        }
-
-        $channel->setLastActivity(new \DateTime());
-        $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
-
         $membersRepo = $this->doctrine->getRepository("Twake\Channels:ChannelMember");
         $userRepo = $this->doctrine->getRepository("Twake\Users:User");
 

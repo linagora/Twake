@@ -133,7 +133,7 @@ export default class CurrentUser extends Component {
                 <div className="menu-buttons">
                   <Button
                     disabled={this.state.new_status[1].length <= 0}
-                    type="submit"
+                    type="button"
                     value={Languages.t(
                       'scenes.app.channelsbar.currentuser.update',
                       [],
