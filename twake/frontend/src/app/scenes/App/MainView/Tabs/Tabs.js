@@ -67,7 +67,7 @@ export default class Tabs extends Component {
               placeholder={Languages.t(
                 'scenes.app.mainview.tabs.placeholder_name_tab',
                 [],
-                "Nom de l'onglet"
+                "Nom de l'onglet",
               )}
               onKeyPress={e => {
                 if (e.key === 'Enter') {
@@ -79,7 +79,7 @@ export default class Tabs extends Component {
           <div className="menu-buttons">
             <Button
               disabled={this.state.tab_name.length <= 0}
-              type="submit"
+              type="button"
               value={
                 id
                   ? Languages.t('scenes.app.mainview.tabs.save_tab', [], 'Enregistrer')
@@ -178,14 +178,14 @@ export default class Tabs extends Component {
                   text: Languages.t(
                     'scenes.app.mainview.tabs.connectors_menu',
                     [],
-                    'Connecteurs...'
+                    'Connecteurs...',
                   ),
                   submenu: [
                     {
                       type: 'react-element',
                       reactElement: level => {
                         var apps = WorkspacesApps.getApps().filter(
-                          app => (app.display || {}).channel
+                          app => (app.display || {}).channel,
                         );
                         if (apps.length > 0) {
                           return (
@@ -212,7 +212,7 @@ export default class Tabs extends Component {
                             {Languages.t(
                               'scenes.app.mainview.tabs.no_connected_connectors_for_channel',
                               [],
-                              "Vous n'avez aucun connecteur capable de se connecter à une chaîne."
+                              "Vous n'avez aucun connecteur capable de se connecter à une chaîne.",
                             )}
                           </div>
                         );
@@ -224,13 +224,13 @@ export default class Tabs extends Component {
                       text: Languages.t(
                         'scenes.app.mainview.tabs.searching_connectors',
                         [],
-                        'Chercher des connecteurs...'
+                        'Chercher des connecteurs...',
                       ),
                       onClick: () => {
                         popupManager.open(
                           <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
                           true,
-                          'workspace_parameters'
+                          'workspace_parameters',
                         );
                       },
                     },
@@ -247,7 +247,7 @@ export default class Tabs extends Component {
   }
   render() {
     var current_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentChannelFrontId
+      this.state.channels.currentChannelFrontId,
     );
 
     if (current_channel.direct || current_channel.application) {
@@ -305,7 +305,7 @@ export default class Tabs extends Component {
             {Languages.t(
               'scenes.app.mainview.tabs.no_connected_connectors_for_tab',
               [],
-              "Vous n'avez aucun connecteur capable créer un onglet."
+              "Vous n'avez aucun connecteur capable créer un onglet.",
             )}
           </div>
         ),
@@ -317,13 +317,13 @@ export default class Tabs extends Component {
       text: Languages.t(
         'scenes.app.mainview.tabs.searching_connectors',
         [],
-        'Chercher des connecteurs...'
+        'Chercher des connecteurs...',
       ),
       onClick: () => {
         popupManager.open(
           <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
           true,
-          'workspace_parameters'
+          'workspace_parameters',
         );
       },
     });

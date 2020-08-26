@@ -132,7 +132,7 @@ class PseudoMarkdownDictionary {
                       object.action_id,
                       object.interactive_context || {},
                       '',
-                      evt
+                      evt,
                     );
                   }
                 }}
@@ -143,7 +143,7 @@ class PseudoMarkdownDictionary {
           }
           return (
             <Button
-              type="submit"
+              type="button"
               className={
                 'button interactive_element interactive_message_btn small ' +
                 (object.style == 'danger' ? 'danger ' : '') +
@@ -156,7 +156,7 @@ class PseudoMarkdownDictionary {
                     object.action_id,
                     object.interactive_context || {},
                     '',
-                    evt
+                    evt,
                   );
                 }
               }}
@@ -187,7 +187,7 @@ class PseudoMarkdownDictionary {
                 object.passive_id,
                 object.interactive_context || {},
                 evt.target.value,
-                evt
+                evt,
               );
             }}
           />
@@ -207,7 +207,7 @@ class PseudoMarkdownDictionary {
                 object.passive_id || object.action_id,
                 object.interactive_context || {},
                 value,
-                evt
+                evt,
               );
               if (object.action_id) {
                 event_container.onAction(
@@ -215,7 +215,7 @@ class PseudoMarkdownDictionary {
                   object.action_id,
                   object.interactive_context || {},
                   value,
-                  evt.target.value
+                  evt.target.value,
                 );
               }
             }}

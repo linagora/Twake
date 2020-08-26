@@ -244,11 +244,6 @@ export default class ChannelsWorkspace extends Component {
           pinned_channels.map(channel => (
             <Channel key={channel.front_id} channel={channel} pinned />
           ))}
-        <ChannelDroppableZone
-          icon={'favorite'}
-          text={'Star this channel'}
-          onDrop={data => ChannelsService.pinChannel(data.data)}
-        />
 
         {!!WorkspaceUserRights.hasWorkspacePrivilege() && !non_pinned_channels_by_groups[''] && (
           <ChannelDroppableZone
@@ -307,15 +302,6 @@ export default class ChannelsWorkspace extends Component {
               </div>
             );
           })}
-
-        {Object.keys(non_pinned_channels_by_groups).length == 0 && (
-          <ChannelDroppableZone
-            text={'Not stared'}
-            onDrop={data => {
-              ChannelsService.pinChannel(data.data, false);
-            }}
-          />
-        )}
 
         {!!WorkspaceUserRights.hasWorkspacePrivilege() &&
           Object.keys(non_pinned_channels_by_groups).length > 0 && (
