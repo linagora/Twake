@@ -206,7 +206,7 @@ export default class MainView extends Component {
                   {!!icon && <Icon className="tab-app-icon" type={icon} />}
                   {!!emoji && <Emojione className="tab-app-icon" type={emoji} />}
                 </div>
-                {app.name}
+                {Languages.t('app.name.' + app.simple_name, [], app.name)}
                 {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
               </div>
             </div>

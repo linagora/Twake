@@ -1622,7 +1622,6 @@ export default {
   'scenes.apps.messages.messageslist.go_last_message_button': 'Gehe zum letzten Beitrag',
   'scenes.apps.messages.messageslist.load_after_button': 'Laden nach',
   'scenes.apps.messages.messageslist.load_before_button': 'Vorher laden',
-  'scenes.apps.messages.messageslist.load_after_button': 'Laden nach',
   'scenes.apps.messages.messageslist.max_id': 'Maximale Kennung:',
   'scenes.apps.messages.messageslist.max_visible_id': 'Maximal sichtbare Kennung:',
   'scenes.apps.messages.messageslist.max_windoq_id': 'Maximale Fensteridentifikation:',

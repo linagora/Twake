@@ -121,7 +121,7 @@ class search extends Observable {
         }
         setTimeout(() => {
           var app_id = Collections.get('applications').findBy({
-            name: Languages.t('services.search.records', [], 'Documents'),
+            name: Languages.t('app.name.twake_drive', [], 'Documents'),
           })[0];
           if (app_id) {
             app_id = app_id.id;

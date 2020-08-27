@@ -1628,9 +1628,8 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': "est en train d'écrire...",
   'scenes.apps.messages.messageslist.get_writing_users': "sont en train d'écrire...",
   'scenes.apps.messages.messageslist.go_last_message_button': 'Aller au dernier message',
-  'scenes.apps.messages.messageslist.load_after_button': 'Charger plus de messages',
-  'scenes.apps.messages.messageslist.load_before_button': 'Charger plus de messages',
-  'scenes.apps.messages.messageslist.load_after_button': 'Charger plus de messages',
+  'scenes.apps.messages.messageslist.load_after_button': 'Charger les messages suivants',
+  'scenes.apps.messages.messageslist.load_before_button': 'Charger les messages précédents',
   'scenes.apps.messages.messageslist.max_id': 'Identifiant maximum : ',
   'scenes.apps.messages.messageslist.max_visible_id': 'Identifiant maximum visible : ',
   'scenes.apps.messages.messageslist.max_windoq_id': 'Identifiant de fenêtre maximum : ',
@@ -1863,4 +1862,5 @@ export default {
   'scenes.apps.messages.select_computer': "Sélectionner à partir de l'ordinateur",
   'scenes.apps.messages.select_twake': 'Sélectionner dans Twake Documents',
   'scenes.apps.tasks.active_tasks': 'tâches actives',
+  'scenes.apps.drive.right_preview.versions': 'Versions',
 };

@@ -145,7 +145,7 @@ export default class Responses extends Component {
               triggerApp={app => this.triggerApp(app)}
             />
             <Button
-              value={Languages.t('scenes.apps.messages.message.save_button', [], 'Enregistrer')}
+              value={Languages.t('scenes.apps.messages.input.send_button', [], 'Send')}
               className="small right-margin"
               onClick={() => {
                 if (this.state.response_message_raw) {

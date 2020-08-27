@@ -212,7 +212,7 @@ export default class UserParameter extends Component {
                   <option value="es">Español</option>
                   <option value="en">English</option>
                   <option value="fr">Français</option>
-                  <option value="ja">中国</option>
+                  <option value="ja">日本語</option>
                   <option value="ru">Русский</option>
                 </select>
               </div>

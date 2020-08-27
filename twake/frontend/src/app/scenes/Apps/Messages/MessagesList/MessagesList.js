@@ -521,7 +521,7 @@ export default class MessagesList extends Component {
               }}
             >
               {Languages.t(
-                'scenes.apps.messages.messageslist.load_before—button',
+                'scenes.apps.messages.messageslist.load_before_button',
                 [],
                 'Charger avant'
               )}

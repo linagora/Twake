@@ -1,4 +1,9 @@
 import moment from 'moment';
+import 'moment/locale/ru';
+import 'moment/locale/fr';
+import 'moment/locale/de';
+import 'moment/locale/ja';
+import 'moment/locale/es';
 import Observable from 'services/observable.js';
 import UserService from 'services/user/user.js';
 
