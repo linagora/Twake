@@ -56,20 +56,20 @@ export default class WorkspaceParameter extends Component {
     Collections.get('users').removeListener(this);
   }
   displayScene() {
-    if (this.state.page == 1) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 1) {
       return <WorkspaceIdentity />;
     }
     if (this.state.page == 2) {
       return <WorkspacePartner />;
     }
-    if (this.state.page == 3) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 3) {
       var options = this.state.options;
       if (this.state.options == 'open_search_apps') {
         this.state.options = undefined;
       }
       return <WorkspaceApps searchApps={options == 'open_search_apps'} />;
     }
-    if (this.state.page == 4) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_DATA') && this.state.page == 4) {
       return <CompanyIdendity />;
     }
     if (this.state.page == 5) {
