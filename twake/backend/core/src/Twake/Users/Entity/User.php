@@ -566,6 +566,7 @@ class User extends SearchableObject
     public function getIndexationArray()
     {
         $return = Array(
+            "email" => $this->getEmail(),
             "username" => $this->getUsername(),
             "firstname" => $this->getFirstName(),
             "lastname" => $this->getLastName(),
