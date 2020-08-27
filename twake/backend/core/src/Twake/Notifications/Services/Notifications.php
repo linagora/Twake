@@ -217,7 +217,7 @@ class Notifications
                 foreach ($keywords as $keyword) {
                     $keyword = trim($keyword);
                     $keyword = " " . $keyword . " ";
-                    if (strrpos(strtolower($title . " " . $text . " "), strtolower($keyword)) >= 0) {
+                    if (mb_strrpos(mb_strtolower($title . " " . $text . " "), mb_strtolower($keyword)) >= 0) {
                         $present = true;
                     }
                 }
@@ -301,8 +301,8 @@ class Notifications
             $token = $device->getValue();
 
             $this->pushDeviceInternal($device->getType(), $token,
-                substr($text, 0, 100) . (strlen($title) > 100 ? "..." : ""),
-                substr($title, 0, 50) . (strlen($title) > 50 ? "..." : ""),
+                mb_substr($text, 0, 100) . (mb_strlen($title) > 100 ? "..." : ""),
+                mb_substr($title, 0, 50) . (mb_strlen($title) > 50 ? "..." : ""),
                 $badge,
                 $data,
                 $doPush
@@ -315,7 +315,7 @@ class Notifications
     public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data, $doPush = true)
     {
 
-        if (strlen($deviceId) < 32) { //False device
+        if (mb_strlen($deviceId) < 32) { //False device
             return;
         }
 

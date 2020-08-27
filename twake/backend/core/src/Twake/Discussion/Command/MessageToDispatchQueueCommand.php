@@ -54,12 +54,16 @@ class MessageToDispatchQueueCommand extends ContainerAwareCommand
                     $user_id = $dispatch_informations["user_id"];
                     $message_id = $dispatch_informations["message_id"];
                     
-                    $message_system->dispatchMessage(
-                        $channel,
-                        $application_id,
-                        $user_id,
-                        $message_id
-                    );
+                    try{
+                        $message_system->dispatchMessage(
+                            $channel,
+                            $application_id,
+                            $user_id,
+                            $message_id
+                        );
+                    }catch(\Exception $e){
+                        error_log($e->getMessage());
+                    }
 
                     $queues->ack("message_dispatch_queue", $queue_message);
                 }

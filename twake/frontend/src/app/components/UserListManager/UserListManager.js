@@ -103,7 +103,7 @@ export default class UserListManager extends React.Component {
       return '';
     }
 
-    if (item.email && !item.thumbnail) {
+    if (item.email && !item.username) {
       item = item.email;
     }
 
