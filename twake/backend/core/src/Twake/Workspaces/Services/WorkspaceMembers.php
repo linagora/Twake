@@ -661,7 +661,7 @@ class WorkspaceMembers
         $link = $workspaceUserRepository->findBy(Array("user" => $user));
         $workspaces = Array();
         foreach ($link as $workspace) {
-            if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null) {
+            if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null && !$workspace->getWorkspace()->getis_deleted()) {
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
                     "workspace" => $workspace->getWorkspace(),
