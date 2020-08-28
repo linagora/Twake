@@ -233,11 +233,11 @@ export default class AddUser extends Component {
                 (this.state.all_import && this.state.multi)
               )
                 ? this.state.i18n.t(
-                    'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
-                    'Skip',
+                  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
+                  'Skip',
                   )
                 : this.state.i18n.t(
-                    'scenes.apps.parameters.group_sections.managers.invite_manager_button',
+                    'general.add',
                   )
             }
             loading={this.state.workspacesUsersService.loading || this.props.loading}

@@ -53,8 +53,7 @@ def overwrite():
                     print('Begin Lecture')
                     lecture.seek(0)
                     lecture.write(s)
-                    print("Changed: " + currentpath+  "   Continue ? ")
-                    s = input()
+                    print("Changed: " + currentpath)
                 lecture.close()
 
 redundance()

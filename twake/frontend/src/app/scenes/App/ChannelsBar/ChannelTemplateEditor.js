@@ -133,8 +133,8 @@ export default class ChannelTemplateEditor extends Component {
               type="submit"
               value={
                 this.state.channel.id
-                  ? Languages.t('scenes.app.channelsbar.save_channel_button', 'Save')
-                  : Languages.t('scenes.app.channelsbar.add_channel_button', 'Add')
+                  ? Languages.t('general.save', 'Save')
+                  : Languages.t('general.add', 'Add')
               }
               onClick={() => this.updateChan()}
             />

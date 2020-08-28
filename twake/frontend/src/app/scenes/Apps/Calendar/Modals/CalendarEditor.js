@@ -48,7 +48,7 @@ export default class CalendarEditor extends Component {
             value={
               this.state.calendar.id
                 ? Languages.t('general.save', [], 'Enregistrer')
-                : Languages.t('scenes.apps.calendar.modals.add_button', [], 'Ajouter')
+                : Languages.t('general.add', [], 'Ajouter')
             }
             onClick={() => this.save()}
           />
