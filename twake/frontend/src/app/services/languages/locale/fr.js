@@ -3,7 +3,7 @@ export default {
   'general.external': 'Externe',
   'general.close': 'Fermer',
   'general.closed': 'Fermé',
-  'general.save': 'Sauvegarder',
+  'general.save': 'Enregistrer',
   'general.copy': 'Copier',
   'general.cancel': 'Annuler',
   'general.yes': 'Oui',
@@ -21,6 +21,8 @@ export default {
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
   'general.send': 'Envoyer le message',
+  'general.update': 'Mettre à jour',
+  'general.remove': 'Supprimer',
   twake_not_on_device: 'Twake ne fonctionne pas sur votre appareil.',
   twake_not_on_device_mobile:
     'Vous pouvez télécharger la version téléphone de Twake sur les stores Android et Apple.',
@@ -1147,8 +1149,6 @@ export default {
     'Nous vous avons envoyé un code de vérification via l’adresse $1',
   'scenes.app.workspaces.welcome_page.done': "J'ai fini",
   'scenes.login.forgot_password.finished': 'Votre mot de passe a bien été mis à jour.',
-  'general.update': 'Mettre à jour',
-  'general.remove': 'Supprimer',
   'scenes.apps.account.account.description_main':
     "Votre adresse principale est celle à qui Twake envoie vos notifications. Vos adresses secondaires vous permettent d'être invité automatiquement dans les espaces de travail qui les utilisent.",
   'scenes.apps.account.account.emails.description': 'Gérez vos différentes adresses email.',

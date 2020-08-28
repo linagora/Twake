@@ -21,6 +21,8 @@ export default {
   'general.from_other_workspace': 'From workspace $1',
   'general.help': 'Help',
   'general.send': 'Send message',
+  'general.update': 'Update',
+  'general.remove': 'Remove',
   twake_not_on_device: "Twake doesn't work on your device.",
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',
@@ -1092,8 +1094,6 @@ export default {
   'scenes.app.workspaces.welcome_page.we_sent_you_mail': 'We sent you a verification code via $1',
   'scenes.app.workspaces.welcome_page.done': "I'm done",
   'scenes.login.forgot_password.finished': 'Your password was successfully updated.',
-  'general.update': 'Update',
-  'general.remove': 'Remove',
   'scenes.apps.account.account.description_main':
     'Your main address is the one to which Twake sends your notifications. Your secondary addresses allow you to be automatically invited to the workspaces that use them.',
   'scenes.apps.account.account.emails.description': 'Manage your different email addresses.',

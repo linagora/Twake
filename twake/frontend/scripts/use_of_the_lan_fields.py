@@ -39,7 +39,7 @@ def init():
     for dossier, sous_dossiers, fichiers in os.walk(rootpath + "/frontend/src/app/services/languages/locale/"):
         for fichier in fichiers:
             currentpath = os.path.join(dossier, fichier)
-            if currentpath.endswith(".js") and (currentpath.count(".")==1):
+            if currentpath.endswith(".js") and (currentpath.count(".")==1) and 'ja' not in currentpath and not currentpath.endswith('es.js'):
                 
                 lecture = open(currentpath, "r")
                 s = lecture.read()

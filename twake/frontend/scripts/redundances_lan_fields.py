@@ -45,9 +45,10 @@ def overwrite():
                     if sub in meta:
                         #replace sub by dicrep[sub][0] in file
                         en_sub = sc.dicstr.get(sub)[-1]
-                        repsub = dicrep.get(en_sub)[0]
-                        s = s.replace(sub, repsub)
-                        b = True
+                        if len(dicrep.get(en_sub))>3 and en_sub:
+                            repsub = dicrep.get(en_sub)[0]
+                            s = s.replace(sub, repsub)
+                            b = True
                 if b:
                     print('Begin Lecture')
                     lecture.seek(0)
@@ -57,11 +58,12 @@ def overwrite():
                 lecture.close()
 
 redundance()
-overwrite()
 ecriture = open('../fichier3.txt', "w")
 c=0
 for key, value in dicrep.items():
-    c+= len(value)
-    ecriture.write(key + " : "+ str(value)+" " + str(len(value))+ "\n")
+    if len(value)>3 and key:
+        c+= len(value)
+        ecriture.write(key + " : "+ str(value)+" " + str(len(value))+ "\n")
 ecriture.write(str(c))
 ecriture.close()
+overwrite()

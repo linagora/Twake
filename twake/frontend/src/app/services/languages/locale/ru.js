@@ -3,7 +3,7 @@ export default {
   'general.external': 'Гость',
   'general.close': 'Закрыть',
   'general.closed': 'Закрыто',
-  'general.save': 'Cохранить',
+  'general.save': 'Сохранить',
   'general.copy': 'Скопироать',
   'general.cancel': 'Отмена',
   'general.yes': 'Да',
@@ -21,6 +21,8 @@ export default {
   'general.from_other_workspace': 'От рабочей группы $1',
   'general.help': 'Помощь',
   'general.send': 'Отправить сообщение',
+  'general.update': 'Обновить',
+  'general.remove': 'Удалить',
   twake_not_on_device: 'Twake не работает на вашем устройстве.',
   twake_not_on_device_mobile:
     'Вы можете скачать наше мобильное приложение в Android и Apple маркет.',
@@ -1138,8 +1140,6 @@ export default {
   'scenes.app.workspaces.welcome_page.we_sent_you_mail': 'Мы отправили вам код проверки через $1',
   'scenes.app.workspaces.welcome_page.done': 'Я закончил',
   'scenes.login.forgot_password.finished': 'Ваш пароль был успешно обновлен.',
-  'general.update': 'Обновить',
-  'general.remove': 'Удалить',
   'scenes.apps.account.account.description_main':
     'Ваш главный адрес - это тот, на который Twake отправляет ваши уведомления. Ваши вторичные адреса позволяют автоматически приглашать вас на рабочие места, которые их используют.',
   'scenes.apps.account.account.emails.description':

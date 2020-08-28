@@ -16,6 +16,8 @@ export default {
   'general.confirm': 'Bestätigen',
   'general.delete': 'Löschen',
   'general.links': 'Links',
+  'general.update': 'Aktualisierung',
+  'general.remove': 'Löschen',
   'general.from_other_workspace': 'Von Arbeitsbereich $1',
   'ads.workspace_is_free_version':
     'Benötigen Sie mehr Funktionalitäten? Wechseln Sie zur Vollversion, um weitere Mitglieder, Arbeitsbereiche, unbegrenzten Speicherplatz usw. hinzuzufügen.',
@@ -1127,8 +1129,6 @@ export default {
     'Wir haben Ihnen einen Verifizierungscode über $1 geschickt',
   'scenes.app.workspaces.welcome_page.done': 'Ich bin fertig',
   'scenes.login.forgot_password.finished': 'Ihr Passwort wurde erfolgreich aktualisiert.',
-  'general.update': 'Aktualisierung',
-  'general.remove': 'Löschen',
   'scenes.apps.account.account.description_main':
     'Ihre Hauptadresse ist diejenige, an die Twake Ihre Benachrichtigungen sendet. Ihre sekundären Adressen ermöglichen es Ihnen, automatisch zu den Arbeitsbereichen eingeladen zu werden, die sie verwenden.',
   'scenes.apps.account.account.emails.description':
@@ -1236,7 +1236,7 @@ export default {
   'scenes.app.channelsbar.private_channel_label': 'Privater Kanal',
   'scenes.app.channelsbar.read_sign': 'als gelesen markieren',
   'scenes.app.channelsbar.remove_mute': 'Entfernen Sie die Stummschaltung',
-  'scenes.app.channelsbar.save_channel_button': 'sparen',
+  'scenes.app.channelsbar.save_channel_button': 'Speichern',
   'scenes.app.channelsbar.sending_message_instruction':
     'Senden Sie eine erste Nachricht in einer Diskussion',
   'scenes.app.channelsbar.tutorial_alert': 'Diesen Rahmen nie wieder anzeigen?',
@@ -1258,7 +1258,7 @@ export default {
   'scenes.app.mainview.tabs.placeholder_name_tab': 'Name der Registerkarte',
   'scenes.app.mainview.tabs.remove_tab': 'Lasche entfernen',
   'scenes.app.mainview.tabs.rename': 'Umbenennen',
-  'scenes.app.mainview.tabs.save_tab': 'sparen',
+  'scenes.app.mainview.tabs.save_tab': 'Speichern',
   'scenes.app.mainview.tabs.searching_connectors': 'Konnektoren suchen ...',
   'scenes.app.popup.adduser.adding_several_people': 'Fügen Sie mehrere Personen gleichzeitig hinzu',
   'scenes.app.popup.adduser.adresses_message':
@@ -1547,8 +1547,8 @@ export default {
   'scenes.apps.calendar.modals.remove_button': 'Löschen',
   'scenes.apps.calendar.modals.remove_event_button': 'Ereignis löschen',
   'scenes.apps.calendar.modals.remove_event_text': 'Ereignis löschen ?',
-  'scenes.apps.calendar.modals.save_button': 'sparen',
-  'scenes.apps.calendar.modals.save_event_button': 'sparen',
+  'scenes.apps.calendar.modals.save_button': 'Speichern',
+  'scenes.apps.calendar.modals.save_event_button': 'Speichern',
   'scenes.apps.calendar.modals.title_placeholder': 'Titel',
   'scenes.apps.calendar.modals.untitled': 'Ohne Titel',
   'scenes.apps.calendar.modify_calendar_menu': 'Bearbeiten Sie den Kalender',
@@ -1608,7 +1608,7 @@ export default {
   'scenes.apps.messages.message.remove_button': 'Delete',
   'scenes.apps.messages.message.reply_button': 'Antworten',
   'scenes.apps.messages.message.show_on_right': 'Rechts zeigen',
-  'scenes.apps.messages.message.save_button': 'sparen',
+  'scenes.apps.messages.message.save_button': 'Speichern',
   'scenes.apps.messages.message.show_button': 'Anzeige',
   'scenes.apps.messages.message.show_responses_button': 'Alle Antworten anzeigen',
   'scenes.apps.messages.message.starred': 'Markiert',
