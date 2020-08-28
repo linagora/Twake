@@ -61,7 +61,7 @@ export default class WorkspaceAppsEditor extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.app_update',
             [this.state.application.name, this.state.application.install_count || 0],
-            "Mettre à jour l'application $1 (application est utilisée $2 fois.)"
+            "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)"
           ),
         }
       );

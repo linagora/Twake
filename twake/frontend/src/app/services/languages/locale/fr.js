@@ -20,6 +20,7 @@ export default {
   'general.unarchive': 'Désarchiver',
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
+  'general.send': 'Envoyer le message',
   twake_not_on_device: 'Twake ne fonctionne pas sur votre appareil.',
   twake_not_on_device_mobile:
     'Vous pouvez télécharger la version téléphone de Twake sur les stores Android et Apple.',
@@ -740,6 +741,7 @@ export default {
   'scenes.apps.parameters.group_sections.managers.invite_manager_placeholder':
     "Nom d'utilisateur du manager",
   'scenes.apps.parameters.group_sections.managers.invite_manager_button': 'Ajouter',
+  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Пропустить',
   'scenes.apps.parameters.group_sections.managers.invite_manager_message':
     'Voulez-vous ajouter cette personne en tant que manager?',
   'scenes.apps.parameters.group_sections.managers.only_reading': 'Seulement la lecture',
@@ -969,6 +971,10 @@ export default {
     "Créer un espace de travail sur le modèle de l'espace courant.",
   'scenes.apps.parameters.workspace_sections.workspace.duplicate_button': 'Dupliquer cet espace...',
   'scenes.apps.tasks.boards': 'Tableaux',
+  'scenes.apps.tasks.connectors_menu': 'Connecteurs...',
+  'scenes.apps.tasks.connectors_search_menu': 'Chercher des connecteurs...',
+  'scenes.apps.tasks.no_connectors_menu_text': "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
+  'scenes.apps.tasks.unconfigured_tab': "Cet onglet n'est pas encore configuré.",
   'scenes.apps.tasks.left.team': 'Équipe',
   'scenes.apps.tasks.new_board.title': 'Nouveau tableau',
   'scenes.apps.tasks.choose_board_button': 'Choisir un tableau',
@@ -1203,7 +1209,8 @@ export default {
   'scenes.app.channelsbar.currentuser.update': 'Mettre à jour',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information':
     "Vos notifications sont désactivées la nuit de $1 jusqu'à $2.",
-  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until': '',
+  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until':
+    "Vos notifications sont désactivées jusqu'à $1:$2.",
   'scenes.app.channelsbar.currentuser.desactivated_notifications_message':
     'Vos notifications sont désactivées.',
   'scenes.app.channelsbar.currentuser.disable_notifications': 'Désactiver',
@@ -1253,7 +1260,9 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': "Installer l'application desktop",
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Invitez vos collaborateurs dans votre espace de travail.',
+  'scenes.app.channelsbar.public_channel_label': 'Chaîne publique',
   'scenes.app.channelsbar.private_channel_label': 'Chaîne privée',
+  'scenes.app.channelsbar.private_channel_message': "C'est une chaîne publique, toue l'espace de travail sera invité",
   'scenes.app.channelsbar.save_channel_button': 'Enregistrer',
   'scenes.app.channelsbar.sending_message_instruction':
     'Envoyer un premier message dans une discussion',
@@ -1300,7 +1309,7 @@ export default {
     'Permet de définir ce que votre application peut modifier et lire.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': "Privilèges de l'application",
   'scenes.app.popup.appsparameters.pages.app_surname': 'Nom simplifié de votre application',
-  'scenes.app.popup.appsparameters.pages.app_update': '',
+  'scenes.app.popup.appsparameters.pages.app_update': "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Créez et administrez vos applications et connecteurs.',
@@ -1312,7 +1321,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'La publication de votre application est actuellement en attente de validation par les équipes de Twake.',
   'scenes.app.popup.appsparameters.pages.button_force': "Forcer dans toute l'entreprise",
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': '',
+  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Evènement de type '$1' et d'identifiant '$2', avec les passifs '$3'",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Catégories',
   'scenes.app.popup.appsparameters.pages.company_label': 'Entreprise propriétaire',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Configuration',
@@ -1358,7 +1367,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.modify_public_data':
     'Modifier les données publiques de votre application.',
   'scenes.app.popup.appsparameters.pages.new_app_title': 'Nouvelle application',
-  'scenes.app.popup.appsparameters.pages.ok_user_code': '',
+  'scenes.app.popup.appsparameters.pages.ok_user_code': 'ok',
   'scenes.app.popup.appsparameters.pages.optimal_format': 'Format optimal : 48x48px.',
   'scenes.app.popup.appsparameters.pages.parameters_form_small_text':
     "L'application non publiée ne fonctionnera que dans votre entreprise, si vous souhaitez la rendre disponible à tous les utilisateurs de Twake, activez cette option.",
@@ -1464,10 +1473,11 @@ export default {
     'Applications développées par votre entreprise',
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     "Préférences d'affichage",
-  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
+    "Un administrateur peut configurer l'espace de travail (identité de l'espace, applications, membres de l'espace).",
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Externe',
-  'scenes.app.popup.workspaceparameter.pages.extern_guest': '',
+  'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Utilisateur invité',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': "Forcer dans toute l'entreprise",
   'scenes.app.popup.workspaceparameter.pages.guest_status': 'Invité',
   'scenes.app.popup.workspaceparameter.pages.install_button': 'Installer',
@@ -1488,7 +1498,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.logo_modify_description':
     "Modifiez l'image de cet espace de travail",
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Logo',
-  'scenes.app.popup.workspaceparameter.pages.modify_level': '',
+  'scenes.app.popup.workspaceparameter.pages.modify_level':
+    "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
   'scenes.app.popup.workspaceparameter.pages.name_description':
     'Modifiez le nom de cet espace de travail',
   'scenes.app.popup.workspaceparameter.pages.name_label': "Nom de l'espace",
@@ -1698,6 +1709,7 @@ export default {
   'scenes.app.workspaces.new_workspace': 'Nouvel espace de travail',
   'scenes.apps.calendar.add_event': 'Ajouter un événement',
   'scenes.apps.calendar.empty_date_information': "C'est une date libre !",
+  'scenes.apps.calendar.unconfigured_tab': "Cet onglet n'est pas encore configuré",
   'scenes.apps.drive.import_image': "Importer une image depuis l'appareil",
   'scenes.apps.drive.import_document': "Importer un document depuis l'appareil",
   'scenes.apps.drive.no_more': "Il n'y a plus rien à afficher.",

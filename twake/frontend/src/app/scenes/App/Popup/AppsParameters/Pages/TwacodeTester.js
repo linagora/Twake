@@ -26,7 +26,7 @@ export default class TwacodeTester extends Component {
         content: Languages.t(
           'scenes.app.popup.appsparameters.pages.call_event_handlers',
           ['interactive_action', id, +JSON.stringify(passives)],
-          "Gestionnaire d'événement d'appels de type $1 et d'événement '$2', avec les passifs : $3"
+          "Event of type '$1' and id '$2' with passives '$3'"
         ),
       });
       this.setState({});
@@ -67,7 +67,7 @@ export default class TwacodeTester extends Component {
             className={
               this.state.display_json_error
                 ? Languages.t('scenes.app.popup.appsparameters.pages.error_user_code', [], 'erreur')
-                : Languages.t('scenes.app.popup.appsparameters.pages.ok_user_code', [], '')
+                : Languages.t('scenes.app.popup.appsparameters.pages.ok_user_code', [], 'ok')
             }
             onChange={evt => {
               try {

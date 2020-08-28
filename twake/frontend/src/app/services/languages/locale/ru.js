@@ -20,6 +20,7 @@ export default {
   'general.unarchive': 'Снять с архивы',
   'general.from_other_workspace': 'От рабочей группы $1',
   'general.help': 'Помощь',
+  'general.send': 'Отправить сообщение',
   twake_not_on_device: 'Twake не работает на вашем устройстве.',
   twake_not_on_device_mobile:
     'Вы можете скачать наше мобильное приложение в Android и Apple маркет.',
@@ -1198,7 +1199,8 @@ export default {
   'scenes.app.channelsbar.currentuser.update': 'Обновить',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information':
     'Ваши уведомления отключены ночью от $1 до $2.',
-  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until': '',
+  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until':
+    'Ваши уведомления отключены до $1:$2.',
   'scenes.app.channelsbar.currentuser.desactivated_notifications_message':
     'Ваши уведомления отключены.',
   'scenes.app.channelsbar.currentuser.disable_notifications': 'Отключить',
@@ -1247,7 +1249,9 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Установить настольное приложение',
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Пригласите своих сотрудников в ваше рабочее пространство.',
+  'scenes.app.channelsbar.public_channel_label': 'Открытый канал',
   'scenes.app.channelsbar.private_channel_label': 'Частный канал',
+  'scenes.app.channelsbar.private_channel_message': 'Это открытый канал, все рабочее пространство будет приглашено!',
   'scenes.app.channelsbar.save_channel_button': 'Сохранить',
   'scenes.app.channelsbar.sending_message_instruction': 'Отправить первое сообщение в дискуссию',
   'scenes.app.channelsbar.tutorial_alert': 'Никогда больше не показывать этот кадр?',
@@ -1285,13 +1289,14 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': 'Группа приложений',
   'scenes.app.popup.appsparameters.pages.app_informations':
     'Эта строка идентифицирует ваше приложение и будет использоваться в командах сообщений.',
+  'scenes.app.popup.appsparameters.pages.app_name_label': 'Название приложения',
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Все менеджеры этой компании смогут редактировать это приложение.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
     'Определите, что ваше приложение может редактировать и читать.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': 'Привилегии приложени',
   'scenes.app.popup.appsparameters.pages.app_surname': 'Упрощенное название вашего приложения',
-  'scenes.app.popup.appsparameters.pages.app_update': '',
+  'scenes.app.popup.appsparameters.pages.app_update': 'Обновить приложение $1 (это приложение использовано $2 раз(а).)',
   'scenes.app.popup.appsparameters.pages.application_title': 'Приложение',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Создавайте и администрируйте свои приложения и разъёмы.',
@@ -1303,7 +1308,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'Публикация вашей заявки в настоящее время ожидает подтверждения командами Twake.',
   'scenes.app.popup.appsparameters.pages.button_force': 'Применить принудительно по всей компании',
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': '',
+  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Событие типа '$1' и id '$2' с пассивами '$3'.",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Категории',
   'scenes.app.popup.appsparameters.pages.company_label': 'Владелец компании',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Конфигурация',
@@ -1349,7 +1354,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.modify_public_data':
     'Редактируйте публичные данные вашего приложения.',
   'scenes.app.popup.appsparameters.pages.new_app_title': 'Новое приложение',
-  'scenes.app.popup.appsparameters.pages.ok_user_code': '',
+  'scenes.app.popup.appsparameters.pages.ok_user_code': 'ок',
   'scenes.app.popup.appsparameters.pages.optimal_format': 'Оптимальный формат : 48x48пкс.',
   'scenes.app.popup.appsparameters.pages.parameters_form_small_text':
     'Неопубликованное приложение будет работать только в вашей компании, если вы хотите сделать его доступным для всех пользователей Twake, активируйте эту опцию.',
@@ -1451,10 +1456,11 @@ export default {
     'Приложения, разработанные компанией',
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Параметры отображения',
-  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
+  "Администратор может конфигурировать рабочее пространство (идентификация пространства, приложений, членов пространства).",
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Гость',
-  'scenes.app.popup.workspaceparameter.pages.extern_guest': '',
+  'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Гостевой пользователь',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text':
     'Применить принудительно по всей компании',
   'scenes.app.popup.workspaceparameter.pages.guest_status': 'Гость',
@@ -1476,7 +1482,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.logo_modify_description':
     'Редактировать изображения этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Логотип',
-  'scenes.app.popup.workspaceparameter.pages.modify_level': '',
+  'scenes.app.popup.workspaceparameter.pages.modify_level':
+  "Изменить уровень управления в компании? (это действие не является обратимым, если вы уменьшите свои права доступа)",
   'scenes.app.popup.workspaceparameter.pages.name_description':
     'Изменить название этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.name_label': 'Название рабочего пространства',
