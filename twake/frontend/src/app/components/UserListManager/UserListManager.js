@@ -103,7 +103,7 @@ export default class UserListManager extends React.Component {
       return '';
     }
 
-    if (item.email && !item.thumbnail) {
+    if (item.email && !item.username) {
       item = item.email;
     }
 
@@ -209,7 +209,7 @@ export default class UserListManager extends React.Component {
                       this.filter(text, cb);
                     },
                   ]}
-                  max={[5]}
+                  max={[this.props.maxResults || 5]}
                   renderItemChoosen={[
                     item => {
                       return '';
@@ -217,7 +217,7 @@ export default class UserListManager extends React.Component {
                   ]}
                   renderItem={[
                     item => {
-                      return [this.renderLine(item)];
+                      return this.renderLine(item);
                     },
                   ]}
                   regexHooked={[/^(.+)$/]}
@@ -226,7 +226,7 @@ export default class UserListManager extends React.Component {
                   }}
                   autoFocus
                   small
-                  position={'bottom'}
+                  position={this.props.onTop ? 'top' : 'bottom'}
                   placeholder={Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],

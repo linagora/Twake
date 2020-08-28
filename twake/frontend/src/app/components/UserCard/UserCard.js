@@ -21,7 +21,7 @@ export default class UserCard extends Component {
         </div>
         <div className="footer">
           <Button
-            type="submit"
+            type="button"
             value={Languages.t('general.send', 'Save')}
             onClick={this.props.onClick}
           />

@@ -110,8 +110,10 @@ export default class ChannelTemplateEditor extends Component {
                 this.setChannelKey({ members: ids });
                 this.newChannel();
               }}
+              onTop={true}
               canRemoveMyself
               noPlaceholder
+              maxResults={3}
               scope="group"
             />
           )) || (
@@ -130,7 +132,7 @@ export default class ChannelTemplateEditor extends Component {
           <div className="menu-buttons">
             <Button
               disabled={this.state.channel.name.length <= 0 && !this.state.channel.app_id}
-              type="submit"
+              type="button"
               value={
                 this.state.channel.id
                   ? Languages.t('general.save', 'Save')

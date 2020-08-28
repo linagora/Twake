@@ -62,7 +62,7 @@ export default class BoardEditor extends React.Component {
         <div className="menu-buttons">
           <Button
             disabled={(this.state.name || '').length <= 0}
-            type="submit"
+            type="button"
             value={Languages.t('general.save', [], 'Enregistrer')}
             onClick={() => {
               this.save();

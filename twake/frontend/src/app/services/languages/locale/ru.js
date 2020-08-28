@@ -24,6 +24,9 @@ export default {
   'general.update': 'Обновить',
   'general.remove': 'Удалить',
   'general.add': 'Добавить',
+  'general.connexion_status.disconnected': 'Вы не в сети',
+  'general.connexion_status.connected': 'Вы в сети',
+  'general.connexion_status.connecting': 'Переподключение...',
   twake_not_on_device: 'Twake не работает на вашем устройстве.',
   twake_not_on_device_mobile:
     'Вы можете скачать наше мобильное приложение в Android и Apple маркет.',

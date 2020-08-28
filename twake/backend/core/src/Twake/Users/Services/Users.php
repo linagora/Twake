@@ -45,6 +45,16 @@ class Users
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
+                            "email" => $name . ".*"
+                        )
+                    )
+                )
+            );
+
+            $should[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
                             "lastname" => ".*" . $name . ".*"
                         )
                     )

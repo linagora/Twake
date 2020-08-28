@@ -24,6 +24,9 @@ export default {
   'general.update': 'Update',
   'general.remove': 'Remove',
   'general.add': 'Add',
+  'general.connexion_status.disconnected': 'You are offline',
+  'general.connexion_status.connected': 'You are online',
+  'general.connexion_status.connecting': 'Reconnecting...',
   twake_not_on_device: "Twake doesn't work on your device.",
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',
@@ -1204,7 +1207,8 @@ export default {
     'Invite your collaborators into your workspace.',
   'scenes.app.channelsbar.public_channel_label': 'Public channel',
   'scenes.app.channelsbar.private_channel_label': 'Private channel',
-  'scenes.app.channelsbar.private_channel_message': 'This is a public channel, all the workspace will be invited !',
+  'scenes.app.channelsbar.private_channel_message':
+    'This is a public channel, all the workspace will be invited !',
   'scenes.app.channelsbar.save_channel_button': 'Save',
   'scenes.app.channelsbar.sending_message_instruction': 'Send a first message in a discussion',
   'scenes.app.channelsbar.tutorial_alert': 'Never show this frame again?',
@@ -1252,7 +1256,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Create and administer your applications and connectors.',
-  'scenes.app.popup.appsparameters.pages.apps_title': 'Your apllications and connectors',
+  'scenes.app.popup.appsparameters.pages.apps_title': 'Your applications and connectors',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatic',
   'scenes.app.popup.appsparameters.pages.automatique_option_information':
     "If you activate 'Automatic', this application will automatically be added to the next workspaces of this company.",
@@ -1264,7 +1268,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.categories_label': 'Categories',
   'scenes.app.popup.appsparameters.pages.company_label': 'Company owner',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Configuration',
-  'scenes.app.popup.appsparameters.pages.create_app_button': 'Create an apllication',
+  'scenes.app.popup.appsparameters.pages.create_app_button': 'Create an application',
   'scenes.app.popup.appsparameters.pages.create_my_app': 'Create my application',
   'scenes.app.popup.appsparameters.pages.creation_app_instruction':
     'Please confirm the following information before creating your app.',

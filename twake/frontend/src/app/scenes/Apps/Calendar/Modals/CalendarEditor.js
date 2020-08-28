@@ -44,7 +44,7 @@ export default class CalendarEditor extends Component {
         <div className="menu-buttons">
           <Button
             disabled={(this.state.calendar.title || '').length <= 0}
-            type="submit"
+            type="button"
             value={
               this.state.calendar.id
                 ? Languages.t('general.save', [], 'Enregistrer')
