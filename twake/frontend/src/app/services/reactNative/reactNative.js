@@ -15,7 +15,7 @@ class ReactNative {
       function (data) {
         that.receiveMessage(data);
       },
-      false
+      false,
     );
     this.callbacks = {};
 
@@ -198,11 +198,7 @@ class ReactNative {
     document.dispatchEvent(new Event('pause'));
   }
 
-  backButton() {
-    /*if(AppsManager.mainGlobals.window.react_uniqid){
-      AppsManager.closeWindow(AppsManager.mainGlobals.window.react_uniqid);
-    }*/
-  }
+  backButton() {}
 }
 
 const instanceReactNative = new ReactNative();

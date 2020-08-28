@@ -17,48 +17,19 @@ class Electron {
     return Globals.window.electron != undefined;
   }
 
-  isWindow() {
-    if (!this.isElectron()) return false;
-    return Globals.window.electron.remote.process.platform != 'darwin';
-  }
-
-  closeWindow() {
-    if (!this.isElectron()) return;
-    var w = Globals.window.electron.remote.getCurrentWindow();
-    w.close();
-  }
-
-  minimizeWindow() {
-    if (!this.isElectron()) return;
-    var w = Globals.window.electron.remote.getCurrentWindow();
-    w.minimize();
-  }
-
-  maximizeWindow() {
-    if (!this.isElectron()) return;
-    var w = Globals.window.electron.remote.getCurrentWindow();
-    if (!w.isFullScreen()) {
-      w.setFullScreen(true);
-    } else {
-      w.setFullScreen(false);
-    }
-  }
-
-  isFullScreen() {
-    if (!this.isElectron()) return;
-    var w = Globals.window.electron.remote.getCurrentWindow();
-    return w.isFullScreen();
-  }
-
   setBadge(value) {
     if (!this.isElectron()) return;
-    if (
-      Globals.window.electron &&
-      Globals.window.electron.remote &&
-      Globals.window.electron.remote.app &&
-      Globals.window.electron.remote.app.dock
-    ) {
-      Globals.window.electron.remote.app.dock.setBadge(value);
+    try {
+      if (
+        Globals.window.electron &&
+        Globals.window.electron.remote &&
+        Globals.window.electron.remote.app &&
+        Globals.window.electron.remote.app.dock
+      ) {
+        Globals.window.electron.remote.app.dock.setBadge(value);
+      }
+    } catch (err) {
+      console.log('No electron app available for setting dock badge');
     }
   }
 }
