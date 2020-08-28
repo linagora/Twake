@@ -22,6 +22,7 @@ import UploadViewer from 'components/Uploads/UploadViewer.js';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
 import MediumPopupComponent from 'components/MediumPopup/MediumPopupComponent.js';
+import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
@@ -99,6 +100,7 @@ export default class App extends Component {
       <Viewer key="DriveViewer" />,
       <MediumPopupComponent key="MediumPopupComponent" />,
       <SearchPopup key="SearchPopup" />,
+      <ConnectionIndicator key="ConnectionIndicator" />,
     ];
 
     if (alertService.isOpen()) {

@@ -20,6 +20,9 @@ export default {
   'general.unarchive': 'Désarchiver',
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
+  'general.connexion_status.disconnected': 'Vous êtes hors ligne',
+  'general.connexion_status.connected': 'Vous êtes connecté',
+  'general.connexion_status.connecting': 'Reconnexion en cours...',
   twake_not_on_device: 'Twake ne fonctionne pas sur votre appareil.',
   twake_not_on_device_mobile:
     'Vous pouvez télécharger la version téléphone de Twake sur les stores Android et Apple.',
@@ -333,7 +336,7 @@ export default {
   'scenes.apps.calendar.event_view.no_reminder': 'Pas de rappel',
   'scenes.apps.calendar.event_view.article_the': 'le',
   'scenes.apps.calendar.event_view.article_at': 'à',
-  'scenes.apps.calendar.event_view.article_until': "à",
+  'scenes.apps.calendar.event_view.article_until': 'à',
   'scenes.apps.calendar.event_view.details': 'Détails',
   'scenes.apps.calendar.event_view.no_event_selected': 'Aucun événement sélectionné',
   'scenes.apps.calendar.event_view.description': 'Description',
@@ -1293,7 +1296,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': "Groupe d'applications",
   'scenes.app.popup.appsparameters.pages.app_informations':
     "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
-  'scenes.app.popup.appsparameters.pages.app_name_label': 'Nom de l\'application',
+  'scenes.app.popup.appsparameters.pages.app_name_label': "Nom de l'application",
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Tous les gérants de cette entreprise pourront modifier cette application.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':

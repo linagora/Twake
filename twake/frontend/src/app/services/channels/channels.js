@@ -30,7 +30,7 @@ class Channels extends Observable {
 
     this.currentSideChannelOptions = {};
     this.currentChannelFrontId = null;
-    this.currentChannelFrontIdByGroup = {};
+    this.currentChannelFrontIdByWorkspace = {};
 
     this.reached_initial_channel = false;
     this.old_channel_state = {};
@@ -109,7 +109,7 @@ class Channels extends Observable {
       Collections.get('channel_tabs').notify();
 
       this.currentChannelFrontId = channel.front_id;
-      this.currentChannelFrontIdByGroup[Workspaces.currentGroupId] = channel.front_id;
+      this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
 
       this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
 
@@ -183,9 +183,11 @@ class Channels extends Observable {
 
       //Select previously selected channel
       if (
-        Collections.get('channels').findByFrontId(this.currentChannelFrontIdByGroup[currentGroupId])
+        Collections.get('channels').findByFrontId(
+          this.currentChannelFrontIdByWorkspace[currentWorkspaceId],
+        )
       ) {
-        this.select({ front_id: this.currentChannelFrontIdByGroup[currentGroupId] });
+        this.select({ front_id: this.currentChannelFrontIdByWorkspace[currentWorkspaceId] });
         return;
       }
 
