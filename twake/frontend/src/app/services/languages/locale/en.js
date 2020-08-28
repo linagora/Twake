@@ -23,6 +23,7 @@ export default {
   'general.send': 'Send message',
   'general.update': 'Update',
   'general.remove': 'Remove',
+  'general.add': 'Add',
   twake_not_on_device: "Twake doesn't work on your device.",
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',

@@ -664,7 +664,7 @@ export default class WorkspaceAppsEditor extends Component {
 
           <ButtonWithTimeout
             className="small buttonGoBack secondary"
-            value={Languages.t('scenes.app.popup.appsparameters.pages.back_button', [], 'Retour')}
+            value={Languages.t('general.back', [], 'Retour')}
             disabled={this.state.loading}
             onClick={() => {
               this.props.exit();

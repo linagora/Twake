@@ -18,6 +18,7 @@ export default {
   'general.links': 'Links',
   'general.update': 'Aktualisierung',
   'general.remove': 'Löschen',
+  'general.add': 'Hinzufügen',
   'general.from_other_workspace': 'Von Arbeitsbereich $1',
   'ads.workspace_is_free_version':
     'Benötigen Sie mehr Funktionalitäten? Wechseln Sie zur Vollversion, um weitere Mitglieder, Arbeitsbereiche, unbegrenzten Speicherplatz usw. hinzuzufügen.',
@@ -971,7 +972,7 @@ export default {
   'scenes.apps.tasks.filter': 'Nach @Benutzername label:name oder Titel filtern',
   'scenes.apps.tasks.members': 'Mitglieder',
   'scenes.apps.tasks.task': 'Aufgabe',
-  'scenes.apps.tasks.task.add': 'Add',
+  'scenes.apps.tasks.task.add': 'Hinzufügen',
   'scenes.apps.tasks.no_tasks': 'Keine Aufgabe',
   'scenes.apps.tasks.task_status.todo': 'Zu erledigen',
   'scenes.apps.tasks.task_status.current': 'In Bearbeitung',

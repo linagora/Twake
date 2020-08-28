@@ -23,6 +23,7 @@ export default {
   'general.send': 'Отправить сообщение',
   'general.update': 'Обновить',
   'general.remove': 'Удалить',
+  'general.add': 'Добавить',
   twake_not_on_device: 'Twake не работает на вашем устройстве.',
   twake_not_on_device_mobile:
     'Вы можете скачать наше мобильное приложение в Android и Apple маркет.',
