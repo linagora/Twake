@@ -20,6 +20,9 @@ export default {
   'general.unarchive': 'Снять с архивы',
   'general.from_other_workspace': 'От рабочей группы $1',
   'general.help': 'Помощь',
+  'general.connexion_status.disconnected': 'Вы не в сети',
+  'general.connexion_status.connected': 'Вы в сети',
+  'general.connexion_status.connecting': 'Переподключение...',
   twake_not_on_device: 'Twake не работает на вашем устройстве.',
   twake_not_on_device_mobile:
     'Вы можете скачать наше мобильное приложение в Android и Apple маркет.',

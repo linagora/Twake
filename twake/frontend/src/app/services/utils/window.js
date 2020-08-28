@@ -12,8 +12,6 @@ class WindowState {
   }
 
   allGetParameter() {
-    console.log(location.search);
-
     if (Globals.isReactNative) {
       return;
     }
@@ -53,7 +51,7 @@ class WindowState {
     }
 
     document.title =
-      (count ? ' (' + count + ') ' : '') + document.title.replace(/^\([0-9]+\) */, '');
+      (count > 0 ? ' (' + count + ') ' : '') + document.title.replace(/^\([0-9\-]+\) */, '');
   }
 
   setTitle(text, icon) {
@@ -61,7 +59,8 @@ class WindowState {
       return;
     }
 
-    if (!icon) {
+    if (!icon || true) {
+      //Always using Twake icon for now
       icon = '/favicon.png';
     }
 

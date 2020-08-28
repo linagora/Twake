@@ -34,7 +34,7 @@ export default class ChannelWorkspaceEditor extends Component {
       <ObjectModal
         title={<ObjectModalTitle>{Languages.t(this.props.title)}</ObjectModalTitle>}
         onClose={() => MediumPopupComponent.closeAll()}
-        noScrollBar={true}
+        noScrollBar={false}
         footer={
           <Button
             className="small primary"

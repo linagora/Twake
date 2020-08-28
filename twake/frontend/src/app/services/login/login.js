@@ -9,6 +9,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
 import Notifications from 'services/user/notifications.js';
 import CurrentUser from 'services/user/current_user.js';
+import ws from 'services/websocket.js';
 
 import Globals from 'services/Globals.js';
 
@@ -33,6 +34,12 @@ class Login extends Observable {
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
+
+    ws.onReconnect('login', () => {
+      if (this.firstInit && this.currentUserId) {
+        this.updateUser();
+      }
+    });
   }
 
   reset() {
@@ -137,35 +144,39 @@ class Login extends Observable {
           this.notify();
         }
 
-        var that = this;
-        Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
-          that.firstInit = true;
-          if (res.errors.length > 0) {
-            if (
-              (res.errors.indexOf('redirect_to_openid') >= 0 ||
-                ((that.server_infos.auth || {}).openid || {}).use) &&
-              !that.external_login_error
-            ) {
-              document.location = Api.route('users/openid');
-              return;
-            } else if (
-              (res.errors.indexOf('redirect_to_cas') >= 0 ||
-                ((that.server_infos.auth || {}).cas || {}).use) &&
-              !that.external_login_error
-            ) {
-              document.location = Api.route('users/cas/login');
-              return;
-            }
+        this.updateUser();
+      }
+    });
+  }
 
-            that.state = 'logged_out';
-            that.notify();
+  updateUser() {
+    var that = this;
+    Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
+      that.firstInit = true;
+      if (res.errors.length > 0) {
+        if (
+          (res.errors.indexOf('redirect_to_openid') >= 0 ||
+            ((that.server_infos.auth || {}).openid || {}).use) &&
+          !that.external_login_error
+        ) {
+          document.location = Api.route('users/openid');
+          return;
+        } else if (
+          (res.errors.indexOf('redirect_to_cas') >= 0 ||
+            ((that.server_infos.auth || {}).cas || {}).use) &&
+          !that.external_login_error
+        ) {
+          document.location = Api.route('users/cas/login');
+          return;
+        }
 
-            WindowState.setTitle();
-            WindowState.setUrl('/', true);
-          } else {
-            that.startApp(res.data);
-          }
-        });
+        that.state = 'logged_out';
+        that.notify();
+
+        WindowState.setTitle();
+        WindowState.setUrl('/', true);
+      } else {
+        that.startApp(res.data);
       }
     });
   }
