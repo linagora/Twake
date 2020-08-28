@@ -110,8 +110,10 @@ export default class ChannelTemplateEditor extends Component {
                 this.setChannelKey({ members: ids });
                 this.newChannel();
               }}
+              onTop={true}
               canRemoveMyself
               noPlaceholder
+              maxResults={3}
               scope="group"
             />
           )) || (

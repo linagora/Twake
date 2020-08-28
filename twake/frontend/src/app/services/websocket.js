@@ -230,6 +230,7 @@ class Websocket extends Observable {
       return;
     }
     this.is_reconnecting = true;
+    this.notify();
 
     api.post(
       'users/alive',
@@ -238,6 +239,7 @@ class Websocket extends Observable {
         if (res._request_failed) {
           setTimeout(() => {
             this.is_reconnecting = false;
+            this.notify();
             this.reconnect();
           }, 2000);
         } else {
@@ -248,7 +250,6 @@ class Websocket extends Observable {
             that.disconnect();
 
             that.updateConnected(true);
-            that.notify();
 
             that.testNetwork = false;
 
@@ -301,8 +302,6 @@ class Websocket extends Observable {
               route = route.split('://')[1];
             }
 
-            console.log('wss://' + route + suffix);
-
             if (
               Globals.window.api_root_url.indexOf('https:') == 0 ||
               Globals.window.standalone ||
@@ -316,13 +315,13 @@ class Websocket extends Observable {
 
             connection.on('socket/connect', function (session) {
               that.is_reconnecting = false;
-
               onopen(session);
             });
             connection.on('socket/disconnect', function (error) {
               console.log(error);
               that.connectionError(error.reason, error.code);
               that.is_reconnecting = false;
+              that.notify();
             });
           } catch (err) {
             that.connectionError('autobahn.connect', err);
@@ -336,9 +335,9 @@ class Websocket extends Observable {
   }
 
   disconnect() {
-    console.log('Network : Disconnected');
     if (this.ws) {
       try {
+        this.updateConnected(false);
         this.ws.close();
       } catch (err) {
         console.log(err);
@@ -349,14 +348,12 @@ class Websocket extends Observable {
 
   connectionError(reason, details) {
     if (details == 0) {
+      this.updateConnected(false);
       console.log('Network : Connexion closed', reason, details);
       return;
     }
 
     this.updateConnected(false);
-    this.notify();
-
-    console.log('Network : Connexion error', reason, details);
 
     if (this.connectionTest) {
       clearTimeout(this.connectionTest);
@@ -392,7 +389,6 @@ class Websocket extends Observable {
             this.ws.call('ping/ping', {}).then(
               result => {
                 this.updateConnected(true);
-                this.notify();
                 this.testNetwork = false;
               },
               (error, desc) => {
@@ -430,8 +426,9 @@ class Websocket extends Observable {
   updateConnected(state) {
     if (state != this.connected) {
       this.connected = state;
-      console.log('CONNECTED = ', state);
+      this.notify();
     }
+    console.log('CONNECTED_STATE = ', state);
   }
 
   isConnected() {

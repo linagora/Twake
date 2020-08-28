@@ -1,0 +1,31 @@
+.connection_indicator {
+  position: absolute;
+  box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  bottom: 16px;
+  left: 16px;
+  background: var(--secondary);
+  color: var(--white);
+  font-size: 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s;
+  transition-delay: 2s;
+
+  span,
+  svg {
+    line-height: 14px;
+    vertical-align: middle;
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.visible {
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+}
