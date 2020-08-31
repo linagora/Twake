@@ -70,7 +70,7 @@ class Notifications extends Observable {
           { uri: 'notifications/' + User.getCurrentUserId(), options: { type: 'notifications' } },
         ],
       },
-      this.notifications_collection_key
+      this.notifications_collection_key,
     );
 
     //This one receive notification badge updates
@@ -84,7 +84,7 @@ class Notifications extends Observable {
           this.updateBadge(
             'workspace',
             data.notification.workspace_id,
-            data.notification.hasnotifications ? 1 : 0
+            data.notification.hasnotifications ? 1 : 0,
           );
         }
 
@@ -92,7 +92,7 @@ class Notifications extends Observable {
           this.updateBadge(
             'group',
             data.notification.group_id,
-            data.notification.hasnotifications ? 1 : 0
+            data.notification.hasnotifications ? 1 : 0,
           );
         }
       }
@@ -112,8 +112,9 @@ class Notifications extends Observable {
     if (type == 'channel') {
       var old_count = (this.notification_by_channel[id] || {}).count;
       var channel = Collections.get('channels').findByFrontId(
-        ChannelsService.currentChannelFrontId
+        ChannelsService.currentChannelFrontId,
       ) || { id: ChannelsService.currentChannelFrontId };
+      console.log('channel:', channel);
       if (
         Globals.window.document.hasFocus() &&
         count > old_count &&
@@ -147,7 +148,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-        count > (this.notification_by_group[id] || {}).count ? delay : 10
+        count > (this.notification_by_group[id] || {}).count ? delay : 10,
       );
     }
 
@@ -168,7 +169,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-        count > (this.notification_by_workspace[id] || {}).count ? delay : 10
+        count > (this.notification_by_workspace[id] || {}).count ? delay : 10,
       );
     }
 
@@ -193,7 +194,7 @@ class Notifications extends Observable {
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
-        count > (this.notification_by_channel[id] || {}).count ? delay : 10
+        count > (this.notification_by_channel[id] || {}).count ? delay : 10,
       );
     }
 
@@ -257,7 +258,7 @@ class Notifications extends Observable {
         var channel = Collections.get('channels').find(id);
         Collections.get('channels').completeObject(
           { _user_last_message_increment: channel.messages_increment },
-          channel.front_id
+          channel.front_id,
         );
       });
       this.notification_by_channel = {};

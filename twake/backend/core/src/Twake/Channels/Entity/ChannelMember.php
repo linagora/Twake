@@ -64,7 +64,7 @@ class ChannelMember
     private $last_access = 0;
 
     /**
-     * @ORM\Column(name="muted", type="twake_boolean")
+     * @ORM\Column(name="muted", type="integer")
      */
     private $muted = 0;
 
@@ -72,6 +72,11 @@ class ChannelMember
      * @ORM\Column(name="last_messages_increment", type="integer")
      */
     private $last_messages_increment = 0; //Will increment on each new message to count notifications
+
+    /**
+     * @ORM\Column(name="last_quoted_message_id", type="text")
+     */
+    private $last_quoted_message_id = ""; //Will be set when the user is quoted to the quoted message id
 
     /**
      * ChannelMember constructor.
@@ -193,7 +198,7 @@ class ChannelMember
     }
 
     /**
-     * @param mixed $muted
+     * @param mixed $muted 0: no, 1: mute default (except @all, @[user]), 2: mute all except user mension, 3: mute everything
      */
     public function setMuted($muted)
     {
@@ -214,6 +219,22 @@ class ChannelMember
     public function setLastMessagesIncrement($last_messages_increment)
     {
         $this->last_messages_increment = $last_messages_increment;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastQuotedMessageId()
+    {
+        return $this->last_quoted_message_id;
+    }
+
+    /**
+     * @param mixed $last_quoted_message_id
+     */
+    public function setLastQuotedMessageId($last_quoted_message_id)
+    {
+        $this->last_quoted_message_id = $last_quoted_message_id;
     }
 
 }

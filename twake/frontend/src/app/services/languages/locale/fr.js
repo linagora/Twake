@@ -1523,7 +1523,7 @@ export default {
     'Créez et administrez vos applications et connecteurs.',
   'scenes.app.popup.workspaceparameter.pages.your_apps_label': 'Vos applications',
   'scenes.app.popup.workspaceparameter.payments_subscriptions_title': 'Paiements et abonnements',
-  'scenes.app.workspacesbar.components.change_company_title': 'Changer de company',
+  'scenes.app.workspacesbar.components.change_company_title': "Changer d'entreprise",
   'scenes.app.workspacesbar.components.create_company_menu': 'Créer une entreprise',
   'scenes.app.workspacesbar.components.grp_parameters': 'Paramètres de $1',
   'scenes.apps.calendar.add_calendar_menu': 'Ajouter un calendrier...',
