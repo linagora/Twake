@@ -534,6 +534,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Supprimer',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     "Cette action n'est pas réversible",
+  'scenes.apps.messages.left_bar.stream.star': 'Mettre en favori',
+  'scenes.apps.messages.left_bar.stream.unstar': 'Retirer des favoris',
   'scenes.apps.messages.left_bar.stream.mute': 'Désactiver les notifications',
   'scenes.apps.messages.left_bar.stream.unmute': 'Réactiver les notifications',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Marquer comme lu',

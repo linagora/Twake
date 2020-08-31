@@ -176,15 +176,6 @@ export default class AddUser extends Component {
                       }}
                       className="full_width medium"
                     />
-                    <Switch
-                      label={Languages.t(
-                        'scenes.app.popup.workspaceparameter.pages.guest_status',
-                        [],
-                        'Invité',
-                      )}
-                      value={item.externe == '1'}
-                      onChange={state => this.onChangeMail({ externe: state ? '1' : '0' }, index)}
-                    />
                   </div>
                 );
               }

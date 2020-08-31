@@ -44,7 +44,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $any_mention = $here_mention || $all_mention || $user_mention;
             
             $muted_options = $member->getMuted();
-            $mention_level = $any_mention?1:0 + $user_mention?1:0; //2 if @user, 1 if only @here
+            $mention_level = ($any_mention?1:0) + ($user_mention?1:0); //2 if @user, 1 if only @here
 
             $muted = true;
             $mention_text = false;
@@ -64,11 +64,13 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 }
 
                 $member->setLastActivity(new \DateTime());
-                if($mention){
+                if($mention_text){
                     $member->setLastQuotedMessageId("" . $message->getId());
                 }
-
-                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUserId());
+                
+                $channel_array = $channel->getAsArray();
+                $channel_array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
+                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel_array)), "notifications/" . $member->getUserId());
 
                 //Updating workspace and group notifications
                 if (!$channel->getDirect()) {
@@ -105,6 +107,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         );
 
         foreach($mentions_types as $mention_text => $users){
+            error_log($mention_text);
             $this->notificationSystem->pushNotification(
                 null,
                 $sender_application,
@@ -113,7 +116,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 $channel,
                 $users,
                 "channel_" . $channel->getId(),
-                "@".$mention_text.": ".$message_as_text,
+                "@".ltrim($mention_text, "@").": ".$message_as_text,
                 $message ? $message->getId() : "",
                 Array(),
                 Array("push"),
@@ -227,6 +230,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement());
         $member->setLastAccess(new \DateTime());
+        $member->setLastQuotedMessageId("");
 
         $array = $channel->getAsArray();
         $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();

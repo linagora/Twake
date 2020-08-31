@@ -64,7 +64,7 @@ class ChannelMember
     private $last_access = 0;
 
     /**
-     * @ORM\Column(name="muted", type="integer")
+     * @ORM\Column(name="muted", type="tinyint")
      */
     private $muted = 0;
 

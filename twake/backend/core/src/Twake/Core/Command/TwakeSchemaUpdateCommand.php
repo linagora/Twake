@@ -378,6 +378,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             "twake_timeuuid" => "timeuuid",
             "array" => "text",
             "twake_boolean" => "tinyint",
+            "tinyint" => "tinyint",
             "boolean" => "tinyint",
             "text" => "text",
             "twake_float" => "float",

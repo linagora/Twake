@@ -18,9 +18,9 @@ export default class Channel extends React.Component {
       <Draggable
         className={
           'channel fade_in ' +
-          (this.props.selected ? 'selected ' : '') +
-          (this.props.muted ? 'muted ' : '') +
-          (this.props.alinea ? 'extra-margin ' : '') +
+          (!!this.props.selected ? 'selected ' : '') +
+          (!!this.props.muted ? 'muted ' : '') +
+          (!!this.props.alinea ? 'extra-margin ' : '') +
           (this.props.notifications > 0 ? 'has_notifications ' : '')
         }
         parentClassOnDrag="dragging_channel_view"
@@ -36,9 +36,9 @@ export default class Channel extends React.Component {
           </div>
         )}
         <div className="icon">
-          {this.props.icon && <Icon type={this.props.icon} />}
-          {this.props.emoji && <Emojione type={this.props.emoji} />}
-          {this.props.users && (
+          {!!this.props.icon && <Icon type={this.props.icon} />}
+          {!!this.props.emoji && <Emojione type={this.props.emoji} />}
+          {!!this.props.users && (
             <div className="user_list">
               {this.props.users.map(user => {
                 return (
@@ -48,7 +48,7 @@ export default class Channel extends React.Component {
             </div>
           )}
         </div>
-        {this.props.notMember && (
+        {!!this.props.notMember && (
           <Tooltip
             className="not_member"
             tooltip={Languages.t(
@@ -61,11 +61,11 @@ export default class Channel extends React.Component {
             <Icon type="external-link-alt" />
           </Tooltip>
         )}
-        {this.props.appIndicator && <div className="app_indicator">APP</div>}
-        {this.props.users && this.props.users.length > 1 && (
+        {!!this.props.appIndicator && <div className="app_indicator">APP</div>}
+        {!!this.props.users && this.props.users.length > 1 && (
           <div className="group_count">{this.props.users.length}</div>
         )}
-        {this.props.imported && (
+        {!!this.props.imported && (
           <Tooltip
             className="imported"
             tooltip={Languages.t(
@@ -88,7 +88,7 @@ export default class Channel extends React.Component {
             <div className="notification_dot">{Math.max(1, this.props.notifications)}</div>
           )}
 
-          {this.props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
+          {!!this.props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           <div
             className="more-icon"
             onClick={evt => {
