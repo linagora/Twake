@@ -333,7 +333,7 @@ export default {
   'scenes.apps.calendar.event_view.no_reminder': 'Pas de rappel',
   'scenes.apps.calendar.event_view.article_the': 'le',
   'scenes.apps.calendar.event_view.article_at': 'à',
-  'scenes.apps.calendar.event_view.article_until': "à",
+  'scenes.apps.calendar.event_view.article_until': 'à',
   'scenes.apps.calendar.event_view.details': 'Détails',
   'scenes.apps.calendar.event_view.no_event_selected': 'Aucun événement sélectionné',
   'scenes.apps.calendar.event_view.description': 'Description',
@@ -1293,7 +1293,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': "Groupe d'applications",
   'scenes.app.popup.appsparameters.pages.app_informations':
     "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
-  'scenes.app.popup.appsparameters.pages.app_name_label': 'Nom de l\'application',
+  'scenes.app.popup.appsparameters.pages.app_name_label': "Nom de l'application",
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Tous les gérants de cette entreprise pourront modifier cette application.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
@@ -1302,8 +1302,6 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_surname': 'Nom simplifié de votre application',
   'scenes.app.popup.appsparameters.pages.app_update': '',
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
-  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
-    'Créez et administrez vos applications et connecteurs.',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Vos applications et connecteurs',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatique',
   'scenes.app.popup.appsparameters.pages.automatique_option_information':
@@ -1863,4 +1861,7 @@ export default {
   'scenes.apps.messages.select_computer': "Sélectionner à partir de l'ordinateur",
   'scenes.apps.messages.select_twake': 'Sélectionner dans Twake Documents',
   'scenes.apps.tasks.active_tasks': 'tâches actives',
+  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
+    'Gérer vos applications et connecteurs.',
+  'scenes.app.popup.appsparameters.pages.icon': 'Icône',
 };

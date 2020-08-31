@@ -1249,8 +1249,6 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_surname': 'Simplified name of your application',
   'scenes.app.popup.appsparameters.pages.app_update': '',
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
-  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
-    'Create and administer your applications and connectors.',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Your applications and connectors',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatic',
   'scenes.app.popup.appsparameters.pages.automatique_option_information':
@@ -1457,8 +1455,6 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.worspace_notif': 'workspace',
   'scenes.app.popup.workspaceparameter.pages.worspace_subtitle': 'Workspace',
   'scenes.app.popup.workspaceparameter.pages.write_access_subtitle': 'Write access',
-  'scenes.app.popup.workspaceparameter.pages.your_apps_description':
-    'Create and administer your applications and connectors.',
   'scenes.app.popup.workspaceparameter.pages.your_apps_label': 'Your applications',
   'scenes.app.popup.workspaceparameter.payments_subscriptions_title': 'Payments and subscriptions',
   'scenes.app.workspacesbar.components.change_company_title': 'Change of company',
@@ -1802,4 +1798,7 @@ export default {
   'scenes.apps.messages.select_computer': 'Select from computer',
   'scenes.apps.messages.select_twake': 'Select in Twake Documents',
   'scenes.apps.tasks.active_tasks': 'active tasks',
+  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
+    'Manage your applications and connectors.',
+  'scenes.app.popup.appsparameters.pages.icon': 'Icon',
 };

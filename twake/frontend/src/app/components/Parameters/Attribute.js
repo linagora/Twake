@@ -70,11 +70,13 @@ export default class Attribute extends React.Component {
         }
       >
         <div className="label" onClick={() => AttributesManager.toggle(this.id)}>
-          <a href="#" className="modify">
-            {this.state.parameters_attributes.open == this.id
-              ? this.state.i18n.t('general.close')
-              : this.state.i18n.t('general.open')}
-          </a>
+          {!this.props.autoOpen && (
+            <a href="#" className="modify">
+              {this.state.parameters_attributes.open == this.id
+                ? this.state.i18n.t('general.close')
+                : this.state.i18n.t('general.open')}
+            </a>
+          )}
           <div className="label">{this.props.label}</div>
           <div className="description">{this.props.description}</div>
         </div>

@@ -1655,4 +1655,5 @@ export default {
   'services.user.update_password_alert': 'Dein Passwort wurde aktualisiert.',
   'services.workspaces.not_added': 'Die folgenden Benutzer wurden nicht hinzugefügt :',
   'client.app.services.languages.locale.fr._1561453218646': '',
+  'scenes.app.popup.appsparameters.pages.icon': 'Symbol',
 };

@@ -859,4 +859,5 @@ export default {
     'しばらくお待ちください、最新版のTwake（$1）をダウンロードしています。',
   //-End QuoteLoader
   //End Login
+  'scenes.app.popup.appsparameters.pages.icon': 'アイコン',
 };

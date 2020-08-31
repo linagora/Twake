@@ -1853,4 +1853,5 @@ export default {
   'scenes.apps.messages.select_computer': 'Выбрать из компьютера',
   'scenes.apps.messages.select_twake': 'Выбрать в Twake Документы',
   'scenes.apps.tasks.active_tasks': 'активные(х) задания(й)',
+  'scenes.app.popup.appsparameters.pages.icon': '',
 };
