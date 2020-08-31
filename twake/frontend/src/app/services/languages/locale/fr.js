@@ -1864,4 +1864,11 @@ export default {
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Gérer vos applications et connecteurs.',
   'scenes.app.popup.appsparameters.pages.icon': 'Icône',
+  'scenes.app.popup.appsparameters.pages.title_informations': 'Informations de base',
+  'scenes.app.popup.appsparameters.pages.subtitle_informations':
+    'Informations liées à la gestion des applications',
+  'scenes.app.popup.appsparameters.pages.smalltext_user_id': 'Identifiant utilisateur actuel',
+  'scenes.app.popup.appsparameters.pages.smalltext_workspace_id':
+    'Identifiant espace de travail actuel',
+  'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
 };

@@ -252,14 +252,6 @@ export default class WorkspaceAppsEditor extends Component {
                   this.setState({});
                 }}
               />
-
-              <div className="label for_input" style={{ marginBottom: 5 }}>
-                {Languages.t(
-                  'scenes.app.popup.appsparameters.pages.categories_label',
-                  [],
-                  'Catégories',
-                )}
-              </div>
               <TagPicker
                 disabled={this.state.loading || public_lock}
                 canCreate={false}

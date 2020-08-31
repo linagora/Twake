@@ -1801,4 +1801,10 @@ export default {
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Manage your applications and connectors.',
   'scenes.app.popup.appsparameters.pages.icon': 'Icon',
+  'scenes.app.popup.appsparameters.pages.title_informations': 'Basic informations',
+  'scenes.app.popup.appsparameters.pages.subtitle_informations':
+    'Informations related to applications management',
+  'scenes.app.popup.appsparameters.pages.smalltext_user_id': 'Current user id',
+  'scenes.app.popup.appsparameters.pages.smalltext_workspace_id': 'Current workspace id',
+  'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Current group id',
 };
