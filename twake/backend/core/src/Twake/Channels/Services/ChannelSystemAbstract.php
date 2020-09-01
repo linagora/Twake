@@ -187,6 +187,8 @@ class ChannelSystemAbstract
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush();
 
+        return $tab;
+
     }
 
     public function addAllWorkspaceMember($workspace, $channel)

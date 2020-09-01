@@ -186,18 +186,23 @@ class ChannelsSystem extends ChannelSystemAbstract
 
 
         //Tabs
+        $tab = null;
         if (isset($object["_once_save_tab"])) {
             if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {
                 $this->renameTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["id"], $object["_once_save_tab"]["name"]);
             } else {
-                $this->addTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["name"]);
+                $tab = $this->addTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["name"]);
             }
         }
         if (isset($object["_once_remove_tab"])) {
             $this->removeTab($channel->getId(), $object["_once_remove_tab"]["app_id"], $object["_once_remove_tab"]["id"]);
         }
         if (isset($object["_once_save_tab_config"])) {
-            $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $object["_once_save_tab_config"]["id"], $object["_once_save_tab_config"]["configuration"]);
+            $tab_id = $object["_once_save_tab_config"]["id"];
+            if($tab && !$tab_id){
+                $tab_id = $tab->getId();
+            }
+            $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $tab_id, $object["_once_save_tab_config"]["configuration"]);
         }
 
         //Send first message if created channel
