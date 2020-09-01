@@ -981,7 +981,8 @@ export default {
   'scenes.apps.tasks.boards': 'Tableaux',
   'scenes.apps.tasks.connectors_menu': 'Connecteurs...',
   'scenes.apps.tasks.connectors_search_menu': 'Chercher des connecteurs...',
-  'scenes.apps.tasks.no_connectors_menu_text': "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
+  'scenes.apps.tasks.no_connectors_menu_text':
+    "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
   'scenes.apps.tasks.unconfigured_tab': "Cet onglet n'est pas encore configuré.",
   'scenes.apps.tasks.left.team': 'Équipe',
   'scenes.apps.tasks.new_board.title': 'Nouveau tableau',
@@ -1268,7 +1269,8 @@ export default {
     'Invitez vos collaborateurs dans votre espace de travail.',
   'scenes.app.channelsbar.public_channel_label': 'Chaîne publique',
   'scenes.app.channelsbar.private_channel_label': 'Chaîne privée',
-  'scenes.app.channelsbar.private_channel_message': "C'est une chaîne publique, toue l'espace de travail sera invité",
+  'scenes.app.channelsbar.private_channel_message':
+    "C'est une chaîne publique, toue l'espace de travail sera invité",
   'scenes.app.channelsbar.save_channel_button': 'Enregistrer',
   'scenes.app.channelsbar.sending_message_instruction':
     'Envoyer un premier message dans une discussion',
@@ -1315,7 +1317,8 @@ export default {
     'Permet de définir ce que votre application peut modifier et lire.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': "Privilèges de l'application",
   'scenes.app.popup.appsparameters.pages.app_surname': 'Nom simplifié de votre application',
-  'scenes.app.popup.appsparameters.pages.app_update': "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
+  'scenes.app.popup.appsparameters.pages.app_update':
+    "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Vos applications et connecteurs',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatique',
@@ -1325,7 +1328,8 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'La publication de votre application est actuellement en attente de validation par les équipes de Twake.',
   'scenes.app.popup.appsparameters.pages.button_force': "Forcer dans toute l'entreprise",
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Evènement de type '$1' et d'identifiant '$2', avec les passifs '$3'",
+  'scenes.app.popup.appsparameters.pages.call_event_handlers':
+    "Evènement de type '$1' et d'identifiant '$2', avec les passifs '$3'",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Catégories',
   'scenes.app.popup.appsparameters.pages.company_label': 'Entreprise propriétaire',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Configuration',

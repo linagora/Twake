@@ -1254,7 +1254,8 @@ export default {
     'Define what your application can edit and read.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': 'Application privileges',
   'scenes.app.popup.appsparameters.pages.app_surname': 'Simplified name of your application',
-  'scenes.app.popup.appsparameters.pages.app_update': "Update the app $1 (the app is used $2 times.)",
+  'scenes.app.popup.appsparameters.pages.app_update':
+    'Update the app $1 (the app is used $2 times.)',
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Your applications and connectors',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatic',
@@ -1264,7 +1265,8 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'The publication of your application is currently awaiting validation by the Twake teams.',
   'scenes.app.popup.appsparameters.pages.button_force': 'Force throughout the company',
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Event of type '$1' and id '$2' with passives '$3'",
+  'scenes.app.popup.appsparameters.pages.call_event_handlers':
+    "Event of type '$1' and id '$2' with passives '$3'",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Categories',
   'scenes.app.popup.appsparameters.pages.company_label': 'Company owner',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Configuration',
@@ -1413,7 +1415,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Display preferences',
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
-    "An admin can configurate the workspace (name, apps, members of the workspace).",
+    'An admin can configurate the workspace (name, apps, members of the workspace).',
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Extern',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Guest user',
@@ -1438,7 +1440,7 @@ export default {
     'Edit the image of this workspace',
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Logo',
   'scenes.app.popup.workspaceparameter.pages.modify_level':
-    "Change your level of administration at the company? (this action is not reversible if you reduce your access rights)",
+    'Change your level of administration at the company? (this action is not reversible if you reduce your access rights)',
   'scenes.app.popup.workspaceparameter.pages.name_description': 'Change the name of this workspace',
   'scenes.app.popup.workspaceparameter.pages.name_label': 'Name of the workspace',
   'scenes.app.popup.workspaceparameter.pages.no_access': 'No access.',
