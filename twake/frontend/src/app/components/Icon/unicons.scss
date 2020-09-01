@@ -20,6 +20,10 @@
 }
 */
 
+.no-margin-left::before {
+  margin-left: 0 !important;
+}
+
 [class^='uil-']:before,
 [class*=' uil-']:before {
   font-family: 'unicons';

@@ -1307,8 +1307,6 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_surname': 'Nom simplifié de votre application',
   'scenes.app.popup.appsparameters.pages.app_update': '',
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
-  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
-    'Créez et administrez vos applications et connecteurs.',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Vos applications et connecteurs',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatique',
   'scenes.app.popup.appsparameters.pages.automatique_option_information':
@@ -1868,4 +1866,14 @@ export default {
   'scenes.apps.messages.select_computer': "Sélectionner à partir de l'ordinateur",
   'scenes.apps.messages.select_twake': 'Sélectionner dans Twake Documents',
   'scenes.apps.tasks.active_tasks': 'tâches actives',
+  'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
+    'Gérer vos applications et connecteurs.',
+  'scenes.app.popup.appsparameters.pages.icon': 'Icône',
+  'scenes.app.popup.appsparameters.pages.title_informations': 'Informations de base',
+  'scenes.app.popup.appsparameters.pages.subtitle_informations':
+    'Informations liées à la gestion des applications',
+  'scenes.app.popup.appsparameters.pages.smalltext_user_id': 'Identifiant utilisateur actuel',
+  'scenes.app.popup.appsparameters.pages.smalltext_workspace_id':
+    'Identifiant espace de travail actuel',
+  'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
 };
