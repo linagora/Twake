@@ -33,7 +33,7 @@ class WorkspacesApps extends Observable {
   getApps() {
     return (
       Object.keys(this.apps_by_workspace[Workspaces.currentWorkspaceId] || {}).map(
-        id => this.apps_by_workspace[Workspaces.currentWorkspaceId][id]
+        id => this.apps_by_workspace[Workspaces.currentWorkspaceId][id],
       ) || []
     );
   }
@@ -164,7 +164,7 @@ class WorkspacesApps extends Observable {
       this.apps_by_group[res.workspace_app.group_id][res.workspace_app.app.id] = app_link;
       Collections.get('applications').completeObject(
         res.workspace_app.app,
-        res.workspace_app.app.front_id
+        res.workspace_app.app.front_id,
       );
     } else if (res.type == 'remove') {
       delete this.apps_by_workspace[res.workspace_app.workspace_id][res.workspace_app.app.id];
@@ -301,7 +301,7 @@ class WorkspacesApps extends Observable {
     if (app.simple_name.toLocaleLowerCase() == 'twake_tasks') {
       return 'check-square';
     }
-    return app.icon_url;
+    return app.icon_url || 'puzzle-piece';
   }
 }
 

@@ -470,6 +470,13 @@ class MessageSystem
                 $channel->setLastActivity(new \DateTime());
                 $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
                 
+                //Sender autoread the channel
+                if($user){
+                    $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
+                    $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
+                    $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                }
+
                 try{
                     $this->queues->push("message_dispatch_queue", [
                         "channel" => $channel->getId(),

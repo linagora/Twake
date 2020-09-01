@@ -178,7 +178,7 @@ export default class WorkspaceIdentity extends Component {
                 }}
               >
                 {Languages.t(
-                  'scenes.app.popup.workspaceparameter.pages.remove_button',
+                  'general.delete',
                   [],
                   'Supprimer'
                 )}

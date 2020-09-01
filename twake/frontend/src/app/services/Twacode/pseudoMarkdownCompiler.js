@@ -49,7 +49,7 @@ class PseudoMarkdownCompiler {
       ':': {
         name: 'emoji',
         allowed_char_before: '', //"(^| )",
-        allowed_chars: '[a-z_]',
+        allowed_chars: '[a-z_]+',
         disable_recursion: true,
         end: ':',
         object: PseudoMarkdownDictionary.render_block.emoji.object,
@@ -57,7 +57,7 @@ class PseudoMarkdownCompiler {
       '@': {
         name: 'user',
         allowed_char_before: '(^|\\B)',
-        allowed_chars: '[a-z_.-A-Z0-9:]',
+        allowed_chars: '[a-z_.-A-Z0-9:]+',
         disable_recursion: true,
         end: '( |$)',
         object: PseudoMarkdownDictionary.render_block.user.object,
@@ -67,7 +67,7 @@ class PseudoMarkdownCompiler {
       '#': {
         name: 'channel',
         allowed_char_before: '(^|\\B)',
-        allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]',
+        allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]+',
         disable_recursion: true,
         end: '( |$)',
         object: PseudoMarkdownDictionary.render_block.channel.object,
@@ -371,42 +371,30 @@ class PseudoMarkdownCompiler {
         return;
       }
 
-      var all_ch = this.pseudo_markdown[starting_value].allowed_char_before;
+      const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
+      let tmp = str;
+      let offset = 0;
+      let indexes = [];
+      let did_match = -1;
+      do {
+        did_match = tmp.indexOf(starting_value);
 
-      var io = str.indexOf(starting_value);
-      while (
-        io > 0 &&
-        (original_str[io - 1] == '\\' ||
-          null === original_str.slice(0, io).match(new RegExp(all_ch ? all_ch + '$' : '$', 'g')))
-      ) {
-        //Ignore antislashed
-        if (original_str[io - 1] == '\\') {
-          str = str.slice(0, io - 1) + str.slice(io); //Ignore first char
-          var indexOf = str.slice(io).indexOf(starting_value);
-          if (indexOf == -1) {
-            io = -1;
-          } else {
-            io = indexOf + io;
-          }
-        } else {
-          var indexOf = str.slice(io).indexOf(starting_value);
-          if (indexOf == -1) {
-            io = -1;
-          } else {
-            io = indexOf + io + starting_value.length;
-          }
+        let match_char_before =
+          !allowed_char_before ||
+          null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
+        match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
+
+        tmp = tmp.slice(did_match + 1);
+        if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
+        offset = offset + did_match + 1;
+      } while (did_match >= 0);
+
+      if (indexes.length > 0) {
+        const mini = Math.min(...indexes);
+        if (min_index_of < 0 || mini < min_index_of) {
+          min_index_of = mini;
+          min_index_of_key = starting_value;
         }
-      }
-
-      if (
-        io >= 0 &&
-        (min_index_of < 0 || io < min_index_of) &&
-        !(original_str[io - 1] == '\\') &&
-        (!all_ch ||
-          !(null === original_str.slice(0, io).match(new RegExp(all_ch ? all_ch + '$' : '$', 'g'))))
-      ) {
-        min_index_of = io;
-        min_index_of_key = starting_value;
       }
     });
 
@@ -425,13 +413,16 @@ class PseudoMarkdownCompiler {
           //It mean we found an antislashed element
           add_to_value += match[0];
         }
+        const countManaged =
+          (this.pseudo_markdown[char].allowed_chars || '').slice(-1) === '+' ||
+          (this.pseudo_markdown[char].allowed_chars || '').slice(-1) === '}';
         match = str_right
           .substr(add_to_value.length)
           .match(
             new RegExp(
               '^(' +
                 (this.pseudo_markdown[char].allowed_chars || '.') +
-                '*' +
+                (countManaged ? '' : '*') +
                 (this.pseudo_markdown[char].end ? '?' : '') +
                 ')' +
                 (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : ''),

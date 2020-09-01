@@ -10,6 +10,7 @@ import InputIcon from 'components/Inputs/InputIcon.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import Icon from 'components/Icon/Icon.js';
 
 import './Pages.scss';
 
@@ -63,11 +64,10 @@ export default class WorkspaceAppsSearch extends Component {
     return list.map(item => {
       return (
         <div className="application">
-          <div
-            className="market_app_image"
-            style={{
-              backgroundImage: 'url(' + (item.icon_url || '/public/img/default_app_icon.png') + ')',
-            }}
+          <Icon
+            className="no-margin-left"
+            style={{ fontSize: '24px' }}
+            type={WorkspacesApps.getAppIcon(item) || ''}
           />
           <div className="market_app_content">
             <div className="market_app_title">{item.name}</div>
@@ -309,7 +309,7 @@ export default class WorkspaceAppsSearch extends Component {
               )}
             </a>
             <a href="#" key="goback" onClick={() => this.props.exit()}>
-              {Languages.t('scenes.app.popup.workspaceparameter.pages.back_button', [], 'Retour')}
+              {Languages.t('general.back', [], 'Retour')}
             </a>
           </div>
 

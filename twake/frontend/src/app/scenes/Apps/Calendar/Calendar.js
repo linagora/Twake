@@ -271,7 +271,7 @@ export default class Calendar extends Component {
               {
                 type: 'menu',
                 className: 'error',
-                text: Languages.t('scenes.apps.calendar.remove_calendar_menu', [], 'Supprimer'),
+                text: Languages.t('general.delete', [], 'Supprimer'),
                 onClick: () => {
                   AlertManager.confirm(
                     () => {

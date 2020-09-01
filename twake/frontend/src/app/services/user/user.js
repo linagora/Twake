@@ -84,7 +84,16 @@ class User {
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {
-          res.push(user);
+          let in_scope = true;
+          if (scope === 'workspace') {
+            in_scope = (user.workspaces_id || []).indexOf(options.workspace_id) >= 0;
+          }
+          if (scope === 'group') {
+            in_scope = (user.groups_id || []).indexOf(options.group_id) >= 0;
+          }
+          if (in_scope) {
+            res.push(user);
+          }
         }
         if (res.length > 30) {
           return false;

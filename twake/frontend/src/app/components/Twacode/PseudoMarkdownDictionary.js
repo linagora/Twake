@@ -65,8 +65,12 @@ class PseudoMarkdownDictionary {
           if (!object.url && object.url !== undefined) {
             return <a>{child}</a>;
           }
+          var protocol = 'https';
+          if ((object.url || object.content || '').indexOf('http://')) {
+            protocol = 'http';
+          }
           var orig_url =
-            'http://' + (object.url || object.content || '').replace(/^(https?:\/\/)/, '');
+            protocol + '://' + (object.url || object.content || '').replace(/^(https?:\/\/)/, '');
           var url = orig_url;
           if (object.user_identifier && UserService.getCurrentUser()) {
             var separator = '?';

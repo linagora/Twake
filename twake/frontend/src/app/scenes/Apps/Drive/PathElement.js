@@ -7,6 +7,7 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'services/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione.js';
+import Languages from 'services/languages/languages.js';
 
 export default class PathElement extends DriveElement {
   dropFile(data, directory) {
@@ -86,7 +87,7 @@ export default class PathElement extends DriveElement {
           {directory.parent_id && directory.parent_id != 'trash'
             ? directory.name
             : this.props.inTrash
-            ? 'Trash'
+            ? Languages.t('scenes.apps.drive.trash', [], 'Trash')
             : workspace.name}
 
           {directory.application_id && app.name && <i> ({app.name})</i>}

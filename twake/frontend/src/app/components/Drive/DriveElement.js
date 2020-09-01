@@ -340,7 +340,7 @@ export default class DriveElement extends React.Component {
                           disabled={(this.state.new_name || '').length <= 0}
                           type="button"
                           value={Languages.t(
-                            'scenes.apps.messages.message.save_button',
+                            'general.save',
                             [],
                             'Enregistrer',
                           )}

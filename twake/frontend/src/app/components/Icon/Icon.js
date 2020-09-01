@@ -19,13 +19,24 @@ export default class Icon extends React.Component {
     return false;
   }
   render() {
-    return (
-      <i
-        ref={this.props.refDom}
-        className={'icon-unicon uil-' + this.props.type + ' ' + this.props.className}
-        onClick={this.props.onClick}
-        style={this.props.style}
-      />
-    );
+    if ((this.props.type || '').indexOf('http') === 0) {
+      return (
+        <div
+          className="app_icon"
+          style={{
+            backgroundImage: 'url(' + (this.props.type || '') + ')',
+          }}
+        />
+      );
+    } else {
+      return (
+        <i
+          ref={this.props.refDom}
+          className={'icon-unicon uil-' + this.props.type + ' ' + this.props.className}
+          onClick={this.props.onClick}
+          style={this.props.style}
+        />
+      );
+    }
   }
 }

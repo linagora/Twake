@@ -107,12 +107,12 @@ class Messages extends Observable {
           text: Languages.t(
             'services.apps.messages.no_command_possible',
             [value, app_name],
-            "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes."
+            "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
           ),
           title: Languages.t(
             'services.apps.messages.no_app',
             [],
-            "Cette application n'existe pas."
+            "Cette application n'existe pas.",
           ),
         });
         return;
@@ -142,7 +142,7 @@ class Messages extends Observable {
       var parent = Collections.get('messages').find(message.parent_message_id);
       Collections.get('messages').completeObject(
         { responses_count: parent.responses_count + 1 },
-        parent.front_id
+        parent.front_id,
       );
       Collections.get('messages').share(parent);
     }
@@ -156,7 +156,7 @@ class Messages extends Observable {
       .findBy({ channel_id: options.channel_id })
       .map(i => i.creation_date)
       .reduce((a, b) => a + b, 0);
-    message.creation_date = Math.max(max_message_time + 1, new Date().getTime() / 1000); //To be on the bottom
+    message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
     message.content = val;
 
     ChannelsService.markFrontAsRead(channel.id, message.creation_date);
@@ -238,7 +238,7 @@ class Messages extends Observable {
         .forEach(message => {
           Collections.get('messages').completeObject(
             { parent_message_id: message_container.id },
-            message.front_id
+            message.front_id,
           );
           moved.push(message);
         });
@@ -252,7 +252,7 @@ class Messages extends Observable {
       if (old_parent) {
         Collections.get('messages').completeObject(
           { responses_count: old_parent.responses_count - 1 },
-          old_parent.front_id
+          old_parent.front_id,
         );
       }
     }
@@ -262,7 +262,7 @@ class Messages extends Observable {
       new_parent = Collections.get('messages').find(message_container.id);
       Collections.get('messages').completeObject(
         { responses_count: new_parent.responses_count + 1 + Math.max(old_count, moved.length) },
-        new_parent.front_id
+        new_parent.front_id,
       );
     }
 
@@ -277,7 +277,7 @@ class Messages extends Observable {
       if (parent.parent_message_id != '') {
         Collections.get('messages').updateObject(
           { parent_message_id: parent.parent_message_id },
-          message.front_id
+          message.front_id,
         );
       }
 
@@ -320,7 +320,7 @@ class Messages extends Observable {
       var parent = Collections.get('messages').find(message.parent_message_id);
       Collections.get('messages').completeObject(
         { responses_count: parent.responses_count - 1 },
-        parent.front_id
+        parent.front_id,
       );
       Collections.get('messages').share(parent);
     }

@@ -3,7 +3,7 @@ export default {
   'general.external': 'Гость',
   'general.close': 'Закрыть',
   'general.closed': 'Закрыто',
-  'general.save': 'Cохранить',
+  'general.save': 'Сохранить',
   'general.copy': 'Скопироать',
   'general.cancel': 'Отмена',
   'general.yes': 'Да',
@@ -20,6 +20,10 @@ export default {
   'general.unarchive': 'Снять с архивы',
   'general.from_other_workspace': 'От рабочей группы $1',
   'general.help': 'Помощь',
+  'general.send': 'Отправить сообщение',
+  'general.update': 'Обновить',
+  'general.remove': 'Удалить',
+  'general.add': 'Добавить',
   'general.connexion_status.disconnected': 'Вы не в сети',
   'general.connexion_status.connected': 'Вы в сети',
   'general.connexion_status.connecting': 'Переподключение...',
@@ -384,7 +388,7 @@ export default {
     'Получите легко доступ к последней загрузке или удаленным файлам.',
   'scenes.apps.drive.drive_tour.storage': 'Хранение',
   'scenes.apps.drive.drive_tour.storage_limit':
-    'Проверьте оставшееся хранилище и подумайте о том, чтобы опорожнить мусор. Ограничением на хранение можно управлять в групповых параметрах.',
+    'Проверьте оставшееся хранилище и подумайте о том, чтобы опорожнить корзину. Ограничением на хранение можно управлять в групповых параметрах.',
   'scenes.apps.drive.drive_tour.congrats': 'Поздравляем!',
   'scenes.apps.drive.drive_tour.bye': 'Вы управляете хранилищем Twake! До скорого!',
   'scenes.apps.drive.drive_tour.preview': 'Предварительный просмотр',
@@ -408,10 +412,10 @@ export default {
   'scenes.apps.drive.navigators.navigator_content.directories': 'Каталоги',
   'scenes.apps.drive.navigators.navigator_content.files': 'Файлы',
   'scenes.apps.drive.navigators.navigator_content.no_file': 'Здесь ничего нет.',
-  'scenes.apps.drive.navigators.navigator_deleted.title': 'Вы в мусоре',
-  'scenes.apps.drive.navigators.navigator_deleted.empty': 'Пустой мусор',
+  'scenes.apps.drive.navigators.navigator_deleted.title': 'Вы в корзине',
+  'scenes.apps.drive.navigators.navigator_deleted.empty': 'Пустая корзина',
   'scenes.apps.drive.navigators.navigator_deleted.empty_message':
-    'Вы действительно собираетесь выкинуть мусор?',
+    'Вы действительно собираетесь опустошить корзину?',
   'scenes.apps.drive.navigators.navigator_labels.title': 'Ярлыки',
   'scenes.apps.drive.navigators.navigator_labels.no_file_with_this_label':
     'Нет файла с этим ярлыком.',
@@ -442,7 +446,7 @@ export default {
   'scenes.apps.drive.navigators.new_file': 'Новый файл',
   'scenes.apps.drive.navigators.directories': 'Удаленные каталоги',
   'scenes.apps.drive.navigators.files': 'Удаленные файлы',
-  'scenes.apps.drive.navigators.no_file': 'Пустой мусор',
+  'scenes.apps.drive.navigators.no_file': 'Пустая корзина',
   'scenes.apps.drive.preview_bloc.added': 'добавил $1',
   'scenes.apps.drive.preview_bloc.see_in_drive': 'Смотреть на диске',
   'scenes.apps.drive.preview_bloc.other_workspace': 'Открыть другое рабочее пространство',
@@ -465,8 +469,8 @@ export default {
   'scenes.apps.drive.right_preview.operations_download': 'Скачать',
   'scenes.apps.drive.right_preview.operations_restore': 'Восстановить',
   'scenes.apps.drive.right_preview.operations_restore_message': 'Восстановить этот файл?',
-  'scenes.apps.drive.right_preview.operations_delete': 'Переместить в мусор',
-  'scenes.apps.drive.right_preview.operations_delete_message': 'Переместить этот файл в мусор?',
+  'scenes.apps.drive.right_preview.operations_delete': 'Переместить в корзину',
+  'scenes.apps.drive.right_preview.operations_delete_message': 'Переместить этот файл в корзину?',
   'scenes.apps.drive.right_preview.operations_message':
     'Это каталог, вы действительно хотите загрузить его (он может быть тяжелым)?',
   'scenes.apps.drive.right_preview.storage': 'Хранение',
@@ -490,7 +494,7 @@ export default {
   'scenes.apps.messages.streams': 'Каналы',
   'scenes.apps.messages.messages': 'Сообщения',
   'scenes.apps.messages.stream': 'Канал',
-  'scenes.apps.messages.chatbox.chat.private_discussion_with': 'Приватная дискуссия с',
+  'scenes.apps.messages.chatbox.chat.private_discussion_with': 'Личная дискуссия с',
   'scenes.apps.messages.chatbox.chat.edit_message': 'Отредактировать сообщение',
   'scenes.apps.messages.chatbox.chat.delete_message': 'Удалить данное сообщение',
   'scenes.apps.messages.chatbox.chat.delete_message_btn': 'Удалить сообщение',
@@ -522,7 +526,7 @@ export default {
   'scenes.apps.messages.chatbox.chat.input_zone.send_attachment': 'Отправить вложение',
   'scenes.apps.messages.chatbox.chat.input_zone.classic_message': 'Обычное сообщение',
   'scenes.apps.messages.chatbox.chat.input_zone.input.placeholder_message': 'Ваше сообщение',
-  'scenes.apps.messages.left_bar.private_messages': 'Прямые сообщения',
+  'scenes.apps.messages.left_bar.private_messages': 'Личные сообщения',
   'scenes.apps.messages.left_bar.channels': 'Тематические каналы',
   'scenes.apps.messages.left_bar.stream_modal.new_channel': 'Новый канал',
   'scenes.apps.messages.left_bar.stream_modal.modify_channel': 'Изменить канал',
@@ -536,6 +540,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.private_btn': 'Private',
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Удалить',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting': 'Это действие не обратимо',
+  'scenes.apps.messages.left_bar.stream.star': 'Закладка',
+  'scenes.apps.messages.left_bar.stream.unstar': 'Удалить из Избранного',
   'scenes.apps.messages.left_bar.stream.mute': 'Отключить канал',
   'scenes.apps.messages.left_bar.stream.unmute': 'Включить канал',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Отметить как прочитанное',
@@ -606,7 +612,7 @@ export default {
   'scenes.apps.account.account.logout_warning': 'Вы выйдете из аккаунта.',
   'scenes.apps.account.contacts.title': 'Контакты',
   'scenes.apps.account.contacts.text':
-    'Ваши контакты являются личными и связаны с вашим аккаунтом, вы можете отправлять им прямые сообщения, не делясь рабочим пространством.',
+    'Ваши контакты являются личными и связаны с вашим аккаунтом, вы можете отправлять им личные сообщения, не делясь рабочим пространством.',
   'scenes.apps.account.contacts.find_new': 'Найти новый контакт',
   'scenes.apps.account.contacts.find_new_text':
     'Введите имя пользователя контакта, который вы хотите найти.',
@@ -948,8 +954,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.calendars': 'Календари',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.drive_labels':
     'Ярлыки диска',
-  'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.boards':
-    'Списки заданий',
+  'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.boards': 'Списки задач',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.streams':
     'Дискуссионные каналы',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.rights': 'Права',
@@ -987,8 +992,8 @@ export default {
   'scenes.apps.tasks.members': 'участники',
   'scenes.apps.tasks.task': 'Задача',
   'scenes.apps.tasks.task.add': 'Добавить',
-  'scenes.apps.tasks.no_tasks': 'Нет задачи',
-  'scenes.apps.tasks.task_status.todo': 'Список заданий',
+  'scenes.apps.tasks.no_tasks': 'У вас нет активных задач',
+  'scenes.apps.tasks.task_status.todo': 'Список задач',
   'scenes.apps.tasks.task_status.current': 'Текущий',
   'scenes.apps.tasks.task_status.done': 'Сделано',
   'scenes.apps.tasks.task_status.cancelled': 'Отложено',
@@ -1005,7 +1010,7 @@ export default {
   'scenes.apps.tasks.task.edit.end_date': 'Дата окончания',
   'scenes.apps.tasks.task.edit.do_not_create_event': 'Не создать событие',
   'scenes.apps.tasks.task.edit.create_event_in_task_calendar': 'Календарь задач',
-  'scenes.apps.tasks.task.edit.checklist': 'Список заданий',
+  'scenes.apps.tasks.task.edit.checklist': 'Список задач',
   'scenes.apps.tasks.task.edit.weight': 'Примерная продолжительность',
   'scenes.apps.tasks.task.edit.weight_unit': 'час(ов)',
   'scenes.apps.tasks.list_done': 'Сделано',
@@ -1016,8 +1021,8 @@ export default {
   'scenes.apps.tasks.list_modal.danger_zone': 'Зона опасности',
   'scenes.apps.tasks.list_modal.remove': 'Удалить список и задачи',
   'scenes.apps.tasks.list_modal.predefined_participants': 'Предопределенные участники',
-  'scenes.apps.tasks.list_modal.archive_all_tasks': 'Архивировать все задания',
-  'scenes.apps.tasks.list_modal.remove_archived_tasks': 'Удалить заархивированные задания ($1)',
+  'scenes.apps.tasks.list_modal.archive_all_tasks': 'Архивировать все задачи',
+  'scenes.apps.tasks.list_modal.remove_archived_tasks': 'Удалить заархивированные задачи ($1)',
   'scenes.apps.tasks.no_task_selected': 'Выбрать задачу',
   'scenes.apps.tasks.board_untitled': 'Проект',
   'scenes.login.footer.go_to_twake': 'Перейти к twakeapp.com',
@@ -1140,8 +1145,6 @@ export default {
   'scenes.app.workspaces.welcome_page.we_sent_you_mail': 'Мы отправили вам код проверки через $1',
   'scenes.app.workspaces.welcome_page.done': 'Я закончил',
   'scenes.login.forgot_password.finished': 'Ваш пароль был успешно обновлен.',
-  'general.update': 'Обновить',
-  'general.remove': 'Удалить',
   'scenes.apps.account.account.description_main':
     'Ваш главный адрес - это тот, на который Twake отправляет ваши уведомления. Ваши вторичные адреса позволяют автоматически приглашать вас на рабочие места, которые их используют.',
   'scenes.apps.account.account.emails.description':
@@ -1157,7 +1160,7 @@ export default {
   'scenes.apps.account.account.email_add_modal.confirm': 'Подтвердить эту электронную почту',
   'app.name.twake_calendar': 'Календарь',
   'app.name.twake_drive': 'Документы',
-  'app.name.twake_tasks': 'Заданий',
+  'app.name.twake_tasks': 'Задачи',
   'components.calendar.repetition.everyday': 'Ежедневно',
   'components.calendar.repetition.does_not_repeat': 'Однократно',
   'components.calendar.repetition.weekly_on': 'Еженедельно по $1',
@@ -1201,7 +1204,8 @@ export default {
   'scenes.app.channelsbar.currentuser.update': 'Обновить',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information':
     'Ваши уведомления отключены ночью от $1 до $2.',
-  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until': '',
+  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until':
+    'Ваши уведомления отключены до $1:$2.',
   'scenes.app.channelsbar.currentuser.desactivated_notifications_message':
     'Ваши уведомления отключены.',
   'scenes.app.channelsbar.currentuser.disable_notifications': 'Отключить',
@@ -1215,10 +1219,10 @@ export default {
   'scenes.app.channelsbar.channel_removing_confirmation': 'Удалить канал',
   'scenes.app.channelsbar.channelsapps.apps': 'ПРИЛОЖЕНИЯ',
   'scenes.app.channelsbar.channelsuser.invite_collaborators': 'Пригласите сотрудников',
-  'scenes.app.channelsbar.channelsuser.new_private_discussion': 'Новая приватная дискусси',
+  'scenes.app.channelsbar.channelsuser.new_private_discussion': 'Новое личное сообщение',
   'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters':
     'Никаких личных сообщений, приглашайте своих сотрудников!',
-  'scenes.app.channelsbar.channelsuser.private_messages': 'Прямые сообщения',
+  'scenes.app.channelsbar.channelsuser.private_messages': 'Личные сообщения',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'КАНАЛЫ',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Создать канал',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Название группы',
@@ -1250,7 +1254,10 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Установить настольное приложение',
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Пригласите своих сотрудников в ваше рабочее пространство.',
+  'scenes.app.channelsbar.public_channel_label': 'Открытый канал',
   'scenes.app.channelsbar.private_channel_label': 'Частный канал',
+  'scenes.app.channelsbar.private_channel_message':
+    'Это открытый канал, все рабочее пространство будет приглашено!',
   'scenes.app.channelsbar.save_channel_button': 'Сохранить',
   'scenes.app.channelsbar.sending_message_instruction': 'Отправить первое сообщение в дискуссию',
   'scenes.app.channelsbar.tutorial_alert': 'Никогда больше не показывать этот кадр?',
@@ -1288,13 +1295,15 @@ export default {
   'scenes.app.popup.appsparameters.pages.app_grp_label': 'Группа приложений',
   'scenes.app.popup.appsparameters.pages.app_informations':
     'Эта строка идентифицирует ваше приложение и будет использоваться в командах сообщений.',
+  'scenes.app.popup.appsparameters.pages.app_name_label': 'Название приложения',
   'scenes.app.popup.appsparameters.pages.app_modification_right':
     'Все менеджеры этой компании смогут редактировать это приложение.',
   'scenes.app.popup.appsparameters.pages.app_privileges_information':
     'Определите, что ваше приложение может редактировать и читать.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': 'Привилегии приложени',
   'scenes.app.popup.appsparameters.pages.app_surname': 'Упрощенное название вашего приложения',
-  'scenes.app.popup.appsparameters.pages.app_update': '',
+  'scenes.app.popup.appsparameters.pages.app_update':
+    'Обновить приложение $1 (это приложение использовано $2 раз(а).)',
   'scenes.app.popup.appsparameters.pages.application_title': 'Приложение',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Создавайте и администрируйте свои приложения и разъёмы.',
@@ -1306,7 +1315,8 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'Публикация вашей заявки в настоящее время ожидает подтверждения командами Twake.',
   'scenes.app.popup.appsparameters.pages.button_force': 'Применить принудительно по всей компании',
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': '',
+  'scenes.app.popup.appsparameters.pages.call_event_handlers':
+    "Событие типа '$1' и id '$2' с пассивами '$3'.",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Категории',
   'scenes.app.popup.appsparameters.pages.company_label': 'Владелец компании',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Конфигурация',
@@ -1352,7 +1362,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.modify_public_data':
     'Редактируйте публичные данные вашего приложения.',
   'scenes.app.popup.appsparameters.pages.new_app_title': 'Новое приложение',
-  'scenes.app.popup.appsparameters.pages.ok_user_code': '',
+  'scenes.app.popup.appsparameters.pages.ok_user_code': 'ок',
   'scenes.app.popup.appsparameters.pages.optimal_format': 'Оптимальный формат : 48x48пкс.',
   'scenes.app.popup.appsparameters.pages.parameters_form_small_text':
     'Неопубликованное приложение будет работать только в вашей компании, если вы хотите сделать его доступным для всех пользователей Twake, активируйте эту опцию.',
@@ -1436,7 +1446,7 @@ export default {
     'Отменить приглашение по электронной почте.',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Добавить сотрудников',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text':
-    'Сотрудники в этом рабочем пространстве $1',
+    'Количество сотрудников в этом рабочем пространстве: $1',
   'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'Сотрудники',
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     'Приложения, разработанные компанией',
@@ -1454,10 +1464,11 @@ export default {
     'Приложения, разработанные компанией',
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Параметры отображения',
-  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
+    'Администратор может конфигурировать рабочее пространство (идентификация пространства, приложений, членов пространства).',
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Гость',
-  'scenes.app.popup.workspaceparameter.pages.extern_guest': '',
+  'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Гостевой пользователь',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text':
     'Применить принудительно по всей компании',
   'scenes.app.popup.workspaceparameter.pages.guest_status': 'Гость',
@@ -1475,11 +1486,12 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Сотрудники, приглашенные по электронной почте',
   'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message':
-    'бедитесь, что используемое имя пользователя или электронная почта действительны.',
+    'Убедитесь, что используемое имя пользователя или электронная почта действительны.',
   'scenes.app.popup.workspaceparameter.pages.logo_modify_description':
     'Редактировать изображения этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Логотип',
-  'scenes.app.popup.workspaceparameter.pages.modify_level': '',
+  'scenes.app.popup.workspaceparameter.pages.modify_level':
+    'Изменить уровень управления в компании? (это действие не является обратимым, если вы уменьшите свои права доступа)',
   'scenes.app.popup.workspaceparameter.pages.name_description':
     'Изменить название этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.name_label': 'Название рабочего пространства',
@@ -1487,7 +1499,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.no_app_information':
     'У вас нет приложений в этом рабочем пространстве',
   'scenes.app.popup.workspaceparameter.pages.other_collaboraters-small_text':
-    'Другие сотрудники этой компании ($1)',
+    'Остальные сотрудники компании ($1)',
   'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu':
     'Покинуть это рабочее пространство',
   'scenes.app.popup.workspaceparameter.pages.read_access_subtitle': 'Доступ с правом чтения',
@@ -1572,8 +1584,8 @@ export default {
   'scenes.apps.drive.open_link': 'Открыть ссылку',
   'scenes.apps.drive.files_subtitle': 'Файлы',
   'scenes.apps.drive.folder_subtitle': 'Папки',
-  'scenes.apps.drive.go_out_trash_menu': 'Выйти из мусора',
-  'scenes.apps.drive.go_trash_menu': 'Перейти в мусор',
+  'scenes.apps.drive.go_out_trash_menu': 'Выйти из корзины',
+  'scenes.apps.drive.go_trash_menu': 'Перейти в корзину',
   'scenes.apps.drive.import_from_computer_menu': 'Загрузить с компьютера',
   'scenes.apps.drive.move_text': 'Переместить',
   'scenes.apps.drive.new_file_menu': 'Новый файл',
@@ -1586,15 +1598,15 @@ export default {
     'У вас нет приложения, позволяющего добавлять внешнее хранилище.',
   'scenes.apps.drive.remove_definitely_menu': 'Удалить навсегда',
   'scenes.apps.drive.restore_menu': 'Восстановить',
-  'scenes.apps.drive.throw_menu': 'Выкидывать в мусор',
-  'scenes.apps.drive.trash_empty_menu': 'Опорожнять мусор',
+  'scenes.apps.drive.throw_menu': 'Выкидывать в корзину',
+  'scenes.apps.drive.trash_empty_menu': 'Опорожнять корзину',
   'scenes.apps.drive.unconfigured_tab': 'Эта вкладка еще не настроена.',
   'scenes.apps.drive.viewer.edit_with_button': 'Отредактировать с помощью $1',
   'scenes.apps.drive.viewer.loading_preview_message': 'Загрузка...',
   'scenes.apps.drive.viewer.no_preview_message': 'Не могу показать такой тип файла.',
   'scenes.apps.drive.viewer.open_with_button': 'Открыть с...',
   'scenes.apps.messages.input.autocompletes_placeholder':
-    'Написать сообщение, использовать @ для цитирования пользователя.',
+    'Написать сообщение. Используйте @ для упоминания определенного пользователя.',
   'scenes.apps.messages.input.no_email_module_menu_text': 'У вас нет почтового модуля.',
   'scenes.apps.messages.input.search_module_text': 'Поиск модулей...',
   'scenes.apps.messages.input.send_button': 'Отправить',
@@ -1603,7 +1615,7 @@ export default {
   'scenes.apps.messages.message.cancel_button': 'Отменить',
   'scenes.apps.messages.message.modify_button': 'Редактировать',
   'scenes.apps.messages.message.personal_message': 'Только вы можете увидеть это сообщение.',
-  'scenes.apps.messages.message.pinned': 'Прикреплённый',
+  'scenes.apps.messages.message.pinned': 'Закрепленное сообщение',
   'scenes.apps.messages.message.remove_button': 'Удалить',
   'scenes.apps.messages.message.reply_button': 'Ответить',
   'scenes.apps.messages.message.show_on_right': 'Показать справа',
@@ -1670,7 +1682,7 @@ export default {
   'login.welcome': '',
   'login.welcome_sub': '',
   'scenes.app.sidemenu.channels.private': 'Частный',
-  'scenes.app.sidemenu.channels.private_messages': 'ПРЯМЫЕ СООБЩЕНИЯ',
+  'scenes.app.sidemenu.channels.private_messages': 'ЛИЧНЫЕ СООБЩЕНИЯ',
   'scenes.app.sidemenu.channels.public': 'публичный',
   'scenes.app.sidemenu.user.account.manage_emails': 'Управление электронной почтой',
   'scenes.app.sidemenu.user.current_user_information': 'Вы зарегистрированы под аккаунтом @$1.',
@@ -1692,7 +1704,7 @@ export default {
   'scenes.apps.drive.import_image': 'Загрузить изображение с устройства',
   'scenes.apps.drive.import_document': 'Загрузить файл с устройства',
   'scenes.apps.drive.no_more': 'Нечего больше показывать.',
-  'scenes.apps.drive.trash': 'Мусор',
+  'scenes.apps.drive.trash': 'Корзина',
   'scenes.apps.drive.top_menu_more': 'Больше',
   'scenes.apps.drive.top_menu_no_items': '$1 элементы',
   'scenes.apps.messages.from_camera': 'С камеры',
@@ -1745,7 +1757,7 @@ export default {
   'scenes.apps.drive.open_link': 'Открыть ссылку в новом окне',
   'scenes.apps.drive.viewer.download_desktop':
     'Скачать Twake Desktop для предварительного просмотра в приложении',
-  'scenes.apps.tasks.my_tasks': 'Мои задания',
+  'scenes.apps.tasks.my_tasks': 'Мои задачи',
   'scenes.apps.tasks.board.place_holder': 'Название доски',
   'scenes.apps.tasks.board.tasks.subtask': 'Подзадача',
   'scenes.apps.tasks.board.tasks.add_subtask': 'Добавить подзадачу',
@@ -1810,7 +1822,7 @@ export default {
   'components.searchpopup.last_modif': 'Последняя модификация',
   'components.searchpopup.sender': 'Отправитель',
   'components.searchpopup.mentions': 'Упоминания',
-  'components.searchpopup.only_pinned': 'Только прикрепленные сообщения',
+  'components.searchpopup.only_pinned': 'Только закрепленные сообщения',
   'components.alert.confirm': 'Подтвердите ваше действие',
   'components.alert.confirm_click': 'Подтвердите ваше действие, нажав на кнопку Подтвердить.',
   'components.searchpopup.tasks': 'Задачи',
@@ -1819,14 +1831,14 @@ export default {
   'components.searchpopup.show_filters': 'фильтры',
   'components.searchpopup.load_more': 'Загрузить больше результатов',
   'general.more': 'Больше',
-  'scenes.apps.board.archived_tasks': 'Архивные задания ($1)',
-  'scenes.apps.board.active_tasks': 'Активные задания',
+  'scenes.apps.board.archived_tasks': 'Архивные задачи ($1)',
+  'scenes.apps.board.active_tasks': 'Активные задачи',
   'scenes.apps.board.kanban': 'Канбан',
   'scenes.apps.board.display_as': 'Показать как',
   'scenes.apps.board.new_task': '+ Новая задача',
   'scenes.apps.board.all_boards': 'Все доски',
   'components.userlistmanager.no_users': 'Нет пользователей.',
-  'scenes.apps.drive.used': 'используемый в этой папке',
+  'scenes.apps.drive.used': 'использовано в этой папке',
   'components.reminder.notification': 'Уведомления',
   'components.reminder.minutes_bef': 'минут(ы) до',
   'components.reminder.hours_bef': 'часа(ов) до',
@@ -1847,7 +1859,7 @@ export default {
   'scenes.apps.drive.remove_attachs': 'Снять вложения',
   'components.drive.elements.see': 'Посмотреть',
   'components.drive.elements.current_name': 'Текущее название : ',
-  'scenes.apps.drive.right_preview.public': 'Открытый доступ',
+  'scenes.apps.drive.right_preview.public': 'Открыть доступ',
   'components.drive.elements.configurate_mod': 'Настройка модуля...',
   'components.drive.elements.manage_version': 'Управление версиями',
   'scenes.app.popup.createcompany.try_again': 'Пожалуйста повторите.',
@@ -1855,5 +1867,7 @@ export default {
   'scenes.app.popup.workspace.create_temp': 'Создать временный аккаунт',
   'scenes.apps.messages.select_computer': 'Выбрать из компьютера',
   'scenes.apps.messages.select_twake': 'Выбрать в Twake Документы',
-  'scenes.apps.tasks.active_tasks': 'активные(х) задания(й)',
+  'scenes.apps.tasks.active_tasks': 'активные(х) задачи(ь)',
+  'scenes.apps.drive.right_preview.versions': 'Версии',
+  'scenes.app.popup.appsparameters.pages.icon': '',
 };

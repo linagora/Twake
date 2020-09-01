@@ -1,7 +1,7 @@
 import os
 import re
 
-rootpath = '../src/app'
+rootpath = os.path.abspath('../frontend/src/app')
 
 def nextGuillemet(s, i):
     for k in range(i , len(s)):
