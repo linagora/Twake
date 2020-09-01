@@ -24,6 +24,8 @@ $primary_background: #f3f2ff;*/
   --pale-grey: #f5f5f7;
   --default-border-radius: 3px;
   --default-border-radius-large: 5px;
+  --green: #18af2c;
+  --red: #ff5154;
 }
 
 $primary: var(--primary);
@@ -39,8 +41,8 @@ $white: var(--white);
 
 $grey_background: var(--grey-background);
 
-$green: #3dcc97;
-$red: #ff5154;
+$green: var(--green);
+$red: var(--red);
 $yellow: #fed453;
 $yellow_background: #fffbee;
 

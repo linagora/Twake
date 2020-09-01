@@ -12,10 +12,14 @@ import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
 import Switch from 'components/Inputs/Switch.js';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
+import Icon from 'components/Icon/Icon.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Input from 'components/Inputs/Input.js';
+import InlineTagPicker from 'app/components/InlineTagPicker/InlineTagPicker';
 
 import './Pages.scss';
+import WorkspacesApp from 'services/workspaces/workspaces_apps.js';
+import WorkspaceApps from './WorkspaceApps.js';
 
 export default class WorkspaceAppsEditor extends Component {
   constructor(props) {
@@ -138,19 +142,17 @@ export default class WorkspaceAppsEditor extends Component {
     return (
       <div className="fade_in app_editor">
         <div className="title">
-          <div
+          <Icon
             className="app_icon"
-            style={{
-              backgroundImage:
-                'url(' + (application.icon_url || '/public/img/default_app_icon.png') + ')',
-            }}
+            style={{ fontSize: '24px' }}
+            type={WorkspacesApp.getAppIcon(application)}
           />
           {application.name}
         </div>
 
         <div className="smalltext" style={{ opacity: 1 }}>
           <Emojione type={':exploding_head:'} /> If you do not know how to fill these, go to{' '}
-          <a href="https://twakeapp.com" target="_blank">
+          <a href="https://doc.twake.app" target="_blank">
             the Twake API documentation
           </a>{' '}
           !
@@ -475,23 +477,14 @@ export default class WorkspaceAppsEditor extends Component {
                   'Privilèges en écriture',
                 )}
               </div>
-              <TagPicker
-                canCreate={false}
-                disabled={this.state.loading || public_lock}
-                data={application.available_capabilities.map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                value={(application.capabilities || []).map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                onChange={values => {
-                  application.capabilities = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
-                  );
+              <InlineTagPicker
+                available={application.available_capabilities}
+                value={application.capabilities}
+                onChange={items => {
+                  application.capabilities = items;
                   this.setState({});
                 }}
               />
-
               <div className="label for_input" style={{ marginBottom: 5 }}>
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.read_privileges_label',
@@ -499,39 +492,22 @@ export default class WorkspaceAppsEditor extends Component {
                   'Privilèges en lecture',
                 )}
               </div>
-              <TagPicker
-                canCreate={false}
-                disabled={this.state.loading || public_lock}
-                data={application.available_privileges.map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                value={(application.privileges || []).map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                onChange={values => {
-                  application.privileges = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
-                  );
+              <InlineTagPicker
+                available={application.available_privileges}
+                value={application.privileges}
+                onChange={items => {
+                  application.privileges = items;
                   this.setState({});
                 }}
               />
-
               <div className="label for_input" style={{ marginBottom: 5 }}>
                 Hooks
               </div>
-              <TagPicker
-                canCreate={false}
-                disabled={this.state.loading || public_lock}
-                data={application.available_hooks.map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                value={(application.hooks || []).map(item => {
-                  return { name: item.id || item, id: item.id || item };
-                })}
-                onChange={values => {
-                  application.hooks = values.map(item =>
-                    typeof item == 'string' ? item : item.id,
-                  );
+              <InlineTagPicker
+                available={application.available_hooks}
+                value={application.hooks}
+                onChange={items => {
+                  application.hooks = items;
                   this.setState({});
                 }}
               />
