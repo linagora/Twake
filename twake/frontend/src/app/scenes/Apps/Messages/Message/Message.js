@@ -169,13 +169,15 @@ export default class Message extends Component {
 
     var isFirstNewMessage = this.props.message.creation_date > this.props.unreadAfter;
 
+    const creation_date = Math.min(new Date().getTime(), this.props.message.creation_date * 1000);
+
     var show_user =
       isFirstNewMessage ||
       this.props.previousMessage.sender != this.props.message.sender ||
       this.props.previousMessage.sender == null ||
       this.props.message.responses_count > 0 ||
       this.props.previousMessage.responses_count > 0 ||
-      this.props.message.creation_date - this.props.previousMessage.creation_date > 60 * 5 || //5 minutes
+      creation_date / 1000 - this.props.previousMessage.creation_date > 60 * 5 || //5 minutes
       this.props.message.pinned;
     var canDropIn = !this.props.isResponse;
     var canDrag = true;
@@ -299,8 +301,16 @@ export default class Message extends Component {
                     )}
                     {!this.props.message._user_ephemeral && (
                       <div className="date">
-                        <Moment tz={moment.tz.guess()} format="h:mm a" style={{ marginLeft: 5 }}>
-                          {this.props.message.creation_date * 1000}
+                        <Moment
+                          tz={moment.tz.guess()}
+                          format={
+                            creation_date > new Date().getTime() - 1000 * 60 * 60 * 12
+                              ? 'h:mm a'
+                              : 'h:mm a, MMM D'
+                          }
+                          style={{ marginLeft: 5 }}
+                        >
+                          {creation_date}
                         </Moment>
                       </div>
                     )}
@@ -539,12 +549,12 @@ export default class Message extends Component {
         )}
         {!!(
           !this.props.previousMessage ||
-          this.props.message.creation_date - this.props.previousMessage.creation_date > 60 * 60 * 2
+          creation_date / 1000 - this.props.previousMessage.creation_date > 60 * 60 * 2
         ) && (
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">
-                {(new Date().getTime() / 1000 - this.props.message.creation_date > 24 * 60 * 60
+                {(new Date().getTime() - creation_date > 24 * 60 * 60
                   ? moment(this.props.message.creation_date * 1000).format('LL')
                   : moment(this.props.message.creation_date * 1000).fromNow()) || '-'}
               </div>

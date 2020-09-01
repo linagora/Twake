@@ -12,7 +12,10 @@ class ChannelsNotifications extends BaseController
     public function mute(Request $request)
     {
         $channel_id = $request->request->get("channel_id");
-        $mute = $request->request->get("mute", true);
+        $mute = $request->request->get("mute", 1);
+        if(!is_integer($mute)){
+            $mute = $mute?2:0;
+        }
         $res = $this->get("app.channels.notifications")->mute($channel_id, $mute, $this->getUser());
         if (!$res) {
             return new Response(Array("status" => "error"));

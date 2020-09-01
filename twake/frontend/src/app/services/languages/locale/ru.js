@@ -536,6 +536,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.private_btn': 'Private',
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Удалить',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting': 'Это действие не обратимо',
+  'scenes.apps.messages.left_bar.stream.star': 'Закладка',
+  'scenes.apps.messages.left_bar.stream.unstar': 'Удалить из Избранного',
   'scenes.apps.messages.left_bar.stream.mute': 'Отключить канал',
   'scenes.apps.messages.left_bar.stream.unmute': 'Включить канал',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Отметить как прочитанное',

@@ -74,6 +74,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             if ($res) {
                 $tmp = $channel->getAsArray();
                 $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
+                $tmp["_user_last_quoted_message_id"] = $res->getLastQuotedMessageId();
                 $tmp["_user_last_access"] = $res->getLastAccess() ? $res->getLastAccess()->getTimestamp() : null;
                 $tmp["_user_muted"] = $res->getMuted();
                 $result[] = $tmp;
@@ -158,18 +159,6 @@ class ChannelsSystem extends ChannelSystemAbstract
         $this->entity_manager->flush($channel);
 
 
-        //Send first message if created channel
-        if ($did_create) {
-            //Init channel with a first message
-            $init_message = Array(
-                "channel_id" => $channel->getId(),
-                "hidden_data" => Array("type" => "init_channel"),
-                "content" => "[]"
-            );
-            $this->messages_service->save($init_message, Array());
-        }
-
-
         //Private and non private users management
         if ($channel->getPrivate()) {
             $this->updateChannelMembers($channel, $members, $current_user->getId());
@@ -197,18 +186,34 @@ class ChannelsSystem extends ChannelSystemAbstract
 
 
         //Tabs
+        $tab = null;
         if (isset($object["_once_save_tab"])) {
             if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {
                 $this->renameTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["id"], $object["_once_save_tab"]["name"]);
             } else {
-                $this->addTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["name"]);
+                $tab = $this->addTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["name"]);
             }
         }
         if (isset($object["_once_remove_tab"])) {
             $this->removeTab($channel->getId(), $object["_once_remove_tab"]["app_id"], $object["_once_remove_tab"]["id"]);
         }
         if (isset($object["_once_save_tab_config"])) {
-            $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $object["_once_save_tab_config"]["id"], $object["_once_save_tab_config"]["configuration"]);
+            $tab_id = $object["_once_save_tab_config"]["id"];
+            if($tab && !$tab_id){
+                $tab_id = $tab->getId();
+            }
+            $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $tab_id, $object["_once_save_tab_config"]["configuration"]);
+        }
+
+        //Send first message if created channel
+        if ($did_create) {
+            //Init channel with a first message
+            $init_message = Array(
+                "channel_id" => $channel->getId(),
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            $this->messages_service->save($init_message, Array());
         }
 
         return $channel->getAsArray();

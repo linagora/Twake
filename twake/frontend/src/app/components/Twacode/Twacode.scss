@@ -91,36 +91,45 @@
     background: rgba(0, 0, 0, 0);
   }
   .user_twacode {
-    font-weight: 500;
-    box-sizing: border-box;
-    color: $black;
-    height: 18px;
-    text-transform: capitalize;
-    border-radius: var(--default-border-radius);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-    padding-right: 5px;
-    margin-right: -2px;
-    vertical-align: top;
-    background: $primary_background;
-    cursor: pointer;
-
-    &:hover {
-      color: $primary;
-    }
-
-    .userimage {
-      width: 16px;
-      height: 16px;
+    &.highlighted,
+    &.with_user.highlighted {
+      background: #fff455;
+      font-weight: 500;
+      box-sizing: border-box;
       border-radius: var(--default-border-radius);
+    }
+    &.with_user {
+      font-weight: 500;
+      box-sizing: border-box;
+      color: $black;
+      height: 18px;
+      text-transform: capitalize;
+      border-radius: var(--default-border-radius);
+      text-overflow: ellipsis;
+      white-space: nowrap;
       display: inline-block;
+      padding-right: 5px;
+      margin-right: -2px;
       vertical-align: top;
-      background: $grey_light;
-      margin: 1px;
-      margin-right: 3px;
-      background-size: cover;
-      background-position: center;
+      background: $primary_background;
+      cursor: pointer;
+
+      &:hover {
+        color: $primary;
+      }
+
+      .userimage {
+        width: 16px;
+        height: 16px;
+        border-radius: var(--default-border-radius);
+        display: inline-block;
+        vertical-align: top;
+        background: $grey_light;
+        margin: 1px;
+        margin-right: 3px;
+        background-size: cover;
+        background-position: center;
+      }
     }
   }
   .channel_twacode {

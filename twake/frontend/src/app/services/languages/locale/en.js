@@ -520,6 +520,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Remove',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     'This action is not reversible',
+  'scenes.apps.messages.left_bar.stream.star': 'Star channel',
+  'scenes.apps.messages.left_bar.stream.unstar': 'Unstar channel',
   'scenes.apps.messages.left_bar.stream.mute': 'Mute channel',
   'scenes.apps.messages.left_bar.stream.unmute': 'Unmute channel',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Mark as read',

@@ -187,6 +187,8 @@ class ChannelSystemAbstract
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush();
 
+        return $tab;
+
     }
 
     public function addAllWorkspaceMember($workspace, $channel)
@@ -217,6 +219,9 @@ class ChannelSystemAbstract
             $members_ids[] = $current_user_id;
         }
 
+        $members_ids = array_unique($members_ids);
+        $final_members_ids = [];
+
         $current_members = $channel_entity->getMembers();
 
         $membersRepo = $this->entity_manager->getRepository("Twake\Channels:ChannelMember");
@@ -224,9 +229,20 @@ class ChannelSystemAbstract
 
         foreach ($members_ids as $member_id) {
             if (!in_array($member_id, $current_members)) {
-                $member = new \Twake\Channels\Entity\ChannelMember($member_id . "", $channel_entity);
-                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
-                $this->entity_manager->persist($member);
+                //Check if user is in workspace
+                $canBeAdded = true;
+                if(!$channel_entity->getDirect()){
+                    $wuRepo = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser");
+                    $canBeAdded = !!$wuRepo->findBy(Array("workspace" => $channel_entity->getOriginalWorkspaceId()."", "user" => $member_id.""));
+                }
+                if($canBeAdded){
+                    $member = new \Twake\Channels\Entity\ChannelMember($member_id . "", $channel_entity);
+                    $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
+                    $this->entity_manager->persist($member);
+                    $final_members_ids[] = $member_id;
+                }
+            }else{
+                $final_members_ids[] = $member_id;
             }
         }
 
@@ -239,7 +255,7 @@ class ChannelSystemAbstract
             }
         }
 
-        $channel_entity->setMembers($members_ids);
+        $channel_entity->setMembers($final_members_ids);
         $this->entity_manager->persist($channel_entity);
         $this->entity_manager->flush();
 
