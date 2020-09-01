@@ -183,7 +183,7 @@ export default class EventCreation extends Component {
             this.save();
           }}
         >
-          {Languages.t('scenes.apps.calendar.modals.save_button', [], 'Enregistrer')}
+          {Languages.t('general.save', [], 'Enregistrer')}
         </Button>
       </div>
     );

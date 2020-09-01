@@ -395,7 +395,7 @@ export default class Message extends Component {
                     />
                     <Button
                       value={Languages.t(
-                        'scenes.apps.messages.message.save_button',
+                        'general.save',
                         [],
                         'Enregistrer',
                       )}

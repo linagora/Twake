@@ -1,8 +1,7 @@
 import os
 import re
 
-rootpath = '..'
-
+rootpath = os.path.abspath('..')
 #2 dictionnaries : 1 with the nb of occurences, 1 with the strings in the various languages
 
 dicoc = dict()
@@ -37,11 +36,10 @@ def get_string(s):
 def init():
     
     #initialization of the strings dictionnaries
-    for dossier, sous_dossiers, fichiers in os.walk(rootpath + "src/app/services/languages/locale/"):
+    for dossier, sous_dossiers, fichiers in os.walk(rootpath + "/frontend/src/app/services/languages/locale/"):
         for fichier in fichiers:
             currentpath = os.path.join(dossier, fichier)
-            if currentpath.endswith(".js") and (currentpath.count(".")==1):
-                print(currentpath)
+            if currentpath.endswith(".js") and (currentpath.count(".")==1) and 'ja' not in currentpath and not currentpath.endswith('es.js'):
                 
                 lecture = open(currentpath, "r")
                 s = lecture.read()
@@ -91,7 +89,7 @@ def main():
     count()
     ecriture = open('../fichier2.txt', "w")
     for key, value in dicstr.items():
-        if dicoc[key] ==0 or len(value)<4 or value.__contains__('') or value.__contains__('No traduction'):
+        if (len(value)<3 or '' in value or 'No traduction'in value) and dicoc[key] >= 0:
             ecriture.write(key + " : "+ str(value)+" "+ str(dicoc[key]) + "\n")
     ecriture.close()
     #print(dicstr)

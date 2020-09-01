@@ -68,11 +68,11 @@ export default class VersionDetails extends React.Component {
         }
         title={
           <div className="title allow_selection">
-            <ObjectModalTitle>Versions</ObjectModalTitle>
+            <ObjectModalTitle>{Languages.t('scenes.apps.drive.right_preview.versions', [], 'Versions')}</ObjectModalTitle>
           </div>
         }
       >
-        <div className="versionDetails list">
+        <div className="versionDetails drive_view list">
           <UploadZone
             disabled={WorkspaceUserRights.isNotConnected()}
             disableClick
@@ -131,7 +131,6 @@ export default class VersionDetails extends React.Component {
                 );
               })}
 
-            <div className="no-more text">Nothing more</div>
           </UploadZone>
         </div>
       </ObjectModal>

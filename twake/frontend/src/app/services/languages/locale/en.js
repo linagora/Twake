@@ -21,6 +21,9 @@ export default {
   'general.from_other_workspace': 'From workspace $1',
   'general.help': 'Help',
   'general.send': 'Send message',
+  'general.update': 'Update',
+  'general.remove': 'Remove',
+  'general.add': 'Add',
   'general.connexion_status.disconnected': 'You are offline',
   'general.connexion_status.connected': 'You are online',
   'general.connexion_status.connecting': 'Reconnecting...',
@@ -1097,8 +1100,6 @@ export default {
   'scenes.app.workspaces.welcome_page.we_sent_you_mail': 'We sent you a verification code via $1',
   'scenes.app.workspaces.welcome_page.done': "I'm done",
   'scenes.login.forgot_password.finished': 'Your password was successfully updated.',
-  'general.update': 'Update',
-  'general.remove': 'Remove',
   'scenes.apps.account.account.description_main':
     'Your main address is the one to which Twake sends your notifications. Your secondary addresses allow you to be automatically invited to the workspaces that use them.',
   'scenes.apps.account.account.emails.description': 'Manage your different email addresses.',
@@ -1157,7 +1158,8 @@ export default {
   'scenes.app.channelsbar.currentuser.update': 'Update',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information':
     'Your notifications are disabled at night from $1 to $2.',
-  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until': '',
+  'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_until':
+    'Your notifications are disabled until $1:$2.',
   'scenes.app.channelsbar.currentuser.desactivated_notifications_message':
     'Your notifications are disabled.',
   'scenes.app.channelsbar.currentuser.disable_notifications': 'Disable',
@@ -1252,7 +1254,7 @@ export default {
     'Define what your application can edit and read.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': 'Application privileges',
   'scenes.app.popup.appsparameters.pages.app_surname': 'Simplified name of your application',
-  'scenes.app.popup.appsparameters.pages.app_update': '',
+  'scenes.app.popup.appsparameters.pages.app_update': "Update the app $1 (the app is used $2 times.)",
   'scenes.app.popup.appsparameters.pages.application_title': 'Application',
   'scenes.app.popup.appsparameters.pages.apps_title': 'Your applications and connectors',
   'scenes.app.popup.appsparameters.pages.automatique_label': 'Automatic',
@@ -1262,7 +1264,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'The publication of your application is currently awaiting validation by the Twake teams.',
   'scenes.app.popup.appsparameters.pages.button_force': 'Force throughout the company',
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': '',
+  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Event of type '$1' and id '$2' with passives '$3'",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Categories',
   'scenes.app.popup.appsparameters.pages.company_label': 'Company owner',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Configuration',
@@ -1308,7 +1310,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.modify_public_data':
     'Edit the public data of your application.',
   'scenes.app.popup.appsparameters.pages.new_app_title': 'New application',
-  'scenes.app.popup.appsparameters.pages.ok_user_code': '',
+  'scenes.app.popup.appsparameters.pages.ok_user_code': 'ok',
   'scenes.app.popup.appsparameters.pages.optimal_format': 'Optimal format : 48x48px.',
   'scenes.app.popup.appsparameters.pages.parameters_form_small_text':
     'The unpublished application will only work in your company, if you want to make it available to all Twake users, activate this option.',
@@ -1410,10 +1412,11 @@ export default {
     'Applications developed by the company',
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Display preferences',
-  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
+    "An admin can configurate the workspace (name, apps, members of the workspace).",
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Extern',
-  'scenes.app.popup.workspaceparameter.pages.extern_guest': '',
+  'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Guest user',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': 'Force throughout the company',
   'scenes.app.popup.workspaceparameter.pages.guest_status': 'Guest',
   'scenes.app.popup.workspaceparameter.pages.install_button': 'Install',
@@ -1434,7 +1437,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.logo_modify_description':
     'Edit the image of this workspace',
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Logo',
-  'scenes.app.popup.workspaceparameter.pages.modify_level': '',
+  'scenes.app.popup.workspaceparameter.pages.modify_level':
+    "Change your level of administration at the company? (this action is not reversible if you reduce your access rights)",
   'scenes.app.popup.workspaceparameter.pages.name_description': 'Change the name of this workspace',
   'scenes.app.popup.workspaceparameter.pages.name_label': 'Name of the workspace',
   'scenes.app.popup.workspaceparameter.pages.no_access': 'No access.',
@@ -1568,9 +1572,8 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': 'is writing...',
   'scenes.apps.messages.messageslist.get_writing_users': 'are writing...',
   'scenes.apps.messages.messageslist.go_last_message_button': 'Go to last message',
-  'scenes.apps.messages.messageslist.load_after_button': 'Load after',
-  'scenes.apps.messages.messageslist.load_before_button': 'Load before',
-  'scenes.apps.messages.messageslist.load_after_button': 'Load after',
+  'scenes.apps.messages.messageslist.load_after_button': 'Load the following messages',
+  'scenes.apps.messages.messageslist.load_before_button': 'Load previous messages',
   'scenes.apps.messages.messageslist.max_id': 'Maximum identifier :',
   'scenes.apps.messages.messageslist.max_visible_id': 'Maximum visible identifier :',
   'scenes.apps.messages.messageslist.max_windoq_id': 'Maximum window identifier :',
@@ -1803,6 +1806,7 @@ export default {
   'scenes.apps.messages.select_computer': 'Select from computer',
   'scenes.apps.messages.select_twake': 'Select in Twake Documents',
   'scenes.apps.tasks.active_tasks': 'active tasks',
+  'scenes.apps.drive.right_preview.versions': 'Versions',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Manage your applications and connectors.',
   'scenes.app.popup.appsparameters.pages.icon': 'Icon',

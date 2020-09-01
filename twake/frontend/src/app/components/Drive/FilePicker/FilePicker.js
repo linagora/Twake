@@ -117,7 +117,7 @@ export default class FilePicker extends React.Component {
               }}
             />
           )}{' '}
-          {directory.parent_id ? directory.name : 'Documents'}
+          {directory.parent_id ? directory.name : Languages.t('app.name.twake_drive', [], 'Documents')}
         </div>
         <div className="drive_view list">
           {directories.map((item, index) => (

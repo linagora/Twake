@@ -174,7 +174,7 @@ export default class TagPicker extends React.Component {
             }}
           >
             <Icon type="plus" className="m-icon-small" />{' '}
-            {Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
+            {Languages.t('general.add', [], 'Add')}
           </Button>
         )}
 

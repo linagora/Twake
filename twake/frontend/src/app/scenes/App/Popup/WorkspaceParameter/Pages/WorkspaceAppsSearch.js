@@ -309,7 +309,7 @@ export default class WorkspaceAppsSearch extends Component {
               )}
             </a>
             <a href="#" key="goback" onClick={() => this.props.exit()}>
-              {Languages.t('scenes.app.popup.workspaceparameter.pages.back_button', [], 'Retour')}
+              {Languages.t('general.back', [], 'Retour')}
             </a>
           </div>
 

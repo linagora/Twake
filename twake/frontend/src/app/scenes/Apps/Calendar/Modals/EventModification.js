@@ -227,7 +227,7 @@ export default class EventModification extends Component {
               this.save();
             }}
           >
-            {Languages.t('scenes.apps.calendar.modals.save_event_button', [], 'Enregistrer')}
+            {Languages.t('general.save', [], 'Enregistrer')}
           </Button>
         </div>
       </PerfectScrollbar>

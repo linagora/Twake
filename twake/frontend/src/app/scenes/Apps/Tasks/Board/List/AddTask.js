@@ -53,7 +53,7 @@ export default class AddTask extends React.Component {
           <Input
             autoFocus
             className="medium"
-            placeholder={Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
+            placeholder={Languages.t('general.add', [], 'Add')}
             value={this.state.new_task_title}
             onChange={evt => {
               this.setState({ new_task_title: evt.target.value });
@@ -64,7 +64,7 @@ export default class AddTask extends React.Component {
           />
           <Button
             className="small"
-            value={Languages.t('scenes.apps.tasks.task.add', [], 'Add')}
+            value={Languages.t('general.add', [], 'Add')}
             onClick={() => {
               this.newTask();
             }}
