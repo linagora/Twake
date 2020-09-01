@@ -373,17 +373,20 @@ class PseudoMarkdownCompiler {
 
       const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
       let tmp = str;
+      let offset = 0;
       let indexes = [];
       let did_match = -1;
       do {
         did_match = tmp.indexOf(starting_value);
 
         let match_char_before =
+          !allowed_char_before ||
           null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
         match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
 
         tmp = tmp.slice(did_match + 1);
-        if (did_match >= 0 && match_char_before) indexes.push(did_match);
+        if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
+        offset = offset + did_match + 1;
       } while (did_match >= 0);
 
       if (indexes.length > 0) {
