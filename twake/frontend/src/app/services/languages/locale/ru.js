@@ -954,8 +954,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.calendars': 'Календари',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.drive_labels':
     'Ярлыки диска',
-  'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.boards':
-    'Списки задач',
+  'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.boards': 'Списки задач',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.streams':
     'Дискуссионные каналы',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure.rights': 'Права',
@@ -1257,7 +1256,8 @@ export default {
     'Пригласите своих сотрудников в ваше рабочее пространство.',
   'scenes.app.channelsbar.public_channel_label': 'Открытый канал',
   'scenes.app.channelsbar.private_channel_label': 'Частный канал',
-  'scenes.app.channelsbar.private_channel_message': 'Это открытый канал, все рабочее пространство будет приглашено!',
+  'scenes.app.channelsbar.private_channel_message':
+    'Это открытый канал, все рабочее пространство будет приглашено!',
   'scenes.app.channelsbar.save_channel_button': 'Сохранить',
   'scenes.app.channelsbar.sending_message_instruction': 'Отправить первое сообщение в дискуссию',
   'scenes.app.channelsbar.tutorial_alert': 'Никогда больше не показывать этот кадр?',
@@ -1302,7 +1302,8 @@ export default {
     'Определите, что ваше приложение может редактировать и читать.',
   'scenes.app.popup.appsparameters.pages.app_privileges_label': 'Привилегии приложени',
   'scenes.app.popup.appsparameters.pages.app_surname': 'Упрощенное название вашего приложения',
-  'scenes.app.popup.appsparameters.pages.app_update': 'Обновить приложение $1 (это приложение использовано $2 раз(а).)',
+  'scenes.app.popup.appsparameters.pages.app_update':
+    'Обновить приложение $1 (это приложение использовано $2 раз(а).)',
   'scenes.app.popup.appsparameters.pages.application_title': 'Приложение',
   'scenes.app.popup.appsparameters.pages.apps_connectors_small_text':
     'Создавайте и администрируйте свои приложения и разъёмы.',
@@ -1314,7 +1315,8 @@ export default {
   'scenes.app.popup.appsparameters.pages.available_publication_alert':
     'Публикация вашей заявки в настоящее время ожидает подтверждения командами Twake.',
   'scenes.app.popup.appsparameters.pages.button_force': 'Применить принудительно по всей компании',
-  'scenes.app.popup.appsparameters.pages.call_event_handlers': "Событие типа '$1' и id '$2' с пассивами '$3'.",
+  'scenes.app.popup.appsparameters.pages.call_event_handlers':
+    "Событие типа '$1' и id '$2' с пассивами '$3'.",
   'scenes.app.popup.appsparameters.pages.categories_label': 'Категории',
   'scenes.app.popup.appsparameters.pages.company_label': 'Владелец компании',
   'scenes.app.popup.appsparameters.pages.configuration_label': 'Конфигурация',
@@ -1463,7 +1465,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Параметры отображения',
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
-  "Администратор может конфигурировать рабочее пространство (идентификация пространства, приложений, членов пространства).",
+    'Администратор может конфигурировать рабочее пространство (идентификация пространства, приложений, членов пространства).',
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Гость',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Гостевой пользователь',
@@ -1489,7 +1491,7 @@ export default {
     'Редактировать изображения этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.logo_subtitle': 'Логотип',
   'scenes.app.popup.workspaceparameter.pages.modify_level':
-  "Изменить уровень управления в компании? (это действие не является обратимым, если вы уменьшите свои права доступа)",
+    'Изменить уровень управления в компании? (это действие не является обратимым, если вы уменьшите свои права доступа)',
   'scenes.app.popup.workspaceparameter.pages.name_description':
     'Изменить название этого рабочего пространства',
   'scenes.app.popup.workspaceparameter.pages.name_label': 'Название рабочего пространства',
