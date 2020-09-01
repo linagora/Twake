@@ -159,18 +159,6 @@ class ChannelsSystem extends ChannelSystemAbstract
         $this->entity_manager->flush($channel);
 
 
-        //Send first message if created channel
-        if ($did_create) {
-            //Init channel with a first message
-            $init_message = Array(
-                "channel_id" => $channel->getId(),
-                "hidden_data" => Array("type" => "init_channel"),
-                "content" => "[]"
-            );
-            $this->messages_service->save($init_message, Array());
-        }
-
-
         //Private and non private users management
         if ($channel->getPrivate()) {
             $this->updateChannelMembers($channel, $members, $current_user->getId());
@@ -210,6 +198,17 @@ class ChannelsSystem extends ChannelSystemAbstract
         }
         if (isset($object["_once_save_tab_config"])) {
             $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $object["_once_save_tab_config"]["id"], $object["_once_save_tab_config"]["configuration"]);
+        }
+
+        //Send first message if created channel
+        if ($did_create) {
+            //Init channel with a first message
+            $init_message = Array(
+                "channel_id" => $channel->getId(),
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            $this->messages_service->save($init_message, Array());
         }
 
         return $channel->getAsArray();

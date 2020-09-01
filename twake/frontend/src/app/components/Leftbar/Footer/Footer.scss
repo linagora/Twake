@@ -8,7 +8,6 @@
   border-top: 1px solid $grey_light;
   flex-direction: column;
   box-sizing: border-box;
-  display: flex;
 
   & > div {
     display: flex;
@@ -79,7 +78,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    flex: 1;
     margin-left: 20px;
     cursor: pointer;
 

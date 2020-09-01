@@ -187,6 +187,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement() - 1);
+        $member->setLastQuotedMessageId("force_unread");
 
         $array = $channel->getAsArray();
         $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();

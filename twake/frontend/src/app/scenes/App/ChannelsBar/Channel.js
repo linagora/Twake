@@ -82,12 +82,12 @@ export default class Channel extends Component {
       submenu: [
         {
           type: 'title',
-          text: 'Enable notifications for...',
+          text: 'Get notifications on',
         },
         {
           type: 'menu',
           icon: channel._user_muted === 0 ? 'check' : null,
-          text: 'Every messages (enlever la sourdine)',
+          text: 'Any message',
           onClick: () => {
             Notifications.mute(channel, 0);
           },
@@ -95,7 +95,7 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 1 ? 'check' : null,
-          text: 'All mentions',
+          text: '@all, @here and @' + UserService.getCurrentUser().username,
           onClick: () => {
             Notifications.mute(channel, 1);
           },
@@ -103,7 +103,7 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 2 ? 'check' : null,
-          text: 'Personnal mentions',
+          text: '@' + UserService.getCurrentUser().username + ' only',
           onClick: () => {
             Notifications.mute(channel, 2);
           },
@@ -111,7 +111,7 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 3 ? 'check' : null,
-          text: 'Nothing (sourdine)',
+          text: 'Nothing',
           onClick: () => {
             Notifications.mute(channel, 3);
           },
@@ -293,6 +293,12 @@ export default class Channel extends Component {
     Notifications.listenOnly(this, ['channel_' + channel.id]);
     ChannelsService.updateBadge(channel);
 
+    let new_content_count = (Notifications.notification_by_channel[channel.id] || {}).count || 0;
+    let notifications_count = new_content_count;
+    if(channel._user_muted >= 1 && !channel._user_last_quoted_message_id){
+      notifications_count = 0;
+    }
+
     return (
       <ChannelUI
         refDiv={node => (this.node = node)}
@@ -305,7 +311,7 @@ export default class Channel extends Component {
         appIndicator={this.mode == 'direct_app'}
         notMember={this.mode == 'direct' && this.props.outOfWorkspace}
         private={channel.private}
-        muted={channel._user_muted}
+        muted={channel._user_muted >= 1}
         favorite={this.props.pinned}
         public={
           (
@@ -314,7 +320,8 @@ export default class Channel extends Component {
               .filter(userId => channel.private || !WorkspacesUser.isAutoAddUser(userId)) || []
           ).length
         }
-        notifications={(Notifications.notification_by_channel[channel.id] || {}).count || 0}
+        hasNewContent={new_content_count}
+        notifications={notifications_count}
         selected={ChannelsService.currentChannelFrontId == this.props.channel.front_id}
         dragData={this.props.channel}
         onClick={evt => ChannelsService.select(this.props.channel)}
