@@ -59,6 +59,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
                 if ($channel) {
                     $tmp = $channel->getAsArray();
                     $tmp["_user_last_message_increment"] = $link->getLastMessagesIncrement();
+                    $tmp["_user_last_quoted_message_id"] = $link->getLastQuotedMessageId();
                     $tmp["_user_last_access"] = $link->getLastAccess() ? $link->getLastAccess()->getTimestamp() : null;
                     $tmp["_user_muted"] = $link->getMuted();
                     $result[] = $tmp;

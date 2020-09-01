@@ -79,9 +79,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    flex: 1;
     margin-left: 20px;
     cursor: pointer;
+    display: inline;
 
     &.free {
       background: #fff3cd;

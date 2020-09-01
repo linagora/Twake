@@ -21,6 +21,7 @@ import WorkspaceAppsSearch from './WorkspaceAppsSearch.js';
 import Loader from 'components/Loader/Loader.js';
 
 import './Pages.scss';
+import Icon from 'components/Icon/Icon.js';
 
 export default class WorkspaceApps extends Component {
   constructor(props) {
@@ -216,14 +217,13 @@ export default class WorkspaceApps extends Component {
                   title: 'Application',
                   dataIndex: 'name',
                   render: row => {
+                    var icon = row.icon_url;
                     return (
                       <div className="absolute_position">
-                        <div
-                          className="app_icon"
-                          style={{
-                            backgroundImage:
-                              'url(' + (row.icon_url || '/public/img/default_app_icon.png') + ')',
-                          }}
+                        <Icon
+                          className="no-margin-left"
+                          style={{ fontSize: '24px' }}
+                          type={WorkspacesApps.getAppIcon(row) || ''}
                         />
                         <div className="fix_text_padding_medium text-complete-width">
                           {row.name} ({row.app_group_name ? row.app_group_name + '.' : ''}
@@ -397,16 +397,10 @@ export default class WorkspaceApps extends Component {
             </div>
 
             <Attribute
-              autoOpen={developed.length > 0}
-              label={Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.your_apps_label',
-                [],
-                'Vos applications',
-              )}
+              autoOpen={true}
               description={Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.your_apps_description',
-                [],
-                'Créez et administrez vos applications et connecteurs.',
+                'scenes.app.popup.appsparameters.pages.apps_connectors_small_text',
+                'Gérer vos applications et connecteurs.',
               )}
             >
               <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>

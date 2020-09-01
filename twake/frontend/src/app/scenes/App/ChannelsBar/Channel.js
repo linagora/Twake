@@ -75,12 +75,48 @@ export default class Channel extends Component {
 
     menu.push({
       type: 'menu',
-      text: channel._user_muted
-        ? Languages.t('scenes.app.channelsbar.remove_mute', [], 'Enlever la sourdine')
-        : Languages.t('scenes.app.channelsbar.mute', [], 'Sourdine'),
+      text: 'Notifications...',
       onClick: () => {
         Notifications.mute(channel, !channel._user_muted);
       },
+      submenu: [
+        {
+          type: 'title',
+          text: 'Get notifications on',
+        },
+        {
+          type: 'menu',
+          icon: channel._user_muted === 0 ? 'check' : null,
+          text: 'Any message',
+          onClick: () => {
+            Notifications.mute(channel, 0);
+          },
+        },
+        {
+          type: 'menu',
+          icon: channel._user_muted === 1 ? 'check' : null,
+          text: '@all, @here and @' + UserService.getCurrentUser().username,
+          onClick: () => {
+            Notifications.mute(channel, 1);
+          },
+        },
+        {
+          type: 'menu',
+          icon: channel._user_muted === 2 ? 'check' : null,
+          text: '@' + UserService.getCurrentUser().username + ' only',
+          onClick: () => {
+            Notifications.mute(channel, 2);
+          },
+        },
+        {
+          type: 'menu',
+          icon: channel._user_muted === 3 ? 'check' : null,
+          text: 'Nothing',
+          onClick: () => {
+            Notifications.mute(channel, 3);
+          },
+        },
+      ],
     });
 
     if (has_notification) {
@@ -104,27 +140,29 @@ export default class Channel extends Component {
     /**
      * Pinned channel preference
      */
-    var pinned_channels_preferences =
-      (
-        ((Collections.get('users').find(UserService.getCurrentUserId()) || {})
-          .workspaces_preferences || {})[Workspaces.currentWorkspaceId] || {}
-      ).pinned_channels || {};
-    if (!pinned_channels_preferences[channel.id]) {
-      menu.push({
-        type: 'menu',
-        text: 'Star this channel',
-        onClick: () => {
-          ChannelsService.pinChannel(channel, true);
-        },
-      });
-    } else {
-      menu.push({
-        type: 'menu',
-        text: 'Unstar this channel',
-        onClick: () => {
-          ChannelsService.pinChannel(channel, false);
-        },
-      });
+    if (!channel.direct && !channel.app_id) {
+      var pinned_channels_preferences =
+        (
+          ((Collections.get('users').find(UserService.getCurrentUserId()) || {})
+            .workspaces_preferences || {})[Workspaces.currentWorkspaceId] || {}
+        ).pinned_channels || {};
+      if (!pinned_channels_preferences[channel.id]) {
+        menu.push({
+          type: 'menu',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.star'),
+          onClick: () => {
+            ChannelsService.pinChannel(channel, true);
+          },
+        });
+      } else {
+        menu.push({
+          type: 'menu',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.unstar'),
+          onClick: () => {
+            ChannelsService.pinChannel(channel, false);
+          },
+        });
+      }
     }
 
     if (!channel.direct && WorkspaceUserRights.hasWorkspacePrivilege()) {
@@ -255,6 +293,12 @@ export default class Channel extends Component {
     Notifications.listenOnly(this, ['channel_' + channel.id]);
     ChannelsService.updateBadge(channel);
 
+    let new_content_count = (Notifications.notification_by_channel[channel.id] || {}).count || 0;
+    let notifications_count = new_content_count;
+    if(channel._user_muted >= 1 && !channel._user_last_quoted_message_id){
+      notifications_count = 0;
+    }
+
     return (
       <ChannelUI
         refDiv={node => (this.node = node)}
@@ -267,7 +311,7 @@ export default class Channel extends Component {
         appIndicator={this.mode == 'direct_app'}
         notMember={this.mode == 'direct' && this.props.outOfWorkspace}
         private={channel.private}
-        muted={channel._user_muted}
+        muted={channel._user_muted >= 1}
         favorite={this.props.pinned}
         public={
           (
@@ -276,7 +320,8 @@ export default class Channel extends Component {
               .filter(userId => channel.private || !WorkspacesUser.isAutoAddUser(userId)) || []
           ).length
         }
-        notifications={(Notifications.notification_by_channel[channel.id] || {}).count || 0}
+        hasNewContent={new_content_count}
+        notifications={notifications_count}
         selected={ChannelsService.currentChannelFrontId == this.props.channel.front_id}
         dragData={this.props.channel}
         onClick={evt => ChannelsService.select(this.props.channel)}

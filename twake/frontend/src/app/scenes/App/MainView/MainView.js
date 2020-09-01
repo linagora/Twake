@@ -112,13 +112,13 @@ export default class MainView extends Component {
   }
   render() {
     var current_side_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentSideChannelFrontId
+      this.state.channels.currentSideChannelFrontId,
     );
     var current_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentChannelFrontId
+      this.state.channels.currentChannelFrontId,
     );
     var current_channel_tab = Collections.get('channel_tabs').find(
-      this.state.channels.current_tab_id
+      this.state.channels.current_tab_id,
     );
 
     if (this.state.channels.current_tab_id) {
@@ -129,7 +129,7 @@ export default class MainView extends Component {
         ) {
           Collections.get('channel_tabs').completeObject(item);
           current_channel_tab = Collections.get('channel_tabs').find(
-            this.state.channels.current_tab_id
+            this.state.channels.current_tab_id,
           );
           return false;
         }
@@ -143,7 +143,7 @@ export default class MainView extends Component {
           {Languages.t(
             'scenes.app.mainview.instruction_current_tab',
             [],
-            'Commencez par sélectionner une chaîne sur votre gauche.'
+            'Commencez par sélectionner une chaîne sur votre gauche.',
           )}
         </div>
       </div>

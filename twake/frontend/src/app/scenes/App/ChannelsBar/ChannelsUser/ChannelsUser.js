@@ -202,13 +202,17 @@ export default class ChannelsUser extends Component {
               if (channel._user_last_message_increment - channel.messages_increment < 0) {
                 keep = true;
               }
-              if (this.membersInWorkspace(channel.members) && channel.messages_increment > 0) {
+              if (this.membersInWorkspace(channel.members) && channel.messages_increment > 1) {
+                //Remove if only first message
                 keep = true;
               }
               if (this.state.channels.currentChannelFrontId == channel.front_id) {
                 keep = true;
               }
-              if (channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60) {
+              if (
+                channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60 &&
+                channel.messages_increment > 1
+              ) {
                 keep = true;
               }
               return keep;

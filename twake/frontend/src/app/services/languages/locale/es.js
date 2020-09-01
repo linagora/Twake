@@ -881,4 +881,5 @@ export default {
     'Espere, estamos descargando la última versión de Twake ($1)',
   //-End QuoteLoader
   //End Login
+  'scenes.app.popup.appsparameters.pages.icon': 'icono',
 };

@@ -34,16 +34,21 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $workspace_ent = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->find($workspace);
 
         $users_to_notify = [];
-        $users_to_notify_mention = [];
+        $mentions_types = [];
 
         foreach ($members as $member) {
 
-            $mention = strpos(json_encode($message->getContent()), $member->getUserId()) !== false;
-            $mention = $mention || strpos(json_encode($message->getContent()), "@here") !== false;
-            $mention = $mention || strpos(json_encode($message->getContent()), "@all") !== false;
+            $user_mention = strpos(json_encode($message->getContent()), $member->getUserId()) !== false;
+            $here_mention = strpos(json_encode($message->getContent()), "@here") !== false;
+            $all_mention = strpos(json_encode($message->getContent()), "@all") !== false;
+            $any_mention = $here_mention || $all_mention || $user_mention;
+            
+            $muted_options = $member->getMuted();
+            $mention_level = ($any_mention?1:0) + ($user_mention?1:0); //2 if @user, 1 if only @here
 
-            $muted = $member->getMuted();
-            if ($muted && $mention) {
+            $muted = true;
+            $mention_text = false;
+            if($mention_level >= $muted_options){
                 $muted = false;
             }
 
@@ -51,9 +56,21 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
                 $user = $userRepo->find($member->getUserId());
 
-                $member->setLastActivity(new \DateTime());
+                if($mention_level === 1){
+                    $mention_text = "@".($all_mention?"all":"here");
+                }
+                if($mention_level === 2){
+                    $mention_text = "@".$user->getUsername(); 
+                }
 
-                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUserId());
+                $member->setLastActivity(new \DateTime());
+                if($mention_text){
+                    $member->setLastQuotedMessageId("" . $message->getId());
+                }
+                
+                $channel_array = $channel->getAsArray();
+                $channel_array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
+                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel_array)), "notifications/" . $member->getUserId());
 
                 //Updating workspace and group notifications
                 if (!$channel->getDirect()) {
@@ -62,16 +79,15 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
                 }
 
-                if($mention){
-                  $users_to_notify_mention[] = $user;
+                if($mention_text){
+                    $mentions_types[$mention_text] = $mentions_types[$mention_text] ?: [];
+                    $mentions_types[$mention_text][] = $user;
                 }else{
                   $users_to_notify[] = $user;
                 }
 
-            } else {
-                $member->setLastMessagesIncrement($channel->getMessagesIncrement());
-                $member->setLastAccess(new \DateTime());
             }
+            
             $this->doctrine->persist($member);
         }
 
@@ -90,20 +106,23 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             true
         );
 
-        $this->notificationSystem->pushNotification(
-            null,
-            $sender_application,
-            $sender_user,
-            $workspace_ent,
-            $channel,
-            $users_to_notify_mention,
-            "channel_" . $channel->getId(),
-            "@mentionned: ".$message_as_text,
-            $message ? $message->getId() : "",
-            Array(),
-            Array("push"),
-            true
-        );
+        foreach($mentions_types as $mention_text => $users){
+            error_log($mention_text);
+            $this->notificationSystem->pushNotification(
+                null,
+                $sender_application,
+                $sender_user,
+                $workspace_ent,
+                $channel,
+                $users,
+                "channel_" . $channel->getId(),
+                "@".ltrim($mention_text, "@").": ".$message_as_text,
+                $message ? $message->getId() : "",
+                Array(),
+                Array("push"),
+                true
+            );
+        }
 
         $this->doctrine->persist($channel);
 
@@ -168,9 +187,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement() - 1);
+        $member->setLastQuotedMessageId("force_unread");
 
         $array = $channel->getAsArray();
         $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();
+        $array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
         $array["_user_last_access"] = $member->getLastAccess() ? $member->getLastAccess()->getTimestamp() : 0;
         $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
 
@@ -210,9 +231,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement());
         $member->setLastAccess(new \DateTime());
+        $member->setLastQuotedMessageId("");
 
         $array = $channel->getAsArray();
         $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();
+        $array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
         $array["_user_last_access"] = $member->getLastAccess() ? $member->getLastAccess()->getTimestamp() : 0;
         $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
 

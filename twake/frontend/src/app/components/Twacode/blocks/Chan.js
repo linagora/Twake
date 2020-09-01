@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione.js';
+import ChannelsService from 'services/channels/channels.js';
 
 export default class CHan extends React.Component {
   render() {
@@ -10,7 +11,12 @@ export default class CHan extends React.Component {
 
     var chan = Collections.get('channels').find(this.props.id);
     return (
-      <div className="channel_twacode">
+      <div
+        className="channel_twacode"
+        onClick={() => {
+          if (chan) ChannelsService.select(chan);
+        }}
+      >
         <Emojione type={chan.icon} />
         {chan.name}
       </div>
