@@ -73,9 +73,7 @@ export default class File extends React.Component {
           />
         </div>
 
-        {(this.props.data.acces_info || {}).token && (
-          <Icon type="link-h" className="m-icon-small" />
-        )}
+        {(this.props.data.acces_info || {}).token && <Icon type="link" className="m-icon-small" />}
         {this.props.data.url && <Icon type="external-link-alt" className="m-icon-small" />}
 
         {/*

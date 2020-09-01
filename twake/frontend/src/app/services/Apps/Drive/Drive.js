@@ -70,7 +70,7 @@ class Drive extends Observable {
           },
         ],
       },
-      (prefix ? prefix : '') + this.current_collection_key_channels[channel]
+      (prefix ? prefix : '') + this.current_collection_key_channels[channel],
     );
     return (prefix ? prefix : '') + this.current_collection_key_channels[channel];
   }
@@ -93,7 +93,7 @@ class Drive extends Observable {
         () => {
           this.changing_directory[channel] = false;
           this.changeCurrentDirectory(channel, directory, wid);
-        }
+        },
       );
       if (!tmp._searching) {
         this.changing_directory[channel] = false;
@@ -186,7 +186,7 @@ class Drive extends Observable {
             Collections.get('drive').updateObject(res.data);
             if (callback) callback(res.data);
           }
-        }
+        },
       );
       return { _searching: true };
     } else {
@@ -226,7 +226,7 @@ class Drive extends Observable {
               }, 2000);
             }
           }
-        }
+        },
       );
       return { _searching: true };
     }
@@ -246,7 +246,7 @@ class Drive extends Observable {
             this.addPathForElement(res, false);
           },
           false,
-          true
+          true,
         );
       }
       element.path = [];
@@ -488,7 +488,7 @@ class Drive extends Observable {
               file.name
                 ? 'scenes.apps.drive.message_added_file'
                 : 'scenes.apps.drive.message_added_file_no_name',
-              [UserService.getFullName(CurrentUser.get()), file.name]
+              [UserService.getFullName(CurrentUser.get()), file.name],
             ),
           },
           { type: 'br' },
@@ -518,7 +518,7 @@ class Drive extends Observable {
       spreadsheet: ['xls', 'xlsx', 'ods', 'csv'],
       pdf: ['pdf'],
       svg: ['svg'],
-      video: ['mp4', 'mov', 'avi', 'webm', 'm4v'],
+      video: ['mp4', 'mov', 'avi', 'webm', 'm4v', 'mkv'],
       archive: ['zip', 'tar', 'gz', 'rar'],
       code: ['php', 'c', 'cpp', 'py', 'html', 'yml', 'json', 'md'],
     };
@@ -560,14 +560,14 @@ class Drive extends Observable {
     }
 
     var apps = WorkspacesApps.getApps().filter(
-      app => ((app.display || {}).drive_module || {}).can_open_files
+      app => ((app.display || {}).drive_module || {}).can_open_files,
     );
 
     //Primary exts
     apps.forEach(app => {
       if (
         ((app.display.drive_module.can_open_files || {}).main_ext || []).indexOf(
-          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase()
+          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
         ) >= 0
       ) {
         if ((app.display.drive_module.can_open_files || {}).url) {
@@ -617,7 +617,7 @@ class Drive extends Observable {
     apps.forEach(app => {
       if (
         ((app.display.drive_module.can_open_files || {}).other_ext || []).indexOf(
-          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase()
+          ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
         ) >= 0
       ) {
         if ((app.display.drive_module.can_open_files || {}).url) {
@@ -657,7 +657,7 @@ class Drive extends Observable {
         url += '&workspace_id=' + Workspaces.currentWorkspaceId;
         url += '&group_id=' + Workspaces.currentGroupId;
         cb(url);
-      }
+      },
     );
   }
 }

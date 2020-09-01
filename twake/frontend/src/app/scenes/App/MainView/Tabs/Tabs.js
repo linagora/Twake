@@ -25,6 +25,10 @@ export default class Tabs extends Component {
       i18n: Languages,
       channels: ChannelsService,
       tab_name: '',
+      link_tab: {
+        name: '',
+        url: '',
+      },
     };
 
     Languages.addListener(this);
@@ -102,12 +106,42 @@ export default class Tabs extends Component {
     };
     WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', data);
   }
+
+  createLink() {
+    ChannelsService.saveTab(this.props.channel.id, 'link', this.state.link_tab.name, {
+      url: this.state.link_tab.url,
+      type: 'link',
+    });
+    this.setState({
+      link_tab: {
+        name: '',
+        url: '',
+      },
+    });
+    MenusManager.closeMenu();
+  }
+
+  linkOrTab(tab) {
+    if (((tab || {}).configuration || {}).type === 'link') {
+      this.formatAndOpenLink(tab.configuration.url);
+    } else {
+      ChannelsService.selectTab(tab);
+    }
+  }
+  formatAndOpenLink(url) {
+    const protocol = /http[s]?:\/\//;
+
+    if (!url.match(protocol)) {
+      url = 'http://' + url;
+    }
+    window.open(url);
+  }
   renderTab(tab, first) {
     var app = null;
     if (tab) {
       app = Collections.get('applications').find(tab.app_id);
       if (!app) {
-        return '';
+        if (tab.configuration.type !== 'link') return '';
       }
     }
 
@@ -115,6 +149,9 @@ export default class Tabs extends Component {
     var emoji = '';
     if (app) {
       icon = WorkspacesApps.getAppIcon(app);
+    }
+    if (((tab || {}).configuration || {}).type === 'link') {
+      icon = 'link';
     }
 
     var force_icon = ((tab || {}).configuration || {}).icon;
@@ -132,7 +169,7 @@ export default class Tabs extends Component {
         types={['file']}
         onDrop={data => this.dropFile(data)}
         className={'tab ' + (this.props.currentTab == (tab ? tab.id : null) ? 'is_selected ' : '')}
-        onClick={() => ChannelsService.selectTab(tab)}
+        onClick={() => this.linkOrTab(tab)}
       >
         {(first || force_icon) && (
           <div className="icon">
@@ -270,10 +307,10 @@ export default class Tabs extends Component {
 
     var tabs_groups = [];
     (this.props.channel.tabs || []).map(tab => {
-      if (!tabs_groups[tab.app_id]) {
-        tabs_groups[tab.app_id] = [];
+      if (!tabs_groups[tab.app_id + '_' + ((tab || {}).configuration || {}).type]) {
+        tabs_groups[tab.app_id + '_' + ((tab || {}).configuration || {}).type] = [];
       }
-      tabs_groups[tab.app_id].push(tab);
+      tabs_groups[tab.app_id + '_' + ((tab || {}).configuration || {}).type].push(tab);
     });
 
     var connectors_menu = [];
@@ -311,6 +348,55 @@ export default class Tabs extends Component {
         ),
       });
     }
+    connectors_menu.push({
+      type: 'menu',
+      text: 'Link',
+      icon: 'link',
+      submenu_replace: true,
+      submenu: [
+        {
+          text: 'Link name',
+          type: 'title',
+        },
+        {
+          type: 'react-element',
+          reactElement: () => [
+            <div>
+              <Input
+                className="medium full_width bottom-margin"
+                type="text"
+                placeholder={Languages.t('Link name', 'Nom du lien')}
+                value={this.state.link_tab.name}
+                onChange={evt =>
+                  this.setState({ link_tab: { ...this.state.link_tab, name: evt.target.value } })
+                }
+              />
+            </div>,
+            <div>
+              <Input
+                className="medium full_width bottom-margin"
+                type="text"
+                placeholder={Languages.t('Url', 'url')}
+                value={this.state.link_tab.url}
+                onChange={evt =>
+                  this.setState({ link_tab: { ...this.state.link_tab, url: evt.target.value } })
+                }
+              />
+            </div>,
+            <div className="menu-buttons">
+              <Button
+                disabled={!(this.state.link_tab.name.length && this.state.link_tab.url.length)}
+                type="button"
+                value={Languages.t('Add', [], 'Add')}
+                onClick={() => {
+                  this.createLink();
+                }}
+              />
+            </div>,
+          ],
+        },
+      ],
+    });
     connectors_menu.push({ type: 'separator' });
     connectors_menu.push({
       type: 'menu',
