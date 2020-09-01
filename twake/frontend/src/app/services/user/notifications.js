@@ -114,7 +114,6 @@ class Notifications extends Observable {
       var channel = Collections.get('channels').findByFrontId(
         ChannelsService.currentChannelFrontId,
       ) || { id: ChannelsService.currentChannelFrontId };
-      console.log('channel:', channel);
       if (
         Globals.window.document.hasFocus() &&
         count > old_count &&

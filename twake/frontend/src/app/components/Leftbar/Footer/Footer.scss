@@ -8,6 +8,7 @@
   border-top: 1px solid $grey_light;
   flex-direction: column;
   box-sizing: border-box;
+  display: flex;
 
   & > div {
     display: flex;
@@ -80,6 +81,7 @@
     white-space: nowrap;
     margin-left: 20px;
     cursor: pointer;
+    display: inline;
 
     &.free {
       background: #fff3cd;
