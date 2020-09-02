@@ -371,6 +371,10 @@ class User
             $retour[] = -1;
         } else {
 
+            if(in_array($pseudo, ["all", "here", "null", "undefined"]) || strlen($pseudo) <= 4){
+                $retour[] = -1;
+            }
+
             //Check user doesn't exists
             $userRepository = $this->em->getRepository("Twake\Users:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));

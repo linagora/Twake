@@ -142,7 +142,7 @@ export default class Collection extends Observable {
             this.sources[key].did_first_load = true;
             this.did_load_first_time[key] = true;
             if (first_load_callback) first_load_callback(res);
-          }
+          },
         );
       }
     };
@@ -200,7 +200,7 @@ export default class Collection extends Observable {
       res => {
         this.sources[source_key].http_loading = false;
         callback(res);
-      }
+      },
     );
   }
 
@@ -525,7 +525,7 @@ export default class Collection extends Observable {
       object = this.known_objects_by_front_id[object.front_id];
       this.objects_original_saved_by_front_id[object.front_id] = this.clearObjectState(
         object,
-        true
+        true,
       );
     }
     return object;
@@ -559,7 +559,7 @@ export default class Collection extends Observable {
     } else {
       this.completeObject(
         this.objects_original_saved_by_front_id[object.front_id],
-        object.front_id
+        object.front_id,
       );
       delete this.objects_original_saved_by_front_id[object.front_id];
     }
@@ -595,7 +595,7 @@ export default class Collection extends Observable {
     var operation_time = new Date().getTime();
     this.known_objects_by_front_id[object.front_id].client_modification_time = operation_time;
     this.waiting_to_save_by_front_id[object.front_id] = JSON.parse(
-      JSON.stringify(this.known_objects_by_front_id[object.front_id])
+      JSON.stringify(this.known_objects_by_front_id[object.front_id]),
     );
     this.doing_http_request++;
     this.completeObject({}, object.front_id);
@@ -685,7 +685,7 @@ export default class Collection extends Observable {
     if (!this.waiting_to_delete_by_front_id[object.front_id]) {
       this.known_objects_by_front_id[object.front_id].client_modification_time = operation_time;
       this.waiting_to_delete_by_front_id[object.front_id] = JSON.parse(
-        JSON.stringify(this.known_objects_by_front_id[object.front_id])
+        JSON.stringify(this.known_objects_by_front_id[object.front_id]),
       );
     }
 
@@ -700,7 +700,7 @@ export default class Collection extends Observable {
       this.object_buffer_add(
         this.waiting_to_delete_by_front_id[object.front_id],
         'remove',
-        source_key
+        source_key,
       );
       return;
     }
@@ -871,7 +871,6 @@ export default class Collection extends Observable {
       this.completeObject(data.object, data.object.front_id);
     }
     if (data.action == 'event') {
-      console.log("ws event '" + data.action + "' on", this);
       this.ws_events_callbacks.forEach(item => {
         item(data.data);
       });
@@ -1074,7 +1073,10 @@ export default class Collection extends Observable {
           update = true;
         } else if (
           !this._last_modified[item] ||
-          this.known_objects_by_front_id[item]._last_modified > this._last_modified[item]
+          !this.known_objects_by_front_id[item]._last_modified ||
+          typeof this.known_objects_by_front_id[item]._last_modified.getTime !== 'function' ||
+          this.known_objects_by_front_id[item]._last_modified.getTime() >
+            this._last_modified[item].getTime()
         ) {
           this._last_modified[item] = this.known_objects_by_front_id[item]._last_modified;
           update = true;
