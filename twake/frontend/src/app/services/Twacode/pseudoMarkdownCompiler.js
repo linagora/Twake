@@ -412,8 +412,6 @@ class PseudoMarkdownCompiler {
       var char = min_index_of_key;
       var str_right = str.substr(min_index_of + char.length);
 
-      console.log(str_left, min_index_of_key, str_right);
-
       //Seach end of element in str_right
       var match = -1;
       var add_to_value = '';
