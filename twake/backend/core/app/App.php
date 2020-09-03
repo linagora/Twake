@@ -70,6 +70,11 @@ class App
         $this->container_service->import(new Configuration($this), "configuration");
         $this->container_service->import(new Parameters($this), "parameters");
 
+        $dsn = $this->getContainer()->getParameter("env.sentry");
+        if($dsn && class_exists("\Sentry")){
+                \Sentry\init(['dsn' => $dsn, 'error_types' => (E_ERROR | E_WARNING | E_PARSE)]);
+        }
+
         $this->counter = new Counter($this);
 
         // Require and instanciate all defined bundles

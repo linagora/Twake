@@ -32,6 +32,7 @@ export default class File extends React.Component {
 
     return [
       <div
+        key="preview"
         className={
           'preview file_type_icon ' +
           DriveService.getFileType(this.props.data) +
@@ -51,7 +52,7 @@ export default class File extends React.Component {
           <TagPicker inline readOnly noPlaceholder value={this.props.data.tags || []} />
         </div>
       </div>,
-      <div className="data">
+      <div key="data" className="data">
         <div className={'file_type_icon'}>
           <FileType type={DriveService.getFileType(this.props.data)} scale={0.75} fill={'#000'} />
         </div>

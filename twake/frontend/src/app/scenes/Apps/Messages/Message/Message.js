@@ -259,7 +259,7 @@ export default class Message extends Component {
         >
           <div
             className={'message_bloc ' + className}
-            onMouseOver={() => this.setState({ was_hover: true })}
+            onMouseOver={() => !this.state.was_hover && this.setState({ was_hover: true })}
           >
             <div key="sender" className="sender">
               {show_user && user && (
@@ -394,11 +394,7 @@ export default class Message extends Component {
                       }}
                     />
                     <Button
-                      value={Languages.t(
-                        'general.save',
-                        [],
-                        'Enregistrer',
-                      )}
+                      value={Languages.t('general.save', [], 'Enregistrer')}
                       className="small right-margin"
                       onClick={() => this.editMessage()}
                     />

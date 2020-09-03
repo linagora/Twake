@@ -540,8 +540,12 @@ export default {
     "Cette action n'est pas réversible",
   'scenes.apps.messages.left_bar.stream.star': 'Mettre en favori',
   'scenes.apps.messages.left_bar.stream.unstar': 'Retirer des favoris',
-  'scenes.apps.messages.left_bar.stream.mute': 'Désactiver les notifications',
-  'scenes.apps.messages.left_bar.stream.unmute': 'Réactiver les notifications',
+  'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
+  'scenes.apps.messages.left_bar.stream.notifications.title': 'Activer les notifications pour',
+  'scenes.apps.messages.left_bar.stream.notifications.all': 'Tous les messages',
+  'scenes.apps.messages.left_bar.stream.notifications.mentions': '$1, $2 et $3',
+  'scenes.apps.messages.left_bar.stream.notifications.me': '$1 seulement',
+  'scenes.apps.messages.left_bar.stream.notifications.never': 'Aucun message',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Marquer comme lu',
   'scenes.apps.messages.services.messages.untitled': 'Sans titre',
   'scenes.apps.parameters.workspace_sections.title': "Paramètres de l'espace de travail",
@@ -1270,7 +1274,7 @@ export default {
   'scenes.app.channelsbar.public_channel_label': 'Chaîne publique',
   'scenes.app.channelsbar.private_channel_label': 'Chaîne privée',
   'scenes.app.channelsbar.private_channel_message':
-    "C'est une chaîne publique, toue l'espace de travail sera invité",
+    "Ceci est une chaîne publique. Tout l'espace de travail sera invité.",
   'scenes.app.channelsbar.save_channel_button': 'Enregistrer',
   'scenes.app.channelsbar.sending_message_instruction':
     'Envoyer un premier message dans une discussion',

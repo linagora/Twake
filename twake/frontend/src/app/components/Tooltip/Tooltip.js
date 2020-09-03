@@ -17,7 +17,7 @@ export default class Tooltip extends Component {
       top: 'unset',
       left: 'unset',
       right: 'unset',
-      bottom: 'unset',
+      bottom: '0px',
     };
   }
   componentWillUnmount() {}
@@ -37,17 +37,33 @@ export default class Tooltip extends Component {
   }
   open() {
     if (this.props.position == 'left') {
-      this.setState({ visible: true, left: (this.tooltip.clientWidth + 8) * -1 + 'px' });
+      this.setState({
+        visible: true,
+        left: (this.tooltip.clientWidth + 8) * -1 + 'px',
+        right: 'unset',
+      });
     } else if (this.props.position == 'right') {
-      this.setState({ visible: true, right: (this.tooltip.clientWidth + 8) * -1 + 'px' });
+      this.setState({
+        visible: true,
+        right: (this.tooltip.clientWidth + 8) * -1 + 'px',
+        left: 'unset',
+      });
     } else if (this.props.position == 'bottom') {
-      this.setState({ visible: true, bottom: (this.tooltip.clientHeight + 5) * -1 + 'px' });
+      this.setState({
+        visible: true,
+        bottom: (this.tooltip.clientHeight + 5) * -1 + 'px',
+        top: 'unset',
+      });
     } else {
-      this.setState({ visible: true, top: (this.tooltip.clientHeight + 5) * -1 + 'px' });
+      this.setState({
+        visible: true,
+        top: (this.tooltip.clientHeight + 5) * -1 + 'px',
+        bottom: 'unset',
+      });
     }
   }
   close() {
-    this.setState({ visible: false, top: 'unset', left: 'unset', right: 'unset', bottom: 'unset' });
+    this.setState({ visible: false, top: 'unset', left: '0px', right: 'unset', bottom: '0px' });
   }
   componentDidMount() {
     var that = this;

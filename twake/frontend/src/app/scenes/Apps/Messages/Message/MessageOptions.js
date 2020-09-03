@@ -47,6 +47,7 @@ export default class MessageOptions extends Component {
       if (!(this.props.message.hidden_data || {}).disable_reactions) {
         list.push(
           <Menu
+            key={list.length}
             className="option_button"
             ref={node => (this.emoji_dom_button = node)}
             menu={[
@@ -63,7 +64,7 @@ export default class MessageOptions extends Component {
                         MessagesService.react(
                           this.props.message,
                           emoji.shortname,
-                          this.props.messagesCollectionKey
+                          this.props.messagesCollectionKey,
                         );
                       }}
                     />
@@ -80,7 +81,7 @@ export default class MessageOptions extends Component {
             position="top"
           >
             <ReactionIcon className="m-icon-small" />
-          </Menu>
+          </Menu>,
         );
       }
 
@@ -91,27 +92,29 @@ export default class MessageOptions extends Component {
         ) {
           list.push(
             <div
+              key={list.length}
               className="option_button"
               onClick={() => MessagesService.startRespond(this.props.message)}
             >
               <Icon type="enter" className="m-icon-small" />
-            </div>
+            </div>,
           );
         }
         if (!(this.props.message.hidden_data || {}).disable_pin) {
           list.push(
             <div
+              key={list.length}
               className={'option_button ' + (this.props.message.pinned && 'selected')}
               onClick={() =>
                 MessagesService.pinMessage(
                   this.props.message,
                   !this.props.message.pinned,
-                  this.props.messagesCollectionKey
+                  this.props.messagesCollectionKey,
                 )
               }
             >
               <Icon type="map-pin-alt" className="m-icon-small" />
-            </div>
+            </div>,
           );
         }
       }
@@ -141,16 +144,17 @@ export default class MessageOptions extends Component {
 
       var apps =
         WorkspacesApps.getApps().filter(
-          app => ((app.display || {}).messages_module || {}).action
+          app => ((app.display || {}).messages_module || {}).action,
         ) || [];
       if (apps.length > 0) {
         menu.push({ type: 'separator' });
         menu.push({
           type: 'react-element',
           reactElement: level => {
-            return apps.map(app => {
+            return apps.map((app, index) => {
               return (
                 <div
+                  key={index}
                   className="menu"
                   onClick={() => {
                     this.triggerApp(app);
@@ -200,7 +204,7 @@ export default class MessageOptions extends Component {
             className: 'error',
             onClick: () => {
               AlertManager.confirm(() =>
-                MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey)
+                MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey),
               );
             },
           });
@@ -211,6 +215,7 @@ export default class MessageOptions extends Component {
     if (menu.length > 0) {
       list.push(
         <Menu
+          key={list.length}
           className="hidden_no_hover option_button"
           onOpen={() => this.props.parent.setState({ is_selected: true })}
           onClose={() => this.props.parent.setState({ is_selected: false })}
@@ -218,7 +223,7 @@ export default class MessageOptions extends Component {
           position={'left'}
         >
           <EditIcon className="m-icon-small" />
-        </Menu>
+        </Menu>,
       );
     }
 

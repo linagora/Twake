@@ -333,6 +333,9 @@ class Channels extends Observable {
       ui = channel._user_last_message_increment;
     }
     var state = channel.messages_increment - ui;
+    if (!channel._user_last_quoted_message_id && channel._user_muted >= 1) {
+      state = 0;
+    }
     if (state == old_state) {
       return;
     }

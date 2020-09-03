@@ -114,7 +114,7 @@ export default class ChannelTemplateEditor extends Component {
               canRemoveMyself
               noPlaceholder
               maxResults={3}
-              scope="group"
+              scope="workspace"
             />
           )) || (
             <div

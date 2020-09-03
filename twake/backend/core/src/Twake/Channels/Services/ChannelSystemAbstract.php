@@ -200,10 +200,14 @@ class ChannelSystemAbstract
             $idsMembers = Array();
             $idsExt = Array();
             foreach ($members as $member) {
-                if (!$member->getExterne()) {
-                    $idsMembers[] = $member->getUser()->getId();
-                } elseif ($member->getAutoAddExterne()) {
-                    $idsExt[] = $member->getUser()->getId();
+                try{
+                    if (!$member->getExterne()) {
+                        $idsMembers[] = $member->getUser()->getId();
+                    } elseif ($member->getAutoAddExterne()) {
+                        $idsExt[] = $member->getUser()->getId();
+                    }
+                }catch(\Exception $err){
+                    //No user
                 }
             }
             $this->updateChannelMembers($channel, $idsMembers);
@@ -276,8 +280,12 @@ class ChannelSystemAbstract
             $workspace = $this->entity_manager->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $channel_entity->getOriginalWorkspaceId()));
             $membersWorkspace = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace));
             foreach ($membersWorkspace as $members) {
-                if ($members->getAutoAddExterne() && !in_array($members->getUser()->getId(), $_ext_members)) {
-                    $_ext_members[] = $members->getUser()->getId();
+                try{
+                    if ($members->getAutoAddExterne() && !in_array($members->getUser()->getId(), $_ext_members)) {
+                        $_ext_members[] = $members->getUser()->getId();
+                    }
+                }catch(\Exception $err){
+                    //No user
                 }
             }
 
