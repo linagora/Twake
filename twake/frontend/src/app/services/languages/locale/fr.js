@@ -1274,7 +1274,7 @@ export default {
   'scenes.app.channelsbar.public_channel_label': 'Chaîne publique',
   'scenes.app.channelsbar.private_channel_label': 'Chaîne privée',
   'scenes.app.channelsbar.private_channel_message':
-    "C'est une chaîne publique, toue l'espace de travail sera invité",
+    "Ceci est une chaîne publique. Tout l'espace de travail sera invité.",
   'scenes.app.channelsbar.save_channel_button': 'Enregistrer',
   'scenes.app.channelsbar.sending_message_instruction':
     'Envoyer un premier message dans une discussion',
