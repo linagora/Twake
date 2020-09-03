@@ -1075,6 +1075,7 @@ export default class Collection extends Observable {
           !this._last_modified[item] ||
           !this.known_objects_by_front_id[item]._last_modified ||
           typeof this.known_objects_by_front_id[item]._last_modified.getTime !== 'function' ||
+          typeof this._last_modified[item].getTime !== 'function' ||
           this.known_objects_by_front_id[item]._last_modified.getTime() >
             this._last_modified[item].getTime()
         ) {
