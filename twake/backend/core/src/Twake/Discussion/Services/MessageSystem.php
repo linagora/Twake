@@ -457,24 +457,18 @@ class MessageSystem
                 error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
             }
 
-
-            if ($channel && $did_create) {
-                $channel->setMessagesCount($channel->getMessagesCount() + 1);
-                $this->em->persist($channel);
-            }
-
-            $this->em->flush();
-
             $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
             if ($channel && $did_create && !$init_channel) {
                 $channel->setLastActivity(new \DateTime());
                 $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
+                $this->em->persist($channel);
                 
                 //Sender autoread the channel
                 if($user){
                     $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
                     $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
                     $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                    $this->em->persist($member);
                 }
 
                 try{
@@ -489,6 +483,7 @@ class MessageSystem
                 }
             }
 
+            $this->em->flush();
 
             //Notify connectors
             if ($channel->getOriginalWorkspaceId()) {
