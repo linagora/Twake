@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
         require_once __DIR__ . '/../vendor/autoload.php';
         require_once __DIR__ . '/../app/App.php';
 
+        if(!headers_sent()){
+            @header('X-Frame-Options: SAMEORIGIN');
+        }
+
         $app = new App();
 
         $app->getCounter()->startTimer("main_run");
