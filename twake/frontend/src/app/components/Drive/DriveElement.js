@@ -41,7 +41,6 @@ export default class DriveElement extends React.Component {
     }
 
     if (this.driveCollectionKey && this.driveCollectionKey != this.props.driveCollectionKey) {
-      console.log('will unmount drive element remove source');
       Collections.get('drive').removeSource(this.driveCollectionKey);
     }
   }
@@ -142,7 +141,6 @@ export default class DriveElement extends React.Component {
     nextState.element =
       Collections.get('drive').find(this.props.data.id) ||
       DriveService.find(Workspaces.currentWorkspaceId, this.props.data.id, el => {
-        console.log(el);
         this.setState({ element: el });
       });
     this.state.element = nextState.element;
@@ -172,7 +170,6 @@ export default class DriveElement extends React.Component {
         'standalone',
       );
       if (old_collection_key && old_collection_key != this.driveCollectionKey) {
-        console.log('will update drive element remove source');
         Collections.get('drive').removeSource(old_collection_key);
       }
     }
@@ -339,11 +336,7 @@ export default class DriveElement extends React.Component {
                         <Button
                           disabled={(this.state.new_name || '').length <= 0}
                           type="button"
-                          value={Languages.t(
-                            'general.save',
-                            [],
-                            'Enregistrer',
-                          )}
+                          value={Languages.t('general.save', [], 'Enregistrer')}
                           onClick={() => {
                             this.rename();
                           }}

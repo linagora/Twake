@@ -64,6 +64,8 @@ export default class Responses extends Component {
   }
   render() {
     let previous_message = {};
+    Collections.get('messages').listenOnly(this, [this.props.parentMessage.front_id]);
+
     return (
       <div className="responses">
         {this.props.parentMessage.responses_count > showed_messages && (

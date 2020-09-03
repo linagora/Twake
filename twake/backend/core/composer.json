@@ -32,7 +32,8 @@
     "mxp100/pusher": "dev-twake-1.0 as 1.0",
     "eluceo/ical": "^0.16.0",
     "php-amqplib/php-amqplib": "^2.11",
-    "phpseclib/phpseclib": "^2.0"
+    "phpseclib/phpseclib": "^2.0",
+    "sentry/sdk": "^2.1"
   },
   "autoload": {
     "psr-4": {
