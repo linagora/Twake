@@ -277,7 +277,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                     Array("direct" => false, "channel_id" => $_channel->getId(), "user_id" => $user->getId())
                 );
                 if ($link && $link->getLastMessagesIncrement() < $_channel->getMessagesIncrement()) {
-                    if($link->getLastQuotedMessageId() || $link->getMute() == 0){
+                    if($link->getLastQuotedMessageId() || $link->getMuted() == 0){
                         $all_read = false;
                         break;
                     }
