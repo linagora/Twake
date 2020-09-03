@@ -59,7 +59,7 @@ class PseudoMarkdownCompiler {
         allowed_char_before: '(^|\\B)',
         allowed_chars: '[a-z_.-A-Z0-9:]+',
         disable_recursion: true,
-        end: ' |$|[^a-zA-Z0-9]',
+        after_end: ' |$|[^a-zA-Z0-9]',
         object: PseudoMarkdownDictionary.render_block.user.object,
         simple_object: (child, obj) => '@' + (obj.content || '').split(':')[0] + ' ',
         text_transform: PseudoMarkdownDictionary.render_block.user.text_transform,
@@ -69,14 +69,15 @@ class PseudoMarkdownCompiler {
         allowed_char_before: '(^|\\B)',
         allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]+',
         disable_recursion: true,
-        end: ' |$[^a-zA-Z0-9]',
+        after_end: ' |$[^a-zA-Z0-9]',
         object: PseudoMarkdownDictionary.render_block.channel.object,
         simple_object: (child, obj) => '#' + (obj.content || '').split(':')[0] + ' ',
         text_transform: PseudoMarkdownDictionary.render_block.channel.text_transform,
       },
       '```': {
         name: 'mcode',
-        end: '```$\n?',
+        end: '```',
+        after_end: '$|\n',
         view: true,
         allowed_chars: '(.|\n)',
         disable_recursion: true,
@@ -112,7 +113,7 @@ class PseudoMarkdownCompiler {
       '*': {
         name: 'bold',
         end: '\\*',
-        allowed_char_before: '(^|\\B)',
+        allowed_char_before: '(^|\\B|.)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.bold.object,
         text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
@@ -139,7 +140,7 @@ class PseudoMarkdownCompiler {
         name: 'quote',
         view: true,
         allowed_char_before: '^',
-        end: '$\n?',
+        after_end: '$|\n',
         object: PseudoMarkdownDictionary.render_block.quote.object,
         simple_object: child => '',
         text_transform: PseudoMarkdownDictionary.render_block.quote.text_transform,
@@ -431,13 +432,16 @@ class PseudoMarkdownCompiler {
           (this.pseudo_markdown[char].end ? '?' : '') +
           ')' +
           (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : '');
+        this.pseudo_markdown[char].after_end
+          ? '(' + this.pseudo_markdown[char].after_end + ')'
+          : '';
         match = str_right.substr(add_to_value.length).match(new RegExp(regex, ''));
       }
       let completion_end_char = '';
       if (match) {
         match[0] = add_to_value + match[0];
         match[1] = add_to_value + match[1];
-        completion_end_char = this.pseudo_markdown[char].end ? match[2] : '';
+        completion_end_char = this.pseudo_markdown[char].after_end ? match[3] || '' : '';
       }
 
       if (!match) {
