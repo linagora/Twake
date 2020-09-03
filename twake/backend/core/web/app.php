@@ -2,7 +2,10 @@
 
 use App\App;
 function getDefaultHeaders()
-{
+{    
+    if(headers_sent()){
+        return;
+    }
     if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
         @header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
     }
