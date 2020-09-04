@@ -17,6 +17,8 @@ chmod -R 777 /var/www &
 chmod -R 777 /tmp/
 rm -R /tmp/*
 chmod -R 777 /twake-core/ &
+mkdir cache
+chmod -R 777 /cache &
 
 if [ "$1" = "dev" ]
 then
