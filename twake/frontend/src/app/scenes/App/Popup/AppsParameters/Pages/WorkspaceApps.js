@@ -5,7 +5,7 @@ import Collections from 'services/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Menu from 'components/Menus/Menu.js';
-import Table from 'components/Table/Table.js';
+import Table from 'components/Table/Table';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';

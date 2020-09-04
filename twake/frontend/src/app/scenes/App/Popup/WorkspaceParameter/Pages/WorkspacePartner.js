@@ -6,7 +6,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
-import Table from 'components/Table/Table.js';
+import Table from 'components/Table/Table';
 import Menu from 'components/Menus/Menu.js';
 import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
@@ -19,6 +19,9 @@ import CreateCompanyAccount from './CreateCompanyAccount.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import CryptoJS from 'crypto-js';
 import './Pages.scss';
+import Members from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
+import Guests from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Guests.js';
+import Tabs from 'components/Tabs/Tabs.js';
 
 export default class WorkspacePartner extends Component {
   constructor() {
@@ -357,103 +360,73 @@ export default class WorkspacePartner extends Component {
         <div className="title">
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.collaborateurs',
-            [],
             'Collaborateurs',
           )}
         </div>
-
-        <div className="group_section">
-          <div className="subtitle">
-            {Languages.t(
-              'scenes.app.popup.workspaceparameter.pages.worspace_subtitle',
-              [],
-              'Espace de travail',
-            )}
-          </div>
-
-          <div className="smalltext">
-            {Languages.t(
-              'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text',
-              [users.length],
-              'Collaborateurs dans cet espace de travail $1',
-            )}
-          </div>
-
-          <Table
-            column={[
-              {
-                title: 'Name',
-                dataIndex: 'name',
-                render: col => {
-                  var tags = [];
-                  if (col.isAdmin) {
-                    tags.push(
-                      <div className="tag blue">
-                        {Languages.t(
-                          'scenes.app.popup.workspaceparameter.pages.administrater_status',
-                          [],
-                          'Administrateur',
-                        )}
-                      </div>,
-                    );
-                  }
-                  if (col.groupLevel > 0 && col.groupLevel !== null) {
-                    tags.push(
-                      <div className="tag orange">
-                        {Languages.t(
-                          'scenes.app.popup.workspaceparameter.pages.company_manager_status',
-                          [],
-                          "Gérant d'entreprise",
-                        )}
-                      </div>,
-                    );
-                  }
-                  if (col.externe) {
-                    tags.push(
-                      <div className="tag green">
-                        {Languages.t(
-                          'scenes.app.popup.workspaceparameter.pages.guest_status',
-                          [],
-                          'Invité',
-                        )}
-                      </div>,
-                    );
-                  }
-
-                  return (
-                    <div
-                      className="absolute_position"
-                      style={{ paddingRight: 8, boxSizing: 'border-box' }}
-                    >
-                      <div
-                        class="user_image"
-                        style={{
-                          backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
-                        }}
-                      />
-                      <div className="fix_text_padding_medium text-complete-width">
-                        {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
-                      </div>
-                      <div style={{ paddingTop: 8 }}>{tags}</div>
-                    </div>
-                  );
-                },
-              },
-              {
-                title: '',
-                width: 30,
-                dataIndex: 'action',
-                render: col => {
-                  return this.buildMenu(col);
-                },
-              },
-            ]}
-            data={users}
-          />
-        </div>
+        <Tabs
+          tabs={[
+            {
+              title: Languages.t(
+                'scenes.apps.parameters.workspace_sections.members.members',
+                'Members',
+              ),
+              render: (
+                <Members users={users.filter(a => !a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: Languages.t('components.workspace.group.guest', 'Guests'),
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+            {
+              title: 'Pending',
+              render: (
+                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
+              ),
+            },
+          ]}
+        />
 
         {pendingMail.length > 0 && (
-          <div>
+          <div /*Email*/>
             <div className="smalltext">
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail',
@@ -584,7 +557,7 @@ export default class WorkspacePartner extends Component {
         )}
 
         {usersInGroup.length > 0 && (
-          <div className="group_section">
+          <div /*Company*/ className="group_section">
             <div className="subtitle">
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.company_subtitle',

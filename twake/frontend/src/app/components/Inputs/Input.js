@@ -76,6 +76,7 @@ export default class Input extends React.Component {
         }}
         className={'input ' + (className || '')}
         onBlur={this.props.onBlur}
+        onChange={this.props.onChange}
       />
     );
   }

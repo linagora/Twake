@@ -936,6 +936,15 @@ FORMS
   width: 100%;
 }
 
+.y-margin {
+  margin: 16px 0;
+}
+.x-margin {
+  margin: 0 16px;
+}
+.all-margin {
+  margin: 16px;
+}
 .bottom-margin {
   margin-bottom: 16px;
 }
@@ -949,6 +958,15 @@ FORMS
   margin-left: 16px;
 }
 
+.small-y-margin {
+  margin: 8px 0;
+}
+.small-x-margin {
+  margin: 0 8px;
+}
+.small-all-margin {
+  margin: 8px;
+}
 .small-top-margin {
   margin-top: 8px;
 }

@@ -42,12 +42,10 @@
       margin-left: 24px;
     }
     .component_tabs {
-      display: flex;
-      flex-direction: column;
       height: 100%;
       .body {
-        flex: 1;
-        position: relative;
+        display: flex;
+        flex-direction: column;
       }
     }
     .component_tabs > .body {

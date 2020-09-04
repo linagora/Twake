@@ -124,6 +124,7 @@ export default class AutoComplete extends Component {
         return;
       }
     }
+
     that.setState({ currentList: [], currentRegexUsed: -1, resultPosition: '' });
     this.props.keyUp && this.props.keyUp(ev);
   }
@@ -227,7 +228,7 @@ export default class AutoComplete extends Component {
 
     this.putTextAtCursor(
       this.props.renderItemChoosen[this.state.currentRegexUsed](item),
-      alreadyTypedLength
+      alreadyTypedLength,
     );
 
     if (that.props.onSelect) {

@@ -11,12 +11,27 @@
     box-shadow: none;
   }
 
+  &.loading {
+    opacity: 0.1;
+  }
+
   .headerTable {
     background: $grey_background;
     font-weight: 700;
     font-size: 14px;
     display: flex;
     padding: 16px;
+    border-bottom: 1px solid $grey_background;
+  }
+
+  .footerTable {
+    background: $grey_background;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 5px 10px;
     border-bottom: 1px solid $grey_background;
   }
   .contentTable {

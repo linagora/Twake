@@ -942,7 +942,7 @@ export default {
     'You do not have any connectors that can connect to a calendar.',
   'scenes.apps.tasks.unconfigured_tab': 'This tab is not configured yet.',
   'scenes.apps.tasks.choose_board_button': 'Choose a board',
-  'scenes.apps.tasks.left.team': 'Team',
+  'scenes.apps.tasks.left.team': 'See tasks for user',
   'scenes.apps.tasks.new_board.title': 'New board',
   'scenes.apps.tasks.new_board.edit_title': 'Edit board',
   'scenes.apps.tasks.new_board.name': 'Name',

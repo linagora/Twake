@@ -989,6 +989,7 @@ export default {
     "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
   'scenes.apps.tasks.unconfigured_tab': "Cet onglet n'est pas encore configuré.",
   'scenes.apps.tasks.left.team': 'Équipe',
+  'scenes.apps.tasks.left.team': "Voir les tâches pour l'utilisateur",
   'scenes.apps.tasks.new_board.title': 'Nouveau tableau',
   'scenes.apps.tasks.choose_board_button': 'Choisir un tableau',
   'scenes.apps.tasks.new_board.edit_title': 'Éditer le tableau',

@@ -25,6 +25,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import Board from './Board/Board.js';
 
 import './Tasks.scss';
+import UserListManager from 'app/components/UserListManager/UserListManager.js';
 
 export default class Tasks extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ export default class Tasks extends Component {
           { uri: 'boards/' + this.props.channel.original_workspace, options: { type: 'board' } },
         ],
       },
-      this.boards_collection_key
+      this.boards_collection_key,
     );
   }
 
@@ -81,7 +82,7 @@ export default class Tasks extends Component {
         'user'
       ) {
         var user_id = TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split(
-          '_'
+          '_',
         )[1];
         var user = Collections.get('users').find(user_id) || {};
         current_board = {
@@ -91,7 +92,7 @@ export default class Tasks extends Component {
         };
       } else {
         current_board = Collections.get('boards').find(
-          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId]
+          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId],
         );
       }
     }
@@ -162,8 +163,7 @@ export default class Tasks extends Component {
                                   type: 'title',
                                   text: Languages.t(
                                     'scenes.apps.tasks.new_board.edit_title',
-                                    [],
-                                    'Edit board'
+                                    'Edit board',
                                   ),
                                 },
                                 {
@@ -187,7 +187,7 @@ export default class Tasks extends Component {
                                 AlertManager.confirm(() => {
                                   Collections.get('boards').remove(
                                     board,
-                                    this.boards_collection_key
+                                    this.boards_collection_key,
                                   );
                                 });
                               },
@@ -197,8 +197,7 @@ export default class Tasks extends Component {
                               type: 'menu',
                               text: Languages.t(
                                 'scenes.apps.tasks.connectors_menu',
-                                [],
-                                'Connecteurs...'
+                                'Connecteurs...',
                               ),
                               submenu: [
                                 {
@@ -207,7 +206,7 @@ export default class Tasks extends Component {
                                     var apps = WorkspacesApps.getApps().filter(
                                       app =>
                                         ((app.display || {}).tasks_module || {})
-                                          .can_connect_to_tasks
+                                          .can_connect_to_tasks,
                                     );
                                     if (apps.length > 0) {
                                       return (
@@ -224,7 +223,7 @@ export default class Tasks extends Component {
                                             board.connectors = ids;
                                             Collections.get('boards').save(
                                               board,
-                                              this.boards_collection_key
+                                              this.boards_collection_key,
                                             );
                                           }}
                                           onConfig={app => {
@@ -237,8 +236,7 @@ export default class Tasks extends Component {
                                       <div className="menu-text" style={{ margin: 0, padding: 0 }}>
                                         {Languages.t(
                                           'scenes.apps.tasks.no_connectors_menu_text',
-                                          [],
-                                          "Vous n'avez aucun connecteur capable de se connecter à un calendrier."
+                                          "Vous n'avez aucun connecteur capable de se connecter à un calendrier.",
                                         )}
                                       </div>
                                     );
@@ -249,8 +247,7 @@ export default class Tasks extends Component {
                                   type: 'menu',
                                   text: Languages.t(
                                     'scenes.apps.tasks.connectors_search_menu',
-                                    [],
-                                    'Chercher des connecteurs...'
+                                    'Chercher des connecteurs...',
                                   ),
                                   onClick: () => {
                                     popupManager.open(
@@ -259,7 +256,7 @@ export default class Tasks extends Component {
                                         options={'open_search_apps'}
                                       />,
                                       true,
-                                      'workspace_parameters'
+                                      'workspace_parameters',
                                     );
                                   },
                                 },
@@ -274,7 +271,7 @@ export default class Tasks extends Component {
                     </div>
                     <div className="board_info">
                       {board.active_tasks || '0'}{' '}
-                      {Languages.t('scenes.apps.tasks.active_tasks', [], 'tâches actives')}
+                      {Languages.t('scenes.apps.tasks.active_tasks', 'tâches actives')}
                     </div>
                   </div>
                 );
@@ -286,7 +283,7 @@ export default class Tasks extends Component {
                   menu={[
                     {
                       type: 'title',
-                      text: Languages.t('scenes.apps.tasks.new_board.title', [], 'New board'),
+                      text: Languages.t('scenes.apps.tasks.new_board.title', 'New board'),
                     },
                     {
                       type: 'react-element',
@@ -304,38 +301,27 @@ export default class Tasks extends Component {
                   <Rounded className="board_add" />
                 </Menu>
               )}
+              <div
+                className="app_title"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignContent: 'center',
+                }}
+              >
+                {Languages.t('scenes.apps.tasks.my_tasks', 'Mes tâches')}
 
-              <div className="app_title" style={{ marginTop: 16 }}>
-                {Languages.t('scenes.apps.tasks.left.team', [], 'Team')}
+                <UserListManager
+                  users={[]}
+                  onlyInput
+                  autoFocus
+                  noLabel
+                  placeholder="components.users_picker.modal_select_user"
+                  scope="workspace"
+                  onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
+                />
               </div>
-
-              {Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
-                .sort((a, b) => this.getSortingValue(b) - this.getSortingValue(a))
-                .map(user_id => {
-                  var user = Collections.get('users').find(user_id);
-                  if (!user) {
-                    return '';
-                  }
-                  return (
-                    <div
-                      className="team_member"
-                      onClick={() => {
-                        TasksService.openBoard('user_' + user_id);
-                      }}
-                    >
-                      <User user={user} big />
-                      <div className="team_username">
-                        <div className="name">{UserService.getFullName(user)}</div>
-                        <div className="username">@{user.username}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-              <div className="app_title" style={{ marginTop: 16 }}>
-                {Languages.t('scenes.apps.tasks.my_tasks', [], 'Mes tâches')}
-              </div>
-
               <Board
                 tab={this.props.tab}
                 noTitle
