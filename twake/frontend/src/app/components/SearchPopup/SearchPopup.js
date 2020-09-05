@@ -75,6 +75,8 @@ export default class SearchPopup extends React.Component {
       }
     } else {
       if ((evt.key == 'k' && evt.ctrlKey) || (evt.key == 'k' && evt.metaKey)) {
+        evt.preventDefault();
+        evt.stopPropagation();
         Search.open();
       }
     }
@@ -185,12 +187,12 @@ export default class SearchPopup extends React.Component {
                   ? Languages.t(
                       'scenes.app.mainview.advanced_search_placeholder',
                       [],
-                      'Recherche avancée'
+                      'Recherche avancée',
                     )
                   : Languages.t(
                       'scenes.app.mainview.quick_search_placeholder',
                       [],
-                      'Recherche rapide'
+                      'Recherche rapide',
                     )
               }
               value={Search.value}
@@ -337,7 +339,7 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix +=
                           ' - ' +
                           moment(item.event.to * 1000).format(
-                            (dateTo != dateFrom ? 'L' : '') + 'LT'
+                            (dateTo != dateFrom ? 'L' : '') + 'LT',
                           );
                         workspace_suffix += ')';
                       }
@@ -390,7 +392,7 @@ export default class SearchPopup extends React.Component {
                     {Languages.t(
                       'components.searchpopup.enter_text',
                       [],
-                      'Enter some text to search Twake.'
+                      'Enter some text to search Twake.',
                     )}
                   </div>
                 )}
