@@ -17,6 +17,8 @@ chmod -R 777 /var/www &
 chmod -R 777 /tmp/
 rm -R /tmp/*
 chmod -R 777 /twake-core/ &
+mkdir /twake-core/cache
+chmod -R 777 /twake-core/cache &
 
 if [ "$1" = "dev" ]
 then
@@ -34,6 +36,9 @@ else
 fi
 
 (php composer.phar dump-autoload --optimize;  php composer.phar dump-autoload --classmap-authoritative; php composer.phar dump-autoload --apcu; php bin/console twake:schema:update; php bin/console twake:init; php bin/console twake:init_connector; php bin/console twake:mapping) &
+
+mkdir /twake-core/cache
+chmod -R 777 /twake-core/cache &
 
 cron -f &
 docker-php-entrypoint php-fpm
