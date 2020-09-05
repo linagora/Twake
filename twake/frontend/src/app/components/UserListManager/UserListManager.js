@@ -61,37 +61,14 @@ export default class UserListManager extends React.Component {
       callback([]);
       return;
     }
-    if (this.props.scope === 'workspace') {
-      var list = Object.keys(
-        WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
-      ).map(id => WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[id]);
-      if (this.props.disableExterne) {
-        list = list.filter(el => !el.externe);
-      }
-      var res = list
-        .filter(el => {
-          return (
-            (el.user.username + ' ' + el.user.firstname + ' ' + el.user.lastname)
-              .toLocaleLowerCase()
-              .indexOf(text.toLocaleLowerCase()) >= 0
-          );
-        })
-        .map(el => el.user);
-      callback(
-        res.filter(item => {
-          if (
-            (this.props.hideUsersIds || []).indexOf(item.id) >= 0 ||
-            this.state.users_ids.indexOf(item.id) >= 0 ||
-            this.state.users_ids.indexOf(item) >= 0
-          ) {
-            return false;
-          }
-          return true;
-        }),
-      );
-    }
-    if (this.props.scope === 'all') {
-      UsersService.search(text, res => {
+    UsersService.search(
+      text,
+      {
+        scope: this.props.scope,
+        workspace_id: Workspaces.currentWorkspaceId,
+        group_id: Workspaces.currentGroupId,
+      },
+      res => {
         res = res.filter(el => {
           return (
             !!el &&
@@ -112,8 +89,8 @@ export default class UserListManager extends React.Component {
             return true;
           }),
         );
-      });
-    }
+      },
+    );
   }
   componentWillUpdate(nextProps, nextState) {
     this.updateStateFromProps(nextProps, false, nextState);
@@ -179,7 +156,7 @@ export default class UserListManager extends React.Component {
     return (
       <OutsideClickHandler
         onOutsideClick={() => {
-          if (!this.props.onlyInput) this.setState({ editing: false });
+          this.setState({ editing: false });
         }}
       >
         <div
@@ -191,9 +168,9 @@ export default class UserListManager extends React.Component {
             (this.props.small ? ' small' : '')
           }
         >
-          {this.state.users_ids.length == 0 && !this.props.noLabel && (
+          {this.state.users_ids.length == 0 && !this.props.noPlaceholder && (
             <div className="menu-text no-users">
-              {Languages.t('components.userlistmanager.no_users', 'Aucun utilisateur.')}
+              {Languages.t('components.userlistmanager.no_users', [], 'Aucun utilisateur.')}
             </div>
           )}
           {this.state.users_ids
@@ -211,8 +188,8 @@ export default class UserListManager extends React.Component {
           )}
 
           {!this.props.readOnly && (
-            <div className={'menu-text ' + !this.props.onlyInput ? 'add-user-input' : ''}>
-              {!this.state.editing && !this.props.onlyInput && (
+            <div className="menu-text add-user-input">
+              {!this.state.editing && (
                 <Button
                   className="small secondary-text right-margin"
                   onClick={() => this.setState({ editing: true })}
@@ -220,6 +197,7 @@ export default class UserListManager extends React.Component {
                   <Icon type="plus" className="m-icon-small" />{' '}
                   {Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
+                    [],
                     'Ajouter des utilisateurs',
                   )}
                 </Button>
@@ -246,13 +224,12 @@ export default class UserListManager extends React.Component {
                   onSelect={el => {
                     this.select(el);
                   }}
-                  autoFocus={!this.props.onlyInput ? true : false}
+                  autoFocus
                   small
                   position={this.props.onTop ? 'top' : 'bottom'}
                   placeholder={Languages.t(
-                    this.props.placeholder
-                      ? this.props.placeholder
-                      : 'scenes.apps.parameters.workspace_sections.members.invite_btn',
+                    'scenes.apps.parameters.workspace_sections.members.invite_btn',
+                    [],
                     'Ajouter des utilisateurs',
                   )}
                 />
@@ -269,7 +246,10 @@ export default class UserListManager extends React.Component {
                   </Button>
                 )}
               {!!this.props.showAddAll &&
-                Object.keys(Workspaces.getCurrentWorkspace() || {}).total_members < 30 && (
+                Object.keys(
+                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
+                ).length > this.state.users_ids.length &&
+                Workspaces.getCurrentWorkspace().total_members < 30 && (
                   <Button
                     className="small primary-text"
                     onClick={() => {
@@ -289,6 +269,7 @@ export default class UserListManager extends React.Component {
                     <Icon type="users-alt" className="m-icon-small" />{' '}
                     {Languages.t(
                       'scenes.apps.parameters.workspace_sections.members.invite_all',
+                      [],
                       'Ajouter tout le monde',
                     )}
                   </Button>

@@ -753,7 +753,7 @@ export default {
   'scenes.apps.parameters.group_sections.managers.invite_manager_placeholder':
     "Nom d'utilisateur du manager",
   'scenes.apps.parameters.group_sections.managers.invite_manager_button': 'Ajouter',
-  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Пропустить',
+  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Passer',
   'scenes.apps.parameters.group_sections.managers.invite_manager_message':
     'Voulez-vous ajouter cette personne en tant que manager?',
   'scenes.apps.parameters.group_sections.managers.only_reading': 'Seulement la lecture',

@@ -25,7 +25,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
     {
         $services = $this->getApp()->getServices();
 
-        $this->queues = $services->get("app.queues");
+        $this->queues = $services->get("app.queues")->getAdapter();
         $this->em = $services->get("app.twake_doctrine");
         $this->pusher = $services->get("app.pusher");
         $this->preview = $services->get("app.drive.preview");
