@@ -213,6 +213,8 @@ class WorkspaceMembers
 //            $this->calendar->addWorkspaceMember($workspace, $user);
             $this->updateChannelAfterAddWorkspaceMember($workspace, $user);
 
+            $this->updateUser($user);
+
             return true;
         }
 
@@ -488,6 +490,8 @@ class WorkspaceMembers
              $this->calendar->delWorkspaceMember($workspace, $user);*/
             $this->delWorkspaceMember_temp($workspace, $user);
 
+            $this->updateUser($user);
+
             return true;
         }
 
@@ -700,7 +704,20 @@ class WorkspaceMembers
 
     }
 
-    public function updateUser(User $user, $workspaces_ids, $groups_ids){
+    public function updateUser(User $user, $workspaces_ids = null, $groups_ids = null){
+
+        if(!$workspaces_ids){
+            $workspaces_obj = $this->getWorkspaces($user->getId() . "");
+            $workspaces_ids = Array();
+            $groups_ids = Array();
+            foreach ($workspaces_obj as $workspace_obj) {
+                $workspaces_ids[] = $value["id"];
+                $groups_ids[] = $value["group"]["id"];
+            }
+            $workspaces_ids = array_values(array_unique($workspaces_ids));
+            $groups_ids = array_values(array_unique($groups_ids));
+        }
+
         $user->setWorkspaces($workspaces_ids);
         $user->setGroups($groups_ids);
         $user->setEsIndexed(false);
