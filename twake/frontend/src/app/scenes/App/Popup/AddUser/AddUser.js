@@ -136,10 +136,6 @@ export default class AddUser extends Component {
               placeholder={'james@acme.com, jane@acme.com'}
             />
 
-            {/*<br/>
-
-                  <Switch label={"Tous comme invités"} value={this.state.all_externes == "1"} onChange={(state)=>{this.setState({all_externes: state?"1":"0"})}} />*/}
-
             <br />
             <br />
 
@@ -173,7 +169,11 @@ export default class AddUser extends Component {
                 return (
                   <div className="new_member bottom-margin">
                     <AutoComplete
-                      regexHooked={[/(.+)/]}
+                      regexHooked={
+                        [
+                          /*/(.+)/*/
+                        ]
+                      }
                       search={[
                         (query, cb) => {
                           cb([{ username: query }]);
@@ -248,12 +248,10 @@ export default class AddUser extends Component {
                 (this.state.all_import && this.state.multi)
               )
                 ? this.state.i18n.t(
-                  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
-                  'Skip',
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
+                    'Skip',
                   )
-                : this.state.i18n.t(
-                    'general.add',
-                  )
+                : this.state.i18n.t('general.add')
             }
             loading={this.state.workspacesUsersService.loading || this.props.loading}
             loadingTimeout={1500}
