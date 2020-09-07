@@ -57,9 +57,9 @@ class BoardTask
             $workspaces = Array();
             if ($user_id != $current_user->getId() . "") {
                 //Get available workspaces
-                $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user" => $user_id));
+                $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user_id" => $user_id));
                 foreach ($workspaceUsers as $wu) {
-                    $available = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user" => $current_user->getId(), "workspace" => $wu->getWorkspace($this->doctrine)->getId()));
+                    $available = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user_id" => $current_user->getId(), "workspace_id" => $wu->getWorkspace($this->doctrine)->getId()));
                     if ($available) {
                         $workspaces[] = $wu->getWorkspaceId();
                     }

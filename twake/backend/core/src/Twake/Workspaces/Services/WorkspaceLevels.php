@@ -32,7 +32,7 @@ class WorkspaceLevels
 
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
-            $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
+            $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             if (!$link) {
                 return null; //No level because no member
@@ -70,7 +70,7 @@ class WorkspaceLevels
             return true;
         }
 
-        $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
+        $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($link) {
             $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
             if (!$link || !$level) {
@@ -289,7 +289,7 @@ class WorkspaceLevels
                 return false;
             }
 
-            $affectedUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $level));
+            $affectedUsers = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId(), "level" => $level));
             foreach ($affectedUsers as $affectedUser) {
                 $affectedUser->setLevel($levelDefault);
                 $this->doctrine->persist($affectedUser);

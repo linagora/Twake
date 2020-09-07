@@ -55,7 +55,7 @@ class WorkspaceMembers
             }
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             $member->setLevelId($level->getId());
 
@@ -126,7 +126,7 @@ class WorkspaceMembers
                 }
             }
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
 
             if ($member != null) {
@@ -223,7 +223,7 @@ class WorkspaceMembers
 
     public function updateChannelAfterAddWorkspaceMember($workspace, $user)
     {
-        $workspaceMember = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace, "user" => $user));
+        $workspaceMember = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($workspaceMember) {
             $channels = $this->doctrine->getRepository("Twake\Channels:Channel")->findBy(
                 Array("original_workspace_id" => $workspace->getId(), "direct" => false)
@@ -318,7 +318,7 @@ class WorkspaceMembers
             $workspace = $workspaceRepository->find($workspaceId);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
-            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
 
             if ($mailObj == null) {
                 //Mail not in tables
@@ -359,7 +359,7 @@ class WorkspaceMembers
             $workspace = $workspaceRepository->find($workspaceId);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
             foreach($mails as $mailguest){         
                 $this->doctrine->remove($mailguest);       
                 $workspace->setPendingCount($workspace->getPendingCount() - 1);
@@ -416,7 +416,7 @@ class WorkspaceMembers
             }
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             if (!$member) {
                 return false;
@@ -543,7 +543,7 @@ class WorkspaceMembers
         }
 
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-        $members = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+        $members = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()));
 
         foreach ($members as $member) {
             $this->removeMember($workspaceId, $member->getUserId());
@@ -603,7 +603,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), Array(), $max, $offset);
+            $link = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset);
             $users = Array();
             foreach ($link as $user) {
 
@@ -647,7 +647,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspace), Array(), $max, $offset);
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset);
 
             return $mails;
         }
@@ -663,7 +663,7 @@ class WorkspaceMembers
         if (!$user) {
             return false;
         }
-        $link = $workspaceUserRepository->findBy(Array("user" => $user));
+        $link = $workspaceUserRepository->findBy(Array("user_id" => $user->getId()));
         $workspaces = Array();
         foreach ($link as $workspace) {
             if ($workspace->getWorkspace($this->doctrine)->getUser() == null && $workspace->getWorkspace($this->doctrine)->getGroup() != null && !$workspace->getWorkspace($this->doctrine)->getis_deleted()) {

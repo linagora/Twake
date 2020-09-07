@@ -29,7 +29,7 @@ class AdministrationWorkspaces
     {
         $membersRepository = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
 
-        $members_tab = $membersRepository->findBy(array("workspace" => $workspace));
+        $members_tab = $membersRepository->findBy(array("workspace_id" => $workspace->getId()));
 
         $members = array();
 

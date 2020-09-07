@@ -141,7 +141,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         if ($workspace_id) {
 
             $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
 
             if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
                 $workspaceUser->setHasNotifications(true);
@@ -263,7 +263,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->notificationSystem->removeMailReminder($user);
 
         $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
 
         $all_read = true;
         if ($workspaceUser && $workspaceUser->getHasNotifications()) {
@@ -301,7 +301,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $all_read = true;
 
             if ($groupUser && $groupUser->getHasNotifications()) {
-                $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+                $workspacesUser = $workspaceUsers->findBy(Array("user_id" => $user->getId()));
 
                 foreach ($workspacesUser as $workspaceUser) {
                     if ($workspaceUser->getHasNotifications()) {
@@ -342,7 +342,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
         $all_read = true;
-        $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+        $workspacesUser = $workspaceUsers->findBy(Array("user_id" => $user->getId()));
         foreach ($workspacesUser as $workspaceUser) {
             if ($workspaceUser->getHasNotifications()) {
                 $all_read = false;

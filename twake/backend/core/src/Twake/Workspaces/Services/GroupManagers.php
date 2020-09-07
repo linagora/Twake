@@ -335,7 +335,7 @@ class GroupManagers
 
                 if ($manager == null) { //si user n'est pas repertorié on l'ajoute au rang super-admin
 
-                    $wss = $workspaceUserRepository->findBy(Array("user" => $userEntity));
+                    $wss = $workspaceUserRepository->findBy(Array("user_id" => $userEntity->getId()));
                     $nbWs = 0;
                     foreach ($wss as $ws) {
                         if ($ws->getWorkspace($this->doctrine)->getGroup() && $ws->getWorkspace($this->doctrine)->getGroup()->getId() == $group->getId()) {

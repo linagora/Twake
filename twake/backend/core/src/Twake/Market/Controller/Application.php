@@ -64,17 +64,17 @@ class Application extends BaseController
 
 
         $appid = $request->request->get("appid", 0);
-        $groupId = $request->request->get("workspaceId", 0);
+        $wId = $request->request->get("workspaceId", 0);
 
         $app = $manager->getRepository("Twake\Market:Application")
             ->find($appid);
 
-        if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "")) {
+        if (!$this->get('app.workspace_levels')->can($wId, $this->getUser()->getId(), "")) {
             $data['errors'][] = "notallowed";
         } else {
 
             $useringroup = $manager->getRepository("Twake\Workspaces:WorkspaceUser")
-                ->findOneBy(Array("user" => $this->getUser(), "workspace" => $groupId));
+                ->findOneBy(Array("user_id" => $this->getUser()->getId(), "workspace_id" => $wId));
 
             //Delete old tokens (1 minutes)
             $qb = $manager->createQueryBuilder();

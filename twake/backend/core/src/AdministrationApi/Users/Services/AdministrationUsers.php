@@ -114,7 +114,7 @@ class AdministrationUsers
         $workspacesLinkRepository = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
         $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
 
-        $workspaces_tab = $workspacesLinkRepository->findBy(Array("user" => $user));
+        $workspaces_tab = $workspacesLinkRepository->findBy(Array("user_id" => $user->getId()));
 
         $workspaces = array();
 
@@ -132,7 +132,7 @@ class AdministrationUsers
     {
         $groupsRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
 
-        $groups_tab = $groupsRepository->findBy(Array("user" => $user));
+        $groups_tab = $groupsRepository->findBy(Array("user_id" => $user->getId()));
 
         $groups = array();
 
