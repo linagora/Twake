@@ -312,15 +312,21 @@ export default class Tasks extends Component {
               >
                 {Languages.t('scenes.apps.tasks.my_tasks', 'Mes tâches')}
 
-                <UserListManager
-                  users={[]}
-                  onlyInput
-                  autoFocus
-                  noLabel
-                  placeholder="components.users_picker.modal_select_user"
-                  scope="workspace"
-                  onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
-                />
+                <div className="right-select-member" style={{ marginTop: '-8px', width: '200px' }}>
+                  <UserListManager
+                    users={[]}
+                    buttonIcon={'enter'}
+                    noPlaceholder
+                    buttonText={Languages.t(
+                      'scenes.apps.tasks.select_user_button',
+                      [],
+                      'View tasks for an other user',
+                    )}
+                    inputText={Languages.t('scenes.apps.tasks.select_user', [], 'Search user')}
+                    scope="workspace"
+                    onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
+                  />
+                </div>
               </div>
               <Board
                 tab={this.props.tab}
