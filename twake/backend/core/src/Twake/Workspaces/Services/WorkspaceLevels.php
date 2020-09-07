@@ -334,7 +334,7 @@ class WorkspaceLevels
 
             $users = Array();
             foreach ($link as $user) {
-                $users[] = $user->getUser();
+                $users[] = $user->getUser($this->doctrine);
             }
 
             return $users;

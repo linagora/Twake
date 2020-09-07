@@ -46,13 +46,14 @@ class MysqlTimeUUIDType extends UuidBinaryOrderedTimeType
             return null;
         }
 
-        if ($value instanceof UuidInterface) {
-            return bin2hex(parent::convertToDatabaseValue($value, $platform));
-        }
-
         try {
-            if (is_string($value) || method_exists($value, '__toString')) {
-                return bin2hex(parent::convertToDatabaseValue($value, $platform));
+            if (is_string($value) || method_exists($value, '__toString') || $value instanceof UuidInterface) {
+                $value = bin2hex(parent::convertToDatabaseValue($value, $platform));
+                if(!preg_match("/[^a-f0-9-]/", $value)){
+                    return $value;
+                }else{
+                    return null;
+                }
             }
         } catch (InvalidArgumentException $e) {
             // Ignore the exception and pass through.

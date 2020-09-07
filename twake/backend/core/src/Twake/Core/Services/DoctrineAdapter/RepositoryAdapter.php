@@ -146,11 +146,14 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         $cassandra = strpos(get_class($this->_em->getConnection()->getDriver()), "PDOCassandra") >= 0;
 
+        $offset_field = null;
         if ($offset && is_array($offset)) {
             if ($cassandra) {
                 $sort = Array();
+                $offset_field = $order_fields[1];
                 $offset = $offset[1];
             } else {
+                $offset_field = $order_fields[0];
                 $offset = $offset[0];
             }
         }
@@ -222,7 +225,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         $offset = $offset->getId();
                     }
 
-                    if (is_string($offset)) {
+                    if (is_string($offset) && in_array($offset_field, $mapping_timeuuid)) {
                         $offset = new FakeCassandraTimeuuid($offset);
                         if (strpos($order_field, "__TOKEN__") === 0) {
                             $offset = "__TOKEN__" . $offset . "";

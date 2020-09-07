@@ -34,7 +34,7 @@ class AdministrationWorkspaces
         $members = array();
 
         foreach ($members_tab as $member) {
-            $members[] = $member->getUser()->getAsArray();
+            $members[] = $member->getUser($this->em)->getAsArray();
         }
 
         return $members;

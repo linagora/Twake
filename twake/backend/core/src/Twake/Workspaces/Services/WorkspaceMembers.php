@@ -65,7 +65,7 @@ class WorkspaceMembers
             if ($workspace->getUser() != null) {
                 $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
-            $workspaceUser = $member->getAsArray();
+            $workspaceUser = $member->getAsArray($this->doctrine);
             $workspaceUser["groupLevel"] = $this->groupManager->getLevel($workspace->getGroup(), $userId, $currentUserId);
             $dataToPush = Array(
                 "type" => "update_workspace_level",
@@ -175,7 +175,7 @@ class WorkspaceMembers
 
             $dataToPush = Array(
                 "type" => "add",
-                "workspace_user" => $member->getAsArray()
+                "workspace_user" => $member->getAsArray($this->doctrine)
             );
             $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
 
@@ -458,7 +458,7 @@ class WorkspaceMembers
             }
 
 
-            $workspace_user = $member->getAsArray();
+            $workspace_user = $member->getAsArray($this->doctrine);
             $workspace_user["nbWorkspace"] = $groupmember != null ? $groupmember->getNbWorkspace() : 0;
 
             $dataToPush = Array(
@@ -527,7 +527,7 @@ class WorkspaceMembers
         foreach ($invitations as $userByMail) {
             $this->doctrine->remove($userByMail);
             $this->doctrine->flush();
-            $this->addMember($userByMail->getWorkspace()->getId(), $userId, $userByMail->getExterne(), $userByMail->getAutoAddExterne());
+            $this->addMember($userByMail->getWorkspaceId(), $userId, $userByMail->getExterne(), $userByMail->getAutoAddExterne());
         }
 
         return true;
@@ -546,7 +546,7 @@ class WorkspaceMembers
         $members = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
         foreach ($members as $member) {
-            $this->removeMember($workspaceId, $member->getUser()->getId());
+            $this->removeMember($workspaceId, $member->getUserId());
         }
 
         $this->doctrine->flush();
@@ -607,22 +607,22 @@ class WorkspaceMembers
             $users = Array();
             foreach ($link as $user) {
 
-                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser()->getId(), "group" => $workspace->getGroup()));
+                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUserId(), "group" => $workspace->getGroup()));
                 $groupId = $workspace->getGroup();
                 
                 if ($group_user) {
                     $users[] = Array(
-                        "user" => $user->getUser(),
+                        "user" => $user->getUser($this->doctrine),
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevelId(),
                         "externe" => $user->getExterne(),
                         "autoAddExterne" => $user->getAutoAddExterne(),
-                        "workspace_member" => $link->getId(),
-                        "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUser()->getId(), $currentUserId)
+                        "workspace_member_id" => $user->getId(),
+                        "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUserId(), $currentUserId)
                     );
 
                 } else {
-                    error_log("error group user, " . $user->getUser()->getId() . "," . $workspace->getGroup()->getId());
+                    error_log("error group user, " . $user->getUserId() . "," . $workspace->getGroup()->getId());
                 }
 
             }
@@ -666,14 +666,14 @@ class WorkspaceMembers
         $link = $workspaceUserRepository->findBy(Array("user" => $user));
         $workspaces = Array();
         foreach ($link as $workspace) {
-            if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null && !$workspace->getWorkspace()->getis_deleted()) {
+            if ($workspace->getWorkspace($this->doctrine)->getUser() == null && $workspace->getWorkspace($this->doctrine)->getGroup() != null && !$workspace->getWorkspace($this->doctrine)->getis_deleted()) {
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
-                    "workspace" => $workspace->getWorkspace(),
+                    "workspace" => $workspace->getWorkspace($this->doctrine),
                     "ishidden" => $workspace->getisHidden(),
                     "isfavorite" => $workspace->getisFavorite(),
                     "hasnotifications" => $workspace->getHasNotifications(),
-                    "isArchived" => $workspace->getWorkspace()->getisArchived()
+                    "isArchived" => $workspace->getWorkspace($this->doctrine)->getisArchived()
                 );
             }
         }

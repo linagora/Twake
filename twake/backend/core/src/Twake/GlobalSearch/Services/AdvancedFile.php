@@ -32,7 +32,7 @@ class AdvancedFile
         if (!$workspaces && !is_array($workspaces)) {
             $workspace_access_tmp = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user" => $current_user_id));
             foreach ($workspace_access_tmp as $wp) {
-                $workspace_access[] = $wp->getWorkspace();
+                $workspace_access[] = $wp->getWorkspace($this->doctrine);
             }
         } else {
             foreach ($workspaces as $wp) {

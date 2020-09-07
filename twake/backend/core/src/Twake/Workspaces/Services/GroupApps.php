@@ -95,7 +95,7 @@ class GroupApps
             $workspace_apps = $workspaceAppsRepository->findBy(Array("groupapp_id" => $groupapp->getId()));
 
             foreach ($workspace_apps as $workspace_app) {
-                $this->was->disableApp($workspace_app->getWorkspace()->getId(), $application->getId());
+                $this->was->disableApp($workspace_app->getWorkspaceId(), $application->getId());
             }
 
             return true;

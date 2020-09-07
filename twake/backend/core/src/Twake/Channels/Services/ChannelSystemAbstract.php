@@ -202,9 +202,9 @@ class ChannelSystemAbstract
             foreach ($members as $member) {
                 try{
                     if (!$member->getExterne()) {
-                        $idsMembers[] = $member->getUser()->getId();
+                        $idsMembers[] = $member->getUser($this->entity_manager)->getId();
                     } elseif ($member->getAutoAddExterne()) {
-                        $idsExt[] = $member->getUser()->getId();
+                        $idsExt[] = $member->getUser($this->entity_manager)->getId();
                     }
                 }catch(\Exception $err){
                     //No user

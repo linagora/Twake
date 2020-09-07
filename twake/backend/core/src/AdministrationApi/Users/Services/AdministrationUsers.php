@@ -111,14 +111,18 @@ class AdministrationUsers
 
     public function getUserWorkspaces($user)
     {
-        $workspacesRepository = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
+        $workspacesLinkRepository = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
+        $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
 
-        $workspaces_tab = $workspacesRepository->findBy(Array("user" => $user));
+        $workspaces_tab = $workspacesLinkRepository->findBy(Array("user" => $user));
 
         $workspaces = array();
 
         foreach ($workspaces_tab as $workspace) {
-            $workspaces[] = $workspace->getWorkspace()->getAsArray();
+            $ws = $workspacesRepository->find($workspace->getWorkspaceId());
+            if($ws){
+                $workspaces[] = $ws->getAsArray();
+            }
         }
 
         return $workspaces;

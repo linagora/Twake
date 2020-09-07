@@ -20,10 +20,10 @@ class WorkspaceUserByMail
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    private $workspace;
+    private $workspace_id;
 
     /**
      * @ORM\Column(name="mail", type="string", length=255)
@@ -63,9 +63,18 @@ class WorkspaceUserByMail
     /**
      * @return mixed
      */
-    public function getWorkspace()
+    public function getWorkspace($em)
     {
-        return $this->workspace;
+        $workspacesRepository = $em->getRepository("Twake\Workspaces:Workspace");
+        return $workspacesRepository->find($this->workspace_id);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
     }
 
     /**
