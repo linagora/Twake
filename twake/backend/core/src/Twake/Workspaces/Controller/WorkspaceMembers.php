@@ -52,6 +52,7 @@ class WorkspaceMembers extends BaseController
         foreach($all_info as $mail){
             $response["data"][] = Array(
                 "mail" => $mail->getMail(),
+                "id" => $mail->getId(),
                 "externe" => $mail->getExterne()
             );
         }

@@ -617,6 +617,7 @@ class WorkspaceMembers
                         "level" => $user->getLevelId(),
                         "externe" => $user->getExterne(),
                         "autoAddExterne" => $user->getAutoAddExterne(),
+                        "workspace_member" => $link->getId(),
                         "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUser()->getId(), $currentUserId)
                     );
 
