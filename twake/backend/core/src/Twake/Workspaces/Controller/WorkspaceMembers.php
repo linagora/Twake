@@ -19,7 +19,10 @@ class WorkspaceMembers extends BaseController
     
     public function getMembers(Request $request)
     {
-        $response = Array("errors" => Array(), "data" => Array());
+        $response = Array("errors" => Array(), "data" => Array(
+            "nextPageToken" => null,
+            "list" => [],
+        ));
 
         $workspaceId = $request->request->get("workspaceId");
         $order = $request->request->get("order", null);
@@ -31,7 +34,8 @@ class WorkspaceMembers extends BaseController
 
         foreach($all_info as $user){
             $user["user"] = $user["user"]->getAsArray();
-            $response["data"][] = $user;
+            $response["data"]["list"][$user["user"]["id"]] = $user;
+            $response["data"]["nextPageToken"] = $user["user"]["id"];
         }
 
         return new Response($response);
@@ -39,7 +43,10 @@ class WorkspaceMembers extends BaseController
 
     public function getPending(Request $request)
     {
-        $response = Array("errors" => Array(), "data" => Array());
+        $response = Array("errors" => Array(), "data" => Array(
+            "nextPageToken" => null,
+            "list" => [],
+        ));
 
         $workspaceId = $request->request->get("workspaceId");
         $order = $request->request->get("order", null);
@@ -50,11 +57,13 @@ class WorkspaceMembers extends BaseController
         $response["data"] = [];
 
         foreach($all_info as $mail){
-            $response["data"][] = Array(
+            $object = Array(
                 "mail" => $mail->getMail(),
                 "id" => $mail->getId(),
                 "externe" => $mail->getExterne()
             );
+            $response["data"]["list"][$mail->getMail()] = $object;
+            $response["data"]["nextPageToken"] = $mail->getMail();
         }
 
         return new Response($response);

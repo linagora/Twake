@@ -606,23 +606,26 @@ class WorkspaceMembers
             $link = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "user_id", "ASC");
             $users = Array();
             foreach ($link as $user) {
+                $userEntity = $user->getUser($this->doctrine);
+                if($userEntity){
+                        
+                    $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUserId(), "group" => $workspace->getGroup()));
+                    $groupId = $workspace->getGroup();
+                    
+                    if ($group_user) {
+                        $users[] = Array(
+                            "user" => $userEntity,
+                            "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
+                            "level" => $user->getLevelId(),
+                            "externe" => $user->getExterne(),
+                            "autoAddExterne" => $user->getAutoAddExterne(),
+                            "workspace_member_id" => $user->getId(),
+                            "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUserId(), $currentUserId)
+                        );
 
-                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUserId(), "group" => $workspace->getGroup()));
-                $groupId = $workspace->getGroup();
-                
-                if ($group_user) {
-                    $users[] = Array(
-                        "user" => $user->getUser($this->doctrine),
-                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                        "level" => $user->getLevelId(),
-                        "externe" => $user->getExterne(),
-                        "autoAddExterne" => $user->getAutoAddExterne(),
-                        "workspace_member_id" => $user->getId(),
-                        "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUserId(), $currentUserId)
-                    );
-
-                } else {
-                    error_log("error group user, " . $user->getUserId() . "," . $workspace->getGroup()->getId());
+                    } else {
+                        error_log("error group user, " . $user->getUserId() . "," . $workspace->getGroup()->getId());
+                    }
                 }
 
             }
