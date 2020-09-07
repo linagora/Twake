@@ -603,7 +603,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset);
+            $link = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "user_id", "ASC");
             $users = Array();
             foreach ($link as $user) {
 
@@ -647,7 +647,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset);
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "mail", "ASC");
 
             return $mails;
         }

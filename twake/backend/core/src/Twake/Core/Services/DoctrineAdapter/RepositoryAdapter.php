@@ -225,7 +225,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         $offset = $offset->getId();
                     }
 
-                    if (is_string($offset) && in_array($offset_field, $mapping_timeuuid)) {
+                    if (is_string($offset) && in_array($order_field, $mapping_timeuuid)) {
                         $offset = new FakeCassandraTimeuuid($offset);
                         if (strpos($order_field, "__TOKEN__") === 0) {
                             $offset = "__TOKEN__" . $offset . "";
