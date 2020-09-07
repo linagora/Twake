@@ -46,6 +46,7 @@ jobs:
   deploy-nginx:
     needs: build-frontend
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
