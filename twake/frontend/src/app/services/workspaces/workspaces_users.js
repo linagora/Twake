@@ -31,8 +31,6 @@ class WorkspacesUsers extends Observable {
     this.offset_by_workspace_id = {};
     this.offset_by_group_id = {};
 
-    Globals.window.wu = this;
-
     this.loading = false;
     Globals.window.workspaceUserService = this;
   }

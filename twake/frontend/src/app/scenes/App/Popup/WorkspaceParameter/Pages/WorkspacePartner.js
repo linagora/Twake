@@ -44,9 +44,6 @@ export default class WorkspacePartner extends Component {
       input_to_show: 2,
       workspaceUserRightsService: workspaceUserRightsService,
     };
-    if (!workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)) {
-      workspacesUsers.load(workspaceService.currentWorkspaceId, true);
-    }
     this.inputWorkspaceName = null;
     Collections.get('workspaces').addListener(this);
     workspaceService.addListener(this);
@@ -63,9 +60,6 @@ export default class WorkspacePartner extends Component {
     workspacesUsers.removeListener(this);
     workspaceUserRightsService.removeListener(this);
     Languages.removeListener(this);
-  }
-  componentDidMount() {
-    workspacesUsers.load(workspaceService.currentWorkspaceId, true);
   }
   onChangeMail(e, member_index) {
     this.state.members[member_index].mail = e.target.value;
@@ -376,48 +370,6 @@ export default class WorkspacePartner extends Component {
             },
             {
               title: Languages.t('components.workspace.group.guest', 'Guests'),
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
-            },
-            {
-              title: 'Pending',
               render: (
                 <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
               ),

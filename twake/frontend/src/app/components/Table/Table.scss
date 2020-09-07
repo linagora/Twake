@@ -13,6 +13,7 @@
 
   &.loading {
     opacity: 0.1;
+    pointer-events: none;
   }
 
   .headerTable {

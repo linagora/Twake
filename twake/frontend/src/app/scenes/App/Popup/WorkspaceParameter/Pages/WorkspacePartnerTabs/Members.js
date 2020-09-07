@@ -2,6 +2,9 @@ import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Table from 'components/Table/Table.tsx';
 import UserService from 'services/user/user.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import workspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 
 export default class Members extends React.Component {
   matchUser(users, query) {
@@ -30,11 +33,12 @@ export default class Members extends React.Component {
           onAdd
           onRequestNextPage={() =>
             new Promise(resolve => {
-              resolve(this.props.users);
+              resolve([]);
             })
           }
           onSearch={(query, maxResults) =>
             new Promise(resolve => {
+              console.log(query);
               resolve(this.props.users, this.matchUser(this.props.users, query));
             })
           }

@@ -236,7 +236,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                 }
 
                 if ($limit) {
-                    $qb = $qb->setMaxResults(abs($limit));
+                    $qb = $qb->setMaxResults(abs($limit) + ($offset?1:0));
                 }
 
                 if ($view_to_use) {
