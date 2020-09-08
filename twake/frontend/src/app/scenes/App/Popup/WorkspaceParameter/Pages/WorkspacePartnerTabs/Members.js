@@ -37,44 +37,24 @@ export default class Members extends React.Component {
               resolve(Object.values(state.list));
             })
           }
-          onSearch={(query, maxResults, callback) => {
-            WorkspacesMembersTable.search(
-              Workspaces.currentWorkspaceId,
-              'members',
-              query,
-              maxResults,
-              list => {
-                callback(Object.values(list));
-              },
-            );
-          }}
+          onSearch={
+            false &&
+            ((query, maxResults, callback) => {
+              WorkspacesMembersTable.search(
+                Workspaces.currentWorkspaceId,
+                'members',
+                query,
+                maxResults,
+                list => {
+                  callback(list);
+                },
+              );
+            })
+          }
           column={[
             {
               title: 'Name',
               dataIndex: 'name',
-              render: col => {
-                return (
-                  <div
-                    className="absolute_position"
-                    style={{ paddingRight: 8, boxSizing: 'border-box' }}
-                  >
-                    <div
-                      class="user_image"
-                      style={{
-                        backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
-                      }}
-                    />
-                    <div className="fix_text_padding_medium text-complete-width">
-                      {UserService.getFullName(col.user)} (@{col.user.username})
-                    </div>
-                  </div>
-                );
-              },
-            },
-            {
-              title: 'Status',
-              width: 300,
-              dataIndex: 'level',
               render: col => {
                 var tags = [];
                 if (col.level === adminLevel) {
@@ -99,7 +79,25 @@ export default class Members extends React.Component {
                     </div>,
                   );
                 }
-                return <div className="fix_text_padding_medium">{tags}</div>;
+
+                return (
+                  <div
+                    className="absolute_position"
+                    style={{ paddingRight: 8, boxSizing: 'border-box' }}
+                  >
+                    <div
+                      class="user_image"
+                      style={{
+                        backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
+                      }}
+                    />
+                    <div className="fix_text_padding_medium text-complete-width">
+                      {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
+                    </div>
+
+                    <div className="fix_text_padding_medium">{tags}</div>
+                  </div>
+                );
               },
             },
             {

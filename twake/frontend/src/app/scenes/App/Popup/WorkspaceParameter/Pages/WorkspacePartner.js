@@ -267,7 +267,7 @@ export default class WorkspacePartner extends Component {
       return (
         <div className="action">
           {menu.length > 0 && (
-            <Menu className="option_button" style={{ padding: 4 }} menu={menu}>
+            <Menu className="option_button" style={{ paddingTop: 8, paddingRight: 8 }} menu={menu}>
               <EditIcon className="m-icon-small" />
             </Menu>
           )}
@@ -316,28 +316,19 @@ export default class WorkspacePartner extends Component {
           fullBody
           tabs={[
             {
-              title:
-                Languages.t(
-                  'scenes.apps.parameters.workspace_sections.members.members',
-                  [],
-                  'Members',
-                ) +
-                ' (' +
-                (workspaceService.getCurrentWorkspace().total_members +
-                  workspaceService.getCurrentWorkspace().total_guests) +
-                ')',
+              title: Languages.t(
+                'scenes.apps.parameters.workspace_sections.members.members',
+                [],
+                'Members',
+              ),
               render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
             {
-              title:
-                Languages.t(
-                  'scenes.apps.parameters.workspace_sections.members.pending',
-                  [],
-                  'Pending',
-                ) +
-                ' (' +
-                workspaceService.getCurrentWorkspace().total_pending +
-                ')',
+              title: Languages.t(
+                'scenes.apps.parameters.workspace_sections.members.pending',
+                [],
+                'Pending',
+              ),
               render: <Pending buildMenu={e => this.buildMenu(e)} />,
             },
           ]}

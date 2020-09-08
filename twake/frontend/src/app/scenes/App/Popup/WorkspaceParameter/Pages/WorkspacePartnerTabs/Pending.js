@@ -8,12 +8,20 @@ import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table
 import Menu from 'components/Menus/Menu.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
+import popupManager from 'services/popupManager/popupManager.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
 
 export default class Pending extends React.Component {
   render() {
     return (
       <div>
         <Table
+          onAdd={
+            workspaceUserRightsService.hasWorkspacePrivilege() &&
+            (() => {
+              popupManager.open(<AddUser standalone />);
+            })
+          }
           onRequestMore={refresh =>
             new Promise(async resolve => {
               const state = await WorkspacesMembersTable.nextPage(

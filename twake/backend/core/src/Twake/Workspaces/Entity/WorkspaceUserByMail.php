@@ -44,7 +44,7 @@ class WorkspaceUserByMail
 
     function __construct($workspace, $mail)
     {
-        $this->workspace = $workspace;
+        $this->workspace_id = $workspace->getId();
         $this->mail = $mail;
         $this->externe = false;
         $this->is_auto_add_externe = false;

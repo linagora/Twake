@@ -12,7 +12,7 @@
   }
 
   &.loading {
-    pointer-events: none;
+    opacity: 0.5;
 
     .tr .item .line {
       pointer-events: none;

@@ -105,39 +105,34 @@ export default class Table extends Component<Props, State> {
 
     return (
       <div>
-        {(this.props.onAdd || this.props.onSearch) && (
-          <div
-            className="small-y-margin full-width"
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: this.setPosition(),
-            }}
-          >
-            {this.props.onAdd && (
-              <Button
-                class="medium"
-                value={this.props.addText || 'Add'}
-                onClick={this.props.onAdd}
+        <div
+          className="small-y-margin full-width"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: this.setPosition(),
+          }}
+        >
+          {this.props.onAdd && (
+            <Button class="medium" value={this.props.addText || 'Add'} onClick={this.props.onAdd} />
+          )}
+          {this.props.onSearch && (
+            <div>
+              <InputIcon
+                icon="search"
+                small
+                placeholder={Languages.t('components.listmanager.filter', 'Search')}
+                onChange={(event: any) => {
+                  const q = event.target.value;
+                  this.setState({ searchFieldValue: q });
+                  this.search();
+                }}
               />
-            )}
-            {this.props.onSearch && (
-              <div>
-                <InputIcon
-                  icon="search"
-                  small
-                  placeholder={Languages.t('components.listmanager.filter', 'Search')}
-                  onChange={(event: any) => {
-                    const q = event.target.value;
-                    this.setState({ searchFieldValue: q });
-                    this.search();
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
+
         <div
           className={
             'table ' +
