@@ -61,6 +61,8 @@ class User {
   search(query, options, callback, noHttp = undefined, didTimeout = undefined) {
     callback = callback || (() => {});
 
+    query = query || '';
+
     const scope = options.scope;
 
     if (query == 'me') {

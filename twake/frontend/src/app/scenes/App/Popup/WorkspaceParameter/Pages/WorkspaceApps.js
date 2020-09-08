@@ -295,7 +295,7 @@ export default class WorkspaceApps extends Component {
                   },
                 },
               ]}
-              data={workspace_apps}
+              onRequestMore={() => new Promise(resolve => resolve(workspace_apps))}
             />
           )}
 
@@ -367,7 +367,7 @@ export default class WorkspaceApps extends Component {
                   },
                 },
               ]}
-              data={group_apps}
+              onRequestMore={() => new Promise(resolve => resolve(group_apps))}
             />
           )}
 

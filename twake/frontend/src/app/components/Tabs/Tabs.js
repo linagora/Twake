@@ -57,7 +57,7 @@ export default class Tabs extends Component {
             );
           })}
         </PerfectScrollbar>
-        <div className="body">
+        <div className={'body ' + (this.props.fullBody ? 'full-body ' : '')}>
           {typeof this.props.tabs[selected].render == 'function'
             ? this.props.tabs[selected].render()
             : this.props.tabs[selected].render}

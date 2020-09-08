@@ -830,6 +830,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.members': 'Members',
   'scenes.apps.parameters.workspace_sections.members.members_text':
     'You can remove collaborators or change collaborators rights.',
+  'scenes.apps.parameters.workspace_sections.members.guests': 'Guests',
   'scenes.apps.parameters.workspace_sections.members.pending': 'Pending members',
   'scenes.apps.parameters.workspace_sections.members.pending_text':
     'No members are using the e-mails bellow.',

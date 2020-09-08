@@ -32,11 +32,16 @@ class WorkspacesMembersTable extends Observable {
     Globals.window.WorkspacesMembersTable = this;
   }
 
-  search(workspaceId: string, type: string, query: string, max: number) {
+  search(
+    workspaceId: string,
+    type: string,
+    query: string,
+    max: number,
+    callback: (res: any[]) => void,
+  ) {
     return new Promise(resolve => {
       UsersService.search(query, { scope: 'workspace', workspace_id: workspaceId }, (res: any) => {
-        console.log(res);
-        resolve(res);
+        callback(res);
       });
     });
   }

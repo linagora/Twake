@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
-import popupManager from 'services/popupManager/popupManager.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import Table from 'components/Table/Table';
 import Menu from 'components/Menus/Menu.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
@@ -19,8 +17,8 @@ import CreateCompanyAccount from './CreateCompanyAccount.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import CryptoJS from 'crypto-js';
 import './Pages.scss';
+import Pending from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending.js';
 import Members from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
-import Guests from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Guests.js';
 import Tabs from 'components/Tabs/Tabs.js';
 
 export default class WorkspacePartner extends Component {
@@ -100,19 +98,16 @@ export default class WorkspacePartner extends Component {
         reactElement: () => (
           <div className="editLevel">
             <Switch
-              disabled={workspacesUsers.updateRoleUserLoading[col.id]}
+              disabled={workspacesUsers.updateRoleUserLoading[col.user.id]}
               label={Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.company_manager_label',
                 [],
                 "Gérant de l'entreprise",
               )}
-              value={
-                this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][col.id]
-                  .groupLevel > 0
-              }
+              value={col.groupLevel > 0}
               onChange={state => {
                 this.confirmIfMe(
-                  col.id,
+                  col.user.id,
                   {
                     text: Languages.t(
                       'scenes.app.popup.workspaceparameter.pages.modify_level',
@@ -121,7 +116,7 @@ export default class WorkspacePartner extends Component {
                     ),
                   },
                   () => {
-                    workspacesUsers.updateManagerRole(col.id, state);
+                    workspacesUsers.updateManagerRole(col.user.id, state);
                   },
                 );
               }}
@@ -147,16 +142,12 @@ export default class WorkspacePartner extends Component {
         reactElement: () => (
           <div className="editLevel">
             <Switch
-              disabled={workspacesUsers.updateLevelUserLoading[col.id]}
+              disabled={workspacesUsers.updateLevelUserLoading[col.user.id]}
               label={'Administrateur'}
-              value={
-                this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[
-                  col.id
-                ].level == adminLevelId
-              }
+              value={col.level == adminLevelId}
               onChange={state =>
                 this.confirmIfMe(
-                  col.id,
+                  col.user.id,
                   {
                     text: Languages.t(
                       'scenes.app.popup.workspaceparameter.pages.modify_level',
@@ -165,7 +156,7 @@ export default class WorkspacePartner extends Component {
                     ),
                   },
                   () => {
-                    workspacesUsers.updateUserLevel(col.id, state);
+                    workspacesUsers.updateUserLevel(col.user.id, state);
                   },
                 )
               }
@@ -209,7 +200,7 @@ export default class WorkspacePartner extends Component {
         </div>
       );
     } else {
-      if (col.id == UserService.getCurrentUserId()) {
+      if (col.user.id == UserService.getCurrentUserId()) {
         menu.push({
           type: 'menu',
           text: Languages.t(
@@ -234,7 +225,10 @@ export default class WorkspacePartner extends Component {
           className: 'error',
           onClick: () => {
             AlertManager.confirm(() =>
-              this.state.workspacesUsers.removeUser(col.id, workspaceService.currentWorkspaceId),
+              this.state.workspacesUsers.removeUser(
+                col.user.id,
+                workspaceService.currentWorkspaceId,
+              ),
             );
           },
         });
@@ -282,72 +276,33 @@ export default class WorkspacePartner extends Component {
     }
   }
   render() {
-    var mail_inputs = 0;
-    var last_not_empty = 0;
     var users = [];
     var usersInGroup = [];
     var adminLevelId = workspacesUsers.getAdminLevel().id;
-    var non_pending_mails = [];
-    Object.keys(
-      this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId),
-    ).map(key => {
-      var user = this.state.workspacesUsers.getUsersByWorkspace(
-        workspaceService.currentWorkspaceId,
-      )[key].user;
-      if (user.mail_hash) {
-        non_pending_mails.push(user.mail_hash);
-      }
-      if (user.mail_verification_override_mail) {
-        non_pending_mails.push(user.mail_verification_override_mail);
-      }
-      users.push({
-        id: user.id,
-        user: user,
-        externe: this.state.workspacesUsers.getUsersByWorkspace(
-          workspaceService.currentWorkspaceId,
-        )[key].externe,
-        level: this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[
-          key
-        ].level,
-        groupLevel: this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][key]
-          .groupLevel,
-        isAdmin:
-          adminLevelId ==
-          this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
-            .level,
-      });
-    });
-    Object.keys(this.state.workspacesUsers.users_by_group[groupService.currentGroupId]).map(key => {
-      var user = this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
-      if (
-        !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key] ||
-        !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
-          .user ||
-        !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
-          .user.id
-      ) {
-        usersInGroup.push({
-          id: user.id,
-          user: user,
-          externe: this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key]
-            .externe,
-          groupLevel: this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][
+    Object.keys(this.state.workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
+      key => {
+        var user = this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
+        if (
+          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[
             key
-          ].groupLevel,
-        });
-      }
-    });
-
-    var pendingMail = [];
-    this.state.workspacesUsers.membersPending.map(pending => {
-      var mail = (pending.mail || '').toLocaleLowerCase().trim();
-      if (
-        non_pending_mails.indexOf(mail) < 0 &&
-        non_pending_mails.indexOf(CryptoJS.MD5(mail) + '') < 0
-      ) {
-        pendingMail.push(pending);
-      }
-    });
+          ] ||
+          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
+            .user ||
+          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
+            .user.id
+        ) {
+          usersInGroup.push({
+            id: user.id,
+            user: user,
+            externe: this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key]
+              .externe,
+            groupLevel: this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][
+              key
+            ].groupLevel,
+          });
+        }
+      },
+    );
 
     return (
       <div className="workspaceParameter">
@@ -358,116 +313,35 @@ export default class WorkspacePartner extends Component {
           )}
         </div>
         <Tabs
+          fullBody
           tabs={[
             {
-              title: Languages.t(
-                'scenes.apps.parameters.workspace_sections.members.members',
-                'Members',
-              ),
-              render: (
-                <Members users={users.filter(a => !a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
+              title:
+                Languages.t(
+                  'scenes.apps.parameters.workspace_sections.members.members',
+                  [],
+                  'Members',
+                ) +
+                ' (' +
+                (workspaceService.getCurrentWorkspace().total_members +
+                  workspaceService.getCurrentWorkspace().total_guests) +
+                ')',
+              render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
             {
-              title: Languages.t('components.workspace.group.guest', 'Guests'),
-              render: (
-                <Guests users={users.filter(a => a.externe)} buildMenu={e => this.buildMenu(e)} />
-              ),
+              title:
+                Languages.t(
+                  'scenes.apps.parameters.workspace_sections.members.pending',
+                  [],
+                  'Pending',
+                ) +
+                ' (' +
+                workspaceService.getCurrentWorkspace().total_pending +
+                ')',
+              render: <Pending buildMenu={e => this.buildMenu(e)} />,
             },
           ]}
         />
-
-        {pendingMail.length > 0 && (
-          <div /*Email*/>
-            <div className="smalltext">
-              {Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail',
-                [pendingMail.length],
-                'Collaborateurs invités par email ',
-              )}
-            </div>
-            <Table
-              column={[
-                {
-                  title: 'Email',
-                  render: col => (
-                    <div className="absolute_position">
-                      <div className="fix_text_padding_medium text-complete-width">{col.mail}</div>
-                      {!!col.externe && (
-                        <div className="tag green">
-                          {Languages.t(
-                            'scenes.app.popup.workspaceparameter.pages.extern_guest',
-                            [],
-                            'Utilisateur invité',
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ),
-                },
-                {
-                  title: '',
-                  width: 30,
-                  dataIndex: 'action',
-                  render: col => {
-                    if (!workspaceUserRightsService.hasWorkspacePrivilege()) {
-                      return '';
-                    }
-                    return (
-                      <div className="action">
-                        <Menu
-                          className="option_button"
-                          style={{ padding: 4 }}
-                          menu={[
-                            {
-                              type: 'menu',
-                              text: Languages.t(
-                                'scenes.app.popup.workspace.create_temp',
-                                [],
-                                'Create temporary account',
-                              ),
-                              onClick: () => {
-                                MediumPopupManager.open(<CreateCompanyAccount email={col.mail} />, {
-                                  size: { width: 400 },
-                                });
-                              },
-                            },
-                            { type: 'separator' },
-                            {
-                              type: 'menu',
-                              className: 'danger',
-                              text: Languages.t(
-                                'scenes.app.popup.workspaceparameter.pages.cancel_invitation',
-                                [],
-                                "Annuler l'invitation.",
-                              ),
-                              onClick: () => {
-                                AlertManager.confirm(
-                                  () => workspacesUsers.removeInvitation(col.mail),
-                                  () => {},
-                                  {
-                                    text: Languages.t(
-                                      'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button',
-                                      [],
-                                      "Annuler l'invitation par mail.",
-                                    ),
-                                  },
-                                );
-                              },
-                            },
-                          ]}
-                        >
-                          <EditIcon className="m-icon-small" />
-                        </Menu>
-                      </div>
-                    );
-                  },
-                },
-              ]}
-              data={pendingMail}
-            />
-          </div>
-        )}
 
         {workspacesUsers.errorOnInvitation && (
           <div className="blocError">
@@ -488,23 +362,6 @@ export default class WorkspacePartner extends Component {
                 "Vérifiez que le nom d'utilisateur ou le mail utilisé est valide.",
               )}
             </div>
-          </div>
-        )}
-
-        {workspaceUserRightsService.hasWorkspacePrivilege() && (
-          <div className="addMemberBtn">
-            <Button
-              onClick={() => {
-                popupManager.open(<AddUser standalone />);
-              }}
-              type="button"
-              class="medium"
-              value={Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
-                [],
-                'Ajouter des collaborateurs',
-              )}
-            />
           </div>
         )}
 
@@ -590,7 +447,7 @@ export default class WorkspacePartner extends Component {
                   },
                 },
               ]}
-              data={usersInGroup}
+              onRequestMore={() => new Promise(resolve => resolve(usersInGroup))}
             />
           </div>
         )}

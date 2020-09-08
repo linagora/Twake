@@ -332,7 +332,7 @@ export default class WorkspaceApps extends Component {
                     },
                   },
                 ]}
-                data={developed}
+                onRequestMore={() => new Promise(resolve => resolve(developed))}
               />
             )}
 

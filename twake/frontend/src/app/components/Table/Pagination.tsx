@@ -5,6 +5,10 @@ type Props = {
   large?: boolean;
   medium?: boolean;
   small?: boolean;
+  page?: number;
+  previousPage?: false | (() => void);
+  firstPage?: false | (() => void);
+  nextPage?: false | (() => void);
 };
 
 export default class Pagination extends React.Component<Props> {
@@ -17,8 +21,16 @@ export default class Pagination extends React.Component<Props> {
   render() {
     return (
       <div className={'pagination full-width ' + this.setSize()}>
-        <a href="#">&laquo;</a>
-        <a href="#">&raquo;</a>
+        {!!this.props.previousPage && (
+          <a href="#" onClick={this.props.previousPage}>
+            Page précédente
+          </a>
+        )}
+        {!!this.props.nextPage && (
+          <a href="#" onClick={this.props.nextPage}>
+            Afficher plus
+          </a>
+        )}
       </div>
     );
   }

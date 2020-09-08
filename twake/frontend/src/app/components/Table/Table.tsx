@@ -9,14 +9,19 @@ type Props = {
   column?: any;
   noHeader: boolean;
   onAdd: () => void;
-  onRequestNextPage: (pageToken: string, maxResults: number) => Promise<any[]>;
-  onSearch: (query: string, maxResults: number) => Promise<any[]>;
+  onRequestMore: (refresh: boolean) => Promise<any[]>;
+  onSearch: (query: string, maxResults: number, callback: (res: any[]) => void) => Promise<any[]>;
+  addText?: string;
   resultsPerPage?: number;
   unFocused: boolean;
 };
 type State = {
   data: null | any[];
+  searchResults: any[];
   loading: boolean;
+  has_more: boolean;
+  page: number;
+  searchFieldValue: string;
 };
 
 export default class Table extends Component<Props, State> {
@@ -26,7 +31,11 @@ export default class Table extends Component<Props, State> {
     super(props);
     this.state = {
       data: null,
+      searchResults: [],
       loading: true,
+      has_more: true,
+      page: 0,
+      searchFieldValue: '',
     };
     Languages.addListener(this);
   }
@@ -36,24 +45,20 @@ export default class Table extends Component<Props, State> {
   }
 
   componentDidMount() {
-    if (this.state.data === null && this.props.onRequestNextPage) {
-      this.props
-        .onRequestNextPage('', this.props.resultsPerPage || 10)
-        .then(data => {
-          this.setState({ data: data, loading: false });
-        })
-        .catch(e => console.log(e));
+    if (this.state.data === null) {
+      this.requestMore();
     }
-    if (this.state.data === null && this.props.onSearch) {
-      this.props
-        .onSearch(this.searchFieldValue, 10)
-        .then(data => {
-          console.log(this.searchFieldValue);
-          if (this.searchFieldValue.length) this.setState({ data: data, loading: false });
-          else this.setState({ data: data, loading: true });
-        })
-        .catch(e => console.log(e));
-    }
+  }
+
+  search() {
+    this.props.onSearch(this.state.searchFieldValue, 10, (data: any[]) => {
+      console.log(this.searchFieldValue);
+      this.setState({
+        searchResults: data.map(i => {
+          return { user: i };
+        }),
+      });
+    });
   }
 
   renderItem(col: any, item: any) {
@@ -64,12 +69,40 @@ export default class Table extends Component<Props, State> {
     }
   }
 
+  requestMore() {
+    this.setState({ loading: true });
+    this.props.onRequestMore(false).then(res => {
+      const hasMore = res.length !== (this.state.data || []).length;
+      console.log(hasMore);
+      this.setState({ loading: false, data: res, has_more: hasMore });
+    });
+  }
+
   setPosition() {
     if (this.props.onSearch && !this.props.onAdd) return 'flex-end';
     else return 'space-between';
   }
 
+  nextPage() {
+    this.setState({ page: this.state.page + 1 });
+    if (this.getPageData().length < (this.state.page + 1) * this.getResultsPerPage()) {
+      this.requestMore();
+    }
+  }
+
+  getPageData() {
+    const from = this.state.page * this.getResultsPerPage();
+    return (this.state.data || []).slice(0, from + this.getResultsPerPage());
+  }
+
+  getResultsPerPage(): number {
+    return this.props.resultsPerPage || 50;
+  }
+
   render() {
+    const page_data =
+      this.state.searchFieldValue.length > 0 ? this.state.searchResults : this.getPageData();
+
     return (
       <div>
         {(this.props.onAdd || this.props.onSearch) && (
@@ -85,10 +118,8 @@ export default class Table extends Component<Props, State> {
             {this.props.onAdd && (
               <Button
                 class="medium"
-                value={Languages.t(
-                  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
-                  'Add collaborators',
-                )}
+                value={this.props.addText || 'Add'}
+                onClick={this.props.onAdd}
               />
             )}
             {this.props.onSearch && (
@@ -96,13 +127,11 @@ export default class Table extends Component<Props, State> {
                 <InputIcon
                   icon="search"
                   small
-                  placeholder={Languages.t(
-                    'scenes.app.mainview.advanced_search_placeholder',
-                    'Advanced search',
-                  )}
+                  placeholder={Languages.t('components.listmanager.filter', 'Search')}
                   onChange={(event: any) => {
-                    this.searchFieldValue = event.target.value;
-                    this.props.onSearch(this.searchFieldValue, this.props.resultsPerPage || 10);
+                    const q = event.target.value;
+                    this.setState({ searchFieldValue: q });
+                    this.search();
                   }}
                 />
               </div>
@@ -135,7 +164,18 @@ export default class Table extends Component<Props, State> {
             </div>
           )}
           <div className="contentTable">
-            {(this.state.data || []).map((data: any) => {
+            {(page_data || []).length === 0 &&
+              !!this.state.loading &&
+              Array.apply(null, Array(this.getResultsPerPage())).map(() => {
+                return (
+                  <div className="tr">
+                    <div className="item">
+                      <div className="line"></div>
+                    </div>
+                  </div>
+                );
+              })}
+            {(page_data || []).map((data: any) => {
               return (
                 <div className="tr">
                   {this.props.column.map((col: any) => {
@@ -152,9 +192,13 @@ export default class Table extends Component<Props, State> {
               );
             })}
           </div>
-          <div className="footerTable">
-            <Pagination small />
-          </div>
+          {this.state.searchFieldValue.length === 0 && !!this.state.has_more && (
+            <div className="footerTable">
+              <a href="#" onClick={() => this.nextPage()}>
+                {Languages.t('components.searchpopup.load_more', [], 'Load more results')}
+              </a>
+            </div>
+          )}
         </div>
       </div>
     );
