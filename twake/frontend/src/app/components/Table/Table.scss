@@ -45,11 +45,9 @@
   }
 
   .footerTable {
-    font-weight: 700;
+    text-align: center;
+    line-height: 32px;
     font-size: 14px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
     padding: 5px 10px;
     border-top: 1px solid $grey_background;
     border-bottom: 1px solid $grey_background;

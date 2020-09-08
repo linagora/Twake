@@ -73,6 +73,9 @@ class WorkspacesMembersTable extends Observable {
       let offset = '';
       if (!fromStart) {
         offset = this.tables[workspaceId][type].nextPageToken;
+      } else {
+        this.tables[workspaceId][type].loaded = 0;
+        this.tables[workspaceId][type].list = {};
       }
 
       const data = {

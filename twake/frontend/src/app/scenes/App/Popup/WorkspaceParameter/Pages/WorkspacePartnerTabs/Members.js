@@ -8,7 +8,6 @@ import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
-
 export default class Members extends React.Component {
   render() {
     const adminLevel = workspacesUsers.getAdminLevel().id;

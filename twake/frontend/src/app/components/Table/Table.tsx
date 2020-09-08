@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
-import Pagination from 'components/Table/Pagination';
 import Button from 'components/Buttons/Button.js';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import './Table.scss';
@@ -46,7 +45,7 @@ export default class Table extends Component<Props, State> {
 
   componentDidMount() {
     if (this.state.data === null) {
-      this.requestMore();
+      this.requestMore(true);
     }
   }
 
@@ -69,9 +68,9 @@ export default class Table extends Component<Props, State> {
     }
   }
 
-  requestMore() {
+  requestMore(refresh: boolean = false) {
     this.setState({ loading: true });
-    this.props.onRequestMore(false).then(res => {
+    this.props.onRequestMore(refresh).then(res => {
       const hasMore = res.length !== (this.state.data || []).length;
       console.log(hasMore);
       this.setState({ loading: false, data: res, has_more: hasMore });

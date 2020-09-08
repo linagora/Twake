@@ -47,7 +47,14 @@
       }
     }
   }
-  & > .body:not(.full-body) {
+  & > .body {
     padding: 16px;
+  }
+
+  &.full-body {
+    & > .body,
+    & > .component_tabs_tabs {
+      padding: 0px;
+    }
   }
 }

@@ -10,6 +10,9 @@ import workspaceUserRightsService from 'services/workspaces/workspace_user_right
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import popupManager from 'services/popupManager/popupManager.js';
 import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AlertManager from 'services/AlertManager/AlertManager.js';
+import CreateCompanyAccount from '../CreateCompanyAccount.js';
+import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 
 export default class Pending extends React.Component {
   render() {
@@ -22,6 +25,11 @@ export default class Pending extends React.Component {
               popupManager.open(<AddUser standalone />);
             })
           }
+          addText={Languages.t(
+            'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
+            [],
+            'Ajouter des collaborateurs',
+          )}
           onRequestMore={refresh =>
             new Promise(async resolve => {
               const state = await WorkspacesMembersTable.nextPage(
