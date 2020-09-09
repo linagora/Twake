@@ -321,9 +321,7 @@ export default class WorkspacePartner extends Component {
               "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
             )}
             <br />
-            {workspacesUsers.errorUsersInvitation
-              .filter(item => item)
-              .join(", ")}
+            <span className="text">{workspacesUsers.errorUsersInvitation.filter(item => item).join(', ')}</span>
             <div className="smalltext">
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message',

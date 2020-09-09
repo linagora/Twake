@@ -41,6 +41,12 @@ export default class Pending extends React.Component {
               resolve(Object.values(state.list));
             })
           }
+          updatedData={col => {
+            return (
+              col?.mail &&
+              WorkspacesMembersTable.getElement(Workspaces.currentWorkspaceId, 'pending', col.mail)
+            );
+          }}
           column={[
             {
               title: 'Email',

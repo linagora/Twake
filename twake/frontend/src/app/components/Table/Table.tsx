@@ -10,6 +10,7 @@ type Props = {
   onAdd: () => void;
   onRequestMore: (refresh: boolean) => Promise<any[]>;
   onSearch: (query: string, maxResults: number, callback: (res: any[]) => void) => Promise<any[]>;
+  updatedData: (data: any) => any;
   addText?: string;
   resultsPerPage?: number;
   unFocused: boolean;
@@ -117,7 +118,16 @@ export default class Table extends Component<Props, State> {
   }
 
   render() {
-    const page_data = this.state.searching ? this.state.searchResults : this.getPageData();
+    let page_data = this.state.searching ? this.state.searchResults : this.getPageData();
+    page_data = page_data
+      .map(data => {
+        data = this.props.updatedData ? this.props.updatedData(data) : data;
+        if (!data) {
+          return false;
+        }
+        return data;
+      })
+      .filter(i => i);
 
     return (
       <div>

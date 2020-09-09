@@ -49,6 +49,9 @@ class WorkspacesMembersTable extends Observable {
       const data = res.data;
       if (data && data.list) {
         Object.values(data.list).map((o: any) => Collections.get('users').updateObject(o?.user));
+        Object.keys(data.list).map(id => {
+          this.updateElement(workspaceId, type, id, data.list[id]);
+        });
         callback(Object.values(data.list));
       } else {
         callback([]);

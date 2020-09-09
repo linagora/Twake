@@ -371,7 +371,7 @@ class WorkspacesUsers extends Observable {
         mail: mail,
       },
       function (res) {
-        WorkspacesMembersTable.removeElement(res.workspaceId, 'pending', res.mail);
+        WorkspacesMembersTable.removeElement(workspaceService.currentWorkspaceId, 'pending', mail);
         that.loading = false;
         that.notify();
         if (cb) {
