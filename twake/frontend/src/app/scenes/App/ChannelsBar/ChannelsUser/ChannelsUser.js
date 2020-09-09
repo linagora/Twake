@@ -199,7 +199,7 @@ export default class ChannelsUser extends Component {
             .filter(channel => {
               //Remove private channels not from this company
               let keep = false;
-              if (channel._user_last_message_increment - channel.messages_increment < 0) {
+              if ((channel._user_last_message_increment || 0) - channel.messages_increment < 0) {
                 keep = true;
               }
               if (this.membersInWorkspace(channel.members) && channel.messages_increment >= 1) {

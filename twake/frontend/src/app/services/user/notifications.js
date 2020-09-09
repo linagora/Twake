@@ -256,7 +256,7 @@ class Notifications extends Observable {
       Object.keys(Collections.get('channels').known_objects_by_id).forEach(id => {
         var channel = Collections.get('channels').find(id);
         Collections.get('channels').completeObject(
-          { _user_last_message_increment: channel.messages_increment },
+          { _user_last_message_increment: channel.messages_increment || 0 },
           channel.front_id,
         );
       });

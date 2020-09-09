@@ -327,10 +327,10 @@ class Channels extends Observable {
 
   updateBadge(channel) {
     var old_state = this.old_channel_state[channel.id];
-    var ui = channel._user_last_message_increment;
+    var ui = channel._user_last_message_increment || 0;
     if (ui === undefined) {
       channel._user_last_message_increment = channel.messages_increment;
-      ui = channel._user_last_message_increment;
+      ui = channel._user_last_message_increment || 0;
     }
     var state = channel.messages_increment - ui;
     if (!channel._user_last_quoted_message_id && channel._user_muted >= 1) {
@@ -354,6 +354,7 @@ class Channels extends Observable {
   }
 
   incrementChannel(channel) {
+    channel._user_last_message_increment = channel._user_last_message_increment || 0;
     channel._user_last_message_increment++;
     channel.messages_increment++;
     channel.last_activity = new Date().getTime() / 1000;
