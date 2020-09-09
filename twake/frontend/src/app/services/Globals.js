@@ -20,7 +20,9 @@ class Globals {
     }
 
     Object.keys(environment).forEach(key => {
-      this.window[key] = environment[key];
+      if (!this.window[key]) {
+        this.window[key] = environment[key];
+      }
     });
     Object.keys(version).forEach(key => {
       this.window[key] = version[key];

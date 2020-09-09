@@ -1487,7 +1487,7 @@ export default {
     'Приложения, установленные в других областях компании $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Установленные приложения',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'Ошибка произошла при приглашении следующих людей: \\n',
+    'Ошибка произошла при приглашении следующих людей: ',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Пригласить в этом пространстве',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Сотрудники, приглашенные по электронной почте',

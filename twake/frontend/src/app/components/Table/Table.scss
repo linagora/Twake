@@ -11,20 +11,53 @@
     box-shadow: none;
   }
 
+  &.loading {
+    opacity: 0.5;
+
+    .tr .item .line {
+      pointer-events: none;
+      border-radius: var(--default-border-radius-large);
+      height: 16px;
+      margin-top: 8px;
+      width: 200px;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+      animation-iteration-count: infinite;
+      animation-name: placeHolderShimmer;
+      animation-timing-function: linear;
+      background: $grey_light;
+      background: linear-gradient(to right, $grey_light 8%, #f2f2f2 18%, $grey_light 33%);
+      background-size: 800px 104px;
+
+      & > * {
+        opacity: 0 !important;
+      }
+    }
+  }
+
   .headerTable {
     background: $grey_background;
     font-weight: 700;
     font-size: 14px;
     display: flex;
-    padding: 16px;
+    padding: 8px;
+    border-bottom: 1px solid $grey_background;
+  }
+
+  .footerTable {
+    text-align: center;
+    line-height: 32px;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-top: 1px solid $grey_background;
     border-bottom: 1px solid $grey_background;
   }
   .contentTable {
     .tr {
       display: flex;
       border-bottom: 1px solid $grey_background;
-      padding: 16px;
-      font-size: 14px;
+      padding: 8px;
+      font-size: 12px;
 
       &:hover {
         background: $grey_background;

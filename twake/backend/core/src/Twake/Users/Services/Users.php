@@ -20,7 +20,7 @@ class Users
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
     }
 
-    public function search($options = Array())
+    public function search($options = Array(), $entity = false)
     {
         $name = $options["name"];
 
@@ -127,14 +127,14 @@ class Users
             $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
 
             if ($user) {
-                $this->list_users["users"][] = Array($user->getAsArray(), 0);
+                $this->list_users["users"][] = Array($entity ? $user : $user->getAsArray(), 0);
             }
         }
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user) {
             if($user[0]){
-                $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);
+                $this->list_users["users"][] = Array($entity ? $user[0] : $user[0]->getAsArray(), $user[1][0]);
             }
         }
 

@@ -50,45 +50,6 @@ class Workspaces
         $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
     }
 
-    public function getPrivate($userId = null)
-    {
-        $userRepository = $this->doctrine->getRepository("Twake\Users:User");
-        $user = $userRepository->find($userId);
-
-        if (!$user) {
-            return null;
-        }
-
-        $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("user" => $user));
-
-        if (!$workspace) {
-            $plan = $this->pricing->getMinimalPricing();
-            $group = $this->gs->create($userId, "private_group_" . $userId, "private_group_" . $userId, $plan->getId());
-            $group->setIsPrivate(true);
-            $workspace = $this->create("private_workspace", $group->getId(), $userId);
-            $workspace->setIsNew(false);
-            $workspace->setUser($user);
-            $this->doctrine->persist($group);
-            $this->doctrine->persist($workspace);
-            $this->doctrine->flush();
-        }
-
-        //Old groups to remove one day
-        if (!$workspace->getGroup()) {
-            $plan = $this->pricing->getMinimalPricing();
-            $group = $this->gs->create($userId, "private_group_" . $userId, "private_group_" . $userId, $plan->getId());
-            $group->setIsPrivate(true);
-            $workspace->setGroup($group);
-            $this->init($workspace);
-            $this->doctrine->persist($group);
-            $this->doctrine->persist($workspace);
-            $this->doctrine->flush();
-        }
-        return $workspace;
-
-    }
-
     public function create($name, $groupId = null, $userId = null)
     {
 
@@ -205,7 +166,7 @@ class Workspaces
 
         if ($workspace->getMemberCount() == 0) {
 
-            $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace));
+            $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $workspace->getId()));
             $workspace->setMemberCount(count($members));
             $this->doctrine->persist($workspace);
 
@@ -273,14 +234,14 @@ class Workspaces
 
                 //Duplicate users
                 if ($config["users"] == "all" || $config["users"] == "admins") {
-                    $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $original_workspace));
+                    $members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $original_workspace->getId()));
                     foreach ($members as $member) {
-                        if ($member->getUser()->getId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevelId() == $adminLevelId))) {
+                        if ($member->getUserId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevelId() == $adminLevelId))) {
 
                             //Add user with good level
                             if (isset($old_levels_id_to_new_levels[$member->getLevelId() . ""])) {
                                 $level_id = $old_levels_id_to_new_levels[$member->getLevelId() . ""]->getId();
-                                $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false, false, $level_id);
+                                $this->wms->addMember($workspace->getId(), $member->getUserId(), false, false, $level_id);
                             }
 
                         }
@@ -652,7 +613,7 @@ class Workspaces
             $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $currentUser->getId()));
 
             if ($wanted_value === null) {
                 $ishidden = $workspaceUser->getisHidden();
@@ -688,7 +649,7 @@ class Workspaces
             $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $currentUser->getId()));
 
             if ($wanted_value === null) {
                 $hasnotifications = $workspaceUser->getHasNotifications();
@@ -726,7 +687,7 @@ class Workspaces
             $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $currentUser->getId()));
 
             $isfavorite = $workspaceUser->getisFavorite();
             $workspaceUser->setisFavorite(!$isfavorite);

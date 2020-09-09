@@ -19,6 +19,7 @@ export default class Input extends React.Component {
   componentDidMount() {
     if (this.props.autoFocus && this.node) {
       this.node.focus();
+      this.node.setSelectionRange(0, Number.MAX_SAFE_INTEGER);
     }
   }
   render() {
@@ -76,6 +77,7 @@ export default class Input extends React.Component {
         }}
         className={'input ' + (className || '')}
         onBlur={this.props.onBlur}
+        onChange={this.props.onChange}
       />
     );
   }

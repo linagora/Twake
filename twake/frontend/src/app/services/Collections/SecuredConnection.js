@@ -229,6 +229,14 @@ export default class SecuredConnection {
   }
 
   getKeyTimestamp(key) {
-    return parseInt((key || '').split('-')[1]);
+    try {
+      if (typeof key !== 'string') {
+        console.log('wrong websocket key format: ', key);
+        return '';
+      }
+      return parseInt((key || '').split('-')[1]);
+    } catch (e) {
+      console.log(key, e);
+    }
   }
 }
