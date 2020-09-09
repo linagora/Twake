@@ -597,7 +597,6 @@ class WorkspaceMembers
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
 
             $workspace = $workspaceRepository->find($workspaceId);
 
@@ -612,17 +611,25 @@ class WorkspaceMembers
                 "workspace_id" => $workspaceId,
                 "scope" => "workspace"
             ], true);
+
+            if($results){
+                $results = $results["users"];
+            }else{
+                $results = [];
+            }
             
             $members = [];
             foreach($results as $user){
-                $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
-                $v = $this->memberFromLink($workspace, $currentUserId, $user, $link);
-                if($v){
-                    $members[] = $v;
+                if($user[0]){
+                    $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user[0]->getId()));
+                    $v = $this->memberFromLink($workspace, $currentUserId, $user[0], $link);
+                    if($v){
+                        $members[] = $v;
+                    }
                 }
             }
 
-            return $member;
+            return $members;
 
         }
 
@@ -652,7 +659,7 @@ class WorkspaceMembers
                 if($userEntity){
                     $v = $this->memberFromLink($workspace, $currentUserId, $userEntity, $link);
                     if($v){
-                        $user[] = $v;
+                        $users[] = $v;
                     }
                 }
 
@@ -665,6 +672,7 @@ class WorkspaceMembers
     }
 
     private function memberFromLink($workspace, $currentUserId, $userEntity, $link){
+        $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
         $group_user = $groupUserRepository->findOneBy(Array("user" => $link->getUserId(), "group" => $workspace->getGroup()));
         $groupId = $workspace->getGroup();
         

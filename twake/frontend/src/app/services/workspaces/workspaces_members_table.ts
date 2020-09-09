@@ -47,8 +47,11 @@ class WorkspacesMembersTable extends Observable {
     };
     Api.post('workspace/members/list', data, (res: any) => {
       const data = res.data;
-      if (data.list) {
+      if (data && data.list) {
+        Object.values(data.list).map((o: any) => Collections.get('users').updateObject(o?.user));
         callback(Object.values(data.list));
+      } else {
+        callback([]);
       }
     });
   }
@@ -80,7 +83,7 @@ class WorkspacesMembersTable extends Observable {
       };
       Api.post(route, data, (res: any) => {
         const data = res.data;
-        if (data.list) {
+        if (data && data.list) {
           if (type !== 'pending')
             Object.values(data.list).map((o: any) =>
               Collections.get('users').updateObject(o?.user),

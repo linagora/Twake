@@ -70,9 +70,7 @@ export default class Table extends Component<Props, State> {
       console.log(this.searchFieldValue);
       this.searchRunning = false;
       this.setState({
-        searchResults: data.map(i => {
-          return { user: i };
-        }),
+        searchResults: data,
       });
     });
   }
