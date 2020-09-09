@@ -772,9 +772,11 @@ class WorkspaceMembers
             $workspaces_obj = $this->getWorkspaces($user->getId() . "");
             $workspaces_ids = Array();
             $groups_ids = Array();
-            foreach ($workspaces_obj as $workspace_obj) {
-                $workspaces_ids[] = $value["id"];
-                $groups_ids[] = $value["group"]["id"];
+            foreach ($workspaces_obj as $value) {
+                if($value && $value["workspace"] && $value["workspace"]->getGroup()){
+                    $workspaces_ids[] = $value["workspace"]->getId();
+                    $groups_ids[] = $value["workspace"]->getGroup()->getId();
+                }
             }
             $workspaces_ids = array_values(array_unique($workspaces_ids));
             $groups_ids = array_values(array_unique($groups_ids));
