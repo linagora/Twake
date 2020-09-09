@@ -58,8 +58,10 @@ class User {
     return thumbnail;
   }
 
-  search(query, options, callback, noHttp, didTimeout) {
+  search(query, options, callback, noHttp = undefined, didTimeout = undefined) {
     callback = callback || (() => {});
+
+    query = query || '';
 
     const scope = options.scope;
 
@@ -80,7 +82,7 @@ class User {
       .findBy({})
       .forEach(user => {
         if (
-          (user.username + ' ' + user.firstname + ' ' + user.lastname)
+          (user.username + ' ' + user.firstname + ' ' + user.lastname + ' ' + user.email)
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {

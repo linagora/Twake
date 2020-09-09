@@ -448,7 +448,7 @@ class Notifications
 
         if ($has_notification_group) {
 
-            $workspace_members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user" => $user));
+            $workspace_members = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user_id" => $user->getId()));
             foreach ($workspace_members as $workspace_member) {
                 if ($workspace_member->getHasNotifications()) {
                     $has_notification_workspace = true;

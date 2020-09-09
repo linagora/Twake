@@ -3,7 +3,7 @@ name: update-saas-backend
 # Deploy backend only if push on "main"
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths:
       - "twake/docker/**"
       - "twake/backend/**"
@@ -13,6 +13,14 @@ jobs:
   deploy-php:
     runs-on: ubuntu-latest
     steps:
+      - name: Set env to develop
+        if: endsWith(github.ref, '/develop')
+        run: |
+          echo "::set-env name=DOCKERTAG::develop"
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "::set-env name=DOCKERTAG::latest"
       - uses: actions/checkout@v2
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@2.18
@@ -22,11 +30,19 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
           buildoptions: "-t twaketech/twake-php -f docker/twake-php/Dockerfile"
-          tags: "latest"
+          tags: "${{ env.DOCKERTAG }}"
 
   deploy-websockets:
     runs-on: ubuntu-latest
     steps:
+      - name: Set env to develop
+        if: endsWith(github.ref, '/develop')
+        run: |
+          echo "::set-env name=DOCKERTAG::develop"
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "::set-env name=DOCKERTAG::latest"
       - uses: actions/checkout@v2
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@2.18
@@ -36,4 +52,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
           buildoptions: "-t twaketech/twake-websockets -f docker/twake-websockets/Dockerfile"
-          tags: "latest"
+          tags: "${{ env.DOCKERTAG }}"

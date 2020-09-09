@@ -37,7 +37,7 @@ export default class Observable {
   shouldNotify(node) {
     return true;
   }
-  notify(force) {
+  notify(force = false) {
     for (var i = 0; i < this.observableListenersList.length; i++) {
       var update = force || this.shouldNotify(this.observableListenersList[i]);
       if (update) {

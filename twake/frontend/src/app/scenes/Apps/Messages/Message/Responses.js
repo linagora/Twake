@@ -132,7 +132,9 @@ export default class Responses extends Component {
               }
               onChange={val => this.setState({ response_message_raw: val })}
               onSend={val => {
-                this.sendResponse();
+                if ((val || '').length > 0) {
+                  this.sendResponse();
+                }
               }}
               onEditLastMessage={() => {
                 MessagesService.startEditingLastMessage({

@@ -170,7 +170,6 @@ class Messages extends Observable {
   }
 
   startEditingLastMessage(options) {
-    console.log(options);
     let filter = {
       channel_id: options.channel_id,
       sender: CurrentUser.get().id,

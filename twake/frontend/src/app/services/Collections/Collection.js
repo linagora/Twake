@@ -131,19 +131,9 @@ export default class Collection extends Observable {
         if (first_load_callback) first_load_callback(res_list);
         this.notify();
       } else {
-        this.sources[key].http_loading = true;
-        this.load(
-          (this.sources[key] || {}).http_base_url,
-          this.sources[key].http_options,
-          undefined,
-          undefined,
-          res => {
-            this.sources[key].http_loading = false;
-            this.sources[key].did_first_load = true;
-            this.did_load_first_time[key] = true;
-            if (first_load_callback) first_load_callback(res);
-          },
-        );
+        this.reload(res => {
+          if (first_load_callback) first_load_callback(res);
+        });
       }
     };
 
@@ -163,6 +153,24 @@ export default class Collection extends Observable {
     if (routes.length == 0 || (options.http_options || {})._http_force_load || !waiting_one_route) {
       initHttp();
     }
+  }
+
+  reload(callback) {
+    Object.keys(this.sources).map(key => {
+      this.sources[key].http_loading = true;
+      this.load(
+        (this.sources[key] || {}).http_base_url,
+        this.sources[key].http_options,
+        undefined,
+        undefined,
+        res => {
+          this.sources[key].http_loading = false;
+          this.sources[key].did_first_load = true;
+          this.did_load_first_time[key] = true;
+          if (callback) callback(res);
+        },
+      );
+    });
   }
 
   removeSource(_key) {

@@ -181,7 +181,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         //Manage connectors
         if (!$channel->getAppId() && isset($object["connectors"])) {
             $connectors = $object["connectors"];
-            $this->updateConnectors($channel, $connectors, $current_user->getId());
+            $this->updateConnectors($channel, $connectors, $current_user ? $current_user->getId() : null);
         }
 
 

@@ -15,6 +15,7 @@ class WorkspaceMembers
     /* @var WorkspacesActivities $workspacesActivities */
     var $workspacesActivities;
     var $groupManager;
+    private $app;
     private $wls;
     private $string_cleaner;
     private $twake_mailer;
@@ -25,6 +26,7 @@ class WorkspaceMembers
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
@@ -55,7 +57,7 @@ class WorkspaceMembers
             }
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             $member->setLevelId($level->getId());
 
@@ -65,7 +67,7 @@ class WorkspaceMembers
             if ($workspace->getUser() != null) {
                 $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
-            $workspaceUser = $member->getAsArray();
+            $workspaceUser = $member->getAsArray($this->doctrine);
             $workspaceUser["groupLevel"] = $this->groupManager->getLevel($workspace->getGroup(), $userId, $currentUserId);
             $dataToPush = Array(
                 "type" => "update_workspace_level",
@@ -126,7 +128,7 @@ class WorkspaceMembers
                 }
             }
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
 
             if ($member != null) {
@@ -175,7 +177,7 @@ class WorkspaceMembers
 
             $dataToPush = Array(
                 "type" => "add",
-                "workspace_user" => $member->getAsArray()
+                "workspace_user" => $member->getAsArray($this->doctrine)
             );
             $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
 
@@ -213,6 +215,8 @@ class WorkspaceMembers
 //            $this->calendar->addWorkspaceMember($workspace, $user);
             $this->updateChannelAfterAddWorkspaceMember($workspace, $user);
 
+            $this->updateUser($user);
+
             return true;
         }
 
@@ -221,7 +225,7 @@ class WorkspaceMembers
 
     public function updateChannelAfterAddWorkspaceMember($workspace, $user)
     {
-        $workspaceMember = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace, "user" => $user));
+        $workspaceMember = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($workspaceMember) {
             $channels = $this->doctrine->getRepository("Twake\Channels:Channel")->findBy(
                 Array("original_workspace_id" => $workspace->getId(), "direct" => false)
@@ -316,7 +320,7 @@ class WorkspaceMembers
             $workspace = $workspaceRepository->find($workspaceId);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
-            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
 
             if ($mailObj == null) {
                 //Mail not in tables
@@ -357,7 +361,7 @@ class WorkspaceMembers
             $workspace = $workspaceRepository->find($workspaceId);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
             foreach($mails as $mailguest){         
                 $this->doctrine->remove($mailguest);       
                 $workspace->setPendingCount($workspace->getPendingCount() - 1);
@@ -414,7 +418,7 @@ class WorkspaceMembers
             }
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+            $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             if (!$member) {
                 return false;
@@ -456,7 +460,7 @@ class WorkspaceMembers
             }
 
 
-            $workspace_user = $member->getAsArray();
+            $workspace_user = $member->getAsArray($this->doctrine);
             $workspace_user["nbWorkspace"] = $groupmember != null ? $groupmember->getNbWorkspace() : 0;
 
             $dataToPush = Array(
@@ -487,6 +491,8 @@ class WorkspaceMembers
             /* $this->messages->delWorkspaceMember($workspace, $user);
              $this->calendar->delWorkspaceMember($workspace, $user);*/
             $this->delWorkspaceMember_temp($workspace, $user);
+
+            $this->updateUser($user);
 
             return true;
         }
@@ -523,7 +529,7 @@ class WorkspaceMembers
         foreach ($invitations as $userByMail) {
             $this->doctrine->remove($userByMail);
             $this->doctrine->flush();
-            $this->addMember($userByMail->getWorkspace()->getId(), $userId, $userByMail->getExterne(), $userByMail->getAutoAddExterne());
+            $this->addMember($userByMail->getWorkspaceId(), $userId, $userByMail->getExterne(), $userByMail->getAutoAddExterne());
         }
 
         return true;
@@ -539,10 +545,10 @@ class WorkspaceMembers
         }
 
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-        $members = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+        $members = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()));
 
         foreach ($members as $member) {
-            $this->removeMember($workspaceId, $member->getUser()->getId());
+            $this->removeMember($workspaceId, $member->getUserId());
         }
 
         $this->doctrine->flush();
@@ -584,6 +590,53 @@ class WorkspaceMembers
 
     }
 
+    public function searchMembers($workspaceId, $currentUserId = null, $query)
+    {
+        if ($currentUserId == null
+            || $this->wls->can($workspaceId, $currentUserId, "")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
+
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            if (!$workspace) {
+                return false;
+            }
+
+            $usersService = $this->app->getServices()->get("app.users");
+
+            $results = $usersService->search([
+                "name" => $query,
+                "workspace_id" => $workspaceId,
+                "scope" => "workspace"
+            ], true);
+
+            if($results){
+                $results = $results["users"];
+            }else{
+                $results = [];
+            }
+            
+            $members = [];
+            foreach($results as $user){
+                if($user[0]){
+                    $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user[0]->getId()));
+                    $v = $this->memberFromLink($workspace, $currentUserId, $user[0], $link);
+                    if($v){
+                        $members[] = $v;
+                    }
+                }
+            }
+
+            return $members;
+
+        }
+
+        return false;
+
+    }
+
     public function getMembers($workspaceId, $currentUserId = null, $order = Array("user" => "DESC"), $max = 100, $offset = 0)
     {
         if ($currentUserId == null
@@ -599,25 +652,15 @@ class WorkspaceMembers
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), Array(), $max, $offset);
+            $links = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "user_id", "ASC");
             $users = Array();
-            foreach ($link as $user) {
-
-                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser()->getId(), "group" => $workspace->getGroup()));
-                $groupId = $workspace->getGroup();
-                
-                if ($group_user) {
-                    $users[] = Array(
-                        "user" => $user->getUser(),
-                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                        "level" => $user->getLevelId(),
-                        "externe" => $user->getExterne(),
-                        "autoAddExterne" => $user->getAutoAddExterne(),
-                        "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUser()->getId(), $currentUserId)
-                    );
-
-                } else {
-                    error_log("error group user, " . $user->getUser()->getId() . "," . $workspace->getGroup()->getId());
+            foreach ($links as $link) {
+                $userEntity = $link->getUser($this->doctrine);
+                if($userEntity){
+                    $v = $this->memberFromLink($workspace, $currentUserId, $userEntity, $link);
+                    if($v){
+                        $users[] = $v;
+                    }
                 }
 
             }
@@ -626,6 +669,29 @@ class WorkspaceMembers
         }
 
         return false;
+    }
+
+    private function memberFromLink($workspace, $currentUserId, $userEntity, $link){
+        $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
+        $group_user = $groupUserRepository->findOneBy(Array("user" => $link->getUserId(), "group" => $workspace->getGroup()));
+        $groupId = $workspace->getGroup();
+        
+        $value = null;
+        if ($group_user) {
+            $value = Array(
+                "user" => $userEntity,
+                "last_access" => $link->getLastAccess() ? $link->getLastAccess()->getTimestamp() : null,
+                "level" => $link->getLevelId(),
+                "externe" => $link->getExterne(),
+                "autoAddExterne" => $link->getAutoAddExterne(),
+                "workspace_member_id" => $link->getId(),
+                "groupLevel" => $this->groupManager->getLevel($groupId, $link->getUserId(), $currentUserId)
+            );
+
+        } else {
+            error_log("error group user, " . $link->getUserId() . "," . $workspace->getGroup()->getId());
+        }
+        return $value;
     }
 
     public function getPendingMembers($workspaceId, $currentUserId = null, $max = 100, $offset = 0)
@@ -642,7 +708,7 @@ class WorkspaceMembers
                 return false;
             }
 
-            $mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspace), Array(), $max, $offset);
+            $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "mail", "ASC");
 
             return $mails;
         }
@@ -658,17 +724,17 @@ class WorkspaceMembers
         if (!$user) {
             return false;
         }
-        $link = $workspaceUserRepository->findBy(Array("user" => $user));
+        $link = $workspaceUserRepository->findBy(Array("user_id" => $user->getId()));
         $workspaces = Array();
         foreach ($link as $workspace) {
-            if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null && !$workspace->getWorkspace()->getis_deleted()) {
+            if ($workspace->getWorkspace($this->doctrine)->getUser() == null && $workspace->getWorkspace($this->doctrine)->getGroup() != null && !$workspace->getWorkspace($this->doctrine)->getis_deleted()) {
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
-                    "workspace" => $workspace->getWorkspace(),
+                    "workspace" => $workspace->getWorkspace($this->doctrine),
                     "ishidden" => $workspace->getisHidden(),
                     "isfavorite" => $workspace->getisFavorite(),
                     "hasnotifications" => $workspace->getHasNotifications(),
-                    "isArchived" => $workspace->getWorkspace()->getisArchived()
+                    "isArchived" => $workspace->getWorkspace($this->doctrine)->getisArchived()
                 );
             }
         }
@@ -700,7 +766,22 @@ class WorkspaceMembers
 
     }
 
-    public function updateUser(User $user, $workspaces_ids, $groups_ids){
+    public function updateUser(User $user, $workspaces_ids = null, $groups_ids = null){
+
+        if(!$workspaces_ids){
+            $workspaces_obj = $this->getWorkspaces($user->getId() . "");
+            $workspaces_ids = Array();
+            $groups_ids = Array();
+            foreach ($workspaces_obj as $value) {
+                if($value && $value["workspace"] && $value["workspace"]->getGroup()){
+                    $workspaces_ids[] = $value["workspace"]->getId();
+                    $groups_ids[] = $value["workspace"]->getGroup()->getId();
+                }
+            }
+            $workspaces_ids = array_values(array_unique($workspaces_ids));
+            $groups_ids = array_values(array_unique($groups_ids));
+        }
+
         $user->setWorkspaces($workspaces_ids);
         $user->setGroups($groups_ids);
         $user->setEsIndexed(false);

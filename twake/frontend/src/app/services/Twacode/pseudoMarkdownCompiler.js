@@ -267,7 +267,7 @@ class PseudoMarkdownCompiler {
   transformChannelsUsers(str) {
     //Users
     str = (str || '').replace(
-      /(\B@)([^\s]*?)(( |$|[^a-zA-Z0-9]))/g,
+      /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, username, match3) => {
         var values = username.split(':');
         if (values.length == 1) {
@@ -288,7 +288,7 @@ class PseudoMarkdownCompiler {
     );
     //Channels
     str = str.replace(
-      /(\B#)([^\s]*?)(( |$|[^a-zA-Z0-9]))/g,
+      /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, channel, match3) => {
         var values = channel.split(':');
         if (values.length == 1) {
@@ -314,9 +314,9 @@ class PseudoMarkdownCompiler {
 
   transformBackChannelsUsers(str) {
     //Users
-    str = str.replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9]))/g, '$1$2');
+    str = str.replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     //Channels
-    str = str.replace(/\B(#[^\s]*?):.*?(( |$|[^a-zA-Z0-9]))/g, '$1$2');
+    str = str.replace(/\B(#[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     return str;
   }
 

@@ -50,6 +50,7 @@ class ListenUsers {
   }
 
   listenUser(idUser) {
+    return;
     if (!idUser) {
       return;
     }

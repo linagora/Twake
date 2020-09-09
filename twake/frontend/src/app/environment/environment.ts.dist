@@ -3,7 +3,7 @@ export default {
   mixpanel_enabled: false,
   sentry_dsn: false,
   mixpanel_id: false,
-  front_root_url: 'http://' + document.location.host,
-  api_root_url: 'http://' + document.location.host,
-  websocket_url: 'ws://' + document.location.host
+  front_root_url: (document.location.protocol || "http") + '//' + document.location.host,
+  api_root_url: (document.location.protocol || "http") + '//' + document.location.host,
+  websocket_url: (document.location.protocol || "http").replace("http", "ws") + '//' + document.location.host
 };

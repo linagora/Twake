@@ -43,11 +43,36 @@ jobs:
           name: frontend-build
           path: twake/frontend/build/
 
+  deploy-nginx:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Set env to develop
+        if: endsWith(github.ref, '/develop')
+        run: |
+          echo "::set-env name=DOCKERTAG::develop"
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "::set-env name=DOCKERTAG::latest"
+      - uses: actions/checkout@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@2.18
+        with:
+          name: twaketech/twake-nginx
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          workdir: twake
+          buildoptions: "-t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile"
+          tags: "${{ env.DOCKERTAG }}"
+
   #TODO tests frontend
 
   # The nexts parts will work only on main push
+
   deploy-saas:
-    needs: build-frontend
+    needs: deploy-nginx
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
@@ -76,18 +101,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}
-
-  deploy-nginx:
-    needs: deploy-saas
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@2.18
-        with:
-          name: twaketech/twake-nginx
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          workdir: twake
-          buildoptions: "-t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile"
-          tags: "latest"
