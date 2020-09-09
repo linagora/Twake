@@ -20,11 +20,13 @@ type State = {
   loading: boolean;
   has_more: boolean;
   page: number;
-  searchFieldValue: string;
+  searching: boolean;
 };
 
 export default class Table extends Component<Props, State> {
   searchFieldValue: string = '';
+  searchRunning: boolean = false;
+  searchRunningTimeout: number | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -34,7 +36,7 @@ export default class Table extends Component<Props, State> {
       loading: true,
       has_more: true,
       page: 0,
-      searchFieldValue: '',
+      searching: false,
     };
     Languages.addListener(this);
   }
@@ -50,8 +52,23 @@ export default class Table extends Component<Props, State> {
   }
 
   search() {
-    this.props.onSearch(this.state.searchFieldValue, 10, (data: any[]) => {
+    if (this.searchFieldValue?.length <= 2) {
+      return false;
+    }
+    if (this.searchRunning) {
+      //@ts-ignore
+      clearTimeout(this.searchRunningTimeout);
+      //@ts-ignore
+      this.searchRunningTimeout = setTimeout(() => {
+        this.search();
+      }, 1000);
+      return;
+    }
+
+    this.searchRunning = true;
+    this.props.onSearch(this.searchFieldValue, 10, (data: any[]) => {
       console.log(this.searchFieldValue);
+      this.searchRunning = false;
       this.setState({
         searchResults: data.map(i => {
           return { user: i };
@@ -99,8 +116,7 @@ export default class Table extends Component<Props, State> {
   }
 
   render() {
-    const page_data =
-      this.state.searchFieldValue.length > 0 ? this.state.searchResults : this.getPageData();
+    const page_data = this.state.searching ? this.state.searchResults : this.getPageData();
 
     return (
       <div>
@@ -124,7 +140,8 @@ export default class Table extends Component<Props, State> {
                 placeholder={Languages.t('components.listmanager.filter', 'Search')}
                 onChange={(event: any) => {
                   const q = event.target.value;
-                  this.setState({ searchFieldValue: q });
+                  this.searchFieldValue = q;
+                  this.setState({ searching: q.length > 0 });
                   this.search();
                 }}
               />
@@ -186,7 +203,7 @@ export default class Table extends Component<Props, State> {
               );
             })}
           </div>
-          {this.state.searchFieldValue.length === 0 && !!this.state.has_more && (
+          {!this.state.searching && !!this.state.has_more && (
             <div className="footerTable">
               <a href="#" onClick={() => this.nextPage()}>
                 {Languages.t('components.searchpopup.load_more', [], 'Load more results')}

@@ -36,20 +36,17 @@ export default class Members extends React.Component {
               resolve(Object.values(state.list));
             })
           }
-          onSearch={
-            false &&
-            ((query, maxResults, callback) => {
-              WorkspacesMembersTable.search(
-                Workspaces.currentWorkspaceId,
-                'members',
-                query,
-                maxResults,
-                list => {
-                  callback(list);
-                },
-              );
-            })
-          }
+          onSearch={(query, maxResults, callback) => {
+            WorkspacesMembersTable.search(
+              Workspaces.currentWorkspaceId,
+              'members',
+              query,
+              maxResults,
+              list => {
+                callback(list);
+              },
+            );
+          }}
           column={[
             {
               title: 'Name',

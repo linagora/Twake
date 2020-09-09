@@ -15,6 +15,7 @@ class WorkspaceMembers
     /* @var WorkspacesActivities $workspacesActivities */
     var $workspacesActivities;
     var $groupManager;
+    private $app;
     private $wls;
     private $string_cleaner;
     private $twake_mailer;
@@ -25,6 +26,7 @@ class WorkspaceMembers
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
@@ -588,6 +590,46 @@ class WorkspaceMembers
 
     }
 
+    public function searchMembers($workspaceId, $currentUserId = null, $query)
+    {
+        if ($currentUserId == null
+            || $this->wls->can($workspaceId, $currentUserId, "")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
+            $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
+
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            if (!$workspace) {
+                return false;
+            }
+
+            $usersService = $this->app->getServices()->get("app.users");
+
+            $results = $usersService->search([
+                "name" => $query,
+                "workspace_id" => $workspaceId,
+                "scope" => "workspace"
+            ], true);
+            
+            $members = [];
+            foreach($results as $user){
+                $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
+                $v = $this->memberFromLink($workspace, $currentUserId, $user, $link);
+                if($v){
+                    $members[] = $v;
+                }
+            }
+
+            return $member;
+
+        }
+
+        return false;
+
+    }
+
     public function getMembers($workspaceId, $currentUserId = null, $order = Array("user" => "DESC"), $max = 100, $offset = 0)
     {
         if ($currentUserId == null
@@ -603,28 +645,14 @@ class WorkspaceMembers
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "user_id", "ASC");
+            $links = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()), Array(), $max, $offset, "user_id", "ASC");
             $users = Array();
-            foreach ($link as $user) {
-                $userEntity = $user->getUser($this->doctrine);
+            foreach ($links as $link) {
+                $userEntity = $link->getUser($this->doctrine);
                 if($userEntity){
-                        
-                    $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUserId(), "group" => $workspace->getGroup()));
-                    $groupId = $workspace->getGroup();
-                    
-                    if ($group_user) {
-                        $users[] = Array(
-                            "user" => $userEntity,
-                            "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                            "level" => $user->getLevelId(),
-                            "externe" => $user->getExterne(),
-                            "autoAddExterne" => $user->getAutoAddExterne(),
-                            "workspace_member_id" => $user->getId(),
-                            "groupLevel" => $this->groupManager->getLevel($groupId, $user->getUserId(), $currentUserId)
-                        );
-
-                    } else {
-                        error_log("error group user, " . $user->getUserId() . "," . $workspace->getGroup()->getId());
+                    $v = $this->memberFromLink($workspace, $currentUserId, $userEntity, $link);
+                    if($v){
+                        $user[] = $v;
                     }
                 }
 
@@ -634,6 +662,28 @@ class WorkspaceMembers
         }
 
         return false;
+    }
+
+    private function memberFromLink($workspace, $currentUserId, $userEntity, $link){
+        $group_user = $groupUserRepository->findOneBy(Array("user" => $link->getUserId(), "group" => $workspace->getGroup()));
+        $groupId = $workspace->getGroup();
+        
+        $value = null;
+        if ($group_user) {
+            $value = Array(
+                "user" => $userEntity,
+                "last_access" => $link->getLastAccess() ? $link->getLastAccess()->getTimestamp() : null,
+                "level" => $link->getLevelId(),
+                "externe" => $link->getExterne(),
+                "autoAddExterne" => $link->getAutoAddExterne(),
+                "workspace_member_id" => $link->getId(),
+                "groupLevel" => $this->groupManager->getLevel($groupId, $link->getUserId(), $currentUserId)
+            );
+
+        } else {
+            error_log("error group user, " . $link->getUserId() . "," . $workspace->getGroup()->getId());
+        }
+        return $value;
     }
 
     public function getPendingMembers($workspaceId, $currentUserId = null, $max = 100, $offset = 0)

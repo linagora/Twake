@@ -28,8 +28,13 @@ class WorkspaceMembers extends BaseController
         $order = $request->request->get("order", null);
         $max = $request->request->get("max", null);
         $offset = $request->request->get("offset", null);
+        $query = $request->request->get("query", null);
 
-        $all_info = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
+        if($query){
+            $all_info = $this->get("app.workspace_members")->searchMembers($workspaceId, $this->getUser()->getId(), $query);
+        }else{
+            $all_info = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
+        }
         $response["data"] = [];
 
         foreach($all_info as $user){

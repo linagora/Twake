@@ -40,21 +40,16 @@ class WorkspacesMembersTable extends Observable {
     max: number,
     callback: (res: any[]) => void,
   ) {
-    return new Promise(resolve => {
-      UsersService.search(query, { scope: 'workspace', workspace_id: workspaceId }, (res: any) => {
-        const ids = res.map((i: any) => i.id);
-        const data = {
-          workspaceId: workspaceId,
-          users_ids: ids,
-        };
-        this.searched = this.searched.concat(ids);
-        Api.post('workspace/members/list', data, (res: any) => {
-          const data = res.data;
-          if (data.list) {
-            callback(Object.values(data.list));
-          }
-        });
-      });
+    const data = {
+      workspaceId: workspaceId,
+      query: query,
+      max: max,
+    };
+    Api.post('workspace/members/list', data, (res: any) => {
+      const data = res.data;
+      if (data.list) {
+        callback(Object.values(data.list));
+      }
     });
   }
 
