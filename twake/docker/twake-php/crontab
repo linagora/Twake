@@ -22,4 +22,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 * *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_timetable
 * *     * * *   root    cd /twake-core/; php bin/console twake:scheduled_notifications_consume_shard
 
+* *	  * * *	  root	  chmod -R 777 /twake-core/cache;
+
 32 *	  * * *	  root	  kill -USR2 1;
