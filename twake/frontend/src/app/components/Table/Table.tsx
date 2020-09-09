@@ -71,7 +71,6 @@ export default class Table extends Component<Props, State> {
 
     this.searchRunning = true;
     this.props.onSearch(this.searchFieldValue, 10, (data: any[]) => {
-      console.log(this.searchFieldValue);
       this.searchRunning = false;
       this.setState({
         loading: false,
@@ -92,7 +91,6 @@ export default class Table extends Component<Props, State> {
     this.setState({ loading: true });
     this.props.onRequestMore(refresh).then(res => {
       const hasMore = res.length !== (this.state.data || []).length;
-      console.log(hasMore);
       this.setState({ loading: false, data: res, has_more: hasMore });
     });
   }
@@ -215,13 +213,15 @@ export default class Table extends Component<Props, State> {
               );
             })}
           </div>
-          {!this.state.searching && !!this.state.has_more && (
-            <div className="footerTable">
-              <a href="#" onClick={() => this.nextPage()}>
-                {Languages.t('components.searchpopup.load_more', [], 'Load more results')}
-              </a>
-            </div>
-          )}
+          {!this.state.searching &&
+            !!this.state.has_more &&
+            page_data.length >= this.getResultsPerPage() && (
+              <div className="footerTable">
+                <a href="#" onClick={() => this.nextPage()}>
+                  {Languages.t('components.searchpopup.load_more', [], 'Load more results')}
+                </a>
+              </div>
+            )}
         </div>
       </div>
     );

@@ -132,7 +132,7 @@ export default class Responses extends Component {
               }
               onChange={val => this.setState({ response_message_raw: val })}
               onSend={val => {
-                if (val.length > 0) {
+                if ((val || '').length > 0) {
                   this.sendResponse();
                 }
               }}

@@ -104,6 +104,39 @@ class WorkspacesMembersTable extends Observable {
       });
     });
   }
+
+  updateElement(workspaceId: string, type: string, user_id: string, object: string) {
+    this.tables[workspaceId] = this.tables[workspaceId] || {};
+    this.tables[workspaceId][type] = this.tables[workspaceId][type] || {
+      list: {},
+    };
+
+    if (this.tables[workspaceId][type]) {
+      this.tables[workspaceId][type].list[user_id] = object;
+      this.notify();
+    }
+  }
+
+  removeElement(workspaceId: string, type: string, user_id: string) {
+    if (this.tables[workspaceId][type]) {
+      delete this.tables[workspaceId][type].list[user_id];
+      this.notify();
+    }
+  }
+
+  getElement(workspaceId: string, type: string, user_id: string) {
+    if (this.tables[workspaceId][type]) {
+      return this.tables[workspaceId][type].list[user_id];
+    }
+    return null;
+  }
+
+  getList(workspaceId: string, type: string) {
+    if (this.tables[workspaceId][type]) {
+      return this.tables[workspaceId][type].list || {};
+    }
+    return {};
+  }
 }
 
 const service = new WorkspacesMembersTable();

@@ -312,6 +312,28 @@ export default class WorkspacePartner extends Component {
             'Collaborateurs',
           )}
         </div>
+
+        {workspacesUsers.errorOnInvitation && (
+          <div className="blocError">
+            {Languages.t(
+              'scenes.app.popup.workspaceparameter.pages.invitation_error',
+              [],
+              "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
+            )}
+            <br />
+            {workspacesUsers.errorUsersInvitation
+              .filter(item => item)
+              .join(", ")}
+            <div className="smalltext">
+              {Languages.t(
+                'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message',
+                [],
+                "Vérifiez que le nom d'utilisateur ou le mail utilisé est valide.",
+              )}
+            </div>
+          </div>
+        )}
+
         <Tabs
           fullBody
           tabs={[
@@ -333,28 +355,6 @@ export default class WorkspacePartner extends Component {
             },
           ]}
         />
-
-        {workspacesUsers.errorOnInvitation && (
-          <div className="blocError">
-            {Languages.t(
-              'scenes.app.popup.workspaceparameter.pages.invitation_error',
-              [],
-              "Une erreur s'est produite lors de l'invitation des personnes suivantes :\n",
-            )}
-            {workspacesUsers.errorUsersInvitation
-              .filter(item => item)
-              .map(item => {
-                return [item, <br />];
-              })}
-            <div className="smalltext">
-              {Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message',
-                [],
-                "Vérifiez que le nom d'utilisateur ou le mail utilisé est valide.",
-              )}
-            </div>
-          </div>
-        )}
 
         {usersInGroup.length > 0 && (
           <div /*Company*/ className="group_section">

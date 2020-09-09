@@ -67,12 +67,12 @@ export default class CurrentUser extends Component {
     this.state.new_status = current_user.status_icon;
 
     //TODO to remove
-    const inter = setInterval(() => {
+    /*const inter = setInterval(() => {
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {
         popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
       }
       clearInterval(inter);
-    }, 1000);
+    }, 1000);*/
   }
   updateStatus(value) {
     value = value || this.state.new_status;

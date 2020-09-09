@@ -12,6 +12,7 @@ import Numbers from 'services/utils/Numbers.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import CurrentUser from 'services/user/current_user.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
+import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 
 import Globals from 'services/Globals.js';
 
@@ -236,9 +237,19 @@ class WorkspacesUsers extends Observable {
       this.users_by_group[res.workspace_user.workspace.group.id][
         res.workspace_user.user.id
       ] = userlink;
+      WorkspacesMembersTable.updateElement(
+        res.workspace_user.workspace.id,
+        'members',
+        res.workspace_user.user.id,
+        res.workspace_user,
+      );
       // Collections.get("users").completeObject(res.workspace_user.user, res.workspace_user.user.front_id);
     } else if (res.type == 'remove') {
-      delete this.users_by_workspace[res.workspace_user.workspace.id][res.workspace_user.user.id];
+      WorkspacesMembersTable.removeElement(
+        res.workspace_user.workspace.id,
+        'members',
+        res.workspace_user.user.id,
+      );
       if (res.workspace_user.nbWorkspace <= 0) {
         delete this.users_by_group[res.workspace_user.workspace.group.id][
           res.workspace_user.user.id
@@ -259,8 +270,7 @@ class WorkspacesUsers extends Observable {
         Globals.window.location.reload();
       }
 
-      var user = that.users_by_workspace[workspaceId][id];
-      delete that.users_by_workspace[workspaceId][id];
+      WorkspacesMembersTable.removeElement(workspaceId, 'members', id);
 
       that.loading = false;
       that.notify();
@@ -303,7 +313,9 @@ class WorkspacesUsers extends Observable {
                 workspace_id: workspaceService.currentWorkspaceId,
               });
 
-            that.membersPending.push({ mail: mail });
+            WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, {
+              mail: mail,
+            });
           });
           that.errorOnInvitation = false;
           that.errorUsersInvitation = [];
@@ -317,7 +329,7 @@ class WorkspacesUsers extends Observable {
                 Languages.t(
                   'services.workspaces.not_added',
                   [],
-                  "Les utilisateurs suivants n'ont pas été ajoutés : ",
+                  "Les utilisateurs suivants n'ont pas été ajoutés (déjà invité, email mal formatté, ou utilisateur inconnu) : ",
                 ) + (res.data.not_added || []).join(', '),
             });
           }
@@ -359,9 +371,7 @@ class WorkspacesUsers extends Observable {
         mail: mail,
       },
       function (res) {
-        if (res.errors.length > 0) {
-          that.membersPending.push(old);
-        }
+        WorkspacesMembersTable.removeElement(res.workspaceId, 'pending', res.mail);
         that.loading = false;
         that.notify();
         if (cb) {
@@ -396,38 +406,44 @@ class WorkspacesUsers extends Observable {
     }
     return false;
   }
+
   updateManagerRole(userId, state) {
     var workspaceId = workspaceService.currentWorkspaceId;
     var groupId = groupService.currentGroupId;
-    if (this.users_by_workspace[workspaceId][userId] && !this.updateRoleUserLoading[userId]) {
+    const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
+    if (member && !this.updateRoleUserLoading[userId]) {
       var that = this;
       this.updateRoleUserLoading[userId] = true;
-      var previousState = this.users_by_workspace[workspaceId][userId].groupLevel;
-      this.users_by_workspace[workspaceId][userId].groupLevel = state ? 3 : -1;
+      var previousState = member.groupLevel;
+      member.groupLevel = state ? 3 : -1;
+      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
       this.notify();
       Api.post(
         'workspace/group/manager/toggleManager',
         { groupId: groupId, userId: userId, isManager: state },
         res => {
           if (res.errors.length > 0) {
-            that.users_by_workspace[workspaceId][userId].groupLevel = previousState;
+            member.groupLevel = previousState;
+            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
         },
       );
-    } else if (this.users_by_group[groupId][userId] && !this.updateRoleUserLoading[userId]) {
+    } else if (member && !this.updateRoleUserLoading[userId]) {
       var that = this;
       this.updateRoleUserLoading[userId] = true;
-      var previousState = this.users_by_group[groupId][userId].groupLevel;
-      this.users_by_group[groupId][userId].level = state ? 3 : -1;
+      var previousState = member.groupLevel;
+      member.level = state ? 3 : -1;
+      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
       this.notify();
       Api.post(
         'workspace/group/manager/toggleManager',
         { groupId: groupId, userId: userId, isManager: state },
         res => {
           if (res.errors.length > 0) {
-            that.users_by_group[groupId][userId].level = previousState;
+            member.level = previousState;
+            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }
           that.updateRoleUserLoading[userId] = false;
           that.notify();
@@ -437,27 +453,30 @@ class WorkspacesUsers extends Observable {
   }
   updateUserLevel(userId, state) {
     var workspaceId = workspaceService.currentWorkspaceId;
-    if (this.users_by_workspace[workspaceId][userId] && !this.updateRoleUserLoading[userId]) {
+    const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
+    if (member && !this.updateRoleUserLoading[userId]) {
       var that = this;
       this.updateLevelUserLoading[userId] = true;
-      var previousState = this.users_by_workspace[workspaceId][userId].level;
+      var previousState = member.level;
       if (previousState == this.getDefaultLevel().id) {
-        this.users_by_workspace[workspaceId][userId].level = this.getAdminLevel().id;
+        member.level = this.getAdminLevel().id;
       } else {
-        this.users_by_workspace[workspaceId][userId].level = this.getDefaultLevel().id;
+        member.level = this.getDefaultLevel().id;
       }
+      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
       this.notify();
       Api.post(
         'workspace/members/changelevel',
         {
           workspaceId: workspaceService.currentWorkspaceId,
           usersId: [userId],
-          levelId: this.users_by_workspace[workspaceId][userId].level,
+          levelId: member.level,
         },
         res => {
           if (res.errors.length > 0 || res.data.updated == 0) {
             console.log('error, going to previous state' + previousState);
-            that.users_by_workspace[workspaceId][userId].level = previousState;
+            member.level = previousState;
+            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }
           that.updateLevelUserLoading[userId] = false;
           that.notify();
@@ -482,7 +501,7 @@ class WorkspacesUsers extends Observable {
     if (!workspaceUserRights.hasWorkspacePrivilege()) {
       has_other_admin = true;
     } else {
-      var users = this.users_by_workspace[workspaceService.currentWorkspaceId];
+      var users = WorkspacesMembersTable.getList(workspaceService.currentWorkspaceId, 'members');
       Object.keys(users).forEach(id => {
         if (
           id != User.getCurrentUserId() &&

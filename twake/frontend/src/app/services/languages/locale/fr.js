@@ -1502,7 +1502,7 @@ export default {
     "Applications installées dans d'autres espaces de l'entreprise $1",
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Applications installées',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    "Une erreur s'est produite lors de l'invitation des personnes suivantes :\\n",
+    "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Inviter dans cet espace',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborateurs invités par email ',

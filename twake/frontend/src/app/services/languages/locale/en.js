@@ -1437,7 +1437,7 @@ export default {
     'Applications installed in other areas of the company $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Installed applications',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'An error occurred while inviting the following people: \\n',
+    'An error occurred while inviting the following people: ',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Invite in this space',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborators invited by email',

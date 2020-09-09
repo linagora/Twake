@@ -1479,7 +1479,7 @@ export default {
     'Anwendungen in anderen Bereichen des Unternehmens installiert $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Installierte Anwendungen',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'Beim Einladen der folgenden Personen ist ein Fehler aufgetreten: \\n',
+    'Beim Einladen der folgenden Personen ist ein Fehler aufgetreten:',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Laden Sie in diesen Raum ein',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Mitarbeiter per E-Mail eingeladen',

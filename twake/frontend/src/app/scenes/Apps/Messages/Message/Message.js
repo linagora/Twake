@@ -386,7 +386,7 @@ export default class Message extends Component {
                         this.setState({});
                       }}
                       onSend={val => {
-                        if (val.length > 0) {
+                        if ((val || '').length > 0) {
                           this.editMessage();
                         } else {
                           this.removeMessage();
@@ -400,22 +400,21 @@ export default class Message extends Component {
                         this.setState({});
                       }}
                     />
-                    {this.state.app_messages_service.edited_message_raw[this.props.message.front_id]
-                      .length === 0 && (
-                      <Button
-                        value={Languages.t('general.remove', [], 'Supprimer')}
-                        className="small right-margin"
-                        onClick={() => this.removeMessage()}
-                      />
-                    )}
-                    {this.state.app_messages_service.edited_message_raw[this.props.message.front_id]
-                      .length > 0 && (
-                      <Button
-                        value={Languages.t('general.save', [], 'Enregistrer')}
-                        className="small right-margin"
-                        onClick={() => this.editMessage()}
-                      />
-                    )}
+                    <Button
+                      value={Languages.t('general.save', [], 'Enregistrer')}
+                      className="small right-margin"
+                      onClick={() => {
+                        if (
+                          this.state.app_messages_service.edited_message_raw[
+                            this.props.message.front_id
+                          ]
+                        ) {
+                          this.editMessage();
+                        } else {
+                          this.removeMessage();
+                        }
+                      }}
+                    />
                     <Button
                       value={Languages.t(
                         'scenes.apps.messages.message.cancel_button',
