@@ -4,7 +4,7 @@ name: update-saas-frontend
 # And for only deploying on pushes on "main" branch
 on:
   push:
-    branches: [main, "feature/*"]
+    branches: [main, develop, "feature/*"]
     paths:
       - "twake/frontend/**"
       - "twake/docker/**"
