@@ -753,7 +753,7 @@ export default {
   'scenes.apps.parameters.group_sections.managers.invite_manager_placeholder':
     "Nom d'utilisateur du manager",
   'scenes.apps.parameters.group_sections.managers.invite_manager_button': 'Ajouter',
-  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Пропустить',
+  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Passer',
   'scenes.apps.parameters.group_sections.managers.invite_manager_message':
     'Voulez-vous ajouter cette personne en tant que manager?',
   'scenes.apps.parameters.group_sections.managers.only_reading': 'Seulement la lecture',
@@ -989,6 +989,7 @@ export default {
     "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
   'scenes.apps.tasks.unconfigured_tab': "Cet onglet n'est pas encore configuré.",
   'scenes.apps.tasks.left.team': 'Équipe',
+  'scenes.apps.tasks.left.team': "Voir les tâches pour l'utilisateur",
   'scenes.apps.tasks.new_board.title': 'Nouveau tableau',
   'scenes.apps.tasks.choose_board_button': 'Choisir un tableau',
   'scenes.apps.tasks.new_board.edit_title': 'Éditer le tableau',
@@ -1501,7 +1502,7 @@ export default {
     "Applications installées dans d'autres espaces de l'entreprise $1",
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Applications installées',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    "Une erreur s'est produite lors de l'invitation des personnes suivantes :\\n",
+    "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Inviter dans cet espace',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborateurs invités par email ',

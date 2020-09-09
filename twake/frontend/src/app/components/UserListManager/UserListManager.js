@@ -194,12 +194,13 @@ export default class UserListManager extends React.Component {
                   className="small secondary-text right-margin"
                   onClick={() => this.setState({ editing: true })}
                 >
-                  <Icon type="plus" className="m-icon-small" />{' '}
-                  {Languages.t(
-                    'scenes.apps.parameters.workspace_sections.members.invite_btn',
-                    [],
-                    'Ajouter des utilisateurs',
-                  )}
+                  <Icon type={this.props.buttonIcon || 'plus'} className="m-icon-small" />{' '}
+                  {this.props.buttonText ||
+                    Languages.t(
+                      'scenes.apps.parameters.workspace_sections.members.invite_btn',
+                      [],
+                      'Ajouter des utilisateurs',
+                    )}
                 </Button>
               )}
               {!!this.state.editing && (
@@ -227,11 +228,14 @@ export default class UserListManager extends React.Component {
                   autoFocus
                   small
                   position={this.props.onTop ? 'top' : 'bottom'}
-                  placeholder={Languages.t(
-                    'scenes.apps.parameters.workspace_sections.members.invite_btn',
-                    [],
-                    'Ajouter des utilisateurs',
-                  )}
+                  placeholder={
+                    this.props.inputText ||
+                    Languages.t(
+                      'scenes.apps.parameters.workspace_sections.members.invite_btn',
+                      [],
+                      'Ajouter des utilisateurs',
+                    )
+                  }
                 />
               )}
 
@@ -249,9 +253,7 @@ export default class UserListManager extends React.Component {
                 Object.keys(
                   WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
                 ).length > this.state.users_ids.length &&
-                Object.keys(
-                  WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
-                ).length < 20 && (
+                Workspaces.getCurrentWorkspace().total_members < 30 && (
                   <Button
                     className="small primary-text"
                     onClick={() => {

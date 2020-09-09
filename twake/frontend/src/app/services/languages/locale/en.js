@@ -830,6 +830,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.members': 'Members',
   'scenes.apps.parameters.workspace_sections.members.members_text':
     'You can remove collaborators or change collaborators rights.',
+  'scenes.apps.parameters.workspace_sections.members.guests': 'Guests',
   'scenes.apps.parameters.workspace_sections.members.pending': 'Pending members',
   'scenes.apps.parameters.workspace_sections.members.pending_text':
     'No members are using the e-mails bellow.',
@@ -942,7 +943,7 @@ export default {
     'You do not have any connectors that can connect to a calendar.',
   'scenes.apps.tasks.unconfigured_tab': 'This tab is not configured yet.',
   'scenes.apps.tasks.choose_board_button': 'Choose a board',
-  'scenes.apps.tasks.left.team': 'Team',
+  'scenes.apps.tasks.left.team': 'See tasks for user',
   'scenes.apps.tasks.new_board.title': 'New board',
   'scenes.apps.tasks.new_board.edit_title': 'Edit board',
   'scenes.apps.tasks.new_board.name': 'Name',
@@ -1436,7 +1437,7 @@ export default {
     'Applications installed in other areas of the company $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Installed applications',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'An error occurred while inviting the following people: \\n',
+    'An error occurred while inviting the following people: ',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Invite in this space',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborators invited by email',

@@ -6,7 +6,7 @@
 
   &::before {
     content: '';
-    position: absolute;
+    position: relative;
     right: 0px;
     left: auto;
     top: 0px;
@@ -49,5 +49,12 @@
   }
   & > .body {
     padding: 16px;
+  }
+
+  &.full-body {
+    & > .body,
+    & > .component_tabs_tabs {
+      padding: 0px;
+    }
   }
 }

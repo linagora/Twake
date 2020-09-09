@@ -95,7 +95,7 @@ class GroupApps
             $workspace_apps = $workspaceAppsRepository->findBy(Array("groupapp_id" => $groupapp->getId()));
 
             foreach ($workspace_apps as $workspace_app) {
-                $this->was->disableApp($workspace_app->getWorkspace()->getId(), $application->getId());
+                $this->was->disableApp($workspace_app->getWorkspaceId(), $application->getId());
             }
 
             return true;
@@ -153,7 +153,7 @@ class GroupApps
 
                 if ($workspaceId) {
                     $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-                    $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspaceId, "user" => $userId));
+                    $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspaceId, "user_id" => $userId));
                     $workspaceUser->setLastAccess();
                     $this->doctrine->persist($workspaceUser);
                 }

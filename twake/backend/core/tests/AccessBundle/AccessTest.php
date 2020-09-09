@@ -681,20 +681,20 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(null, $channel4);
 
         // pour les worskspaceUser
-        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace" => $workspace1_id));
+        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $workspace1_id));
         foreach ($workspaceUser1 as $wp) {
             $this->get("app.twake_doctrine")->remove($wp);
             $this->get("app.twake_doctrine")->flush();
         }
 
-        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace1_id));
+        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $workspace1_id));
         $this->assertEquals(null, $workspaceUser1);
 
-        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $workspace2_id));
+        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $workspace2_id));
         $this->get("app.twake_doctrine")->remove($workspaceUser2);
         $this->get("app.twake_doctrine")->flush();
 
-        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUSer")->findOneBy(Array("workspace" => $workspace2_id));
+        $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUSer")->findOneBy(Array("workspace_id" => $workspace2_id));
         $this->assertEquals(null, $workspaceUser2);
 
         //pour les fichiers

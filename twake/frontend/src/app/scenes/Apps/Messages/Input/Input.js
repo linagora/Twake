@@ -87,6 +87,8 @@ export default class Input extends Component {
         this.setState({ sent: false });
       }, 600);
       if (this.props.onSend) this.props.onSend(this.state.content);
+    } else {
+      if (this.props.onSend) this.props.onSend('');
     }
   }
   onKeyUp(evt) {

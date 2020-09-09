@@ -243,7 +243,7 @@ class Groups
             $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
             $workspaceUserRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+            $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()));
 
             $workspaceappsRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceApp");
             $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));

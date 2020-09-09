@@ -141,20 +141,20 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         if ($workspace_id) {
 
             $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
 
             if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
                 $workspaceUser->setHasNotifications(true);
                 $this->doctrine->persist($workspaceUser);
-                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspace()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspaceId(), "hasnotifications" => true)), "notifications/" . $user->getId());
 
                 $groupUsers = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
-                $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $user));
+                $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace($this->doctrine)->getGroup(), "user" => $user));
 
                 if ($groupUser && !$groupUser->getHasNotifications()) {
                     $groupUser->setHasNotifications(true);
                     $this->doctrine->persist($groupUser);
-                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace()->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace($this->doctrine)->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
                 }
 
             }
@@ -263,7 +263,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->notificationSystem->removeMailReminder($user);
 
         $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
-        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
 
         $all_read = true;
         if ($workspaceUser && $workspaceUser->getHasNotifications()) {
@@ -293,7 +293,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspace_id, "hasnotifications" => false)), "notifications/" . $user->getId());
             }
 
-            $groupId = $workspaceUser->getWorkspace()->getGroup()->getId();
+            $groupId = $workspaceUser->getWorkspace($this->doctrine)->getGroup()->getId();
 
             $groupUsers = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
             $groupUser = $groupUsers->findOneBy(Array("group" => $groupId, "user" => $user));
@@ -301,11 +301,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $all_read = true;
 
             if ($groupUser && $groupUser->getHasNotifications()) {
-                $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+                $workspacesUser = $workspaceUsers->findBy(Array("user_id" => $user->getId()));
 
                 foreach ($workspacesUser as $workspaceUser) {
                     if ($workspaceUser->getHasNotifications()) {
-                        $workspace = $workspaceUser->getWorkspace();
+                        $workspace = $workspaceUser->getWorkspace($this->doctrine);
                         if ($workspace->getGroup()->getId() == $groupId) {
                             $all_read = false;
                             break;
@@ -342,7 +342,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
         $all_read = true;
-        $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+        $workspacesUser = $workspaceUsers->findBy(Array("user_id" => $user->getId()));
         foreach ($workspacesUser as $workspaceUser) {
             if ($workspaceUser->getHasNotifications()) {
                 $all_read = false;

@@ -24,16 +24,16 @@ class WorkspaceUser
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    private $workspace;
+    private $workspace_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Users\Entity\User")
+     * @ORM\Column(name="user_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    private $user;
+    private $user_id;
 
     /**
      * @ORM\Column(name="level_id", type="twake_timeuuid")
@@ -67,8 +67,8 @@ class WorkspaceUser
 
     public function __construct($workspace, $user, $level_id)
     {
-        $this->workspace = $workspace;
-        $this->user = $user;
+        $this->workspace_id = $workspace->getId();
+        $this->user_id = $user->getId();
 
         $this->level_id = $level_id;
         $this->date_added = new \DateTime();
@@ -91,17 +91,35 @@ class WorkspaceUser
     /**
      * @return mixed
      */
-    public function getWorkspace()
+    public function getWorkspace($em)
     {
-        return $this->workspace;
+        $workspacesRepository = $em->getRepository("Twake\Workspaces:Workspace");
+        return $workspacesRepository->find($this->workspace_id);
     }
 
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getWorkspaceId()
     {
-        return $this->user;
+        return $this->workspace_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser($em)
+    {
+        $repo = $em->getRepository("Twake\Users:User");
+        return $repo->find($this->user_id);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 
     /**
@@ -224,12 +242,14 @@ class WorkspaceUser
         $this->auto_add_externe = $auto_add_externe;
     }
 
-    public function getAsArray()
+    public function getAsArray($em)
     {
         return Array(
             "id" => $this->getId(),
-            "user" => $this->getUser()->getAsArray(),
-            "workspace" => $this->getWorkspace()->getAsArray(),
+            "user" => $this->getUser($em),
+            "user_id" => $this->getUserId(),
+            "workspace_id" => $this->getWorkspaceId(),
+            "workspace" => $this->getWorkspace($em),
             "level_id" => $this->getLevelId(),
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),

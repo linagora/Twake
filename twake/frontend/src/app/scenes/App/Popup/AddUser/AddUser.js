@@ -5,9 +5,12 @@ import workspacesUsersService from 'services/workspaces/workspaces_users.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Emojione from 'components/Emojione/Emojione.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Switch from 'components/Inputs/Switch.js';
+
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Input from 'components/Inputs/Input.js';
+
+import Strings from 'services/utils/strings.js';
+import UserOrMail from 'components/ui/UserOrMail.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete.js';
 import './AddUser.scss';
 
 export default class AddUser extends Component {
@@ -19,9 +22,10 @@ export default class AddUser extends Component {
       workspacesUsersService: workspacesUsersService,
       members: [],
       collaborators: 0,
-      input_to_show: 2,
+      input_to_show: 1,
       willClose: false,
       multi: false,
+      entry: '',
     };
     for (var i = 0; i < 5; i++) {
       this.state.members.push({ mail: '', externe: '0' });
@@ -99,6 +103,17 @@ export default class AddUser extends Component {
         .map(item => item.mail + '|' + (item.externe || '0'));
     }
   }
+  getUserOrMail(str) {
+    if (Strings.verifyMail(str)) {
+      return str;
+    } else {
+      return str
+        .toLocaleLowerCase()
+        .replace(/[^a-zA-Z0-9-_\.]/g, '')
+        .replace(/^@*(.*)/, '@$1');
+    }
+  }
+
   render() {
     var mail_inputs = 0;
     var last_not_empty = 0;
@@ -120,10 +135,6 @@ export default class AddUser extends Component {
               style={{ minHeight: 100, marginTop: 0, maxHeight: '50vh' }}
               placeholder={'james@acme.com, jane@acme.com'}
             />
-
-            {/*<br/>
-
-                  <Switch label={"Tous comme invités"} value={this.state.all_externes == "1"} onChange={(state)=>{this.setState({all_externes: state?"1":"0"})}} />*/}
 
             <br />
             <br />
@@ -157,22 +168,35 @@ export default class AddUser extends Component {
                 mail_inputs++;
                 return (
                   <div className="new_member bottom-margin">
-                    <Input
-                      refInput={ref => {
-                        if (index == 0) {
-                          this.input = ref;
-                        }
-                      }}
+                    <AutoComplete
+                      regexHooked={
+                        [
+                          /*/(.+)/*/
+                        ]
+                      }
+                      search={[
+                        (query, cb) => {
+                          cb([{ username: query }]);
+                        },
+                      ]}
+                      renderItem={[
+                        item => {
+                          return <UserOrMail item={this.getUserOrMail(item.username)} />;
+                        },
+                      ]}
+                      renderItemChoosen={[
+                        item => {
+                          return this.getUserOrMail(item.username);
+                        },
+                      ]}
+                      max={[5]}
                       value={item.mail}
                       key={'addMembers-' + index}
                       placeholder={this.state.i18n.t(
                         'scenes.app.workspaces.create_company.invitations.input_placeholder',
                       )}
-                      onChange={e => this.onChangeMail({ mail: e.target.value }, index)}
-                      onKeyDown={e => {
-                        if (e.keyCode == 13) {
-                          this.finish();
-                        }
+                      onChange={e => {
+                        this.onChangeMail({ mail: e.target.value }, index);
                       }}
                       className="full_width medium"
                     />
@@ -224,12 +248,10 @@ export default class AddUser extends Component {
                 (this.state.all_import && this.state.multi)
               )
                 ? this.state.i18n.t(
-                  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
-                  'Skip',
+                    'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip',
+                    'Skip',
                   )
-                : this.state.i18n.t(
-                    'general.add',
-                  )
+                : this.state.i18n.t('general.add')
             }
             loading={this.state.workspacesUsersService.loading || this.props.loading}
             loadingTimeout={1500}

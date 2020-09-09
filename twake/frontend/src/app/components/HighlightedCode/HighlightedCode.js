@@ -4,8 +4,8 @@ import 'highlight.js/styles/railscasts.css'; //monokai-sublime
 
 export default class HighlightedCode extends React.Component {
   componentDidMount() {
-    hljs.highlightBlock(this.node);
     window.hljs = hljs;
+    hljs.highlightBlock(this.node);
   }
   render() {
     var code = this.props.children;

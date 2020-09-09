@@ -33,7 +33,7 @@ export default class Tabs extends Component {
     }
 
     return (
-      <div className="component_tabs">
+      <div className={'component_tabs ' + (this.props.fullBody ? 'full-body ' : '')}>
         <PerfectScrollbar
           options={{ suppressScrollY: true }}
           component="div"
@@ -57,7 +57,7 @@ export default class Tabs extends Component {
             );
           })}
         </PerfectScrollbar>
-        <div className="body">
+        <div className="body ">
           {typeof this.props.tabs[selected].render == 'function'
             ? this.props.tabs[selected].render()
             : this.props.tabs[selected].render}

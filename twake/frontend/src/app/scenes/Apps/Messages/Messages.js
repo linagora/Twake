@@ -264,7 +264,9 @@ export default class MainView extends Component {
                   return this.node_infinite_messages && this.node_infinite_messages.onUpdate();
                 }}
                 onSend={val => {
-                  this.sendMessage(val);
+                  if ((val || '').length > 0) {
+                    this.sendMessage(val);
+                  }
                 }}
                 onEditLastMessage={() => {
                   MessagesService.startEditingLastMessage({
