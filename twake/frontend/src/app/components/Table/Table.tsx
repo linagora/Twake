@@ -65,11 +65,16 @@ export default class Table extends Component<Props, State> {
       return;
     }
 
+    this.setState({
+      loading: true,
+    });
+
     this.searchRunning = true;
     this.props.onSearch(this.searchFieldValue, 10, (data: any[]) => {
       console.log(this.searchFieldValue);
       this.searchRunning = false;
       this.setState({
+        loading: false,
         searchResults: data,
       });
     });
@@ -173,17 +178,26 @@ export default class Table extends Component<Props, State> {
             </div>
           )}
           <div className="contentTable">
+            {(page_data || []).length === 0 && !this.state.loading && (
+              <div className="tr" style={{ justifyContent: 'center', display: 'flex' }}>
+                <div className="item" style={{ lineHeight: '32px' }}>
+                  {Languages.t('components.user_picker.modal_no_result')}
+                </div>
+              </div>
+            )}
             {(page_data || []).length === 0 &&
               !!this.state.loading &&
-              Array.apply(null, Array(this.getResultsPerPage())).map(() => {
-                return (
-                  <div className="tr">
-                    <div className="item">
-                      <div className="line"></div>
+              Array.apply(null, Array(this.state.searching ? 1 : this.getResultsPerPage())).map(
+                () => {
+                  return (
+                    <div className="tr">
+                      <div className="item">
+                        <div className="line"></div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             {(page_data || []).map((data: any) => {
               return (
                 <div className="tr">

@@ -101,7 +101,9 @@ export default class Members extends React.Component {
               width: 30,
               dataIndex: 'action',
               render: col => {
-                return this.props.buildMenu(col);
+                return (
+                  workspaceUserRightsService.hasWorkspacePrivilege() && this.props.buildMenu(col)
+                );
               },
             },
           ]}
