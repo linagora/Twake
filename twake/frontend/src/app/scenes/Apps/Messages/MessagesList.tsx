@@ -31,22 +31,30 @@ export default class MessagesList extends Component<Props> {
   }
 
   render() {
-    const count = Collections.get('messages').findBy({ channel_id: this.props.channel.id }).length;
+    const count = this.messagesListService.getMessages().length;
     return (
       <div>
         {count}
         <button
           onClick={() => {
-            Collections.get('messages').sourceLoad(
-              this.props.collectionKey,
-              { offset: '', limit: 50 },
-              (res: any) => {
-                console.log(res);
-              },
-            );
+            this.messagesListService.loadMore();
           }}
         >
-          test
+          before
+        </button>
+        <button
+          onClick={() => {
+            this.messagesListService.loadMore(false);
+          }}
+        >
+          after
+        </button>
+        <button
+          onClick={() => {
+            this.messagesListService.init('2e24585e-e8fe-11ea-9555-0242ac120004');
+          }}
+        >
+          Jump to ...
         </button>
       </div>
     );
