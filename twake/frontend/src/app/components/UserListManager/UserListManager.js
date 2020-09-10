@@ -69,14 +69,7 @@ export default class UserListManager extends React.Component {
         group_id: Workspaces.currentGroupId,
       },
       res => {
-        res = res.filter(el => {
-          return (
-            !!el &&
-            (el.username + ' ' + el.firstname + ' ' + el.lastname)
-              .toLocaleLowerCase()
-              .indexOf(this.state.input.toLocaleLowerCase()) >= 0
-          );
-        });
+        res = res.filter(el => !!el);
         callback(
           res.filter(item => {
             if (
