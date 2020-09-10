@@ -91,6 +91,7 @@ class ChannelMember
         $this->last_activity = new \DateTime();
         $this->last_access = new \DateTime();
         $this->direct = $channel->getDirect();
+        $this->last_messages_increment = $channel->getMessagesIncrement();
     }
 
     /**

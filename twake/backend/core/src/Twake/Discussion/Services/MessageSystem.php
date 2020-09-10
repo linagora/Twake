@@ -293,7 +293,7 @@ class MessageSystem
             }
 
             //Create a new message
-            $message = new Message($object["channel_id"], $object["parent_message_id"]);
+            $message = new Message($object["channel_id"], $object["parent_message_id"], $channel);
 
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {
