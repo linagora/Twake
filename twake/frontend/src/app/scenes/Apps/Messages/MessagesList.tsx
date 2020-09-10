@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
+import MessagesListService from 'services/Apps/Messages/MessagesList';
 
 type Props = {
   channel: any;
@@ -8,27 +9,25 @@ type Props = {
 };
 
 export default class MessagesList extends Component<Props> {
+  messagesListService: MessagesListService;
+
+  constructor(props: Props) {
+    super(props);
+    this.messagesListService = new MessagesListService(
+      this.props.channel.id,
+      this.props.threadId,
+      this.props.collectionKey,
+    );
+  }
+
   componentDidMount() {
     Collections.get('messages').addListener(this);
-    Collections.get('messages').addSource(
-      {
-        http_base_url: 'discussion',
-        http_options: {
-          channel_id: this.props.channel.id,
-          parent_message_id: this.props.threadId,
-          limit: 20,
-        },
-        websockets: [{ uri: 'messages/' + this.props.channel.id, options: { type: 'messages' } }],
-      },
-      this.props.collectionKey,
-      (res: any) => {
-        console.log(res);
-      },
-    );
+    this.messagesListService.init();
   }
 
   componentWillUnmount() {
     Collections.get('messages').removeListener(this);
+    this.messagesListService.destroy();
   }
 
   render() {
