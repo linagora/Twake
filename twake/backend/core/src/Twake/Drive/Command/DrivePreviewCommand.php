@@ -44,7 +44,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
             foreach ($todos ?: [] as $todo_original) {
                 $todo = $this->queues->getMessage($todo_original);
                 $this->autoGenPreview($todo["file_id"]);
-                $this->queues->ack($todo_original);
+                $this->queues->ack("drive_preview_to_generate", $todo_original);
             }
 
         }
