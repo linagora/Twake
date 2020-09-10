@@ -44,7 +44,6 @@ export default class MessagesList extends Component {
       !Mlist.states[this.key] &&
       !(Collections.get('messages').sources[this.messages_collection_key] || {}).did_first_load
     ) {
-      console.log('loading set to true A');
       this.state.loading = true;
     }
 
@@ -75,11 +74,13 @@ export default class MessagesList extends Component {
         this.clearIdInWindow();
         this.addIdInRange((tmp[0] || {}).id);
         this.addIdInRange((tmp[tmp.length - 1] || {}).id);
-        this.setVisibleWindow(
-          (tmp[0] || {}).id,
-          (tmp[tmp.length - 1] || {}).id,
-          (tmp[tmp.length - 1] || {}).id,
-        );
+
+        const start = (tmp[0] || {}).id;
+        const end = (tmp[tmp.length - 1] || {}).id;
+        const min = Numbers.minTimeuuid(start, end);
+        const max = Numbers.maxTimeuuid(start, end);
+
+        this.setVisibleWindow(min, max, max);
       },
     );
   }
@@ -215,7 +216,6 @@ export default class MessagesList extends Component {
           } else {
             Mlist.states[this.key].know_first_message = true;
           }
-          console.log('no more in this direction');
         }
 
         if (tmp.length == 0) {
@@ -468,7 +468,6 @@ export default class MessagesList extends Component {
       new Date().getTime() - MessagesService.futureScrollToMessage[scroll_to_key].date.getTime() <
         1000 * 10
     ) {
-      console.log('WILL SCROLL NOW !', scroll_to_key);
       setTimeout(() => {
         this.showMessage(MessagesService.futureScrollToMessage[scroll_to_key].id);
       }, 100);
@@ -496,23 +495,20 @@ export default class MessagesList extends Component {
         className={this.state.loading ? 'loading ' : ''}
         getPositions={id => this.positions[id]}
       >
-        {messages.length > 0 &&
-          !this.state.loading &&
-          (Mlist.states[this.key].visible_min_id != Mlist.states[this.key].min_id ||
-            !Mlist.states[this.key].know_first_message) && (
-            <a
-              className="load_before"
-              onClick={() => {
-                this.loadRange(Mlist.states[this.key].visible_min_id, 20);
-              }}
-            >
-              {Languages.t(
-                'scenes.apps.messages.messageslist.load_before_button',
-                [],
-                'Charger avant',
-              )}
-            </a>
-          )}
+        {messages.length > 0 && !this.state.loading && !Mlist.states[this.key].know_first_message && (
+          <a
+            className="load_before"
+            onClick={() => {
+              this.loadRange(Mlist.states[this.key].visible_min_id, 20);
+            }}
+          >
+            {Languages.t(
+              'scenes.apps.messages.messageslist.load_before_button',
+              [],
+              'Charger avant',
+            )}
+          </a>
+        )}
 
         <div className="messages_flex">
           {messages.map((message, index) => {
