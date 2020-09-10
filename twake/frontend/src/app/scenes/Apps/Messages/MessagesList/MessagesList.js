@@ -60,6 +60,10 @@ export default class MessagesList extends Component {
       },
       this.messages_collection_key,
       res => {
+        if (res.length >= 1 && res[0].channel_id != this.props.channel.id) {
+          return;
+        }
+
         this.state.loading = false;
         var tmp = res.filter(message => message.parent_message_id == this.props.parentMessageId);
         if (
@@ -207,6 +211,10 @@ export default class MessagesList extends Component {
         this.state.loading = false;
 
         var tmp = res.filter(message => message.parent_message_id == this.props.parentMessageId);
+
+        if (tmp.length >= 1 && tmp[0].channel_id != this.props.channel.id) {
+          return;
+        }
 
         if (callback) callback(tmp);
 
