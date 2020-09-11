@@ -280,8 +280,8 @@ class ChannelSystemAbstract
             $membersWorkspace = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $channel_entity->getOriginalWorkspaceId()));
             foreach ($membersWorkspace as $members) {
                 try{
-                    if ($members->getAutoAddExterne() && !in_array($members->getUser()->getId(), $_ext_members)) {
-                        $_ext_members[] = $members->getUser()->getId();
+                    if ($members->getAutoAddExterne() && !in_array($members->getUserId(), $_ext_members)) {
+                        $_ext_members[] = $members->getUserId();
                     }
                 }catch(\Exception $err){
                     //No user
