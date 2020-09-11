@@ -37,6 +37,8 @@ export default class MessagesListUtils {
   firstMessageOfAll: string = '';
   firstLoadedMessageId: string = '';
   lastLoadedMessageId: string = '';
+  lastMessageOfAllLoaded: string = '';
+  httpLoading: boolean = false;
   lastRealtimeMessageId: string = '';
 
   constructor(channelId: string, threadId: string, collectionKey: string) {
@@ -47,18 +49,25 @@ export default class MessagesListUtils {
     window.MessagesListUtils = this;
   }
 
-  async init(fromMessageId: string = '') {
-    this.firstMessageOfAll = '';
-    this.firstLoadedMessageId = '';
-    this.lastLoadedMessageId = '';
-    this.lastRealtimeMessageId = '';
+  //Init messages and reset almost everything.
+  // Option 1: no parameters or true = init at the end of the conversation
+  // Option 2: from parameters = init next to a defined message
+  async init(fromMessageId: string | boolean = false) {
+    if (this.httpLoading) {
+      return;
+    }
+
+    this.reset();
 
     if (fromMessageId) {
-      this.firstLoadedMessageId = fromMessageId;
-      this.lastLoadedMessageId = fromMessageId;
-      return this.loadMore(false);
+      if (typeof fromMessageId === 'string') {
+        return this.loadMore(false, fromMessageId);
+      } else {
+        return this.loadMore(true, '');
+      }
     } else {
       return new Promise(resolve => {
+        this.httpLoading = true;
         Collections.get('messages').addSource(
           {
             http_base_url: 'discussion',
@@ -72,7 +81,9 @@ export default class MessagesListUtils {
           },
           this.collectionKey,
           (messages: Message[]) => {
+            this.httpLoading = false;
             this.updateLastFirstMessagesId(messages);
+            if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
             resolve();
           },
         );
@@ -80,26 +91,41 @@ export default class MessagesListUtils {
     }
   }
 
-  async loadMore(history: boolean = true) {
+  //Load more messages, fromOffset can be undefined (use class variables), or a string, or an empty string (load from the end / the begining)
+  async loadMore(history: boolean = true, fromOffset?: string) {
+    if (this.httpLoading) {
+      return;
+    }
+
+    const direction = history ? 1 : -1;
+    const offset =
+      typeof fromOffset === 'string'
+        ? fromOffset
+        : history
+        ? this.firstLoadedMessageId
+        : this.lastLoadedMessageId;
+
     return new Promise(resolve => {
       if (
-        history &&
-        this.firstMessageOfAll == this.firstLoadedMessageId &&
-        this.firstLoadedMessageId
+        (history && this.firstMessageOfAll == offset && offset) ||
+        (!history && this.lastMessageOfAllLoaded == offset && offset)
       ) {
         resolve();
         return;
       }
 
-      const direction = history ? 1 : -1;
-      const offset = history ? this.firstLoadedMessageId : this.lastLoadedMessageId;
+      this.httpLoading = true;
       Collections.get('messages').sourceLoad(
         this.collectionKey,
         { offset: offset, limit: direction * this.numberOfLoadedMessages },
         (messages: Message[]) => {
+          this.httpLoading = false;
           this.updateLastFirstMessagesId(messages);
           if (history && messages.length < this.numberOfLoadedMessages) {
             this.firstMessageOfAll = this.firstLoadedMessageId;
+          }
+          if (!history && messages.length < this.numberOfLoadedMessages) {
+            this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
           }
           resolve();
         },
@@ -107,8 +133,70 @@ export default class MessagesListUtils {
     });
   }
 
-  getMessages() {
-    return Collections.get('messages').findBy({ channel_id: this.channelId });
+  onNewMessageFromWebsocket(message: Message) {
+    const previousMessage: Message = Collections.get('messages').find(this.lastRealtimeMessageId);
+    this.lastRealtimeMessageId = Numbers.maxTimeuuid(this.lastRealtimeMessageId, message.id);
+    let incrementDifference = 0;
+    if (previousMessage && previousMessage.increment_at_time && message.increment_at_time) {
+      incrementDifference = message.increment_at_time - previousMessage.increment_at_time;
+    }
+    console.log(
+      'New message: ',
+      incrementDifference,
+      message.increment_at_time,
+      previousMessage && previousMessage.increment_at_time,
+    );
+    //TODO if we find a newer message not loaded from server,
+    // choose to show it and may be reload from server if missing gap
+  }
+
+  //Get all loaded messages without holes between messages
+  getMessages(): Message[] {
+    let messages = Collections.get('messages').findBy({ channel_id: this.channelId });
+
+    const newWebsocketsMessagesToAdd = this.detectNewWebsocketsMessages(messages);
+
+    messages = messages.filter((m: Message) => {
+      return (
+        Numbers.compareTimeuuid(this.lastLoadedMessageId, m.id) >= 0 &&
+        Numbers.compareTimeuuid(this.firstLoadedMessageId, m.id) <= 0
+      );
+    });
+
+    messages = messages.concat(newWebsocketsMessagesToAdd);
+
+    return messages;
+  }
+
+  // We can detect new unknown messages from websocket, this few lines detect new messages
+  detectNewWebsocketsMessages(messages: Message[]) {
+    let newUnknownMessages: Message[] = [];
+
+    messages.map((m: Message) => {
+      if (
+        Numbers.compareTimeuuid(this.lastLoadedMessageId, m.id) < 0 &&
+        Numbers.compareTimeuuid(this.lastRealtimeMessageId, m.id) < 0
+      ) {
+        newUnknownMessages.push(m);
+      }
+    });
+
+    newUnknownMessages.forEach((m: Message) => {
+      this.onNewMessageFromWebsocket(m);
+    });
+
+    let shouldAddWebsockets =
+      newUnknownMessages.length > 0 && this.lastLoadedMessageId === this.lastMessageOfAllLoaded;
+
+    return shouldAddWebsockets ? newUnknownMessages : [];
+  }
+
+  reset() {
+    this.firstMessageOfAll = '';
+    this.firstLoadedMessageId = '';
+    this.lastLoadedMessageId = '';
+    this.lastMessageOfAllLoaded = '';
+    this.lastRealtimeMessageId = '';
   }
 
   updateLastFirstMessagesId(messages: Message[]) {

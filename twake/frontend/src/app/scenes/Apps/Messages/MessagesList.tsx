@@ -51,10 +51,17 @@ export default class MessagesList extends Component<Props> {
         </button>
         <button
           onClick={() => {
-            this.messagesListService.init('2e24585e-e8fe-11ea-9555-0242ac120004');
+            this.messagesListService.init('edfbdbda-57a9-11e9-994d-0242ac120005');
           }}
         >
           Jump to ...
+        </button>
+        <button
+          onClick={() => {
+            this.messagesListService.init(true);
+          }}
+        >
+          Go to the end
         </button>
       </div>
     );
