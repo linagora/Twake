@@ -70,10 +70,14 @@ class PseudoMarkdownDictionary {
       url: {
         object: (child, object) => {
           if (!object.url && object.url !== undefined) {
-            return <a key={this.counter++}>{child}</a>;
+            return (
+              <a key={this.counter++} href="#">
+                {child}
+              </a>
+            );
           }
           var protocol = 'https';
-          if ((object.url || object.content || '').indexOf('http://')) {
+          if ((object.url || object.content || '').indexOf('http://') >= 0) {
             protocol = 'http';
           }
           var orig_url =
