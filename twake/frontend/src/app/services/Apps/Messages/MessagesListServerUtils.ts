@@ -19,12 +19,13 @@ type Message = {
   responses_count: number | null;
   sender: string | null;
   user_specific_content: any;
+  _user_ephemeral: any;
 };
 
 /*
   This class will manage what is loaded from the backend and what's not, the complete list of messages for a channel will always be h
 */
-export default class MessagesListUtils {
+export default class MessagesListServerUtils {
   //Configuration
   numberOfLoadedMessages: number = 20;
 
@@ -46,7 +47,7 @@ export default class MessagesListUtils {
     this.threadId = threadId;
     this.collectionKey = collectionKey;
     //@ts-ignore
-    window.MessagesListUtils = this;
+    window.MessagesListServerUtils = this;
   }
 
   //Init messages and reset almost everything.
@@ -148,6 +149,9 @@ export default class MessagesListUtils {
     );
     //TODO if we find a newer message not loaded from server,
     // choose to show it and may be reload from server if missing gap
+
+    //For now just consider we always receive everything from websockets
+    this.updateLastFirstMessagesId([message]);
   }
 
   //Get all loaded messages without holes between messages
@@ -164,6 +168,10 @@ export default class MessagesListUtils {
     });
 
     messages = messages.concat(newWebsocketsMessagesToAdd);
+
+    messages = messages
+      .filter((message: Message) => !message._user_ephemeral)
+      .sort((a: Message, b: Message) => a.creation_date - b.creation_date);
 
     return messages;
   }

@@ -36,7 +36,7 @@ export default class MainView extends Component<Props> {
 
   render() {
     return (
-      <div>
+      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <MessagesList
           threadId={this.threadId}
           channel={this.props.channel}
