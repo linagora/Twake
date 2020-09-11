@@ -1,14 +1,14 @@
 <?php
 
-namespace BuiltInConnectors\Connectors\Jitsi;
+namespace BuiltInConnectors\Connectors\QuickLinks;
 
 require_once __DIR__ . "/Resources/Routing.php";
 require_once __DIR__ . "/Resources/Services.php";
 require_once __DIR__ . "/ConnectorDefinition.php";
 
-use BuiltInConnectors\Connectors\Jitsi\ConnectorDefinition;
-use BuiltInConnectors\Connectors\Jitsi\Resources\Routing;
-use BuiltInConnectors\Connectors\Jitsi\Resources\Services;
+use BuiltInConnectors\Connectors\QuickLinks\ConnectorDefinition;
+use BuiltInConnectors\Connectors\QuickLinks\Resources\Routing;
+use BuiltInConnectors\Connectors\QuickLinks\Resources\Services;
 use Common\BaseBundle;
 
 class Bundle extends BaseBundle

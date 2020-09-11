@@ -3,6 +3,9 @@ import Messages from 'scenes/Apps/Messages/Messages.js';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';
+import workspaceService from 'services/workspaces/workspaces.js';
+import userService from 'services/user/user.js';
+import CurrentUser from 'services/user/current_user.js';
 
 export default class AppView extends Component {
   constructor() {
@@ -61,6 +64,26 @@ export default class AppView extends Component {
         />
       );
     }
+    if (!this.props.loading && (this.props.app || {}).display.channel_tab && (found = true)) {
+      const userId = userService.getCurrentUserId();
+      const groupId = workspaceService.currentGroupId;
+      const workspaceId = workspaceService.currentWorkspaceId;
+      let url = this.props.app.display.channel_tab.iframe;
+      url +=
+        (url.indexOf(this.props.app.display.channel_tab.iframe) ? '&' : '?') +
+        `user_id=${userId}&group_id=${groupId}&workspace_id=${workspaceId}&channel_id=${this.props.current_channel.id}&connection_id=${CurrentUser.unique_connection_id}`;
+      return (
+        <iframe
+          id="quickLinksFrame"
+          title="QuickLinks"
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          src={url}
+        />
+      );
+    }
+
     if (!found && !this.props.loading) {
       return this.props.noapp;
     }

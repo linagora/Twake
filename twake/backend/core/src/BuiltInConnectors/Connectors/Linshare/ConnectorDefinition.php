@@ -1,7 +1,9 @@
 <?php
 namespace BuiltInConnectors\Connectors\Linshare;
 
-class ConnectorDefinition
+use BuiltInConnectors\Common\BaseConnectorDefinition;
+
+class ConnectorDefinition extends BaseConnectorDefinition
 {
   public $configuration = [
       'domain' => '',
@@ -59,4 +61,14 @@ I/Tda4fDOa3PRINRAgMBAAE=
       'api_allowed_ips' => '*',
       'api_event_url' => '/event'
   ];
+
+  public function getDefinition(){
+    $this->setDefinition();
+    return $this->definition;
+  }
+
+  public function getConfiguration(){
+    $this->setConfiguration();
+    return $this->configuration;
+  }
 }

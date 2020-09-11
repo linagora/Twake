@@ -23,7 +23,7 @@ class Bundle extends BaseBundle
     {
         $routing = new Routing();
         $this->routes = $routing->getRoutes();
-        $this->routing_prefix = "bundle/connectors/" . (new ConnectorDefinition())->definition["simple_name"] . $routing->getRoutesPrefix();
+        $this->routing_prefix = "bundle/connectors/" . $this->getDefinition()["simple_name"] . $routing->getRoutesPrefix();
         $this->initRoutes();
 
         $this->services = (new Services())->getServices();
@@ -32,11 +32,15 @@ class Bundle extends BaseBundle
     }
 
     public function getDefinition(){
-      return (new ConnectorDefinition())->definition;
+      $definition = (new ConnectorDefinition($this->app));
+      $definition->setDefinition();
+      return $definition->definition;
     }
 
     public function getConfiguration(){
-      return (new ConnectorDefinition())->configuration;
+      $definition = (new ConnectorDefinition($this->app));
+      $definition->setConfiguration();
+      return $definition->configuration;
     }
 
 }

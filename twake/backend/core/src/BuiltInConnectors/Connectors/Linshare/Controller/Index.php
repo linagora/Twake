@@ -11,7 +11,7 @@ class Index extends BaseController
 {
     public function icon()
     {
-      $configuration = (new ConnectorDefinition())->definition;
+      $configuration = (new ConnectorDefinition($this->app))->getDefinition();
       $route = realpath(__DIR__."/../Resources/medias/".$configuration["icon_url"]);
 
       $filename = basename($route);

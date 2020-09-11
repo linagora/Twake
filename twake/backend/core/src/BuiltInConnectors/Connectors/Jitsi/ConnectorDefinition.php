@@ -1,7 +1,9 @@
 <?php
 namespace BuiltInConnectors\Connectors\Jitsi;
 
-class ConnectorDefinition
+use BuiltInConnectors\Common\BaseConnectorDefinition;
+
+class ConnectorDefinition extends BaseConnectorDefinition
 {
   public $configuration = [
     'jitsi_domain' => 'meet.jit.si'
@@ -40,4 +42,14 @@ class ConnectorDefinition
       'api_allowed_ips' => '*',
       'api_event_url' => '/event'
   ];
+
+  public function getDefinition(){
+    $this->setDefinition();
+    return $this->definition;
+  }
+
+  public function getConfiguration(){
+    $this->setConfiguration();
+    return $this->configuration;
+  }
 }

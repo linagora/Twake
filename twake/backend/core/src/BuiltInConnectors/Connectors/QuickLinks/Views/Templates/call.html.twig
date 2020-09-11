@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="utf-8">
+
+    <title></title>
+</head>
+<body>
+    <style>
+
+        html, body, iframe {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        #channel-links {
+            padding: 32px;
+        }
+
+        .title {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;  
+        }
+
+        button {
+            padding: 10px;
+            color: #fff;
+            background-color: #837dff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .link-container {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 3px;
+
+            width: 15em;
+            height: 80px;
+            
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .link-container:hover {
+            box-shadow: 4px 4px 16px 0 #00000022;
+            border-color: #fff;
+        }
+
+        .link {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .link > span {
+            font-size: 18px;       
+        }
+
+        .link > a {
+            font-size: 12px;       
+        }
+
+        img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+    </style>
+    <div id="channel-links">
+        <div class="title">
+            <h1>Channel links</h1>
+            <button onclick="save()">Add Quicklink</button>
+        </div>
+        <div class="container"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        var linksById = {};
+
+        function save(id) {
+            let init = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify({
+                    link: linksById[id],
+                    connection_id: "{{ids['connection']}}",
+                    group_id: "{{ids['group']}}",
+                    user_id: "{{ids['user']}}",
+                    channel_id: "{{ids['channel']}}",
+                })
+            };
+            fetch("{{ server_url }}/quicklinks/save", init)
+            .then((res) => {
+                return console.log(linksById[id]);
+            })
+            .catch(e => console.log('Il y a eu un problème avec l\'opération fetch: ', e));
+        
+        }
+
+        function getArrayList() {
+            let init = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    channel_id: "{{ids['channel']}}"
+                }),
+                mode: 'cors',
+                cache: 'default' 
+            };
+
+            fetch("{{ server_url }}/quicklinks/read", init)
+            .then((res) => {
+                return res.json();
+            })
+            .then((res) => {
+                return renderLinks(res.response);
+            })
+            .catch(e => console.log("Il y a eu un problème avec l'opération fetch: ", e));
+        }
+
+        function renderLinks(array, type='channel')
+        {
+            const container = document.querySelector('.container');
+            
+            container.innerHTML = "";
+
+            if(array && type === 'channel'){
+                for (let link of array) {
+
+                    linksById[link.id] = link;
+
+                    // Default Object
+                    const linkObj = {
+                        div: {
+                            linkSubContainer: {
+                                element: document.createElement("div"),
+                                className: "link"
+                            },
+                            linkContainer: {
+                                element: document.createElement("div"),
+                                className: "link-container"
+                            }
+                        },
+                        img: {
+                            element: document.createElement("img"),
+                            src: "{{icon}}"
+                        },
+                        span: {
+                            element: document.createElement("span"),
+                            text: document.createTextNode(link.name)
+                        },
+                        a: {
+                            element: document.createElement("a"),
+                            href: link.url,
+                            text: document.createTextNode(link.url)
+                        },
+                        button: {
+                            element: document.createElement("button"),
+                            text: document.createTextNode("edit"),
+                            onClick: () => save(link.id)
+                        }
+                    }; 
+
+                    // Setup elements
+                    const linkContainer = linkObj.div.linkContainer.element;
+                    linkContainer.className = linkObj.div.linkContainer.className;
+
+                    const linkSubContainer = linkObj.div.linkSubContainer.element;
+                    linkSubContainer.className = linkObj.div.linkSubContainer.className;
+
+                    const img = linkObj.img.element;
+                    img.src = linkObj.img.src;
+
+                    const span = linkObj.span.element;
+                    span.appendChild(linkObj.span.text);
+
+                    const a = linkObj.a.element;
+                    a.href = linkObj.a.href;
+                    a.target = "_blank";
+                    a.appendChild(linkObj.a.text);
+
+                    const button = linkObj.button.element;
+                    button.onclick = linkObj.button.onClick;
+                    button.appendChild(linkObj.button.text);
+
+                    linkSubContainer.appendChild(span);
+                    linkSubContainer.appendChild(a);
+            
+                    linkContainer.appendChild(img);
+                    linkContainer.appendChild(linkSubContainer);
+                    linkContainer.appendChild(button);
+
+                    container.appendChild(linkContainer);
+                }
+            }
+        }
+
+        getArrayList();
+    </script>
+
+</body>
+</html>

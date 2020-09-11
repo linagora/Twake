@@ -13,7 +13,7 @@ class Event
     }
 
     public function getJWT($user_email){
-      $configuration = (new ConnectorDefinition())->configuration;
+      $configuration = (new ConnectorDefinition($this->app))->getConfiguration();
 
       $data = [];
       $data["sub"] = $user_email;
@@ -37,7 +37,7 @@ class Event
 
     public function proceedEvent($type, $event, $data) {
       $this->main_service->setConnector("linshare");
-      $definition = (new ConnectorDefinition())->definition;
+      $definition = (new ConnectorDefinition($this->app))->getDefinition();
 
       $group = $data["group"];
       $entity = null;

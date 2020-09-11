@@ -14,7 +14,7 @@ class Configure
 
     public function proceedEvent($type, $event, $data) {
       $this->main_service->setConnector("linshare");
-      $configuration = (new ConnectorDefinition())->configuration;
+      $configuration = (new ConnectorDefinition($this->app))->getConfiguration();
       $linshare_domain = $this->app->getContainer()->getParameter("defaults.connectors.linshare.domain", $configuration["domain"]);
 
       $group = $data["group"];
