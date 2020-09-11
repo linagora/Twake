@@ -1,25 +1,25 @@
 import Collections from 'services/Collections/Collections.js';
 import Numbers from 'services/utils/Numbers.js';
 
-type Message = {
-  application_id: string | null;
-  channel_id: string;
-  content: any;
-  creation_date: number;
-  edited: boolean;
-  front_id: string;
-  hidden_data: any;
-  id: string;
-  increment_at_time: number | null;
-  message_type: 0 | 1 | 2;
-  modification_date: number;
-  parent_message_id: string | null;
-  pinned: boolean;
-  reactions: any[];
-  responses_count: number | null;
-  sender: string | null;
-  user_specific_content: any;
-  _user_ephemeral: any;
+export type Message = {
+  application_id?: string | null;
+  channel_id?: string;
+  content?: any;
+  creation_date?: number;
+  edited?: boolean;
+  front_id?: string;
+  hidden_data?: any;
+  id?: string;
+  increment_at_time?: number | null;
+  message_type?: 0 | 1 | 2;
+  modification_date?: number;
+  parent_message_id?: string | null;
+  pinned?: boolean;
+  reactions?: any[];
+  responses_count?: number | null;
+  sender?: string | null;
+  user_specific_content?: any;
+  _user_ephemeral?: any;
 };
 
 /*
@@ -39,8 +39,9 @@ export default class MessagesListServerUtils {
   firstLoadedMessageId: string = '';
   lastLoadedMessageId: string = '';
   lastMessageOfAllLoaded: string = '';
-  httpLoading: boolean = false;
   lastRealtimeMessageId: string = '';
+
+  httpLoading: boolean = false;
 
   constructor(channelId: string, threadId: string, collectionKey: string) {
     this.channelId = channelId;
@@ -83,7 +84,7 @@ export default class MessagesListServerUtils {
           this.collectionKey,
           (messages: Message[]) => {
             this.httpLoading = false;
-            this.updateLastFirstMessagesId(messages);
+            this.updateLastFirstMessagesId(messages, true);
             if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
             resolve();
           },
@@ -121,37 +122,19 @@ export default class MessagesListServerUtils {
         { offset: offset, limit: direction * this.numberOfLoadedMessages },
         (messages: Message[]) => {
           this.httpLoading = false;
-          this.updateLastFirstMessagesId(messages);
+          console.log('loaded from back');
+          this.updateLastFirstMessagesId(messages, !!fromOffset);
           if (history && messages.length < this.numberOfLoadedMessages) {
             this.firstMessageOfAll = this.firstLoadedMessageId;
           }
           if (!history && messages.length < this.numberOfLoadedMessages) {
+            console.log('reset last of all loaded');
             this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
           }
           resolve();
         },
       );
     });
-  }
-
-  onNewMessageFromWebsocket(message: Message) {
-    const previousMessage: Message = Collections.get('messages').find(this.lastRealtimeMessageId);
-    this.lastRealtimeMessageId = Numbers.maxTimeuuid(this.lastRealtimeMessageId, message.id);
-    let incrementDifference = 0;
-    if (previousMessage && previousMessage.increment_at_time && message.increment_at_time) {
-      incrementDifference = message.increment_at_time - previousMessage.increment_at_time;
-    }
-    console.log(
-      'New message: ',
-      incrementDifference,
-      message.increment_at_time,
-      previousMessage && previousMessage.increment_at_time,
-    );
-    //TODO if we find a newer message not loaded from server,
-    // choose to show it and may be reload from server if missing gap
-
-    //For now just consider we always receive everything from websockets
-    this.updateLastFirstMessagesId([message]);
   }
 
   //Get all loaded messages without holes between messages
@@ -171,7 +154,7 @@ export default class MessagesListServerUtils {
 
     messages = messages
       .filter((message: Message) => !message._user_ephemeral)
-      .sort((a: Message, b: Message) => a.creation_date - b.creation_date);
+      .sort((a: Message, b: Message) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
     return messages;
   }
@@ -199,6 +182,16 @@ export default class MessagesListServerUtils {
     return shouldAddWebsockets ? newUnknownMessages : [];
   }
 
+  onNewMessageFromWebsocket(message: Message) {
+    //TODO if we find a newer message not loaded from server,
+    // choose to show it and may be reload from server if missing gap
+
+    //For now just consider we always receive everything from websockets
+    if (this.lastLoadedMessageId === this.lastMessageOfAllLoaded) {
+      this.updateLastFirstMessagesId([message]);
+    }
+  }
+
   reset() {
     this.firstMessageOfAll = '';
     this.firstLoadedMessageId = '';
@@ -207,7 +200,10 @@ export default class MessagesListServerUtils {
     this.lastRealtimeMessageId = '';
   }
 
-  updateLastFirstMessagesId(messages: Message[]) {
+  updateLastFirstMessagesId(messages: Message[], reset?: boolean) {
+    if (reset) {
+      this.reset();
+    }
     messages.forEach(item => {
       this.lastLoadedMessageId = Numbers.maxTimeuuid(this.lastLoadedMessageId, item.id);
       this.firstLoadedMessageId = Numbers.minTimeuuid(this.firstLoadedMessageId, item.id);

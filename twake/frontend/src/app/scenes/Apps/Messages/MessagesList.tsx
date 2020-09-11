@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
-import MessagesListServerService from 'app/services/Apps/Messages/MessagesListServerUtils';
+import MessagesListServerService, {
+  Message,
+} from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesListService from 'app/services/Apps/Messages/MessagesListUtils';
 import {
   AutoSizer,
@@ -22,7 +24,7 @@ export default class MessagesList extends Component<Props, { messages: number[] 
   virtualizedList: List | null = null;
   cache: CellMeasurerCache = new CellMeasurerCache({
     defaultHeight: 80,
-    minHeight: 50,
+    minHeight: 20,
     fixedWidth: true,
   });
 
@@ -34,6 +36,9 @@ export default class MessagesList extends Component<Props, { messages: number[] 
       this.props.threadId,
       this.props.collectionKey,
     );
+
+    //@ts-ignore
+    window.MessagesList = this;
   }
 
   componentDidMount() {
@@ -47,13 +52,22 @@ export default class MessagesList extends Component<Props, { messages: number[] 
   }
 
   componentWillUpdate() {
+    //this.resetList();
+  }
+
+  resetList() {
     this.cache.clearAll(); //Clear the cache if row heights are recompute to be sure there are no "blank spaces" (some row are erased)
     this.virtualizedList && this.virtualizedList.recomputeRowHeights(); //We need to recompute the heights
   }
 
   render() {
-    const messages = this.messagesListServerService.getMessages();
+    const messages: any[] = this.messagesListService.addLoadingMessages(
+      this.messagesListServerService,
+      this.messagesListServerService.getMessages(),
+    );
     this.messagesListService.setMessagesCount(messages.length);
+    this.messagesListService.setScrollToIndex();
+
     return (
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <InfiniteLoader
@@ -66,7 +80,6 @@ export default class MessagesList extends Component<Props, { messages: number[] 
               {({ width, height }) => {
                 return (
                   <List
-                    scrollToIndex={this.messagesListService.getScrollToIndex()}
                     rowHeight={this.cache.rowHeight}
                     deferredMeasurementCache={this.cache}
                     height={height}
@@ -77,7 +90,10 @@ export default class MessagesList extends Component<Props, { messages: number[] 
                       this.messagesListService.refList(node);
                       this.virtualizedList = node;
                     }}
-                    onRowsRendered={onRowsRendered}
+                    onRowsRendered={p => {
+                      onRowsRendered(p);
+                      //this.messagesListService.onRenderRows();
+                    }}
                     onScroll={this.messagesListService.onScroll}
                     rowRenderer={({ index, key, style, parent }: any) => (
                       <CellMeasurer
@@ -87,9 +103,7 @@ export default class MessagesList extends Component<Props, { messages: number[] 
                         parent={parent}
                         rowIndex={index}
                       >
-                        <div style={{ borderTop: '1px solid #AAA', ...style }}>
-                          {messages[index]?.content?.original_str}
-                        </div>
+                        <div style={style}>{messages[index]?.content?.original_str}</div>
                       </CellMeasurer>
                     )}
                   />

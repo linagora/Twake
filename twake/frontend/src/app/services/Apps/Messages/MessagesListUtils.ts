@@ -1,4 +1,6 @@
 import { OnScrollParams } from 'react-virtualized';
+import MessagesListServerUtils, { Message } from './MessagesListServerUtils';
+
 /*
   This class will manage react virtualized and scroll cases
 */
@@ -7,6 +9,7 @@ export default class MessagesListUtils {
   listNode: any;
   messagesCount: number = 0;
   ignoreNextScroll: number = 0;
+  registeredScrollTo: number | null = null;
 
   //State
   fixBottom: boolean = true;
@@ -14,7 +17,8 @@ export default class MessagesListUtils {
   constructor() {
     this.refList = this.refList.bind(this);
     this.onScroll = this.onScroll.bind(this);
-    this.getScrollToIndex = this.getScrollToIndex.bind(this);
+    this.setScrollToIndex = this.setScrollToIndex.bind(this);
+    this.onRenderRows = this.onRenderRows.bind(this);
 
     //@ts-ignore
     window.MessagesListUtils = this;
@@ -26,6 +30,18 @@ export default class MessagesListUtils {
 
   setMessagesCount(messagesCount: number) {
     this.messagesCount = messagesCount;
+  }
+
+  addLoadingMessages(
+    messagesListServerUtils: MessagesListServerUtils,
+    messages: (Message | { fake: boolean })[],
+  ): any[] {
+    const fakes: (Message | { fake: boolean })[] = Array.apply(null, Array(5)).map(i => {
+      return {
+        fake: true,
+      };
+    });
+    return fakes.concat(messages, fakes);
   }
 
   onScroll(evt: OnScrollParams) {
@@ -40,14 +56,22 @@ export default class MessagesListUtils {
     }
   }
 
-  getScrollToIndex(): number | undefined {
-    if (this.fixBottom && this.messagesCount > 0) {
+  onRenderRows() {
+    console.log('render');
+    if (this.listNode && this.registeredScrollTo !== null) {
       if (this.listNode) {
-        this.listNode.scrollToPosition(this.messagesCount * 100000000);
+        this.listNode.scrollToPosition(this.registeredScrollTo * 100000000);
         this.ignoreNextScroll++;
       }
       this.ignoreNextScroll++;
-      return this.messagesCount;
+      this.listNode.scrollToRow(this.registeredScrollTo);
+      this.registeredScrollTo = null;
+    }
+  }
+
+  setScrollToIndex(): number | undefined {
+    if (this.fixBottom && this.messagesCount > 0) {
+      this.registeredScrollTo = this.messagesCount;
     } else {
       return;
     }
