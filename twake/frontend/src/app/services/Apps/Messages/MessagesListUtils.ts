@@ -1,6 +1,4 @@
-import { OnScrollParams } from 'react-virtualized';
-import MessagesListServerUtils, { Message } from './MessagesListServerUtils';
-const ResizeObserver: any = {};
+import MessagesListServerUtils from './MessagesListServerUtils';
 
 /*
   This class will manage react virtualized and scroll cases
@@ -103,14 +101,23 @@ export default class MessagesListUtils {
       return;
     }
     if (this.fixBottom) {
-      this.scrollTo(this.messagesContainerNode.clientHeight);
+      this.scrollTo(this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight);
     }
   }
 
   scrollTo(position: number) {
     if (this.scrollerNode) {
       this.ignoreNextScroll++;
-      this.scrollerNode.scrollTop = position;
+      const smallJump = Math.abs(this.scrollerNode.scrollTop - position);
+      console.log(smallJump);
+      if (this.fixBottom && smallJump < 200) {
+        this.scrollerNode.scroll({
+          top: position,
+          behavior: 'smooth',
+        });
+      } else {
+        this.scrollerNode.scrollTop = position;
+      }
     }
   }
 
@@ -184,12 +191,10 @@ export default class MessagesListUtils {
       if (evt.scrollTop <= topFakeHeight * 0.75) {
         const didRequest = await this.serverService.loadMore();
         if (didRequest) this.lockScroll();
-        return;
       }
       if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= bottomFakeHeight * 0.75) {
         const didRequest = await this.serverService.loadMore(false);
         if (didRequest) this.lockScroll();
-        return;
       }
     }
 
