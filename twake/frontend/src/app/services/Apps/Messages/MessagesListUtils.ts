@@ -109,7 +109,6 @@ export default class MessagesListUtils {
     if (this.scrollerNode) {
       this.ignoreNextScroll++;
       const smallJump = Math.abs(this.scrollerNode.scrollTop - position);
-      console.log(smallJump);
       if (this.fixBottom && smallJump < 200) {
         this.scrollerNode.scroll({
           top: position,
