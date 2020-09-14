@@ -4,6 +4,7 @@ import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionar
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals.js';
+import React, { Component } from 'react';
 
 class PseudoMarkdownCompiler {
   constructor() {
@@ -45,6 +46,14 @@ class PseudoMarkdownCompiler {
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.br.object,
         simple_object: child => child,
+      },
+      '[': {
+        name: 'markdown_link',
+        allowed_char_before: '', //"(^| )",
+        allowed_chars: '.+?\\]\\([^ ]+',
+        disable_recursion: true,
+        end: '\\)',
+        object: PseudoMarkdownDictionary.render_block.markdown_link.object,
       },
       ':': {
         name: 'emoji',
@@ -238,7 +247,12 @@ class PseudoMarkdownCompiler {
   }
 
   compileStringToLinkObject(string) {
-    var link_found = anchorme(string, { list: true, ips: false, files: false });
+    //Monkey hack for new markdown links, not the best place for this code
+    var link_found = anchorme(string.replace(/\]\(/gm, '](_'), {
+      list: true,
+      ips: false,
+      files: false,
+    });
 
     var result = [];
 
