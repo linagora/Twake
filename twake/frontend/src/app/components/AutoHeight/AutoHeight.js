@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './AutoHeight.scss';
 
-export default class AutoHeight extends React.Component {
+export default class AutoHeight extends Component {
   constructor(props) {
     super();
     this.change = this.change.bind(this);
@@ -11,6 +11,7 @@ export default class AutoHeight extends React.Component {
       parseInt(this.textarea.style.paddingTop || 0) +
       parseInt(this.textarea.style.paddingBottom || 0);
     window.addEventListener('resize', this.change);
+    this.change();
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.change);
@@ -53,12 +54,21 @@ export default class AutoHeight extends React.Component {
       <div
         ref={node => (this.container = node)}
         className={'input autoheight_container ' + className}
-        style={{ display: 'inline-block', width: '100%' }}
+        style={{
+          display: 'inline-block',
+          width: '100%',
+          minHeight: this.props.minHeight ? this.props.minHeight : '',
+          maxHeight: this.props.maxHeight ? this.props.maxHeight : '',
+        }}
         onMouseEnter={() => {
           this.change();
         }}
       >
         <textarea
+          style={{
+            maxHeight: this.props.maxHeight ? this.props.maxHeight : '',
+            minHeight: this.props.minHeight ? this.props.minHeight : '',
+          }}
           {...this.props}
           className="input full_width"
           ref={node => {

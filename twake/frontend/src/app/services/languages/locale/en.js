@@ -1825,4 +1825,5 @@ export default {
   'scenes.app.popup.appsparameters.pages.smalltext_user_id': 'Current user id',
   'scenes.app.popup.appsparameters.pages.smalltext_workspace_id': 'Current workspace id',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Current group id',
+  'scenes.app.mainview.channel_description': 'Describe the channel',
 };
