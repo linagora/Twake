@@ -189,7 +189,7 @@ export default class Channel extends Component {
               />,
               {
                 position: 'center',
-                size: { width: '400px' },
+                size: { width: '600px' },
               },
             );
           },

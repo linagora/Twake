@@ -27,6 +27,14 @@
     padding: 13px 16px;
     display: flex;
     border-bottom: 1px solid $grey_light;
+    flex-direction: column;
+    justify-content: center;
+
+    .channel_description {
+      font-size: 12px;
+      width: 100%;
+      color: var(--grey-dark);
+    }
 
     .app-icon {
       height: 28px;
@@ -51,6 +59,8 @@
   }
 
   .channel_header {
+    display: flex;
+    flex-direction: row;
     .search {
       margin-right: 32;
       margin-top: 13;

@@ -10,10 +10,7 @@ import './MainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Tabs from './Tabs/Tabs.js';
-import Messages from 'scenes/Apps/Messages/Messages.js';
-import Drive from 'scenes/Apps/Drive/Drive.js';
-import Calendar from 'scenes/Apps/Calendar/Calendar.js';
-import Tasks from 'scenes/Apps/Tasks/Tasks.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import Search from './Search.js';
 import AppView from './AppView/AppView.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
@@ -217,6 +214,7 @@ export default class MainView extends Component {
                 <Emojione type={current_channel.icon} /> {current_channel.name}
                 {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
               </div>
+              <Tabs channel={current_channel} currentTab={this.state.channels.current_tab_id} />
             </div>
           )}
           {!current_channel.application && !!current_channel.direct && !!current_channel.app_id && (
@@ -262,8 +260,17 @@ export default class MainView extends Component {
             </div>
           )}
 
-          <Tabs channel={current_channel} currentTab={this.state.channels.current_tab_id} />
-
+          {!current_channel.application &&
+            !current_channel.direct &&
+            current_channel.description && (
+              <div className="channel_description markdown">
+                {PseudoMarkdownCompiler.compileToHTML(
+                  PseudoMarkdownCompiler.compileToJSON(
+                    (current_channel.description || '').replace(/\n/g, ' '),
+                  ),
+                )}
+              </div>
+            )}
           <div className="right">
             <Search />
           </div>

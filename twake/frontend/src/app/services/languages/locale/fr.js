@@ -1898,4 +1898,5 @@ export default {
   'scenes.app.popup.appsparameters.pages.smalltext_workspace_id':
     'Identifiant espace de travail actuel',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
+  'scenes.app.mainview.channel_description': 'Description de la chaîne',
 };
