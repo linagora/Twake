@@ -86,9 +86,8 @@ export default class MessagesListServerUtils {
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
             if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
-            if (messages.length < this.numberOfLoadedMessages) {
+            if (messages[0]?.hidden_data?.type === 'init_channel') {
               this.firstMessageOfAll = this.firstLoadedMessageId;
-              this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
             }
             resolve();
           },
