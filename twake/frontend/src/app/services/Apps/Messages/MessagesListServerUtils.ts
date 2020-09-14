@@ -86,6 +86,10 @@ export default class MessagesListServerUtils {
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
             if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
+            if (messages.length < this.numberOfLoadedMessages) {
+              this.firstMessageOfAll = this.firstLoadedMessageId;
+              this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
+            }
             resolve();
           },
         );
@@ -95,24 +99,25 @@ export default class MessagesListServerUtils {
 
   //Load more messages, fromOffset can be undefined (use class variables), or a string, or an empty string (load from the end / the begining)
   async loadMore(history: boolean = true, fromOffset?: string) {
-    if (this.httpLoading) {
-      return;
-    }
-
-    const direction = history ? 1 : -1;
-    const offset =
-      typeof fromOffset === 'string'
-        ? fromOffset
-        : history
-        ? this.firstLoadedMessageId
-        : this.lastLoadedMessageId;
-
     return new Promise(resolve => {
+      if (this.httpLoading) {
+        resolve(false);
+        return;
+      }
+
+      const direction = history ? 1 : -1;
+      const offset =
+        typeof fromOffset === 'string'
+          ? fromOffset
+          : history
+          ? this.firstLoadedMessageId
+          : this.lastLoadedMessageId;
+
       if (
         (history && this.firstMessageOfAll == offset && offset) ||
         (!history && this.lastMessageOfAllLoaded == offset && offset)
       ) {
-        resolve();
+        resolve(false);
         return;
       }
 
@@ -122,16 +127,14 @@ export default class MessagesListServerUtils {
         { offset: offset, limit: direction * this.numberOfLoadedMessages },
         (messages: Message[]) => {
           this.httpLoading = false;
-          console.log('loaded from back');
           this.updateLastFirstMessagesId(messages, !!fromOffset);
           if (history && messages.length < this.numberOfLoadedMessages) {
             this.firstMessageOfAll = this.firstLoadedMessageId;
           }
           if (!history && messages.length < this.numberOfLoadedMessages) {
-            console.log('reset last of all loaded');
             this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
           }
-          resolve();
+          resolve(true);
         },
       );
     });

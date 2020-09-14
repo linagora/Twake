@@ -108,8 +108,10 @@ export default class MessagesListUtils {
   }
 
   scrollTo(position: number) {
-    this.ignoreNextScroll++;
-    this.scrollerNode.scrollTop = position;
+    if (this.scrollerNode) {
+      this.ignoreNextScroll++;
+      this.scrollerNode.scrollTop = position;
+    }
   }
 
   onContentChange() {
@@ -135,6 +137,10 @@ export default class MessagesListUtils {
   }
 
   lockScroll() {
+    if (this.scrollerNode) {
+      return;
+    }
+
     this.scrollerNode.style.pointerEvents = 'none';
     this.loadMoreLocked = true;
     if (this.lockedScrollTimeout) {
@@ -146,6 +152,10 @@ export default class MessagesListUtils {
   }
 
   unlockScroll() {
+    if (this.scrollerNode) {
+      return;
+    }
+
     this.scrollerNode.style.pointerEvents = 'all';
     this.loadMoreLocked = false;
   }
@@ -172,13 +182,13 @@ export default class MessagesListUtils {
         this.messagesContainerNode.childNodes[this.messagesContainerNode.childNodes.length - 1]
           .clientHeight || 0;
       if (evt.scrollTop <= topFakeHeight * 0.75) {
-        await this.serverService.loadMore();
-        this.lockScroll();
+        const didRequest = await this.serverService.loadMore();
+        if (didRequest) this.lockScroll();
         return;
       }
       if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= bottomFakeHeight * 0.75) {
-        await this.serverService.loadMore(false);
-        this.lockScroll();
+        const didRequest = await this.serverService.loadMore(false);
+        if (didRequest) this.lockScroll();
         return;
       }
     }
