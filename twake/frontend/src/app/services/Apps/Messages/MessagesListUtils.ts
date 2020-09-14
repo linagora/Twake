@@ -133,17 +133,21 @@ export default class MessagesListUtils {
           messageListOffset,
       );
     }
+
+    //Get current status to detect changes on new messages are added to the list
     this.currentWitnessNode = this.messagesContainerNode.childNodes[1];
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
     this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
-
-    this.unlockScroll();
+    this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
+    this.currentScrollTop = this.scrollerNode.scrollTop;
 
     this.updateScroll();
+
+    this.unlockScroll();
   }
 
   lockScroll() {
-    if (this.scrollerNode) {
+    if (!this.scrollerNode) {
       return;
     }
 
@@ -158,24 +162,32 @@ export default class MessagesListUtils {
   }
 
   unlockScroll() {
-    if (this.scrollerNode) {
+    if (!this.scrollerNode) {
       return;
     }
 
-    this.scrollerNode.style.pointerEvents = 'all';
-    this.loadMoreLocked = false;
+    setTimeout(() => {
+      this.scrollerNode.style.pointerEvents = 'all';
+      this.loadMoreLocked = false;
+    }, 200);
   }
 
-  async onScroll() {
-    const evt = {
+  async onScroll(evt: any) {
+    if (this.loadMoreLocked) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      return;
+    }
+
+    evt = {
       clientHeight: this.scrollerNode.clientHeight,
       scrollHeight: this.messagesContainerNode.clientHeight,
       scrollTop: this.scrollerNode.scrollTop,
     };
 
     //Get current status to detect changes on new messages are added to the list
-    this.currentScrollHeight = evt.scrollHeight;
-    this.currentScrollTop = evt.scrollTop;
+    this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
+    this.currentScrollTop = this.scrollerNode.scrollTop;
 
     if (this.ignoreNextScroll > 0) {
       this.ignoreNextScroll--;

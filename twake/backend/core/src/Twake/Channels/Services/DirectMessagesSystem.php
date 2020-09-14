@@ -45,7 +45,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         $member = $this->entity_manager->getRepository("Twake\Channels:ChannelMember")->findBy(
             Array("user_id" => $current_user->getId(), "direct" => true),
             Array(),
-            isset($options["max"]) ? $options["max"] : 20,
+            isset($options["max"]) ? $options["max"] : 40,
             isset($options["offset"]) ? $options["offset"] : 0,
             "last_activity_least_updated",
             0,
