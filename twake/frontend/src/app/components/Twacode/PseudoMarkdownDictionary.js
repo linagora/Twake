@@ -76,13 +76,7 @@ class PseudoMarkdownDictionary {
               </a>
             );
           }
-          var protocol = 'https';
-          if ((object.url || object.content || '').indexOf('http://') >= 0) {
-            protocol = 'http';
-          }
-          var orig_url =
-            protocol + '://' + (object.url || object.content || '').replace(/^(https?:\/\/)/, '');
-          var url = orig_url;
+          var url = this.setUrlProtocol(object.url || object.content);
           if (object.user_identifier && UserService.getCurrentUser()) {
             var separator = '?';
             if (url.indexOf('?') > 0) {
@@ -91,8 +85,20 @@ class PseudoMarkdownDictionary {
             url += separator + 'twake_user=' + UserService.getCurrentUser().id;
           }
           return (
-            <a key={this.counter++} target="_blank" href={url || orig_url}>
+            <a key={this.counter++} target="_blank" href={url}>
               {child}
+            </a>
+          );
+        },
+      },
+      markdown_link: {
+        object: (_child, object) => {
+          const linkData = object.content.split('](');
+          const url = linkData[1] || '';
+
+          return (
+            <a href={this.setUrlProtocol(url)} target="_BLANK">
+              {linkData[0]}
             </a>
           );
         },
@@ -253,6 +259,15 @@ class PseudoMarkdownDictionary {
         ),
       },
     };
+  }
+
+  setUrlProtocol(url) {
+    let protocol = 'https';
+
+    if ((url || '').indexOf('http://') >= 0) {
+      protocol = 'http';
+    }
+    return protocol + '://' + (url || '').replace(/^(https?:\/\/)/, '');
   }
 }
 

@@ -138,7 +138,7 @@ export default class ChannelsWorkspace extends Component {
       <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
       {
         position: 'center',
-        size: { width: '400px' },
+        size: { width: '600px' },
       },
     );
   }
