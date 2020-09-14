@@ -139,7 +139,10 @@ export default class MessagesListServerUtils {
 
   //Get all loaded messages without holes between messages
   getMessages(): Message[] {
-    let messages = Collections.get('messages').findBy({ channel_id: this.channelId });
+    let messages = Collections.get('messages').findBy({
+      channel_id: this.channelId,
+      parent_message_id: '',
+    });
 
     const newWebsocketsMessagesToAdd = this.detectNewWebsocketsMessages(messages);
 
@@ -157,6 +160,14 @@ export default class MessagesListServerUtils {
       .sort((a: Message, b: Message) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
     return messages;
+  }
+
+  hasFirstMessage(): boolean {
+    return this.firstLoadedMessageId === this.firstMessageOfAll;
+  }
+
+  hasLastMessage(): boolean {
+    return !!this.lastMessageOfAllLoaded;
   }
 
   // We can detect new unknown messages from websocket, this few lines detect new messages

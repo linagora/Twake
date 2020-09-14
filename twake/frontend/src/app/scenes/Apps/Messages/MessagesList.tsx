@@ -4,6 +4,7 @@ import MessagesListServerService, {
   Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesListService from 'app/services/Apps/Messages/MessagesListUtils';
+import MessageComponent from './Message/Message';
 import {
   AutoSizer,
   List,
@@ -30,12 +31,12 @@ export default class MessagesList extends Component<Props, { messages: number[] 
 
   constructor(props: Props) {
     super(props);
-    this.messagesListService = new MessagesListService();
     this.messagesListServerService = new MessagesListServerService(
       this.props.channel.id,
       this.props.threadId,
       this.props.collectionKey,
     );
+    this.messagesListService = new MessagesListService(this.messagesListServerService);
 
     //@ts-ignore
     window.MessagesList = this;
@@ -49,6 +50,8 @@ export default class MessagesList extends Component<Props, { messages: number[] 
   componentWillUnmount() {
     Collections.get('messages').removeListener(this);
     this.messagesListServerService.destroy();
+    this.messagesListService.unsetScroller();
+    this.messagesListService.unsetMessagesContainer();
   }
 
   componentWillUpdate() {
@@ -61,57 +64,40 @@ export default class MessagesList extends Component<Props, { messages: number[] 
   }
 
   render() {
-    const messages: any[] = this.messagesListService.addLoadingMessages(
+    const messages: any[] = this.messagesListServerService.getMessages();
+    const loadingMessagesTop: any[] = this.messagesListService.getLoadingMessages(
       this.messagesListServerService,
-      this.messagesListServerService.getMessages(),
+      'top',
     );
-    this.messagesListService.setMessagesCount(messages.length);
-    this.messagesListService.setScrollToIndex();
+    const loadingMessagesBottom: any[] = this.messagesListService.getLoadingMessages(
+      this.messagesListServerService,
+      'bottom',
+    );
+    this.messagesListService.updateScroll();
 
     return (
-      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-        <InfiniteLoader
-          isRowLoaded={() => true}
-          loadMoreRows={() => new Promise(resolve => resolve(messages))}
-          rowCount={messages.length}
-        >
-          {({ onRowsRendered, registerChild }) => (
-            <AutoSizer>
-              {({ width, height }) => {
-                return (
-                  <List
-                    rowHeight={this.cache.rowHeight}
-                    deferredMeasurementCache={this.cache}
-                    height={height}
-                    width={width}
-                    rowCount={messages.length}
-                    ref={node => {
-                      registerChild(node);
-                      this.messagesListService.refList(node);
-                      this.virtualizedList = node;
-                    }}
-                    onRowsRendered={p => {
-                      onRowsRendered(p);
-                      //this.messagesListService.onRenderRows();
-                    }}
-                    onScroll={this.messagesListService.onScroll}
-                    rowRenderer={({ index, key, style, parent }: any) => (
-                      <CellMeasurer
-                        cache={this.cache}
-                        columnIndex={0}
-                        key={key}
-                        parent={parent}
-                        rowIndex={index}
-                      >
-                        <div style={style}>{messages[index]?.content?.original_str}</div>
-                      </CellMeasurer>
-                    )}
-                  />
-                );
-              }}
-            </AutoSizer>
-          )}
-        </InfiniteLoader>
+      <div
+        style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
+        ref={this.messagesListService.setScroller}
+        onClick={() => {
+          this.messagesListServerService.loadMore();
+        }}
+      >
+        <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
+          <div className="fake-messages">
+            {loadingMessagesTop.map((_m, index) => (
+              <MessageComponent style={{}} key={index} message={loadingMessagesTop[index]} />
+            ))}
+          </div>
+          {messages.map((_m, index) => (
+            <MessageComponent style={{}} key={messages[index].id} message={messages[index]} />
+          ))}
+          <div className="fake-messages">
+            {loadingMessagesBottom.map((_m, index) => (
+              <MessageComponent style={{}} key={index} message={loadingMessagesBottom[index]} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
