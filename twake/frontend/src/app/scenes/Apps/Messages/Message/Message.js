@@ -75,19 +75,6 @@ export default class Message extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    /*var stringified = JSON.stringify([
-      this.props.message, this.props.previousMessage, this.props.new, this.props.hasTimeline,
-      this.state.is_hover, this.state.is_selected, this.state.loading_interaction
-    ]);
-    if(stringified != this.saved_stringified){
-      this.saved_stringified = stringified;
-      return true;
-    }
-    return false;*/
-    return true;
-  }
-
   displayUserCard(user) {
     if (!this.props.message.application_id) {
       let box = window.getBoundingClientRect(this.user_details);
