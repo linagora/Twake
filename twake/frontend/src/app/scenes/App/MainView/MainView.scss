@@ -30,6 +30,11 @@
     flex-direction: column;
     justify-content: center;
 
+    .inline_header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
     .channel_description {
       font-size: 12px;
       width: 100%;
