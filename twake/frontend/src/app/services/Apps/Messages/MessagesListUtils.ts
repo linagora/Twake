@@ -91,7 +91,7 @@ export default class MessagesListUtils {
     messagesListServerUtils: MessagesListServerUtils,
     position: 'top' | 'bottom',
   ): any[] {
-    const fakes: { fake: boolean }[] = Array.apply(null, Array(5)).map(i => {
+    const fakes: { fake: boolean }[] = Array.apply(null, Array(1)).map(i => {
       return {
         fake: true,
       };
@@ -194,6 +194,8 @@ export default class MessagesListUtils {
       } else {
         this.scrollerNode.scrollTop = position;
       }
+      this.onScroll();
+      this.getVisibleMessages(true);
     }
   }
 
@@ -274,8 +276,8 @@ export default class MessagesListUtils {
     }, 200);
   }
 
-  async onScroll(evt: any) {
-    if (this.loadMoreLocked) {
+  async onScroll(evt?: any) {
+    if (this.loadMoreLocked && evt) {
       evt.preventDefault();
       evt.stopPropagation();
       return;
@@ -311,11 +313,11 @@ export default class MessagesListUtils {
       const bottomFakeHeight =
         this.messagesContainerNode.childNodes[this.messagesContainerNode.childNodes.length - 1]
           .clientHeight || 0;
-      if (evt.scrollTop <= topFakeHeight * 0.75) {
+      if (evt.scrollTop <= topFakeHeight * 0.25) {
         const didRequest = await this.serverService.loadMore();
         if (didRequest) this.lockScroll();
       }
-      if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= bottomFakeHeight * 0.75) {
+      if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= bottomFakeHeight * 0.25) {
         const didRequest = await this.serverService.loadMore(false);
         if (didRequest) this.lockScroll();
       }
