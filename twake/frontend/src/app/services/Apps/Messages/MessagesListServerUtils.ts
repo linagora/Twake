@@ -50,6 +50,9 @@ export default class MessagesListServerUtils extends Observable {
     this.channelId = channelId;
     this.threadId = threadId;
     this.collectionKey = collectionKey;
+
+    this.onNewMessageFromWebsocketListener = this.onNewMessageFromWebsocketListener.bind(this);
+
     //@ts-ignore
     window.MessagesListServerUtils = this;
   }
@@ -63,6 +66,8 @@ export default class MessagesListServerUtils extends Observable {
     }
 
     this.reset();
+
+    Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
     if (fromMessageId) {
       if (typeof fromMessageId === 'string') {
@@ -151,18 +156,13 @@ export default class MessagesListServerUtils extends Observable {
       parent_message_id: '',
     });
 
-    const newWebsocketsMessagesToAdd = this.detectNewWebsocketsMessages(messages);
-
-    messages = messages.filter((m: Message) => {
-      return (
-        Numbers.compareTimeuuid(this.lastLoadedMessageId, m.id) >= 0 &&
-        Numbers.compareTimeuuid(this.firstLoadedMessageId, m.id) <= 0
-      );
-    });
-
-    messages = messages.concat(newWebsocketsMessagesToAdd);
-
     messages = messages
+      .filter((m: Message) => {
+        return (
+          Numbers.compareTimeuuid(this.lastLoadedMessageId, m.id) >= 0 &&
+          Numbers.compareTimeuuid(this.firstLoadedMessageId, m.id) <= 0
+        );
+      })
       .filter((message: Message) => !message._user_ephemeral)
       .sort((a: Message, b: Message) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
@@ -194,10 +194,17 @@ export default class MessagesListServerUtils extends Observable {
       this.onNewMessageFromWebsocket(m);
     });
 
-    let shouldAddWebsockets =
-      newUnknownMessages.length > 0 && this.lastLoadedMessageId === this.lastMessageOfAllLoaded;
+    return newUnknownMessages;
+  }
 
-    return shouldAddWebsockets ? newUnknownMessages : [];
+  onNewMessageFromWebsocketListener(_event: any) {
+    this.detectNewWebsocketsMessages(
+      Collections.get('messages').findBy({
+        channel_id: this.channelId,
+        parent_message_id: '',
+      }),
+    );
+    this.notify();
   }
 
   onNewMessageFromWebsocket(message: Message) {
@@ -230,5 +237,6 @@ export default class MessagesListServerUtils extends Observable {
 
   destroy() {
     Collections.get('messages').removeSource(this.collectionKey);
+    Collections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
   }
 }

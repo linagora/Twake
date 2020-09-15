@@ -43,7 +43,11 @@ export default class Observable {
       if (update) {
         var data = {};
         data[this.observableName] = this;
-        this.observableListenersList[i].setState(data);
+        if (typeof this.observableListenersList[i] === 'function') {
+          this.observableListenersList[i](data);
+        } else {
+          this.observableListenersList[i].setState(data);
+        }
       }
     }
   }

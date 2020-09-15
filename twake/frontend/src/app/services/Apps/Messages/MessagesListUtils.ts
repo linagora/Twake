@@ -11,6 +11,7 @@ export default class MessagesListUtils {
   ignoreNextScroll: number = 0;
   serverService: MessagesListServerUtils;
   lockedScrollTimeout: any;
+  initDate: number = 0;
 
   //State
   fixBottom: boolean = true;
@@ -31,6 +32,7 @@ export default class MessagesListUtils {
     this.unsetScroller = this.unsetScroller.bind(this);
     this.unsetMessagesContainer = this.unsetMessagesContainer.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    this.initDate = new Date().getTime();
 
     this.serverService = serverService;
 
@@ -123,18 +125,18 @@ export default class MessagesListUtils {
   }
 
   setWitnessMessage(node: any) {
-    console.log('update witness');
     if (this.currentWitnessNode) {
       this.currentWitnessNode.style.background = 'none';
     }
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
-    this.currentWitnessNode.style.background = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
   getVisibleMessages(setWitness: boolean = false) {
     this.getVisibleMessagesLastPosition = this.currentScrollTop;
+    let closestToCenter = 10000;
+    let bestCenterNode: any;
     Object.values(this.messagesPositions).forEach(nodeMessage => {
       if (nodeMessage.node) {
         const offsetTop =
@@ -143,12 +145,12 @@ export default class MessagesListUtils {
         const upLimit = this.currentScrollTop;
         const bottomLimit = this.currentScrollTop + this.scrollerNode.clientHeight;
 
-        if (
-          setWitness &&
-          offsetTop > upLimit &&
-          offsetBottom < bottomLimit - this.scrollerNode.clientHeight / 4
-        ) {
-          this.setWitnessMessage(nodeMessage.node.getDomElement());
+        if (setWitness) {
+          const distanceFromCenter = Math.abs(offsetTop + offsetBottom - (upLimit + bottomLimit));
+          if (distanceFromCenter < closestToCenter) {
+            closestToCenter = distanceFromCenter;
+            bestCenterNode = nodeMessage.node.getDomElement();
+          }
         }
 
         if (
@@ -163,12 +165,11 @@ export default class MessagesListUtils {
         }
       }
     });
+    if (bestCenterNode) this.setWitnessMessage(bestCenterNode);
   }
 
   //Search for a message and scroll to it
   scrollToMessage(message: Message): boolean {
-    console.log('call scroll to message');
-
     return Object.values(this.messagesPositions).some(nodeMessage => {
       if (
         nodeMessage.message?.id === message.id ||
@@ -185,8 +186,13 @@ export default class MessagesListUtils {
   scrollTo(position: number) {
     if (this.scrollerNode) {
       this.ignoreNextScroll++;
-      const smallJump = Math.abs(this.scrollerNode.scrollTop - position);
-      if (this.fixBottom && smallJump < 200) {
+      const smallJump = position - this.scrollerNode.scrollTop;
+      if (
+        this.fixBottom &&
+        smallJump > 0 &&
+        smallJump < 200 &&
+        new Date().getTime() - this.initDate > 1000
+      ) {
         this.scrollerNode.scroll({
           top: position,
           behavior: 'smooth',
@@ -204,38 +210,11 @@ export default class MessagesListUtils {
     const messageListOffset =
       this.messagesContainerNodeScrollTop - this.messagesContainerNode?.offsetTop;
 
-    console.log('content changed ', this.serverService.getMessages().length);
-
-    console.log(
-      'before',
-      this.currentWitnessNodeClientTop,
-      (this.currentWitnessNode?.offsetTop || 0) +
-        this.messagesContainerNode?.offsetTop -
-        this.scrollerNode.scrollTop,
-    );
-
-    //If new content but 'witness node' (message on top) didnt moved, then it was added at the end and then nothing to scroll back in place
-    /*if (this.currentWitnessNodeScrollTop !== this.currentWitnessNode?.offsetTop || 0) {
-      this.scrollTo(
-        this.currentScrollTop +
-          (this.messagesContainerNode.clientHeight - this.currentScrollHeight) -
-          messageListOffset,
-      );
-    }*/
-
     //Force witness node to keep at the same position
     this.scrollTo(
       (this.currentWitnessNode?.offsetTop || 0) +
         this.messagesContainerNode?.offsetTop -
         this.currentWitnessNodeClientTop,
-    );
-
-    console.log(
-      'now',
-      this.currentWitnessNodeClientTop,
-      (this.currentWitnessNode?.offsetTop || 0) +
-        this.messagesContainerNode?.offsetTop -
-        this.scrollerNode.scrollTop,
     );
 
     //Get current status to detect changes on new messages are added to the list
@@ -256,6 +235,7 @@ export default class MessagesListUtils {
     }
 
     this.scrollerNode.style.pointerEvents = 'none';
+    this.scrollerNode.style.overflow = 'hidden';
     this.loadMoreLocked = true;
     if (this.lockedScrollTimeout) {
       clearTimeout(this.lockedScrollTimeout);
@@ -270,10 +250,9 @@ export default class MessagesListUtils {
       return;
     }
 
-    setTimeout(() => {
-      this.scrollerNode.style.pointerEvents = 'all';
-      this.loadMoreLocked = false;
-    }, 200);
+    this.scrollerNode.style.pointerEvents = 'all';
+    this.scrollerNode.style.overflow = 'auto';
+    this.loadMoreLocked = false;
   }
 
   async onScroll(evt?: any) {
@@ -285,11 +264,11 @@ export default class MessagesListUtils {
 
     evt = {
       clientHeight: this.scrollerNode.clientHeight,
-      scrollHeight: this.messagesContainerNode.clientHeight,
+      scrollHeight: this.scrollerNode.scrollHeight,
       scrollTop: this.scrollerNode.scrollTop,
     };
 
-    if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 100) {
+    if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 200) {
       this.getVisibleMessages(this.ignoreNextScroll <= 0);
     }
 
@@ -323,6 +302,7 @@ export default class MessagesListUtils {
       }
     }
 
+    console.log('Update scroll to bottmo', evt.clientHeight + evt.scrollTop - evt.scrollHeight);
     if (
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&
       this.serverService.hasLastMessage()

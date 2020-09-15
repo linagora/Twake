@@ -387,7 +387,7 @@ class Channels extends Observable {
     } else if (channel.direct) {
       var name = [];
       var user_icon = undefined;
-      channel.members.forEach(id => {
+      ((channel || {}).members || []).forEach(id => {
         if (channel.members.length == 1 || id != CurrentUser.get().id) {
           var user = Collections.get('users').find(id);
           if (user) {
@@ -471,7 +471,7 @@ class Channels extends Observable {
     } else if (channel.direct) {
       //Private chan
       var name = [];
-      channel.members.forEach(id => {
+      ((channel || {}).members || []).forEach(id => {
         if (channel.members.length == 1 || id != CurrentUser.get().id) {
           var user = Collections.get('users').find(id);
           if (user) {
