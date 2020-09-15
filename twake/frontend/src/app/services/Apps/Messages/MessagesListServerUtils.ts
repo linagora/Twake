@@ -1,5 +1,6 @@
 import Collections from 'services/Collections/Collections.js';
 import Numbers from 'services/utils/Numbers.js';
+import Observable from 'services/observable';
 
 export type Message = {
   application_id?: string | null;
@@ -25,7 +26,7 @@ export type Message = {
 /*
   This class will manage what is loaded from the backend and what's not, the complete list of messages for a channel will always be h
 */
-export default class MessagesListServerUtils {
+export default class MessagesListServerUtils extends Observable {
   //Configuration
   numberOfLoadedMessages: number = 20;
 
@@ -44,6 +45,8 @@ export default class MessagesListServerUtils {
   httpLoading: boolean = false;
 
   constructor(channelId: string, threadId: string, collectionKey: string) {
+    super();
+
     this.channelId = channelId;
     this.threadId = threadId;
     this.collectionKey = collectionKey;
@@ -89,6 +92,7 @@ export default class MessagesListServerUtils {
             if (messages[0]?.hidden_data?.type === 'init_channel') {
               this.firstMessageOfAll = this.firstLoadedMessageId;
             }
+            this.notify();
             resolve();
           },
         );
@@ -133,6 +137,7 @@ export default class MessagesListServerUtils {
           if (!history && messages.length < this.numberOfLoadedMessages) {
             this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
           }
+          this.notify();
           resolve(true);
         },
       );

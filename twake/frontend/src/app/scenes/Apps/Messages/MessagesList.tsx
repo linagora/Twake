@@ -43,24 +43,15 @@ export default class MessagesList extends Component<Props, { messages: number[] 
   }
 
   componentDidMount() {
-    Collections.get('messages').addListener(this);
     this.messagesListServerService.init();
+    this.messagesListServerService.addListener(this);
   }
 
   componentWillUnmount() {
-    Collections.get('messages').removeListener(this);
+    this.messagesListServerService.removeListener(this);
     this.messagesListServerService.destroy();
     this.messagesListService.unsetScroller();
     this.messagesListService.unsetMessagesContainer();
-  }
-
-  componentWillUpdate() {
-    //this.resetList();
-  }
-
-  resetList() {
-    this.cache.clearAll(); //Clear the cache if row heights are recompute to be sure there are no "blank spaces" (some row are erased)
-    this.virtualizedList && this.virtualizedList.recomputeRowHeights(); //We need to recompute the heights
   }
 
   render() {
@@ -89,8 +80,13 @@ export default class MessagesList extends Component<Props, { messages: number[] 
               <MessageComponent style={{}} key={index} message={loadingMessagesTop[index]} />
             ))}
           </div>
-          {messages.map((_m, index) => (
-            <MessageComponent style={{}} key={messages[index].id} message={messages[index]} />
+          {messages.map((m, index) => (
+            <MessageComponent
+              style={{}}
+              key={messages[index].id}
+              message={messages[index]}
+              ref={node => this.messagesListService.setMessageNode(m, node)}
+            />
           ))}
           <div className="fake-messages">
             {loadingMessagesBottom.map((_m, index) => (

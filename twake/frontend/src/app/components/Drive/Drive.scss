@@ -145,7 +145,8 @@
 
   .preview {
     width: 216px;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
     background-color: #f5f5f7;
     flex: 1;

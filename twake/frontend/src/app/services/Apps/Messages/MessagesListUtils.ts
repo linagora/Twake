@@ -1,4 +1,4 @@
-import MessagesListServerUtils from './MessagesListServerUtils';
+import MessagesListServerUtils, { Message } from './MessagesListServerUtils';
 
 /*
   This class will manage react virtualized and scroll cases
@@ -20,6 +20,9 @@ export default class MessagesListUtils {
   messagesContainerNodeScrollTop: number = 0;
   currentWitnessNode: any = 0;
   currentWitnessNodeScrollTop: number = 0;
+  currentWitnessNodeClientTop: number = 0;
+  messagesPositions: { [key: string]: { node: any; message: Message } } = {};
+  getVisibleMessagesLastPosition: number = 0;
 
   constructor(serverService: MessagesListServerUtils) {
     this.setScroller = this.setScroller.bind(this);
@@ -37,6 +40,8 @@ export default class MessagesListUtils {
     //@ts-ignore
     window.MessagesListUtils = this;
   }
+
+  /* Getter / Setter for dom nodes */
 
   setScroller(node: any) {
     if (!node) {
@@ -58,7 +63,15 @@ export default class MessagesListUtils {
     this.messagesContainerNodeResizeObserver.observe(node);
   }
 
+  setMessageNode(message: Message, node: any) {
+    this.messagesPositions[message.front_id || 'undefined'] = {
+      message: message,
+      node: node,
+    };
+  }
+
   unsetScroller() {
+    if (this.lockedScrollTimeout) clearTimeout(this.lockedScrollTimeout);
     if (this.scrollerNode) {
       this.scrollerNode.removeEventListener('scroll', this.onScroll);
     }
@@ -71,6 +84,9 @@ export default class MessagesListUtils {
     }
   }
 
+  /* END Getter / Setter for dom nodes */
+
+  //Generate fake messages if needed
   getLoadingMessages(
     messagesListServerUtils: MessagesListServerUtils,
     position: 'top' | 'bottom',
@@ -96,6 +112,7 @@ export default class MessagesListUtils {
     }
   }
 
+  //Called by frontend on each rerender to update scroll
   updateScroll() {
     if (!this.messagesContainerNode) {
       return;
@@ -103,6 +120,66 @@ export default class MessagesListUtils {
     if (this.fixBottom) {
       this.scrollTo(this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight);
     }
+  }
+
+  setWitnessMessage(node: any) {
+    console.log('update witness');
+    if (this.currentWitnessNode) {
+      this.currentWitnessNode.style.background = 'none';
+    }
+    this.currentWitnessNode = node;
+    this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
+    this.currentWitnessNode.style.background = 'red';
+  }
+
+  // Update visible / invisible message and set the 'witness message' (message that's should not move)
+  getVisibleMessages(setWitness: boolean = false) {
+    this.getVisibleMessagesLastPosition = this.currentScrollTop;
+    Object.values(this.messagesPositions).forEach(nodeMessage => {
+      if (nodeMessage.node) {
+        const offsetTop =
+          nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
+        const offsetBottom = offsetTop + nodeMessage.node?.getDomElement()?.clientHeight;
+        const upLimit = this.currentScrollTop;
+        const bottomLimit = this.currentScrollTop + this.scrollerNode.clientHeight;
+
+        if (
+          setWitness &&
+          offsetTop > upLimit &&
+          offsetBottom < bottomLimit - this.scrollerNode.clientHeight / 4
+        ) {
+          this.setWitnessMessage(nodeMessage.node.getDomElement());
+        }
+
+        if (
+          offsetBottom > upLimit - this.scrollerNode.clientHeight / 2 &&
+          offsetTop < bottomLimit + this.scrollerNode.clientHeight / 2
+        ) {
+          //This message is visible
+          nodeMessage.node.getDomElement().style.visibility = 'visible';
+        } else {
+          //This message is not visible
+          nodeMessage.node.getDomElement().style.visibility = 'hidden';
+        }
+      }
+    });
+  }
+
+  //Search for a message and scroll to it
+  scrollToMessage(message: Message): boolean {
+    console.log('call scroll to message');
+
+    return Object.values(this.messagesPositions).some(nodeMessage => {
+      if (
+        nodeMessage.message?.id === message.id ||
+        nodeMessage.message?.front_id === message.front_id
+      ) {
+        const offsetTop =
+          nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
+        this.scrollTo(offsetTop - 64);
+        return true;
+      }
+    });
   }
 
   scrollTo(position: number) {
@@ -125,18 +202,41 @@ export default class MessagesListUtils {
     const messageListOffset =
       this.messagesContainerNodeScrollTop - this.messagesContainerNode?.offsetTop;
 
+    console.log('content changed ', this.serverService.getMessages().length);
+
+    console.log(
+      'before',
+      this.currentWitnessNodeClientTop,
+      (this.currentWitnessNode?.offsetTop || 0) +
+        this.messagesContainerNode?.offsetTop -
+        this.scrollerNode.scrollTop,
+    );
+
     //If new content but 'witness node' (message on top) didnt moved, then it was added at the end and then nothing to scroll back in place
-    if (this.currentWitnessNodeScrollTop !== this.currentWitnessNode?.offsetTop || 0) {
+    /*if (this.currentWitnessNodeScrollTop !== this.currentWitnessNode?.offsetTop || 0) {
       this.scrollTo(
         this.currentScrollTop +
           (this.messagesContainerNode.clientHeight - this.currentScrollHeight) -
           messageListOffset,
       );
-    }
+    }*/
+
+    //Force witness node to keep at the same position
+    this.scrollTo(
+      (this.currentWitnessNode?.offsetTop || 0) +
+        this.messagesContainerNode?.offsetTop -
+        this.currentWitnessNodeClientTop,
+    );
+
+    console.log(
+      'now',
+      this.currentWitnessNodeClientTop,
+      (this.currentWitnessNode?.offsetTop || 0) +
+        this.messagesContainerNode?.offsetTop -
+        this.scrollerNode.scrollTop,
+    );
 
     //Get current status to detect changes on new messages are added to the list
-    this.currentWitnessNode = this.messagesContainerNode.childNodes[1];
-    this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
     this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
@@ -144,6 +244,8 @@ export default class MessagesListUtils {
     this.updateScroll();
 
     this.unlockScroll();
+
+    this.getVisibleMessages();
   }
 
   lockScroll() {
@@ -185,10 +287,20 @@ export default class MessagesListUtils {
       scrollTop: this.scrollerNode.scrollTop,
     };
 
+    if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 100) {
+      this.getVisibleMessages(this.ignoreNextScroll <= 0);
+    }
+
     //Get current status to detect changes on new messages are added to the list
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
 
+    this.currentWitnessNodeClientTop =
+      (this.currentWitnessNode?.offsetTop || 0) +
+      this.messagesContainerNode?.offsetTop -
+      this.scrollerNode.scrollTop;
+
+    //After this point, we only want to act if this is user scroll (and not ourselve scrolling)
     if (this.ignoreNextScroll > 0) {
       this.ignoreNextScroll--;
       return;
