@@ -14,7 +14,7 @@ type Props = {
   collectionKey: string;
 };
 
-export default class MessagesList extends Component<Props, { messages: number[] }> {
+export default class MessagesList extends Component<Props> {
   messagesListServerService: MessagesListServerUtils;
   messagesListService: MessagesListService;
 
@@ -48,16 +48,23 @@ export default class MessagesList extends Component<Props, { messages: number[] 
     this.messagesListService.unsetMessagesContainer();
   }
 
+  jumpTo(messageId: string) {
+    this.messagesListServerService.init(messageId).then(() => {
+      this.messagesListService.scrollToMessage({ id: messageId });
+      this.messagesListServerService.loadMore();
+    });
+  }
+
   render() {
     const messages: any[] = this.messagesListServerService.getMessages();
     const loadingMessagesTop: any[] = this.messagesListService.getLoadingMessages(
       this.messagesListServerService,
       'top',
     );
-    const loadingMessagesBottom: any[] = this.messagesListService.getLoadingMessages(
-      this.messagesListServerService,
-      'bottom',
-    );
+    const loadingMessagesBottom: any[] =
+      messages.length > 0
+        ? this.messagesListService.getLoadingMessages(this.messagesListServerService, 'bottom')
+        : [];
     this.messagesListService.updateScroll();
 
     return (
@@ -76,6 +83,7 @@ export default class MessagesList extends Component<Props, { messages: number[] 
               style={{}}
               key={messages[index].id}
               message={messages[index]}
+              highlighted={this.messagesListService.highlighted === messages[index]?.id}
               ref={node => this.messagesListService.setMessageNode(m, node)}
             />
           ))}

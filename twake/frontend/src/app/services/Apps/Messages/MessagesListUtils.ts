@@ -4,7 +4,7 @@ class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
   constructor() {
     //@ts-ignore
-    window.MessagesListServerUtils = this;
+    window.MessagesListUtils = this;
   }
   get(collectionKey: string, serverService: MessagesListServerUtils) {
     if (this.services[collectionKey]) {
@@ -31,6 +31,7 @@ export class MessagesListUtils {
   initDate: number = 0;
 
   //State
+  highlighted: string = '';
   fixBottom: boolean = true;
   loadMoreLocked: boolean = false;
   currentScrollTop: number = 0;
@@ -49,7 +50,6 @@ export class MessagesListUtils {
     this.unsetScroller = this.unsetScroller.bind(this);
     this.unsetMessagesContainer = this.unsetMessagesContainer.bind(this);
     this.onScroll = this.onScroll.bind(this);
-    this.initDate = new Date().getTime();
 
     this.serverService = serverService;
 
@@ -142,9 +142,6 @@ export class MessagesListUtils {
   }
 
   setWitnessMessage(node: any) {
-    if (this.currentWitnessNode) {
-      this.currentWitnessNode.style.background = 'none';
-    }
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
   }
@@ -154,16 +151,22 @@ export class MessagesListUtils {
     this.getVisibleMessagesLastPosition = this.currentScrollTop;
     let closestToCenter = 10000;
     let bestCenterNode: any;
+
+    const upLimit = this.currentScrollTop;
+    const bottomLimit = this.currentScrollTop + this.scrollerNode.clientHeight;
+    let center = (upLimit + bottomLimit) / 2;
+    if (this.fixBottom) {
+      center = bottomLimit;
+    }
+
     Object.values(this.messagesPositions).forEach(nodeMessage => {
       if (nodeMessage.node) {
         const offsetTop =
           nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
         const offsetBottom = offsetTop + nodeMessage.node?.getDomElement()?.clientHeight;
-        const upLimit = this.currentScrollTop;
-        const bottomLimit = this.currentScrollTop + this.scrollerNode.clientHeight;
 
         if (setWitness) {
-          const distanceFromCenter = Math.abs(offsetTop + offsetBottom - (upLimit + bottomLimit));
+          const distanceFromCenter = Math.abs((offsetTop + offsetBottom) / 2 - center);
           if (distanceFromCenter < closestToCenter) {
             closestToCenter = distanceFromCenter;
             bestCenterNode = nodeMessage.node.getDomElement();
@@ -195,6 +198,7 @@ export class MessagesListUtils {
         const offsetTop =
           nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
         this.scrollTo(offsetTop - 64);
+        this.highlighted = message.id || '';
         return true;
       }
     });
@@ -211,6 +215,7 @@ export class MessagesListUtils {
         this.fixBottom &&
         smallJump > 0 &&
         smallJump < 200 &&
+        this.initDate > 0 &&
         new Date().getTime() - this.initDate > 1000
       ) {
         this.scrollerNode.scroll({
@@ -229,6 +234,10 @@ export class MessagesListUtils {
     //In case top fake messages disapear
     const messageListOffset =
       this.messagesContainerNodeScrollTop - this.messagesContainerNode?.offsetTop;
+
+    if (this.initDate === 0) {
+      this.initDate = new Date().getTime();
+    }
 
     //Force witness node to keep at the same position
     this.scrollTo(
@@ -327,6 +336,7 @@ export class MessagesListUtils {
       this.serverService.hasLastMessage()
     ) {
       this.fixBottom = true;
+      this.highlighted = '';
       this.updateScroll();
     } else {
       this.fixBottom = false;

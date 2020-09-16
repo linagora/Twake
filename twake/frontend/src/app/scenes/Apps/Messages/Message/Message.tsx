@@ -7,18 +7,26 @@ import './Message.scss';
 import FirstMessage from './Parts/FirstMessage/FirstMessage';
 import Thread from './Parts/Thread';
 import ThreadSection from './Parts/ThreadSection';
+import MessageContent from './Parts/MessageContent';
+
 import Collections from 'services/Collections/Collections.js';
 
 type Props = {
   message: Message & { fake: boolean };
+  highlighted?: boolean;
   style: any;
 };
 
-export default class MessageComponent extends Component<Props> {
+export default class MessageComponent extends Component<Props, { history: number }> {
   domNode: any;
 
   constructor(props: Props) {
     super(props);
+
+    this.state = {
+      history: 5,
+    };
+
     this.setDomElement = this.setDomElement.bind(this);
   }
 
@@ -41,7 +49,7 @@ export default class MessageComponent extends Component<Props> {
       );
     }
 
-    const max_responses = 5;
+    const max_responses = this.state.history;
     let previous_message: Message = this.props.message;
     let responses = Collections.get('messages')
       .findBy({
@@ -52,18 +60,24 @@ export default class MessageComponent extends Component<Props> {
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
     return (
-      <Thread refDom={this.setDomElement}>
-        <ThreadSection message={this.props.message} />
+      <Thread refDom={this.setDomElement} highlighted={this.props.highlighted}>
+        <ThreadSection message={this.props.message} head>
+          <MessageContent message={this.props.message} />
+        </ThreadSection>
 
-        {responses.length > 5 && (
-          <div className="thread-section gradient">
-            <div className="message">
-              <div className="sender-space" />
-              <div className="message-content">
-                <a>Open thread ({responses.length - max_responses} more messages)</a>
-              </div>
+        {responses.length > max_responses && (
+          <ThreadSection compact>
+            <div className="message-content">
+              <a
+                onClick={() => {
+                  this.setState({ history: 10 });
+                }}
+                href="#"
+              >
+                Open thread ({responses.length - max_responses} more messages)
+              </a>
             </div>
-          </div>
+          </ThreadSection>
         )}
 
         {responses.slice(-max_responses).map((message: Message) => {
@@ -72,19 +86,25 @@ export default class MessageComponent extends Component<Props> {
           }
           const tmp_previous_message = previous_message;
           previous_message = message;
-          return <ThreadSection message={message} small />;
+          return (
+            <ThreadSection message={message} small>
+              <MessageContent message={message} />
+            </ThreadSection>
+          );
         })}
 
-        <div className="thread-section compact">
-          <div className="message">
-            <div className="sender-space" />
-            <div className="message-content">
-              <a>
-                <FontAwesomeIcon icon={faLevelUpAlt} className={'fa-rotate-90	fa-w-20'} /> Reply
-              </a>
-            </div>
+        <ThreadSection compact>
+          <div className="message-content">
+            <a>
+              <FontAwesomeIcon
+                icon={faLevelUpAlt}
+                style={{ transform: 'scale(0.75) rotate(90deg)', width: '0.8em' }}
+                className={'fa-rotate-90	fa-w-20'}
+              />{' '}
+              Reply
+            </a>
           </div>
-        </div>
+        </ThreadSection>
       </Thread>
     );
   }

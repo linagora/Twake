@@ -2,12 +2,20 @@ import React from 'react';
 
 type Props = {
   loading?: boolean;
+  highlighted?: boolean;
   children?: any | any[];
   refDom?: (node: any) => void;
 };
 
 export default (props: Props) => (
-  <div className={'thread-container ' + (props.loading ? 'loading ' : '')} ref={props.refDom}>
+  <div
+    className={
+      'thread-container ' +
+      (props.loading ? 'loading ' : '') +
+      (props.highlighted ? 'highlighted ' : '')
+    }
+    ref={props.refDom}
+  >
     <div className="thread with-block">
       {!!props.loading && (
         <div className="thread-section">

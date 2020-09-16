@@ -1,21 +1,21 @@
 import React from 'react';
-import Twacode from 'components/Twacode/Twacode.js';
-import MessagesService from 'services/Apps/Messages/Messages.js';
 import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
 import 'moment-timezone';
-import Moment from 'react-moment';
-import moment from 'moment';
+import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 
 type Props = {
-  message: any;
+  message?: Message;
+  compact?: boolean;
   small?: boolean;
+  head?: boolean;
+  children?: any;
 };
 
 export default (props: Props) => {
   var user = null;
 
-  if (props.message.sender) {
+  if (props.message?.sender) {
     user = Collections.get('users').known_objects_by_id[props.message.sender];
     if (!user) {
       User.asyncGet(props.message.sender);
@@ -25,46 +25,27 @@ export default (props: Props) => {
   }
 
   return (
-    <div className="thread-section">
+    <div
+      className={
+        'thread-section ' +
+        (props.compact ? 'compact ' : '') +
+        (props.small ? 'small-section ' : '') +
+        (props.head ? 'head-section ' : '') +
+        (props.message?.sender && props.message.pinned ? 'pinned-section ' : '')
+      }
+    >
       <div className="message">
         <div className="sender-space">
-          <div
-            className={'sender-head ' + (props.small ? 'small ' : '')}
-            style={{
-              backgroundImage: "url('" + User.getThumbnail(user) + "')",
-            }}
-          ></div>
-        </div>
-        <div className="message-content">
-          <div className="message-content-header">
-            <span className="sender-name">{User.getFullName(user)}</span>
-            <span className="date">
-              <Moment tz={moment.tz.guess()} format="h:mm a">
-                {props.message.creation_date * 1000}
-              </Moment>
-            </span>
-          </div>
-          <div className="content-parent">
-            <Twacode
-              className="content allow_selection"
-              onDoubleClick={(evt: any) => {
-                evt.preventDefault();
-                evt.stopPropagation();
+          {props.message?.sender && (
+            <div
+              className={'sender-head'}
+              style={{
+                backgroundImage: "url('" + User.getThumbnail(user) + "')",
               }}
-              content={MessagesService.prepareContent(
-                props.message.content,
-                props.message.user_specific_content,
-              )}
-              id={props.message.front_id}
-              isApp={props.message.message_type == 1}
-              after={
-                props.message.edited &&
-                props.message.message_type == 0 && <div className="edited">(edited)</div>
-              }
-              onAction={undefined}
-            />
-          </div>
+            ></div>
+          )}
         </div>
+        {props.children}
       </div>
     </div>
   );

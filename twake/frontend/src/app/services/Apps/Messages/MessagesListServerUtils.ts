@@ -170,6 +170,10 @@ export class MessagesListServerUtils extends Observable {
 
   //Get all loaded messages without holes between messages
   getMessages(): Message[] {
+    if (this.lastLoadedMessageId === this.firstLoadedMessageId && this.httpLoading) {
+      return [];
+    }
+
     let messages = Collections.get('messages').findBy({
       channel_id: this.channelId,
       parent_message_id: this.threadId,

@@ -1,5 +1,12 @@
 .thread-container {
+  &.highlighted {
+    background-color: #ffe692;
+    box-shadow: 0 0 0 8px #ffe692;
+  }
+  transition: background-color 0.2s, box-shadow 0.2s;
+
   .thread {
+    overflow: hidden;
     margin: 0 auto;
     margin-bottom: 16px;
     max-width: 1000px;
@@ -12,12 +19,6 @@
     }
 
     .thread-section {
-      padding: 12px;
-
-      &.compact {
-        padding: 4px 12px;
-      }
-
       &.gradient {
         margin-bottom: -40px;
         height: 40px;
@@ -31,7 +32,15 @@
         border-bottom: 1px solid var(--grey-background);
       }
 
+      &.compact {
+        .message {
+          padding: 4px 12px;
+        }
+      }
+
       .message {
+        background-color: var(--white);
+        padding: 12px;
         display: flex;
         .sender-space {
           width: 28px;
@@ -45,11 +54,6 @@
             background-color: var(--grey-background);
             background-size: cover;
             background-position: center;
-
-            &.small {
-              width: 16px;
-              height: 16px;
-            }
           }
         }
         .message-content {
@@ -68,6 +72,25 @@
               font-size: 12px;
             }
           }
+        }
+      }
+
+      &.small-section {
+        .message .sender-space .sender-head {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      &.head-section {
+        .message {
+          border-left: 4px solid var(--black);
+        }
+      }
+
+      &.pinned-section {
+        .message {
+          border-left: 4px solid var(--red);
         }
       }
     }
