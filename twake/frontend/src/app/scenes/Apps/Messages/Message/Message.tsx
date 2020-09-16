@@ -28,7 +28,7 @@ export default class MessageComponent extends Component<
 
     this.state = {
       history: 5,
-      render: false,
+      render: true,
     };
 
     this.setDomElement = this.setDomElement.bind(this);
@@ -79,7 +79,7 @@ export default class MessageComponent extends Component<
         </ThreadSection>
 
         {responses.length > max_responses && (
-          <ThreadSection compact>
+          <ThreadSection gradient>
             <div className="message-content">
               <a
                 onClick={() => {

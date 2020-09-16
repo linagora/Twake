@@ -48,9 +48,12 @@ export default class MessagesList extends Component<Props> {
   }
 
   componentDidMount() {
-    this.messagesListServerService.init().then(() => {
-      this.messagesListService.scrollTo(true);
-    });
+    if (false) {
+      //Can jump on init to message
+      this.jumpTo('98a9de3a-f1b2-11ea-bda2-0242ac120004');
+    } else {
+      this.jumpBottom();
+    }
     this.messagesListServerService.addListener(this);
   }
 

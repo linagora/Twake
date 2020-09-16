@@ -7,6 +7,7 @@ import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 type Props = {
   message?: Message;
   compact?: boolean;
+  gradient?: boolean;
   small?: boolean;
   head?: boolean;
   children?: any;
@@ -30,6 +31,7 @@ export default (props: Props) => {
       className={
         'thread-section ' +
         (props.compact ? 'compact ' : '') +
+        (props.gradient ? 'gradient ' : '') +
         (props.small ? 'small-section ' : '') +
         (props.head ? 'head-section ' : '') +
         (props.message?.sender && props.message.pinned ? 'pinned-section ' : '')

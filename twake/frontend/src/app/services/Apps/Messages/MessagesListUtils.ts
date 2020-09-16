@@ -232,8 +232,6 @@ export class MessagesListUtils {
 
   onContentChange() {
     //In case top fake messages disapear
-    const messageListOffset =
-      this.messagesContainerNodeScrollTop - this.messagesContainerNode?.offsetTop;
 
     if (this.initDate === 0) {
       this.initDate = new Date().getTime();

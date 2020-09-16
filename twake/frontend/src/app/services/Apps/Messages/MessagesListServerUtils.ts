@@ -80,10 +80,9 @@ export class MessagesListServerUtils extends Observable {
     if (this.httpLoading) {
       return;
     }
-
     Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
-    if (fromMessageId) {
+    if (this.didInit && fromMessageId) {
       this.reset();
       if (typeof fromMessageId === 'string') {
         return this.loadMore(false, fromMessageId);
@@ -102,7 +101,7 @@ export class MessagesListServerUtils extends Observable {
               channel_id: this.channelId,
               parent_message_id: this.threadId,
               limit: 20,
-              offset: fromMessageId,
+              offset: false,
             },
             websockets: [{ uri: 'messages/' + this.channelId, options: { type: 'messages' } }],
           },
@@ -117,7 +116,14 @@ export class MessagesListServerUtils extends Observable {
             }
             this.notify();
             this.didInit = true;
-            resolve();
+
+            if (fromMessageId && fromMessageId !== true) {
+              this.init(fromMessageId).then(() => {
+                resolve();
+              });
+            } else {
+              resolve();
+            }
           },
         );
       });
