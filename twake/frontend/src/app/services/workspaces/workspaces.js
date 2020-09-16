@@ -43,6 +43,11 @@ class Workspaces extends Observable {
   }
 
   initSelection(group_id) {
+    if (!Object.keys(this.user_workspaces).length) {
+      this.openWelcomePage(this.welcomePage);
+      return;
+    }
+
     LocalStorage.getItem('autoload_workspaces', autoload_workspaces => {
       this.didFirstSelection = true;
 
@@ -388,6 +393,7 @@ class Workspaces extends Observable {
         PopupManager.close();
       });
     }
+    window.location.reload();
   }
 
   getCurrentWorkspace() {
