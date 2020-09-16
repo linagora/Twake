@@ -29,6 +29,7 @@ export class MessagesListUtils {
   serverService: MessagesListServerUtils;
   lockedScrollTimeout: any;
   initDate: number = 0;
+  visiblesMessages: { [key: string]: boolean } = {};
 
   //State
   highlighted: string = '';
@@ -177,14 +178,13 @@ export class MessagesListUtils {
           offsetBottom > upLimit - this.scrollerNode.clientHeight / 2 &&
           offsetTop < bottomLimit + this.scrollerNode.clientHeight / 2
         ) {
-          //This message is visible
-          nodeMessage.node.getDomElement().style.visibility = 'visible';
+          nodeMessage.node.startRenderContent();
         } else {
-          //This message is not visible
-          nodeMessage.node.getDomElement().style.visibility = 'hidden';
+          //Do nothing
         }
       }
     });
+
     if (bestCenterNode) this.setWitnessMessage(bestCenterNode);
   }
 

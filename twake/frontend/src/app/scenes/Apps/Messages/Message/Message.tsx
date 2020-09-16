@@ -17,7 +17,10 @@ type Props = {
   style: any;
 };
 
-export default class MessageComponent extends Component<Props, { history: number }> {
+export default class MessageComponent extends Component<
+  Props,
+  { history: number; render: boolean }
+> {
   domNode: any;
 
   constructor(props: Props) {
@@ -25,6 +28,7 @@ export default class MessageComponent extends Component<Props, { history: number
 
     this.state = {
       history: 5,
+      render: false,
     };
 
     this.setDomElement = this.setDomElement.bind(this);
@@ -38,12 +42,21 @@ export default class MessageComponent extends Component<Props, { history: number
     this.domNode = node;
   }
 
+  startRenderContent() {
+    if (!this.state.render) {
+      this.setState({ render: true });
+    }
+  }
+
   render() {
     if (this.props.message.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
     }
 
     if (this.props.message?.hidden_data?.type === 'init_channel') {
+      if (!this.state.render) {
+        return [];
+      }
       return (
         <FirstMessage refDom={this.setDomElement} channelId={this.props.message.channel_id || ''} />
       );
@@ -61,7 +74,7 @@ export default class MessageComponent extends Component<Props, { history: number
 
     return (
       <Thread refDom={this.setDomElement} highlighted={this.props.highlighted}>
-        <ThreadSection message={this.props.message} head>
+        <ThreadSection message={this.props.message} head delayRender={!this.state.render}>
           <MessageContent message={this.props.message} />
         </ThreadSection>
 
@@ -87,7 +100,7 @@ export default class MessageComponent extends Component<Props, { history: number
           const tmp_previous_message = previous_message;
           previous_message = message;
           return (
-            <ThreadSection message={message} small>
+            <ThreadSection message={message} small delayRender={!this.state.render}>
               <MessageContent message={message} />
             </ThreadSection>
           );

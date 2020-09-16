@@ -34,6 +34,19 @@ export default class MessagesList extends Component<Props> {
     window.MessagesList = this;
   }
 
+  jumpTo(messageId: string) {
+    this.messagesListServerService.init(messageId).then(() => {
+      this.messagesListService.scrollToMessage({ id: messageId });
+      this.messagesListServerService.loadMore();
+    });
+  }
+
+  jumpBottom() {
+    this.messagesListServerService.init(true).then(() => {
+      this.messagesListService.scrollTo(true);
+    });
+  }
+
   componentDidMount() {
     this.messagesListServerService.init().then(() => {
       this.messagesListService.scrollTo(true);
@@ -46,13 +59,6 @@ export default class MessagesList extends Component<Props> {
     this.messagesListServerService.destroy();
     this.messagesListService.unsetScroller();
     this.messagesListService.unsetMessagesContainer();
-  }
-
-  jumpTo(messageId: string) {
-    this.messagesListServerService.init(messageId).then(() => {
-      this.messagesListService.scrollToMessage({ id: messageId });
-      this.messagesListServerService.loadMore();
-    });
   }
 
   render() {

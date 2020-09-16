@@ -10,6 +10,7 @@ type Props = {
   small?: boolean;
   head?: boolean;
   children?: any;
+  delayRender?: boolean;
 };
 
 export default (props: Props) => {
@@ -45,7 +46,7 @@ export default (props: Props) => {
             ></div>
           )}
         </div>
-        {props.children}
+        {!props.delayRender && props.children}
       </div>
     </div>
   );
