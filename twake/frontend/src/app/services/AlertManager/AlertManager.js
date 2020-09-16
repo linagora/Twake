@@ -33,7 +33,11 @@ class AlertService extends Observable {
   confirmAlert() {
     if (this.isOpen()) {
       if (this.component[this.component.length - 1].onConfirm) {
-        this.component[this.component.length - 1].onConfirm();
+        try {
+          this.component[this.component.length - 1].onConfirm();
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.close();
     }
@@ -41,7 +45,11 @@ class AlertService extends Observable {
   closeAlert() {
     if (this.isOpen()) {
       if (this.component[this.component.length - 1].onClose) {
-        this.component[this.component.length - 1].onClose();
+        try {
+          this.component[this.component.length - 1].onClose();
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.close();
     }
@@ -68,7 +76,7 @@ class AlertService extends Observable {
     this.open(
       <Alert title={options.title} text={options.text} />,
       onCloseFunction,
-      onCloseFunction
+      onCloseFunction,
     );
   }
   confirm(onConfirm, onClose, options) {
@@ -86,7 +94,7 @@ class AlertService extends Observable {
     this.open(
       <Confirm title={options.title} text={options.text} />,
       onConfirmFunction,
-      onCloseFunction
+      onCloseFunction,
     );
   }
 }
