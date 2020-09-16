@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
-import MessagesListServerService, {
+import MessagesListServerServicesManager, {
+  MessagesListServerUtils,
   Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
-import MessagesListService from 'app/services/Apps/Messages/MessagesListUtils';
+import MessagesListServiceManager, {
+  MessagesListUtils as MessagesListService,
+} from 'app/services/Apps/Messages/MessagesListUtils';
 import MessageComponent from './Message/Message';
-import {
-  AutoSizer,
-  List,
-  CellMeasurer,
-  CellMeasurerCache,
-  InfiniteLoader,
-} from 'react-virtualized';
 
 type Props = {
   channel: any;
@@ -20,30 +15,29 @@ type Props = {
 };
 
 export default class MessagesList extends Component<Props, { messages: number[] }> {
-  messagesListServerService: MessagesListServerService;
+  messagesListServerService: MessagesListServerUtils;
   messagesListService: MessagesListService;
-  virtualizedList: List | null = null;
-  cache: CellMeasurerCache = new CellMeasurerCache({
-    defaultHeight: 80,
-    minHeight: 20,
-    fixedWidth: true,
-  });
 
   constructor(props: Props) {
     super(props);
-    this.messagesListServerService = new MessagesListServerService(
+    this.messagesListServerService = MessagesListServerServicesManager.get(
       this.props.channel.id,
       this.props.threadId,
       this.props.collectionKey,
     );
-    this.messagesListService = new MessagesListService(this.messagesListServerService);
+    this.messagesListService = MessagesListServiceManager.get(
+      this.props.collectionKey,
+      this.messagesListServerService,
+    );
 
     //@ts-ignore
     window.MessagesList = this;
   }
 
   componentDidMount() {
-    this.messagesListServerService.init();
+    this.messagesListServerService.init().then(() => {
+      this.messagesListService.scrollTo(true);
+    });
     this.messagesListServerService.addListener(this);
   }
 
@@ -70,9 +64,6 @@ export default class MessagesList extends Component<Props, { messages: number[] 
       <div
         style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
         ref={this.messagesListService.setScroller}
-        onClick={() => {
-          this.messagesListServerService.loadMore();
-        }}
       >
         <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
           <div className="fake-messages">

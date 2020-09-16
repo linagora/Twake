@@ -3,9 +3,13 @@ import Twacode from 'components/Twacode/Twacode.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
+import 'moment-timezone';
+import Moment from 'react-moment';
+import moment from 'moment';
 
 type Props = {
   message: any;
+  small?: boolean;
 };
 
 export default (props: Props) => {
@@ -25,7 +29,7 @@ export default (props: Props) => {
       <div className="message">
         <div className="sender-space">
           <div
-            className="sender-head"
+            className={'sender-head ' + (props.small ? 'small ' : '')}
             style={{
               backgroundImage: "url('" + User.getThumbnail(user) + "')",
             }}
@@ -34,7 +38,11 @@ export default (props: Props) => {
         <div className="message-content">
           <div className="message-content-header">
             <span className="sender-name">{User.getFullName(user)}</span>
-            <span className="date">14/09 at 15h18</span>
+            <span className="date">
+              <Moment tz={moment.tz.guess()} format="h:mm a">
+                {props.message.creation_date * 1000}
+              </Moment>
+            </span>
           </div>
           <div className="content-parent">
             <Twacode

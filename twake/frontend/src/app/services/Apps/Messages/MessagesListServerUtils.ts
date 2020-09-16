@@ -23,10 +23,28 @@ export type Message = {
   _user_ephemeral?: any;
 };
 
+class MessagesListServerUtilsManager {
+  services: { [key: string]: MessagesListServerUtils } = {};
+  constructor() {
+    //@ts-ignore
+    window.MessagesListServerUtils = this;
+  }
+  get(channelId: string, threadId: string, collectionKey: string) {
+    const key = channelId + '_' + threadId + '_' + collectionKey;
+    if (this.services[key]) {
+      return this.services[key];
+    }
+    this.services[key] = new MessagesListServerUtils(channelId, threadId, collectionKey);
+    return this.services[key];
+  }
+}
+
+export default new MessagesListServerUtilsManager();
+
 /*
   This class will manage what is loaded from the backend and what's not, the complete list of messages for a channel will always be h
 */
-export default class MessagesListServerUtils extends Observable {
+export class MessagesListServerUtils extends Observable {
   //Configuration
   numberOfLoadedMessages: number = 20;
 
@@ -41,6 +59,7 @@ export default class MessagesListServerUtils extends Observable {
   lastLoadedMessageId: string = '';
   lastMessageOfAllLoaded: string = '';
   lastRealtimeMessageId: string = '';
+  didInit: boolean = false;
 
   httpLoading: boolean = false;
 
@@ -52,9 +71,6 @@ export default class MessagesListServerUtils extends Observable {
     this.collectionKey = collectionKey;
 
     this.onNewMessageFromWebsocketListener = this.onNewMessageFromWebsocketListener.bind(this);
-
-    //@ts-ignore
-    window.MessagesListServerUtils = this;
   }
 
   //Init messages and reset almost everything.
@@ -65,11 +81,10 @@ export default class MessagesListServerUtils extends Observable {
       return;
     }
 
-    this.reset();
-
     Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
     if (fromMessageId) {
+      this.reset();
       if (typeof fromMessageId === 'string') {
         return this.loadMore(false, fromMessageId);
       } else {
@@ -77,7 +92,9 @@ export default class MessagesListServerUtils extends Observable {
       }
     } else {
       return new Promise(resolve => {
-        this.httpLoading = true;
+        if (!this.didInit) {
+          this.httpLoading = true;
+        }
         Collections.get('messages').addSource(
           {
             http_base_url: 'discussion',
@@ -91,6 +108,7 @@ export default class MessagesListServerUtils extends Observable {
           },
           this.collectionKey,
           (messages: Message[]) => {
+            this.reset();
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
             if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
@@ -98,6 +116,7 @@ export default class MessagesListServerUtils extends Observable {
               this.firstMessageOfAll = this.firstLoadedMessageId;
             }
             this.notify();
+            this.didInit = true;
             resolve();
           },
         );
@@ -153,7 +172,7 @@ export default class MessagesListServerUtils extends Observable {
   getMessages(): Message[] {
     let messages = Collections.get('messages').findBy({
       channel_id: this.channelId,
-      parent_message_id: '',
+      parent_message_id: this.threadId,
     });
 
     messages = messages
@@ -201,7 +220,7 @@ export default class MessagesListServerUtils extends Observable {
     this.detectNewWebsocketsMessages(
       Collections.get('messages').findBy({
         channel_id: this.channelId,
-        parent_message_id: '',
+        parent_message_id: this.threadId,
       }),
     );
     this.notify();
@@ -236,6 +255,7 @@ export default class MessagesListServerUtils extends Observable {
   }
 
   destroy() {
+    this.httpLoading = false;
     Collections.get('messages').removeSource(this.collectionKey);
     Collections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
   }

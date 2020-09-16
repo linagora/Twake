@@ -18,7 +18,16 @@
         padding: 4px 12px;
       }
 
-      &:not(:last-child) {
+      &.gradient {
+        margin-bottom: -40px;
+        height: 40px;
+        background: linear-gradient(180deg, #fff 40%, transparent);
+        z-index: 1;
+        position: relative;
+        border: none;
+      }
+
+      &:not(:last-child):not(.gradient) {
         border-bottom: 1px solid var(--grey-background);
       }
 

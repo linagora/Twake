@@ -157,6 +157,9 @@ export default class Collection extends Observable {
 
   reload(callback) {
     Object.keys(this.sources).map(key => {
+      if (!this.sources[key]) {
+        return;
+      }
       this.sources[key].http_loading = true;
       this.load(
         (this.sources[key] || {}).http_base_url,
@@ -192,6 +195,9 @@ export default class Collection extends Observable {
   }
 
   sourceLoad(source_key, _options, callback) {
+    if (!this.sources[source_key]) {
+      return;
+    }
     this.sources[source_key].http_loading = true;
     var options = {};
     Object.keys(this.sources[source_key].http_options).forEach(key => {

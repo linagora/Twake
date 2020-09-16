@@ -1,9 +1,26 @@
-import MessagesListServerUtils, { Message } from './MessagesListServerUtils';
+import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
+
+class MessagesListUtilsManager {
+  services: { [key: string]: MessagesListUtils } = {};
+  constructor() {
+    //@ts-ignore
+    window.MessagesListServerUtils = this;
+  }
+  get(collectionKey: string, serverService: MessagesListServerUtils) {
+    if (this.services[collectionKey]) {
+      return this.services[collectionKey];
+    }
+    this.services[collectionKey] = new MessagesListUtils(serverService);
+    return this.services[collectionKey];
+  }
+}
+
+export default new MessagesListUtilsManager();
 
 /*
   This class will manage react virtualized and scroll cases
 */
-export default class MessagesListUtils {
+export class MessagesListUtils {
   //Internal variables
   scrollerNode: any;
   messagesContainerNode: any;
@@ -116,7 +133,7 @@ export default class MessagesListUtils {
 
   //Called by frontend on each rerender to update scroll
   updateScroll() {
-    if (!this.messagesContainerNode) {
+    if (!this.messagesContainerNode || !this.scrollerNode) {
       return;
     }
     if (this.fixBottom) {
@@ -183,7 +200,10 @@ export default class MessagesListUtils {
     });
   }
 
-  scrollTo(position: number) {
+  scrollTo(position: number | true) {
+    if (position === true) {
+      position = this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight;
+    }
     if (this.scrollerNode) {
       this.ignoreNextScroll++;
       const smallJump = position - this.scrollerNode.scrollTop;
@@ -302,7 +322,6 @@ export default class MessagesListUtils {
       }
     }
 
-    console.log('Update scroll to bottmo', evt.clientHeight + evt.scrollTop - evt.scrollHeight);
     if (
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&
       this.serverService.hasLastMessage()
