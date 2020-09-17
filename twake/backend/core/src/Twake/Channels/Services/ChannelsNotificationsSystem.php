@@ -138,7 +138,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         }
 
         //TODO also check all links of this channel when implemented
-        if ($workspace_id) {
+        if ($workspace_id && $user) {
 
             $workspaceUsers = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $workspaceUser = $workspaceUsers->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));

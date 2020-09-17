@@ -10,6 +10,7 @@ import './MainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Tabs from './Tabs/Tabs.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import Search from './Search.js';
 import AppView from './AppView/AppView.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
@@ -195,74 +196,88 @@ export default class MainView extends Component {
     return (
       <div className="main_view">
         <div className="header">
-          {!!current_channel.application && (
-            <div className="channel_header">
-              <div className="title">
-                <div className="app-icon">
-                  {!!icon && <Icon className="tab-app-icon" type={icon} />}
-                  {!!emoji && <Emojione className="tab-app-icon" type={emoji} />}
+          <div className="inline_header">
+            {!!current_channel.application && (
+              <div className="channel_header">
+                <div className="title">
+                  <div className="app-icon">
+                    {!!icon && <Icon className="tab-app-icon" type={icon} />}
+                    {!!emoji && <Emojione className="tab-app-icon" type={emoji} />}
+                  </div>
+                  {Languages.t('app.name.' + app.simple_name, [], app.name)}
+                  {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
                 </div>
-                {Languages.t('app.name.' + app.simple_name, [], app.name)}
-                {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
               </div>
-            </div>
-          )}
-          {!current_channel.application && !current_channel.direct && (
-            <div className="channel_header">
-              <div className="title">
-                <Emojione type={current_channel.icon} /> {current_channel.name}
-                {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
+            )}
+            {!current_channel.application && !current_channel.direct && (
+              <div className="channel_header">
+                <div className="title">
+                  <Emojione type={current_channel.icon} /> {current_channel.name}
+                  {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
+                </div>
+                <Tabs channel={current_channel} currentTab={this.state.channels.current_tab_id} />
               </div>
-            </div>
-          )}
-          {!current_channel.application && !!current_channel.direct && !!current_channel.app_id && (
-            <div className="channel_header">
-              <div className="title direct_message">
-                <PlugIcon className="m-icon-small app-plug-icon" />
-                <div
-                  className="user_image"
-                  style={{ backgroundImage: "url('" + current_channel.app.icon_url + "')" }}
-                />
-                {' ' +
-                  (((current_channel.app.display || {}).member_app || {}).name ||
-                    current_channel.app.name)}
+            )}
+
+            {!current_channel.application && !!current_channel.direct && !!current_channel.app_id && (
+              <div className="channel_header">
+                <div className="title direct_message">
+                  <PlugIcon className="m-icon-small app-plug-icon" />
+                  <div
+                    className="user_image"
+                    style={{ backgroundImage: "url('" + current_channel.app.icon_url + "')" }}
+                  />
+                  {' ' +
+                    (((current_channel.app.display || {}).member_app || {}).name ||
+                      current_channel.app.name)}
+                </div>
               </div>
-            </div>
-          )}
-          {!current_channel.application && !!current_channel.direct && !current_channel.app_id && (
-            <div className="channel_header">
-              <div className="title direct_message">
-                {Object.values(current_channel.members).map(id => {
-                  if (id == User.getCurrentUserId() && current_channel.members_count > 1) {
-                    return undefined;
-                  }
-                  var user = Collections.get('users').known_objects_by_id[id];
-                  if (user) {
-                    return (
-                      <div
-                        key={'user_' + id}
-                        className="user_image"
-                        style={{ backgroundImage: "url('" + User.getThumbnail(user) + "')" }}
-                      />
-                    );
-                  } else {
-                    User.asyncGet(id);
-                  }
-                })}
+            )}
+            {!current_channel.application && !!current_channel.direct && !current_channel.app_id && (
+              <div className="channel_header">
+                <div className="title direct_message">
+                  {Object.values(current_channel.members).map(id => {
+                    if (id == User.getCurrentUserId() && current_channel.members_count > 1) {
+                      return undefined;
+                    }
+                    var user = Collections.get('users').known_objects_by_id[id];
+                    if (user) {
+                      return (
+                        <div
+                          key={'user_' + id}
+                          className="user_image"
+                          style={{ backgroundImage: "url('" + User.getThumbnail(user) + "')" }}
+                        />
+                      );
+                    } else {
+                      User.asyncGet(id);
+                    }
+                  })}
 
-                {current_channel.members_count > 2 &&
-                  ' (' + (current_channel.members_count - 1) + ')'}
+                  {current_channel.members_count > 2 &&
+                    ' (' + (current_channel.members_count - 1) + ')'}
 
-                {this.getChannelNameFromMembers(current_channel)}
+                  {this.getChannelNameFromMembers(current_channel)}
+                </div>
               </div>
+            )}
+
+            <div className="right">
+              <Search />
             </div>
-          )}
-
-          <Tabs channel={current_channel} currentTab={this.state.channels.current_tab_id} />
-
-          <div className="right">
-            <Search />
           </div>
+
+          {!current_channel.application &&
+            !current_channel.direct &&
+            current_channel.description && (
+              <div className="channel_description markdown">
+                {PseudoMarkdownCompiler.compileToHTML(
+                  PseudoMarkdownCompiler.compileToJSON(
+                    (current_channel.description || '').replace(/\n/g, ' '),
+                  ),
+                )}
+              </div>
+            )}
         </div>
 
         <div className="app_views">

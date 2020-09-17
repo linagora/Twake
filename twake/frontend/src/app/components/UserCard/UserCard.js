@@ -5,6 +5,7 @@ import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
 import UserServices from 'services/user/user.js';
 import './User-Card.scss';
+import Emojione from 'components/Emojione/Emojione.js';
 
 export default class UserCard extends Component {
   render() {
@@ -18,6 +19,10 @@ export default class UserCard extends Component {
             <div className="text-ellipsis title">{UserServices.getFullName(this.props.user)}</div>
             <div className="text-ellipsis">{'@' + (this.props.user || {}).username}</div>
           </div>
+        </div>
+        <div className="mail-container small-y-margin">
+          <Emojione type=":envelope_with_arrow:" />
+          <a href={'mailto:' + this.props.user.email}>{this.props.user.email}</a>
         </div>
         <div className="footer">
           <Button

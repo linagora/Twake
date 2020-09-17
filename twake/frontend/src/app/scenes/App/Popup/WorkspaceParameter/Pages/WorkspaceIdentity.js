@@ -55,12 +55,6 @@ export default class WorkspaceIdentity extends Component {
       }
     });
   }
-  deleteWorkspace() {
-    var that = this;
-    AlertManager.confirm(() => {
-      that.state.workspaceService.deleteWorkspace();
-    });
-  }
 
   render() {
     var workspace = Collections.get('workspaces').find(workspaceService.currentWorkspaceId);
@@ -70,7 +64,7 @@ export default class WorkspaceIdentity extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.title',
             [],
-            "Paramètres de l'espace de travail"
+            "Paramètres de l'espace de travail",
           )}
         </div>
 
@@ -79,7 +73,7 @@ export default class WorkspaceIdentity extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle',
               [],
-              "Préférences d'affichage"
+              "Préférences d'affichage",
             )}
           </div>
 
@@ -87,12 +81,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.name_label',
               [],
-              "Nom de l'espace"
+              "Nom de l'espace",
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.name_description',
               [],
-              'Modifiez le nom de cet espace de travail'
+              'Modifiez le nom de cet espace de travail',
             )}
             focusOnOpen={this.inputWorkspaceName}
           >
@@ -133,12 +127,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.logo_subtitle',
               [],
-              'Logo'
+              'Logo',
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.logo_modify_description',
               [],
-              "Modifiez l'image de cet espace de travail"
+              "Modifiez l'image de cet espace de travail",
             )}
             focusOnOpen={this.inputWorkspaceName}
           >
@@ -168,7 +162,7 @@ export default class WorkspaceIdentity extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.weight_max_small_text',
                 [],
-                'Poids maximum 5 mo.'
+                'Poids maximum 5 mo.',
               )}
               <br />
               <a
@@ -177,11 +171,7 @@ export default class WorkspaceIdentity extends Component {
                   this.setState({ workspaceLogo: null });
                 }}
               >
-                {Languages.t(
-                  'general.delete',
-                  [],
-                  'Supprimer'
-                )}
+                {Languages.t('general.delete', [], 'Supprimer')}
               </a>
             </div>
             <div>
@@ -200,12 +190,12 @@ export default class WorkspaceIdentity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace',
               [],
-              "Supprimer l'espace"
+              "Supprimer l'espace",
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description',
               [],
-              'Supprimer cet espace de travail'
+              'Supprimer cet espace de travail',
             )}
             focusOnOpen={this.inputDeleteWorkspace}
           >
@@ -220,11 +210,6 @@ export default class WorkspaceIdentity extends Component {
                   workspace.name
                 }
                 value={this.state.deleteWorkspaceName}
-                onKeyDown={e => {
-                  if (e.keyCode == 13 && workspace.name == this.state.deleteWorkspaceName) {
-                    this.deleteWorkspace();
-                  }
-                }}
                 onChange={ev => this.setState({ deleteWorkspaceName: ev.target.value })}
               />
               <ButtonWithTimeout
@@ -233,7 +218,11 @@ export default class WorkspaceIdentity extends Component {
                   this.state.workspaceService.loading ||
                   workspace.name != this.state.deleteWorkspaceName
                 }
-                onClick={() => this.deleteWorkspace()}
+                onClick={() => {
+                  AlertManager.confirm(() => {
+                    this.state.workspaceService.deleteWorkspace();
+                  });
+                }}
                 loading={this.state.workspaceService.loading}
                 value={this.state.i18n.t('general.delete')}
               />
@@ -243,7 +232,7 @@ export default class WorkspaceIdentity extends Component {
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.error_workspace_member',
                   [],
-                  "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération"
+                  "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération",
                 )}
               </span>
             )}

@@ -30,7 +30,7 @@ export default class Confirm extends Component {
               Languages.t(
                 'components.alert.confirm_click',
                 [],
-                'Confirmez votre action en cliquant sur Confirmer.'
+                'Confirmez votre action en cliquant sur Confirmer.',
               )}
           </div>
         </div>

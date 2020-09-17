@@ -251,7 +251,7 @@ export class MessagesListUtils {
         smallJump > 0 &&
         smallJump < 200 &&
         this.initDate > 0 &&
-        new Date().getTime() - this.initDate > 1000
+        new Date().getTime() - this.initDate > 2000
       ) {
         this.scrollerNode.scroll({
           top: position,
@@ -266,6 +266,9 @@ export class MessagesListUtils {
   }
 
   onContentChange() {
+    if (!this.scrollerNode || !this.messagesContainerNode) {
+      return;
+    }
     //In case top fake messages disapear
 
     if (this.initDate === 0) {

@@ -22,11 +22,6 @@
       border: 1px solid var(--grey-background);
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
       border-radius: 5px;
-
-      transition: box-shadow 0.2s;
-      &:hover {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      }
     }
 
     .thread-section {
@@ -97,7 +92,7 @@
           background-color: var(--white);
           height: 28px;
           border-radius: 14px;
-          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
           border: 1px solid var(--grey-background);
           display: block;
           top: 0px;
@@ -106,7 +101,6 @@
           right: 8px;
           z-index: 1;
           opacity: 0;
-          transition: opacity 0.2s;
           display: flex;
           flex-direction: row;
 
@@ -132,8 +126,7 @@
         }
 
         .reactions {
-          margin-top: 4px;
-          margin-bottom: 4px;
+          margin-top: 8px;
 
           .reaction_container {
             width: auto;
@@ -155,7 +148,6 @@
             font-size: 14px;
             line-height: 16px;
             border: 1px solid var(--grey-background);
-            background: var(--grey-background);
             font-weight: 500;
             cursor: pointer;
 
@@ -181,12 +173,6 @@
         .message .sender-space .sender-head {
           width: 16px;
           height: 16px;
-        }
-      }
-
-      &.head-section {
-        .message {
-          border-left: 4px solid var(--grey-background);
         }
       }
 

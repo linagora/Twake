@@ -5,17 +5,14 @@ import Collections from 'services/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
-import Table from 'components/Table/Table';
 import Menu from 'components/Menus/Menu.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import UserService from 'services/user/user.js';
-import Button from 'components/Buttons/Button.js';
 import CreateCompanyAccount from './CreateCompanyAccount.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
-import CryptoJS from 'crypto-js';
 import './Pages.scss';
 import Pending from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending.js';
 import Members from 'app/scenes/App/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
@@ -321,7 +318,9 @@ export default class WorkspacePartner extends Component {
               "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
             )}
             <br />
-            <span className="text">{workspacesUsers.errorUsersInvitation.filter(item => item).join(', ')}</span>
+            <span className="text">
+              {workspacesUsers.errorUsersInvitation.filter(item => item).join(', ')}
+            </span>
             <div className="smalltext">
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message',
@@ -353,93 +352,6 @@ export default class WorkspacePartner extends Component {
             },
           ]}
         />
-
-        {usersInGroup.length > 0 && (
-          <div /*Company*/ className="group_section">
-            <div className="subtitle">
-              {Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.company_subtitle',
-                [],
-                'Entreprise',
-              )}
-            </div>
-
-            <div className="smalltext">
-              {Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.other_collaboraters-small_text',
-                [usersInGroup.length],
-                'Autres collaborateurs dans cette entreprise ($1)',
-              )}
-            </div>
-
-            <Table
-              unFocused
-              noHeader
-              column={[
-                {
-                  title: 'Name',
-                  dataIndex: 'name',
-                  render: col => {
-                    return (
-                      <div className="absolute_position">
-                        <div
-                          class="user_image"
-                          style={{
-                            backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
-                          }}
-                        />
-                        <div className="fix_text_padding_medium text-complete-width">
-                          {UserService.getFullName(col.user)} (@{col.user.username}){' '}
-                          {col.user.email}
-                        </div>
-                      </div>
-                    );
-                  },
-                },
-                {
-                  title: 'Droits',
-                  width: 150,
-                  dataIndex: 'level',
-                  render: col => {
-                    var tags = [];
-                    if (col.groupLevel > 0 && col.groupLevel != null) {
-                      tags.push(
-                        <div className="tag orange">
-                          {Languages.t(
-                            'scenes.app.popup.workspaceparameter.pages.company_manager_label',
-                            [],
-                            "Gérant de l'entreprise",
-                          )}
-                        </div>,
-                      );
-                    }
-                    if (col.externe) {
-                      tags.push(
-                        <div className="tag green">
-                          {Languages.t(
-                            'scenes.app.popup.workspaceparameter.pages.extern',
-                            [],
-                            'Externe',
-                          )}
-                        </div>,
-                      );
-                    }
-                    return <div className="fix_text_padding_medium">{tags}</div>;
-                  },
-                },
-                {
-                  title: '',
-                  width: 30,
-                  dataIndex: 'action',
-                  render: col => {
-                    return this.buildMenu(col, true);
-                  },
-                },
-              ]}
-              onRequestMore={() => new Promise(resolve => resolve(usersInGroup))}
-            />
-          </div>
-        )}
       </div>
     );
   }
