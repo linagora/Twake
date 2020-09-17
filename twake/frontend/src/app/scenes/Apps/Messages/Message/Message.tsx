@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
+import { CornerDownRight } from 'react-feather';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import './Message.scss';
 
@@ -13,6 +12,7 @@ import Collections from 'services/Collections/Collections.js';
 
 type Props = {
   message: Message & { fake: boolean };
+  collectionKey: string;
   highlighted?: boolean;
   style: any;
 };
@@ -83,7 +83,7 @@ export default class MessageComponent extends Component<
         hidden={!this.state.render}
       >
         <ThreadSection message={this.props.message} head delayRender={!this.state.render}>
-          <MessageContent message={this.props.message} />
+          <MessageContent message={this.props.message} collectionKey={this.props.collectionKey} />
         </ThreadSection>
 
         {responses.length > max_responses && (
@@ -109,7 +109,7 @@ export default class MessageComponent extends Component<
           previous_message = message;
           return (
             <ThreadSection message={message} small delayRender={!this.state.render}>
-              <MessageContent message={message} />
+              <MessageContent message={message} collectionKey={this.props.collectionKey} />
             </ThreadSection>
           );
         })}
@@ -117,12 +117,7 @@ export default class MessageComponent extends Component<
         <ThreadSection compact>
           <div className="message-content">
             <a>
-              <FontAwesomeIcon
-                icon={faLevelUpAlt}
-                style={{ transform: 'scale(0.75) rotate(90deg)', width: '0.8em' }}
-                className={'fa-rotate-90	fa-w-20'}
-              />{' '}
-              Reply
+              <CornerDownRight size={14} /> Reply
             </a>
           </div>
         </ThreadSection>

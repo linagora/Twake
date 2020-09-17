@@ -7,9 +7,12 @@ import 'moment-timezone';
 import Moment from 'react-moment';
 import moment from 'moment';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
+import { MoreHorizontal, Smile } from 'react-feather';
+import Reactions from './Reactions';
 
 type Props = {
   message: Message;
+  collectionKey: string;
 };
 
 export default (props: Props) => {
@@ -62,6 +65,15 @@ export default (props: Props) => {
           }
           onAction={undefined}
         />
+        <Reactions message={props.message} collectionKey={props.collectionKey} />
+      </div>
+      <div className="message-options">
+        <div className="option">
+          <Smile size={16} />
+        </div>
+        <div className="option">
+          <MoreHorizontal size={16} />
+        </div>
       </div>
     </div>
   );

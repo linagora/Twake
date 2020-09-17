@@ -73,6 +73,7 @@ export class MessagesListUtils {
       node.addEventListener('scroll', this.onScroll);
     }
     this.scrollerNode = node;
+    this.messagesContainerNodeResizeObserver.observe(node);
   }
 
   setMessagesContainer(node: any) {

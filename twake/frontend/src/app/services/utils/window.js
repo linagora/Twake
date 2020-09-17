@@ -143,6 +143,7 @@ class WindowState {
     var url = document.location.pathname;
     if (url) {
       if (url.indexOf('/private/') == 0) {
+        url = url.split('/').pop();
         var list = url.split('-');
         console.log(list);
         result.channel_id = this.expandUUID4(list[1]);
@@ -151,9 +152,11 @@ class WindowState {
           result = {};
         }
       } else {
+        url = url.split('/').pop();
         var list = url.split('-');
-        var channel_id = list[1];
-        var workspace_id = list[2];
+        console.log(list);
+        var channel_id = list[2];
+        var workspace_id = list[1];
         result.message = list[3] ? this.expandUUID4(list[3]) : false;
         result.channel_id = this.expandUUID4(channel_id);
         result.workspace_id = this.expandUUID4(workspace_id);

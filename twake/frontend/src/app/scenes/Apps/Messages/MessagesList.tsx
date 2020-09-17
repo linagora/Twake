@@ -89,7 +89,12 @@ export default class MessagesList extends Component<Props> {
         <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
           <div className="fake-messages">
             {loadingMessagesTop.map((_m, index) => (
-              <MessageComponent style={{}} key={index} message={loadingMessagesTop[index]} />
+              <MessageComponent
+                style={{}}
+                key={index}
+                message={loadingMessagesTop[index]}
+                collectionKey={this.props.collectionKey}
+              />
             ))}
           </div>
           {messages.map((m, index) => (
@@ -99,11 +104,17 @@ export default class MessagesList extends Component<Props> {
               message={messages[index]}
               highlighted={this.messagesListService.highlighted === messages[index]?.id}
               ref={node => this.messagesListService.setMessageNode(m, node)}
+              collectionKey={this.props.collectionKey}
             />
           ))}
           <div className="fake-messages">
             {loadingMessagesBottom.map((_m, index) => (
-              <MessageComponent style={{}} key={index} message={loadingMessagesBottom[index]} />
+              <MessageComponent
+                style={{}}
+                key={index}
+                message={loadingMessagesBottom[index]}
+                collectionKey={this.props.collectionKey}
+              />
             ))}
           </div>
         </div>

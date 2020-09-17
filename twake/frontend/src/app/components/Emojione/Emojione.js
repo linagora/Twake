@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import 'emoji-mart/css/emoji-mart.css';
+
+import { getEmojiDataFromNative, Emoji } from 'emoji-mart';
+import data from 'emoji-mart/data/all.json';
 
 import emojione from 'emojione';
 import Icon from 'components/Icon/Icon.js';
@@ -59,21 +63,20 @@ export default class Emojione extends React.Component {
       html = html.replace('/32/', '/128/');
     }
 
-    //TODO check if on apple mac
-    var isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
-    if (isMacLike) {
-      return (
-        <span className={'emojione-container emoji-text ' + (this.props.className || '')}>
-          {emojione.shortnameToUnicode(this.props.type)}
-        </span>
-      );
-    }
-
     return (
-      <i
-        className={'emojione-container ' + (this.props.className || '')}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <span className={'emoji-container emoji-text ' + (this.props.className || '')}>
+        <Emoji
+          emoji={this.props.type}
+          set="apple"
+          size={16}
+          fallback={() => (
+            <i
+              className={'emoji-container ' + (this.props.className || '')}
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          )}
+        />
+      </span>
     );
   }
 }
