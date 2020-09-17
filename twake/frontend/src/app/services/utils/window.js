@@ -143,15 +143,18 @@ class WindowState {
     var url = document.location.pathname;
     if (url) {
       if (url.indexOf('/private/') == 0) {
-        var channel_id = url.split('-').pop();
-        result.channel_id = this.expandUUID4(channel_id);
+        var list = url.split('-');
+        console.log(list);
+        result.channel_id = this.expandUUID4(list[1]);
+        result.message = list[2] ? this.expandUUID4(list[2]) : false;
         if (!result.channel_id) {
           result = {};
         }
       } else {
         var list = url.split('-');
-        var channel_id = list.pop();
-        var workspace_id = list.pop();
+        var channel_id = list[1];
+        var workspace_id = list[2];
+        result.message = list[3] ? this.expandUUID4(list[3]) : false;
         result.channel_id = this.expandUUID4(channel_id);
         result.workspace_id = this.expandUUID4(workspace_id);
         if (!result.workspace_id || !result.channel_id) {

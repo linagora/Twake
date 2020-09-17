@@ -3,7 +3,12 @@
     background-color: #ffe692;
     box-shadow: 0 0 0 8px #ffe692;
   }
-  transition: background-color 0.2s, box-shadow 0.2s;
+  opacity: 1;
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &.hidden {
+    opacity: 0;
+  }
 
   .thread {
     overflow: hidden;

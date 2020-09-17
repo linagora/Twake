@@ -4,6 +4,7 @@ type Props = {
   loading?: boolean;
   highlighted?: boolean;
   children?: any | any[];
+  hidden?: boolean;
   refDom?: (node: any) => void;
 };
 
@@ -12,6 +13,7 @@ export default (props: Props) => (
     className={
       'thread-container ' +
       (props.loading ? 'loading ' : '') +
+      (props.hidden ? 'hidden ' : '') +
       (props.highlighted ? 'highlighted ' : '')
     }
     ref={props.refDom}

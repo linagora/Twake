@@ -28,7 +28,7 @@ export default class MessageComponent extends Component<
 
     this.state = {
       history: 5,
-      render: true,
+      render: false,
     };
 
     this.setDomElement = this.setDomElement.bind(this);
@@ -48,6 +48,10 @@ export default class MessageComponent extends Component<
     }
   }
 
+  isRendered() {
+    return this.state.render;
+  }
+
   render() {
     if (this.props.message.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
@@ -55,7 +59,7 @@ export default class MessageComponent extends Component<
 
     if (this.props.message?.hidden_data?.type === 'init_channel') {
       if (!this.state.render) {
-        return [];
+        return <div ref={this.setDomElement} />;
       }
       return (
         <FirstMessage refDom={this.setDomElement} channelId={this.props.message.channel_id || ''} />
@@ -73,7 +77,11 @@ export default class MessageComponent extends Component<
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
     return (
-      <Thread refDom={this.setDomElement} highlighted={this.props.highlighted}>
+      <Thread
+        refDom={this.setDomElement}
+        highlighted={this.props.highlighted}
+        hidden={!this.state.render}
+      >
         <ThreadSection message={this.props.message} head delayRender={!this.state.render}>
           <MessageContent message={this.props.message} />
         </ThreadSection>

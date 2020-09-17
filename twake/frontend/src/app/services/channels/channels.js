@@ -443,7 +443,9 @@ class Channels extends Observable {
         '-' +
         WindowService.reduceUUID4(workspace.id) +
         '-' +
-        WindowService.reduceUUID4(channel.id);
+        WindowService.reduceUUID4(channel.id) +
+        '-' +
+        (this.url_values.message ? WindowService.reduceUUID4(this.url_values.message || '') : '');
     } else if (channel && channel.application && channel.app_id) {
       //Workspace chan
 
@@ -487,7 +489,12 @@ class Channels extends Observable {
       }
       name = name.join('+');
       url =
-        '/private/' + WindowService.nameToUrl(name) + '-' + WindowService.reduceUUID4(channel.id);
+        '/private/' +
+        WindowService.nameToUrl(name) +
+        '-' +
+        WindowService.reduceUUID4(channel.id) +
+        '-' +
+        (this.url_values.message ? WindowService.reduceUUID4(this.url_values.message || '') : '');
     }
 
     WindowService.setUrl(url);

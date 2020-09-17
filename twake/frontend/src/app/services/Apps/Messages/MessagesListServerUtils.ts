@@ -110,7 +110,8 @@ export class MessagesListServerUtils extends Observable {
             this.reset();
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
-            if (!fromMessageId) this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
+            if (!fromMessageId || fromMessageId === true)
+              this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
             if (messages[0]?.hidden_data?.type === 'init_channel') {
               this.firstMessageOfAll = this.firstLoadedMessageId;
             }

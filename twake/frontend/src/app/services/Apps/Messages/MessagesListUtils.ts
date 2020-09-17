@@ -30,6 +30,7 @@ export class MessagesListUtils {
   lockedScrollTimeout: any;
   initDate: number = 0;
   visiblesMessages: { [key: string]: boolean } = {};
+  registeredRender: any[] = [];
 
   //State
   highlighted: string = '';
@@ -159,6 +160,12 @@ export class MessagesListUtils {
     if (this.fixBottom) {
       center = bottomLimit;
     }
+    if (this.highlighted) {
+      const scrollTop = this.getMessageScrollTop({ id: this.highlighted });
+      if (scrollTop !== null) {
+        center = scrollTop;
+      }
+    }
 
     Object.values(this.messagesPositions).forEach(nodeMessage => {
       if (nodeMessage.node) {
@@ -167,7 +174,7 @@ export class MessagesListUtils {
         const offsetBottom = offsetTop + nodeMessage.node?.getDomElement()?.clientHeight;
 
         if (setWitness) {
-          const distanceFromCenter = Math.abs((offsetTop + offsetBottom) / 2 - center);
+          const distanceFromCenter = Math.abs(offsetTop - center);
           if (distanceFromCenter < closestToCenter) {
             closestToCenter = distanceFromCenter;
             bestCenterNode = nodeMessage.node.getDomElement();
@@ -178,7 +185,7 @@ export class MessagesListUtils {
           offsetBottom > upLimit - this.scrollerNode.clientHeight / 2 &&
           offsetTop < bottomLimit + this.scrollerNode.clientHeight / 2
         ) {
-          nodeMessage.node.startRenderContent();
+          this.registerDelayedRender(nodeMessage.node);
         } else {
           //Do nothing
         }
@@ -186,6 +193,17 @@ export class MessagesListUtils {
     });
 
     if (bestCenterNode) this.setWitnessMessage(bestCenterNode);
+  }
+
+  registerDelayedRender(messageNode: any) {
+    this.registeredRender.push(messageNode);
+  }
+
+  triggerDelayedRender() {
+    this.registeredRender.forEach((node: any) => {
+      node.startRenderContent();
+    });
+    this.registeredRender = [];
   }
 
   //Search for a message and scroll to it
@@ -202,6 +220,22 @@ export class MessagesListUtils {
         return true;
       }
     });
+  }
+
+  //Search for a message and scroll to it
+  getMessageScrollTop(message: Message): number | null {
+    let offsetTop = null;
+    Object.values(this.messagesPositions).some(nodeMessage => {
+      if (
+        nodeMessage.message?.id === message.id ||
+        nodeMessage.message?.front_id === message.front_id
+      ) {
+        offsetTop =
+          nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
+        return true;
+      }
+    });
+    return offsetTop;
   }
 
   scrollTo(position: number | true) {
@@ -254,6 +288,8 @@ export class MessagesListUtils {
     this.unlockScroll();
 
     this.getVisibleMessages();
+
+    window.requestAnimationFrame(() => this.triggerDelayedRender());
   }
 
   lockScroll() {
@@ -297,6 +333,7 @@ export class MessagesListUtils {
 
     if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 200) {
       this.getVisibleMessages(this.ignoreNextScroll <= 0);
+      this.triggerDelayedRender();
     }
 
     //Get current status to detect changes on new messages are added to the list

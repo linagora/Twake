@@ -7,6 +7,8 @@ import MessagesListServiceManager, {
   MessagesListUtils as MessagesListService,
 } from 'app/services/Apps/Messages/MessagesListUtils';
 import MessageComponent from './Message/Message';
+import WindowService from 'services/utils/window.js';
+import ChannelsService from 'services/channels/channels.js';
 
 type Props = {
   channel: any;
@@ -36,7 +38,9 @@ export default class MessagesList extends Component<Props> {
 
   jumpTo(messageId: string) {
     this.messagesListServerService.init(messageId).then(() => {
+      ChannelsService.url_values.message = false; //Not the best place for this
       this.messagesListService.scrollToMessage({ id: messageId });
+      this.messagesListServerService.notify();
       this.messagesListServerService.loadMore();
     });
   }
@@ -48,9 +52,10 @@ export default class MessagesList extends Component<Props> {
   }
 
   componentDidMount() {
-    if (false) {
+    const mid = WindowService.getInfoFromUrl()?.message;
+    if (mid) {
       //Can jump on init to message
-      this.jumpTo('98a9de3a-f1b2-11ea-bda2-0242ac120004');
+      this.jumpTo(mid);
     } else {
       this.jumpBottom();
     }
