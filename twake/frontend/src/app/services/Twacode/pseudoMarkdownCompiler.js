@@ -248,7 +248,7 @@ class PseudoMarkdownCompiler {
 
   compileStringToLinkObject(string) {
     //Monkey hack for new markdown links, not the best place for this code
-    var link_found = anchorme(string.replace(/\]\(/gm, '](_'), {
+    var link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
       list: true,
       ips: false,
       files: false,

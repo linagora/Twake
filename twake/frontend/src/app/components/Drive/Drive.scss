@@ -49,7 +49,7 @@
     font-weight: bold;
   }
 
-  &:hover {
+  &:hover:not(.notInDrive) {
     box-shadow: 4px 4px 16px 0 #00000022;
     border-color: #fff;
   }
@@ -112,7 +112,7 @@
   position: relative;
   cursor: pointer;
 
-  &:hover {
+  &:not(.notInDrive) {
     box-shadow: 4px 4px 16px 0 #00000022;
     border-color: #fff;
   }
@@ -243,7 +243,7 @@
       fill: #fff;
     }
 
-    &:hover,
+    &:hover:not(.notInDrive),
     .data {
       background-color: $primary;
       color: #fff;
@@ -331,7 +331,7 @@
     display: block;
   }
 
-  &:hover {
+  &:not(.notInDrive) {
     box-shadow: none;
     background: $primary_background;
   }
