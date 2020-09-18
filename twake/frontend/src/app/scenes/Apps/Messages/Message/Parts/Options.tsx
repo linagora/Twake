@@ -2,7 +2,7 @@ import React from 'react';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesService from 'services/Apps/Messages/Messages.js';
-import { MoreHorizontal, Smile } from 'react-feather';
+import { MoreHorizontal, Smile, ArrowUpRight } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'services/Menus/MenusManager.js';
@@ -187,6 +187,14 @@ export default (props: Props) => {
       >
         <Smile size={16} />
       </Menu>
+      <div
+        className="option"
+        onClick={() => {
+          MessagesService.showMessage(props.message.parent_message_id || props.message.id);
+        }}
+      >
+        <ArrowUpRight size={16} />
+      </div>
       {menu.length > 0 && (
         <Menu
           className="option"

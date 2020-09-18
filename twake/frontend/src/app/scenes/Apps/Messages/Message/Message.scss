@@ -80,6 +80,7 @@
           flex: 1;
           min-width: 0;
           position: relative;
+          width: 0;
 
           &.link-to-thread {
             color: var(--grey-dark);
@@ -91,11 +92,14 @@
           }
 
           .message-content-header {
+            position: relative;
+            display: inline-block;
             margin-bottom: 4px;
             overflow: hidden;
             white-space: nowrap;
             display: flex;
             flex-direction: row;
+            justify-content: flex-start;
             align-items: baseline;
 
             .sender-name {
@@ -107,8 +111,6 @@
               margin-right: 4px;
               a {
               }
-              flex: 1;
-              min-width: 0;
               overflow: hidden;
               text-overflow: ellipsis;
             }

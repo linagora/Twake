@@ -103,7 +103,7 @@ export default class MessageHeader extends Component<Props, State> {
     }
 
     return (
-      <div className={'message-content-header'}>
+      <div className={'message-content-header '}>
         <span
           className="sender-name"
           ref={node => (user_name_node = node)}
@@ -117,8 +117,7 @@ export default class MessageHeader extends Component<Props, State> {
             replied to{' '}
             <a href="#" onClick={() => scrollToMessage()}>
               {PseudoMarkdownCompiler.compileToSimpleHTML(parentMessage?.content)}
-            </a>{' '}
-            -
+            </a>
           </span>
         )}
 
