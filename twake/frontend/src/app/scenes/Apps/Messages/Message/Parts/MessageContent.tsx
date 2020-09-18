@@ -20,7 +20,11 @@ export default (props: Props) => {
 
   return (
     <div
-      className={'message-content ' + (active ? 'active ' : '')}
+      className={
+        'message-content ' +
+        (active ? 'active ' : '') +
+        (props.linkToThread ? 'link-to-thread ' : '')
+      }
       onClick={() => setActive(false)}
     >
       <MessageHeader

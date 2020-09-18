@@ -206,7 +206,11 @@ export class MessagesListServerUtils extends Observable {
     let lastParentId: string = '';
     messages = messages.filter((m: Message) => {
       if (m.parent_message_id) {
-        if (lastParentId && lastParentId != m.parent_message_id) {
+        if (
+          lastParentId &&
+          lastParentId != m.parent_message_id &&
+          Numbers.compareTimeuuid(m.parent_message_id, m.id) <= 0
+        ) {
           return true;
         }
         return false;

@@ -217,6 +217,7 @@ export class MessagesListUtils {
         nodeMessage.message?.id === message.id ||
         nodeMessage.message?.front_id === message.front_id
       ) {
+        this.fixBottom = false;
         const offsetTop =
           nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
         this.scrollTo(offsetTop - 64);
@@ -275,6 +276,7 @@ export class MessagesListUtils {
       }
       this.onScroll();
       this.getVisibleMessages(true);
+      this.triggerDelayedRender();
     }
   }
 

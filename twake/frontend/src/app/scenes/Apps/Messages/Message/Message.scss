@@ -81,13 +81,36 @@
           min-width: 0;
           position: relative;
 
+          &.link-to-thread {
+            color: var(--grey-dark);
+            .content-parent {
+              border-left: 4px solid var(--grey-light);
+              padding-left: 8px;
+              border-radius: 3px;
+            }
+          }
+
           .message-content-header {
             margin-bottom: 4px;
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
 
             .sender-name {
               font-weight: 700;
               margin-right: 4px;
               cursor: pointer;
+            }
+            .reply-text {
+              margin-right: 4px;
+              a {
+              }
+              flex: 1;
+              min-width: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
             }
             .date {
               color: var(--grey-dark);

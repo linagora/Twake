@@ -21,7 +21,7 @@ export default class ThreadSection extends Component<Props> {
     let senderData: any = getSender(this.props.message);
     if (senderData.type === 'user') {
       Collections.get('users').addListener(this);
-      Collections.get('users').listenOnly(this, [senderData.type.id]);
+      Collections.get('users').listenOnly(this, [senderData.id]);
     }
     if (!senderData.type || senderData.type === 'unknown') {
       senderData = false;
