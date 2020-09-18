@@ -4,64 +4,31 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
 import 'moment-timezone';
-import Moment from 'react-moment';
-import moment from 'moment';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Reactions from './Reactions';
 import Options from './Options';
-import ChannelsService from 'services/channels/channels.js';
+import MessageHeader from './MessageHeader';
 
 type Props = {
   message: Message;
   collectionKey: string;
+  linkToThread?: boolean;
 };
 
 export default (props: Props) => {
   const [active, setActive] = useState(false);
-  const [messageLink, setMessageLink] = useState('');
-
-  const updateMessageLink = () => {
-    const url = ChannelsService.getURL(
-      props.message.channel_id,
-      props.message.parent_message_id || props.message.id,
-    );
-    setMessageLink(url);
-  };
-
-  var user = null;
-
-  if (props.message.sender) {
-    user = Collections.get('users').known_objects_by_id[props.message.sender];
-    if (!user) {
-      User.asyncGet(props.message.sender);
-    } else {
-      //Collections.get('users').listenOnly(this, [user.front_id]);
-    }
-  }
 
   return (
     <div
       className={'message-content ' + (active ? 'active ' : '')}
       onClick={() => setActive(false)}
     >
-      <div className="message-content-header">
-        <span className="sender-name">{User.getFullName(user)}</span>
-        {props.message.creation_date && (
-          <a className="date" href={messageLink || '#'} onMouseEnter={() => updateMessageLink()}>
-            <Moment
-              tz={moment.tz.guess()}
-              format={
-                new Date().getTime() - props.message.creation_date * 1000 > 12 * 60 * 60 * 1000
-                  ? 'lll'
-                  : 'LT'
-              }
-            >
-              {props.message.creation_date * 1000}
-            </Moment>
-          </a>
-        )}
-      </div>
-      <div className="content-parent">
+      <MessageHeader
+        message={props.message}
+        collectionKey={props.collectionKey}
+        linkToThread={props.linkToThread}
+      />
+      <div className="content-parent dont-break-out">
         <Twacode
           className="content allow_selection"
           onDoubleClick={(evt: any) => {

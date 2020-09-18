@@ -268,7 +268,7 @@ export class MessagesListUtils {
       ) {
         this.scrollerNode.scroll({
           top: position,
-          behavior: 'smooth',
+          //behavior: 'smooth', Need more digging
         });
       } else {
         this.scrollerNode.scrollTop = position;

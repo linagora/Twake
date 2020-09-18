@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import ChannelsService from 'services/channels/channels.js';
+import Input from './Input/Input';
 import MessagesList from './MessagesList';
+import MessageComponent from './Message/Message';
 import './Messages.scss';
 
 type Props = {
@@ -42,6 +43,8 @@ export default class MainView extends Component<Props> {
           channel={this.props.channel}
           collectionKey={this.collectionKey}
         />
+
+        <Input />
       </div>
     );
   }

@@ -5,6 +5,7 @@
   }
   opacity: 1;
   transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+  min-width: 0;
 
   &.hidden {
     opacity: 0;
@@ -13,6 +14,7 @@
   .thread {
     overflow: hidden;
     margin: 0 auto;
+    min-width: 0;
     max-width: 1000px;
     width: calc(100% - 32px);
     font-size: 14px;
@@ -76,6 +78,7 @@
         }
         .message-content {
           flex: 1;
+          min-width: 0;
           position: relative;
 
           .message-content-header {
@@ -84,6 +87,7 @@
             .sender-name {
               font-weight: 700;
               margin-right: 4px;
+              cursor: pointer;
             }
             .date {
               color: var(--grey-dark);
@@ -103,8 +107,7 @@
           box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
           border: 1px solid var(--grey-background);
           display: block;
-          top: 0px;
-          bottom: 0px;
+          top: 4px;
           margin: auto;
           right: 8px;
           z-index: 1;
@@ -185,7 +188,7 @@
         }
       }
 
-      &.small-section {
+      &.small-section.alinea {
         .message {
           padding-left: 32px;
         }

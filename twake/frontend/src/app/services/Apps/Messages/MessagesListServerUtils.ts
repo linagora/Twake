@@ -191,7 +191,6 @@ export class MessagesListServerUtils extends Observable {
 
     let messages = Collections.get('messages').findBy({
       channel_id: this.channelId,
-      parent_message_id: this.threadId,
     });
 
     messages = messages
@@ -203,6 +202,19 @@ export class MessagesListServerUtils extends Observable {
       })
       .filter((message: Message) => !message._user_ephemeral)
       .sort((a: Message, b: Message) => (a?.creation_date || 0) - (b?.creation_date || 0));
+
+    let lastParentId: string = '';
+    messages = messages.filter((m: Message) => {
+      if (m.parent_message_id) {
+        if (lastParentId && lastParentId != m.parent_message_id) {
+          return true;
+        }
+        return false;
+      } else {
+        lastParentId = m.id || '';
+      }
+      return true;
+    });
 
     return messages;
   }

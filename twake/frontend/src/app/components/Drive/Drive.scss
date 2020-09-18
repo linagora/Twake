@@ -229,6 +229,10 @@
 .directory {
   transition: opacity 0s;
 
+  &.notInDrive {
+    margin-bottom: 0px;
+  }
+
   &.dragging_opacity {
     opacity: 0;
   }

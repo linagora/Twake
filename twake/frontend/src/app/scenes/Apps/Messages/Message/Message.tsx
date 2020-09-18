@@ -15,6 +15,9 @@ type Props = {
   collectionKey: string;
   highlighted?: boolean;
   style: any;
+  delayRender?: boolean;
+  noReplies?: boolean;
+  repliesAsLink?: boolean;
 };
 
 export default class MessageComponent extends Component<
@@ -28,7 +31,7 @@ export default class MessageComponent extends Component<
 
     this.state = {
       history: 5,
-      render: false,
+      render: !props.delayRender,
     };
 
     this.setDomElement = this.setDomElement.bind(this);
@@ -76,6 +79,8 @@ export default class MessageComponent extends Component<
       })
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
+    const linkToThread = !!this.props.message.parent_message_id && this.props.repliesAsLink;
+
     return (
       <Thread
         refDom={this.setDomElement}
@@ -83,11 +88,20 @@ export default class MessageComponent extends Component<
         hidden={!this.state.render}
         withBlock={!this.props.message.parent_message_id}
       >
-        <ThreadSection message={this.props.message} head delayRender={!this.state.render}>
-          <MessageContent message={this.props.message} collectionKey={this.props.collectionKey} />
+        <ThreadSection
+          small={linkToThread}
+          message={this.props.message}
+          head
+          delayRender={!this.state.render}
+        >
+          <MessageContent
+            linkToThread={linkToThread}
+            message={this.props.message}
+            collectionKey={this.props.collectionKey}
+          />
         </ThreadSection>
 
-        {responses.length > max_responses && (
+        {!this.props.noReplies && responses.length > max_responses && (
           <ThreadSection gradient>
             <div className="message-content">
               <a
@@ -102,20 +116,21 @@ export default class MessageComponent extends Component<
           </ThreadSection>
         )}
 
-        {responses.slice(-max_responses).map((message: Message) => {
-          if (!message) {
-            return '';
-          }
-          const tmp_previous_message = previous_message;
-          previous_message = message;
-          return (
-            <ThreadSection message={message} small delayRender={!this.state.render}>
-              <MessageContent message={message} collectionKey={this.props.collectionKey} />
-            </ThreadSection>
-          );
-        })}
+        {!this.props.noReplies &&
+          responses.slice(-max_responses).map((message: Message) => {
+            if (!message) {
+              return '';
+            }
+            const tmp_previous_message = previous_message;
+            previous_message = message;
+            return (
+              <ThreadSection alinea message={message} small delayRender={!this.state.render}>
+                <MessageContent message={message} collectionKey={this.props.collectionKey} />
+              </ThreadSection>
+            );
+          })}
 
-        {!this.props.message.parent_message_id && (
+        {!this.props.noReplies && !this.props.message.parent_message_id && (
           <ThreadSection compact>
             <div className="message-content">
               <a>

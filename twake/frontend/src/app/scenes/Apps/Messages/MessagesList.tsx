@@ -9,6 +9,7 @@ import MessagesListServiceManager, {
 import MessageComponent from './Message/Message';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
+import Collections from 'services/Collections/Collections.js';
 
 type Props = {
   channel: any;
@@ -81,6 +82,9 @@ export default class MessagesList extends Component<Props> {
         : [];
     this.messagesListService.updateScroll();
 
+    const headerMessage =
+      this.props.threadId && Collections.get('messages').find(this.props.threadId);
+
     return (
       <div
         style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
@@ -90,6 +94,7 @@ export default class MessagesList extends Component<Props> {
           <div className="fake-messages">
             {loadingMessagesTop.map((_m, index) => (
               <MessageComponent
+                delayRender
                 style={{}}
                 key={index}
                 message={loadingMessagesTop[index]}
@@ -97,8 +102,23 @@ export default class MessagesList extends Component<Props> {
               />
             ))}
           </div>
+
+          {loadingMessagesTop.length == 0 && this.props.threadId && headerMessage && (
+            <div className="message_header">
+              <MessageComponent
+                noReplies
+                style={{}}
+                key={headerMessage?.id}
+                message={headerMessage}
+                collectionKey={this.props.collectionKey}
+              />
+            </div>
+          )}
+
           {messages.map((m, index) => (
             <MessageComponent
+              delayRender
+              repliesAsLink
               style={{}}
               key={messages[index].id}
               message={messages[index]}
@@ -110,6 +130,7 @@ export default class MessagesList extends Component<Props> {
           <div className="fake-messages">
             {loadingMessagesBottom.map((_m, index) => (
               <MessageComponent
+                delayRender
                 style={{}}
                 key={index}
                 message={loadingMessagesBottom[index]}

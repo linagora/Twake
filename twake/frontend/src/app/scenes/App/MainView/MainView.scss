@@ -249,6 +249,7 @@
 
   .app_views {
     flex: 1;
+    min-width: 0;
     display: flex;
     height: 100%;
     overflow: hidden;
@@ -256,6 +257,7 @@
     .app_main {
       position: relative;
       flex: 1;
+      min-width: 0;
       display: flex;
     }
     .app_side {
@@ -275,10 +277,19 @@
         padding-left: 16px;
         line-height: 24px;
         box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+
+        & > span {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          min-width: 0;
+          flex: 1;
+        }
 
         .close {
           cursor: pointer;
-          position: absolute;
           right: 8px;
           color: var(--black-alpha-1);
           &:hover {
@@ -291,6 +302,7 @@
         flex: 1;
         display: flex;
         position: relative;
+        overflow: hidden;
       }
     }
 
