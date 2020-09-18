@@ -1,4 +1,5 @@
 import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
+import Observable from 'services/observable';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
@@ -20,7 +21,7 @@ export default new MessagesListUtilsManager();
 /*
   This class will manage react virtualized and scroll cases
 */
-export class MessagesListUtils {
+export class MessagesListUtils extends Observable {
   //Internal variables
   scrollerNode: any;
   messagesContainerNode: any;
@@ -46,6 +47,8 @@ export class MessagesListUtils {
   getVisibleMessagesLastPosition: number = 0;
 
   constructor(serverService: MessagesListServerUtils) {
+    super();
+
     this.setScroller = this.setScroller.bind(this);
     this.onContentChange = this.onContentChange.bind(this);
     this.setMessagesContainer = this.setMessagesContainer.bind(this);
@@ -389,11 +392,17 @@ export class MessagesListUtils {
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&
       this.serverService.hasLastMessage()
     ) {
-      this.fixBottom = true;
+      if (!this.fixBottom) {
+        this.fixBottom = true;
+        this.notify();
+      }
       this.removeHighlightMessage();
       this.updateScroll();
     } else {
-      this.fixBottom = false;
+      if (this.fixBottom) {
+        this.fixBottom = false;
+        this.notify();
+      }
     }
   }
 }

@@ -1570,7 +1570,7 @@ export default {
   'scenes.apps.messages.message.copy_link': 'Copy link to message',
   'scenes.apps.messages.message.pinned': 'Pinned',
   'scenes.apps.messages.message.remove_button': 'Delete',
-  'scenes.apps.messages.message.reply_button': 'Answer',
+  'scenes.apps.messages.message.reply_button': 'Reply',
   'scenes.apps.messages.message.show_on_right': 'Show on the right',
   'scenes.apps.messages.message.save_button': 'Save',
   'scenes.apps.messages.message.show_button': 'Display',

@@ -3,10 +3,12 @@ import { CornerDownRight } from 'react-feather';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import './Message.scss';
 
+import Languages from 'services/languages/languages.js';
 import FirstMessage from './Parts/FirstMessage/FirstMessage';
 import Thread from './Parts/Thread';
 import ThreadSection from './Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
+import MessagesService from 'services/Apps/Messages/Messages.js';
 
 import Collections from 'services/Collections/Collections.js';
 
@@ -106,11 +108,11 @@ export default class MessageComponent extends Component<
             <div className="message-content">
               <a
                 onClick={() => {
-                  this.setState({ history: 10 });
+                  MessagesService.showMessage(this.props.message.id);
                 }}
                 href="#"
               >
-                Open thread ({responses.length - max_responses} more messages)
+                {Languages.t('scenes.apps.messages.message.show_responses_button')}
               </a>
             </div>
           </ThreadSection>
@@ -134,7 +136,8 @@ export default class MessageComponent extends Component<
           <ThreadSection compact>
             <div className="message-content">
               <a>
-                <CornerDownRight size={14} /> Reply
+                <CornerDownRight size={14} />{' '}
+                {Languages.t('scenes.apps.messages.message.reply_button')}
               </a>
             </div>
           </ThreadSection>

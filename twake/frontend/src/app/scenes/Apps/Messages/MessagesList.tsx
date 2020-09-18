@@ -10,6 +10,8 @@ import MessageComponent from './Message/Message';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
+import Languages from 'services/languages/languages.js';
+import { ArrowDown } from 'react-feather';
 
 type Props = {
   channel: any;
@@ -47,9 +49,13 @@ export default class MessagesList extends Component<Props> {
   }
 
   jumpBottom() {
-    this.messagesListServerService.init(true).then(() => {
+    if (this.messagesListServerService.hasLastMessage()) {
       this.messagesListService.scrollTo(true);
-    });
+    } else {
+      this.messagesListServerService.init(true).then(() => {
+        this.messagesListService.scrollTo(true);
+      });
+    }
   }
 
   componentDidMount() {
@@ -61,10 +67,12 @@ export default class MessagesList extends Component<Props> {
       this.jumpBottom();
     }
     this.messagesListServerService.addListener(this);
+    this.messagesListService.addListener(this);
   }
 
   componentWillUnmount() {
     this.messagesListServerService.removeListener(this);
+    this.messagesListService.removeListener(this);
     this.messagesListServerService.destroy();
     this.messagesListService.unsetScroller();
     this.messagesListService.unsetMessagesContainer();
@@ -85,8 +93,9 @@ export default class MessagesList extends Component<Props> {
     const headerMessage =
       this.props.threadId && Collections.get('messages').find(this.props.threadId);
 
-    return (
+    return [
       <div
+        key="messages"
         style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
         ref={this.messagesListService.setScroller}
       >
@@ -139,7 +148,18 @@ export default class MessagesList extends Component<Props> {
             ))}
           </div>
         </div>
-      </div>
-    );
+      </div>,
+
+      <div
+        className={'go-to-now ' + (this.messagesListService.fixBottom ? 'hidden ' : '')}
+        key="go-to-now"
+        onClick={() => {
+          this.jumpBottom();
+        }}
+      >
+        <ArrowDown size={16} />{' '}
+        {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
+      </div>,
+    ];
   }
 }
