@@ -66,19 +66,22 @@ export default class Emojione extends React.Component {
       html = html.replace('/32/', '/128/');
     }
 
+    const uni = getEmojiDataFromNative(emojione.shortnameToUnicode(this.props.type), 'apple', data);
+
+    const fb = (
+      <i
+        className={'emoji-container ' + (this.props.className || '')}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+
+    if (size > 32) {
+      return fb;
+    }
+
     return (
       <span className={'emoji-container emoji-text ' + (this.props.className || '')}>
-        <Emoji
-          emoji={this.props.type}
-          set="apple"
-          size={size}
-          fallback={() => (
-            <i
-              className={'emoji-container ' + (this.props.className || '')}
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
-          )}
-        />
+        <Emoji emoji={uni || this.props.type} set="apple" size={size} fallback={() => fb} />
       </span>
     );
   }

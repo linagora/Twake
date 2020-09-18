@@ -112,7 +112,7 @@
   position: relative;
   cursor: pointer;
 
-  &:not(.notInDrive) {
+  &:hover:not(.notInDrive) {
     box-shadow: 4px 4px 16px 0 #00000022;
     border-color: #fff;
   }
@@ -335,7 +335,7 @@
     display: block;
   }
 
-  &:not(.notInDrive) {
+  &:hover:not(.notInDrive):not(.is_selected) {
     box-shadow: none;
     background: $primary_background;
   }
