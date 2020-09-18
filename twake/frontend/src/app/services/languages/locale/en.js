@@ -186,7 +186,7 @@ export default {
   'scenes.app.workspaces.create_company.invitations.title': 'Configure your workspace.',
   'scenes.app.workspaces.create_company.invitations.text':
     'Invite collaborators to your workspace.',
-  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'Username or e-mail',
+  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'Collaborator e-mail',
   'scenes.app.workspaces.create_company.invitations.continue_with':
     'Continue with $1 collaborator(s)',
   'components.welcome_in_new_workspace.apps.title': 'Configure your workspace.',
@@ -1079,7 +1079,7 @@ export default {
     'Already working with digital tools? Import or integrate your tools now!',
   'scenes.app.workspaces.create_company.importations.title_2': 'No worries, you can do this later!',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
-    'The number of fields increases automatically.',
+    'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add collaborators to your company.',
   'scenes.app.workspaces.create_company.invitations.title_2': 'Twake is better in team.',
@@ -1238,7 +1238,7 @@ export default {
   'scenes.app.mainview.tabs.searching_connectors': 'Search connectors...',
   'scenes.app.popup.adduser.adding_several_people': 'Add multiple people at once',
   'scenes.app.popup.adduser.adresses_message':
-    'Please separate the addresses with a comma. Remember that Twake can limit the number of invitations based on your subscription.',
+    'Please separate the addresses with a comma or space. Remember that Twake can limit the number of invitations based on your subscription.',
   'scenes.app.popup.adduser.message_instruction': 'Use the classic form',
   'scenes.app.popup.appsparameters.pages._app_identity': 'Identity of the application',
   'scenes.app.popup.appsparameters.pages._appareance_message_twakcode':
@@ -1826,4 +1826,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.smalltext_workspace_id': 'Current workspace id',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Current group id',
   'scenes.app.mainview.channel_description': 'Describe the channel',
+  'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
+  'scenes.app.popup.adduser.add_another_mail': 'Add another email',
+  'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
 };

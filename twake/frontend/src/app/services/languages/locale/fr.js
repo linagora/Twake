@@ -1132,7 +1132,7 @@ export default {
   'scenes.app.workspaces.create_company.importations.title_2':
     'Pas d’inquiétude, vous pourrez y revenir plus tard !',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
-    'Le nombre de champs augmente automatiquement.',
+    'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
   'scenes.app.workspaces.create_company.invitations.title_2': "Twake, c'est mieux à plusieurs.",
@@ -1299,7 +1299,7 @@ export default {
   'scenes.app.mainview.tabs.searching_connectors': 'Chercher des connecteurs...',
   'scenes.app.popup.adduser.adding_several_people': 'Ajouter plusieurs personnes à la fois',
   'scenes.app.popup.adduser.adresses_message':
-    "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
+    "Veuillez séparer les adresses par une virgule ou un espace. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
   'scenes.app.popup.adduser.message_instruction': 'Utiliser le formulaire classique',
   'scenes.app.popup.appsparameters.pages._app_identity': "Identité de l'application",
   'scenes.app.popup.appsparameters.pages._appareance_message_twakcode':
@@ -1899,4 +1899,6 @@ export default {
     'Identifiant espace de travail actuel',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
+  'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
+  'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
 };
