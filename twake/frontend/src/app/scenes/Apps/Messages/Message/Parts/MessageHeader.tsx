@@ -124,6 +124,7 @@ export default class MessageHeader extends Component<Props, State> {
         {this.props.message.creation_date && (
           <a
             className="date"
+            target="_BLANK"
             href={this.state.messageLink || '#'}
             onMouseEnter={() => updateMessageLink()}
           >

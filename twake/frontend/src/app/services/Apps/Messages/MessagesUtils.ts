@@ -11,13 +11,14 @@ export const getSender = (message: Message | undefined) => {
   if (message) {
     if (message.sender) {
       senderData = Collections.get('users').find(message.sender);
-      senderData.type = 'user';
       if (!senderData) {
         User.asyncGet(message.sender);
         senderData = {
           type: 'user',
           id: message.sender,
         };
+      } else {
+        senderData.type = 'user';
       }
     }
     if (message.message_type == 1) {

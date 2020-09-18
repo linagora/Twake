@@ -189,9 +189,13 @@ export class MessagesListServerUtils extends Observable {
       return [];
     }
 
-    let messages = Collections.get('messages').findBy({
+    const filter: any = {
       channel_id: this.channelId,
-    });
+    };
+    if (this.threadId) {
+      filter.parent_message_id = this.threadId;
+    }
+    let messages = Collections.get('messages').findBy(filter);
 
     messages = messages
       .filter((m: Message) => {
