@@ -12,6 +12,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
+import ChannelsService from 'services/channels/channels.js';
 
 type Props = {
   message: Message;
@@ -59,6 +60,25 @@ export default (props: Props) => {
 
     if (!props.message.parent_message_id) {
       if (!(props.message.hidden_data || {}).disable_pin) {
+        menu.push({
+          type: 'menu',
+          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+          onClick: () => {
+            const url =
+              document.location.origin +
+              ChannelsService.getURL(
+                props.message.channel_id,
+                props.message.parent_message_id || props.message.id,
+              );
+            const el = document.createElement('textarea');
+            el.value = url;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+          },
+        });
+
         menu.push({
           type: 'menu',
           text: Languages.t(

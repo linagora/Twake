@@ -1638,6 +1638,7 @@ export default {
   'scenes.apps.messages.message.personal_message': 'Vous seul pouvez voir ce message.',
   'scenes.apps.messages.message.unpin_button': 'Désépingler le message',
   'scenes.apps.messages.message.pin_button': 'Épingler le message',
+  'scenes.apps.messages.message.copy_link': 'Copier le lien vers le message',
   'scenes.apps.messages.message.pinned': 'Épinglé',
   'scenes.apps.messages.message.remove_button': 'Supprimer',
   'scenes.apps.messages.message.reply_button': 'Répondre',

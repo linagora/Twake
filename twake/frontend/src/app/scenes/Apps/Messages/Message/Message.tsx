@@ -81,6 +81,7 @@ export default class MessageComponent extends Component<
         refDom={this.setDomElement}
         highlighted={this.props.highlighted}
         hidden={!this.state.render}
+        withBlock={!this.props.message.parent_message_id}
       >
         <ThreadSection message={this.props.message} head delayRender={!this.state.render}>
           <MessageContent message={this.props.message} collectionKey={this.props.collectionKey} />
@@ -114,13 +115,15 @@ export default class MessageComponent extends Component<
           );
         })}
 
-        <ThreadSection compact>
-          <div className="message-content">
-            <a>
-              <CornerDownRight size={14} /> Reply
-            </a>
-          </div>
-        </ThreadSection>
+        {!this.props.message.parent_message_id && (
+          <ThreadSection compact>
+            <div className="message-content">
+              <a>
+                <CornerDownRight size={14} /> Reply
+              </a>
+            </div>
+          </ThreadSection>
+        )}
       </Thread>
     );
   }

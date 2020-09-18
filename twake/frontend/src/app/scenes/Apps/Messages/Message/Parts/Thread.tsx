@@ -5,6 +5,7 @@ type Props = {
   highlighted?: boolean;
   children?: any | any[];
   hidden?: boolean;
+  withBlock?: boolean;
   refDom?: (node: any) => void;
 };
 
@@ -18,7 +19,7 @@ export default (props: Props) => (
     }
     ref={props.refDom}
   >
-    <div className="thread with-block">
+    <div className={'thread ' + (props.withBlock ? 'with-block ' : '')}>
       {!!props.loading && (
         <div className="thread-section">
           <div className="message">

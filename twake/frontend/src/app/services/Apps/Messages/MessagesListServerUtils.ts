@@ -108,12 +108,16 @@ export class MessagesListServerUtils extends Observable {
           },
           this.collectionKey,
           (messages: Message[]) => {
+            messages = messages.filter(
+              (a: Message) => !this.threadId || a.parent_message_id === this.threadId,
+            ); //Hack because collections are doing weird stuff
+
             this.reset();
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
             if (!fromMessageId || fromMessageId === true)
               this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
-            if (messages[0]?.hidden_data?.type === 'init_channel') {
+            if (messages[0]?.hidden_data?.type === 'init_channel' || messages.length < 20) {
               this.firstMessageOfAll = this.firstLoadedMessageId;
             }
             this.notify();
@@ -159,7 +163,10 @@ export class MessagesListServerUtils extends Observable {
       this.httpLoading = true;
       Collections.get('messages').sourceLoad(
         this.collectionKey,
-        { offset: offset, limit: direction * this.numberOfLoadedMessages },
+        {
+          offset: offset,
+          limit: direction * this.numberOfLoadedMessages,
+        },
         (messages: Message[]) => {
           this.httpLoading = false;
           this.updateLastFirstMessagesId(messages, !!fromOffset);
@@ -249,6 +256,7 @@ export class MessagesListServerUtils extends Observable {
   }
 
   reset() {
+    console.error(this.threadId + ' reset firstMessageOfAll');
     this.firstMessageOfAll = '';
     this.firstLoadedMessageId = '';
     this.lastLoadedMessageId = '';

@@ -9,6 +9,7 @@ import moment from 'moment';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Reactions from './Reactions';
 import Options from './Options';
+import ChannelsService from 'services/channels/channels.js';
 
 type Props = {
   message: Message;
@@ -17,6 +18,15 @@ type Props = {
 
 export default (props: Props) => {
   const [active, setActive] = useState(false);
+  const [messageLink, setMessageLink] = useState('');
+
+  const updateMessageLink = () => {
+    const url = ChannelsService.getURL(
+      props.message.channel_id,
+      props.message.parent_message_id || props.message.id,
+    );
+    setMessageLink(url);
+  };
 
   var user = null;
 
@@ -37,7 +47,7 @@ export default (props: Props) => {
       <div className="message-content-header">
         <span className="sender-name">{User.getFullName(user)}</span>
         {props.message.creation_date && (
-          <span className="date">
+          <a className="date" href={messageLink || '#'} onMouseEnter={() => updateMessageLink()}>
             <Moment
               tz={moment.tz.guess()}
               format={
@@ -48,7 +58,7 @@ export default (props: Props) => {
             >
               {props.message.creation_date * 1000}
             </Moment>
-          </span>
+          </a>
         )}
       </div>
       <div className="content-parent">

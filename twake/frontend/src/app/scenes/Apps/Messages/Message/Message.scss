@@ -13,15 +13,20 @@
   .thread {
     overflow: hidden;
     margin: 0 auto;
-    margin-bottom: 16px;
     max-width: 1000px;
     width: calc(100% - 32px);
     font-size: 14px;
+    margin-bottom: 8px;
 
     &.with-block {
       border: 1px solid var(--grey-background);
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
       border-radius: 5px;
+      margin-bottom: 16px;
+
+      .thread-section .message {
+        padding: 12px;
+      }
     }
 
     .thread-section {
@@ -50,7 +55,7 @@
       .message {
         border-left: 4px solid transparent;
         background-color: var(--white);
-        padding: 12px;
+        padding: 4px;
         padding-left: 8px;
         display: flex;
         overflow: hidden;
@@ -83,6 +88,9 @@
             .date {
               color: var(--grey-dark);
               font-size: 12px;
+              &:hover {
+                text-decoration: underline;
+              }
             }
           }
         }

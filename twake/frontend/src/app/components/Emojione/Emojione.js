@@ -57,9 +57,12 @@ export default class Emojione extends React.Component {
     var html = emojione.toImage(this.props.type);
     html = html.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
 
+    let size = 16;
     if (this.props.s64) {
+      size = 32;
       html = html.replace('/32/', '/64/');
     } else if (this.props.s128) {
+      size = 64;
       html = html.replace('/32/', '/128/');
     }
 
@@ -68,7 +71,7 @@ export default class Emojione extends React.Component {
         <Emoji
           emoji={this.props.type}
           set="apple"
-          size={16}
+          size={size}
           fallback={() => (
             <i
               className={'emoji-container ' + (this.props.className || '')}
