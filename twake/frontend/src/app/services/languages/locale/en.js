@@ -1565,6 +1565,8 @@ export default {
   'scenes.apps.messages.message.cancel_button': 'Cancel',
   'scenes.apps.messages.message.modify_button': 'Edit',
   'scenes.apps.messages.message.personal_message': 'Only you can see this message.',
+  'scenes.apps.messages.message.pin_button': 'Pin message',
+  'scenes.apps.messages.message.unpin_button': 'Unpin message',
   'scenes.apps.messages.message.pinned': 'Pinned',
   'scenes.apps.messages.message.remove_button': 'Delete',
   'scenes.apps.messages.message.reply_button': 'Answer',

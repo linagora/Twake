@@ -18,7 +18,7 @@ export default (props: Props) => {
     props.message?.reactions &&
     Object.keys(props.message?.reactions).length > 0;
   if (!has_reactions) {
-    return <div className="reactions" />;
+    return <span />;
   }
   return (
     <div className="reactions">

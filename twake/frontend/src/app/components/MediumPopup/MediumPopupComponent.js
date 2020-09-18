@@ -26,7 +26,7 @@ export default class MediumPopupComponent extends React.Component {
     if (this.component) {
       var screen = window.screen;
       var size = JSON.parse(
-        JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {})
+        JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {}),
       );
       size.x = size.x || size.left;
       size.y = size.y || size.top;
@@ -64,7 +64,7 @@ export default class MediumPopupComponent extends React.Component {
     var position = JSON.parse(JSON.stringify(MediumPopupManager.position));
     var screen = window.screen;
     var component_size = JSON.parse(
-      JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {})
+      JSON.stringify((this.component && window.getBoundingClientRect(this.component)) || {}),
     );
     component_size.x = component_size.x || component_size.left;
     component_size.y = component_size.y || component_size.top;
@@ -75,7 +75,7 @@ export default class MediumPopupComponent extends React.Component {
     var pare_style = {};
     var comp_style = {};
     var background_style = {};
-    var animation_style = 'skew_in_bottom';
+    var animation_style = 'skew_in_bottom_nobounce';
 
     if (position) {
       if (position.no_background) {
@@ -110,7 +110,7 @@ export default class MediumPopupComponent extends React.Component {
         if (position.position == 'left') {
           pare_style.left = position.highlight.x - (comp_style.width || 0) / 2;
           pare_style.right = 'unset';
-          animation_style = 'skew_in_left';
+          animation_style = 'skew_in_left_nobounce';
           if (position.margin) {
             comp_style.marginLeft = -position.margin;
           }
@@ -119,7 +119,7 @@ export default class MediumPopupComponent extends React.Component {
           pare_style.left =
             position.highlight.x + position.highlight.width + (comp_style.width || 0) / 2;
           pare_style.right = 'unset';
-          animation_style = 'skew_in_right';
+          animation_style = 'skew_in_right_nobounce';
           if (position.margin) {
             comp_style.marginLeft = position.margin;
           }

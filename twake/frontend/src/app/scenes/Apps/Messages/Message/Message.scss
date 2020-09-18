@@ -1,7 +1,7 @@
 .thread-container {
   &.highlighted {
-    background-color: #ffe692;
-    box-shadow: 0 0 0 8px #ffe692;
+    background-color: var(--primary-background);
+    box-shadow: 0 0 0 8px var(--primary-background);
   }
   opacity: 1;
   transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
@@ -119,7 +119,8 @@
             }
           }
         }
-        &:hover {
+        &:hover,
+        .message-content.active {
           .message-options {
             opacity: 1;
           }

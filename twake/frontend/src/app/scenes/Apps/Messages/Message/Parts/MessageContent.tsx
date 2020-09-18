@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Twacode from 'components/Twacode/Twacode.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import User from 'services/user/user.js';
@@ -7,8 +7,8 @@ import 'moment-timezone';
 import Moment from 'react-moment';
 import moment from 'moment';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
-import { MoreHorizontal, Smile } from 'react-feather';
 import Reactions from './Reactions';
+import Options from './Options';
 
 type Props = {
   message: Message;
@@ -16,6 +16,8 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const [active, setActive] = useState(false);
+
   var user = null;
 
   if (props.message.sender) {
@@ -28,7 +30,10 @@ export default (props: Props) => {
   }
 
   return (
-    <div className="message-content">
+    <div
+      className={'message-content ' + (active ? 'active ' : '')}
+      onClick={() => setActive(false)}
+    >
       <div className="message-content-header">
         <span className="sender-name">{User.getFullName(user)}</span>
         {props.message.creation_date && (
@@ -67,14 +72,12 @@ export default (props: Props) => {
         />
         <Reactions message={props.message} collectionKey={props.collectionKey} />
       </div>
-      <div className="message-options">
-        <div className="option">
-          <Smile size={16} />
-        </div>
-        <div className="option">
-          <MoreHorizontal size={16} />
-        </div>
-      </div>
+      <Options
+        message={props.message}
+        collectionKey={props.collectionKey}
+        onOpen={() => setActive(true)}
+        onClose={() => setActive(false)}
+      />
     </div>
   );
 };

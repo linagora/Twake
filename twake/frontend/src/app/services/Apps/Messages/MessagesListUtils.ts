@@ -188,6 +188,9 @@ export class MessagesListUtils {
         ) {
           this.registerDelayedRender(nodeMessage.node);
         } else {
+          if (nodeMessage.message.id === this.highlighted) {
+            this.removeHighlightMessage();
+          }
           //Do nothing
         }
       }
@@ -217,10 +220,20 @@ export class MessagesListUtils {
         const offsetTop =
           nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
         this.scrollTo(offsetTop - 64);
-        this.highlighted = message.id || '';
+        this.highlightMessage(message.id || '');
         return true;
       }
     });
+  }
+
+  highlightMessage(mid: string) {
+    this.highlighted = mid;
+    this.serverService.notify();
+  }
+
+  removeHighlightMessage() {
+    this.highlighted = '';
+    this.serverService.notify();
   }
 
   //Search for a message and scroll to it
@@ -360,11 +373,11 @@ export class MessagesListUtils {
       const bottomFakeHeight =
         this.messagesContainerNode.childNodes[this.messagesContainerNode.childNodes.length - 1]
           .clientHeight || 0;
-      if (evt.scrollTop <= topFakeHeight * 0.25) {
+      if (evt.scrollTop <= this.scrollerNode.clientHeight) {
         const didRequest = await this.serverService.loadMore();
         if (didRequest) this.lockScroll();
       }
-      if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= bottomFakeHeight * 0.25) {
+      if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight) {
         const didRequest = await this.serverService.loadMore(false);
         if (didRequest) this.lockScroll();
       }
@@ -375,7 +388,7 @@ export class MessagesListUtils {
       this.serverService.hasLastMessage()
     ) {
       this.fixBottom = true;
-      this.highlighted = '';
+      this.removeHighlightMessage();
       this.updateScroll();
     } else {
       this.fixBottom = false;

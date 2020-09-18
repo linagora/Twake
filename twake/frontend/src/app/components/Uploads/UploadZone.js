@@ -73,7 +73,7 @@ export default class UploadZone extends React.Component {
       this.props.parent,
       this.props.uploadOptions,
       this.props.driveCollectionKey,
-      this.props.onUploaded
+      this.props.onUploaded,
     );
   }
   change(event) {
@@ -176,7 +176,7 @@ export default class UploadZone extends React.Component {
       >
         <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
           <div className="dashed">
-            <div className={'centered ' + (this.state.dragover ? 'skew_in_top ' : '')}>
+            <div className={'centered ' + (this.state.dragover ? 'skew_in_top_nobounce ' : '')}>
               <Emojione type=":page_facing_up:" s128 />
               <div className="title">
                 {Languages.t('components.upload.upload_doc', [], 'Envoyer des documents')}
@@ -185,7 +185,7 @@ export default class UploadZone extends React.Component {
                 {Languages.t(
                   'components.upload.drop_files',
                   [],
-                  'Relachez vos fichiers pour les télécharger.'
+                  'Relachez vos fichiers pour les télécharger.',
                 )}
               </div>
             </div>
