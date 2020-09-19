@@ -61,13 +61,15 @@ class MailsQueueCommand extends ContainerAwareCommand
                         /** @var MailTask $task */
                         $task = $repo->find($id);
 
+                        //Ack anyway, we do not retry email sending
+                        $queues->ack("mails", $queue_message);
+
                         if ($task) {
                             $task_data = $task->getData();
                             $mailer->sendInternal($task_data["mail"], $task_data["template"], $task_data["data"], $task_data["attachments"], $task_data["templateDirectory"]);
                             $em->remove($task);
                         }
 
-                        $queues->ack("mails", $queue_message);
                     }
 
 
