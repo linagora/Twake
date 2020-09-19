@@ -560,7 +560,7 @@ class BoardTask
                 if ($valid_notification) {
 
                     $is_deadline = false;
-                    if ($task->getBefore() && abs($task->getBefore() - ($notification->getWhenTs() + $notification["delay"])) < 60) {
+                    if ($task->getBefore() && abs($task->getBefore() - (date("U") + $notification["delay"])) < 60) {
                         $is_deadline = true;
                     }
 

@@ -32,6 +32,7 @@ class TwakeMailer
         $this->licenceKey = $app->getContainer()->getParameter("env.licence_key");
         $this->standalone = $app->getContainer()->getParameter("env.standalone");
         $this->circle = $app->getServices()->get("app.restclient");
+        $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
     }
 
     public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Mail")
@@ -59,6 +60,10 @@ class TwakeMailer
 
     public function sendInternal($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "Mail")
     {
+              
+        if(!$mail || !$this->string_cleaner->verifyMail($mail)){
+            return false;
+        }
 
         $templateDirectory = "Mail";
 
@@ -92,9 +97,9 @@ class TwakeMailer
 
 
         if ($this->standalone) {
-            $this->sendHtml($mail, $html, $attachments);
+            return $this->sendHtml($mail, $html, $attachments);
         } else {
-            $this->sendHtmlViaRemote($mail, $html, $attachments);
+            return $this->sendHtmlViaRemote($mail, $html, $attachments);
         }
 
     }
@@ -104,7 +109,7 @@ class TwakeMailer
         //[REMOVE_ONPREMISE]
 
         if (defined("TESTENV") && TESTENV) {
-            return;
+            return false;
         }
 
         if (!$this->mailer) {
@@ -161,6 +166,8 @@ class TwakeMailer
         }
         
         $this->mailer->send($message);
+        
+        return true;
 
         //[/REMOVE_ONPREMISE]
 
@@ -201,6 +208,8 @@ class TwakeMailer
             "attachments" => $final_attachments
         );
         $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        
+        return true;
     }
 
 }
