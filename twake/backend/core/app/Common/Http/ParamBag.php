@@ -31,6 +31,11 @@ class ParamBag
     {
         return isset($this->array[$key]) ? !!$this->array[$key] : $default;
     }
+    
+    public function getInt($key, $default = false)
+    {
+        return isset($this->array[$key]) ? intval($this->array[$key]) : $default;
+    }
 
     public function reset($array)
     {
