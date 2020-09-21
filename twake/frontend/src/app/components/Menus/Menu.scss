@@ -235,20 +235,22 @@
   }
 
   .menu-custom {
-    font-size: 12px;
+    font-size: 0px;
     font-weight: 500;
     margin: 8px 8px;
     padding: 0 8px;
 
     .menu-cancel-margin,
-    &.menu-cancel-margin,
-    & {
+    &.menu-cancel-margin {
+      margin: -8px 0;
+      width: 100%;
+      padding: 0;
+
       & > .menu,
       & > .menu-text,
       & > .menu-custom,
       & > .menu-title {
-        margin-left: 0;
-        margin-right: 0;
+        margin: -8px 0;
       }
     }
   }
@@ -319,9 +321,11 @@
       font-size: 18px;
       margin-left: -5px;
       color: $grey_dark;
+      align-items: center;
+      justify-content: center;
+
       .emoji-container {
-        min-width: 24px;
-        text-align: center;
+        height: 28px;
       }
 
       .user_head {

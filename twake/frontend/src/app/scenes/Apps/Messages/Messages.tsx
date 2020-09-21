@@ -42,7 +42,11 @@ export default class MainView extends Component<Props> {
           channel={this.props.channel}
           collectionKey={this.collectionKey}
         />
-        <NewThread useButton collectionKey={this.collectionKey} key="input" />
+        <NewThread
+          useButton={!this.props.channel.direct}
+          collectionKey={this.collectionKey}
+          key="input"
+        />
       </div>
     );
   }

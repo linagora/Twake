@@ -22,3 +22,13 @@
     }
   }
 }
+
+.new-thread {
+  .input {
+    flex: 1;
+
+    textarea.input {
+      background: #fff;
+    }
+  }
+}

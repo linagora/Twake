@@ -10,15 +10,38 @@
     min-height: 0;
     position: relative;
 
+    &:before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 16px;
+      border-top: 1px solid var(--grey-background);
+      background: var(--white);
+      z-index: 10;
+      bottom: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
     &:after {
       content: '';
       position: absolute;
-      bottom: 0;
       width: 100%;
+      height: 100%;
+      border-top: 1px solid var(--grey-background);
+      box-shadow: 0 -32px 32px -32px rgba(0, 0, 0, 0.1) inset;
+      z-index: 10;
+      bottom: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0s;
     }
     &.scrolled-up {
-      &:after {
+      &:after,
+      &:before {
         opacity: 1;
+      }
+      &:after {
+        transition: opacity 0.2s;
       }
     }
 
@@ -29,7 +52,7 @@
     .go-to-now {
       position: absolute;
       padding: 0 8px;
-      bottom: 16px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;

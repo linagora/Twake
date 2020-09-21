@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import { PlusCircle } from 'react-feather';
-
+import Input from './Input';
 import './Input.scss';
 
 type Props = {
@@ -23,8 +23,10 @@ export default (props: Props) => {
     );
   } else {
     return (
-      <Thread withBlock>
-        <ThreadSection noSenderSpace>$</ThreadSection>
+      <Thread withBlock className="new-thread">
+        <ThreadSection noSenderSpace>
+          <Input />
+        </ThreadSection>
       </Thread>
     );
   }

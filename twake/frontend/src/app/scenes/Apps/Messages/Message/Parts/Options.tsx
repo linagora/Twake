@@ -168,15 +168,15 @@ export default (props: Props) => {
         menu={[
           {
             type: 'react-element',
+            className: 'menu-cancel-margin',
             reactElement: () => {
               return (
                 <EmojiPicker
-                  noPicker={false}
                   selected={props.message._user_reaction || ''}
                   onChange={(emoji: any) => {
                     MenusManager.closeMenu();
                     props.onClose && props.onClose();
-                    MessagesService.react(props.message, emoji.shortname, props.collectionKey);
+                    MessagesService.react(props.message, emoji.colons, props.collectionKey);
                   }}
                 />
               );

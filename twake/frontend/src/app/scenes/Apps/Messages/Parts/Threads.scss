@@ -18,7 +18,6 @@
     width: calc(100% - 32px);
 
     .thread {
-      overflow: hidden;
       font-size: 14px;
       margin-bottom: 8px;
 
@@ -62,7 +61,6 @@
           padding: 4px;
           padding-left: 8px;
           display: flex;
-          overflow: hidden;
         }
 
         &.small-section {
@@ -85,50 +83,49 @@
         }
       }
     }
+  }
+  &.loading {
+    .sender-head,
+    .sender-name,
+    .content-parent {
+      animation-duration: 10s;
+      animation-fill-mode: forwards;
+      animation-iteration-count: infinite;
+      animation-name: placeHolderShimmer;
+      animation-timing-function: linear;
+      background-repeat: repeat !important;
+      background-image: linear-gradient(
+        to right,
+        var(--grey-light) 0px,
+        #f2f2f2 120px,
+        var(--grey-light) 234px
+      ) !important;
+    }
+    .sender-name {
+      width: 30%;
+      max-width: 200px;
+    }
+    .content-parent {
+      width: 100%;
+    }
+    .sender-name,
+    .content-parent {
+      height: 14px;
+      margin: 4px 0;
+      display: inline-block;
+      border-radius: 3px;
+    }
+    div,
+    span {
+      font-size: 0px !important;
+    }
 
-    &.loading {
-      .sender-head,
-      .sender-name,
-      .content-parent {
-        animation-duration: 10s;
-        animation-fill-mode: forwards;
-        animation-iteration-count: infinite;
-        animation-name: placeHolderShimmer;
-        animation-timing-function: linear;
-        background-repeat: repeat !important;
-        background-image: linear-gradient(
-          to right,
-          var(--grey-light) 0px,
-          #f2f2f2 120px,
-          var(--grey-light) 234px
-        ) !important;
-      }
-      .sender-name {
-        width: 30%;
-        max-width: 200px;
-      }
-      .content-parent {
-        width: 100%;
-      }
-      .sender-name,
-      .content-parent {
-        height: 14px;
-        margin: 4px 0;
-        display: inline-block;
-        border-radius: 3px;
-      }
-      div,
-      span {
-        font-size: 0px !important;
-      }
+    .thread-section {
+      border: 0px !important;
+    }
 
-      .thread-section {
-        border: 0px !important;
-      }
-
-      .thread-section.compact {
-        display: none;
-      }
+    .thread-section.compact {
+      display: none;
     }
   }
 }
