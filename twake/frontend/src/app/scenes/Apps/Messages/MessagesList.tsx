@@ -12,7 +12,6 @@ import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
 import { ArrowDown } from 'react-feather';
-
 type Props = {
   channel: any;
   threadId: string;
@@ -95,70 +94,76 @@ export default class MessagesList extends Component<Props> {
 
     return [
       <div
-        key="messages"
-        style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
-        ref={this.messagesListService.setScroller}
+        className={
+          'messages-scroller-parent ' + (this.messagesListService.fixBottom ? '' : 'scrolled-up ')
+        }
       >
-        <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
-          <div className="fake-messages">
-            {loadingMessagesTop.map((_m, index) => (
-              <MessageComponent
-                delayRender
-                style={{}}
-                key={index}
-                message={loadingMessagesTop[index]}
-                collectionKey={this.props.collectionKey}
-              />
-            ))}
-          </div>
-
-          {loadingMessagesTop.length == 0 && this.props.threadId && headerMessage && (
-            <div className="message_header">
-              <MessageComponent
-                noReplies
-                style={{}}
-                key={headerMessage?.id}
-                message={headerMessage}
-                collectionKey={this.props.collectionKey}
-              />
+        <div
+          key="messages"
+          style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
+          ref={this.messagesListService.setScroller}
+        >
+          <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
+            <div className="fake-messages">
+              {loadingMessagesTop.map((_m, index) => (
+                <MessageComponent
+                  delayRender
+                  style={{}}
+                  key={index}
+                  message={loadingMessagesTop[index]}
+                  collectionKey={this.props.collectionKey}
+                />
+              ))}
             </div>
-          )}
 
-          {messages.map((m, index) => (
-            <MessageComponent
-              delayRender
-              repliesAsLink
-              style={{}}
-              key={messages[index].id}
-              message={messages[index]}
-              highlighted={this.messagesListService.highlighted === messages[index]?.id}
-              ref={node => this.messagesListService.setMessageNode(m, node)}
-              collectionKey={this.props.collectionKey}
-            />
-          ))}
-          <div className="fake-messages">
-            {loadingMessagesBottom.map((_m, index) => (
+            {loadingMessagesTop.length == 0 && this.props.threadId && headerMessage && (
+              <div className="message_header">
+                <MessageComponent
+                  noReplies
+                  style={{}}
+                  key={headerMessage?.id}
+                  message={headerMessage}
+                  collectionKey={this.props.collectionKey}
+                />
+              </div>
+            )}
+
+            {messages.map((m, index) => (
               <MessageComponent
                 delayRender
+                repliesAsLink
                 style={{}}
-                key={index}
-                message={loadingMessagesBottom[index]}
+                key={messages[index].id}
+                previousMessage={messages[index - 1] || null}
+                message={messages[index]}
+                highlighted={this.messagesListService.highlighted === messages[index]?.id}
+                ref={node => this.messagesListService.setMessageNode(m, node)}
                 collectionKey={this.props.collectionKey}
               />
             ))}
+            <div className="fake-messages">
+              {loadingMessagesBottom.map((_m, index) => (
+                <MessageComponent
+                  delayRender
+                  style={{}}
+                  key={index}
+                  message={loadingMessagesBottom[index]}
+                  collectionKey={this.props.collectionKey}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>,
-
-      <div
-        className={'go-to-now ' + (this.messagesListService.fixBottom ? 'hidden ' : '')}
-        key="go-to-now"
-        onClick={() => {
-          this.jumpBottom();
-        }}
-      >
-        <ArrowDown size={16} />{' '}
-        {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
+        <div
+          className={'go-to-now '}
+          key="go-to-now"
+          onClick={() => {
+            this.jumpBottom();
+          }}
+        >
+          <ArrowDown size={16} />{' '}
+          {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
+        </div>
       </div>,
     ];
   }

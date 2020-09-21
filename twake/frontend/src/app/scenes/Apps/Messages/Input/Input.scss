@@ -1,0 +1,24 @@
+.new-thread-button {
+  cursor: pointer;
+
+  .message {
+    align-items: center;
+    color: var(--secondary);
+    .plus-icon {
+      margin-right: 8px;
+    }
+  }
+  .thread.with-block {
+    width: auto;
+    display: inline-block;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    &:active {
+      .thread.with-block {
+        box-shadow: none;
+      }
+    }
+  }
+}

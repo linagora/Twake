@@ -3,10 +3,9 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import ChannelsService from 'services/channels/channels.js';
-import Input from './Input/Input';
 import MessagesList from './MessagesList';
-import MessageComponent from './Message/Message';
 import './Messages.scss';
+import NewThread from './Input/NewThread';
 
 type Props = {
   channel: any;
@@ -37,14 +36,13 @@ export default class MainView extends Component<Props> {
 
   render() {
     return (
-      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div className="messages-view">
         <MessagesList
           threadId={this.threadId}
           channel={this.props.channel}
           collectionKey={this.collectionKey}
         />
-
-        <Input />
+        <NewThread useButton collectionKey={this.collectionKey} key="input" />
       </div>
     );
   }

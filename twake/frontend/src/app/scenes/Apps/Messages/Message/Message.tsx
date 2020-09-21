@@ -5,8 +5,8 @@ import './Message.scss';
 
 import Languages from 'services/languages/languages.js';
 import FirstMessage from './Parts/FirstMessage/FirstMessage';
-import Thread from './Parts/Thread';
-import ThreadSection from './Parts/ThreadSection';
+import Thread from '../Parts/Thread';
+import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 
@@ -14,6 +14,7 @@ import Collections from 'services/Collections/Collections.js';
 
 type Props = {
   message: Message & { fake: boolean };
+  previousMessage?: Message;
   collectionKey: string;
   highlighted?: boolean;
   style: any;

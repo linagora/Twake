@@ -29,7 +29,7 @@ class ChannelSystemAbstract
             foreach ($members as $member) {
                 $this->entity_manager->remove($member);
                 $linkWorkspaceUser = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $object->getOriginalWorkspaceId(), "user_id" => $member->getUserId()));
-                if ($linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()) {
+                if ($linkWorkspaceUser && $linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()) {
                     $this->removeExterneIfNotAnymoreInChannel($object->getOriginalWorkspaceId(), $object->getId(), $member->getUserId());
                 }
             }

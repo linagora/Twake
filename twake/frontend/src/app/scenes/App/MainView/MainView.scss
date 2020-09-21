@@ -267,6 +267,31 @@
       display: flex;
       flex-direction: column;
 
+      @media screen and (max-width: 1000px) {
+        &:after {
+          content: '';
+          position: absolute;
+          z-index: 99;
+          background: rgba(0, 0, 0, 0.3);
+          left: 0px;
+          top: 0px;
+          height: 100vh;
+          width: 100vw;
+          margin-left: -100vw;
+        }
+        position: absolute;
+        right: 0px;
+        height: 100vh;
+        top: 0;
+        background: #fff;
+        width: 70vw;
+        box-shadow: 0 0 64px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+      @media screen and (max-width: 640px) {
+        width: 100vw;
+      }
+
       .side_header {
         height: 40px;
         background: var(--grey-background);
