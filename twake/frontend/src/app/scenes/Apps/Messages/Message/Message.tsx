@@ -9,6 +9,10 @@ import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
 import MessagesService from 'services/Apps/Messages/Messages.js';
+import UserService from 'services/user/user.js';
+import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+
+import Input from '../Input/Input';
 
 import Collections from 'services/Collections/Collections.js';
 
@@ -28,6 +32,7 @@ export default class MessageComponent extends Component<
   { history: number; render: boolean }
 > {
   domNode: any;
+  messageEditorService: MessageEditors;
 
   constructor(props: Props) {
     super(props);
@@ -38,6 +43,8 @@ export default class MessageComponent extends Component<
     };
 
     this.setDomElement = this.setDomElement.bind(this);
+    this.messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
+    this.messageEditorService.addListener(this);
   }
 
   getDomElement() {
@@ -83,6 +90,8 @@ export default class MessageComponent extends Component<
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
     const linkToThread = !!this.props.message.parent_message_id && this.props.repliesAsLink;
+
+    const showInput = this.messageEditorService.currentEditor === this.props.message?.id;
 
     return (
       <Thread
@@ -133,10 +142,20 @@ export default class MessageComponent extends Component<
             );
           })}
 
-        {!this.props.noReplies && !this.props.message.parent_message_id && (
+        {!this.props.noReplies && showInput && (
+          <ThreadSection alinea small message={{ sender: UserService.getCurrentUserId() }}>
+            <div className="message-content">
+              <Input />
+            </div>
+          </ThreadSection>
+        )}
+        {!showInput && !this.props.noReplies && !this.props.message.parent_message_id && (
           <ThreadSection compact>
             <div className="message-content">
-              <a>
+              <a
+                href="#"
+                onClick={() => this.messageEditorService.openEditor(this.props.message?.id || '')}
+              >
                 <CornerDownRight size={14} />{' '}
                 {Languages.t('scenes.apps.messages.message.reply_button')}
               </a>

@@ -43,8 +43,10 @@ export default class MainView extends Component<Props> {
           collectionKey={this.collectionKey}
         />
         <NewThread
-          useButton={!this.props.channel.direct}
+          useButton={!this.props.channel.direct && !this.threadId}
           collectionKey={this.collectionKey}
+          channelId={this.props.channel.id}
+          threadId={this.threadId}
           key="input"
         />
       </div>

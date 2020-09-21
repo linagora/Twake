@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete.js';
 import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
@@ -8,12 +8,14 @@ import Emojione from 'components/Emojione/Emojione.js';
 import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
 import LocalStorage from 'services/localStorage.js';
+import InputOptions from './Parts/InputOptions';
 import './Input.scss';
 
 type Props = {
   onResize?: (evt: any) => void;
   onEscape?: (evt: any) => void;
   onFocus?: () => void;
+  ref?: (node: any) => void;
   onChange?: (text: string) => void;
   localStorageIdentifier?: string;
   disableApps?: boolean;
@@ -21,6 +23,9 @@ type Props = {
 
 export default (props: Props) => {
   const [content, setContent] = useState('');
+  useEffect(() => {
+    focus();
+  }, []);
   let autocomplete: any = null;
 
   let autocompletes = [/\B@([\-+\w]+)$/, /\B#([a-zA-Z\u00C0-\u017F]+)$/, /\B:([\-+\w]+)$/];
@@ -42,6 +47,10 @@ export default (props: Props) => {
     if (props.onChange) props.onChange(text);
   };
 
+  const focus = () => {
+    autocomplete.focus();
+  };
+
   const onKeyPress = (event: any) => {};
 
   const onKeyUp = (event: any) => {};
@@ -49,7 +58,7 @@ export default (props: Props) => {
   const searchCommand = (event: any, cb: any) => {};
 
   return (
-    <div className="input">
+    <div className="message-input" ref={props.ref}>
       <AutoComplete
         ref={(node: any) => {
           autocomplete = node;
@@ -136,6 +145,7 @@ export default (props: Props) => {
         )}
         autoHeight
         value={content}
+        small
         onChange={(evt: any) => {
           change(evt.target.value);
         }}
@@ -149,6 +159,8 @@ export default (props: Props) => {
           }
         }}
       />
+
+      <InputOptions />
     </div>
   );
 };

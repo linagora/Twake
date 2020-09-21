@@ -24,11 +24,49 @@
 }
 
 .new-thread {
-  .input {
-    flex: 1;
+  .message-input {
+    padding: 8px;
+  }
+}
+.message-input {
+  flex: 1;
+  background: #fff;
 
-    textarea.input {
+  .autocomplete {
+    div.input {
       background: #fff;
+      textarea.input {
+        background: #fff;
+      }
+    }
+    .input.small {
+      margin-top: -2px;
+      padding: 0;
+    }
+    .input.autoheight_container.small textarea {
+      padding-left: 0px;
+    }
+  }
+
+  .input-options {
+    display: flex;
+    flex-direction: row;
+    margin-top: 8px;
+    .option {
+      color: var(--grey-light);
+
+      &:not(:last-child) {
+        margin-right: 12px;
+      }
+
+      &:not(.disabled):hover {
+        color: var(--black);
+      }
+
+      &:not(.disabled) {
+        cursor: pointer;
+        color: var(--grey-dark);
+      }
     }
   }
 }
