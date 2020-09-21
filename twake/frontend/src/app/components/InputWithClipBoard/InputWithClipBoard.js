@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import './InputWithClipBoard.scss';
 import Icon from 'components/Icon/Icon.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import Input from 'components/Inputs/Input.js';
+import InputWithButton from 'components/Inputs/InputWithButton.js';
 
 export default class InputWithClipBoard extends Component {
   /*
@@ -46,19 +46,14 @@ export default class InputWithClipBoard extends Component {
         overable={false}
         tooltip={Languages.t('components.input.copied', [], 'Copié')}
       >
-        <div className="inputWithClipBoard">
-          <Input
-            className="medium full_width"
-            refInput={obj => (this.inputElement = obj)}
-            onClick={() => this.selectAll()}
-            {...this.props}
-          />
-          {!this.props.hideBtn && (
-            <div className="button copy" onClick={() => this.copy()}>
-              <Icon type="copy" />
-            </div>
-          )}
-        </div>
+        <InputWithButton
+          refInput={obj => (this.inputElement = obj)}
+          btnAction={() => this.copy()}
+          icon="copy"
+          hideBtn={this.props.hideBtn}
+          value={this.props.value}
+          disabled={this.props.disabled}
+        />
       </Tooltip>
     );
   }

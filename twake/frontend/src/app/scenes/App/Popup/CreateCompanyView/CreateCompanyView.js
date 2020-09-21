@@ -7,7 +7,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import Emojione from 'components/Emojione/Emojione.js';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
 import CurrentUser from 'services/user/current_user.js';
