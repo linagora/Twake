@@ -16,12 +16,14 @@ class DrivePreview
     var $doctrine;
     var $img_height;
     var $img_width;
+    var $previewableExt = [];
 
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->img_height = 300;
         $this->img_width = 300;
+        $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");
     }
 
     public function generatePreview($filename, $file, $path, $ext, $entity = null)

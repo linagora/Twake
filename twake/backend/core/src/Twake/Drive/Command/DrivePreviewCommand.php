@@ -59,7 +59,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
 
             $file->setPreviewHasBeenGenerated(true);
 
-            if (in_array(strtolower($file->getExtension()), $this->previewableExt)) {
+            if (in_array(strtolower($file->getExtension()), $this->preview->previewableExt)) {
 
                 $tmppath = $this->checkLocalFileForPreview($file);
 
