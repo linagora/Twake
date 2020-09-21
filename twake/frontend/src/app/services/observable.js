@@ -14,7 +14,9 @@ export default class Observable {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {
       this.onFirstListener();
     }
-    this.observableListenersList.push(listener);
+    if (this.observableListenersList.indexOf(listener) < 0) {
+      this.observableListenersList.push(listener);
+    }
   }
   removeListener(listener) {
     var index = this.observableListenersList.indexOf(listener);

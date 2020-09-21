@@ -103,7 +103,7 @@ export default (props: Props) => {
           (item: any) => {
             return [
               <div className="icon">
-                <Emojione type={item.native} />
+                <Emojione type={item.icon} />
               </div>,
               <div className="text">{item.name}</div>,
             ];
