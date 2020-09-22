@@ -19,7 +19,7 @@ export default (props: Props) => {
 
   useEffect(() => {
     if (!props.useButton && messageEditorService.currentEditor === false) {
-      messageEditorService.openEditor(props.threadId + '_main');
+      messageEditorService.openEditor(props.threadId, 'main');
     }
   }, []);
 
@@ -29,7 +29,7 @@ export default (props: Props) => {
         withBlock
         className="new-thread-button"
         onClick={() => {
-          messageEditorService.openEditor(props.threadId + '_main');
+          messageEditorService.openEditor(props.threadId, 'main');
         }}
       >
         <ThreadSection noSenderSpace>
@@ -41,7 +41,12 @@ export default (props: Props) => {
     return (
       <Thread withBlock className="new-thread">
         <ThreadSection noSenderSpace>
-          <Input ref={node => messageEditorService.setInputNode(props.threadId + '_main', node)} />
+          <Input
+            ref={node => messageEditorService.setInputNode(props.threadId + '_main', node)}
+            channelId={props.channelId}
+            threadId={props.threadId}
+            context={'main'}
+          />
         </ThreadSection>
       </Thread>
     );

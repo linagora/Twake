@@ -145,7 +145,10 @@ export default class MessageComponent extends Component<
         {!this.props.noReplies && showInput && (
           <ThreadSection alinea small message={{ sender: UserService.getCurrentUserId() }}>
             <div className="message-content">
-              <Input />
+              <Input
+                channelId={this.props.message?.channel_id || ''}
+                threadId={this.props.message?.id || ''}
+              />
             </div>
           </ThreadSection>
         )}
