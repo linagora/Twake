@@ -21,6 +21,7 @@ export type Message = {
   sender?: string | null;
   user_specific_content?: any;
   _user_ephemeral?: any;
+  _last_modified?: string;
   _user_reaction?: any;
 };
 

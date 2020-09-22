@@ -99,6 +99,11 @@
     }
   }
 
+  .message-content.loading-interaction {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   .reactions {
     margin-top: 8px;
 

@@ -45,6 +45,7 @@ export default (props: Props) => {
             ref={node => messageEditorService.setInputNode(props.threadId + '_main', node)}
             channelId={props.channelId}
             threadId={props.threadId}
+            collectionKey={props.collectionKey}
             context={'main'}
           />
         </ThreadSection>

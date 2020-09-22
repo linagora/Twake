@@ -32,6 +32,11 @@
   flex: 1;
   background: #fff;
 
+  &.loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   .autocomplete {
     div.input {
       background: #fff;
@@ -66,6 +71,14 @@
       &:not(.disabled) {
         cursor: pointer;
         color: var(--grey-dark);
+      }
+
+      .messages-input-app-icon {
+        width: 16px;
+        height: 16px;
+        background-position: center;
+        background-size: contain;
+        border-radius: var(--default-border-radius);
       }
     }
   }

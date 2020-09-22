@@ -15,7 +15,7 @@ type Props = {
   onResize?: (evt: any) => void;
   onEscape?: (evt: any) => void;
   onFocus?: () => void;
-  ref?: (node: any) => void;
+  autocompleteRef?: (node: any) => void;
   onEditLastMessage?: () => void;
   onChange?: (text: string) => void;
   onSend?: (text: string) => void;
@@ -31,7 +31,7 @@ export default (props: Props) => {
   messageEditorService.useListener(useState);
   useEffect(() => {
     focus();
-    setContent(messageEditorService.getContent(props.threadId));
+    change(messageEditorService.getContent(props.threadId));
   }, []);
   let autocomplete: any = null;
   let disable_enter: boolean = false;
@@ -70,8 +70,9 @@ export default (props: Props) => {
       if (!evt.shiftKey) {
         evt.stopPropagation();
         evt.preventDefault();
-        change('');
-        props.onSend && props.onSend(content);
+        if (props.onSend && props.onSend(content)) {
+          change('');
+        }
       } else {
         var target = evt.target;
         var result = PseudoMarkdownCompiler.autoCompleteBulletList(target, true);
@@ -101,6 +102,7 @@ export default (props: Props) => {
     <AutoComplete
       ref={(node: any) => {
         autocomplete = node;
+        props.autocompleteRef && props.autocompleteRef(node);
       }}
       onResize={props.onResize}
       search={[

@@ -107,6 +107,7 @@ export default class MessageComponent extends Component<
           delayRender={!this.state.render}
         >
           <MessageContent
+            key={this.props.message?._last_modified || this.props.message?.front_id}
             linkToThread={linkToThread}
             message={this.props.message}
             collectionKey={this.props.collectionKey}
@@ -148,6 +149,7 @@ export default class MessageComponent extends Component<
               <Input
                 channelId={this.props.message?.channel_id || ''}
                 threadId={this.props.message?.id || ''}
+                collectionKey={this.props.collectionKey}
               />
             </div>
           </ThreadSection>

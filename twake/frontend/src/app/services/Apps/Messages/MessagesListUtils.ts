@@ -272,7 +272,7 @@ export class MessagesListUtils extends Observable {
       ) {
         this.scrollerNode.scroll({
           top: position,
-          //behavior: 'smooth', Need more digging
+          behavior: 'smooth',
         });
       } else {
         this.scrollerNode.scrollTop = position;

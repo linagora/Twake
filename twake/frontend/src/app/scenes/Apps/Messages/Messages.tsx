@@ -6,6 +6,8 @@ import ChannelsService from 'services/channels/channels.js';
 import MessagesList from './MessagesList';
 import './Messages.scss';
 import NewThread from './Input/NewThread';
+import Collections from 'services/Collections/Collections.js';
+import CurrentUser from 'services/user/current_user.js';
 
 type Props = {
   channel: any;
@@ -22,6 +24,7 @@ export default class MainView extends Component<Props> {
     super(props);
     Languages.addListener(this);
     ChannelsService.addListener(this);
+    Collections.get('messages').addListener(this);
     MessagesService.addListener(this);
 
     this.options = props.options || {};
@@ -31,10 +34,27 @@ export default class MainView extends Component<Props> {
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
+    Collections.get('messages').removeListener(this);
     MessagesService.removeListener(this);
   }
 
   render() {
+    var ephemerals_messages = Collections.get('messages')
+      .findBy({
+        channel_id: this.props.channel.id,
+        parent_message_id: this.threadId,
+        _user_ephemeral: true,
+      })
+      .filter((message: any) => {
+        try {
+          if (message.ephemeral_message_recipients) {
+            return (message.ephemeral_message_recipients || []).indexOf(CurrentUser.get().id) >= 0;
+          }
+        } catch (e) {}
+        return true;
+      })
+      .sort((a: any, b: any) => a.creation_date - b.creation_date);
+
     return (
       <div className="messages-view">
         <MessagesList
@@ -42,6 +62,29 @@ export default class MainView extends Component<Props> {
           channel={this.props.channel}
           collectionKey={this.collectionKey}
         />
+
+        {ephemerals_messages.length > 0 && (
+          <div className="ephemerals">
+            <div className="ephemerals_text">
+              {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
+            </div>
+            {ephemerals_messages.map(message => {
+              if (!message) {
+                return '';
+              }
+              return (
+                <Message
+                  messagesCollectionKey={this.messages_collection_key}
+                  message={message}
+                  previousMessage={{}}
+                  new={false}
+                  measure={() => {}}
+                  hasTimeline={false}
+                />
+              );
+            })}
+          </div>
+        )}
         <NewThread
           useButton={!this.props.channel.direct && !this.threadId}
           collectionKey={this.collectionKey}

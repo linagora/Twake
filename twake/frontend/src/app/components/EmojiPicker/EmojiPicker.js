@@ -19,6 +19,7 @@ export default class EmojiPicker extends React.Component {
       currentTitle: '',
       availableCategories: [],
       scrollToRow: 0,
+      loaded: false,
     };
     this.currentTitleIndex = 100000;
     this.clickScrollToRow = 0;
@@ -84,7 +85,15 @@ export default class EmojiPicker extends React.Component {
     }
     return pref;
   }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ loaded: true });
+    }, 300);
+  }
   render() {
+    if (!this.state.loaded) {
+      return <div style={{ height: 356 }}></div>;
+    }
     return (
       <div className="menu-cancel-margin">
         <Picker

@@ -7,8 +7,11 @@ import Collections from 'services/Collections/Collections.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import ChannelsService from 'services/channels/channels.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import MenusManager from 'services/Menus/MenusManager.js';
+import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
+import DriveService from 'services/Apps/Drive/Drive.js';
 
 import Globals from 'services/Globals.js';
 
@@ -86,87 +89,124 @@ class Messages extends Observable {
     return users;
   }
 
-  sendMessage(value, options, collectionKey) {
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
+  async sendMessage(value, options, collectionKey) {
+    return new Promise(resolve => {
+      if (Globals.window.mixpanel_enabled)
+        Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
 
-    var value = PseudoMarkdownCompiler.transformChannelsUsers(value);
-    var channel = Collections.get('channels').find(options.channel_id);
+      value = PseudoMarkdownCompiler.transformChannelsUsers(value);
+      var channel = Collections.get('channels').find(options.channel_id);
 
-    if (value[0] == '/') {
-      var app = null;
-      var app_name = value.split(' ')[0].slice(1);
-      WorkspacesApps.getApps().map(_app => {
-        if (_app.simple_name == app_name) {
-          app = _app;
-        }
-      });
-
-      if (!app) {
-        AlertManager.alert(() => {}, {
-          text: Languages.t(
-            'services.apps.messages.no_command_possible',
-            [value, app_name],
-            "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
-          ),
-          title: Languages.t(
-            'services.apps.messages.no_app',
-            [],
-            "Cette application n'existe pas.",
-          ),
+      if (value[0] == '/') {
+        var app = null;
+        var app_name = value.split(' ')[0].slice(1);
+        WorkspacesApps.getApps().map(_app => {
+          if (_app.simple_name == app_name) {
+            app = _app;
+          }
         });
+
+        if (!app) {
+          AlertManager.alert(() => {}, {
+            text: Languages.t(
+              'services.apps.messages.no_command_possible',
+              [value, app_name],
+              "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
+            ),
+            title: Languages.t(
+              'services.apps.messages.no_app',
+              [],
+              "Cette application n'existe pas.",
+            ),
+          });
+          resolve(false);
+          return;
+        }
+        var data = {
+          command: value.split(' ').slice(1).join(' '),
+          channel: channel,
+          parent_message: options.parent_message_id
+            ? Collections.get('messages').find(options.parent_message_id) || null
+            : null,
+        };
+
+        WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
+
+        resolve(false);
         return;
       }
-      var data = {
-        command: value.split(' ').slice(1).join(' '),
-        channel: channel,
-        parent_message: options.parent_message_id
-          ? Collections.get('messages').find(options.parent_message_id) || null
-          : null,
-      };
 
-      WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
+      options = options || {};
 
+      var message = Collections.get('messages').edit();
+      var val = PseudoMarkdownCompiler.compileToJSON(value);
+
+      message.channel_id = options.channel_id;
+      message.parent_message_id = options.parent_message_id || '';
+
+      if (message.parent_message_id) {
+        var parent = Collections.get('messages').find(message.parent_message_id);
+        Collections.get('messages').completeObject(
+          { responses_count: parent.responses_count + 1 },
+          parent.front_id,
+        );
+        Collections.get('messages').share(parent);
+      }
+
+      message.hidden_data = {};
+      message.pinned = false;
+      message.responses_count = 0;
+      message.sender = UserService.getCurrentUserId();
+
+      const max_message_time = Collections.get('messages')
+        .findBy({ channel_id: options.channel_id })
+        .map(i => i.creation_date)
+        .reduce((a, b) => a + b, 0);
+      message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
+      message.content = val;
+
+      ChannelsService.markFrontAsRead(channel.id, message.creation_date);
+
+      Collections.get('messages').save(message, collectionKey, message => {
+        ChannelsService.markFrontAsRead(channel.id);
+        ChannelsService.incrementChannel(channel);
+        resolve(message);
+      });
+
+      CurrentUser.updateTutorialStatus('first_message_sent');
+    });
+  }
+
+  triggerApp(channelId, threadId, app, from_icon, evt) {
+    if (app.simple_name == 'twake_drive') {
+      var menu = [];
+      var has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
+      if (has_drive_app) {
+        menu.push({
+          type: 'react-element',
+          reactElement: () => (
+            <FilePicker
+              mode={'select_file'}
+              onChoose={file => DriveService.sendAsMessage(channelId, threadId, file)}
+            />
+          ),
+        });
+      }
+
+      MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'center');
       return;
     }
 
-    options = options || {};
-
-    var message = Collections.get('messages').edit();
-    var val = PseudoMarkdownCompiler.compileToJSON(value);
-
-    message.channel_id = options.channel_id;
-    message.parent_message_id = options.parent_message_id || '';
-
-    if (message.parent_message_id) {
-      var parent = Collections.get('messages').find(message.parent_message_id);
-      Collections.get('messages').completeObject(
-        { responses_count: parent.responses_count + 1 },
-        parent.front_id,
-      );
-      Collections.get('messages').share(parent);
+    if ((((app.display || {}).messages_module || {}).in_plus || {}).should_wait_for_popup) {
+      WorkspacesApps.openAppPopup(app.id);
     }
 
-    message.hidden_data = {};
-    message.pinned = false;
-    message.responses_count = 0;
-    message.sender = UserService.getCurrentUserId();
-
-    const max_message_time = Collections.get('messages')
-      .findBy({ channel_id: options.channel_id })
-      .map(i => i.creation_date)
-      .reduce((a, b) => a + b, 0);
-    message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
-    message.content = val;
-
-    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
-
-    Collections.get('messages').save(message, collectionKey, message => {
-      ChannelsService.markFrontAsRead(channel.id);
-      ChannelsService.incrementChannel(channel);
-    });
-
-    CurrentUser.updateTutorialStatus('first_message_sent');
+    var data = {
+      channel: Collections.get('channels').find(channelId),
+      parent_message: (threadId ? Collections.get('messages').find(threadId) : null) || null,
+      from_icon: from_icon,
+    };
+    WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
 
   startEditingLastMessage(options) {

@@ -59,7 +59,7 @@ class MessageSystem
         $channel_id = $data["channel_id"];
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
-            "edition" => true,
+            "edition" => false,
             "object_id" => $channel_id
         ]);
     }
