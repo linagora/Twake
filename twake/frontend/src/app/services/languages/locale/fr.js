@@ -20,7 +20,7 @@ export default {
   'general.unarchive': 'Désarchiver',
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
-  'general.send': 'Envoyer le message',
+  'general.send': 'Envoyer un message',
   'general.update': 'Mettre à jour',
   'general.remove': 'Supprimer',
   'general.add': 'Ajouter',

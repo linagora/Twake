@@ -115,9 +115,12 @@
     }
 
     &.small-section {
-      .message .sender-space .sender-head {
-        width: 16px;
-        height: 16px;
+      .message .sender-space {
+        .sender-head,
+        .app_icon {
+          width: 16px;
+          height: 16px;
+        }
       }
     }
 
@@ -136,6 +139,7 @@
 
   &.loading {
     .sender-head,
+    .app_icon,
     .sender-name,
     .content-parent {
       animation-duration: 10s;

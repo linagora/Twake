@@ -5,6 +5,8 @@ import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
 import Draggable from 'components/Draggable/Draggable.js';
+import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import Icon from 'components/Icon/Icon.js';
 import './Threads.scss';
 
 type Props = {
@@ -61,13 +63,24 @@ export default class ThreadSection extends Component<Props> {
         <div className="message">
           {!this.props.noSenderSpace && (
             <div className="sender-space">
-              {senderData && (
+              {senderData && senderData.type !== 'app' && (
                 <div
                   className={'sender-head'}
                   style={{
                     backgroundImage: "url('" + User.getThumbnail(senderData) + "')",
                   }}
                 ></div>
+              )}
+              {senderData && senderData.type === 'app' && (
+                <Icon
+                  className="no-margin-left"
+                  style={{ fontSize: this.props.small ? '16px' : '24px' }}
+                  type={
+                    senderData.application
+                      ? WorkspacesApps.getAppIcon(senderData.application)
+                      : 'puzzle-piece' || 'puzzle-piece'
+                  }
+                />
               )}
             </div>
           )}

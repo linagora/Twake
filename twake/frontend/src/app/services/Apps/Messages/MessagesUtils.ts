@@ -29,6 +29,7 @@ export const getSender = (message: Message | undefined) => {
       } else {
         senderData = {
           type: 'app',
+          application: app,
           username: 'app#' + app.simple_name,
           firstname: app.name,
           lastname: '',
