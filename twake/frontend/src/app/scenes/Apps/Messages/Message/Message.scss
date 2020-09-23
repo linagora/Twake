@@ -1,4 +1,5 @@
 .message {
+  text-align: left;
   .sender-space {
     width: 28px;
     margin-right: 8px;
@@ -43,6 +44,11 @@
         font-weight: 700;
         margin-right: 4px;
         cursor: pointer;
+      }
+      .sender-status {
+        font-size: 12px;
+        color: var(--black);
+        margin-right: 4px;
       }
       .reply-text {
         margin-right: 4px;

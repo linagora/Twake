@@ -16,6 +16,7 @@ import MessagesListServerServicesManager, {
   MessagesListServerUtils,
   Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
+import Emojione from 'components/Emojione/Emojione.js';
 
 type Props = {
   message: Message;
@@ -111,6 +112,11 @@ export default class MessageHeader extends Component<Props, State> {
         >
           {User.getFullName(senderData)}
         </span>
+        {senderData.type === 'user' && senderData.status_icon && senderData.status_icon[0] && (
+          <div className="sender-status">
+            <Emojione size={12} type={senderData.status_icon[0]} /> {senderData.status_icon[1]}
+          </div>
+        )}
 
         {this.props.linkToThread && (
           <span className="reply-text">

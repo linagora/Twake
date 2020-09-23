@@ -18,12 +18,12 @@ import Collections from 'services/Collections/Collections.js';
 
 type Props = {
   message: Message & { fake: boolean };
-  previousMessage?: Message;
   collectionKey: string;
   highlighted?: boolean;
-  style: any;
+  style?: any;
   delayRender?: boolean;
   noReplies?: boolean;
+  noBlock?: boolean;
   repliesAsLink?: boolean;
 };
 
@@ -33,6 +33,7 @@ export default class MessageComponent extends Component<
 > {
   domNode: any;
   messageEditorService: MessageEditors;
+  allowUpdates: boolean = false;
 
   constructor(props: Props) {
     super(props);
@@ -45,6 +46,9 @@ export default class MessageComponent extends Component<
     this.setDomElement = this.setDomElement.bind(this);
     this.messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
     this.messageEditorService.addListener(this);
+
+    Collections.get('messages').addListener(this);
+    Collections.get('messages').listenOnly(this, [props.message.id || props.message.front_id]);
   }
 
   getDomElement() {
@@ -61,11 +65,19 @@ export default class MessageComponent extends Component<
     }
   }
 
+  stopRenderContent() {
+    if (this.state.render) {
+      this.setState({ render: false });
+    }
+  }
+
   isRendered() {
     return this.state.render;
   }
 
   render() {
+    console.log('rerender message', this.props.message.id);
+
     if (this.props.message.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
     }
@@ -87,6 +99,7 @@ export default class MessageComponent extends Component<
         parent_message_id: this.props.message.id,
         _user_ephemeral: undefined,
       })
+      .filter((i: Message) => !i._user_ephemeral)
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
     const linkToThread = !!this.props.message.parent_message_id && this.props.repliesAsLink;
@@ -98,7 +111,7 @@ export default class MessageComponent extends Component<
         refDom={this.setDomElement}
         highlighted={this.props.highlighted}
         hidden={!this.state.render}
-        withBlock={!this.props.message.parent_message_id}
+        withBlock={!this.props.message.parent_message_id && !this.props.noBlock}
       >
         <ThreadSection
           small={linkToThread}

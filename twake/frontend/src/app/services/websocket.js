@@ -111,7 +111,6 @@ class Websocket extends Observable {
         () => {
           if (new Date().getTime() - this.last_reconnect_call.getTime() > 600000) {
             this.last_reconnect_call = new Date();
-            //Every two minutes
             this.reconnect();
           }
           clearTimeout(this.alive_timeout);

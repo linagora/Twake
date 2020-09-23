@@ -194,6 +194,7 @@ export class MessagesListUtils extends Observable {
           if (nodeMessage.message.id === this.highlighted) {
             this.removeHighlightMessage();
           }
+          nodeMessage.node.stopRenderContent();
           //Do nothing
         }
       }

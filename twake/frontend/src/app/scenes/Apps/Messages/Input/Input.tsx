@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InputOptions from './Parts/InputOptions';
 import InputAutocomplete from './Parts/InputAutocomplete';
+import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import './Input.scss';
 import MessagesService from 'services/Apps/Messages/Messages.js';
@@ -82,6 +83,12 @@ export default (props: Props) => {
         autocompleteRef={node => {
           autocomplete = node || autocomplete;
         }}
+      />
+
+      <EphemeralMessages
+        channelId={props.channelId}
+        threadId={props.threadId}
+        collectionKey={props.collectionKey}
       />
 
       <InputOptions

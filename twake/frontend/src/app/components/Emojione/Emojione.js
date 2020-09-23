@@ -57,7 +57,7 @@ export default class Emojione extends React.Component {
     var html = emojione.toImage(this.props.type);
     html = html.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
 
-    let size = 16;
+    let size = this.props.size || 16;
     if (this.props.s64) {
       size = 32;
       html = html.replace('/32/', '/64/');
