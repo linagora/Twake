@@ -128,10 +128,15 @@ export default (props: Props) => {
           <Smile size={16} />
         </Menu>
       )}
-      {addon_calls.length > 0 && (
+      {addon_calls.length > 1 && (
         <Menu className="option" position="top" menu={addon_calls}>
           <Video size={16} />
         </Menu>
+      )}
+      {addon_calls.length === 1 && (
+        <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
+          <Video size={16} />
+        </div>
       )}
 
       {addon_right_icon.map((app: any) => {

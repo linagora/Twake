@@ -14,6 +14,7 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import UserService from 'services/user/user.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
+import TimeSeparator from './TimeSeparator';
 
 import Input from '../Input/Input';
 
@@ -28,6 +29,7 @@ type Props = {
   noReplies?: boolean;
   noBlock?: boolean;
   repliesAsLink?: boolean;
+  unreadAfter?: number;
 };
 
 export default class MessageComponent extends Component<
@@ -176,17 +178,24 @@ export default class MessageComponent extends Component<
               }
               const tmp_previous_message = previous_message;
               previous_message = message;
-              return (
+              return [
+                <TimeSeparator
+                  key={message.front_id + '_time'}
+                  message={message}
+                  previousMessage={tmp_previous_message}
+                  unreadAfter={this.props.unreadAfter || 0}
+                />,
                 <ThreadSection
                   canDrag
                   alinea
                   message={message}
                   small
                   delayRender={!this.state.render}
+                  key={message.front_id}
                 >
                   <MessageContent message={message} collectionKey={this.props.collectionKey} />
-                </ThreadSection>
-              );
+                </ThreadSection>,
+              ];
             })}
 
           {!this.props.noReplies && showInput && (

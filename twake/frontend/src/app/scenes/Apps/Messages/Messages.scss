@@ -17,7 +17,7 @@
       height: 16px;
       border-top: 1px solid var(--grey-background);
       background: var(--white);
-      z-index: 10;
+      z-index: 4;
       bottom: 0;
       opacity: 0;
       pointer-events: none;
@@ -29,7 +29,7 @@
       height: 100%;
       border-top: 1px solid var(--grey-background);
       box-shadow: 0 -32px 32px -32px rgba(0, 0, 0, 0.1) inset;
-      z-index: 10;
+      z-index: 4;
       bottom: 16px;
       opacity: 0;
       pointer-events: none;
@@ -55,7 +55,7 @@
       bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10;
+      z-index: 4;
       font-size: 14px;
       color: var(--white);
       align-items: center;
@@ -82,6 +82,20 @@
     }
   }
 
+  .thread .message_timeline {
+    text-align: left;
+    background: var(--white);
+    margin-left: 0px;
+    margin-top: -12px;
+    width: 100%;
+    .time_container {
+      margin-left: 32px;
+    }
+    &::before {
+      margin-top: 21px;
+    }
+  }
+
   .message_timeline {
     text-align: center;
     color: var(--grey-dark);
@@ -91,10 +105,20 @@
     margin: 0 auto;
     margin-bottom: 12px;
     margin-top: 20px;
-    z-index: 2;
     min-width: 0;
     max-width: 1000px;
     width: calc(100% - 32px);
+
+    &::before {
+      content: '';
+      z-index: 0;
+      width: 100%;
+      border-bottom: 1px solid var(--grey-background);
+      position: relative;
+      left: 0;
+      margin-top: 11px;
+      display: inline-block;
+    }
 
     &.new_messages {
       &::before {
@@ -113,6 +137,8 @@
       display: inline-block;
       padding: 0px 11px;
       background: var(--white);
+      top: -15px;
+      position: relative;
 
       .time {
         color: var(--grey-dark);
@@ -125,18 +151,6 @@
         border-radius: 12px;
         padding: 0 4px;
       }
-    }
-
-    &::before {
-      content: '';
-      z-index: 1;
-      position: absolute;
-      width: 100%;
-      border-bottom: 1px solid var(--grey-background);
-      position: absolute;
-      left: 0;
-      top: 11px;
-      z-index: -1;
     }
   }
 

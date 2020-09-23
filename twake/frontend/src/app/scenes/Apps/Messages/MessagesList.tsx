@@ -148,6 +148,7 @@ export default class MessagesList extends Component<Props> {
                   highlighted={this.messagesListService.highlighted === messages[index]?.id}
                   ref={node => this.messagesListService.setMessageNode(m, node)}
                   collectionKey={this.props.collectionKey}
+                  unreadAfter={this.props.unreadAfter}
                 />,
               ];
             })}
