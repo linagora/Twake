@@ -4,6 +4,7 @@ import ThreadSection from '../Parts/ThreadSection';
 import { PlusCircle } from 'react-feather';
 import Input from './Input';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import DriveService from 'services/Apps/Drive/Drive.js';
 import './Input.scss';
 
 type Props = {
@@ -39,7 +40,14 @@ export default (props: Props) => {
     );
   } else {
     return (
-      <Thread withBlock className="new-thread">
+      <Thread
+        collectionKey={props.collectionKey}
+        withBlock
+        className="new-thread"
+        onUploadFile={(file: any) => {
+          DriveService.sendAsMessage(props.channelId, '', file);
+        }}
+      >
         <ThreadSection noSenderSpace>
           <Input
             ref={node => messageEditorService.setInputNode(props.threadId + '_main', node)}

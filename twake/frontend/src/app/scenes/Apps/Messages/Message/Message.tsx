@@ -134,6 +134,7 @@ export default class MessageComponent extends Component<
         onDrop={(data: any) => this.dropMessage(data.data)}
       >
         <Thread
+          collectionKey={this.props.collectionKey}
           refDom={this.setDomElement}
           highlighted={this.props.highlighted}
           hidden={!this.state.render}

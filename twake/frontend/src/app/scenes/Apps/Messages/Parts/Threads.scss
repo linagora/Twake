@@ -64,6 +64,7 @@
     min-width: 0;
     max-width: 1000px;
     width: calc(100% - 32px);
+    position: relative;
   }
 
   .thread {
@@ -75,6 +76,7 @@
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
       border-radius: 5px;
       margin-bottom: 16px;
+      background: var(--white);
 
       .message {
         padding: 12px;

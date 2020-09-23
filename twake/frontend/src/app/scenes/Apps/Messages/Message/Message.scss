@@ -122,9 +122,13 @@
       }
     }
   }
-  &:hover,
   .message-content.active {
     .message-options.right {
+      opacity: 1;
+    }
+  }
+  &:hover {
+    .message-options {
       opacity: 1;
     }
   }

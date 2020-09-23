@@ -19,6 +19,7 @@ export default class MainView extends Component<Props> {
   options: any = {};
   threadId: string = ''; //Non-empty = thread view
   collectionKey: string = ''; //For a specific collection (aka channel)
+  upload_zone: any;
 
   constructor(props: Props) {
     super(props);
