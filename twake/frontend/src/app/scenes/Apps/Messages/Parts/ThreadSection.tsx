@@ -39,7 +39,7 @@ export default class ThreadSection extends Component<Props> {
         refDraggable={(node: any) => {
           this.node = node;
         }}
-        dragHandler="js-drag-handler"
+        dragHandler="js-drag-handler-message"
         data={{ type: 'message', data: this.props.message }}
         parentClassOnDrag="dragged"
         onDragStart={(evt: any) => {

@@ -12,13 +12,15 @@
 
   .emoji-container {
     display: inline-block;
+    vertical-align: bottom;
+    line-height: 0px;
   }
 
   a {
     overflow: hidden;
     max-width: 100%;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: bottom;
     overflow-wrap: break-word;
   }
   .bold {
@@ -110,7 +112,7 @@
       display: inline-block;
       padding-right: 5px;
       margin-right: -2px;
-      vertical-align: top;
+      vertical-align: bottom;
       background: $primary_background;
       cursor: pointer;
 
@@ -123,7 +125,7 @@
         height: 16px;
         border-radius: var(--default-border-radius);
         display: inline-block;
-        vertical-align: top;
+        vertical-align: bottom;
         background: $grey_light;
         margin: 1px;
         margin-right: 3px;
@@ -144,7 +146,7 @@
     display: inline-block;
     padding-right: 5px;
     margin-right: -2px;
-    vertical-align: top;
+    vertical-align: bottom;
     background: $primary_background;
     font-weight: 500;
     cursor: pointer;
@@ -164,7 +166,7 @@
   }
 
   .user_bloc {
-    vertical-align: top;
+    vertical-align: bottom;
     margin-top: -10px;
     transform: translateY(6px);
     padding: 4px 5px;
@@ -247,7 +249,7 @@
     padding: 0px;
     display: inline;
     cursor: pointer;
-    vertical-align: top;
+    vertical-align: bottom;
     background: transparent !important;
     color: #888;
 

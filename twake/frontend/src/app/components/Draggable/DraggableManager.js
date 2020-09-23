@@ -107,6 +107,10 @@ class DraggableManager extends Observable {
 
     this.current_react_draggable && this.current_react_draggable.setState({ hide_original: false });
 
+    if (!this.data) {
+      return;
+    }
+
     if (node) {
       this.current_node = node;
     }

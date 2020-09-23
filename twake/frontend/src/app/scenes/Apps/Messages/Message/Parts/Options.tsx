@@ -164,7 +164,7 @@ export default (props: Props) => {
   return (
     <div>
       <div className="message-options drag" key="drag">
-        <div className="option js-drag-handler">
+        <div className="option js-drag-handler-message">
           <DragIndicator style={{ width: '18px' }} />
         </div>
       </div>

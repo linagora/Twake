@@ -29,7 +29,7 @@ export default (props: Props) => (
   >
     <div className="thread-centerer">
       <Draggable
-        dragHandler="js-drag-handler-all-thread"
+        dragHandler="js-drag-handler-message"
         data={{ type: 'message', data: props.message }}
         parentClassOnDrag="dragged"
         onDragStart={(evt: any) => {
