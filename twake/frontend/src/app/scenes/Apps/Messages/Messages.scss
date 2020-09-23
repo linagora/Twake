@@ -157,4 +157,26 @@
       z-index: -1;
     }
   }
+
+  .writing_message {
+    font-size: 12px;
+    color: var(--grey-dark);
+    font-size: 12px;
+    padding-bottom: 8px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    right: 0;
+    width: calc(100% - 48px);
+    background: #fff;
+    transition: opacity 0.2s;
+    min-width: 0;
+    max-width: 1000px;
+    width: calc(100% - 32px);
+
+    &:hover {
+      opacity: 0.2;
+    }
+  }
 }

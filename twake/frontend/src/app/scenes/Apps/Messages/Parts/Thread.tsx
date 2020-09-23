@@ -1,7 +1,9 @@
 import React from 'react';
 import './Threads.scss';
+import Draggable from 'components/Draggable/Draggable.js';
 
 type Props = {
+  message?: any;
   loading?: boolean;
   highlighted?: boolean;
   children?: any | any[];
@@ -10,6 +12,7 @@ type Props = {
   className?: string;
   onClick?: (event: any) => void;
   refDom?: (node: any) => void;
+  canDrag?: boolean;
 };
 
 export default (props: Props) => (
@@ -25,7 +28,17 @@ export default (props: Props) => (
     ref={props.refDom}
   >
     <div className="thread-centerer">
-      <div className={'thread ' + (props.withBlock ? 'with-block ' : '')}>
+      <Draggable
+        dragHandler="js-drag-handler-all-thread"
+        data={{ type: 'message', data: props.message }}
+        parentClassOnDrag="dragged"
+        onDragStart={(evt: any) => {
+          console.log(evt);
+        }}
+        minMove={10}
+        className={'thread ' + (props.withBlock ? 'with-block ' : '')}
+        deactivated={!(props.canDrag && props.message)}
+      >
         {!!props.loading && (
           <div className="thread-section">
             <div className="message">
@@ -43,7 +56,7 @@ export default (props: Props) => (
           </div>
         )}
         {!props.loading && props.children}
-      </div>
+      </Draggable>
     </div>
   </div>
 );

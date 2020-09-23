@@ -17,15 +17,25 @@
   .message-content {
     flex: 1;
     min-width: 0;
-    position: relative;
     width: 0;
 
     &.link-to-thread {
       color: var(--grey-dark);
       .content-parent {
-        border-left: 4px solid var(--grey-light);
+        &:before {
+          content: '';
+          position: absolute;
+          left: 0px;
+          height: 100%;
+          width: 3px;
+          border-radius: 2px;
+          background: var(--grey-light);
+        }
+        position: relative;
         padding-left: 8px;
-        border-radius: 3px;
+      }
+      .sender-status {
+        display: none;
       }
     }
 
@@ -52,7 +62,8 @@
       }
       .reply-text {
         margin-right: 4px;
-        a {
+        a * {
+          display: inline-block;
         }
         overflow: hidden;
         text-overflow: ellipsis;
@@ -75,13 +86,25 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
     border: 1px solid var(--grey-background);
     display: block;
-    top: 4px;
+    top: 12px;
     margin: auto;
     right: 8px;
     z-index: 1;
     opacity: 0;
     display: flex;
     flex-direction: row;
+
+    &.drag {
+      left: -8px;
+      right: unset;
+
+      .option,
+      .option:hover {
+        min-width: 28px;
+        color: var(--primary);
+        cursor: grab;
+      }
+    }
 
     .option {
       &:not(:last-child) {

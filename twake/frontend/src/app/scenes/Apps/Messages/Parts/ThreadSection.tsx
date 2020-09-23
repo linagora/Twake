@@ -4,6 +4,7 @@ import Collections from 'services/Collections/Collections.js';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
+import Draggable from 'components/Draggable/Draggable.js';
 import './Threads.scss';
 
 type Props = {
@@ -17,9 +18,12 @@ type Props = {
   noSenderSpace?: boolean;
   className?: string;
   delayRender?: boolean;
+  canDrag?: boolean;
 };
 
 export default class ThreadSection extends Component<Props> {
+  node: any;
+
   render() {
     let senderData: any = getSender(this.props.message);
     if (senderData.type === 'user') {
@@ -31,7 +35,17 @@ export default class ThreadSection extends Component<Props> {
     }
 
     return (
-      <div
+      <Draggable
+        refDraggable={(node: any) => {
+          this.node = node;
+        }}
+        dragHandler="js-drag-handler"
+        data={{ type: 'message', data: this.props.message }}
+        parentClassOnDrag="dragged"
+        onDragStart={(evt: any) => {
+          console.log(evt);
+        }}
+        minMove={10}
         className={
           'thread-section ' +
           (this.props.compact ? 'compact ' : '') +
@@ -42,6 +56,7 @@ export default class ThreadSection extends Component<Props> {
           (this.props.message?.sender && this.props.message.pinned ? 'pinned-section ' : '') +
           (this.props.className ? this.props.className + ' ' : '')
         }
+        deactivated={!this.props.canDrag}
       >
         <div className="message">
           {!this.props.noSenderSpace && (
@@ -58,7 +73,7 @@ export default class ThreadSection extends Component<Props> {
           )}
           {!this.props.delayRender && this.props.children}
         </div>
-      </div>
+      </Draggable>
     );
   }
 }

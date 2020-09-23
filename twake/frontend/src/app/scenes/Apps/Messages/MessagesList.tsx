@@ -13,6 +13,7 @@ import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
 import { ArrowDown } from 'react-feather';
+import WritingUsers from './Input/WritingUsers';
 type Props = {
   channel: any;
   threadId: string;
@@ -173,6 +174,7 @@ export default class MessagesList extends Component<Props> {
           <ArrowDown size={16} />{' '}
           {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
         </div>
+        <WritingUsers channelId={this.props.channel.id} threadId={this.props.threadId} />
       </div>,
     ];
   }

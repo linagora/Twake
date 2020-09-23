@@ -7,6 +7,7 @@ import MessagesList from './MessagesList';
 import './Messages.scss';
 import NewThread from './Input/NewThread';
 import Collections from 'services/Collections/Collections.js';
+import DroppableZone from 'components/Draggable/DroppableZone.js';
 
 type Props = {
   channel: any;
@@ -47,13 +48,18 @@ export default class MainView extends Component<Props> {
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
         />
-        <NewThread
-          useButton={!this.props.channel.direct && !this.threadId}
-          collectionKey={this.collectionKey}
-          channelId={this.props.channel.id}
-          threadId={this.threadId}
-          key="input"
-        />
+        <DroppableZone
+          className="bottom_input"
+          types={['message']}
+          onDrop={(data: any) => MessagesService.dropMessage(data.data, null, this.collectionKey)}
+        >
+          <NewThread
+            useButton={!this.props.channel.direct && !this.threadId}
+            collectionKey={this.collectionKey}
+            channelId={this.props.channel.id}
+            threadId={this.threadId}
+          />
+        </DroppableZone>
       </div>
     );
   }

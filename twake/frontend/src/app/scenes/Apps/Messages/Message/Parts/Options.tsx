@@ -13,6 +13,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
+import DragIndicator from '@material-ui/icons/DragIndicator';
 
 type Props = {
   message: Message;
@@ -161,51 +162,58 @@ export default (props: Props) => {
   }
 
   return (
-    <div className="message-options">
-      <Menu
-        className="option"
-        onOpen={(evt: any) => onOpen(evt)}
-        menu={[
-          {
-            type: 'react-element',
-            className: 'menu-cancel-margin',
-            reactElement: () => {
-              return (
-                <EmojiPicker
-                  selected={props.message._user_reaction || ''}
-                  onChange={(emoji: any) => {
-                    MenusManager.closeMenu();
-                    props.onClose && props.onClose();
-                    MessagesService.react(props.message, emoji.colons, props.collectionKey);
-                  }}
-                />
-              );
-            },
-          },
-        ]}
-        position="top"
-      >
-        <Smile size={16} />
-      </Menu>
-      <div
-        className="option"
-        onClick={() => {
-          MessagesService.showMessage(props.message.parent_message_id || props.message.id);
-        }}
-      >
-        <ArrowUpRight size={16} />
+    <div>
+      <div className="message-options drag" key="drag">
+        <div className="option js-drag-handler">
+          <DragIndicator style={{ width: '18px' }} />
+        </div>
       </div>
-      {menu.length > 0 && (
+      <div className="message-options" key="options">
         <Menu
           className="option"
           onOpen={(evt: any) => onOpen(evt)}
-          onClose={() => props.onClose && props.onClose()}
-          menu={menu}
-          position={'left'}
+          menu={[
+            {
+              type: 'react-element',
+              className: 'menu-cancel-margin',
+              reactElement: () => {
+                return (
+                  <EmojiPicker
+                    selected={props.message._user_reaction || ''}
+                    onChange={(emoji: any) => {
+                      MenusManager.closeMenu();
+                      props.onClose && props.onClose();
+                      MessagesService.react(props.message, emoji.colons, props.collectionKey);
+                    }}
+                  />
+                );
+              },
+            },
+          ]}
+          position="top"
         >
-          <MoreHorizontal size={16} />
+          <Smile size={16} />
         </Menu>
-      )}
+        <div
+          className="option"
+          onClick={() => {
+            MessagesService.showMessage(props.message.parent_message_id || props.message.id);
+          }}
+        >
+          <ArrowUpRight size={16} />
+        </div>
+        {menu.length > 0 && (
+          <Menu
+            className="option"
+            onOpen={(evt: any) => onOpen(evt)}
+            onClose={() => props.onClose && props.onClose()}
+            menu={menu}
+            position={'left'}
+          >
+            <MoreHorizontal size={16} />
+          </Menu>
+        )}
+      </div>
     </div>
   );
 };
