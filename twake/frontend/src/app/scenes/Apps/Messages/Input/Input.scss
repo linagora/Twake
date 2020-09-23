@@ -82,4 +82,25 @@
       }
     }
   }
+
+  .ephemerals {
+    text-align: left;
+
+    .thread-centerer {
+      width: 100%;
+      .message {
+        padding: 0px;
+      }
+    }
+
+    .ephemerals_text {
+      font-size: 12px;
+      color: var(--grey-dark);
+      padding-bottom: 12px;
+      max-width: 1362px;
+      width: calc(100% - 48px);
+      display: inline-flex;
+      text-align: left;
+    }
+  }
 }

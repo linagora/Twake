@@ -39,8 +39,6 @@ class DraggableManager extends Observable {
     if (this.dragging) {
       return;
     }
-    evt.stopPropagation();
-    evt.preventDefault();
 
     if (react_draggable.props.dragHandler) {
       var handlers = node.getElementsByClassName(react_draggable.props.dragHandler);
@@ -102,8 +100,10 @@ class DraggableManager extends Observable {
     if (this.current_react_draggable) this.current_react_draggable.setState({ drag: true });
   }
   end(evt, node, react_draggable) {
-    evt.preventDefault();
-    evt.stopPropagation();
+    if (this.dragging) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
 
     this.current_react_draggable && this.current_react_draggable.setState({ hide_original: false });
 

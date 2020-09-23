@@ -10,17 +10,21 @@ import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspacePar
 import Collections from 'services/Collections/Collections.js';
 import CurrentUser from 'services/user/current_user.js';
 import MessageComponent from '../../Message/Message';
+import MessagesService from 'services/Apps/Messages/Messages.js';
 
 type Props = {
   channelId: string;
   threadId: string;
   collectionKey: string;
+  onHasEphemeralMessage: () => void;
+  onNotEphemeralMessage: () => void;
 };
 
 export default (props: Props) => {
   Collections.get('messages').useListener(useState);
 
-  var ephemerals_messages = Collections.get('messages')
+  let lastEphemeral: any = null;
+  const ephemerals_messages = Collections.get('messages')
     .findBy({
       channel_id: props.channelId,
       parent_message_id: props.threadId,
@@ -34,30 +38,37 @@ export default (props: Props) => {
       } catch (e) {}
       return true;
     })
-    .sort((a: any, b: any) => a.creation_date - b.creation_date);
+    .sort((a: any, b: any) => a.creation_date - b.creation_date)
+    .forEach((item: any) => {
+      if (lastEphemeral) {
+        MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
+      }
+      lastEphemeral = item;
+    });
 
+  if (!lastEphemeral) {
+    props.onNotEphemeralMessage();
+    return <div />;
+  }
+  props.onHasEphemeralMessage();
   return (
-    <div className="ephemeral message">
-      {ephemerals_messages.length > 0 && (
-        <div className="ephemerals">
-          <div className="ephemerals_text">
-            {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
-          </div>
-          {ephemerals_messages.map((message: any) => {
-            if (!message) {
-              return '';
-            }
-            return (
-              <MessageComponent
-                noBlock
-                noReplies
-                collectionKey={props.collectionKey}
-                message={message}
-              />
-            );
-          })}
-        </div>
-      )}
+    <div className="ephemerals">
+      <div className="ephemerals_text">
+        {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
+      </div>
+      {[lastEphemeral].map((message: any) => {
+        if (!message) {
+          return '';
+        }
+        return (
+          <MessageComponent
+            noBlock
+            noReplies
+            collectionKey={props.collectionKey}
+            message={message}
+          />
+        );
+      })}
     </div>
   );
 };

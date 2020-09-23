@@ -3,8 +3,8 @@ import InputOptions from './Parts/InputOptions';
 import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
-import './Input.scss';
 import MessagesService from 'services/Apps/Messages/Messages.js';
+import './Input.scss';
 
 type Props = {
   channelId: string;
@@ -22,6 +22,7 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const messageEditorService = MessageEditorsManager.get(props.channelId);
@@ -72,40 +73,54 @@ export default (props: Props) => {
 
   return (
     <div className={'message-input ' + (loading ? 'loading ' : '')} ref={props.ref}>
-      <InputAutocomplete
-        channelId={props.channelId}
-        threadId={props.threadId}
-        onChange={(text: string) => {
-          onChange(text);
-        }}
-        onSend={(text: string) => onSend()}
-        onFocus={() => messageEditorService.openEditor(props.threadId, props.context)}
-        autocompleteRef={node => {
-          autocomplete = node || autocomplete;
-        }}
-      />
-
       <EphemeralMessages
         channelId={props.channelId}
         threadId={props.threadId}
         collectionKey={props.collectionKey}
-      />
-
-      <InputOptions
-        inputValue={content}
-        channelId={props.channelId}
-        threadId={props.threadId}
-        onSend={() => onSend()}
-        triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-        onAddEmoji={emoji => {
-          if (autocomplete) {
-            autocomplete && autocomplete.putTextAtCursor(' ' + emoji.native + ' ');
-            setTimeout(() => {
-              autocomplete && autocomplete.focus();
-            }, 200);
+        onHasEphemeralMessage={() => {
+          if (!hasEphemeralMessage) {
+            setHasEphemeralMessage(true);
+          }
+        }}
+        onNotEphemeralMessage={() => {
+          if (hasEphemeralMessage) {
+            setHasEphemeralMessage(false);
           }
         }}
       />
+
+      {!hasEphemeralMessage && (
+        <InputAutocomplete
+          channelId={props.channelId}
+          threadId={props.threadId}
+          onChange={(text: string) => {
+            onChange(text);
+          }}
+          onSend={(text: string) => onSend()}
+          onFocus={() => messageEditorService.openEditor(props.threadId, props.context)}
+          autocompleteRef={node => {
+            autocomplete = node || autocomplete;
+          }}
+        />
+      )}
+
+      {!hasEphemeralMessage && (
+        <InputOptions
+          inputValue={content}
+          channelId={props.channelId}
+          threadId={props.threadId}
+          onSend={() => onSend()}
+          triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
+          onAddEmoji={emoji => {
+            if (autocomplete) {
+              autocomplete && autocomplete.putTextAtCursor(' ' + emoji.native + ' ');
+              setTimeout(() => {
+                autocomplete && autocomplete.focus();
+              }, 200);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

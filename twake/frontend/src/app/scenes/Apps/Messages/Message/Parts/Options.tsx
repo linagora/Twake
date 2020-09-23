@@ -2,7 +2,7 @@ import React from 'react';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesService from 'services/Apps/Messages/Messages.js';
-import { MoreHorizontal, Smile, ArrowUpRight } from 'react-feather';
+import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'services/Menus/MenusManager.js';
@@ -161,6 +161,21 @@ export default (props: Props) => {
     }
   }
 
+  if (props.message._user_ephemeral) {
+    return (
+      <div className="message-options right">
+        <div
+          className="option"
+          onClick={() => {
+            MessagesService.deleteMessage(props.message, props.collectionKey);
+          }}
+        >
+          <Trash2 size={16} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="message-options drag" key="drag">
@@ -168,7 +183,7 @@ export default (props: Props) => {
           <DragIndicator style={{ width: '18px' }} />
         </div>
       </div>
-      <div className="message-options" key="options">
+      <div className="message-options right" key="options">
         <Menu
           className="option"
           onOpen={(evt: any) => onOpen(evt)}
