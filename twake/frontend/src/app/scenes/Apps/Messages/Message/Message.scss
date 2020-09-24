@@ -184,8 +184,10 @@
   }
 }
 
-.draggable {
-  .message-options.drag {
-    display: flex;
+body:not(.drag_message) {
+  .draggable {
+    .message-options.drag {
+      display: flex;
+    }
   }
 }
