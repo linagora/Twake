@@ -75,19 +75,19 @@ export default class Channel extends Component {
 
     menu.push({
       type: 'menu',
-      text: 'Notifications...',
+      text: Languages.t('scenes.apps.messages.left_bar.stream.notifications'),
       onClick: () => {
         Notifications.mute(channel, !channel._user_muted);
       },
       submenu: [
         {
           type: 'title',
-          text: 'Get notifications on',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.title'),
         },
         {
           type: 'menu',
           icon: channel._user_muted === 0 ? 'check' : null,
-          text: 'Any message',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.all'),
           onClick: () => {
             Notifications.mute(channel, 0);
           },
@@ -95,7 +95,11 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 1 ? 'check' : null,
-          text: '@all, @here and @' + UserService.getCurrentUser().username,
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.mentions', [
+            '@all',
+            '@here',
+            '@' + UserService.getCurrentUser().username,
+          ]),
           onClick: () => {
             Notifications.mute(channel, 1);
           },
@@ -103,7 +107,9 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 2 ? 'check' : null,
-          text: '@' + UserService.getCurrentUser().username + ' only',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
+            '@' + UserService.getCurrentUser().username,
+          ]),
           onClick: () => {
             Notifications.mute(channel, 2);
           },
@@ -111,7 +117,7 @@ export default class Channel extends Component {
         {
           type: 'menu',
           icon: channel._user_muted === 3 ? 'check' : null,
-          text: 'Nothing',
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.never'),
           onClick: () => {
             Notifications.mute(channel, 3);
           },
@@ -183,7 +189,7 @@ export default class Channel extends Component {
               />,
               {
                 position: 'center',
-                size: { width: '400px' },
+                size: { width: '600px' },
               },
             );
           },
@@ -295,7 +301,7 @@ export default class Channel extends Component {
 
     let new_content_count = (Notifications.notification_by_channel[channel.id] || {}).count || 0;
     let notifications_count = new_content_count;
-    if(channel._user_muted >= 1 && !channel._user_last_quoted_message_id){
+    if (channel._user_muted >= 1 && !channel._user_last_quoted_message_id) {
       notifications_count = 0;
     }
 

@@ -80,7 +80,7 @@ class CalendarCalendar
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();
 
-        $this->updateConnectors($calendar, $object["connectors"], $current_user->getId());
+        $this->updateConnectors($calendar, $object["connectors"], $current_user ? $current_user->getId() : null);
 
         //Notify connectors
         $workspace_id = $calendar->getWorkspaceId();

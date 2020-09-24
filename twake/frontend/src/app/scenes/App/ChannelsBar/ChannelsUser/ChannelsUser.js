@@ -148,9 +148,6 @@ export default class ChannelsUser extends Component {
           false_channel.members = [user_id, UserService.getCurrentUserId()];
           false_channel.direct = true;
           false_channel.members_count = 2;
-          false_channel.last_activity = this.state.workspaces_users.users_by_workspace[
-            Workspaces.currentWorkspaceId
-          ][user_id].last_access;
           false_channel.front_id = user_id;
           all_direct_channels.push(false_channel);
         }
@@ -199,10 +196,10 @@ export default class ChannelsUser extends Component {
             .filter(channel => {
               //Remove private channels not from this company
               let keep = false;
-              if (channel._user_last_message_increment - channel.messages_increment < 0) {
+              if ((channel._user_last_message_increment || 0) - channel.messages_increment < 0) {
                 keep = true;
               }
-              if (this.membersInWorkspace(channel.members) && channel.messages_increment > 1) {
+              if (this.membersInWorkspace(channel.members) && channel.messages_increment >= 1) {
                 //Remove if only first message
                 keep = true;
               }
@@ -211,7 +208,7 @@ export default class ChannelsUser extends Component {
               }
               if (
                 channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60 &&
-                channel.messages_increment > 1
+                channel.messages_increment >= 1
               ) {
                 keep = true;
               }

@@ -2,7 +2,10 @@
 
 use App\App;
 function getDefaultHeaders()
-{
+{    
+    if(headers_sent()){
+        return;
+    }
     if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
         @header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
     }
@@ -18,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
         require_once __DIR__ . '/../vendor/autoload.php';
         require_once __DIR__ . '/../app/App.php';
+
+        if(!headers_sent()){
+            @header('X-Frame-Options: SAMEORIGIN');
+        }
 
         $app = new App();
 

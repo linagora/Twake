@@ -28,7 +28,7 @@ class TaskReminderCheckerCommand extends ContainerAwareCommand
         $limit = date("U", date("U") + 60);
 
         while (date("U") < $limit) {
-            $sent = $services->get("app.task.task")->checkReminders();
+            $sent = $services->get("app.tasks.task")->checkReminders();
             if ($sent == 0) {
                 sleep(30);
             }

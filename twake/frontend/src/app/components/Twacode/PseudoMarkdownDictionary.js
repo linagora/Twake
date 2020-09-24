@@ -12,15 +12,20 @@ import Input from 'components/Inputs/Input.js';
 
 class PseudoMarkdownDictionary {
   constructor() {
+    this.counter = 0;
     this.render_block = {
       text_block_parent: {
         object: (child, object, event_container, text_transform) => (
-          <span style={text_transform || {}}>{child}</span>
+          <span key={this.counter++} style={text_transform || {}}>
+            {child}
+          </span>
         ),
       },
       text: {
         object: (child, object, event_container, text_transform) => (
-          <span style={text_transform || {}}>{child}</span>
+          <span key={this.counter++} style={text_transform || {}}>
+            {child}
+          </span>
         ),
       },
       br: { object: child => [<br />, child] },
@@ -30,7 +35,7 @@ class PseudoMarkdownDictionary {
           var data = (object.content || '').split(':');
           var id = object.id || data[1];
           var username = data[0];
-          return [<User id={id} username={username} />, ' '];
+          return [<User key={this.counter++} id={id} username={username} />, ' '];
         },
       },
       channel: {
@@ -38,19 +43,21 @@ class PseudoMarkdownDictionary {
           var data = (object.content || '').split(':');
           var id = object.id || data[1];
           var name = data[0];
-          return [<Chan id={id} name={name} />, ' '];
+          return [<Chan key={this.counter++} id={id} name={name} />, ' '];
         },
       },
       mcode: {
         object: (child, object) => (
-          <HighlightedCode className="multiline-code">
+          <HighlightedCode key={this.counter++} className="multiline-code">
             {(object.content || '').trim()}
           </HighlightedCode>
         ),
       },
       icode: {
         object: (child, object) => (
-          <div className="inline-code">{(object.content || '').trim()}</div>
+          <div key={this.counter++} className="inline-code">
+            {(object.content || '').trim()}
+          </div>
         ),
       },
       underline: { object: child => <div className="underline">{child}</div> },
@@ -63,15 +70,13 @@ class PseudoMarkdownDictionary {
       url: {
         object: (child, object) => {
           if (!object.url && object.url !== undefined) {
-            return <a>{child}</a>;
+            return (
+              <a key={this.counter++} href="#">
+                {child}
+              </a>
+            );
           }
-          var protocol = 'https';
-          if ((object.url || object.content || '').indexOf('http://')) {
-            protocol = 'http';
-          }
-          var orig_url =
-            protocol + '://' + (object.url || object.content || '').replace(/^(https?:\/\/)/, '');
-          var url = orig_url;
+          var url = this.setUrlProtocol(object.url || object.content);
           if (object.user_identifier && UserService.getCurrentUser()) {
             var separator = '?';
             if (url.indexOf('?') > 0) {
@@ -80,15 +85,27 @@ class PseudoMarkdownDictionary {
             url += separator + 'twake_user=' + UserService.getCurrentUser().id;
           }
           return (
-            <a target="_blank" href={url || orig_url}>
+            <a key={this.counter++} target="_blank" href={url}>
               {child}
+            </a>
+          );
+        },
+      },
+      markdown_link: {
+        object: (_child, object) => {
+          const linkData = object.content.split('](');
+          const url = linkData[1] || '';
+
+          return (
+            <a href={this.setUrlProtocol(url)} target="_BLANK">
+              {linkData[0]}
             </a>
           );
         },
       },
       email: {
         object: (child, object) => (
-          <a target="_blank" href={'mailto:' + (object.content || '')}>
+          <a key={this.counter++} target="_blank" href={'mailto:' + (object.content || '')}>
             {child}
           </a>
         ),
@@ -96,7 +113,7 @@ class PseudoMarkdownDictionary {
       system: { object: child => <span style={{ color: '#888', fontSize: 13 }}>{child}</span> },
       file: {
         object: (child, object) => (
-          <div className="drive_view grid" style={{ marginTop: 5 }}>
+          <div key={this.counter++} className="drive_view grid" style={{ marginTop: 5 }}>
             <File
               data={{ id: object.content || '' }}
               notInDrive={true}
@@ -107,13 +124,13 @@ class PseudoMarkdownDictionary {
       },
       image: {
         object: (child, object, event_container) => (
-          <img src={object.src} className={'image twacode'} />
+          <img key={this.counter++} src={object.src} className={'image twacode'} />
         ),
       },
       icon: { object: (child, object) => <Emojione type={object.src} /> },
       progress_bar: {
         object: (child, object) => (
-          <div className="progress_bar">
+          <div key={this.counter++} className="progress_bar">
             <div style={{ width: (object.progress || 0) + '%' }} />
           </div>
         ),
@@ -124,6 +141,7 @@ class PseudoMarkdownDictionary {
           if (object.inline) {
             return (
               <div
+                key={this.counter++}
                 className={
                   'interactive_element underline interactive_message_btn ' +
                   (object.style == 'danger' ? 'danger ' : '') +
@@ -147,6 +165,7 @@ class PseudoMarkdownDictionary {
           }
           return (
             <Button
+              key={this.counter++}
               type="button"
               className={
                 'button interactive_element interactive_message_btn small ' +
@@ -172,12 +191,13 @@ class PseudoMarkdownDictionary {
       },
       copiable: {
         object: (child, object) => (
-          <InputWithClipBoard value={object.content || ''} disabled={false} />
+          <InputWithClipBoard key={this.counter++} value={object.content || ''} disabled={false} />
         ),
       },
       input: {
         object: (child, object, event_container) => (
           <Input
+            key={this.counter++}
             type="text"
             className={
               'interactive_element interactive_message_input medium ' +
@@ -200,6 +220,7 @@ class PseudoMarkdownDictionary {
       select: {
         object: (child, object, event_container) => (
           <select
+            key={this.counter++}
             className={
               'select interactive_element interactive_message_input medium ' +
               (object.full_width ? 'full_width ' : '')
@@ -238,6 +259,15 @@ class PseudoMarkdownDictionary {
         ),
       },
     };
+  }
+
+  setUrlProtocol(url) {
+    let protocol = 'https';
+
+    if ((url || '').indexOf('http://') >= 0) {
+      protocol = 'http';
+    }
+    return protocol + '://' + (url || '').replace(/^(https?:\/\/)/, '');
   }
 }
 

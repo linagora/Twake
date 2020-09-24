@@ -20,6 +20,8 @@ class ListenUsers {
     this.lastPong = 0;
   }
 
+  //Check if we are active: new Date().getTime() - ws.lastAlive < 1000*60*5
+
   ping(_idUser) {
     var idUser = _idUser;
     ws.publish('users/' + idUser, {
@@ -48,6 +50,7 @@ class ListenUsers {
   }
 
   listenUser(idUser) {
+    return;
     if (!idUser) {
       return;
     }
@@ -93,7 +96,7 @@ class ListenUsers {
           }
         }, 1000);
 
-        if (new Date().getTime() - this.lastPong > 1000 * 20) {
+        if (new Date().getTime() - this.lastPong > 60000) {
           this.pong();
         }
       }
@@ -105,7 +108,7 @@ class ListenUsers {
     this.connectedPing[idUser] = setTimeout(() => {
       this.ping(idUser);
       this.setUserPingTimeout(idUser);
-    }, 60000);
+    }, 600000);
   }
 
   cancelListenUser(idUser) {

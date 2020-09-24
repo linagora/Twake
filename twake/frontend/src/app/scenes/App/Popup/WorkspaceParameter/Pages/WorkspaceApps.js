@@ -8,7 +8,7 @@ import Emojione from 'components/Emojione/Emojione.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
 import Menu from 'components/Menus/Menu.js';
-import Table from 'components/Table/Table.js';
+import Table from 'components/Table/Table';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
@@ -295,7 +295,7 @@ export default class WorkspaceApps extends Component {
                   },
                 },
               ]}
-              data={workspace_apps}
+              onRequestMore={() => new Promise(resolve => resolve(workspace_apps))}
             />
           )}
 
@@ -367,7 +367,7 @@ export default class WorkspaceApps extends Component {
                   },
                 },
               ]}
-              data={group_apps}
+              onRequestMore={() => new Promise(resolve => resolve(group_apps))}
             />
           )}
 

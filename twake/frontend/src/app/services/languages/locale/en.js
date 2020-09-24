@@ -186,7 +186,7 @@ export default {
   'scenes.app.workspaces.create_company.invitations.title': 'Configure your workspace.',
   'scenes.app.workspaces.create_company.invitations.text':
     'Invite collaborators to your workspace.',
-  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'Username or e-mail',
+  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'Collaborator e-mail',
   'scenes.app.workspaces.create_company.invitations.continue_with':
     'Continue with $1 collaborator(s)',
   'components.welcome_in_new_workspace.apps.title': 'Configure your workspace.',
@@ -527,6 +527,12 @@ export default {
   'scenes.apps.messages.left_bar.stream.unstar': 'Unstar channel',
   'scenes.apps.messages.left_bar.stream.mute': 'Mute channel',
   'scenes.apps.messages.left_bar.stream.unmute': 'Unmute channel',
+  'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
+  'scenes.apps.messages.left_bar.stream.notifications.title': 'Get notification on',
+  'scenes.apps.messages.left_bar.stream.notifications.all': 'Any message',
+  'scenes.apps.messages.left_bar.stream.notifications.mentions': '$1, $2 and $3',
+  'scenes.apps.messages.left_bar.stream.notifications.me': '$1 only',
+  'scenes.apps.messages.left_bar.stream.notifications.never': 'Nothing',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Mark as read',
   'scenes.apps.messages.services.messages.untitled': 'Untitled',
   'scenes.apps.parameters.workspace_sections.title': 'Workspace parameters.',
@@ -824,6 +830,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.members': 'Members',
   'scenes.apps.parameters.workspace_sections.members.members_text':
     'You can remove collaborators or change collaborators rights.',
+  'scenes.apps.parameters.workspace_sections.members.guests': 'Guests',
   'scenes.apps.parameters.workspace_sections.members.pending': 'Pending members',
   'scenes.apps.parameters.workspace_sections.members.pending_text':
     'No members are using the e-mails bellow.',
@@ -936,7 +943,7 @@ export default {
     'You do not have any connectors that can connect to a calendar.',
   'scenes.apps.tasks.unconfigured_tab': 'This tab is not configured yet.',
   'scenes.apps.tasks.choose_board_button': 'Choose a board',
-  'scenes.apps.tasks.left.team': 'Team',
+  'scenes.apps.tasks.left.team': 'See tasks for user',
   'scenes.apps.tasks.new_board.title': 'New board',
   'scenes.apps.tasks.new_board.edit_title': 'Edit board',
   'scenes.apps.tasks.new_board.name': 'Name',
@@ -1072,7 +1079,7 @@ export default {
     'Already working with digital tools? Import or integrate your tools now!',
   'scenes.app.workspaces.create_company.importations.title_2': 'No worries, you can do this later!',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
-    'The number of fields increases automatically.',
+    'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add collaborators to your company.',
   'scenes.app.workspaces.create_company.invitations.title_2': 'Twake is better in team.',
@@ -1231,7 +1238,7 @@ export default {
   'scenes.app.mainview.tabs.searching_connectors': 'Search connectors...',
   'scenes.app.popup.adduser.adding_several_people': 'Add multiple people at once',
   'scenes.app.popup.adduser.adresses_message':
-    'Please separate the addresses with a comma. Remember that Twake can limit the number of invitations based on your subscription.',
+    'Please separate the addresses with a comma or space. Remember that Twake can limit the number of invitations based on your subscription.',
   'scenes.app.popup.adduser.message_instruction': 'Use the classic form',
   'scenes.app.popup.appsparameters.pages._app_identity': 'Identity of the application',
   'scenes.app.popup.appsparameters.pages._appareance_message_twakcode':
@@ -1430,7 +1437,7 @@ export default {
     'Applications installed in other areas of the company $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Installed applications',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'An error occurred while inviting the following people: \\n',
+    'An error occurred while inviting the following people: ',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Invite in this space',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborators invited by email',
@@ -1818,4 +1825,8 @@ export default {
   'scenes.app.popup.appsparameters.pages.smalltext_user_id': 'Current user id',
   'scenes.app.popup.appsparameters.pages.smalltext_workspace_id': 'Current workspace id',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Current group id',
+  'scenes.app.mainview.channel_description': 'Describe the channel',
+  'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
+  'scenes.app.popup.adduser.add_another_mail': 'Add another email',
+  'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
 };

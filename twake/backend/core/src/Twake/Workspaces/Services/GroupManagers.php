@@ -330,15 +330,15 @@ class GroupManagers
             $members = $workspace->getMembers();
 
             foreach ($members as $member) {
-                $userEntity = $member->getUser();
+                $userEntity = $member->getUser($this->doctrine);
                 $manager = $groupManagerRepository->findBy(Array("user" => $userEntity, "group" => $group));
 
                 if ($manager == null) { //si user n'est pas repertorié on l'ajoute au rang super-admin
 
-                    $wss = $workspaceUserRepository->findBy(Array("user" => $userEntity));
+                    $wss = $workspaceUserRepository->findBy(Array("user_id" => $userEntity->getId()));
                     $nbWs = 0;
                     foreach ($wss as $ws) {
-                        if ($ws->getWorkspace()->getGroup() && $ws->getWorkspace()->getGroup()->getId() == $group->getId()) {
+                        if ($ws->getWorkspace($this->doctrine)->getGroup() && $ws->getWorkspace($this->doctrine)->getGroup()->getId() == $group->getId()) {
                             $nbWs++;
                         }
                     }

@@ -24,7 +24,15 @@ export default class Button extends React.Component {
       className += ' small';
     }
     return (
-      <button ref={this.props.refButton} {...this.props} className={'button ' + className}>
+      <button
+        ref={this.props.refButton}
+        {...this.props}
+        className={'button ' + className}
+        onClick={evt => {
+          evt.target.blur();
+          this.props.onClick(evt);
+        }}
+      >
         {this.props.value || this.props.children}
       </button>
     );

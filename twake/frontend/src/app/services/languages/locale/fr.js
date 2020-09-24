@@ -540,8 +540,12 @@ export default {
     "Cette action n'est pas réversible",
   'scenes.apps.messages.left_bar.stream.star': 'Mettre en favori',
   'scenes.apps.messages.left_bar.stream.unstar': 'Retirer des favoris',
-  'scenes.apps.messages.left_bar.stream.mute': 'Désactiver les notifications',
-  'scenes.apps.messages.left_bar.stream.unmute': 'Réactiver les notifications',
+  'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
+  'scenes.apps.messages.left_bar.stream.notifications.title': 'Activer les notifications pour',
+  'scenes.apps.messages.left_bar.stream.notifications.all': 'Tous les messages',
+  'scenes.apps.messages.left_bar.stream.notifications.mentions': '$1, $2 et $3',
+  'scenes.apps.messages.left_bar.stream.notifications.me': '$1 seulement',
+  'scenes.apps.messages.left_bar.stream.notifications.never': 'Aucun message',
   'scenes.apps.messages.left_bar.stream.mark_as_read': 'Marquer comme lu',
   'scenes.apps.messages.services.messages.untitled': 'Sans titre',
   'scenes.apps.parameters.workspace_sections.title': "Paramètres de l'espace de travail",
@@ -749,7 +753,7 @@ export default {
   'scenes.apps.parameters.group_sections.managers.invite_manager_placeholder':
     "Nom d'utilisateur du manager",
   'scenes.apps.parameters.group_sections.managers.invite_manager_button': 'Ajouter',
-  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Пропустить',
+  'scenes.apps.parameters.group_sections.managers.invite_manager_button_skip': 'Passer',
   'scenes.apps.parameters.group_sections.managers.invite_manager_message':
     'Voulez-vous ajouter cette personne en tant que manager?',
   'scenes.apps.parameters.group_sections.managers.only_reading': 'Seulement la lecture',
@@ -985,6 +989,7 @@ export default {
     "Vous n'avez pas de connecteur qui peut se connecter à un calendrier",
   'scenes.apps.tasks.unconfigured_tab': "Cet onglet n'est pas encore configuré.",
   'scenes.apps.tasks.left.team': 'Équipe',
+  'scenes.apps.tasks.left.team': "Voir les tâches pour l'utilisateur",
   'scenes.apps.tasks.new_board.title': 'Nouveau tableau',
   'scenes.apps.tasks.choose_board_button': 'Choisir un tableau',
   'scenes.apps.tasks.new_board.edit_title': 'Éditer le tableau',
@@ -1127,7 +1132,7 @@ export default {
   'scenes.app.workspaces.create_company.importations.title_2':
     'Pas d’inquiétude, vous pourrez y revenir plus tard !',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
-    'Le nombre de champs augmente automatiquement.',
+    'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
   'scenes.app.workspaces.create_company.invitations.title_2': "Twake, c'est mieux à plusieurs.",
@@ -1270,7 +1275,7 @@ export default {
   'scenes.app.channelsbar.public_channel_label': 'Chaîne publique',
   'scenes.app.channelsbar.private_channel_label': 'Chaîne privée',
   'scenes.app.channelsbar.private_channel_message':
-    "C'est une chaîne publique, toue l'espace de travail sera invité",
+    "Ceci est une chaîne publique. Tout l'espace de travail sera invité.",
   'scenes.app.channelsbar.save_channel_button': 'Enregistrer',
   'scenes.app.channelsbar.sending_message_instruction':
     'Envoyer un premier message dans une discussion',
@@ -1294,7 +1299,7 @@ export default {
   'scenes.app.mainview.tabs.searching_connectors': 'Chercher des connecteurs...',
   'scenes.app.popup.adduser.adding_several_people': 'Ajouter plusieurs personnes à la fois',
   'scenes.app.popup.adduser.adresses_message':
-    "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
+    "Veuillez séparer les adresses par une virgule ou un espace. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
   'scenes.app.popup.adduser.message_instruction': 'Utiliser le formulaire classique',
   'scenes.app.popup.appsparameters.pages._app_identity': "Identité de l'application",
   'scenes.app.popup.appsparameters.pages._appareance_message_twakcode':
@@ -1497,7 +1502,7 @@ export default {
     "Applications installées dans d'autres espaces de l'entreprise $1",
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Applications installées',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    "Une erreur s'est produite lors de l'invitation des personnes suivantes :\\n",
+    "Une erreur s'est produite lors de l'invitation des personnes suivantes :",
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Inviter dans cet espace',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
     'Collaborateurs invités par email ',
@@ -1893,4 +1898,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.smalltext_workspace_id':
     'Identifiant espace de travail actuel',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
+  'scenes.app.mainview.channel_description': 'Description de la chaîne',
+  'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
+  'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
 };

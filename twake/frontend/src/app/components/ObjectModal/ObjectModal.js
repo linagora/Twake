@@ -29,6 +29,7 @@ export class ObjectModalSectionTitle extends Component {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          marginBottom: this.props.smallMargin ? '16px' : '',
         }}
       >
         <b>{this.props.title || this.props.children}</b>

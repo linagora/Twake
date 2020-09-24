@@ -31,9 +31,9 @@ class AdvancedEvent
 
         $workspace_access = [];
         if (!$workspaces && !is_array($workspaces)) {
-            $workspace_access_tmp = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user" => $current_user_id));
+            $workspace_access_tmp = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("user_id" => $current_user_id));
             foreach ($workspace_access_tmp as $wp) {
-                $workspace_access[] = $wp->getWorkspace();
+                $workspace_access[] = $wp->getWorkspace($this->doctrine);
             }
         } else {
             foreach ($workspaces as $wp) {
@@ -46,7 +46,7 @@ class AdvancedEvent
                         $wp = $wp->getId();
                     }
                 }
-                $wp_entity = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace" => $wp, "user" => $current_user_id));
+                $wp_entity = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $wp, "user_id" => $current_user_id));
                 if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }

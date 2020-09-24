@@ -12,7 +12,7 @@ import ListenUsers from 'services/user/listen_users.js';
 import UserParameter from 'scenes/App/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'scenes/App/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
@@ -65,6 +65,14 @@ export default class CurrentUser extends Component {
       current_user.status_icon[1] = '';
     }
     this.state.new_status = current_user.status_icon;
+
+    //TODO to remove
+    /*const inter = setInterval(() => {
+      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
+        popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
+      }
+      clearInterval(inter);
+    }, 1000);*/
   }
   updateStatus(value) {
     value = value || this.state.new_status;
@@ -171,37 +179,19 @@ export default class CurrentUser extends Component {
       },
     ];
     if (!WorkspaceUserRights.isInvite()) {
-      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-        usermenu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.add_collaborators_menu',
-            [],
-            'Ajouter des collaborateurs',
-          ),
-          icon: 'user-plus',
-          onClick: () => {
-            popupManager.open(<AddUser standalone />);
-          },
-        });
-      } else {
-        usermenu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.collaborateurs',
-            [],
-            'Collaborateurs',
-          ),
-          icon: 'users-alt',
-          onClick: () => {
-            popupManager.open(
-              <WorkspaceParameter initial_page={2} />,
-              true,
-              'workspace_parameters',
-            );
-          },
-        });
-      }
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.collaborateurs',
+          [],
+          'Collaborateurs',
+        ),
+        icon: 'users-alt',
+        onClick: () => {
+          popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
+        },
+      });
+
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {
         usermenu.push({
           type: 'menu',

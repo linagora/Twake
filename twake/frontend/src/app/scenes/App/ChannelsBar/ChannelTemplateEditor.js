@@ -7,6 +7,9 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
 import Button from 'components/Buttons/Button.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
+import AutoHeight from 'components/AutoHeight/AutoHeight.js';
+import Select from 'components/Select/Select.js';
+
 import {
   ObjectModalSeparator,
   ObjectModalSectionTitle,
@@ -38,6 +41,7 @@ export default class ChannelTemplateEditor extends Component {
 
     this.state.channel.name = this.state.channel.name || '';
     this.state.channel.icon = this.state.channel.icon || '';
+    this.state.channel.description = this.state.channel.description || '';
     this.state.channel.private =
       this.state.channel.private === undefined ? true : this.state.channel.private;
   }
@@ -84,23 +88,53 @@ export default class ChannelTemplateEditor extends Component {
           <ObjectModalSeparator />
           <ObjectModalSectionTitle
             title={Languages.t(
+              'scenes.app.popup.appsparameters.pages.description_label',
+              'Description',
+            )}
+            smallMargin
+          />
+          <AutoHeight
+            minHeight="40px"
+            maxHeight="150px"
+            placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
+            value={this.state.channel.description}
+            onChange={e => {
+              this.setChannelKey({ description: e.target.value });
+              this.newChannel();
+            }}
+          />
+          <ObjectModalSeparator />
+          <ObjectModalSectionTitle
+            title={Languages.t(
               'scenes.apps.calendar.event_edition.title_participants',
               'Participants',
             )}
             action={
-              <Button
-                className="button small primary-text"
-                onClick={() => {
+              <Select
+                value={!this.state.channel.private ? 'public_channel' : 'private_channel'}
+                style={{ width: 'auto' }}
+                onChange={value => {
+                  console.log(value);
                   this.setChannelKey({ private: !this.state.channel.private });
                   this.newChannel();
                 }}
-              >
-                {Languages.t(
-                  this.state.channel.private
-                    ? 'scenes.app.channelsbar.public_channel_label'
-                    : 'scenes.app.channelsbar.private_channel_label',
-                )}
-              </Button>
+                options={[
+                  {
+                    value: 'public_channel',
+                    text: Languages.t(
+                      'scenes.app.channelsbar.public_channel_label',
+                      'Public channel',
+                    ),
+                  },
+                  {
+                    value: 'private_channel',
+                    text: Languages.t(
+                      'scenes.app.channelsbar.private_channel_label',
+                      'Private channel',
+                    ),
+                  },
+                ]}
+              />
             }
           />
           {(this.state.channel.private && (
@@ -114,7 +148,7 @@ export default class ChannelTemplateEditor extends Component {
               canRemoveMyself
               noPlaceholder
               maxResults={3}
-              scope="group"
+              scope="workspace"
             />
           )) || (
             <div

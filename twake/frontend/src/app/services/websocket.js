@@ -123,12 +123,7 @@ class Websocket extends Observable {
   }
 
   useOldMode(bool) {
-    console.log('use old mode = ', bool);
-    if (bool) {
-      console.log('no more old mode');
-    } else {
-      this.autobahn = SocketCluster;
-    }
+    this.autobahn = SocketCluster;
     this.use_old_mode = bool;
   }
 

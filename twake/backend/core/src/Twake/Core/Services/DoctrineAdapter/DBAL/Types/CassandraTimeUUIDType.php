@@ -22,7 +22,12 @@ class CassandraTimeUUIDType extends StringType
         if (!$value) {
             return null;
         }
-        return $value . "";
+        $value = $value . "";
+        if(!preg_match("/[^a-f0-9-]/", $value)){
+            return $value;
+        }else{
+            return null;
+        }
     }
 
 }

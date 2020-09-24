@@ -4,6 +4,7 @@ import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionar
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals.js';
+import React, { Component } from 'react';
 
 class PseudoMarkdownCompiler {
   constructor() {
@@ -46,6 +47,14 @@ class PseudoMarkdownCompiler {
         object: PseudoMarkdownDictionary.render_block.br.object,
         simple_object: child => child,
       },
+      '[': {
+        name: 'markdown_link',
+        allowed_char_before: '', //"(^| )",
+        allowed_chars: '.+?\\]\\([^ ]+',
+        disable_recursion: true,
+        end: '\\)',
+        object: PseudoMarkdownDictionary.render_block.markdown_link.object,
+      },
       ':': {
         name: 'emoji',
         allowed_char_before: '', //"(^| )",
@@ -59,7 +68,7 @@ class PseudoMarkdownCompiler {
         allowed_char_before: '(^|\\B)',
         allowed_chars: '[a-z_.-A-Z0-9:]+',
         disable_recursion: true,
-        end: '( |$)',
+        after_end: ' |$|[^a-zA-Z0-9]',
         object: PseudoMarkdownDictionary.render_block.user.object,
         simple_object: (child, obj) => '@' + (obj.content || '').split(':')[0] + ' ',
         text_transform: PseudoMarkdownDictionary.render_block.user.text_transform,
@@ -69,14 +78,15 @@ class PseudoMarkdownCompiler {
         allowed_char_before: '(^|\\B)',
         allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]+',
         disable_recursion: true,
-        end: '( |$)',
+        after_end: ' |$[^a-zA-Z0-9]',
         object: PseudoMarkdownDictionary.render_block.channel.object,
         simple_object: (child, obj) => '#' + (obj.content || '').split(':')[0] + ' ',
         text_transform: PseudoMarkdownDictionary.render_block.channel.text_transform,
       },
       '```': {
         name: 'mcode',
-        end: '```$\n?',
+        end: '```',
+        after_end: '$|\n',
         view: true,
         allowed_chars: '(.|\n)',
         disable_recursion: true,
@@ -112,7 +122,7 @@ class PseudoMarkdownCompiler {
       '*': {
         name: 'bold',
         end: '\\*',
-        allowed_char_before: '(^|\\B)',
+        allowed_char_before: '(^|\\B|.)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.bold.object,
         text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
@@ -139,7 +149,7 @@ class PseudoMarkdownCompiler {
         name: 'quote',
         view: true,
         allowed_char_before: '^',
-        end: '$\n?',
+        after_end: '$|\n',
         object: PseudoMarkdownDictionary.render_block.quote.object,
         simple_object: child => '',
         text_transform: PseudoMarkdownDictionary.render_block.quote.text_transform,
@@ -237,7 +247,12 @@ class PseudoMarkdownCompiler {
   }
 
   compileStringToLinkObject(string) {
-    var link_found = anchorme(string, { list: true, ips: false, files: false });
+    //Monkey hack for new markdown links, not the best place for this code
+    var link_found = anchorme(string.replace(/\]\(/gm, '](_'), {
+      list: true,
+      ips: false,
+      files: false,
+    });
 
     var result = [];
 
@@ -265,51 +280,57 @@ class PseudoMarkdownCompiler {
 
   transformChannelsUsers(str) {
     //Users
-    str = (str || '').replace(/(\B@)([^\s]*?)(( |$))/g, (full_match, match1, username, match3) => {
-      var values = username.split(':');
-      if (values.length == 1) {
-        if (username == 'me') {
-          username = UserService.getCurrentUser().username;
-        }
-        var user_id = Collections.get('users').findBy({ username: username })[0];
-        if (user_id && user_id.id) {
-          user_id = user_id.id;
-          return match1 + username + ':' + user_id + match3;
+    str = (str || '').replace(
+      /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
+      (full_match, match1, username, match3) => {
+        var values = username.split(':');
+        if (values.length == 1) {
+          if (username == 'me') {
+            username = UserService.getCurrentUser().username;
+          }
+          var user_id = Collections.get('users').findBy({ username: username })[0];
+          if (user_id && user_id.id) {
+            user_id = user_id.id;
+            return match1 + username + ':' + user_id + match3;
+          } else {
+            return full_match;
+          }
         } else {
           return full_match;
         }
-      } else {
-        return full_match;
-      }
-    });
+      },
+    );
     //Channels
-    str = str.replace(/(\B#)([^\s]*?)(( |$))/g, (full_match, match1, channel, match3) => {
-      var values = channel.split(':');
-      if (values.length == 1) {
-        var channel_id = Collections.get('channels')
-          .findBy({})
-          .filter(
-            item =>
-              item.name.toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') == channel,
-          )[0];
-        if (channel_id && channel_id.id) {
-          channel_id = channel_id.id;
-          return match1 + channel + ':' + channel_id + match3;
+    str = str.replace(
+      /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
+      (full_match, match1, channel, match3) => {
+        var values = channel.split(':');
+        if (values.length == 1) {
+          var channel_id = Collections.get('channels')
+            .findBy({})
+            .filter(
+              item =>
+                item.name.toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') == channel,
+            )[0];
+          if (channel_id && channel_id.id) {
+            channel_id = channel_id.id;
+            return match1 + channel + ':' + channel_id + match3;
+          } else {
+            return full_match;
+          }
         } else {
           return full_match;
         }
-      } else {
-        return full_match;
-      }
-    });
+      },
+    );
     return str;
   }
 
   transformBackChannelsUsers(str) {
     //Users
-    str = str.replace(/\B(@[^\s]*?):.*?(( |$))/g, '$1$2');
+    str = str.replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     //Channels
-    str = str.replace(/\B(#[^\s]*?):.*?(( |$))/g, '$1$2');
+    str = str.replace(/\B(#[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     return str;
   }
 
@@ -416,23 +437,23 @@ class PseudoMarkdownCompiler {
         const countManaged =
           (this.pseudo_markdown[char].allowed_chars || '').slice(-1) === '+' ||
           (this.pseudo_markdown[char].allowed_chars || '').slice(-1) === '}';
-        match = str_right
-          .substr(add_to_value.length)
-          .match(
-            new RegExp(
-              '^(' +
-                (this.pseudo_markdown[char].allowed_chars || '.') +
-                (countManaged ? '' : '*') +
-                (this.pseudo_markdown[char].end ? '?' : '') +
-                ')' +
-                (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : ''),
-              'm',
-            ),
-          );
+        const regex =
+          '^(' +
+          (this.pseudo_markdown[char].allowed_chars || '.') +
+          (countManaged ? '' : '*') +
+          (this.pseudo_markdown[char].end ? '?' : '') +
+          ')' +
+          (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : '');
+        this.pseudo_markdown[char].after_end
+          ? '(' + this.pseudo_markdown[char].after_end + ')'
+          : '';
+        match = str_right.substr(add_to_value.length).match(new RegExp(regex, ''));
       }
+      let completion_end_char = '';
       if (match) {
         match[0] = add_to_value + match[0];
         match[1] = add_to_value + match[1];
+        completion_end_char = this.pseudo_markdown[char].after_end ? match[3] || '' : '';
       }
 
       if (!match) {
@@ -453,7 +474,7 @@ class PseudoMarkdownCompiler {
         };
         result.push(object);
 
-        str_right = str_right.substr(match[0].length);
+        str_right = completion_end_char + str_right.substr(match[0].length);
       }
 
       result = result.concat(this.compileToJSON(str_right, 1));

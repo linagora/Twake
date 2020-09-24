@@ -75,19 +75,6 @@ export default class Message extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    /*var stringified = JSON.stringify([
-      this.props.message, this.props.previousMessage, this.props.new, this.props.hasTimeline,
-      this.state.is_hover, this.state.is_selected, this.state.loading_interaction
-    ]);
-    if(stringified != this.saved_stringified){
-      this.saved_stringified = stringified;
-      return true;
-    }
-    return false;*/
-    return true;
-  }
-
   displayUserCard(user) {
     if (!this.props.message.application_id) {
       let box = window.getBoundingClientRect(this.user_details);
@@ -127,6 +114,9 @@ export default class Message extends Component {
     );
     this.state.app_messages_service.edited_message_raw[this.props.message.front_id] = undefined;
     this.setState({});
+  }
+  removeMessage() {
+    MessagesService.deleteMessage(this.props.message, this.props.messagesCollectionKey);
   }
   onInteractiveMessageAction(action_id, context, passives, evt) {
     var app_id = this.props.message.application_id;
@@ -259,7 +249,7 @@ export default class Message extends Component {
         >
           <div
             className={'message_bloc ' + className}
-            onMouseOver={() => this.setState({ was_hover: true })}
+            onMouseOver={() => !this.state.was_hover && this.setState({ was_hover: true })}
           >
             <div key="sender" className="sender">
               {show_user && user && (
@@ -383,7 +373,11 @@ export default class Message extends Component {
                         this.setState({});
                       }}
                       onSend={val => {
-                        this.editMessage();
+                        if ((val || '').length > 0) {
+                          this.editMessage();
+                        } else {
+                          this.removeMessage();
+                        }
                       }}
                       onEscape={() => {
                         MessagesService.startEditing(false);
@@ -394,13 +388,19 @@ export default class Message extends Component {
                       }}
                     />
                     <Button
-                      value={Languages.t(
-                        'general.save',
-                        [],
-                        'Enregistrer',
-                      )}
+                      value={Languages.t('general.save', [], 'Enregistrer')}
                       className="small right-margin"
-                      onClick={() => this.editMessage()}
+                      onClick={() => {
+                        if (
+                          this.state.app_messages_service.edited_message_raw[
+                            this.props.message.front_id
+                          ]
+                        ) {
+                          this.editMessage();
+                        } else {
+                          this.removeMessage();
+                        }
+                      }}
                     />
                     <Button
                       value={Languages.t(

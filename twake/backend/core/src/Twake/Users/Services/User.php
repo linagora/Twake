@@ -371,6 +371,10 @@ class User
             $retour[] = -1;
         } else {
 
+            if(in_array($pseudo, ["all", "here", "null", "undefined"]) || strlen($pseudo) <= 4){
+                $retour[] = -1;
+            }
+
             //Check user doesn't exists
             $userRepository = $this->em->getRepository("Twake\Users:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
@@ -522,7 +526,7 @@ class User
         return $verificationNumberMail->getToken();
     }
 
-    public function verifyMail($mail, $token, $code, $force = false, $response = null)
+    public function verifyMail($mail, $token, $code, $force = false, $response = null,  $login = true)
     {
 
         $mail = trim(strtolower($mail));
@@ -576,7 +580,7 @@ class User
 
 
                 // User auto log in
-                $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
+                if($login) $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
 
             }
 
@@ -645,7 +649,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        $this->verifyMail($mail, "", "", true);
+        $this->verifyMail($mail, "", "", true, null, false);
 
         $user->setMailVerified(false);
         $this->em->persist($user);

@@ -22,47 +22,58 @@ class ReindexCommand extends ContainerAwareCommand
     {
         $manager = $this->getApp()->getServices()->get('app.twake_doctrine');
 
-        $channels = $manager->getRepository("Twake\Channels:Channel")->findBy(Array("direct" => true));
-        foreach ($channels as $i => $channel) {
-            $c = $this->indexChannel($channel, $manager);
-            error_log("index " . "Direct Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
-        }
-        $channels = $manager->getRepository("Twake\Channels:Channel")->findBy(Array("direct" => false));
-        foreach ($channels as $i => $channel) {
-            $c = $this->indexChannel($channel, $manager);
-            error_log("index " . "Workspaces Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
-        }
+        $arg_list = $_SERVER['argv'];
+        $arg = isset($arg_list[0]) ? $arg_list[0] : false;
 
-        $this->indexRepository("Twake\Workspaces:Workspace");
+        error_log("REINDEX ".$arg);
 
-        $this->indexRepository("Twake\Workspaces:Group");
-
-        $workspaces = $manager->getRepository("Twake\Workspaces:Workspace")->findBy(Array());
-        error_log("index " . "Files");
-        foreach ($workspaces as $workspace) {
-            $this->indexRepository("Twake\Drive:DriveFile", Array("workspace_id" => $workspace->getId()));
-        }
-
-        error_log("index " . "Twake\Channels:Channel");
-        $channels = $manager->getRepository("Twake\Channels:Channel")->findBy(Array());
-        error_log("   -> " . count($channels));
-        foreach ($channels as $channel) {
-            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
-                $manager->es_put($channel, $channel->getEsType());
+        if($arg == "channel"){
+            $channels = $manager->getRepository("Twake\Channels:Channel")->findBy(Array("direct" => false));
+            foreach ($channels as $i => $channel) {
+                $c = $this->indexChannel($channel, $manager);
+                error_log("index " . "Workspaces Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
             }
         }
 
-        $this->indexRepository("Twake\Market:Application");
+        if($arg == "workspace"){
+            $this->indexRepository("Twake\Workspaces:Workspace");
+        }
 
-        $this->indexRepository("Twake\GlobalSearch:Bloc");
+        if($arg == "group"){
+            $this->indexRepository("Twake\Workspaces:Group");
+        }
 
-        $this->indexRepository("Twake\Users:Mail");
+        if($arg == "file"){
+            $workspaces = $manager->getRepository("Twake\Workspaces:Workspace")->findBy(Array());
+            error_log("index " . "Files");
+            foreach ($workspaces as $workspace) {
+                $this->indexRepository("Twake\Drive:DriveFile", Array("workspace_id" => $workspace->getId()));
+            }
+        }
 
-        $this->indexRepository("Twake\Users:User");
+        if($arg == "application"){
+            $this->indexRepository("Twake\Market:Application");
+        }
 
-        $this->indexRepository("Twake\Tasks:Task");
+        if($arg == "message"){
+            $this->indexRepository("Twake\GlobalSearch:Bloc");
+        }
 
-        $this->indexRepository("Twake\Calendar:Event");
+        if($arg == "mail"){
+            $this->indexRepository("Twake\Users:Mail");
+        }
+
+        if($arg == "user"){
+            $this->indexRepository("Twake\Users:User");
+        }
+
+        if($arg == "task"){
+            $this->indexRepository("Twake\Tasks:Task");
+        }
+
+        if($arg == "event"){
+            $this->indexRepository("Twake\Calendar:Event");
+        }
 
 
     }
@@ -87,7 +98,9 @@ class ReindexCommand extends ContainerAwareCommand
 
         $items = $manager->getRepository($repository)->findBy($options);
         error_log("   -> " . count($items));
+        $i = 0;
         foreach ($items as $item) {
+            if(($i++) % 100 == 0) error_log($i);
             $manager->es_put($item, $item->getEsType());
         }
 

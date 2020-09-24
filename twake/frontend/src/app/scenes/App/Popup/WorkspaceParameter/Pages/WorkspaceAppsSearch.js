@@ -50,7 +50,6 @@ export default class WorkspaceAppsSearch extends Component {
           (item.name + ' ' + item.description + ' ' + (item.categories || []).join(' '))
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0;
-        console.log(res);
         return res;
       },
     };

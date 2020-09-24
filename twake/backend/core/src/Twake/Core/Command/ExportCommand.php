@@ -215,9 +215,9 @@ class ExportCommand extends ContainerAwareCommand
             $members = Array();
             foreach ($workspaces_user as $wp_user) {
                 //on cree la liste des membres du workspace
-                if (!$wp_user->getUser()->getIsRobot()) {
+                if (!$wp_user->getUser($this->doctrine)->getIsRobot()) {
                     $members[] = Array(
-                        "user_id" => $wp_user->getUser()->getId(),
+                        "user_id" => $wp_user->getUser($this->doctrine)->getId(),
                         "level" => $wp_user->getLevelId(),
                         "externe" => $wp_user->getExterne()
                     );
