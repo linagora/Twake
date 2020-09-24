@@ -5,6 +5,7 @@ import Emojione from 'components/Emojione/Emojione.js';
 import './Uploads.scss';
 import Languages from 'services/languages/languages.js';
 
+let sharedFileInput = null;
 export default class UploadZone extends React.Component {
   constructor(props) {
     super();
@@ -17,29 +18,31 @@ export default class UploadZone extends React.Component {
   componentWillUnmount() {
     UploadManager.removeListener(this);
     window.document.removeEventListener('paste', this.paste);
-
-    if (this.file_input) {
-      document.body.removeChild(this.file_input);
-    }
   }
   componentDidMount() {
     this.watch(this.node);
 
-    this.file_input = document.createElement('input');
-    this.file_input.type = 'file';
-    this.file_input.style.position = 'absolute';
-    this.file_input.style.top = '-10000px';
-    this.file_input.style.left = '-10000px';
-    this.file_input.style.width = '100px';
-    if (this.props.multiple !== false) {
-      this.file_input.multiple = true;
+    if (!sharedFileInput) {
+      this.file_input = document.createElement('input');
+      this.file_input.type = 'file';
+      this.file_input.style.position = 'absolute';
+      this.file_input.style.top = '-10000px';
+      this.file_input.style.left = '-10000px';
+      this.file_input.style.width = '100px';
+      if (this.props.multiple !== false) {
+        this.file_input.multiple = true;
+      }
+
+      this.file_input.onchange = e => {
+        this.change(e);
+      };
+
+      document.body.appendChild(this.file_input);
+
+      sharedFileInput = this.file_input;
+    } else {
+      this.file_input = sharedFileInput;
     }
-
-    this.file_input.onchange = e => {
-      this.change(e);
-    };
-
-    document.body.appendChild(this.file_input);
   }
   open() {
     if (this.props.disabled) {

@@ -7,6 +7,8 @@ import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import MessageEdition from './MessageEdition';
 
 type Props = {
   message: Message;
@@ -17,6 +19,8 @@ type Props = {
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
+  messageEditorService.useListener(useState);
   let loading_interaction_timeout: any = 0;
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
@@ -42,6 +46,11 @@ export default (props: Props) => {
     }
   };
 
+  const showEdition =
+    !props.linkToThread && messageEditorService.currentEditorMessageId === props.message.id;
+
+  console.log(showEdition, messageEditorService.currentEditorMessageId, props.message.id);
+
   return (
     <div
       className={
@@ -57,35 +66,44 @@ export default (props: Props) => {
         collectionKey={props.collectionKey}
         linkToThread={props.linkToThread}
       />
-      <div className="content-parent dont-break-out">
-        <Twacode
-          className="content allow_selection"
-          onDoubleClick={(evt: any) => {
-            evt.preventDefault();
-            evt.stopPropagation();
-          }}
-          content={MessagesService.prepareContent(
-            props.message.content,
-            props.message.user_specific_content,
-          )}
-          id={props.message.front_id}
-          isApp={props.message.message_type == 1}
-          after={
-            props.message.edited &&
-            props.message.message_type == 0 && <div className="edited">(edited)</div>
-          }
-          onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
-            onAction(type, id, context, passives, evt)
-          }
+      {!!showEdition && (
+        <div className="content-parent">
+          <MessageEdition message={props.message} collectionKey={props.collectionKey} />
+        </div>
+      )}
+      {!showEdition && (
+        <div className="content-parent dont-break-out">
+          <Twacode
+            className="content allow_selection"
+            onDoubleClick={(evt: any) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+            }}
+            content={MessagesService.prepareContent(
+              props.message.content,
+              props.message.user_specific_content,
+            )}
+            id={props.message.front_id}
+            isApp={props.message.message_type == 1}
+            after={
+              props.message.edited &&
+              props.message.message_type == 0 && <div className="edited">(edited)</div>
+            }
+            onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
+              onAction(type, id, context, passives, evt)
+            }
+          />
+          <Reactions message={props.message} collectionKey={props.collectionKey} />
+        </div>
+      )}
+      {!showEdition && (
+        <Options
+          message={props.message}
+          collectionKey={props.collectionKey}
+          onOpen={() => setActive(true)}
+          onClose={() => setActive(false)}
         />
-        <Reactions message={props.message} collectionKey={props.collectionKey} />
-      </div>
-      <Options
-        message={props.message}
-        collectionKey={props.collectionKey}
-        onOpen={() => setActive(true)}
-        onClose={() => setActive(false)}
-      />
+      )}
     </div>
   );
 };

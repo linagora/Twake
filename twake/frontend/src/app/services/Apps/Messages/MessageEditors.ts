@@ -32,36 +32,47 @@ export class MessageEditors extends Observable {
   channelId: string;
   currentEditor: string | false = false; //False no editor opened, string = parent message
   currentEditorThreadId: string | false = false; //False no editor opened, string = parent message
+  currentEditorMessageId: string | false = false; //False no editor opened, string = parent message
   editorsContents: { [key: string]: string } = {};
   editorsUploadZones: { [key: string]: any } = {};
 
-  setInputNode(node: any, editorId: string) {}
+  setInputNode(threadId: string, messageId: string, context: string, node: any) {}
 
-  setContent(threadId: string, content: string) {
-    LocalStorage.setItem('m_input_' + this.channelId + '_' + threadId, content);
-    this.editorsContents[threadId] = content;
+  setContent(threadId: string, messageId: string, content: string) {
+    if (!messageId) {
+      LocalStorage.setItem('m_input_' + this.channelId + '_' + threadId, content);
+    }
+    this.editorsContents[threadId + '_' + messageId] = content;
   }
 
-  getContent(threadId: string) {
-    LocalStorage.getItem('m_input_' + this.channelId + '_' + threadId, (res: string | null) => {
-      if (res) {
-        this.editorsContents[threadId] = res;
-        this.notify();
-      }
-    });
-    return this.editorsContents[threadId] || '';
+  getContent(threadId: string, messageId: string) {
+    if (!messageId) {
+      LocalStorage.getItem('m_input_' + this.channelId + '_' + threadId, (res: string | null) => {
+        if (res) {
+          this.editorsContents[threadId] = res;
+          this.notify();
+        }
+      });
+    }
+    return this.editorsContents[threadId + '_' + messageId] || '';
   }
 
-  openEditor(threadId: string, context: string = '') {
-    this.currentEditor = threadId + (context ? '_' + context : '');
+  openEditor(threadId: string, messageId: string, context: string = '') {
+    this.currentEditor =
+      threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
     this.currentEditorThreadId = threadId;
+    this.currentEditorMessageId = messageId;
     this.notify();
   }
 
   closeEditor() {
     this.currentEditor = false;
+    this.currentEditorThreadId = '';
+    this.currentEditorMessageId = '';
     this.notify();
   }
+
+  /* Get upload zone */
 
   setUploadZone(threadId: string, node: any) {
     if (node) {

@@ -14,6 +14,7 @@ import User from 'services/user/user.js';
 import Collections from 'services/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
+import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 
 type Props = {
   message: Message;
@@ -142,7 +143,11 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Modifier'),
           onClick: () => {
-            MessagesService.startEditing(props.message);
+            MessageEditorsManager.get(props.message?.channel_id || '').openEditor(
+              props.message?.parent_message_id || '',
+              props.message?.id || '',
+              'edition',
+            );
           },
         });
       }

@@ -21,6 +21,7 @@ type Props = {
   onSend?: (text: string) => void;
   localStorageIdentifier?: string;
   disableApps?: boolean;
+  messageId: string;
   channelId: string;
   threadId: string;
 };
@@ -31,7 +32,8 @@ export default (props: Props) => {
   messageEditorService.useListener(useState);
   useEffect(() => {
     focus();
-    change(messageEditorService.getContent(props.threadId));
+    const val = messageEditorService.getContent(props.threadId, props.messageId || '');
+    if (val) change(val);
   }, []);
   let autocomplete: any = null;
   let disable_enter: boolean = false;
@@ -42,7 +44,7 @@ export default (props: Props) => {
   }
 
   const change = (text: string) => {
-    messageEditorService.setContent(props.threadId, text);
+    messageEditorService.setContent(props.threadId, props.messageId || '', text);
     setContent(text);
     if (props.onChange) props.onChange(text);
   };
@@ -52,7 +54,10 @@ export default (props: Props) => {
   };
 
   const onKeyUp = (event: any) => {
-    if (event.key == 'ArrowUp' && !messageEditorService.getContent(props.threadId)) {
+    if (
+      event.key == 'ArrowUp' &&
+      !messageEditorService.getContent(props.threadId, props.messageId || '')
+    ) {
       //Edit last message from ourselve
       props.onEditLastMessage && props.onEditLastMessage();
     }

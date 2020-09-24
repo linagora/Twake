@@ -216,7 +216,9 @@ export default class MessageComponent extends Component<
               <div className="message-content">
                 <a
                   href="#"
-                  onClick={() => this.messageEditorService.openEditor(this.props.message?.id || '')}
+                  onClick={() =>
+                    this.messageEditorService.openEditor(this.props.message?.id || '', '')
+                  }
                 >
                   <CornerDownRight size={14} />{' '}
                   {Languages.t('scenes.apps.messages.message.reply_button')}

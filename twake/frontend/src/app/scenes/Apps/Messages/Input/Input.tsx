@@ -7,6 +7,7 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import './Input.scss';
 
 type Props = {
+  messageId?: string;
   channelId: string;
   threadId: string;
   collectionKey: string;
@@ -32,10 +33,9 @@ export default (props: Props) => {
 
   const onChange = (text: string) => {
     setContent(text);
-    console.log(text);
   };
   const onSend = () => {
-    const content = messageEditorService.getContent(props.threadId);
+    const content = messageEditorService.getContent(props.threadId, props.messageId || '');
     if (content.trim()) {
       sendMessage(content);
       autocomplete.setContent('');
@@ -66,7 +66,7 @@ export default (props: Props) => {
     ).then(message => {
       setLoading(false);
       if (!message.parent_message_id) {
-        messageEditorService.openEditor(message.id);
+        messageEditorService.openEditor(message.id, props.messageId || '');
       }
     });
   };
@@ -91,20 +91,27 @@ export default (props: Props) => {
 
       {!hasEphemeralMessage && (
         <InputAutocomplete
+          messageId={props.messageId || ''}
           channelId={props.channelId}
           threadId={props.threadId}
           onChange={(text: string) => {
             onChange(text);
           }}
-          onSend={(text: string) => onSend()}
-          onFocus={() => messageEditorService.openEditor(props.threadId, props.context)}
+          onSend={() => onSend()}
+          onFocus={() =>
+            messageEditorService.openEditor(
+              props.threadId || '',
+              props.messageId || '',
+              props.context,
+            )
+          }
           autocompleteRef={node => {
             autocomplete = node || autocomplete;
           }}
         />
       )}
 
-      {!hasEphemeralMessage && (
+      {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
           inputValue={content}
           channelId={props.channelId}

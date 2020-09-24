@@ -70,6 +70,10 @@ export default class App extends Component {
     this.page_state = nextState.login.state;
     return true;
   }
+  getDerivedStateFromError() {
+    this.state.hasError = true;
+    return { hasError: true, error: [error, info] };
+  }
   componentDidCatch(error, info) {
     if (!this.state.hasError) {
       if (Globals.window.mixpanel_enabled)
