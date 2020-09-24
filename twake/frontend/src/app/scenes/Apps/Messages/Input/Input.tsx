@@ -36,6 +36,10 @@ export default (props: Props) => {
   };
   const onSend = () => {
     const content = messageEditorService.getContent(props.threadId, props.messageId || '');
+    if (props.onSend) {
+      props.onSend(content);
+      return;
+    }
     if (content.trim()) {
       sendMessage(content);
       autocomplete.setContent('');
@@ -107,6 +111,12 @@ export default (props: Props) => {
           }
           autocompleteRef={node => {
             autocomplete = node || autocomplete;
+          }}
+          onEditLastMessage={() => {
+            MessagesService.startEditingLastMessage({
+              channel_id: props.channelId,
+              parent_message_id: props.threadId,
+            });
           }}
         />
       )}

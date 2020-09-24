@@ -226,34 +226,12 @@ class Messages extends Observable {
       last_message &&
       new Date().getTime() / 1000 - last_message.creation_date < 60 * 60 * 24 * 7
     ) {
-      this.startEditing(last_message);
+      MessageEditors.get(last_message.channel_id).openEditor(
+        last_message.parent_message_id,
+        last_message.id,
+        'edition',
+      );
     }
-  }
-
-  startEditing(message) {
-    this.respondedMessage = {};
-    if (!message) {
-      this.editedMessage = {};
-      this.notify();
-      return;
-    }
-    this.editedMessage = Collections.get('messages').editCopy(message);
-    this.notify();
-  }
-
-  startRespond(message) {
-    this.editedMessage = {};
-    if (!message) {
-      this.respondedMessage = {};
-      this.notify();
-      return;
-    }
-    if (!message.id) {
-      return;
-    }
-    this.respondedMessage = Collections.get('messages').editCopy({});
-    this.respondedMessage.parent_message_id = message.id;
-    this.notify();
   }
 
   dropMessage(message, message_container, collectionKey) {
@@ -347,7 +325,7 @@ class Messages extends Observable {
 
     Collections.get('messages').completeObject({ _user_reaction: reaction }, message.front_id);
     Collections.get('messages').save(message, messagesCollectionKey);
-    this.startEditing(false);
+    MessageEditors.get(message.channel_id).closeEditor();
   }
 
   pinMessage(message, value, messagesCollectionKey) {
@@ -368,14 +346,11 @@ class Messages extends Observable {
     Collections.get('messages').remove(message, messagesCollectionKey);
   }
 
-  editMessage(value, messagesCollectionKey) {
-    if (!this.editedMessage.front_id) {
-      return;
-    }
+  editMessage(messageId, value, messagesCollectionKey) {
+    this.editedMessage = Collections.get('messages').find(messageId);
     this.editedMessage.content = PseudoMarkdownCompiler.compileToJSON(value);
     Collections.get('messages').completeObject(this.editedMessage, this.editedMessage.front_id);
     Collections.get('messages').save(this.editedMessage, messagesCollectionKey);
-    this.startEditing(false);
   }
 
   prepareContent(_content, user_specific_content) {

@@ -9,6 +9,7 @@ import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import Input from '../../Input/Input';
+import Button from 'components/Buttons/Button.js';
 
 type Props = {
   message: Message;
@@ -21,11 +22,27 @@ export default (props: Props) => {
   messageEditorService.setContent(
     props.message?.parent_message_id || '',
     props.message?.id || '',
-    props.message?.content?.original_str,
+    typeof props.message?.content === 'string'
+      ? props.message?.content
+      : props.message?.content?.original_str,
   );
 
+  const save = () => {
+    const content = messageEditorService.getContent(
+      props.message?.parent_message_id || '',
+      props.message?.id || '',
+    );
+
+    if (!content) {
+      MessagesService.deleteMessage(props.message, props.collectionKey);
+    } else {
+      MessagesService.editMessage(props.message.id, content, props.collectionKey);
+    }
+    messageEditorService.closeEditor();
+  };
+
   return (
-    <div>
+    <div style={{ paddingTop: '4px', paddingBottom: '12px' }}>
       <Input
         ref={node =>
           messageEditorService.setInputNode(
@@ -40,7 +57,24 @@ export default (props: Props) => {
         messageId={props.message?.id || ''}
         collectionKey={props.collectionKey}
         context={'edition'}
+        onSend={() => {
+          save();
+        }}
       />
+
+      <Button
+        className="primary small-right-margin"
+        small
+        onClick={() => {
+          save();
+        }}
+      >
+        Save
+      </Button>
+
+      <Button className="secondary-light" small onClick={() => messageEditorService.closeEditor()}>
+        Cancel
+      </Button>
     </div>
   );
 };
