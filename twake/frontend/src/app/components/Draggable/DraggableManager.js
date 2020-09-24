@@ -94,7 +94,7 @@ class DraggableManager extends Observable {
 
     this.clone_created = false;
     this.drag_initial_point = [evt.clientX, evt.clientY];
-    this.current_node_initial_position = [rect.left, rect.top];
+    this.current_node_initial_position = [rect.left, rect.top, node.clientWidth, node.clientHeight];
 
     this.drag = true;
     if (this.current_react_draggable) this.current_react_draggable.setState({ drag: true });
@@ -189,6 +189,10 @@ class DraggableManager extends Observable {
         div.firstChild.classList.remove('dragging_opacity');
         div.firstChild.classList.remove('fade_in');
         div.firstChild.classList.remove('is_selected');
+
+        div.style.width = this.current_node_initial_position[2] + 'px';
+        div.style.height = this.current_node_initial_position[3] + 'px';
+
         this.clone = div;
 
         if (this.selected_number > 1) {

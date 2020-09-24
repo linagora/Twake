@@ -139,7 +139,7 @@ export default class MessageComponent extends Component<
           highlighted={this.props.highlighted}
           hidden={!this.state.render}
           withBlock={!this.props.message.parent_message_id && !this.props.noBlock}
-          canDrag
+          canDrag={!(this.props.repliesAsLink && this.props.message.parent_message_id)}
           message={this.props.message}
           className={canDropIn ? 'has-droppable ' : ''}
         >

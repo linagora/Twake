@@ -63,8 +63,9 @@
       }
       .reply-text {
         margin-right: 4px;
+        a,
         a * {
-          display: inline-block;
+          display: inline;
         }
         overflow: hidden;
         text-overflow: ellipsis;
@@ -98,6 +99,7 @@
     &.drag {
       left: -8px;
       right: unset;
+      display: none;
 
       .option,
       .option:hover {
@@ -179,5 +181,11 @@
         background: var(--primary-background);
       }
     }
+  }
+}
+
+.draggable {
+  .message-options.drag {
+    display: flex;
   }
 }
