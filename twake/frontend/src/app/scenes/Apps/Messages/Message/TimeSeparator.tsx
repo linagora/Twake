@@ -5,6 +5,7 @@ import Moment from 'react-moment';
 import moment from 'moment';
 import 'moment-timezone';
 import Languages from 'services/languages/languages.js';
+import CurrentUser from 'services/user/current_user.js';
 
 type Props = {
   message: Message;
@@ -19,10 +20,11 @@ export default (props: Props) => {
   const isFirstNewMessage =
     (props.message?.creation_date || 0) >= props.unreadAfter &&
     (props.previousMessage?.creation_date || 0) < props.unreadAfter;
-  const isNewMessage = !!(
-    !props.previousMessage ||
-    (props.message.creation_date && isFirstNewMessage && props.previousMessage?.creation_date)
-  );
+  const isNewMessage =
+    !!(
+      !props.previousMessage ||
+      (props.message.creation_date && isFirstNewMessage && props.previousMessage?.creation_date)
+    ) && !props.message.sender === CurrentUser.get().id;
   return (
     <div>
       {isNewMessage && (

@@ -41,12 +41,11 @@ export default (props: Props) => {
   } else {
     return (
       <Thread
+        channelId={props.channelId}
         collectionKey={props.collectionKey}
         withBlock
         className="new-thread"
-        onUploadFile={(file: any) => {
-          DriveService.sendAsMessage(props.channelId, '', file);
-        }}
+        allowUpload
       >
         <ThreadSection noSenderSpace>
           <Input

@@ -166,7 +166,8 @@ export default class MessageComponent extends Component<
                   }}
                   href="#"
                 >
-                  {Languages.t('scenes.apps.messages.message.show_responses_button')}
+                  {Languages.t('scenes.apps.messages.message.show_responses_button')} (
+                  {this.props.message.responses_count})
                 </a>
               </div>
             </ThreadSection>

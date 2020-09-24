@@ -2,11 +2,12 @@ import React from 'react';
 import './Threads.scss';
 import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
 import Workspaces from 'services/workspaces/workspaces.js';
+import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 
 type Props = {
   collectionKey?: string;
+  channelId?: string;
   message?: any;
   loading?: boolean;
   highlighted?: boolean;
@@ -17,7 +18,7 @@ type Props = {
   onClick?: (event: any) => void;
   refDom?: (node: any) => void;
   canDrag?: boolean;
-  onUploadFile?: (file: any) => void;
+  allowUpload?: boolean;
 };
 
 export default (props: Props) => (
@@ -34,19 +35,24 @@ export default (props: Props) => (
   >
     <UploadZone
       className="thread-centerer"
-      ref={node => {}}
+      ref={node => {
+        MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').setUploadZone(
+          props.message?.id,
+          node,
+        );
+      }}
       disableClick
       parent={''}
       driveCollectionKey={props.collectionKey}
       uploadOptions={{ workspace_id: Workspaces.currentWorkspaceId, detached: true }}
       onUploaded={(file: any) => {
-        props.onUploadFile
-          ? props.onUploadFile(file)
-          : DriveService.sendAsMessage(props.message.channel_id, props.message.id, file);
+        MessageEditorsManager.get(
+          props.message?.channel_id || props.channelId || '',
+        ).onAddAttachment(props.message?.id, file);
       }}
       multiple={false}
       allowPaste={true}
-      disabled={!(props.onUploadFile || (props.message && props.collectionKey))}
+      disabled={!(props.allowUpload || (props.message && props.collectionKey))}
     >
       <Draggable
         dragHandler="js-drag-handler-message"

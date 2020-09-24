@@ -7,6 +7,7 @@ import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 
 type Props = {
   inputValue: string;
@@ -96,7 +97,9 @@ export default (props: Props) => {
             type: 'menu',
             icon: 'desktop',
             text: 'From computer',
-            onClick: (evt: any) => {},
+            onClick: (evt: any) => {
+              MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
+            },
           },
           ...addon_files,
         ]}

@@ -258,6 +258,9 @@ export class MessagesListUtils extends Observable {
   }
 
   scrollTo(position: number | true) {
+    if (!this.scrollerNode) {
+      return;
+    }
     if (position === true) {
       position = this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight;
     }
@@ -273,7 +276,7 @@ export class MessagesListUtils extends Observable {
       ) {
         this.scrollerNode.scroll({
           top: position,
-          behavior: 'smooth',
+          //behavior: 'smooth', still need to did around this one
         });
       } else {
         this.scrollerNode.scrollTop = position;

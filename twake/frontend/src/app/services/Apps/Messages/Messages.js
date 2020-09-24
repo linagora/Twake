@@ -14,6 +14,7 @@ import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 
 import Globals from 'services/Globals.js';
+import MessageEditors from './MessageEditors';
 
 class Messages extends Observable {
   constructor() {
@@ -187,7 +188,7 @@ class Messages extends Observable {
           reactElement: () => (
             <FilePicker
               mode={'select_file'}
-              onChoose={file => DriveService.sendAsMessage(channelId, threadId, file)}
+              onChoose={file => MessageEditors.get(channelId).onAddAttachment(threadId, file)}
             />
           ),
         });
