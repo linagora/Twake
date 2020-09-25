@@ -40,19 +40,39 @@ export class MessageEditors extends Observable {
 
   setContent(threadId: string, messageId: string, content: string) {
     if (!messageId) {
-      LocalStorage.setItem('m_input_' + this.channelId + '_' + threadId, content);
+      const all = LocalStorage.getItem('m_input') || {};
+      all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
+        content,
+        new Date().getTime(),
+      ];
+      LocalStorage.setItem('m_input', all);
     }
     this.editorsContents[threadId + '_' + messageId] = content;
   }
 
   getContent(threadId: string, messageId: string) {
     if (!messageId) {
-      const res = LocalStorage.getItem('m_input_' + this.channelId + '_' + threadId);
+      const all = this.cleanSavedInputContents(LocalStorage.getItem('m_input') || {});
+      const res = all[this.channelId + (threadId ? '_thread=' + threadId : '')][0];
       if (res) {
         this.editorsContents[threadId + '_' + messageId] = res;
       }
     }
     return this.editorsContents[threadId + '_' + messageId] || '';
+  }
+
+  cleanSavedInputContents(all: any) {
+    Object.keys(all).forEach(key => {
+      if (
+        all[key] &&
+        all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 &&
+        (all.indexOf('_thread=') ||
+          all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 6)
+      ) {
+        delete all[key];
+      }
+    });
+    return all;
   }
 
   openEditor(threadId: string, messageId: string, context: string = '') {
