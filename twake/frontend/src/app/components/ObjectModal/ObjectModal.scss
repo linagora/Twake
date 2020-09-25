@@ -35,7 +35,8 @@
 
   & > .body {
     margin: 0 -16px;
-    .scrollbar-container, .child-with-margin {
+    .scrollbar-container,
+    .child-with-margin {
       padding: 0 16px;
       max-height: calc(80vh - 200px);
     }
@@ -44,6 +45,16 @@
   .modal_title {
     font-size: 24px;
     color: $black;
+  }
+
+  .modal_subtitle {
+    font-size: 16px;
+    color: $black;
+  }
+
+  .modal_text {
+    font-size: 12px;
+    color: $grey_dark;
   }
 }
 

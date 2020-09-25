@@ -376,7 +376,7 @@ export default {
   'scenes.apps.drive.drive_tour.storage_limit':
     'Check the remaining storage and think about emptying your trash. Storage limit can be managed in group parameters.',
   'scenes.apps.drive.drive_tour.congrats': 'Congratulations!',
-  'scenes.apps.drive.drive_tour.bye': 'You\'ve mastered storage in Twake. See you soon!',
+  'scenes.apps.drive.drive_tour.bye': "You've mastered storage in Twake. See you soon!",
   'scenes.apps.drive.drive_tour.preview': 'Preview',
   'scenes.apps.drive.drive_tour.preview_div':
     'Click on a file to download it or change the name, description or labels.',
@@ -400,8 +400,7 @@ export default {
   'scenes.apps.drive.navigators.navigator_content.no_file': 'There is nothing here.',
   'scenes.apps.drive.navigators.navigator_deleted.title': 'You are in trash',
   'scenes.apps.drive.navigators.navigator_deleted.empty': 'Empty trash',
-  'scenes.apps.drive.navigators.navigator_deleted.empty_message':
-    'Do you want to empty the trash?',
+  'scenes.apps.drive.navigators.navigator_deleted.empty_message': 'Do you want to empty the trash?',
   'scenes.apps.drive.navigators.navigator_labels.title': 'Labels',
   'scenes.apps.drive.navigators.navigator_labels.no_file_with_this_label':
     'There are no files with this label.',
@@ -627,7 +626,8 @@ export default {
   'scenes.apps.account.languages.title': 'Language',
   'scenes.apps.account.languages.text': 'Change Twake language.',
   'scenes.apps.account.notifications.title': 'Notifications',
-  'scenes.apps.account.notifications.text': 'You can choose which notifications you want to receive here.',
+  'scenes.apps.account.notifications.text':
+    'You can choose which notifications you want to receive here.',
   'scenes.apps.account.notifications.keywords_subtitle': 'Keywords',
   'scenes.apps.account.notifications.keywords_text':
     'You can filter notifications you want to receive using keywords.',
@@ -803,8 +803,7 @@ export default {
   'scenes.apps.parameters.group_sections.workspaces.add_subtitle_2': 'List workspaces',
   'scenes.apps.parameters.group_sections.workspaces.inform_max_workspace':
     'You have reached the maximum number of workspaces ($1) for your subscription.',
-  'scenes.apps.parameters.group_sections.workspaces.name_placeholder':
-    'New workspace name',
+  'scenes.apps.parameters.group_sections.workspaces.name_placeholder': 'New workspace name',
   'scenes.apps.parameters.group_sections.workspaces.add_btn': 'Create organisation workspace',
   'scenes.apps.parameters.workspace_sections.apps.desactivate_message':
     'This application will no longer be available in this workspace for any of your employees.',
@@ -829,7 +828,7 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.title': 'Workspace members',
   'scenes.apps.parameters.workspace_sections.members.members': 'Members',
   'scenes.apps.parameters.workspace_sections.members.members_text':
-    'You can remove collaborators or change collaborators\' rights.',
+    "You can remove collaborators or change collaborators' rights.",
   'scenes.apps.parameters.workspace_sections.members.guests': 'Guests',
   'scenes.apps.parameters.workspace_sections.members.pending': 'Pending members',
   'scenes.apps.parameters.workspace_sections.members.pending_text':
@@ -1018,7 +1017,8 @@ export default {
     '- All data entered into a workspace is visible only to collaborators with access ;',
   'scenes.login.create_account.data_line_3':
     '- We do not use personal data for advertising or commercial purposes ;',
-  'scenes.login.create_account.data_line_4': '- All data stored in the storage system is encrypted.',
+  'scenes.login.create_account.data_line_4':
+    '- All data stored in the storage system is encrypted.',
   'scenes.login.create_account.data_line_5': 'To find out more, click on the link below.',
   'scenes.login.create_account.terms_of_use': 'I have read and agree to the terms of use Twake',
   'scenes.login.create_account.label_username': 'Username',
@@ -1038,7 +1038,7 @@ export default {
   'scenes.login.forgot_password.password': 'Password',
   'scenes.login.forgot_password.password2': 'Confirm password',
   'scenes.login.forgot_password.password_dont_match':
-    'Your passwords don\'t match or they are too short. Please type a password with at least 8 characters.',
+    "Your passwords don't match or they are too short. Please type a password with at least 8 characters.",
   'scenes.login.home.title': 'Sign in to Twake',
   'scenes.login.home.subtitle': 'Happy to see you',
   'scenes.login.home.email': 'Username or e-mail',
@@ -1059,7 +1059,7 @@ export default {
   'general.next': '',
   'scenes.login.create_account.password': 'Password',
   'scenes.login.create_account.step_1_subtitle':
-    'It couldn\'t be simpler — we just need some information.',
+    "It couldn't be simpler — we just need some information.",
   'scenes.login.create_account.step_2_subtitle_a':
     'Add your full name for your collaborators to recognize you.',
   'scenes.login.create_account.step_2_subtitle_b': 'Your phone number remains private.',
@@ -1067,14 +1067,14 @@ export default {
   'scenes.login.create_account.step_3_cgu_text': 'By clicking on create an account, you accept our',
   'scenes.login.create_account.step_3_mail_sent': 'We have sent you an activation link by e-mail.',
   'scenes.login.create_account.step_3_subtitle':
-    'Last step — we need to verify you\'re not a robot!',
+    "Last step — we need to verify you're not a robot!",
   'scenes.app.workspaces.create_company.company_name.placeholder': 'Company name',
   'scenes.app.workspaces.create_company.company_name.title_1': 'To begin,',
   'scenes.app.workspaces.create_company.company_name.title_2': 'indicate the name of your company.',
   'scenes.app.workspaces.create_company.create_group_btn': 'Create $1',
   'scenes.app.workspaces.create_company.default_workspace_name': 'Main',
   'scenes.app.workspaces.create_company.group_data.title':
-    " We\'ll be quick — we just need some statistical information.",
+    " We'll be quick — we just need some statistical information.",
   'scenes.app.workspaces.create_company.importations.title_1':
     'Already working with digital tools? Import or integrate your tools now!',
   'scenes.app.workspaces.create_company.importations.title_2': 'No worries, you can do this later!',
@@ -1390,13 +1390,13 @@ export default {
     'You can not leave the workspace, because you are the last administrator. You can define a new administrator or delete/archive this workspace.',
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'All applications',
   'scenes.app.popup.workspaceparameter.pages.apps_company_small_text':
-    'Your company\'s applications',
+    "Your company's applications",
   'scenes.app.popup.workspaceparameter.pages.apps_connectors_title': 'Applications and connectors',
   'scenes.app.popup.workspaceparameter.pages.apps_research_title': 'Search applications',
   'scenes.app.popup.workspaceparameter.pages.apps_small_text': 'Applications of this workspace',
   'scenes.app.popup.workspaceparameter.pages.automatique_label': 'Automatic',
   'scenes.app.popup.workspaceparameter.pages.automatique_option_text':
-    "If you activate 'Automatic', this application will automatically be added to this company\'s next workspaces.",
+    "If you activate 'Automatic', this application will automatically be added to this company's next workspaces.",
   'scenes.app.popup.workspaceparameter.pages.back_button': 'Back',
   'scenes.app.popup.workspaceparameter.pages.back_to_search_button': 'Return to the search',
   'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button':
@@ -1604,7 +1604,7 @@ export default {
   'scenes.login.verifymail.signin_button': 'Log in',
   'scenes.login.verifymail.success': 'Your e-mail was successfully verified!',
   'scenes.login.verifymail.verification_waiting': 'Waiting for verification...',
-  'scenes.no_panic': 'Don\'t panic! Simply reload this page to find Twake.',
+  'scenes.no_panic': "Don't panic! Simply reload this page to find Twake.",
   'services.apps.calendar.deadline_icon': 'Deadline',
   'services.apps.calendar.event_icon': 'Event',
   'services.apps.calendar.move_icon': 'Move',
@@ -1728,8 +1728,7 @@ export default {
   'scenes.apps.account.account.fullname': 'Full name',
   'login.email_login': 'E-mail / Login',
   'scenes.apps.account.account.password_for_user': 'Password for your user',
-  'scenes.apps.account.account.send_info':
-    'Send this credential information to your user.',
+  'scenes.apps.account.account.send_info': 'Send this credential information to your user.',
   'scenes.apps.account.account.save': 'Save account',
   'scenes.apps.account.message_temporary':
     'A temporary account works like a normal Twake account, but you create the password and you will be able to reset it if necessary.',
@@ -1832,4 +1831,15 @@ export default {
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
   'scenes.app.popup.adduser.add_another_mail': 'Add another email',
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
+  'scenes.app.popup.channelmembers.current_channel_members': 'And $1 more...',
+  'components.channelmembers.object_modal_members.open_private_discussion':
+    'Open private discussion',
+  'components.channelmembers.object_modal_members.popup_title': 'Members of the channel $1',
+  'components.channelmembers.object_modal_members.public_channel_title': 'This channel is $1',
+  'components.channelmembers.object_modal_members.public_channel_description':
+    'All workspace have access to this channel.',
+  'components.channelmembers.object_modal_members.public_channe_link':
+    'Go to workspace collaborators',
+  'components.channelmembers.object_modal_members.public': 'public',
+  'components.channelmembers.object_modal_members.private': 'private',
 };

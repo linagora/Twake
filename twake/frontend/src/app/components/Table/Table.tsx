@@ -5,15 +5,15 @@ import InputIcon from 'components/Inputs/InputIcon.js';
 import './Table.scss';
 
 type Props = {
-  column?: any;
-  noHeader: boolean;
-  onAdd: () => void;
+  column: any;
+  noHeader?: boolean;
+  onAdd?: () => void;
   onRequestMore: (refresh: boolean) => Promise<any[]>;
-  onSearch: (query: string, maxResults: number, callback: (res: any[]) => void) => Promise<any[]>;
-  updatedData: (data: any) => any;
+  onSearch?: (query: string, maxResults: number, callback: (res: any[]) => void) => Promise<any[]>;
+  updatedData?: (data: any) => any;
   addText?: string;
   resultsPerPage?: number;
-  unFocused: boolean;
+  unFocused?: boolean;
 };
 type State = {
   data: null | any[];
@@ -71,13 +71,14 @@ export default class Table extends Component<Props, State> {
     });
 
     this.searchRunning = true;
-    this.props.onSearch(this.searchFieldValue, 10, (data: any[]) => {
-      this.searchRunning = false;
-      this.setState({
-        loading: false,
-        searchResults: data,
+    this.props.onSearch &&
+      this.props.onSearch(this.searchFieldValue, 10, (data: any[]) => {
+        this.searchRunning = false;
+        this.setState({
+          loading: false,
+          searchResults: data,
+        });
       });
-    });
   }
 
   renderItem(col: any, item: any) {
@@ -213,7 +214,12 @@ export default class Table extends Component<Props, State> {
                     return (
                       <div
                         className="item"
-                        style={{ width: col.width || 'inherit', flex: col.width ? 'inherit' : '1' }}
+                        style={{
+                          display: col.flexAlign ? 'flex' : '',
+                          alignItems: col.flexAlign ? 'center' : '',
+                          width: col.width || 'inherit',
+                          flex: col.width ? 'inherit' : '1',
+                        }}
                       >
                         {this.renderItem(col, data)}
                       </div>

@@ -1904,4 +1904,12 @@ export default {
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
   'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
+  'components.channelmembers.object_modal_members.public_channel_description':
+    "Tous l'espace de travail a accès à cette chaine.",
+  'components.channelmembers.object_modal_members.public_channe_link':
+    "Accéder à la liste des collaborateurs de l'espace de travail",
+  'components.channelmembers.object_modal_members.public_channel_title': 'Cette chaine est $1',
+  'components.channelmembers.object_modal_members.public': 'publique',
+  'components.channelmembers.object_modal_members.private': 'privée',
+  'components.channelmembers.object_modal_members.popup_title': 'Membres de la chaîne $1',
 };

@@ -4,6 +4,18 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import Tabs from 'components/Tabs/Tabs.js';
 import './ObjectModal.scss';
 
+export class ObjectModalSubtitle extends Component {
+  render() {
+    return <div className={'modal_subtitle'}>{this.props.children}</div>;
+  }
+}
+
+export class ObjectModalText extends Component {
+  render() {
+    return <div className={'modal_text ' + this.props.className}>{this.props.children}</div>;
+  }
+}
+
 export class ObjectModalTitle extends Component {
   render() {
     return (

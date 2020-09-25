@@ -1,0 +1,120 @@
+@import '~components/constants.scss';
+
+.channel_members_viewer {
+  .user_image {
+    vertical-align: top;
+    margin-right: 10px;
+    display: inline-block;
+    margin-top: 2px;
+    width: 24px;
+    height: 24px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--grey-dark);
+    border-radius: 50%;
+    border: 1px solid #fff;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+.rounded {
+  background: var(--grey-background);
+  border-radius: var(--default-border-radius);
+  text-align: center;
+  color: var(--grey-dark);
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+
+  &:hover {
+    background: $grey_light;
+    color: $grey_dark;
+  }
+}
+
+.channel_members_container {
+  display: flex;
+  flex-direction: row;
+  .card_container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    .thumbnails {
+      display: flex;
+      align-items: center;
+      position: relative;
+      flex-direction: row-reverse;
+      margin-right: 8px;
+      max-width: 120px;
+      .user_image {
+        position: relative;
+        margin-left: -5px;
+      }
+    }
+
+    .count_user {
+      color: var(--white);
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .count_user:hover {
+      transition: 0.5s;
+      background-color: var(--grey-dark);
+    }
+    .card {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      background-color: var(--grey-dark);
+      border-radius: 50%;
+      border: 1px solid #fff;
+      background-size: cover;
+      background-position: center;
+
+      &.user_image {
+        background-color: var(--white);
+      }
+
+      &:last-child {
+        margin-left: 0px;
+      }
+    }
+
+    .tooltip-container {
+      min-width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .text-el {
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 140px;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.grey-icon {
+  color: var(--grey-dark);
+}
+
+.grey-icon:hover {
+  color: var(--black);
+}

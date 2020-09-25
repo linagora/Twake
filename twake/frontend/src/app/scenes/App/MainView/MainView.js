@@ -15,6 +15,7 @@ import Search from './Search.js';
 import AppView from './AppView/AppView.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import Workspaces from 'services/workspaces/workspaces.js';
+import ChannelMembers from 'components/ChannelMembers/ChannelMembers';
 
 export default class MainView extends Component {
   constructor() {
@@ -261,8 +262,8 @@ export default class MainView extends Component {
                 </div>
               </div>
             )}
-
             <div className="right">
+              {!current_channel.direct && <ChannelMembers channel={current_channel} />}
               <Search />
             </div>
           </div>
