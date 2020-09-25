@@ -53,7 +53,7 @@ export class MessageEditors extends Observable {
   getContent(threadId: string, messageId: string) {
     if (!messageId) {
       const all = this.cleanSavedInputContents(LocalStorage.getItem('m_input') || {});
-      const res = all[this.channelId + (threadId ? '_thread=' + threadId : '')][0];
+      const res = (all[this.channelId + (threadId ? '_thread=' + threadId : '')] || {})[0];
       if (res) {
         this.editorsContents[threadId + '_' + messageId] = res;
       }

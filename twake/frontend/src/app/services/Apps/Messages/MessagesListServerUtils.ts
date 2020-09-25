@@ -27,10 +27,7 @@ export type Message = {
 
 class MessagesListServerUtilsManager {
   services: { [key: string]: MessagesListServerUtils } = {};
-  constructor() {
-    //@ts-ignore
-    window.MessagesListServerUtils = this;
-  }
+  constructor() {}
   get(channelId: string, threadId: string, collectionKey: string) {
     const key = channelId + '_' + threadId + '_' + collectionKey;
     if (this.services[key]) {
@@ -67,6 +64,8 @@ export class MessagesListServerUtils extends Observable {
 
   constructor(channelId: string, threadId: string, collectionKey: string) {
     super();
+    //@ts-ignore
+    window.MessagesListServerUtils = this;
 
     this.channelId = channelId;
     this.threadId = threadId;

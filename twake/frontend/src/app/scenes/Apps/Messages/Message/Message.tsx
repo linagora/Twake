@@ -91,6 +91,17 @@ export default class MessageComponent extends Component<
     MessagesService.dropMessage(message, this.props.message, this.props.collectionKey);
   }
 
+  componentDidUpdate(prevProps: any, prevState: any) {
+    Object.entries(this.props).forEach(
+      ([key, val]) => prevProps[key] !== val && console.log(`Prop '${key}' changed`),
+    );
+    if (this.state) {
+      Object.entries(this.state).forEach(
+        ([key, val]) => prevState[key] !== val && console.log(`State '${key}' changed`),
+      );
+    }
+  }
+
   render() {
     console.log('rerender message', this.props.message.id);
 

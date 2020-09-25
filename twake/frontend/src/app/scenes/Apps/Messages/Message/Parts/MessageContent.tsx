@@ -49,8 +49,6 @@ export default (props: Props) => {
   const showEdition =
     !props.linkToThread && messageEditorService.currentEditorMessageId === props.message.id;
 
-  console.log(showEdition, messageEditorService.currentEditorMessageId, props.message.id);
-
   return (
     <div
       className={

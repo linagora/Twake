@@ -111,7 +111,6 @@ export default class MessagesList extends Component<Props> {
               {loadingMessagesTop.map((_m, index) => (
                 <MessageComponent
                   delayRender
-                  style={{}}
                   key={index}
                   message={loadingMessagesTop[index]}
                   collectionKey={this.props.collectionKey}
@@ -123,7 +122,6 @@ export default class MessagesList extends Component<Props> {
               <div className="message_header">
                 <MessageComponent
                   noReplies
-                  style={{}}
                   key={headerMessage?.id}
                   message={headerMessage}
                   collectionKey={this.props.collectionKey}
@@ -142,7 +140,6 @@ export default class MessagesList extends Component<Props> {
                 <MessageComponent
                   delayRender
                   repliesAsLink
-                  style={{}}
                   key={messages[index].front_id}
                   message={messages[index]}
                   highlighted={this.messagesListService.highlighted === messages[index]?.id}
@@ -156,7 +153,6 @@ export default class MessagesList extends Component<Props> {
               {loadingMessagesBottom.map((_m, index) => (
                 <MessageComponent
                   delayRender
-                  style={{}}
                   key={index}
                   message={loadingMessagesBottom[index]}
                   collectionKey={this.props.collectionKey}

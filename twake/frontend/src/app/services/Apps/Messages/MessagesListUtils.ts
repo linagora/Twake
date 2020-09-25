@@ -3,10 +3,7 @@ import Observable from 'services/observable';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
-  constructor() {
-    //@ts-ignore
-    window.MessagesListUtils = this;
-  }
+  constructor() {}
   get(collectionKey: string, serverService: MessagesListServerUtils) {
     if (this.services[collectionKey]) {
       return this.services[collectionKey];
@@ -143,13 +140,19 @@ export class MessagesListUtils extends Observable {
       return;
     }
     if (this.fixBottom) {
-      this.scrollTo(this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight);
+      this.scrollTo(this.scrollerNode.scrollHeight - this.scrollerNode.clientHeight, true);
     }
   }
 
   setWitnessMessage(node: any) {
+    console.log('new change= witness changed', node);
+
+    if (this.currentWitnessNode) {
+      this.currentWitnessNode.style.backgroundColor = '';
+    }
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
+    this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -224,7 +227,7 @@ export class MessagesListUtils extends Observable {
         this.fixBottom = false;
         const offsetTop =
           nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
-        this.scrollTo(offsetTop - 64);
+        this.scrollTo(offsetTop - 64, true);
         this.highlightMessage(message.id || '');
         return true;
       }
@@ -257,7 +260,7 @@ export class MessagesListUtils extends Observable {
     return offsetTop;
   }
 
-  scrollTo(position: number | true) {
+  scrollTo(position: number | true, changeWitness: boolean = false) {
     if (!this.scrollerNode) {
       return;
     }
@@ -282,12 +285,13 @@ export class MessagesListUtils extends Observable {
         this.scrollerNode.scrollTop = position;
       }
       this.onScroll();
-      this.getVisibleMessages(true);
+      this.getVisibleMessages(changeWitness);
       this.triggerDelayedRender();
     }
   }
 
   onContentChange() {
+    console.log('new change=', this.messagesContainerNode.scrollHeight);
     if (!this.scrollerNode || !this.messagesContainerNode) {
       return;
     }
@@ -296,6 +300,16 @@ export class MessagesListUtils extends Observable {
     if (this.initDate === 0) {
       this.initDate = new Date().getTime();
     }
+
+    console.log(
+      'new change= client top witness bfeore',
+      this.currentWitnessNodeClientTop,
+      this.scrollerNode.scrollTop,
+      this.currentWitnessNode,
+      (this.currentWitnessNode?.offsetTop || 0) +
+        this.messagesContainerNode?.offsetTop -
+        this.currentWitnessNodeClientTop,
+    );
 
     //Force witness node to keep at the same position
     this.scrollTo(
@@ -308,6 +322,14 @@ export class MessagesListUtils extends Observable {
     this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
+
+    console.log(
+      'new change= client top witness',
+      (this.currentWitnessNode?.offsetTop || 0) +
+        this.messagesContainerNode?.offsetTop -
+        this.scrollerNode.scrollTop,
+      this.scrollerNode.scrollTop,
+    );
 
     this.updateScroll();
 
@@ -362,6 +384,8 @@ export class MessagesListUtils extends Observable {
       this.triggerDelayedRender();
     }
 
+    const goingUp = this.currentScrollTop - this.scrollerNode.scrollTop > 0;
+
     //Get current status to detect changes on new messages are added to the list
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
@@ -382,11 +406,14 @@ export class MessagesListUtils extends Observable {
       const bottomFakeHeight =
         this.messagesContainerNode.childNodes[this.messagesContainerNode.childNodes.length - 1]
           .clientHeight || 0;
-      if (evt.scrollTop <= this.scrollerNode.clientHeight) {
+      if (evt.scrollTop <= this.scrollerNode.clientHeight && goingUp) {
         const didRequest = await this.serverService.loadMore();
         if (didRequest) this.lockScroll();
       }
-      if (evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight) {
+      if (
+        evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight &&
+        !goingUp
+      ) {
         const didRequest = await this.serverService.loadMore(false);
         if (didRequest) this.lockScroll();
       }
