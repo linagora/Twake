@@ -47,12 +47,10 @@ export class MessageEditors extends Observable {
 
   getContent(threadId: string, messageId: string) {
     if (!messageId) {
-      LocalStorage.getItem('m_input_' + this.channelId + '_' + threadId, (res: string | null) => {
-        if (res) {
-          this.editorsContents[threadId] = res;
-          this.notify();
-        }
-      });
+      const res = LocalStorage.getItem('m_input_' + this.channelId + '_' + threadId);
+      if (res) {
+        this.editorsContents[threadId + '_' + messageId] = res;
+      }
     }
     return this.editorsContents[threadId + '_' + messageId] || '';
   }
