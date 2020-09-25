@@ -54,13 +54,15 @@ class DownloadFile
             $name = "Document.zip";
         } elseif (count($files_ids) == 1) {
             $file = $this->doctrine->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $files_ids[0]));
-            if ($file->getIsDirectory()) {
-                $name = $file->getName() . ".zip";
-                $zip = true;
-                $files_ids = Array();
-                $files_son = $this->doctrine->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
-                foreach ($files_son as $son) {
-                    $files_ids[] = $son->getId() . "";
+            if($file){
+                if ($file->getIsDirectory()) {
+                    $name = $file->getName() . ".zip";
+                    $zip = true;
+                    $files_ids = Array();
+                    $files_son = $this->doctrine->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
+                    foreach ($files_son as $son) {
+                        $files_ids[] = $son->getId() . "";
+                    }
                 }
             }
         }

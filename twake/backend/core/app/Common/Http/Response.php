@@ -75,6 +75,9 @@ class Response
 
     public function sendHeaders()
     {
+        if(headers_sent()){
+            return;
+        }
         if (defined("TESTENV") && TESTENV) {
             return;
         }
@@ -94,7 +97,7 @@ class Response
     {
         $this->sendHeaders();
         http_response_code($this->status);
-        if (is_array($this->content)) {
+        if (is_array($this->content) && !headers_sent()) {
             header('Content-Type: application/json; charset=utf-8');
         }
         echo $this->getContent();

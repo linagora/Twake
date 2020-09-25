@@ -18,6 +18,9 @@ class DirectMessagesSystem extends ChannelSystemAbstract
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
+        if(!$current_user){
+            return false;
+        }
         if (str_replace("channels/direct_messages/", "", $route) == $current_user->getId()) {
             return $this->hasAccess($data, $current_user);
         } else {

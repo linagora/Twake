@@ -29,7 +29,7 @@ class ChannelSystemAbstract
             foreach ($members as $member) {
                 $this->entity_manager->remove($member);
                 $linkWorkspaceUser = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $object->getOriginalWorkspaceId(), "user_id" => $member->getUserId()));
-                if ($linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()) {
+                if ($linkWorkspaceUser && $linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()) {
                     $this->removeExterneIfNotAnymoreInChannel($object->getOriginalWorkspaceId(), $object->getId(), $member->getUserId());
                 }
             }
@@ -200,14 +200,12 @@ class ChannelSystemAbstract
             $idsMembers = Array();
             $idsExt = Array();
             foreach ($members as $member) {
-                try{
+                if($member->getUser($this->entity_manager)){
                     if (!$member->getExterne()) {
                         $idsMembers[] = $member->getUser($this->entity_manager)->getId();
                     } elseif ($member->getAutoAddExterne()) {
                         $idsExt[] = $member->getUser($this->entity_manager)->getId();
                     }
-                }catch(\Exception $err){
-                    //No user
                 }
             }
             $this->updateChannelMembers($channel, $idsMembers);
@@ -366,6 +364,9 @@ class ChannelSystemAbstract
 
     public function addUserToChannel($user, $channel)
     {
+        if(!$user || is_string($user) === 'string'){
+            return false;
+        }
         $link = $this->entity_manager->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $user->getId(), "channel_id" => $channel->getId()));
         if (!$link) {
             $member = new \Twake\Channels\Entity\ChannelMember($user->getId(), $channel);
@@ -374,11 +375,12 @@ class ChannelSystemAbstract
             $this->entity_manager->persist($member);
 
             $workspace_id = $channel->getOriginalWorkspaceId();
-            $link = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()->getId()));
+            $link = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
             if (!$link) {
                 $this->workspaceUser->addMember($workspace_id, $user->getId(), true, false);
             }
         }
+        return true;
     }
 
 
