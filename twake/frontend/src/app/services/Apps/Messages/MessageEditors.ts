@@ -8,7 +8,7 @@ class MessageEditorsManager {
     //@ts-ignore
     window.MessageEditors = this;
   }
-  get(channelId: string) {
+  get(channelId: string): MessageEditors {
     if (this.services[channelId]) {
       return this.services[channelId];
     }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InputOptions from './Parts/InputOptions';
 import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import './Input.scss';
 
@@ -26,7 +26,7 @@ export default (props: Props) => {
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const messageEditorService = MessageEditorsManager.get(props.channelId);
+  const messageEditorService: MessageEditors = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
   let autocomplete: any = null;
   let disable_app: any = {};
