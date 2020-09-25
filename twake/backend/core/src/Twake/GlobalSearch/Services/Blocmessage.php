@@ -154,6 +154,10 @@ class Blocmessage
 
                         $message_bdd = $this->doctrine->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message["id"]));
 
+                        if(!$message_bdd){
+                            continue;
+                        }
+
                         $doublon_id[] = $message_id_in_bloc;
 
                         if (!isset($known_channels_by_id[$message_bdd->getChannelId()])) {
