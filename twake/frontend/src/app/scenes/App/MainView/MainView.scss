@@ -177,6 +177,7 @@
     }
     .tab_group {
       display: inline-block;
+      vertical-align: top;
       margin-right: 8px;
       border-radius: var(--default-border-radius);
 
@@ -184,9 +185,16 @@
         background: $grey_background;
       }
       .tab {
+        display: inline-flex;
+        align-items: center;
         margin-right: 0px;
         border-radius: 0px;
         padding-right: 8px;
+
+        i.emoji-image {
+          margin-top: 0px;
+        }
+
         &:first-child {
           border-radius: $base_border_radius 0 0 $base_border_radius;
         }
