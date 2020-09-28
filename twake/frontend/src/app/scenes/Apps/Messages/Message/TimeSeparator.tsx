@@ -25,6 +25,7 @@ export default (props: Props) => {
       !props.previousMessage ||
       (props.message.creation_date && isFirstNewMessage && props.previousMessage?.creation_date)
     ) && !props.message.sender === CurrentUser.get().id;
+  const creation_date = Math.min(new Date().getTime() / 1000, props.message?.creation_date || 0);
   return (
     <div>
       {isNewMessage && (
@@ -46,8 +47,8 @@ export default (props: Props) => {
             <div className="time_container">
               <div className="time">
                 {(new Date().getTime() / 1000 - (props.message?.creation_date || 0) > 24 * 60 * 60
-                  ? moment((props.message?.creation_date || 0) * 1000).format('LL')
-                  : moment((props.message?.creation_date || 0) * 1000).fromNow()) || '-'}
+                  ? moment((creation_date || 0) * 1000).format('LL')
+                  : moment((creation_date || 0) * 1000).fromNow()) || '-'}
               </div>
             </div>
           </div>
