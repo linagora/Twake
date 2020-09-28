@@ -61,11 +61,11 @@ export default class Viewer extends Component {
       this.viewed_document.id,
       url => {
         window.open(url);
-      }
+      },
     );
   }
   previewFile(url, app) {
-    this.state.loading_preview = true;
+    this.setState({ loading_preview: true });
 
     DriveService.getFileUrlForEdition(url, app, this.viewed_document.id, url => {
       this.setState({ loading_preview: false, did_load_preview: true, url_formated: url });
@@ -107,7 +107,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.edit_with_button',
                   [editor_candidate[0].name],
-                  'Editer avec $1'
+                  'Editer avec $1',
                 )}
               </Button>
             )}
@@ -164,7 +164,7 @@ export default class Viewer extends Component {
                   {Languages.t(
                     'scenes.apps.drive.viewer.no_preview_message',
                     [],
-                    'Impossible de visualiser ce type de fichier.'
+                    'Impossible de visualiser ce type de fichier.',
                   )}
                 </span>
               )}
@@ -180,7 +180,7 @@ export default class Viewer extends Component {
                     {Languages.t(
                       'scenes.apps.drive.viewer.download_desktop',
                       [],
-                      'Download Twake Desktop to preview in app'
+                      'Download Twake Desktop to preview in app',
                     )}
                   </a>
                 </div>
@@ -193,7 +193,7 @@ export default class Viewer extends Component {
                 {Languages.t(
                   'scenes.apps.drive.viewer.loading_preview_message',
                   [],
-                  'Chargement...'
+                  'Chargement...',
                 )}
               </span>
             </div>
