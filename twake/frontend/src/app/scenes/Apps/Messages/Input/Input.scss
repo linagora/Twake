@@ -37,6 +37,13 @@
     pointer-events: none;
   }
 
+  &.unfocused {
+    opacity: 0.5;
+    .input-options {
+      opacity: 0.5;
+    }
+  }
+
   .autocomplete {
     div.input {
       background: #fff;
@@ -102,5 +109,11 @@
       display: inline-flex;
       text-align: left;
     }
+  }
+}
+
+.small-section.alinea {
+  .ephemerals .thread-container .sender-space {
+    width: 16px;
   }
 }

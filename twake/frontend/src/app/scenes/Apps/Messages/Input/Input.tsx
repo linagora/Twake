@@ -69,14 +69,35 @@ export default (props: Props) => {
       props.collectionKey,
     ).then(message => {
       setLoading(false);
+      if (
+        messageEditorService.currentEditor ===
+        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+      ) {
+        autocomplete.focus();
+      }
       if (!message.parent_message_id) {
         messageEditorService.openEditor(message.id, props.messageId || '');
       }
     });
   };
 
+  const focus = () => {
+    messageEditorService.openEditor(props.threadId || '', props.messageId || '', props.context);
+  };
+
   return (
-    <div className={'message-input ' + (loading ? 'loading ' : '')} ref={props.ref}>
+    <div
+      className={
+        'message-input ' +
+        (loading ? 'loading ' : '') +
+        (messageEditorService.currentEditor !==
+        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+          ? 'unfocused '
+          : '')
+      }
+      ref={props.ref}
+      onClick={() => focus()}
+    >
       <EphemeralMessages
         channelId={props.channelId}
         threadId={props.threadId}
@@ -102,13 +123,7 @@ export default (props: Props) => {
             onChange(text);
           }}
           onSend={() => onSend()}
-          onFocus={() =>
-            messageEditorService.openEditor(
-              props.threadId || '',
-              props.messageId || '',
-              props.context,
-            )
-          }
+          onFocus={() => focus()}
           autocompleteRef={node => {
             autocomplete = node || autocomplete;
           }}

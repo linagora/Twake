@@ -1,5 +1,6 @@
 import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
 import Observable from 'services/observable';
+import Collections from 'services/Collections/Collections';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
@@ -203,6 +204,10 @@ export class MessagesListUtils extends Observable {
       }
     });
 
+    if (this.highlighted) {
+      const message = Collections.get('messages').find(this.highlighted);
+      bestCenterNode = this.messagesPositions[message?.id]?.node?.getDomElement() || bestCenterNode;
+    }
     if (bestCenterNode) this.setWitnessMessage(bestCenterNode);
   }
 
@@ -391,6 +396,17 @@ export class MessagesListUtils extends Observable {
     //After this point, we only want to act if this is user scroll (and not ourselve scrolling)
     if (this.ignoreNextScroll > 0) {
       this.ignoreNextScroll--;
+
+      if (
+        evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&
+        this.serverService.hasLastMessage()
+      ) {
+        if (!this.fixBottom) {
+          this.fixBottom = true;
+          this.notify();
+        }
+      }
+
       return;
     }
 

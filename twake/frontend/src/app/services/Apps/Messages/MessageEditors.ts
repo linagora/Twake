@@ -76,8 +76,7 @@ export class MessageEditors extends Observable {
   }
 
   openEditor(threadId: string, messageId: string, context: string = '') {
-    this.currentEditor =
-      threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
+    this.currentEditor = this.getEditorId(threadId, messageId, context);
     this.currentEditorThreadId = threadId;
     this.currentEditorMessageId = messageId;
     this.notify();
@@ -88,6 +87,10 @@ export class MessageEditors extends Observable {
     this.currentEditorThreadId = '';
     this.currentEditorMessageId = '';
     this.notify();
+  }
+
+  getEditorId(threadId: string, messageId: string, context: string = ''): string {
+    return threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
   }
 
   /* Get upload zone */
