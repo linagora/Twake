@@ -145,8 +145,14 @@ export class MessagesListUtils extends Observable {
   }
 
   setWitnessMessage(node: any) {
+    console.error('new change= witness changed', node);
+
+    if (this.currentWitnessNode) {
+      this.currentWitnessNode.style.backgroundColor = '';
+    }
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
+    this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -285,7 +291,7 @@ export class MessagesListUtils extends Observable {
   }
 
   onContentChange() {
-    console.log('new change=', this.messagesContainerNode.scrollHeight);
+    this.ignoreNextScroll++; //Additional ignore for better results
     if (!this.scrollerNode || !this.messagesContainerNode) {
       return;
     }
