@@ -285,6 +285,7 @@ export class MessagesListUtils extends Observable {
   }
 
   onContentChange() {
+    console.log('new change=', this.messagesContainerNode.scrollHeight);
     if (!this.scrollerNode || !this.messagesContainerNode) {
       return;
     }
@@ -300,6 +301,17 @@ export class MessagesListUtils extends Observable {
         this.messagesContainerNode?.offsetTop -
         this.currentWitnessNodeClientTop,
     );
+
+    const newClientTop =
+      (this.currentWitnessNode?.offsetTop || 0) +
+      this.messagesContainerNode?.offsetTop -
+      this.scrollerNode.scrollTop;
+
+    if (newClientTop != this.currentWitnessNodeClientTop) {
+      this.scrollTo(
+        this.scrollerNode.scrollTop + (newClientTop - this.currentWitnessNodeClientTop),
+      );
+    }
 
     //Get current status to detect changes on new messages are added to the list
     this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
