@@ -292,7 +292,7 @@ class Messages extends Observable {
     Collections.get('messages').completeObject(message, message.front_id);
     Collections.get('messages').save(message, collectionKey, () => {
       var parent = Collections.get('messages').find(message.parent_message_id);
-      if (parent.parent_message_id != '') {
+      if (parent && parent.parent_message_id != '') {
         Collections.get('messages').updateObject(
           { parent_message_id: parent.parent_message_id },
           message.front_id,

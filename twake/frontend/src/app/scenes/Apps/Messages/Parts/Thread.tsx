@@ -58,9 +58,7 @@ export default (props: Props) => (
         dragHandler="js-drag-handler-message"
         data={{ type: 'message', data: props.message }}
         parentClassOnDrag="dragged"
-        onDragStart={(evt: any) => {
-          console.log(evt);
-        }}
+        onDragStart={(evt: any) => {}}
         minMove={10}
         className={'thread ' + (props.withBlock ? 'with-block ' : '')}
         deactivated={!(props.canDrag && props.message)}

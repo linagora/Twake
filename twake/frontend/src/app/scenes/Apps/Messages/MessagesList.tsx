@@ -131,7 +131,6 @@ export default class MessagesList extends Component<Props> {
             {messages.map((m, index) => (
               <MessageAndTimeSeparator
                 delayRender
-                repliesAsLink
                 key={messages[index].front_id}
                 message={messages[index]}
                 previousMessage={messages[index - 1]}
@@ -139,6 +138,7 @@ export default class MessagesList extends Component<Props> {
                 highlighted={this.messagesListService.highlighted === messages[index]?.id}
                 collectionKey={this.props.collectionKey}
                 refMessage={node => this.messagesListService.setMessageNode(m, node)}
+                repliesAsLink={!this.props.threadId}
               />
             ))}
             <div className="fake-messages">

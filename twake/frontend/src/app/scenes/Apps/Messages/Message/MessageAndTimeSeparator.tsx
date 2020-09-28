@@ -28,7 +28,7 @@ export default (props: Props) => {
       />
       <MessageComponent
         delayRender
-        repliesAsLink
+        repliesAsLink={props.repliesAsLink}
         key="message"
         message={props.message}
         highlighted={props.highlighted}

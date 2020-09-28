@@ -29,10 +29,11 @@ class MessagesListServerUtilsManager {
   services: { [key: string]: MessagesListServerUtils } = {};
   constructor() {}
   get(channelId: string, threadId: string, collectionKey: string) {
-    const key = channelId + '_' + threadId + '_' + collectionKey;
+    const key = channelId + '_' + collectionKey;
     if (this.services[key]) {
       return this.services[key];
     }
+    console.log('create for ', channelId, threadId, collectionKey);
     this.services[key] = new MessagesListServerUtils(channelId, threadId, collectionKey);
     return this.services[key];
   }
@@ -207,22 +208,24 @@ export class MessagesListServerUtils extends Observable {
       .filter((message: Message) => !message._user_ephemeral)
       .sort((a: Message, b: Message) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
-    let lastParentId: string = '';
-    messages = messages.filter((m: Message) => {
-      if (m.parent_message_id) {
-        if (
-          lastParentId &&
-          lastParentId != m.parent_message_id &&
-          Numbers.compareTimeuuid(m.parent_message_id, m.id) <= 0
-        ) {
-          return true;
+    if (!this.threadId) {
+      let lastParentId: string = '';
+      messages = messages.filter((m: Message) => {
+        if (m.parent_message_id) {
+          if (
+            lastParentId &&
+            lastParentId != m.parent_message_id &&
+            Numbers.compareTimeuuid(m.parent_message_id, m.id) <= 0
+          ) {
+            return true;
+          }
+          return false;
+        } else {
+          lastParentId = m.id || '';
         }
-        return false;
-      } else {
-        lastParentId = m.id || '';
-      }
-      return true;
-    });
+        return true;
+      });
+    }
 
     return messages;
   }
@@ -259,7 +262,6 @@ export class MessagesListServerUtils extends Observable {
     this.detectNewWebsocketsMessages(
       Collections.get('messages').findBy({
         channel_id: this.channelId,
-        parent_message_id: this.threadId,
       }),
     );
     this.notify();
@@ -288,10 +290,20 @@ export class MessagesListServerUtils extends Observable {
     if (reset) {
       this.reset();
     }
+
+    const wasAtEnd = this.hasLastMessage();
+
     messages.forEach(item => {
       this.lastLoadedMessageId = Numbers.maxTimeuuid(this.lastLoadedMessageId, item.id);
       this.firstLoadedMessageId = Numbers.minTimeuuid(this.firstLoadedMessageId, item.id);
     });
+
+    if (wasAtEnd) {
+      this.lastMessageOfAllLoaded = Numbers.maxTimeuuid(
+        this.lastMessageOfAllLoaded,
+        this.lastLoadedMessageId,
+      );
+    }
   }
 
   destroy() {

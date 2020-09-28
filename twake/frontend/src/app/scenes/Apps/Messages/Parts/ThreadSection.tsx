@@ -44,9 +44,7 @@ export default class ThreadSection extends Component<Props> {
         dragHandler="js-drag-handler-message"
         data={{ type: 'message', data: this.props.message }}
         parentClassOnDrag="dragged"
-        onDragStart={(evt: any) => {
-          console.log(evt);
-        }}
+        onDragStart={(evt: any) => {}}
         minMove={10}
         className={
           'thread-section ' +

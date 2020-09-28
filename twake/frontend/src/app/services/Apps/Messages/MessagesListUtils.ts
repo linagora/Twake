@@ -145,14 +145,14 @@ export class MessagesListUtils extends Observable {
   }
 
   setWitnessMessage(node: any) {
-    console.error('new change= witness changed', node);
+    /*console.error('new change= witness changed', node);
 
     if (this.currentWitnessNode) {
       this.currentWitnessNode.style.backgroundColor = '';
-    }
+    }*/
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
-    this.currentWitnessNode.style.backgroundColor = 'red';
+    //    this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -401,6 +401,7 @@ export class MessagesListUtils extends Observable {
           .clientHeight || 0;
       if (evt.scrollTop <= this.scrollerNode.clientHeight && goingUp) {
         const didRequest = await this.serverService.loadMore();
+        if (didRequest) console.log('load more up');
         if (didRequest) this.lockScroll();
       }
       if (
@@ -408,6 +409,7 @@ export class MessagesListUtils extends Observable {
         !goingUp
       ) {
         const didRequest = await this.serverService.loadMore(false);
+        if (didRequest) console.log('load more down');
         if (didRequest) this.lockScroll();
       }
     }
