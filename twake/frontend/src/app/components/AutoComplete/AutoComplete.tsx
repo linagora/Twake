@@ -1,141 +1,175 @@
 import React, { Component } from 'react';
-
+import AutoHeight from '../AutoHeight/AutoHeight';
+import Input from '../Inputs/Input';
 import './AutoComplete.scss';
-import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Input from 'components/Inputs/Input.js';
 
-export default class AutoComplete extends Component {
-  /*
-        props : {
-            placeholder : string,
-            search : Array of search function,
-            max : Array of maximum of proposition
-            onSelect : callback on selection
-            renderItem(item) : how to render item
-            renderItemChoosen(item) : how to add item in input
-            regexHooked : on which regex start auto completed ex : /\@([A-z])/ -> check match on [A-z] after @
-            onChange
-            value
-            onChangeCurrentList : return currentList,selected when update of selected proposition or proposition
-            hideResult
-            onBackspace : when backspace on empty input
-            disableNavigationKey
-            showResultsOnInit
-            position: top / bottom
-        }
-    */
+type State = {
+  currentList: any[];
+  selected: number;
+  resultPosition: string;
+  selectedUser: object;
+  focused: any;
+};
 
-  constructor(props) {
+type Props = {
+  onResize?: any;
+  autoHeight?: any;
+  className?: string;
+  placeholder?: string;
+  search: ((text: string, cb: (arr: any) => any) => void)[];
+  max: number[];
+  onSelect?: (obj: object, other: any) => void;
+  renderItem: ((obj: object) => any)[];
+  renderItemChoosen: ((el: any) => any)[];
+  regexHooked: any;
+  onChange?: any;
+  value?: any;
+  onChangeCurrentList?: any;
+  hideResult?: any;
+  onBackspace?: any;
+  disableNavigationKey?: any;
+  showResultsOnInit?: any;
+  position?: any;
+  onHide?: any;
+  onEscape?: any;
+  keyUp?: any;
+  onKeyUp?: any;
+  onKeyDown?: any;
+  onKeyPress?: any;
+  onFocusChange?: any;
+  big?: boolean;
+  small?: boolean;
+  autoFocus?: any;
+};
+
+export default class AutoComplete extends Component<Props, State> {
+  currentIdFromList: string = '';
+  is_open: boolean = false;
+  input: any;
+  container: any;
+  outsideClickListener: any;
+  currentRegexUsed: any = -1;
+
+  constructor(props: any) {
     super(props);
-    this.props = props;
+
     this.state = {
       currentList: [],
-      currentRegexUsed: -1,
       selected: -1,
       resultPosition: '',
+      selectedUser: {},
+      focused: '',
     };
 
     this.keyUp = this.keyUp.bind(this);
     this.keyDown = this.keyDown.bind(this);
 
-    var that = this;
-    window.addEventListener('keydown', function (evt) {
+    window.addEventListener('keydown', (evt: any) => {
       evt = evt || window.event;
-      var isEscape = false;
+      let isEscape = false;
       if ('key' in evt) {
         isEscape = evt.key === 'Escape' || evt.key === 'Esc';
       } else {
         isEscape = evt.keyCode === 27;
       }
       if (isEscape) {
-        that.is_open = false;
-        if (that.props.onHide) that.props.onHide();
+        this.is_open = false;
+        if (this.props.onHide) this.props.onHide();
       }
     });
   }
-  keyDown(ev) {
-    var that = this;
-    var key = ev.which;
+  keyDown(ev: any) {
+    let key = ev.which;
     if (
       this.is_open &&
       key &&
-      that.state.currentRegexUsed >= 0 &&
-      (key == 13 || key == 9 || key == 39 || key == 38 || key == 40)
+      this.currentRegexUsed >= 0 &&
+      this.state.currentList.length > 0 &&
+      (key == 13 || key == 9 || key == 38 || key == 40)
     ) {
       ev.preventDefault();
       ev.stopPropagation();
     }
-    if (key == 27 && !this.is_open && that.props.onEscape) {
-      that.props.onEscape();
+    if (key == 27 && !this.is_open && this.props.onEscape) {
+      this.props.onEscape();
     }
-    if (key == 27 && this.is_open && that.props.onHide) {
+    if (key == 27 && this.is_open && this.props.onHide) {
       this.is_open = false;
-      that.props.onHide();
+      this.props.onHide();
     }
   }
-  keyUp(ev) {
-    var that = this;
-    var key = ev.which;
-    var allText = that.getValueBeforeCaret();
-    if (key == 8 && that.input.value.length == 0 && that.props.onBackspace) {
-      that.props.onBackspace();
+  keyUp(ev: any) {
+    let key = ev.which;
+    let allText = this.getValueBeforeCaret();
+    if (key == 8 && this.input.value.length == 0 && this.props.onBackspace) {
+      this.props.onBackspace();
     }
-    for (var i = 0; i < that.props.regexHooked.length; i++) {
-      var text = allText.match(that.props.regexHooked[i]);
+    for (let i = 0; i < this.props.regexHooked.length; i++) {
+      let text = allText.match(this.props.regexHooked[i]);
       if (text && allText) {
-        if (that.state.currentRegexUsed < 0 || that.state.currentRegexUsed != i) {
-          that.state.currentRegexUsed = i;
+        if (this.currentRegexUsed < 0 || this.currentRegexUsed != i) {
+          this.currentRegexUsed = i;
         }
-        var text = text[1] || '';
+        text = text[1] || '';
         if (
           key &&
-          !that.props.disableNavigationKey &&
-          (key == 13 || key == 9 || key == 39 || key == 38 || key == 40)
+          !this.props.disableNavigationKey &&
+          (key == 13 || key == 9 || key == 38 || key == 40) &&
+          this.state.currentList.length > 0
         ) {
           ev.preventDefault();
           ev.stopPropagation();
-          if (key == 13 || key == 9 || key == 39) {
+          if (key == 13 || key == 9) {
             //Select (enter)
-            that.select(that.state.currentList[that.state.selected]);
+            this.select((this.state.currentList || {})[this.state.selected]);
           } else if (key == 38 || key == 40) {
             //Up // down
+            let nextState = 0;
             if (
-              (key == 38 && that.state.resultPosition == 'top') ||
-              (key == 40 && that.state.resultPosition == 'bottom')
+              (key == 38 && this.state.resultPosition == 'top') ||
+              (key == 40 && this.state.resultPosition == 'bottom')
             ) {
-              that.setState({
-                selected: (that.state.selected + 1) % that.state.currentList.length,
-              });
+              nextState = (this.state.selected + 1) % this.state.currentList.length;
             } else {
-              that.setState({
-                selected:
-                  (that.state.selected + that.state.currentList.length - 1) %
-                  that.state.currentList.length,
-              });
+              nextState =
+                (this.state.selected + this.state.currentList.length - 1) %
+                this.state.currentList.length;
             }
+            this.setState({
+              selected: nextState,
+            });
+            this.currentIdFromList = this.getCurrentIdFromList(this.state.currentList, nextState);
           }
         } else {
-          that.is_open = true;
-          that.search(text, i);
+          this.is_open = true;
+          this.search(text, i);
         }
-        if (that.props.onChangeCurrentList) {
-          that.props.onChangeCurrentList(that.state.currentList, that.state.selected);
+        if (this.props.onChangeCurrentList) {
+          this.props.onChangeCurrentList(this.state.currentList, this.state.selected);
         }
         return;
       }
     }
 
-    that.setState({ currentList: [], currentRegexUsed: -1, resultPosition: '' });
+    this.currentRegexUsed = -1;
+    this.setState({ currentList: [], resultPosition: '' });
     this.props.keyUp && this.props.keyUp(ev);
   }
+
+  getCurrentIdFromList(list: any[], pos: number) {
+    if (!list[pos]) {
+      return;
+    }
+    let id = list[pos].id || JSON.stringify(list[pos]);
+    return id;
+  }
+
   componentWillUnmount() {
     document.removeEventListener('click', this.outsideClickListener);
   }
   componentDidMount() {
-    var that = this;
-
-    var element = this.container;
-    this.outsideClickListener = event => {
+    let element = this.container;
+    this.outsideClickListener = (event: any) => {
       if (!element.contains(event.target) && document.contains(event.target)) {
         this.setState({ focused: false });
       }
@@ -147,99 +181,101 @@ export default class AutoComplete extends Component {
     this.input.addEventListener('keyup', this.keyUp);
 
     if (this.props.showResultsOnInit) {
-      that.state.currentRegexUsed = 0;
-      that.search('', 0);
-      that.props.onChangeCurrentList(that.state.currentList, that.state.selected);
+      this.currentRegexUsed = 0;
+      this.search('', 0);
+      this.props.onChangeCurrentList(this.state.currentList, this.state.selected);
     }
   }
-  search(query, i) {
-    var that = this;
-    that.props.search[that.state.currentRegexUsed](query, function (results) {
-      if (!that.is_open) {
+  search(query: any, i: any) {
+    this.props.search[this.currentRegexUsed](query, results => {
+      if (!this.is_open) {
         return;
       }
 
-      var suggestions = [];
-      for (
-        var j = 0;
-        j < Math.min(that.props.max[that.state.currentRegexUsed], results.length);
-        j++
-      ) {
+      let suggestions: any[] = [];
+      for (let j = 0; j < Math.min(this.props.max[this.currentRegexUsed], results.length); j++) {
         results[j].autocomplete_id = j;
         suggestions.push(results[j]);
       }
 
-      that.state.currentList = suggestions;
-      that.setState({
-        selected: 0,
+      let selection = 0;
+
+      const idsFromSuggestedList = suggestions.map(
+        (item, index) => (item = this.getCurrentIdFromList(suggestions, index)),
+      );
+
+      selection = Math.max(idsFromSuggestedList.indexOf(this.currentIdFromList), 0);
+
+      this.currentRegexUsed = i;
+      this.setState({
+        selected: selection,
         currentList: suggestions,
-        currentRegexUsed: i,
       });
 
-      if (that.props.onChangeCurrentList) {
-        that.props.onChangeCurrentList(that.state.currentList, that.state.selected);
+      this.currentIdFromList = this.getCurrentIdFromList(suggestions, selection);
+
+      if (this.props.onChangeCurrentList) {
+        this.props.onChangeCurrentList(suggestions, this.state.selected);
       }
     });
   }
   getValueBeforeCaret() {
     return this.input.value.substr(0, this.input.selectionStart);
   }
-  putTextAtCursor(text, alreadyTypedLength) {
-    var that = this;
-
+  putTextAtCursor(text: string, alreadyTypedLength: any) {
     alreadyTypedLength = alreadyTypedLength || 0;
 
-    var myValue = text;
+    let myValue = text;
 
-    if (that.input.selectionStart || that.input.selectionStart == '0') {
-      var startPos = that.input.selectionStart;
-      var endPos = that.input.selectionEnd;
-      that.input.value =
-        that.input.value.substring(0, startPos - alreadyTypedLength) +
+    if (this.input.selectionStart || this.input.selectionStart == '0') {
+      let startPos = this.input.selectionStart;
+      let endPos = this.input.selectionEnd;
+      this.input.value =
+        this.input.value.substring(0, startPos - alreadyTypedLength) +
         myValue +
-        that.input.value.substring(endPos, that.input.value.length);
-      that.input.selectionStart = that.input.selectionStart + myValue.length;
-      that.input.selectionEnd = that.input.selectionStart + myValue.length;
+        this.input.value.substring(endPos, this.input.value.length);
+      this.input.selectionStart = this.input.selectionStart + myValue.length;
+      this.input.selectionEnd = this.input.selectionStart + myValue.length;
     } else {
-      that.input.value += myValue;
+      this.input.value += myValue;
     }
 
-    if (this.props.onChange) this.props.onChange({ target: { value: that.input.value } });
+    if (this.props.onChange) this.props.onChange({ target: { value: this.input.value } });
 
-    that.input.focus();
-    that.input.dispatchEvent(new Event('input'));
+    this.input.focus();
+    this.input.dispatchEvent(new Event('input'));
 
-    that.setState({
+    this.setState({
       selected: -1,
       currentList: [],
     });
   }
-  select(item) {
+  select(item: any) {
     if (!item) {
       return;
     }
 
-    var that = this;
-    var m = that.getValueBeforeCaret().match(that.props.regexHooked[that.state.currentRegexUsed]);
+    let m = this.getValueBeforeCaret().match(this.props.regexHooked[this.currentRegexUsed]);
     if (m == null) {
       return;
     }
-    var alreadyTypedLength = m[0].length;
+    let alreadyTypedLength = m[0].length;
 
     this.putTextAtCursor(
-      this.props.renderItemChoosen[this.state.currentRegexUsed](item),
+      this.props.renderItemChoosen[this.currentRegexUsed](item),
       alreadyTypedLength,
     );
 
-    if (that.props.onSelect) {
-      that.props.onSelect(item, that.state.currentRegexUsed);
+    if (this.props.onSelect) {
+      this.props.onSelect(item, this.currentRegexUsed);
     }
     this.is_open = false;
   }
   setPositionResult() {
     if (this.input && this.state.resultPosition == '' && this.state.currentList.length > 0) {
-      var size = this.state.currentList.length * 32 + 5;
+      let size = this.state.currentList.length * 32 + 5;
       if (
+        //@ts-ignore
         document.documentElement.clientHeight - window.getBoundingClientRect(this.input).bottom <
           size ||
         this.props.position == 'top'
@@ -259,7 +295,7 @@ export default class AutoComplete extends Component {
     this.input.blur();
     this.setState({ focused: false });
   }
-  setContent(content) {
+  setContent(content: any) {
     this.input.value = content;
   }
   render() {
@@ -282,7 +318,7 @@ export default class AutoComplete extends Component {
           {this.props.autoHeight && (
             <AutoHeight
               className={'' + (this.props.big ? ' big' : this.props.small ? ' small' : ' medium')}
-              refInput={ref => {
+              refInput={(ref: any) => {
                 this.input = ref;
               }}
               onResize={this.props.onResize}
@@ -310,7 +346,7 @@ export default class AutoComplete extends Component {
               className={
                 'full_width ' + (this.props.big ? ' big' : this.props.small ? ' small' : ' medium')
               }
-              refInput={ref => {
+              refInput={(ref: any) => {
                 this.input = ref;
               }}
               placeholder={this.props.placeholder}
@@ -343,6 +379,7 @@ export default class AutoComplete extends Component {
               {this.state.currentList.map((item, index) => {
                 return (
                   <div
+                    key={index}
                     className={
                       'menu ' +
                       (!this.props.disableNavigationKey &&
@@ -352,7 +389,7 @@ export default class AutoComplete extends Component {
                     }
                     onClick={() => this.select(item)}
                   >
-                    {item && this.props.renderItem[this.state.currentRegexUsed](item)}
+                    {item && this.props.renderItem[this.currentRegexUsed](item)}
                   </div>
                 );
               })}
