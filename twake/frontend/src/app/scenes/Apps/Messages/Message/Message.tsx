@@ -103,8 +103,6 @@ export default class MessageComponent extends Component<
   }
 
   render() {
-    console.log('rerender message', this.props.message.id);
-
     if (this.props.message.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
     }

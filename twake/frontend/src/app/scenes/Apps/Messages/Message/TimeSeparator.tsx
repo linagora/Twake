@@ -9,7 +9,7 @@ import CurrentUser from 'services/user/current_user.js';
 
 type Props = {
   message: Message;
-  previousMessage: Message;
+  previousMessage: Message | null;
   unreadAfter: number;
 };
 

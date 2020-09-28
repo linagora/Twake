@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import MessagesListServerServicesManager, {
   MessagesListServerUtils,
-  Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesListServiceManager, {
   MessagesListUtils as MessagesListService,
 } from 'app/services/Apps/Messages/MessagesListUtils';
 import MessageComponent from './Message/Message';
-import TimeSeparator from './Message/TimeSeparator';
+import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
@@ -129,26 +128,19 @@ export default class MessagesList extends Component<Props> {
               </div>
             )}
 
-            {messages.map((m, index) => {
-              return [
-                <TimeSeparator
-                  key={messages[index].front_id + '_time'}
-                  message={messages[index]}
-                  previousMessage={messages[index - 1]}
-                  unreadAfter={this.props.unreadAfter}
-                />,
-                <MessageComponent
-                  delayRender
-                  repliesAsLink
-                  key={messages[index].front_id}
-                  message={messages[index]}
-                  highlighted={this.messagesListService.highlighted === messages[index]?.id}
-                  ref={node => this.messagesListService.setMessageNode(m, node)}
-                  collectionKey={this.props.collectionKey}
-                  unreadAfter={this.props.unreadAfter}
-                />,
-              ];
-            })}
+            {messages.map((m, index) => (
+              <MessageAndTimeSeparator
+                delayRender
+                repliesAsLink
+                key={messages[index].front_id}
+                message={messages[index]}
+                previousMessage={messages[index - 1]}
+                unreadAfter={this.props.unreadAfter}
+                highlighted={this.messagesListService.highlighted === messages[index]?.id}
+                collectionKey={this.props.collectionKey}
+                refMessage={node => this.messagesListService.setMessageNode(m, node)}
+              />
+            ))}
             <div className="fake-messages">
               {loadingMessagesBottom.map((_m, index) => (
                 <MessageComponent

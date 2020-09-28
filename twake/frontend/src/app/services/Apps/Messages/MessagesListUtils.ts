@@ -145,14 +145,8 @@ export class MessagesListUtils extends Observable {
   }
 
   setWitnessMessage(node: any) {
-    console.log('new change= witness changed', node);
-
-    if (this.currentWitnessNode) {
-      this.currentWitnessNode.style.backgroundColor = '';
-    }
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
-    this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -291,7 +285,6 @@ export class MessagesListUtils extends Observable {
   }
 
   onContentChange() {
-    console.log('new change=', this.messagesContainerNode.scrollHeight);
     if (!this.scrollerNode || !this.messagesContainerNode) {
       return;
     }
@@ -300,16 +293,6 @@ export class MessagesListUtils extends Observable {
     if (this.initDate === 0) {
       this.initDate = new Date().getTime();
     }
-
-    console.log(
-      'new change= client top witness bfeore',
-      this.currentWitnessNodeClientTop,
-      this.scrollerNode.scrollTop,
-      this.currentWitnessNode,
-      (this.currentWitnessNode?.offsetTop || 0) +
-        this.messagesContainerNode?.offsetTop -
-        this.currentWitnessNodeClientTop,
-    );
 
     //Force witness node to keep at the same position
     this.scrollTo(
@@ -322,14 +305,6 @@ export class MessagesListUtils extends Observable {
     this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
-
-    console.log(
-      'new change= client top witness',
-      (this.currentWitnessNode?.offsetTop || 0) +
-        this.messagesContainerNode?.offsetTop -
-        this.scrollerNode.scrollTop,
-      this.scrollerNode.scrollTop,
-    );
 
     this.updateScroll();
 
