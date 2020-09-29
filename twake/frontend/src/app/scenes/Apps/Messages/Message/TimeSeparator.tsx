@@ -24,7 +24,7 @@ export default (props: Props) => {
     !!(
       !props.previousMessage ||
       (props.message.creation_date && isFirstNewMessage && props.previousMessage?.creation_date)
-    ) && !props.message.sender === CurrentUser.get().id;
+    ) && props.message.sender !== CurrentUser.get().id;
   const creation_date = Math.min(new Date().getTime() / 1000, props.message?.creation_date || 0);
   return (
     <div>

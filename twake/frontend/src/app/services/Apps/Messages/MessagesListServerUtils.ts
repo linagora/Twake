@@ -113,17 +113,18 @@ export class MessagesListServerUtils extends Observable {
           },
           this.collectionKey,
           (messages: Message[]) => {
-            messages = messages.filter(
-              (a: Message) => !this.threadId || a.parent_message_id === this.threadId,
-            ); //Hack because collections are doing weird stuff
-
             this.reset();
             this.httpLoading = false;
             this.updateLastFirstMessagesId(messages, true);
-            if (!fromMessageId || fromMessageId === true)
+            if (!fromMessageId || fromMessageId === true) {
               this.lastMessageOfAllLoaded = this.lastLoadedMessageId;
+            }
+
             if (messages[0]?.hidden_data?.type === 'init_channel' || messages.length < 20) {
-              this.firstMessageOfAll = this.firstLoadedMessageId;
+              this.firstMessageOfAll = Numbers.minTimeuuid(
+                this.firstLoadedMessageId,
+                this.firstMessageOfAll,
+              );
             }
             this.notify();
             this.didInit = true;

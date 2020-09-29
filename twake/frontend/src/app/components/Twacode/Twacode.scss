@@ -13,7 +13,9 @@
   .emoji-container {
     display: inline-block;
     vertical-align: bottom;
-    line-height: 0px;
+    .emoji-mart-emoji {
+      transform: translateY(20%);
+    }
   }
 
   a {

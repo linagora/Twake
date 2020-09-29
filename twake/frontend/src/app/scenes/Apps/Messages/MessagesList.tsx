@@ -61,7 +61,7 @@ export default class MessagesList extends Component<Props> {
 
   componentDidMount() {
     const mid = WindowService.getInfoFromUrl()?.message;
-    if (mid) {
+    if (mid && !this.props.threadId) {
       //Can jump on init to message
       this.jumpTo(mid);
     } else {

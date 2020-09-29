@@ -146,14 +146,8 @@ export class MessagesListUtils extends Observable {
   }
 
   setWitnessMessage(node: any) {
-    /*console.error('new change= witness changed', node);
-
-    if (this.currentWitnessNode) {
-      this.currentWitnessNode.style.backgroundColor = '';
-    }*/
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
-    //    this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -182,7 +176,7 @@ export class MessagesListUtils extends Observable {
         const offsetBottom = offsetTop + nodeMessage.node?.getDomElement()?.clientHeight;
 
         if (setWitness) {
-          const distanceFromCenter = Math.abs(offsetTop - center);
+          const distanceFromCenter = Math.abs((offsetTop + offsetBottom) / 2 - center);
           if (distanceFromCenter < closestToCenter) {
             closestToCenter = distanceFromCenter;
             bestCenterNode = nodeMessage.node.getDomElement();
