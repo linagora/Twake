@@ -59,7 +59,7 @@ class MessageSystem
         $channel_id = $data["channel_id"];
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
-            "edition" => true,
+            "edition" => false,
             "object_id" => $channel_id
         ]);
     }
@@ -293,7 +293,7 @@ class MessageSystem
             }
 
             //Create a new message
-            $message = new Message($object["channel_id"], $object["parent_message_id"]);
+            $message = new Message($object["channel_id"], $object["parent_message_id"], $channel);
 
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {

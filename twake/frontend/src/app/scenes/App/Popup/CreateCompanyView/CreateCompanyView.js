@@ -442,7 +442,7 @@ export default class CreateCompanyView extends Component {
         <div
           className={
             'center_box_container login_view ' +
-            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom ')
+            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom_nobounce ')
           }
         >
           <div className="center_box ">

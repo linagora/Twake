@@ -70,6 +70,10 @@ export default class App extends Component {
     this.page_state = nextState.login.state;
     return true;
   }
+  getDerivedStateFromError() {
+    this.state.hasError = true;
+    return { hasError: true, error: [error, info] };
+  }
   componentDidCatch(error, info) {
     if (!this.state.hasError) {
       if (Globals.window.mixpanel_enabled)
@@ -152,7 +156,7 @@ export default class App extends Component {
     if (this.state.hasError) {
       page.push(
         <div className="full_page_error" key="page_error">
-          <div className="error_message skew_in_top">
+          <div className="error_message skew_in_top_nobounce">
             <div className="title">
               <Emojione type=":boom:" /> {Languages.t('scenes.aie', [], 'Aïe !')}
             </div>

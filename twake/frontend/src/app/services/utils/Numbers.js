@@ -32,8 +32,8 @@ export default class Numbers {
           .replace(/\r|\n/g, '')
           .replace(/([\da-fA-F]{2}) ?/g, '0x$1 ')
           .replace(/ +$/, '')
-          .split(' ')
-      )
+          .split(' '),
+      ),
     );
   }
 
@@ -51,10 +51,14 @@ export default class Numbers {
   }
 
   static minTimeuuid(a, b) {
+    if (!a) return b;
+    if (!b) return a;
     return Numbers.compareTimeuuid(a, b) > 0 ? b : a;
   }
 
   static maxTimeuuid(a, b) {
+    if (!a) return b;
+    if (!b) return a;
     return Numbers.compareTimeuuid(a, b) > 0 ? a : b;
   }
 

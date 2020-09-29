@@ -76,8 +76,6 @@ class Drive extends Observable {
   }
 
   changeCurrentDirectory(channel, directory, workspace_id) {
-    console.log('changeCurrentDirectory', directory);
-
     if (this.changing_directory[channel]) {
       return;
     }

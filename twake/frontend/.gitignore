@@ -28,3 +28,4 @@ yarn-error.log*
 /storybook-static/
 /build/
 /counter-clone/
+__old

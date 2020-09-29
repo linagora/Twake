@@ -67,7 +67,7 @@ export default class AttachmentPicker extends Component {
                     text: Languages.t(
                       'components.attachmentpicker.remove_attach',
                       [],
-                      'Remove attachment'
+                      'Remove attachment',
                     ),
                     onClick: () => {
                       this.removeAttachment(att);
@@ -76,7 +76,7 @@ export default class AttachmentPicker extends Component {
                 ];
               }
               return (
-                <div className="attachment attachment_file drive_view grid">
+                <div className="attachment attachment_file drive_view list">
                   <File
                     data={{ id: att.id || '' }}
                     additionalMenu={additionalMenu}
@@ -118,7 +118,7 @@ export default class AttachmentPicker extends Component {
                     text: Languages.t(
                       'components.attachmentpicker.from_computer',
                       [],
-                      'From computer'
+                      'From computer',
                     ),
                     onClick: () => {
                       this.upload_zone.open();
@@ -131,7 +131,7 @@ export default class AttachmentPicker extends Component {
                     text: Languages.t(
                       'components.attachmentpicker.from_twake',
                       [],
-                      'From Twake Documents'
+                      'From Twake Documents',
                     ),
                     submenu: [
                       {
@@ -178,7 +178,7 @@ export default class AttachmentPicker extends Component {
               {Languages.t(
                 'components.attachmentpicker.add_attachment',
                 [],
-                'Ajouter des pièces jointes'
+                'Ajouter des pièces jointes',
               )}
             </Button>
           </Menu>

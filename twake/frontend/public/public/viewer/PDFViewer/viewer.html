@@ -37,6 +37,16 @@
       margin-top: 24px !important;
       box-shadow: 0 0 32px rgba(0,0,0,0.2) !important;
     }
+	#loader {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 14px;
+		opacity: 0.8;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+	}
+	
   </style>
 
 </head>
@@ -424,7 +434,7 @@
 
   </div> <!-- outerContainer -->
   <div id="printContainer"></div>
-
+  <div id="loader" style="display: block;">Loading...</div>
 
   <script type="application/javascript">
 
@@ -541,7 +551,6 @@
   		};
   	}
 
-
   	function initPdf() {
   		Twake.call(
   			"/drive/autoopen",
@@ -553,9 +562,7 @@
   					function () {
   					}
   				);
-
   				openPdf(file);
-
   			}
   		);
   	};
@@ -587,9 +594,7 @@
     }
 
   	function openFile() {
-  		Twake.call("/drive/explorer", {mode: "open", directoryId: 0, extensions: ["pdf"]}, function (res) {
-  			openPdf(res);
-  		});
+  		Twake.call("/drive/explorer", {mode: "open", directoryId: 0, extensions: ["pdf"]}, (res) => openPdf(res));
   	}
 
     function getUrlParameter(name) {
@@ -604,9 +609,9 @@
   		config.defaultUrl = pdf_url;
   		config.openFileInputName = name;
   		window.PDFViewerApplication = pdfjsWebApp.PDFViewerApplication;
-  		pdfjsWebApp.PDFViewerApplication.run(config);
+        pdfjsWebApp.PDFViewerApplication.run(config);
   	}
-
+      
     openPdf(getUrlParameter("link"), getUrlParameter("name"));
 
   </script>

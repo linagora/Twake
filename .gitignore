@@ -139,3 +139,5 @@ docker-compose.yml
 /tests/code_coverage/
 /web/detached/*
 /drive/*
+userreport.sh
+

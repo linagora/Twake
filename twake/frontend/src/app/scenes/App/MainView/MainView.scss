@@ -97,7 +97,7 @@
       margin-top: 4px;
       color: var(--black);
 
-      .emojione-container {
+      .emoji-container {
         margin-right: 4px;
         .emojione {
           margin-top: -6px;
@@ -257,6 +257,7 @@
 
   .app_views {
     flex: 1;
+    min-width: 0;
     display: flex;
     height: 100%;
     overflow: hidden;
@@ -264,6 +265,7 @@
     .app_main {
       position: relative;
       flex: 1;
+      min-width: 0;
       display: flex;
     }
     .app_side {
@@ -272,6 +274,31 @@
       border-left: 1px solid var(--grey-background);
       display: flex;
       flex-direction: column;
+
+      @media screen and (max-width: 1000px) {
+        &:after {
+          content: '';
+          position: absolute;
+          z-index: 99;
+          background: rgba(0, 0, 0, 0.3);
+          left: 0px;
+          top: 0px;
+          height: 100vh;
+          width: 100vw;
+          margin-left: -100vw;
+        }
+        position: absolute;
+        right: 0px;
+        height: 100vh;
+        top: 0;
+        background: #fff;
+        width: 70vw;
+        box-shadow: 0 0 64px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+      @media screen and (max-width: 640px) {
+        width: 100vw;
+      }
 
       .side_header {
         height: 40px;
@@ -283,10 +310,19 @@
         padding-left: 16px;
         line-height: 24px;
         box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+
+        & > span {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          min-width: 0;
+          flex: 1;
+        }
 
         .close {
           cursor: pointer;
-          position: absolute;
           right: 8px;
           color: var(--black-alpha-1);
           &:hover {
@@ -299,6 +335,7 @@
         flex: 1;
         display: flex;
         position: relative;
+        overflow: hidden;
       }
     }
 

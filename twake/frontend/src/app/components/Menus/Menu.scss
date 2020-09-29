@@ -2,186 +2,6 @@
 
 /* Dropmenu */
 
-/*
-.dropmenu {
-  background: #FFFFFF;
-  box-shadow: $base_box_shadow;
-  border-radius: $base_border_radius;
-  box-sizing: border-box;
-  width: 220px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  box-sizing: border-box;
-  overflow: auto;
-
-  &.inline {
-    width: 100%;
-    position: absolute;
-    top: 100%;
-    z-index: 1000;
-
-    &.top {
-      bottom: 100%;
-      top: auto;
-      display: flex;
-      flex-direction: column-reverse;
-      box-shadow: 0 0px 4px rgba(0,0,0,0.5);
-
-      &::before {
-        height: calc( 100% + 34px );
-        top: 0;
-      }
-    }
-  }
-
-  .menu-buttons {
-    text-align: right;
-    padding: 8px 10px;
-    padding-top: 10px;
-
-    input[type=button], button {
-      height: 28px;
-      padding: 0px 16px;
-      line-height: 0px;
-      min-height: 0px;
-      font-size: 13px;
-      width: auto;
-      margin: 0;
-    }
-  }
-
-  .menu, .menu-text {
-    font-size: 13px;
-    display: inline-block;
-    position: relative;
-    box-sizing: border-box;
-    padding: 0 10px;
-    width: 100%;
-  }
-
-  .menu-title {
-    font-size: 13px;
-    padding: 6px 10px;
-    color: #333;
-    font-weight: bold;
-    padding-bottom: 10px;
-    margin-bottom: 11px;
-    border-bottom: 1px solid #EEE;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-    &.no-separator {
-      margin-bottom: 0px;
-      border-bottom: 0px solid #EEE;
-      padding-bottom: 4px;
-    }
-  }
-
-  .menu {
-    cursor: pointer;
-    height: 24px;
-    line-height: 24px;
-    display: flex;
-    flex-direction: row;
-
-    &.no-background {
-      background-color: transparent !important;
-    }
-
-    &.error, &.danger {
-      color: #F00;
-    }
-
-    .text {
-      flex: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-
-      i.icon-fontastic {
-        margin-right: 5px;
-        position: relative;
-        bottom: -2px;
-      }
-    }
-
-    .more {
-      width: auto;
-      height: 24px;
-      font-size: 10px;
-      color: #000;
-
-      i.icon-fontastic {
-        display: inline-block;
-        margin-top: 7px;
-        margin-left: 5px;
-      }
-
-      .notification, .badge {
-        margin-top: 3px;
-        margin-left: 5px;
-
-        &.circle {
-          margin-top: 7px;
-        }
-      }
-    }
-
-    &:hover, &.is_selected {
-      background: #F2F2F2;
-    }
-
-  }
-
-  .menu-app-icon, .menu-user-icon {
-    background-size: cover;
-    background-position: center;
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
-    margin-top: -1px;
-  }
-  .menu-user-icon {
-    border-radius: 50%;
-  }
-
-  .menu-separator {
-    height: 7px;
-    margin-top: 5px;
-    border-top: 1px solid #DDD;
-  }
-
-  .menu-text {
-    font-size: 12px;
-    opacity: 0.5;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-
-  .picker_container {
-    .pickerInput {
-      margin: 0 10px;
-    }
-    .autocomplete {
-      box-shadow: none !important;
-    }
-  }
-
-  input[type=button], button {
-    height: 28px;
-  }
-
-  input[type=button]:disabled, button:disabled {
-    background: #AAA !important;
-  }
-}
-
-*/
-
 .menu-list {
   width: 100%;
   box-sizing: border-box;
@@ -241,14 +61,16 @@
     padding: 0 8px;
 
     .menu-cancel-margin,
-    &.menu-cancel-margin,
-    & {
+    &.menu-cancel-margin {
+      margin: -8px 0;
+      width: 100%;
+      padding: 0;
+
       & > .menu,
       & > .menu-text,
       & > .menu-custom,
       & > .menu-title {
-        margin-left: 0;
-        margin-right: 0;
+        margin: -8px 0;
       }
     }
   }
@@ -319,9 +141,11 @@
       font-size: 18px;
       margin-left: -5px;
       color: $grey_dark;
-      .emojione-container {
-        min-width: 24px;
-        text-align: center;
+      align-items: center;
+      justify-content: center;
+
+      .emoji-container {
+        height: 28px;
       }
 
       .user_head {
