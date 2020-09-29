@@ -167,8 +167,10 @@ export default class Collection extends Observable {
         undefined,
         undefined,
         res => {
-          this.sources[key].http_loading = false;
-          this.sources[key].did_first_load = true;
+          if (this.sources[key]) {
+            this.sources[key].http_loading = false;
+            this.sources[key].did_first_load = true;
+          }
           this.did_load_first_time[key] = true;
           if (callback) callback(res);
         },
@@ -212,7 +214,9 @@ export default class Collection extends Observable {
       options.offset || 0,
       options.limit || 0,
       res => {
-        this.sources[source_key].http_loading = false;
+        if (this.sources[source_key]) {
+          this.sources[source_key].http_loading = false;
+        }
         callback(res);
       },
     );

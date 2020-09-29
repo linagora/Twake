@@ -145,7 +145,6 @@ class WindowState {
       if (url.indexOf('/private/') == 0) {
         url = url.split('/').pop();
         var list = url.split('-');
-        console.log(list);
         result.channel_id = this.expandUUID4(list[1]);
         result.message = list[2] ? this.expandUUID4(list[2]) : false;
         if (!result.channel_id) {
@@ -154,7 +153,6 @@ class WindowState {
       } else {
         url = url.split('/').pop();
         var list = url.split('-');
-        console.log(list);
         var channel_id = list[2];
         var workspace_id = list[1];
         result.message = list[3] ? this.expandUUID4(list[3]) : false;

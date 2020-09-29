@@ -31,9 +31,10 @@ class MessagesListServerUtilsManager {
   get(channelId: string, threadId: string, collectionKey: string) {
     const key = channelId + '_' + collectionKey;
     if (this.services[key]) {
+      //@ts-ignore
+      window.MessagesListServerUtils = this.services[key];
       return this.services[key];
     }
-    console.log('create for ', channelId, threadId, collectionKey);
     this.services[key] = new MessagesListServerUtils(channelId, threadId, collectionKey);
     return this.services[key];
   }
@@ -60,13 +61,12 @@ export class MessagesListServerUtils extends Observable {
   lastMessageOfAllLoaded: string = '';
   lastRealtimeMessageId: string = '';
   didInit: boolean = false;
+  destroyed: boolean = false;
 
   httpLoading: boolean = false;
 
   constructor(channelId: string, threadId: string, collectionKey: string) {
     super();
-    //@ts-ignore
-    window.MessagesListServerUtils = this;
 
     this.channelId = channelId;
     this.threadId = threadId;
@@ -84,7 +84,7 @@ export class MessagesListServerUtils extends Observable {
     }
     Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
-    if (this.didInit && fromMessageId) {
+    if (!this.destroyed && this.didInit && fromMessageId) {
       this.reset();
       if (typeof fromMessageId === 'string') {
         return this.loadMore(false, fromMessageId);
@@ -95,6 +95,10 @@ export class MessagesListServerUtils extends Observable {
       return new Promise(resolve => {
         if (!this.didInit) {
           this.httpLoading = true;
+        }
+        if (this.destroyed) {
+          this.destroyed = false;
+          resolve();
         }
         Collections.get('messages').addSource(
           {
@@ -133,6 +137,10 @@ export class MessagesListServerUtils extends Observable {
             }
           },
         );
+      }).then(() => {
+        //After an init always update last and first messages
+        this.onNewMessageFromWebsocketListener(null);
+        return new Promise(resolve => resolve());
       });
     }
   }
@@ -278,7 +286,6 @@ export class MessagesListServerUtils extends Observable {
   }
 
   reset() {
-    console.error(this.threadId + ' reset firstMessageOfAll');
     this.firstMessageOfAll = '';
     this.firstLoadedMessageId = '';
     this.lastLoadedMessageId = '';
@@ -307,6 +314,7 @@ export class MessagesListServerUtils extends Observable {
   }
 
   destroy() {
+    this.destroyed = true;
     this.httpLoading = false;
     Collections.get('messages').removeSource(this.collectionKey);
     Collections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);

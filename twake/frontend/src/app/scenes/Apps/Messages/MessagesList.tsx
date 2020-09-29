@@ -49,8 +49,8 @@ export default class MessagesList extends Component<Props> {
     });
   }
 
-  jumpBottom() {
-    if (this.messagesListServerService.hasLastMessage()) {
+  jumpBottom(init?: boolean) {
+    if (!init && this.messagesListServerService.hasLastMessage()) {
       this.messagesListService.scrollTo(true);
     } else {
       this.messagesListServerService.init(true).then(() => {
@@ -65,7 +65,7 @@ export default class MessagesList extends Component<Props> {
       //Can jump on init to message
       this.jumpTo(mid);
     } else {
-      this.jumpBottom();
+      this.jumpBottom(true);
     }
     this.messagesListServerService.addListener(this);
     this.messagesListService.addListener(this);
