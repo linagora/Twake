@@ -215,7 +215,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel));
         }
 
-        if (!$channel) {
+        if (!$channel || !$user) {
             return false;
         }
 
