@@ -65,7 +65,7 @@ export default class Viewer extends Component {
     );
   }
   previewFile(url, app) {
-    this.state.loading_preview = true;
+    this.setState({ loading_preview: true });
 
     DriveService.getFileUrlForEdition(url, app, this.viewed_document.id, url => {
       this.setState({ loading_preview: false, did_load_preview: true, url_formated: url });
