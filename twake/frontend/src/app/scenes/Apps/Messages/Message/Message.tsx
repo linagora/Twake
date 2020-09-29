@@ -96,34 +96,34 @@ export default class MessageComponent extends Component<
       return <Thread loading refDom={this.setDomElement} />;
     }
 
-    if (this.props.message?.hidden_data?.type === 'init_channel') {
+    const message =
+      Collections.get('messages').find(this.props.message.id) ||
+      Collections.get('messages').findByFrontId(this.props.message.front_id);
+
+    if (message?.hidden_data?.type === 'init_channel') {
       if (!this.state.render) {
         return <div ref={this.setDomElement} />;
       }
-      return (
-        <FirstMessage refDom={this.setDomElement} channelId={this.props.message.channel_id || ''} />
-      );
+      return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
     }
 
     const max_responses = this.state.history;
-    let previous_message: Message = this.props.message;
+    let previous_message: Message = message;
     let responses = Collections.get('messages')
       .findBy({
-        channel_id: this.props.message.channel_id,
-        parent_message_id: this.props.message.id,
+        channel_id: message.channel_id,
+        parent_message_id: message.id,
         _user_ephemeral: undefined,
       })
       .filter((i: Message) => !i._user_ephemeral)
       .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
 
-    const linkToThread = !!this.props.message.parent_message_id && this.props.repliesAsLink;
+    const linkToThread = !!message.parent_message_id && this.props.repliesAsLink;
 
-    const showInput = this.messageEditorService.currentEditor === this.props.message?.id;
+    const showInput = this.messageEditorService.currentEditor === message?.id;
 
     const canDropIn =
-      !this.props.message.parent_message_id &&
-      !this.props.message._user_ephemeral &&
-      this.props.message.message_type !== 2;
+      !message.parent_message_id && !message._user_ephemeral && message.message_type !== 2;
 
     return (
       <DroppableZone
@@ -136,21 +136,21 @@ export default class MessageComponent extends Component<
           refDom={this.setDomElement}
           highlighted={this.props.highlighted}
           hidden={!this.state.render}
-          withBlock={!this.props.message.parent_message_id && !this.props.noBlock}
-          canDrag={!(this.props.repliesAsLink && this.props.message.parent_message_id)}
-          message={this.props.message}
+          withBlock={!message.parent_message_id && !this.props.noBlock}
+          canDrag={!(this.props.repliesAsLink && message.parent_message_id)}
+          message={message}
           className={canDropIn ? 'has-droppable ' : ''}
         >
           <ThreadSection
             small={linkToThread}
-            message={this.props.message}
+            message={message}
             head
             delayRender={!this.state.render}
           >
             <MessageContent
-              key={this.props.message?._last_modified || this.props.message?.front_id}
+              key={message?._last_modified || message?.front_id}
               linkToThread={linkToThread}
-              message={this.props.message}
+              message={message}
               collectionKey={this.props.collectionKey}
             />
           </ThreadSection>
@@ -160,12 +160,12 @@ export default class MessageComponent extends Component<
               <div className="message-content">
                 <a
                   onClick={() => {
-                    MessagesService.showMessage(this.props.message.id);
+                    MessagesService.showMessage(message.id);
                   }}
                   href="#"
                 >
                   {Languages.t('scenes.apps.messages.message.show_responses_button')} (
-                  {this.props.message.responses_count})
+                  {message.responses_count})
                 </a>
               </div>
             </ThreadSection>
@@ -202,21 +202,19 @@ export default class MessageComponent extends Component<
             <ThreadSection alinea small message={{ sender: UserService.getCurrentUserId() }}>
               <div className="message-content">
                 <Input
-                  channelId={this.props.message?.channel_id || ''}
-                  threadId={this.props.message?.id || ''}
+                  channelId={message?.channel_id || ''}
+                  threadId={message?.id || ''}
                   collectionKey={this.props.collectionKey}
                 />
               </div>
             </ThreadSection>
           )}
-          {!showInput && !this.props.noReplies && !this.props.message.parent_message_id && (
+          {!showInput && !this.props.noReplies && !message.parent_message_id && (
             <ThreadSection compact>
               <div className="message-content">
                 <a
                   href="#"
-                  onClick={() =>
-                    this.messageEditorService.openEditor(this.props.message?.id || '', '')
-                  }
+                  onClick={() => this.messageEditorService.openEditor(message?.id || '', '')}
                 >
                   <CornerDownRight size={14} />{' '}
                   {Languages.t('scenes.apps.messages.message.reply_button')}

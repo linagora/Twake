@@ -10,8 +10,8 @@ import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
-import Languages from 'services/languages/languages.js';
-import { ArrowDown } from 'react-feather';
+import GoToBottom from './Parts/GoToBottom';
+import ScrollerParent from './Parts/ScrollerParent';
 import WritingUsers from './Input/WritingUsers';
 type Props = {
   channel: any;
@@ -19,6 +19,7 @@ type Props = {
   collectionKey: string;
   unreadAfter: number;
 };
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default class MessagesList extends Component<Props> {
   messagesListServerService: MessagesListServerUtils;
@@ -68,7 +69,6 @@ export default class MessagesList extends Component<Props> {
       this.jumpBottom(true);
     }
     this.messagesListServerService.addListener(this);
-    this.messagesListService.addListener(this);
   }
 
   componentWillUnmount() {
@@ -95,15 +95,12 @@ export default class MessagesList extends Component<Props> {
       this.props.threadId && Collections.get('messages').find(this.props.threadId);
 
     return [
-      <div
-        className={
-          'messages-scroller-parent ' + (this.messagesListService.fixBottom ? '' : 'scrolled-up ')
-        }
-      >
-        <div
-          key="messages"
-          style={{ width: '100%', height: '100%', position: 'relative', overflow: 'auto' }}
-          ref={this.messagesListService.setScroller}
+      <ScrollerParent messagesListService={this.messagesListService}>
+        <PerfectScrollbar
+          options={{ suppressScrollX: true }}
+          component="div"
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+          containerRef={this.messagesListService.setScroller}
         >
           <div className="messages-list" ref={this.messagesListService.setMessagesContainer}>
             <div className="fake-messages">
@@ -152,19 +149,10 @@ export default class MessagesList extends Component<Props> {
               ))}
             </div>
           </div>
-        </div>
-        <div
-          className={'go-to-now '}
-          key="go-to-now"
-          onClick={() => {
-            this.jumpBottom();
-          }}
-        >
-          <ArrowDown size={16} />{' '}
-          {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
-        </div>
+        </PerfectScrollbar>
+        <GoToBottom jumpBottom={() => this.jumpBottom()} />
         <WritingUsers channelId={this.props.channel.id} threadId={this.props.threadId} />
-      </div>,
+      </ScrollerParent>,
     ];
   }
 }

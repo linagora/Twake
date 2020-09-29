@@ -146,15 +146,22 @@ export class MessagesListUtils extends Observable {
   }
 
   setWitnessMessage(node: any) {
+    /*    console.log('new witness id', node);
+    if (this.currentWitnessNode) {
+      this.currentWitnessNode.style.backgroundColor = '';
+    }*/
+    this.getVisibleMessagesLastPosition = this.currentScrollTop;
     this.currentWitnessNode = node;
     this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
+    //   this.currentWitnessNode.style.backgroundColor = 'red';
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
   getVisibleMessages(setWitness: boolean = false) {
-    this.getVisibleMessagesLastPosition = this.currentScrollTop;
     let closestToCenter = 10000;
     let bestCenterNode: any;
+
+    this.currentScrollTop = this.scrollerNode.scrollTop;
 
     const upLimit = this.currentScrollTop;
     const bottomLimit = this.currentScrollTop + this.scrollerNode.clientHeight;
@@ -184,15 +191,20 @@ export class MessagesListUtils extends Observable {
         }
 
         if (
-          offsetBottom > upLimit - this.scrollerNode.clientHeight / 2 &&
-          offsetTop < bottomLimit + this.scrollerNode.clientHeight / 2
+          offsetBottom > upLimit - this.scrollerNode.clientHeight &&
+          offsetTop < bottomLimit + this.scrollerNode.clientHeight
         ) {
           this.registerDelayedRender(nodeMessage.node);
         } else {
           if (nodeMessage.message.id === this.highlighted) {
             this.removeHighlightMessage();
           }
-          nodeMessage.node.stopRenderContent();
+          if (
+            offsetBottom < upLimit - this.scrollerNode.clientHeight * 10 &&
+            offsetTop > bottomLimit + this.scrollerNode.clientHeight * 10
+          ) {
+            nodeMessage.node.stopRenderContent();
+          }
           //Do nothing
         }
       }
@@ -203,6 +215,8 @@ export class MessagesListUtils extends Observable {
       bestCenterNode = this.messagesPositions[message?.id]?.node?.getDomElement() || bestCenterNode;
     }
     if (bestCenterNode) this.setWitnessMessage(bestCenterNode);
+
+    window.requestAnimationFrame(() => this.triggerDelayedRender());
   }
 
   registerDelayedRender(messageNode: any) {
@@ -327,9 +341,7 @@ export class MessagesListUtils extends Observable {
 
     this.unlockScroll();
 
-    this.getVisibleMessages();
-
-    window.requestAnimationFrame(() => this.triggerDelayedRender());
+    this.getVisibleMessages(false);
   }
 
   lockScroll() {
@@ -371,7 +383,7 @@ export class MessagesListUtils extends Observable {
       scrollTop: this.scrollerNode.scrollTop,
     };
 
-    if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 200) {
+    if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 50) {
       this.getVisibleMessages(this.ignoreNextScroll <= 0);
       this.triggerDelayedRender();
     }
