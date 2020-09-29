@@ -212,7 +212,7 @@ class Workspace extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
             $workspaceId = $request->request->get("workspaceId");
             $ok = $this->get("app.workspaces")->remove(0, $workspaceId);
             if ($ok) {

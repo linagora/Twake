@@ -18,7 +18,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $language = $request->request->get("language", "");
             $this->get("app.user")->updateLanguage($this->getUser()->getId(), $language);
@@ -39,7 +39,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $data["data"] = $this->get("app.user")->getNotificationPreferences($this->getUser()->getId());
 
@@ -59,7 +59,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $notification = $request->request->get("preferences", Array());
             $this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
@@ -80,7 +80,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $status = $request->request->get("status", Array());
             $this->get("app.user")->setTutorialStatus($this->getUser()->getId(), $status);
@@ -122,7 +122,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $preferences = $request->request->get("preferences", Array());
             $this->get("app.user")->setWorkspacesPreferences($this->getUser()->getId(), $preferences);
@@ -143,7 +143,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $status = $request->request->get("status", Array());
             $this->get("app.user")->updateStatus($this->getUser()->getId(), $status);
@@ -164,7 +164,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $firstname = $request->request->get("firstname", "");
             $lastname = $request->request->get("lastname", "");
@@ -217,7 +217,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $username = $request->request->get("username", "");
 
@@ -241,7 +241,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $oldPassword = $request->request->get("old_password", "");
             $password = $request->request->get("password", "");
@@ -266,7 +266,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $mail = $request->request->get("mail", "");
 
@@ -290,7 +290,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $mail = $request->request->get("mail", "");
             $result = $this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail);
@@ -314,7 +314,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
             $mail = $request->request->get("mail", "");
 
             $token = $this->get("app.user")->addNewMail($this->getUser()->getId(), $mail);
@@ -340,7 +340,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $token = $request->request->get("token", "");
             $number = $request->request->get("code", "");
@@ -371,7 +371,7 @@ class UsersAccount extends BaseController
             "data" => Array()
         );
 
-        if ($this->getUser()) {
+        if ($this->getUser() && !is_string($this->getUser())) {
 
             $mails = $this->get("app.user")->getSecondaryMails($this->getUser()->getId());
             foreach ($mails as $mail) {
