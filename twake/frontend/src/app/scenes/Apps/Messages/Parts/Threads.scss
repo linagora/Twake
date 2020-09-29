@@ -52,7 +52,7 @@
     box-shadow: 0 0 0 8px var(--primary-background);
   }
   opacity: 1;
-  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s;
   min-width: 0;
 
   &.hidden {
