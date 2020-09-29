@@ -66,6 +66,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 $member->setLastActivity(new \DateTime());
                 if($mention_text){
                     $member->setLastQuotedMessageId("" . $message->getId());
+                    $member->setLastMessagesIncrement($channel->getMessagesIncrement());
                 }
                 
                 $channel_array = $channel->getAsArray();
@@ -188,6 +189,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement() - 1);
         $member->setLastQuotedMessageId("force_unread");
+        $member->setLastMessagesIncrement($channel->getMessagesIncrement());
 
         $array = $channel->getAsArray();
         $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();

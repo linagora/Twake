@@ -18,7 +18,7 @@ export default class AutoHeight extends Component {
   }
   change() {
     this.textarea.style.height = '1px';
-    var totalHeight = this.textarea.scrollHeight - this.textarea_offset + 4;
+    var totalHeight = this.textarea.scrollHeight - this.textarea_offset;
     this.textarea.style.height = totalHeight + 'px';
     this.container.style.height = totalHeight + 'px';
     if (this.oldHeight != totalHeight && this.props.onResize) {

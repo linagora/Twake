@@ -56,20 +56,20 @@ export default class WorkspaceParameter extends Component {
     Collections.get('users').removeListener(this);
   }
   displayScene() {
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 1) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 1) {
       return <WorkspaceIdentity />;
     }
     if (this.state.page == 2) {
       return <WorkspacePartner />;
     }
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 3) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 3) {
       var options = this.state.options;
       if (this.state.options == 'open_search_apps') {
         this.state.options = undefined;
       }
       return <WorkspaceApps searchApps={options == 'open_search_apps'} />;
     }
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_DATA') && this.state.page == 4) {
+    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page == 4) {
       return <CompanyIdendity />;
     }
     if (this.state.page == 5) {
@@ -141,7 +141,7 @@ export default class WorkspaceParameter extends Component {
 
     var menu = [];
 
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS')) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege()) {
       menu.push({
         type: 'menu',
         emoji: ':house_with_garden:',
@@ -183,7 +183,7 @@ export default class WorkspaceParameter extends Component {
       },
     });
 
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_DATA')) {
+    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA')) {
       menu.push({ type: 'separator' });
       menu.push({
         type: 'menu',

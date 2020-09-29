@@ -207,7 +207,7 @@ export default class ChannelsUser extends Component {
                 keep = true;
               }
               if (
-                channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60 &&
+                channel._user_last_access > new Date().getTime() / 1000 - 14 * 24 * 60 * 60 &&
                 channel.messages_increment >= 1
               ) {
                 keep = true;

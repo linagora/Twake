@@ -9,8 +9,9 @@ import sha256 from 'crypto-js/sha256';
 import Globals from 'services/Globals.js';
 
 export default class SecuredConnection {
-  constructor(route, options, callback, http_options) {
+  constructor(route, options, callback, http_options, collectionId) {
     this.ready = false;
+    this.collectionId = collectionId;
 
     this.route = route;
     this.options = options;
@@ -52,7 +53,7 @@ export default class SecuredConnection {
         this.open();
 
         if (data.get) {
-          this.callback('get', data.get);
+          this.callback('get', { collectionId: this.collectionId, data: data.get });
           did_get = true;
         }
       }

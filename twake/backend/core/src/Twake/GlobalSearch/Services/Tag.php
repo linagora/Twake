@@ -118,6 +118,8 @@ Class Tag
                 if ($object["front_id"]) {
                     $tag->setFrontId($object["front_id"]);
                 }
+            }else{
+                return false;
             }
             $did_create = true;
         }

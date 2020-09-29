@@ -73,6 +73,9 @@ export default class Viewer extends Component {
   }
   render() {
     if (!this.viewed_document) {
+      setTimeout(() => {
+        this.setState({});
+      }, 1000);
       return '';
     }
 

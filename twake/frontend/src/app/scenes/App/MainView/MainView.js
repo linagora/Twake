@@ -295,8 +295,7 @@ export default class MainView extends Component {
               current_side_channel.original_group == Workspaces.currentGroupId) && (
               <div className="app_side">
                 <div className="side_header">
-                  {this.getSideAppName(side_app, current_side_channel)}
-
+                  <span>{this.getSideAppName(side_app, current_side_channel)}</span>
                   <CloseIcon
                     className="m-icon-medium close"
                     onClick={() => {

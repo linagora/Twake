@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Messages from 'scenes/Apps/Messages/Messages.js';
+import Messages from 'scenes/Apps/Messages/Messages';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';

@@ -255,6 +255,13 @@ export default class AutoComplete extends Component {
     this.setState({ focused: true });
     this.keyUp({});
   }
+  blur() {
+    this.input.blur();
+    this.setState({ focused: false });
+  }
+  setContent(content) {
+    this.input.value = content;
+  }
   render() {
     this.setPositionResult();
     return (
