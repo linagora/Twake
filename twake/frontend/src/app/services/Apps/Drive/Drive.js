@@ -515,7 +515,7 @@ class Drive extends Observable {
       spreadsheet: ['xls', 'xlsx', 'ods', 'csv'],
       pdf: ['pdf'],
       svg: ['svg'],
-      video: ['mp4', 'mov', 'avi', 'webm', 'm4v'],
+      video: ['mp4', 'mov', 'avi', 'webm', 'm4v', 'mkv'],
       archive: ['zip', 'tar', 'gz', 'rar'],
       code: ['php', 'c', 'cpp', 'py', 'html', 'yml', 'json', 'md'],
     };
