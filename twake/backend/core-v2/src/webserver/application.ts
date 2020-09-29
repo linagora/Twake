@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { WebConfigService } from './configuration/configuration.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -7,9 +8,13 @@ async function bootstrap() {
     logger: true
   });
 
+  const webConfig: WebConfigService = app.get('WebConfigService');
+
   app.setGlobalPrefix("api/v2");
 
-  await app.listen(3000);
+  await app.listen(webConfig.port);
+
+  console.log(`TwakeApp started on port ${webConfig.port}`);
 }
 
 export default bootstrap;

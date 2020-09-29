@@ -19,6 +19,11 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Configuration
+
+1. Configuration is achieved with the help of environment variables and environment files with high priority on system environment variables
+2. Variables can be be defined in 2 files: `.env` and `.env.development` with priority on `.env.development` one
+
 ## Test
 
 ```bash
