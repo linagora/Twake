@@ -387,7 +387,7 @@ class Channels extends Observable {
     } else if (channel.direct) {
       var name = [];
       var user_icon = undefined;
-      channel.members.forEach(id => {
+      ((channel || {}).members || []).forEach(id => {
         if (channel.members.length == 1 || id != CurrentUser.get().id) {
           var user = Collections.get('users').find(id);
           if (user) {
@@ -412,8 +412,10 @@ class Channels extends Observable {
     return true;
   }
 
-  updateURL(channel) {
+  getURL(channel, messageId) {
     var url = '/';
+
+    channel = channel.id ? channel : Collections.get('channels').find(channel);
 
     if (this._url_timeout) clearTimeout(this._title_timeout);
 
@@ -424,9 +426,6 @@ class Channels extends Observable {
       return false;
     }
     if (!channel.id) {
-      this._url_timeout = setTimeout(() => {
-        this.updateURL();
-      }, 1000);
       return false;
     }
     if (channel && channel.icon) {
@@ -443,16 +442,15 @@ class Channels extends Observable {
         '-' +
         WindowService.reduceUUID4(workspace.id) +
         '-' +
-        WindowService.reduceUUID4(channel.id);
+        WindowService.reduceUUID4(channel.id) +
+        '-' +
+        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
     } else if (channel && channel.application && channel.app_id) {
       //Workspace chan
 
       var application = Collections.get('applications').find(channel.app_id);
 
       if (!application) {
-        this._url_timeout = setTimeout(() => {
-          this.updateURL();
-        }, 1000);
         return;
       }
 
@@ -471,7 +469,7 @@ class Channels extends Observable {
     } else if (channel.direct) {
       //Private chan
       var name = [];
-      channel.members.forEach(id => {
+      ((channel || {}).members || []).forEach(id => {
         if (channel.members.length == 1 || id != CurrentUser.get().id) {
           var user = Collections.get('users').find(id);
           if (user) {
@@ -480,16 +478,27 @@ class Channels extends Observable {
         }
       });
       if (name.length == 0) {
-        this._url_timeout = setTimeout(() => {
-          this.updateURL();
-        }, 1000);
         return false;
       }
       name = name.join('+');
       url =
-        '/private/' + WindowService.nameToUrl(name) + '-' + WindowService.reduceUUID4(channel.id);
+        '/private/' +
+        WindowService.nameToUrl(name) +
+        '-' +
+        WindowService.reduceUUID4(channel.id) +
+        '-' +
+        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
     }
+    return url;
+  }
 
+  updateURL(channel) {
+    const url = this.getURL(channel, this.url_values.message);
+    if (!url) {
+      this._url_timeout = setTimeout(() => {
+        this.updateURL();
+      }, 1000);
+    }
     WindowService.setUrl(url);
     this.updateTitle(channel);
   }

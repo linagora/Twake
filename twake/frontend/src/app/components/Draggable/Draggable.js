@@ -12,7 +12,7 @@ export default class Draggable extends React.Component {
     return (
       <div
         className={
-          'draggable ' +
+          (this.props.deactivated ? '' : 'draggable ') +
           this.props.className +
           ' ' +
           (this.state.hide_original ? 'dragging_opacity ' : '')

@@ -33,7 +33,7 @@ export default class LoginView extends Component {
   }
   render() {
     return (
-      <div className="center_box_container login_view skew_in_bottom">
+      <div className="center_box_container login_view skew_in_bottom_nobounce">
         <div className="center_box white_box_with_shadow">
           <div className="title">
             {!((LoginService.server_infos || {}).branding || {}).logo &&

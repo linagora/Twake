@@ -107,16 +107,22 @@ class Message extends FrontObject
     private $block_id = null;
 
     /**
+     * @ORM\Column(name="increment_at_time", type="twake_bigint", nullable=true)
+     */
+    private $increment_at_time = null;
+
+    /**
      * Message constructor.
      */
 
-    public function __construct($channel_id, $parent_message_id)
+    public function __construct($channel_id, $parent_message_id, $increment_at_time)
     {
         parent::__construct();
         $this->channel_id = $channel_id;
         $this->parent_message_id = $parent_message_id;
         $this->creation_date = new \DateTime();
         $this->modification_date = new \DateTime();
+        $this->increment_at_time = $increment_at_time;
     }
 
 
@@ -451,21 +457,25 @@ class Message extends FrontObject
     {
         $this->user_specific_content = json_encode($user_specific_content);
     }
-
-    /**
-     * @return mixed
-     */
+    
     public function getBlockId()
     {
         return $this->block_id;
     }
-
-    /**
-     * @param mixed $block_id
-     */
+    
     public function setBlockId($block_id)
     {
         $this->block_id = $block_id;
+    }
+    
+    public function getIncrementAtTime()
+    {
+        return $this->increment_at_time;
+    }
+    
+    public function setIncrementAtTime($increment_at_time)
+    {
+        $this->increment_at_time = $increment_at_time;
     }
 
     public function getAsArray()
@@ -486,7 +496,8 @@ class Message extends FrontObject
             "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
             "content" => $this->getContent(),
-            "user_specific_content" => $this->getUserSpecificContent()
+            "user_specific_content" => $this->getUserSpecificContent(),
+            "increment_at_time" => $this->getIncrementAtTime(),
         );
     }
 

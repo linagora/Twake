@@ -47,7 +47,7 @@ export default class TwakeNotReady extends Component<Props> {
     return (
       <div className="centered-twake-not-ready-page">
         <div className="twake-not-ready-page">
-          <div className=" skew_in_top">
+          <div className=" skew_in_top_nobounce">
             <div className="">
               <div className="title">
                 <Emojione type=":partying_face:" s64 /> {'Twake is waking up!'}

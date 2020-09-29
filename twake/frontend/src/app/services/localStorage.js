@@ -8,21 +8,20 @@ export default class LocalStorage {
     Globals.localStorageSetItem(key, value);
   }
   static getItem(key, callback) {
-    if (callback) {
-      Globals.localStorageGetItem(key, value => {
-        if (!value) {
-          callback(value);
-          return;
-        }
-        try {
-          value = JSON.parse(value);
-        } catch (e) {
-          value = null;
-          console.log(e);
-        }
-        callback(value);
-      });
+    let value = Globals.localStorageGetItem(key);
+
+    if (!value) {
+      if (callback) callback(value);
+      return;
     }
+    try {
+      value = JSON.parse(value);
+    } catch (e) {
+      value = null;
+      console.log(e);
+    }
+    if (callback) callback(value);
+    return value;
   }
   static clear() {
     Globals.localStorageClear();

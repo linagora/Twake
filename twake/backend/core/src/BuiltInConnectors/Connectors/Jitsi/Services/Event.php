@@ -76,7 +76,7 @@ class Event
             $message = [];
             $message["channel_id"] = $original_message["channel_id"];
             $message["sender"] = $user["id"];
-            $message["parent_message_id"] = isset($original_message["parent_message_id"])?:"";
+            $message["parent_message_id"] = isset($original_message["parent_message_id"])?$original_message["parent_message_id"]:"";
             $message["content"] = Array(
                 ["type" => "system", "content" => ["@" . $creator["username"] . " invite you to join the call ", ["type" => "bold", "content" => $data["form"]["meeting_name"]],". "]],
                 ["type" => "system", "content" => ["type" => "button", "inline" => "true", "style"=>"primary", "action_id"=>"show_link", "content" => "Show call link"]],

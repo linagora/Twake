@@ -49,7 +49,7 @@
     font-weight: bold;
   }
 
-  &:hover {
+  &:hover:not(.notInDrive) {
     box-shadow: 4px 4px 16px 0 #00000022;
     border-color: #fff;
   }
@@ -112,7 +112,7 @@
   position: relative;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(.notInDrive) {
     box-shadow: 4px 4px 16px 0 #00000022;
     border-color: #fff;
   }
@@ -145,7 +145,8 @@
 
   .preview {
     width: 216px;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
     background-color: #f5f5f7;
     flex: 1;
@@ -228,6 +229,10 @@
 .directory {
   transition: opacity 0s;
 
+  &.notInDrive {
+    margin-bottom: 0px;
+  }
+
   &.dragging_opacity {
     opacity: 0;
   }
@@ -242,7 +247,7 @@
       fill: #fff;
     }
 
-    &:hover,
+    &:hover:not(.notInDrive),
     .data {
       background-color: $primary;
       color: #fff;
@@ -330,7 +335,7 @@
     display: block;
   }
 
-  &:hover {
+  &:hover:not(.notInDrive):not(.is_selected) {
     box-shadow: none;
     background: $primary_background;
   }

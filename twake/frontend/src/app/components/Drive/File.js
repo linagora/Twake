@@ -49,6 +49,7 @@ export default class File extends DriveElement {
         className={
           'js-drive-multi-selector-selectable fade_in file ' +
           (this.state.selected ? 'is_selected ' : '') +
+          (this.props.notInDrive ? 'notInDrive ' : '') +
           (mini ? 'mini ' : '') +
           this.props.className
         }
@@ -57,13 +58,13 @@ export default class File extends DriveElement {
           this.clickElement(evt);
         }}
         onDoubleClick={this.props.onDoubleClick}
-        parentClassOnDrag="drive_view grid"
+        parentClassOnDrag="drive_view list"
         onDragStart={evt => {
           this.dragElement(evt);
         }}
         minMove={10}
         data={{ type: 'file', selection_type: this.props.selectionType, data: this.props.data }}
-        deactivated={WorkspaceUserRights.isNotConnected()}
+        deactivated={WorkspaceUserRights.isNotConnected() || this.props.notInDrive}
       >
         <UIFile data={this.state.element} menu={this.common_menu} details={true} />
       </Draggable>
