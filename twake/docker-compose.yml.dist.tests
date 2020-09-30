@@ -19,6 +19,20 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  node:
+    image: twaketech/twake-node
+    volumes:
+      - ./backend/core-v2/:/twake-node:cached
+      - ./docker-data/drive/:/twake-core/drive/
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
+      - ./docker-data/uploads/:/twake-core/web/upload/
+    depends_on:
+      - scylladb
+      - rabbitmq
+      - elasticsearch
+    links:
+      - websockets
+      - scylladb
   php:
     image: twaketech/twake-php
     volumes:

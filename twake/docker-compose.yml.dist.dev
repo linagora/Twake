@@ -19,6 +19,25 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  node:
+    image: twaketech/twake-node
+    environment:
+      - DEV=dev
+    build:
+      context: .
+      dockerfile: docker/twake-node/Dockerfile
+    volumes:
+      - ./backend/core-v2/:/twake-node:cached
+      - ./docker-data/drive/:/twake-core/drive/
+      - ./docker-data/drive-preview/:/twake-core/web/medias/
+      - ./docker-data/uploads/:/twake-core/web/upload/
+    depends_on:
+      - scylladb
+      - rabbitmq
+      - elasticsearch
+    links:
+      - websockets
+      - scylladb
   php:
     image: twaketech/twake-php
     environment:
@@ -70,9 +89,11 @@ services:
       - 8000:80
     links:
       - php
+      - node
       - websockets
     volumes_from:
       - php
+      - node
     volumes:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
