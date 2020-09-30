@@ -8,11 +8,15 @@ export class UsersService {
     return CoreUser.get("123");
   }
 
-  delete(id: string): void {
+  async findByUsername(username): Promise<User | undefined> {
+    return CoreUser.findByUsername(username);
+  }
+
+  async delete(id: string): Promise<void> {
     return CoreUser.remove(id);
   }
 
-  get(id: string): User {
+  async get(id: string): Promise<User | undefined> {
     return CoreUser.get(id);
   }
 }

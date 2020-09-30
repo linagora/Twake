@@ -18,7 +18,12 @@ function remove(id: string): void {
   console.log('Deleting', id);
 }
 
+function findByUsername(username: string): User {
+  return new User(username);
+}
+
 export default {
+  findByUsername,
   remove,
   get
 };
