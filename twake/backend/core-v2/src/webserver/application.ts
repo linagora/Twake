@@ -14,7 +14,7 @@ async function bootstrap() {
 
   await app.listen(webConfig.port);
 
-  console.log(`TwakeApp started on port ${webConfig.port}`);
+  console.log(`TwakeApp started on ${await app.getUrl()}`);
 }
 
 export default bootstrap;
