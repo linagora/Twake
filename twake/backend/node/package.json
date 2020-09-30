@@ -1,0 +1,51 @@
+{
+  "name": "@twake/twake-backend",
+  "version": "1.0.0",
+  "description": "Twake backend",
+  "main": "src/server.js",
+  "scripts": {
+    "build": "npm run build-ts && npm run lint",
+    "build-ts": "tsc",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "serve": "node dist/server.js",
+    "serve-debug": "nodemon --inspect dist/server.js",
+    "start": "npm run serve",
+    "test": "jest --forceExit --coverage --verbose",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch-node": "nodemon dist/server.js",
+    "watch-test": "npm run test -- --watchAll",
+    "watch-ts": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TwakeApp/twake-backend.git"
+  },
+  "author": "Twake",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TwakeApp/twake-backend/issues"
+  },
+  "homepage": "https://github.com/TwakeApp/twake-backend#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/eslint": "^7.2.3",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.2",
+    "@types/supertest": "2.0.4",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "chai": "^4.2.0",
+    "concurrently": "5.3.0",
+    "eslint": "^7.10.0",
+    "jest": "^26.4.2",
+    "nodemon": "2.0.4",
+    "supertest": "4.0.2",
+    "ts-jest": "^26.4.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "fastify": "3.4.1",
+    "fastify-plugin": "2.3.4"
+  }
+}
