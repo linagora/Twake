@@ -63,23 +63,10 @@ export default class AutoComplete extends Component<Props, State> {
 
     this.keyUp = this.keyUp.bind(this);
     this.keyDown = this.keyDown.bind(this);
-
-    window.addEventListener('keydown', (evt: any) => {
-      evt = evt || window.event;
-      let isEscape = false;
-      if ('key' in evt) {
-        isEscape = evt.key === 'Escape' || evt.key === 'Esc';
-      } else {
-        isEscape = evt.keyCode === 27;
-      }
-      if (isEscape) {
-        this.is_open = false;
-        if (this.props.onHide) this.props.onHide();
-      }
-    });
   }
   keyDown(ev: any) {
-    let key = ev.which;
+    let key = ev.which || window.event;
+
     if (
       this.is_open &&
       key &&
@@ -166,6 +153,8 @@ export default class AutoComplete extends Component<Props, State> {
 
   componentWillUnmount() {
     document.removeEventListener('click', this.outsideClickListener);
+    this.input.removeEventListener('keydown', this.keyDown);
+    this.input.removeEventListener('keyup', this.keyUp);
   }
   componentDidMount() {
     let element = this.container;
