@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AutoComplete from 'components/AutoComplete/AutoComplete.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete';
 import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
 import ChannelsService from 'services/channels/channels.js';
