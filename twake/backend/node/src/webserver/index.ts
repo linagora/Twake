@@ -1,15 +1,13 @@
 import { Server, IncomingMessage, ServerResponse } from "http";
 import * as fastify from "fastify";
+import { serverErrorHandler } from "./error";
 import { registerRoutes } from "./api";
 
 const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify.fastify({
   logger: true
 });
 
-server.setErrorHandler(async (err) => {
-  console.log(err);
-});
-
+serverErrorHandler(server);
 registerRoutes(server);
 
 const start = async (): Promise<void> => {
