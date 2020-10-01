@@ -4,9 +4,12 @@
   "description": "Twake backend",
   "main": "src/server.js",
   "scripts": {
-    "build": "npm run build-ts && npm run lint",
+    "build": "npm run clean-dist && npm run build-ts && npm run copy-assets",
     "build-ts": "tsc",
-    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "clean-dist": "rimraf ./dist",
+    "copy-assets": "npm run copy-config",
+    "copy-config": "cp -R config dist",
+    "lint": "eslint . --ext .ts --quiet --fix",
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
@@ -28,6 +31,7 @@
   "homepage": "https://github.com/TwakeApp/twake-backend#readme",
   "devDependencies": {
     "@types/chai": "^4.2.12",
+    "@types/config": "0.0.36",
     "@types/eslint": "^7.2.3",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
@@ -39,12 +43,14 @@
     "eslint": "^7.10.0",
     "jest": "^26.4.2",
     "nodemon": "2.0.4",
+    "rimraf": "^3.0.2",
     "supertest": "4.0.2",
     "ts-jest": "^26.4.0",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.3"
   },
   "dependencies": {
+    "config": "^3.3.2",
     "fastify": "3.4.1",
     "fastify-plugin": "2.3.4"
   }
