@@ -1,40 +1,43 @@
-import { FastifyInstance, RouteShorthandOptions } from 'fastify';
+import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { UserParams, CreateUserBody } from "./types";
 import * as controller from "./controller";
-import User from '../../../core/user/models';
+import User from "../../../core/types/user";
 
-export default (router: FastifyInstance) => {
-
-  router.get('/users', async (req, _res): Promise<User[]> => {
-    req.log.info('Get users');
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
+  fastify.get("/", async (req): Promise<User[]> => {
+    req.log.info("Get users");
 
     return controller.getUsers();
   });
 
-  router.get<{
+  fastify.get<{
     Params: UserParams,
-  }>('/users/:id', async (req, _res): Promise<User> => {
+  }>("/:id", async (req): Promise<User> => {
     req.log.info(`Get user ${req.params.id}`);
     return controller.getUser(req.params.id);
   });
 
-  const opts: RouteShorthandOptions = {
+  const routeOptions: RouteShorthandOptions = {
     schema: {
       body: {
-        type: 'object',
+        type: "object",
         properties: {
           email: {
-            type: 'string'
+            type: "string"
           }
         }
       }
     }
   };
 
-  router.post<{
+  fastify.post<{
     Body: CreateUserBody
-  }>('/users', opts, async (req, _res): Promise<User> => {
+  }>("/", routeOptions, async (req): Promise<User> => {
     req.log.info(`Creating user ${JSON.stringify(req.body)}`);
-    return new User('1');
+    return new User("1");
   });
-}
+
+  next();
+};
+
+export default routes;

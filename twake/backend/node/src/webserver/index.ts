@@ -6,13 +6,13 @@ const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> =
   logger: true
 });
 
-server.setErrorHandler(async (err, _req, _res) => {
+server.setErrorHandler(async (err) => {
   console.log(err);
 });
 
 registerRoutes(server);
 
-const start = async () => {
+const start = async (): Promise<void> => {
   try {
     await server.listen(4000, "0.0.0.0");
   } catch (err) {

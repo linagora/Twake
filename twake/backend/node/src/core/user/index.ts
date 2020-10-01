@@ -1,4 +1,4 @@
-import User from "./models";
+import User from "../types/user";
 
 /**
  * Get user from its ID
@@ -15,7 +15,7 @@ function get(id: string): User {
  * @param id
  */
 function remove(id: string): void {
-  console.log('Deleting', id);
+  console.log("Deleting", id);
 }
 
 function findByUsername(username: string): User {
