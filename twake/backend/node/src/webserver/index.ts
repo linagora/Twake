@@ -3,6 +3,7 @@ import { FastifyInstance, fastify } from "fastify";
 import { serverErrorHandler } from "./error";
 import { registerRoutes } from "./api";
 import { configureAuthentication } from "./auth";
+import configureWebsocket from "./websocket";
 import config from "../core/config";
 
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({
@@ -11,6 +12,7 @@ const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify
 
 serverErrorHandler(server);
 configureAuthentication(server);
+configureWebsocket(server);
 registerRoutes(server);
 
 const start = async (): Promise<void> => {
