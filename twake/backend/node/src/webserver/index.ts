@@ -1,14 +1,16 @@
 import { Server, IncomingMessage, ServerResponse } from "http";
-import * as fastify from "fastify";
+import { FastifyInstance, fastify } from "fastify";
 import { serverErrorHandler } from "./error";
 import { registerRoutes } from "./api";
+import { configureAuthentication } from "./auth";
 import config from "../core/config";
 
-const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify.fastify({
+const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({
   logger: true
 });
 
 serverErrorHandler(server);
+configureAuthentication(server);
 registerRoutes(server);
 
 const start = async (): Promise<void> => {
