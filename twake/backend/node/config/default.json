@@ -1,5 +1,10 @@
 {
   "web": {
     "port": 3000
+  },
+  "auth": {
+    "jwt": {
+      "secret": "supersecret"
+    }
   }
 }
