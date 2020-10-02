@@ -40,6 +40,11 @@ class AccessManager
                 return false;
             }
         } else if ($type == "Channel") {
+
+            if($edition && !$this->user_has_workspace_access($current_user_id, $id)){
+                return false;
+            }
+            
             $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $id));
             if (isset($channel)) {
                 $channel = $channel->getAsArray();

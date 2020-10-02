@@ -90,6 +90,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             return false;
         }
 
+
         return $this->removeGeneralChannel($object);
     }
 

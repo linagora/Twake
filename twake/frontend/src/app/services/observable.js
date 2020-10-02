@@ -1,8 +1,9 @@
 import React from 'react';
 
+let observables_count = 0;
 export default class Observable {
   constructor() {
-    this.observableName = 'observable';
+    this.observableName = 'observable_' + observables_count++;
     this.observableListenersList = [];
     this.onFirstListener = null;
     this.onLastListener = null;
@@ -10,11 +11,17 @@ export default class Observable {
   setObservableName(name) {
     this.observableName = name;
   }
+  useListener(useState) {
+    const [_, setState] = useState(0);
+    this.addListener(setState);
+  }
   addListener(listener) {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {
       this.onFirstListener();
     }
-    this.observableListenersList.push(listener);
+    if (this.observableListenersList.indexOf(listener) < 0) {
+      this.observableListenersList.push(listener);
+    }
   }
   removeListener(listener) {
     var index = this.observableListenersList.indexOf(listener);
@@ -43,7 +50,16 @@ export default class Observable {
       if (update) {
         var data = {};
         data[this.observableName] = this;
-        this.observableListenersList[i].setState(data);
+        try {
+          if (typeof this.observableListenersList[i] === 'function') {
+            this.observableListenersList[i](data);
+          } else {
+            this.observableListenersList[i].setState(data);
+          }
+        } catch (error) {
+          console.log(error);
+          this.removeListener(this.observableListenersList[i]);
+        }
       }
     }
   }

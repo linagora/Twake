@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
-import AutoComplete from 'components/AutoComplete/AutoComplete.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import Button from 'components/Buttons/Button.js';
@@ -123,7 +123,7 @@ export default class WorkspaceListManager extends React.Component {
             className="m-icon-small remove"
             onClick={() => {
               this.state.workspaces_ids = this.state.workspaces_ids.filter(id =>
-                typeof item == 'string' ? item != id : item.id != id
+                typeof item == 'string' ? item != id : item.id != id,
               );
               this.setState({});
               if (this.props.onUpdate) this.props.onUpdate(this.state.workspaces_ids);
@@ -181,7 +181,7 @@ export default class WorkspaceListManager extends React.Component {
               {Languages.t(
                 'components.workspace.list_manager.no_workspace',
                 [],
-                'Aucun espace de travail.'
+                'Aucun espace de travail.',
               )}
             </div>
           )}
@@ -202,7 +202,7 @@ export default class WorkspaceListManager extends React.Component {
                     Languages.t(
                       'components.workspace.list_manager.add',
                       [],
-                      'Ajouter des espaces de travail'
+                      'Ajouter des espaces de travail',
                     )}
                 </Button>
               )}
@@ -234,7 +234,7 @@ export default class WorkspaceListManager extends React.Component {
                   placeholder={Languages.t(
                     'scenes.apps.parameters.workspace_sections.members.invite_btn',
                     [],
-                    'Ajouter des utilisateurs'
+                    'Ajouter des utilisateurs',
                   )}
                 />
               )}
@@ -249,13 +249,13 @@ export default class WorkspaceListManager extends React.Component {
                     {Languages.t(
                       'components.workspace.list_manager.current_space',
                       [],
-                      'Espace courant'
+                      'Espace courant',
                     )}
                   </Button>
                 )}
               {!!this.props.showAddCurrentGroup &&
                 Workspaces.getOrderedWorkspacesInGroup(Workspaces.currentGroupId).filter(
-                  item => this.state.workspaces_ids.indexOf(item.id) < 0
+                  item => this.state.workspaces_ids.indexOf(item.id) < 0,
                 ).length > 0 &&
                 this.state.workspaces_ids.indexOf(Workspaces.currentGroupId) < 0 && (
                   <Button
@@ -266,7 +266,7 @@ export default class WorkspaceListManager extends React.Component {
                     {Languages.t(
                       'components.workspace.list_manager.current_company',
                       [],
-                      'Entreprise courante'
+                      'Entreprise courante',
                     )}
                   </Button>
                 )}

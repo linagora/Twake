@@ -85,6 +85,10 @@ class WorkspaceLevels
                 return true; //Admin can do everything
             }
 
+            if($action === "admin"){
+                return $level->getIsAdmin();
+            }
+
             if ($action == "" || $action == null) {
                 return true;
             }

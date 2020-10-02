@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import AutoComplete from 'components/AutoComplete/AutoComplete.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Icon from 'components/Icon/Icon.js';
 import Languages from 'services/languages/languages.js';
 import './Picker.scss';

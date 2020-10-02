@@ -248,7 +248,7 @@ class PseudoMarkdownCompiler {
 
   compileStringToLinkObject(string) {
     //Monkey hack for new markdown links, not the best place for this code
-    var link_found = anchorme(string.replace(/\]\(/gm, '](_'), {
+    var link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
       list: true,
       ips: false,
       files: false,
@@ -368,15 +368,13 @@ class PseudoMarkdownCompiler {
         }
       });
 
-      if (original_str.length < 1500) {
-        return {
-          original_str: original_str,
-          fallback_string: original_str.substr(0, 280) + (original_str.length > 280 ? '...' : ''),
-          prepared: result,
-        };
-      }
+      const all = {
+        original_str: original_str,
+        fallback_string: original_str.substr(0, 280) + (original_str.length > 280 ? '...' : ''),
+        prepared: result,
+      };
 
-      return result;
+      return all;
     }
 
     var original_str = str;

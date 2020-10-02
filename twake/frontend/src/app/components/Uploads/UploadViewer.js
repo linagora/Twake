@@ -108,7 +108,8 @@ export default class UploadViewer extends React.Component {
     return (
       <div
         className={
-          'upload_viewer ' + (this.state.upload_manager.will_close ? 'fade_out ' : 'skew_in_left ')
+          'upload_viewer ' +
+          (this.state.upload_manager.will_close ? 'fade_out ' : 'skew_in_left_nobounce ')
         }
       >
         <div className="title" onClick={() => this.setState({ large: !this.state.large })}>

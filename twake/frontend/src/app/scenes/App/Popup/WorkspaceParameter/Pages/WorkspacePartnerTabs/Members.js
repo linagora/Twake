@@ -7,7 +7,7 @@ import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 
 export default class Members extends React.Component {
   render() {
