@@ -50,7 +50,6 @@ class ListenUsers {
   }
 
   listenUser(idUser) {
-    return;
     if (!idUser) {
       return;
     }
@@ -63,16 +62,16 @@ class ListenUsers {
     var that = this;
     if (this.listenerCount[idUser] == 1) {
       ws.subscribe('users/' + idUser, function (uri, data) {
-        if (idUser == UserService.getCurrentUserId()) {
+        /*if (idUser == UserService.getCurrentUserId()) {
           if (data.ping) {
             that.pong();
           }
-        }
+        }*/
         if (data.user && data.user.id) {
-          that.setUserPingTimeout(data.user.id);
+          /*that.setUserPingTimeout(data.user.id);
           if (data.user.connected && that.pingTimeouts[idUser]) {
             clearTimeout(that.pingTimeouts[idUser]);
-          }
+          }*/
           if (that.users_repository.find(data.user.id)) {
             that.was_connected_last_check[idUser] = data.user.connected;
             if (
@@ -89,7 +88,7 @@ class ListenUsers {
       });
 
       if (idUser != UserService.getCurrentUserId()) {
-        setTimeout(() => {
+        /*setTimeout(() => {
           if (idUser != UserService.getCurrentUserId()) {
             this.setUserPingTimeout(idUser);
             this.ping(idUser);
@@ -98,7 +97,7 @@ class ListenUsers {
 
         if (new Date().getTime() - this.lastPong > 60000) {
           this.pong();
-        }
+        }*/
       }
     }
   }
