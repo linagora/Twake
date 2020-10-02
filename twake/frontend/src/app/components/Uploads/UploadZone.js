@@ -33,9 +33,7 @@ export default class UploadZone extends React.Component {
         this.file_input.multiple = true;
       }
 
-      this.file_input.onchange = e => {
-        this.change(e);
-      };
+      this.setCallback();
 
       document.body.appendChild(this.file_input);
 
@@ -44,10 +42,17 @@ export default class UploadZone extends React.Component {
       this.file_input = sharedFileInput;
     }
   }
+  setCallback() {
+    this.file_input.onchange = e => {
+      this.change(e);
+    };
+  }
   open() {
     if (this.props.disabled) {
       return;
     }
+
+    this.setCallback();
 
     this.file_input.click();
   }
@@ -89,6 +94,7 @@ export default class UploadZone extends React.Component {
     this.hover(false);
 
     UploadManager.getFilesTree(event, (tree, nb, totalSize) => {
+      this.file_input.value = '';
       this.upload(tree, nb, totalSize);
     });
   }
@@ -103,6 +109,8 @@ export default class UploadZone extends React.Component {
       }
       this.hover(true, e);
       e.preventDefault();
+
+      this.setCallback();
     });
     node.addEventListener('dragleave', e => {
       if (this.props.onDragLeave) {

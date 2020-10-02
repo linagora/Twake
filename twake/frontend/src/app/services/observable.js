@@ -5,21 +5,24 @@ export default class Observable {
   constructor() {
     this.observableName = 'observable_' + observables_count++;
     this.observableListenersList = [];
+    this.observableListenersShouldNotifyList = [];
     this.onFirstListener = null;
     this.onLastListener = null;
+    this.previousStore = {};
   }
   setObservableName(name) {
     this.observableName = name;
   }
-  useListener(useState) {
+  useListener(useState, shouldNotify = undefined) {
     const [_, setState] = useState(0);
-    this.addListener(setState);
+    this.addListener(setState, shouldNotify);
   }
-  addListener(listener) {
+  addListener(listener, shouldNotify = undefined) {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {
       this.onFirstListener();
     }
     if (this.observableListenersList.indexOf(listener) < 0) {
+      this.observableListenersShouldNotifyList.push(shouldNotify);
       this.observableListenersList.push(listener);
     }
   }
@@ -27,6 +30,7 @@ export default class Observable {
     var index = this.observableListenersList.indexOf(listener);
     if (index > -1) {
       this.observableListenersList.splice(index, 1);
+      this.observableListenersShouldNotifyList.splice(index, 1);
     }
     if (this.observableListenersList.length == 0 && this.onLastListener) {
       this.onLastListener();
@@ -47,6 +51,9 @@ export default class Observable {
   notify(force = false) {
     for (var i = 0; i < this.observableListenersList.length; i++) {
       var update = force || this.shouldNotify(this.observableListenersList[i]);
+      if (update && this.observableListenersShouldNotifyList[i]) {
+        update = this.observableListenersShouldNotifyList[i]();
+      }
       if (update) {
         var data = {};
         data[this.observableName] = this;

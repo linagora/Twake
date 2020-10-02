@@ -81,11 +81,11 @@ export default class MessagesList extends Component<Props> {
 
   render() {
     const messages: any[] = this.messagesListServerService.getMessages();
-    const loadingMessagesTop: any[] = this.messagesListService.getLoadingMessages(
+    let loadingMessagesTop: any[] = this.messagesListService.getLoadingMessages(
       this.messagesListServerService,
       'top',
     );
-    const loadingMessagesBottom: any[] =
+    let loadingMessagesBottom: any[] =
       messages.length > 0
         ? this.messagesListService.getLoadingMessages(this.messagesListServerService, 'bottom')
         : [];
@@ -93,6 +93,11 @@ export default class MessagesList extends Component<Props> {
 
     const headerMessage =
       this.props.threadId && Collections.get('messages').find(this.props.threadId);
+
+    if (headerMessage && messages.length === 0) {
+      loadingMessagesTop = [];
+      loadingMessagesBottom = [];
+    }
 
     return [
       <ScrollerParent messagesListService={this.messagesListService}>

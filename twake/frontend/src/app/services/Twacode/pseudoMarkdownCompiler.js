@@ -92,7 +92,10 @@ class PseudoMarkdownCompiler {
         disable_recursion: true,
         object: PseudoMarkdownDictionary.render_block.mcode.object,
         text_transform: PseudoMarkdownDictionary.render_block.mcode.text_transform,
-        simple_object: (child, obj) => (obj.content || '').trim().substr(0, 20) + '[...]',
+        simple_object: (child, obj) => {
+          const str = (obj.content || '').trim();
+          return str.length > 40 ? str.substr(0, 37) + '...' : str;
+        },
       },
       '`': {
         name: 'icode',
@@ -173,11 +176,11 @@ class PseudoMarkdownCompiler {
       system: {
         apps_only: true,
         object: PseudoMarkdownDictionary.render_block.system.object,
+        simple_object: child => child,
         text_transform: PseudoMarkdownDictionary.render_block.system.text_transform,
       },
       file: {
         view: true,
-        apps_only: true,
         object: PseudoMarkdownDictionary.render_block.file.object,
         simple_object: child => '',
         text_transform: PseudoMarkdownDictionary.render_block.file.text_transform,
@@ -489,7 +492,7 @@ class PseudoMarkdownCompiler {
     return ret;
   }
 
-  compileToHTML(json, is_app, event_container, text_transform) {
+  compileToHTML(json, is_app, event_container, text_transform = undefined) {
     if (!text_transform) {
       text_transform = {};
     }
@@ -498,11 +501,11 @@ class PseudoMarkdownCompiler {
       return this.pseudo_markdown['text'].object('');
     }
 
+    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
     if (typeof json == 'string') {
       json = [json];
     }
-
-    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
     if (json.type || json.start) {
       json = [json];
@@ -582,7 +585,12 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  compileToSimpleHTML(json, is_app = false, text_transform = undefined) {
+  compileToSimpleHTML(
+    json,
+    is_app = false,
+    text_transform = undefined,
+    result_analysis = undefined,
+  ) {
     if (!text_transform) {
       text_transform = {};
     }
@@ -591,11 +599,17 @@ class PseudoMarkdownCompiler {
       return this.pseudo_markdown['text'].object('');
     }
 
-    if (typeof json == 'string') {
-      json = [json];
+    if (!result_analysis) {
+      result_analysis = {
+        has_string: false,
+      };
     }
 
     if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
+    if (typeof json == 'string') {
+      json = [json];
+    }
 
     if (json.type || json.start) {
       json = [json];
@@ -605,15 +619,26 @@ class PseudoMarkdownCompiler {
       var result = [];
       json.forEach(item => {
         if (typeof item == 'string') {
-          result.push(this.pseudo_markdown['text'].object(item, is_app, {}, text_transform));
+          result_analysis.has_string = true;
+          result.push(
+            this.pseudo_markdown['text'].object(item, is_app, {}, text_transform, result_analysis),
+          );
         } else if (Array.isArray(item)) {
-          result.push(this.compileToSimpleHTML(item, is_app, text_transform));
+          result.push(this.compileToSimpleHTML(item, is_app, text_transform, result_analysis));
         } else {
-          if (this.pseudo_markdown[item.start]) {
-            var type = this.pseudo_markdown[item.start];
+          let type = this.pseudo_markdown[item.start];
+          if (item.type) {
+            type = this.pseudo_markdown_types[item.type];
+          }
+          if (type) {
             if (item.type == 'compile' && is_app && typeof item.content == 'string') {
               result.push(
-                this.compileToSimpleHTML(this.compileToJSON(item.content), is_app, text_transform),
+                this.compileToSimpleHTML(
+                  this.compileToJSON(item.content),
+                  is_app,
+                  text_transform,
+                  result_analysis,
+                ),
               );
             } else {
               if (item.type) {
@@ -632,7 +657,12 @@ class PseudoMarkdownCompiler {
 
                   result.push(
                     (type.simple_object || type.object)(
-                      this.compileToSimpleHTML(item.content || '', is_app, text_transform),
+                      this.compileToSimpleHTML(
+                        item.content || '',
+                        is_app,
+                        text_transform,
+                        result_analysis,
+                      ),
                       item,
                       {},
                     ),
@@ -648,6 +678,10 @@ class PseudoMarkdownCompiler {
     } catch (e) {
       console.log(e);
       return this.pseudo_markdown['text'].object('An error occured while showing this message.');
+    }
+
+    if (!result_analysis.has_string) {
+      return this.pseudo_markdown['text'].object('No text content to display.');
     }
 
     return result;
