@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import 'emoji-mart/css/emoji-mart.css';
+
+import { getEmojiDataFromNative, Emoji } from 'emoji-mart';
+import data from 'emoji-mart/data/all.json';
 
 import emojione from 'emojione';
 import Icon from 'components/Icon/Icon.js';
@@ -53,27 +57,32 @@ export default class Emojione extends React.Component {
     var html = emojione.toImage(this.props.type);
     html = html.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
 
+    let size = this.props.size || 16;
     if (this.props.s64) {
+      size = 32;
       html = html.replace('/32/', '/64/');
     } else if (this.props.s128) {
+      size = 64;
       html = html.replace('/32/', '/128/');
     }
 
-    //TODO check if on apple mac
-    var isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
-    if (isMacLike) {
-      return (
-        <span className={'emojione-container emoji-text ' + (this.props.className || '')}>
-          {emojione.shortnameToUnicode(this.props.type)}
-        </span>
-      );
+    const uni = getEmojiDataFromNative(emojione.shortnameToUnicode(this.props.type), 'apple', data);
+
+    const fb = (
+      <i
+        className={'emoji-container ' + (this.props.className || '')}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+
+    if (size > 32) {
+      return fb;
     }
 
     return (
-      <i
-        className={'emojione-container ' + (this.props.className || '')}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <span className={'emoji-container emoji-text ' + (this.props.className || '')}>
+        <Emoji emoji={uni || this.props.type} set="apple" size={size} fallback={() => fb} />
+      </span>
     );
   }
 }

@@ -504,7 +504,7 @@ export default class Drive extends Component {
     ).length;
     var general_menu = [];
 
-    if (!WorkspaceUserRights.isNotConnected()) {
+    if (!WorkspaceUserRights.isNotConnected() && !WorkspaceUserRights.isInvite()) {
       general_menu.push({
         type: 'menu',
         text: in_trash
@@ -514,8 +514,6 @@ export default class Drive extends Component {
           DriveService.toggleInTrash(this.drive_channel);
         },
       });
-
-      general_menu.push({ type: 'separator' });
     }
 
     if (selection_length > 0 && !WorkspaceUserRights.isNotConnected()) {
@@ -658,19 +656,7 @@ export default class Drive extends Component {
           },
         });
       }
-
-      general_menu.push({ type: 'separator' });
     }
-
-    general_menu = general_menu.concat([
-      {
-        type: 'menu',
-        text: Languages.t('scenes.apps.drive.different_view_menu', [], 'Vue liste / grille'),
-        onClick: () => {
-          DriveService.toggleView();
-        },
-      },
-    ]);
 
     var plus_menu = [
       {
@@ -766,9 +752,7 @@ export default class Drive extends Component {
 
     list.push(
       <div className="app">
-        <div
-          className={'drive_app drive_view ' + (DriveService.view_mode == 'list' ? 'list' : 'grid')}
-        >
+        <div className={'drive_app drive_view list'}>
           <UploadZone
             disabled={in_trash || WorkspaceUserRights.isNotConnected()}
             ref={node => (this.upload_zone = node)}

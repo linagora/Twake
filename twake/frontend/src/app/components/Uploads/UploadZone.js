@@ -5,6 +5,7 @@ import Emojione from 'components/Emojione/Emojione.js';
 import './Uploads.scss';
 import Languages from 'services/languages/languages.js';
 
+let sharedFileInput = null;
 export default class UploadZone extends React.Component {
   constructor(props) {
     super();
@@ -17,29 +18,31 @@ export default class UploadZone extends React.Component {
   componentWillUnmount() {
     UploadManager.removeListener(this);
     window.document.removeEventListener('paste', this.paste);
-
-    if (this.file_input) {
-      document.body.removeChild(this.file_input);
-    }
   }
   componentDidMount() {
     this.watch(this.node);
 
-    this.file_input = document.createElement('input');
-    this.file_input.type = 'file';
-    this.file_input.style.position = 'absolute';
-    this.file_input.style.top = '-10000px';
-    this.file_input.style.left = '-10000px';
-    this.file_input.style.width = '100px';
-    if (this.props.multiple !== false) {
-      this.file_input.multiple = true;
+    if (!sharedFileInput) {
+      this.file_input = document.createElement('input');
+      this.file_input.type = 'file';
+      this.file_input.style.position = 'absolute';
+      this.file_input.style.top = '-10000px';
+      this.file_input.style.left = '-10000px';
+      this.file_input.style.width = '100px';
+      if (this.props.multiple !== false) {
+        this.file_input.multiple = true;
+      }
+
+      this.file_input.onchange = e => {
+        this.change(e);
+      };
+
+      document.body.appendChild(this.file_input);
+
+      sharedFileInput = this.file_input;
+    } else {
+      this.file_input = sharedFileInput;
     }
-
-    this.file_input.onchange = e => {
-      this.change(e);
-    };
-
-    document.body.appendChild(this.file_input);
   }
   open() {
     if (this.props.disabled) {
@@ -73,7 +76,7 @@ export default class UploadZone extends React.Component {
       this.props.parent,
       this.props.uploadOptions,
       this.props.driveCollectionKey,
-      this.props.onUploaded
+      this.props.onUploaded,
     );
   }
   change(event) {
@@ -174,23 +177,15 @@ export default class UploadZone extends React.Component {
           }
         }}
       >
-        <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
-          <div className="dashed">
-            <div className={'centered ' + (this.state.dragover ? 'skew_in_top ' : '')}>
-              <Emojione type=":page_facing_up:" s128 />
-              <div className="title">
-                {Languages.t('components.upload.upload_doc', [], 'Envoyer des documents')}
-              </div>
-              <div className="text">
-                {Languages.t(
-                  'components.upload.drop_files',
-                  [],
-                  'Relachez vos fichiers pour les télécharger.'
-                )}
+        {!this.props.disabled && (
+          <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
+            <div className="dashed">
+              <div className={'centered ' + (this.state.dragover ? 'skew_in_top_nobounce ' : '')}>
+                <div className="subtitle">{Languages.t('components.upload.drop_files')}</div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {this.props.children}
       </div>

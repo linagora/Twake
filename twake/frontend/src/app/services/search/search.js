@@ -60,23 +60,25 @@ class search extends Observable {
     ChannelsService.select(item.channel);
 
     if (ChannelsService.currentChannelFrontId == item.channel.front_id) {
+      console.log(item);
+
       if (!item.message.parent_message_id) {
         console.log(
           'search Ea',
           item.channel.id || '',
           item.message.parent_message_id || '',
-          item.message.id || ''
+          item.message.id || '',
         );
         MessagesService.scrollToMessage(
           item.channel.id,
           item.message.parent_message_id,
-          item.message.id
+          item.message.id,
         );
       } else {
         MessagesService.scrollToMessage(
           item.channel.id || '',
           '',
-          item.message.parent_message_id || ''
+          item.message.parent_message_id || '',
         );
         /*MessagesService.scrollToMessage(
           item.channel.id || '',
@@ -130,12 +132,12 @@ class search extends Observable {
               if (item.file.is_directory) {
                 DriveService.changeCurrentDirectory(
                   channel.id + '_undefined_' + item.file.workspace_id,
-                  { id: item.file.id }
+                  { id: item.file.id },
                 );
               } else {
                 DriveService.changeCurrentDirectory(
                   channel.id + '_undefined_' + item.file.workspace_id,
-                  { id: item.file.parent_id }
+                  { id: item.file.parent_id },
                 );
               }
               ChannelsService.select(channel);
@@ -203,7 +205,7 @@ class search extends Observable {
     if (item.type == 'message') {
       if (!item.workspace && (item.channel || {}).original_workspace) {
         item.workspace = Collections.get('workspaces').find(
-          (item.channel || {}).original_workspace
+          (item.channel || {}).original_workspace,
         );
       }
       if (item.workspace && item.channel) {
@@ -336,7 +338,7 @@ class search extends Observable {
 
             this.search_http_loading = false;
             this.notify();
-          }
+          },
         );
       }, 500);
     }
@@ -391,7 +393,7 @@ class search extends Observable {
         if (present_word.trim() && new_word.trim().indexOf(present_word.trim()) >= 0) {
           object._search_text = object._search_text.replace(
             ' ' + present_word + ' ',
-            ' ' + new_word + ' '
+            ' ' + new_word + ' ',
           );
           replaced = true;
         }
@@ -410,7 +412,7 @@ class search extends Observable {
         if (
           word &&
           Strings.removeAccents((object[key] || '').toLocaleLowerCase()).indexOf(
-            Strings.removeAccents(word.trim().toLocaleLowerCase())
+            Strings.removeAccents(word.trim().toLocaleLowerCase()),
           ) >= 0
         ) {
           return true;

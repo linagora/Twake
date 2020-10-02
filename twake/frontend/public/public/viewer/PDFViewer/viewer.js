@@ -10719,9 +10719,9 @@
 				key: 'updateLoadingIndicatorState',
 				value: function updateLoadingIndicatorState() {
 					var loading = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
 					var pageNumberInput = this.items.pageNumber;
 					if (loading) {
+					document.querySelector("#loader").style.display = "none";
 						pageNumberInput.classList.add(PAGE_NUMBER_LOADING_INDICATOR);
 					} else {
 						pageNumberInput.classList.remove(PAGE_NUMBER_LOADING_INDICATOR);

@@ -393,7 +393,7 @@ export default class Signin extends Component {
   render() {
     return (
       <div className="signin">
-        <div className="center_box_container login_view skew_in_bottom">
+        <div className="center_box_container login_view skew_in_bottom_nobounce">
           <div className="center_box white_box_with_shadow" style={{ width: '400px' }}>
             <StepCounter total={3} current={this.state.page} />
             <div className="title">

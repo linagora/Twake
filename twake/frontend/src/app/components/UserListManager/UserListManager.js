@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import UsersService from 'services/user/user.js';
-import AutoComplete from 'components/AutoComplete/AutoComplete.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';

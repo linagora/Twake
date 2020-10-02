@@ -277,9 +277,9 @@ export default class WorkspaceApps extends Component {
                 },
                 {
                   title: '',
-                  width: WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') ? 30 : 1,
+                  width: WorkspaceUserRights.hasWorkspacePrivilege() ? 30 : 1,
                   render: row => {
-                    if (!WorkspaceUserRights.hasGroupPrivilege('MANAGE_APPS')) {
+                    if (!WorkspaceUserRights.hasWorkspacePrivilege()) {
                       return '';
                     }
                     return (
