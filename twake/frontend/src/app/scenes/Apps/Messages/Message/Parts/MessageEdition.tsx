@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Twacode from 'components/Twacode/Twacode.js';
+import Twacode from 'components/Twacode/Twacode';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
