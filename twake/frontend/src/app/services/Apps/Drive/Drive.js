@@ -76,8 +76,6 @@ class Drive extends Observable {
   }
 
   changeCurrentDirectory(channel, directory, workspace_id) {
-    console.log('changeCurrentDirectory', directory);
-
     if (this.changing_directory[channel]) {
       return;
     }
@@ -517,7 +515,7 @@ class Drive extends Observable {
       spreadsheet: ['xls', 'xlsx', 'ods', 'csv'],
       pdf: ['pdf'],
       svg: ['svg'],
-      video: ['mp4', 'mov', 'avi', 'webm', 'm4v'],
+      video: ['mp4', 'mov', 'avi', 'webm', 'm4v', 'mkv'],
       archive: ['zip', 'tar', 'gz', 'rar'],
       code: ['php', 'c', 'cpp', 'py', 'html', 'yml', 'json', 'md'],
     };

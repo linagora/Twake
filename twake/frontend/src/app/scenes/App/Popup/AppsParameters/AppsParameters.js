@@ -106,12 +106,6 @@ export default class AppsParameters extends Component {
 
           <div className="content">{this.displayScene()}</div>
         </div>
-        {/*<div className="bottom">
-            <div className="return">
-              <a className="blue_link"  onClick={()=>this.previous()}>{this.state.i18n.t("general.cancel")}</a>
-            </div>
-            <ButtonWithTimeout className="small " disabled={false} onClick={()=>console.log("click")} loading={false} value={this.state.i18n.t("general.update")} />
-          </div>*/}
       </div>
     );
   }

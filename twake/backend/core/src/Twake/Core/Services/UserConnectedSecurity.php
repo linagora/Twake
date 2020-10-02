@@ -20,7 +20,7 @@ class UserConnectedSecurity
     public function applySecurity(Request $request)
     {
         $user = $this->app->getServices()->get("app.session_handler")->getUser($request);
-        if (!$user) {
+        if (!$user || is_string($user)) {
             $response = new Response();
             $response->setContent(Array("error" => "user_not_connected"));
             return $response;

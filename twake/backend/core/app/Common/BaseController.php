@@ -35,7 +35,7 @@ abstract class BaseController
         $request = $this->app->getRouting()->getCurrentRequest();
         $user = $this->app->getServices()->get("app.session_handler")->getUser($request);
 
-        return $user;
+        return $user ?: "anonymous"; //null is reserved to user == system
     }
 
     public function getParameter($key, $fallback = null)

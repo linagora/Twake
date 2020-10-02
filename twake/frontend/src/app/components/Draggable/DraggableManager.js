@@ -36,20 +36,23 @@ class DraggableManager extends Observable {
   }
 
   start(evt, node, react_draggable) {
+    if (this.dragging) {
+      return;
+    }
+
     if (react_draggable.props.dragHandler) {
+      var onHandler = false;
       var handlers = node.getElementsByClassName(react_draggable.props.dragHandler);
       if (handlers.length > 0) {
-        var onHandler = false;
-
         Array.from(handlers).forEach(item => {
           if (item == evt.target || item.contains(evt.target)) {
             onHandler = true;
           }
         });
+      }
 
-        if (!onHandler) {
-          return;
-        }
+      if (!onHandler) {
+        return;
       }
     }
 
@@ -89,12 +92,19 @@ class DraggableManager extends Observable {
 
     this.clone_created = false;
     this.drag_initial_point = [evt.clientX, evt.clientY];
-    this.current_node_initial_position = [rect.left, rect.top];
+    this.current_node_initial_position = [rect.left, rect.top, node.clientWidth, node.clientHeight];
 
     this.drag = true;
     if (this.current_react_draggable) this.current_react_draggable.setState({ drag: true });
   }
   end(evt, node, react_draggable) {
+    if (this.dragging) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+
+    this.current_react_draggable && this.current_react_draggable.setState({ hide_original: false });
+
     if (!this.data) {
       return;
     }
@@ -177,6 +187,10 @@ class DraggableManager extends Observable {
         div.firstChild.classList.remove('dragging_opacity');
         div.firstChild.classList.remove('fade_in');
         div.firstChild.classList.remove('is_selected');
+
+        div.style.width = this.current_node_initial_position[2] + 'px';
+        div.style.height = this.current_node_initial_position[3] + 'px';
+
         this.clone = div;
 
         if (this.selected_number > 1) {

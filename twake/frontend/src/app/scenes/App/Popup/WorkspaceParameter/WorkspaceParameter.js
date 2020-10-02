@@ -56,20 +56,20 @@ export default class WorkspaceParameter extends Component {
     Collections.get('users').removeListener(this);
   }
   displayScene() {
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 1) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 1) {
       return <WorkspaceIdentity />;
     }
     if (this.state.page == 2) {
       return <WorkspacePartner />;
     }
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') && this.state.page == 3) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 3) {
       var options = this.state.options;
       if (this.state.options == 'open_search_apps') {
         this.state.options = undefined;
       }
       return <WorkspaceApps searchApps={options == 'open_search_apps'} />;
     }
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_DATA') && this.state.page == 4) {
+    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page == 4) {
       return <CompanyIdendity />;
     }
     if (this.state.page == 5) {
@@ -79,7 +79,7 @@ export default class WorkspaceParameter extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.payments_subscriptions_title',
               [],
-              'Paiements et abonnements'
+              'Paiements et abonnements',
             )}
           </div>
 
@@ -102,7 +102,7 @@ export default class WorkspaceParameter extends Component {
             Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId).name,
             Collections.get('groups').find(WorkspaceService.currentGroupId).name,
           ],
-          "Vous êtes dans l'espace de travail $1 du groupe $2."
+          "Vous êtes dans l'espace de travail $1 du groupe $2.",
         )}
         <br />
         <br />
@@ -112,7 +112,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_manager_current_status',
                 [],
-                "Vous êtes Administrateur et Gérant de l'entreprise."
+                "Vous êtes Administrateur et Gérant de l'entreprise.",
               )}
             </span>
           )}
@@ -122,7 +122,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.admin_current_status',
                 [],
-                'Vous êtes Administrateur.'
+                'Vous êtes Administrateur.',
               )}
             </span>
           )}
@@ -132,7 +132,7 @@ export default class WorkspaceParameter extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.manager_current_status',
                 [],
-                "Vous êtes Gérant de l'entreprise."
+                "Vous êtes Gérant de l'entreprise.",
               )}
             </span>
           )}
@@ -141,14 +141,14 @@ export default class WorkspaceParameter extends Component {
 
     var menu = [];
 
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS')) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege()) {
       menu.push({
         type: 'menu',
         emoji: ':house_with_garden:',
         text: Languages.t(
           'scenes.apps.parameters.workspace_sections.workspace',
           [],
-          'Espace de travail'
+          'Espace de travail',
         ),
         selected: this.state.page == 1 ? 'selected' : '',
         onClick: () => {
@@ -161,7 +161,7 @@ export default class WorkspaceParameter extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.apps_connectors_title',
           [],
-          'Applications et connecteurs'
+          'Applications et connecteurs',
         ),
         selected: this.state.page == 3 ? 'selected' : '',
         onClick: () => {
@@ -175,7 +175,7 @@ export default class WorkspaceParameter extends Component {
       text: Languages.t(
         'scenes.app.popup.workspaceparameter.pages.collaborateurs',
         [],
-        'Collaborateurs'
+        'Collaborateurs',
       ),
       selected: this.state.page == 2 ? 'selected' : '',
       onClick: () => {
@@ -183,7 +183,7 @@ export default class WorkspaceParameter extends Component {
       },
     });
 
-    if (WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_DATA')) {
+    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA')) {
       menu.push({ type: 'separator' });
       menu.push({
         type: 'menu',
@@ -191,7 +191,7 @@ export default class WorkspaceParameter extends Component {
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.company_identity_title',
           [],
-          "Identité de l'entreprise"
+          "Identité de l'entreprise",
         ),
         selected: this.state.page == 4 ? 'selected' : '',
         onClick: () => {
@@ -214,12 +214,6 @@ export default class WorkspaceParameter extends Component {
           </div>
           <div className="content">{this.displayScene()}</div>
         </div>
-        {/*<div className="bottom">
-            <div className="return">
-              <a className="blue_link"  onClick={()=>this.previous()}>{this.state.i18n.t("general.cancel")}</a>
-            </div>
-            <ButtonWithTimeout className="small " disabled={false} onClick={()=>console.log("click")} loading={false} value={this.state.i18n.t("general.update")} />
-          </div>*/}
       </div>
     );
   }

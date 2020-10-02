@@ -1,0 +1,38 @@
+.first_message {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10vh;
+  margin-top: 10vh;
+
+  .emojione {
+    width: 88px;
+    margin-bottom: 10px;
+  }
+  .icon {
+    font-size: 88px;
+  }
+
+  .channel_first_message_icon {
+    .user_image {
+      width: 78px;
+      height: 78px;
+      background-size: cover;
+      background-position: center;
+      background-color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      margin-bottom: 20px;
+      border: 2px solid #fff;
+      margin-left: -40px;
+
+      &:first-child {
+        margin-left: 0px;
+      }
+    }
+  }
+
+  .text {
+    margin-top: 10px;
+    opacity: 0.5;
+  }
+}
