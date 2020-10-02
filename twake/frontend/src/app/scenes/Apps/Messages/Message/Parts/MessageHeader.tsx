@@ -132,7 +132,10 @@ export default class MessageHeader extends Component<Props, State> {
           <span className="reply-text">
             replied to{' '}
             <a href="#" onClick={() => scrollToMessage()}>
-              {PseudoMarkdownCompiler.compileToSimpleHTML(parentMessage?.content)}
+              {PseudoMarkdownCompiler.compileToSimpleHTML(
+                parentMessage?.content,
+                parentMessage?.message_type == 1,
+              )}
             </a>
           </span>
         )}

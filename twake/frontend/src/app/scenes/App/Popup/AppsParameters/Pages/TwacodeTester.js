@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Twacode from 'components/Twacode/Twacode.js';
+import Twacode from 'components/Twacode/Twacode';
 
 import './Pages.scss';
 

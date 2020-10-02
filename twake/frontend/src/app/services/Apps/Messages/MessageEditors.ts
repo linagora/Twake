@@ -102,7 +102,6 @@ export class MessageEditors extends Observable {
   }
 
   openFileSelector(threadId: string) {
-    console.log(this.editorsUploadZones);
     if (this.editorsUploadZones[threadId || 'main']) {
       this.editorsUploadZones[threadId || 'main'].open();
     }
