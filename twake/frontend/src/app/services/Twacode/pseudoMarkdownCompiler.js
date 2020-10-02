@@ -501,11 +501,11 @@ class PseudoMarkdownCompiler {
       return this.pseudo_markdown['text'].object('');
     }
 
+    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
     if (typeof json == 'string') {
       json = [json];
     }
-
-    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
     if (json.type || json.start) {
       json = [json];
@@ -605,11 +605,11 @@ class PseudoMarkdownCompiler {
       };
     }
 
+    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
     if (typeof json == 'string') {
       json = [json];
     }
-
-    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
     if (json.type || json.start) {
       json = [json];
