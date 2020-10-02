@@ -591,7 +591,6 @@ class PseudoMarkdownCompiler {
     text_transform = undefined,
     result_analysis = undefined,
   ) {
-    console.log(json);
     if (!text_transform) {
       text_transform = {};
     }
