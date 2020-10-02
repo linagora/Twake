@@ -58,7 +58,7 @@ class WorkspaceUserRights extends Observable {
     return (rights.group || []).indexOf(privilege) >= 0;
   }
 
-  hasWorkspacePrivilege(privilege) {
+  hasWorkspacePrivilege(privilege = 'all') {
     var rights = this.getUserRights();
     if ((rights.workspace || {}).admin) {
       return true;

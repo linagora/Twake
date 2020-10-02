@@ -150,7 +150,7 @@ class User {
     );
   }
 
-  asyncGet(id, callback) {
+  asyncGet(id, callback = undefined) {
     if (this.users_repository.known_objects_by_id[id]) {
       return;
     }
