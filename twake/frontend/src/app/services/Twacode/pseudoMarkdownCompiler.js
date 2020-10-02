@@ -624,7 +624,7 @@ class PseudoMarkdownCompiler {
             this.pseudo_markdown['text'].object(item, is_app, {}, text_transform, result_analysis),
           );
         } else if (Array.isArray(item)) {
-          result.push(this.compileToSimpleHTML(i, is_app, text_transform, result_analysis));
+          result.push(this.compileToSimpleHTML(item, is_app, text_transform, result_analysis));
         } else {
           let type = this.pseudo_markdown[item.start];
           if (item.type) {

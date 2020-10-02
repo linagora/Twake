@@ -50,7 +50,15 @@ export default class MessageComponent extends Component<
 
     this.setDomElement = this.setDomElement.bind(this);
     this.messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
-    this.messageEditorService.addListener(this);
+    let savedCurrentEditor: string | false = '';
+    this.messageEditorService.addListener(this, () => {
+      const render =
+        this.messageEditorService.currentEditor !== savedCurrentEditor &&
+        (this.messageEditorService.currentEditor === this.props.message?.id ||
+          savedCurrentEditor === this.props.message?.id);
+      savedCurrentEditor = this.messageEditorService.currentEditor;
+      return render;
+    });
 
     Collections.get('messages').addListener(this);
     Collections.get('messages').listenOnly(this, [props.message.id || props.message.front_id]);
@@ -152,6 +160,7 @@ export default class MessageComponent extends Component<
               linkToThread={linkToThread}
               message={message}
               collectionKey={this.props.collectionKey}
+              edited={this.messageEditorService.currentEditorMessageId === message.id}
             />
           </ThreadSection>
 
