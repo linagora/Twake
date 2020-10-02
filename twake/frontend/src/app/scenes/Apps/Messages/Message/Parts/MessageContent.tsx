@@ -14,13 +14,12 @@ type Props = {
   message: Message;
   collectionKey: string;
   linkToThread?: boolean;
+  edited?: boolean;
 };
 
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
-  const messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
-  messageEditorService.useListener(useState);
   let loading_interaction_timeout: any = 0;
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
@@ -46,8 +45,7 @@ export default (props: Props) => {
     }
   };
 
-  const showEdition =
-    !props.linkToThread && messageEditorService.currentEditorMessageId === props.message.id;
+  const showEdition = !props.linkToThread && props.edited;
 
   return (
     <div
