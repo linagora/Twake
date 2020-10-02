@@ -38,7 +38,7 @@ class WorkspacesApps extends Observable {
     );
   }
 
-  getApp(id, callback) {
+  getApp(id, callback = undefined) {
     if (this.findingApp[id]) {
       return;
     }
@@ -54,7 +54,7 @@ class WorkspacesApps extends Observable {
     });
   }
 
-  notifyApp(app_id, type, event, data, workspace_id, group_id) {
+  notifyApp(app_id, type, event, data, workspace_id = undefined, group_id = undefined) {
     workspace_id = workspace_id || Workspaces.currentWorkspaceId;
     group_id = group_id || Workspaces.currentGroupId;
 

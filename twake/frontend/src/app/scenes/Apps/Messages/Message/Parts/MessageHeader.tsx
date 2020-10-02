@@ -17,6 +17,7 @@ import MessagesListServerServicesManager, {
   Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Emojione from 'components/Emojione/Emojione.js';
+import ListenUsers from 'services/user/listen_users.js';
 
 type Props = {
   message: Message;
@@ -48,6 +49,14 @@ export default class MessageHeader extends Component<Props, State> {
       this.messagesListServerService,
     );
   }
+
+  componentWillUnmount() {
+    let senderData: any = getSender(this.props.message);
+    if (senderData.type === 'user') {
+      ListenUsers.cancelListenUser(senderData.id);
+    }
+  }
+
   render() {
     let user_name_node: any = null;
 
@@ -94,6 +103,7 @@ export default class MessageHeader extends Component<Props, State> {
 
     let senderData: any = getSender(this.props.message);
     if (senderData.type === 'user') {
+      ListenUsers.listenUser(senderData.id);
       Collections.get('users').addListener(this);
       Collections.get('users').listenOnly(this, [senderData.id]);
     }

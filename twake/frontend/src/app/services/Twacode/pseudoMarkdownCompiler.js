@@ -582,7 +582,7 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  compileToSimpleHTML(json, is_app, text_transform) {
+  compileToSimpleHTML(json, is_app = false, text_transform = undefined) {
     if (!text_transform) {
       text_transform = {};
     }
