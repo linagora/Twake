@@ -79,7 +79,7 @@ class AlertService extends Observable {
       onCloseFunction,
     );
   }
-  confirm(onConfirm, onClose, options) {
+  confirm(onConfirm, onClose = undefined, options = undefined) {
     options = options || {};
     var onConfirmFunction = onConfirm
       ? () => {
