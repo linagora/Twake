@@ -1,4 +1,4 @@
-import Message from "../types/message";
+import Message from "../entity/message";
 
 /**
  * Get message from its ID

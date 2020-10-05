@@ -1,4 +1,4 @@
-import User from "../../../core/types/user";
+import User from "../entity/user";
 
 export async function getUsers(): Promise<User[]> {
   return [new User("1"), new User("2")];

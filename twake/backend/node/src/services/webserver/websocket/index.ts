@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import websocketPlugin from "../plugins/socket.io";
+import websocketPlugin from "./plugin";
 
 export default function configureWebsocket(fastify: FastifyInstance): void {
   fastify.register(websocketPlugin, {
-    path: "/"
+    path: "/socket.io",
   });
 }
