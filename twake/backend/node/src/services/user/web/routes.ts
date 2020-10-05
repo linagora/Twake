@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { UserParams, CreateUserBody } from "./types";
 import * as controller from "./controller";
-import User from "../../../core/types/user";
+import User from "../entity/user";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
   fastify.get(
@@ -20,7 +20,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) =>
   }>(
     "/:id",
     {
-      preValidation: [fastify.authenticate]
+      //preValidation: [fastify.authenticate]
     },
     async (req): Promise<User> => {
       req.log.debug(`Current user ${JSON.stringify(req.user)}`);
@@ -29,7 +29,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) =>
     });
 
   const routeOptions: RouteShorthandOptions = {
-    preValidation: [fastify.authenticate],
+    //preValidation: [fastify.authenticate],
     schema: {
       body: {
         type: "object",

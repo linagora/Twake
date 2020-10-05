@@ -1,4 +1,4 @@
-import Message from "../../../core/types/message";
+import Message from "../entity/message";
 
 export async function getMessages(): Promise<Message[]> {
   return [new Message("1"), new Message("2")];

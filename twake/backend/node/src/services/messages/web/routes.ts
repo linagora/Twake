@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { MessageParams, CreateMessageBody } from "./types";
 import * as controller from "./controller";
-import Message from "../../../core/types/message";
+import Message from "../entity/message";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
   fastify.get("/", async (req): Promise<Message[]> => {

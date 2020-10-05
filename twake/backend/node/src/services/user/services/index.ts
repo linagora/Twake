@@ -1,4 +1,4 @@
-import User from "../types/user";
+import User from "../entity/user";
 
 /**
  * Get user from its ID
