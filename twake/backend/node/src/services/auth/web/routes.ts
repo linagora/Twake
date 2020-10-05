@@ -5,7 +5,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) =>
     // TODO: Get the credentials from req, authenticate user
     const token = fastify.jwt.sign({ _id: 1 });
 
-    reply.send({ token })
+    reply.send({ token });
   });
 
   next();
