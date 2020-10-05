@@ -11,7 +11,7 @@ import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 
 import Globals from 'services/Globals.js';
 import MessageEditors from './MessageEditors';
@@ -142,6 +142,45 @@ class Messages extends Observable {
       var message = Collections.get('messages').edit();
       var val = PseudoMarkdownCompiler.compileToJSON(value);
 
+      const editorManager = MessageEditorsManager.get(options.channel_id);
+      let filesAttachements =
+        editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
+
+      const filesAttachementsToTwacode =
+        filesAttachements.map((id, index) => {
+          return {
+            type: 'file',
+            mode: filesAttachements.length > 1 ? 'mini' : 'preview',
+            content: id,
+          };
+        }) || {};
+
+      const user = UserService.getCurrentUser();
+
+      const multipleFileSystemMessage = [
+        { type: 'br' },
+        { type: 'br' },
+        {
+          type: 'system',
+          content: Languages.t('scenes.apps.drive.message_added_mutiple_files', [
+            UserService.getFullName(user),
+          ]),
+        },
+        { type: 'br' },
+      ];
+
+      const soloFileSystemMessage = [{ type: 'br' }];
+
+      const preparedFiles = filesAttachementsToTwacode.length
+        ? [
+            filesAttachements.length > 1 && val.original_str.length > 1
+              ? [...multipleFileSystemMessage]
+              : [...soloFileSystemMessage],
+            ...filesAttachementsToTwacode,
+          ]
+        : [];
+
+      val = { ...val, prepared: [val.original_str, ...preparedFiles] };
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
 
@@ -157,7 +196,6 @@ class Messages extends Observable {
       message.hidden_data = {};
       message.pinned = false;
       message.responses_count = 0;
-      message.sender = UserService.getCurrentUserId();
 
       const max_message_time = Collections.get('messages')
         .findBy({ channel_id: options.channel_id })
