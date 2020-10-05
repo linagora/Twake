@@ -66,7 +66,13 @@ export default class File extends DriveElement {
         data={{ type: 'file', selection_type: this.props.selectionType, data: this.props.data }}
         deactivated={WorkspaceUserRights.isNotConnected() || this.props.notInDrive}
       >
-        <UIFile data={this.state.element} menu={this.common_menu} details={true} />
+        <UIFile
+          data={this.state.element}
+          menu={!this.props.removeIcon && this.common_menu}
+          details={true}
+          removeIcon={this.props.removeIcon}
+          removeOnClick={this.props.removeOnClick}
+        />
       </Draggable>
     );
   }

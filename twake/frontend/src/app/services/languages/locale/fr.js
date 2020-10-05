@@ -1595,6 +1595,7 @@ export default {
   'scenes.apps.calendar.workspace_menu': 'Espace de travail',
   'scenes.apps.drive.add_button': 'Ajouter',
   'scenes.apps.drive.message_added_file': '$1 a envoyé $2.',
+  'scenes.apps.drive.message_added_mutiple_files': '$1 a envoyé plusieurs fichiers.',
   'scenes.apps.drive.message_added_file_no_name': '$1 a envoyé un fichier.',
   'scenes.apps.drive.choose_folder_button': 'Choisir un dossier',
   'scenes.apps.drive.choose_file_button': 'Choisir un fichier',

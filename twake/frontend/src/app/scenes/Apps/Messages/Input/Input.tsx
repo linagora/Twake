@@ -4,6 +4,7 @@ import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import MessagesService from 'services/Apps/Messages/Messages.js';
+import AttachedFiles from './Parts/AttachedFiles';
 import './Input.scss';
 
 type Props = {
@@ -113,7 +114,7 @@ export default (props: Props) => {
           }
         }}
       />
-
+      <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
       {!hasEphemeralMessage && (
         <InputAutocomplete
           messageId={props.messageId || ''}
