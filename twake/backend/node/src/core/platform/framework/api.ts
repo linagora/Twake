@@ -122,7 +122,7 @@ abstract class TwakePlatform extends TwakeService<TwakeServiceProvider> implemen
 
   constructor(protected options?: TwakeAppConfiguration) {
     super(options);
-    this.serviceRegistry = new Registry();
+    this.serviceRegistry = Registry.getInstance();
   }
 
   getProvider<T extends TwakeServiceProvider>(name: string): T {

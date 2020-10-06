@@ -1,9 +1,17 @@
 import { TwakeService, TwakeServiceProvider } from "./api";
-
 export class Registry {
-  protected providers: Map<string, TwakeService<TwakeServiceProvider>>;
+  private static instance: Registry;
+  public static getInstance(): Registry {
+    if (!Registry.instance) {
+      Registry.instance = new Registry();
+    }
 
-  constructor() {
+    return Registry.instance;
+  }
+
+  private providers: Map<string, TwakeService<TwakeServiceProvider>>;
+
+  private constructor() {
     this.providers = new Map<string, TwakeService<TwakeServiceProvider>>();
   }
 
