@@ -22,7 +22,7 @@ export class Platform extends TwakePlatform {
     };
 
     // TODO: Create a loader which looks in several configured paths.
-    const loader = new Loader("../../../services");
+    const loader = new Loader(this.options.servicesPath);
 
     const serviceDefinitions: ServiceDefinition[] = await Promise.all(this.options.services.map(async name => {
       const clazz = await loader.load(name);
