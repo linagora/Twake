@@ -4,5 +4,5 @@ export interface ChannelParams {
 
 export interface CreateChannelBody {
   creator: string,
-  text: string,
+  name: string,
 }

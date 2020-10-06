@@ -1,7 +1,7 @@
 export default class Channel {
-  id: string;
-
-  constructor(id: string) {
-    this.id = id;
-  }
+  constructor(
+    protected id: string,
+    protected name?: string,
+    protected secret?: string
+  ) {}
 }
