@@ -1,0 +1,35 @@
+import { Consumes, TwakeService } from "../../core/platform/framework";
+import WebServerAPI from "../webserver/provider";
+import WebSocketAPI from "./provider";
+import websocketPlugin from "./plugin";
+import { WebSocketService } from "./services";
+import { AdaptersConfiguration } from "./types";
+
+@Consumes(["webserver"])
+export default class WebSocket extends TwakeService<WebSocketAPI> {
+  private service: WebSocketService;
+  name = "websocket";
+  version = "1";
+
+  api(): WebSocketAPI {
+    return this.service;
+  }
+
+  async doInit(): Promise<this> {
+    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+
+    this.service = new WebSocketService({
+      server: fastify.server,
+      options: {
+        path: this.configuration.get<string>("path", "/ws")
+      },
+      adapters: this.configuration.get<AdaptersConfiguration>("adapters")
+    });
+
+    fastify.register(websocketPlugin, {
+      io: this.service.getIo()
+    });
+
+    return this;
+  }
+}
