@@ -60,6 +60,7 @@
     "fastify-plugin": "^2.3.4",
     "fastify-websocket": "^2.0.7",
     "pino": "^6.6.1",
+    "reflect-metadata": "^0.1.13",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0"
   }

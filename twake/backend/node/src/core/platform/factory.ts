@@ -1,4 +1,4 @@
-import { TwakeService, TwakeServiceOptions, TwakeServiceProvider, TwakeServiceState, TwakeServiceConfiguration, TwakeContext } from "./service";
+import { TwakeService, TwakeServiceOptions, TwakeServiceProvider, TwakeServiceState, TwakeServiceConfiguration, TwakeContext } from "./api";
 
 class StaticTwakeServiceFactory {
 

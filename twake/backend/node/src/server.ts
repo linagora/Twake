@@ -1,12 +1,10 @@
-import { TwakeAppConfiguration } from "./core/platform/service";
+import { TwakeAppConfiguration, Platform } from "./core/platform";
 import config from "./core/config";
-import Platform from "./core/platform/platform";
 
 const start = async (): Promise<void> => {
   try {
     const configuration: TwakeAppConfiguration = {
       name: "Twake",
-      prefix: "/",
       services: config.get("services"),
     };
     const platform = new Platform(configuration);
