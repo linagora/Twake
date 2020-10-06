@@ -1,13 +1,14 @@
 import { TwakeServiceFactory } from "./factory";
-import { TwakePlatform, TwakeService, TwakeServiceProvider } from "./service";
+import classLoader from "./loader";
+import { TwakePlatform, TwakeService, TwakeServiceProvider } from "./api";
 import Configuration from "./configuration";
 import AuthService from "../../services/auth";
 import UserService from "../../services/user";
 import MessageService from "../../services/messages";
 import WebServerService from "../../services/webserver";
-import logger from "./logger";
+import { logger } from "./logger";
 
-class Platform extends TwakePlatform {
+export class Platform extends TwakePlatform {
   private services: Map<string, TwakeService<TwakeServiceProvider>> = new Map<string, TwakeService<TwakeServiceProvider>>();
 
   api(): TwakeServiceProvider {
@@ -18,23 +19,35 @@ class Platform extends TwakePlatform {
     logger.info("Init %s", this.name);
     // TODO: Load services from options
     // TODO: Dynamic loading
-    logger.info("Init services", this.options.services);
+    logger.info("Init services %o", this.options.services);
 
     const context = {
       getProvider: this.getProvider.bind(this)
     };
 
-    const webserver = await TwakeServiceFactory.create(WebServerService, context, { prefix: "/api", configuration: new Configuration("web"), consumes: [] });
+    const classes = await Promise.all(this.options.services.map(serviceName => classLoader(`../../services/${serviceName}`)));
+
+    console.log(classes);
+//
+    //classes.forEach(async clazz => {
+    //  const service = await TwakeServiceFactory.create(clazz, context, { prefix: "/api/XYZ", consumes: [], configuration: new Configuration("web")});
+    //  this.providers.set(service.name, service.api());
+    //  this.services.set(service.name, service);
+    //});
+
+
+    const webserver = await TwakeServiceFactory.create(WebServerService, context, { configuration: new Configuration("web") });
     this.providers.set(webserver.name, webserver.api());
 
-    const auth = await TwakeServiceFactory.create(AuthService, context, { prefix: "/api/auth", consumes: ["webserver", "user"] });
-    const user = await TwakeServiceFactory.create(UserService, context, { prefix: "/api/users", consumes: ["webserver"] });
-    const message = await TwakeServiceFactory.create(MessageService, context, { prefix: "/api/messages", consumes: ["webserver"] });
+    const auth = await TwakeServiceFactory.create(AuthService, context);
+    const user = await TwakeServiceFactory.create(UserService, context);
+    const message = await TwakeServiceFactory.create(MessageService, context);
 
     this.services.set(webserver.name, webserver);
     this.services.set(auth.name, auth);
     this.services.set(user.name, user);
     this.services.set(message.name, message);
+
 
     await this.launchInit();
 
@@ -125,5 +138,3 @@ class Platform extends TwakePlatform {
     return this;
   }
 }
-
-export default Platform;

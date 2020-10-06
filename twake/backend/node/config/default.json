@@ -1,5 +1,5 @@
 {
-  "services": ["auth"],
+  "services": ["auth", "user", "messages", "webserver"],
   "web": {
     "port": 3000
   },
