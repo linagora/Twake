@@ -147,7 +147,7 @@ class Messages extends Observable {
         editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
 
       const filesAttachementsToTwacode =
-        filesAttachements.map((id, index) => {
+        filesAttachements.map(id => {
           return {
             type: 'file',
             mode: filesAttachements.length > 1 ? 'mini' : 'preview',
@@ -157,25 +157,39 @@ class Messages extends Observable {
 
       const user = UserService.getCurrentUser();
 
-      const multipleFileSystemMessage = [
-        { type: 'br' },
-        { type: 'br' },
-        {
-          type: 'system',
-          content: Languages.t('scenes.apps.drive.message_added_mutiple_files', [
-            UserService.getFullName(user),
-          ]),
-        },
-        { type: 'br' },
-      ];
+      const singleFileSystemMessage =
+        val.original_str.length === 0
+          ? [
+              { type: 'br' },
+              {
+                type: 'system',
+                content: Languages.t('scenes.apps.drive.message_added_file_no_name', [
+                  UserService.getFullName(user),
+                ]),
+              },
+              { type: 'br' },
+            ]
+          : [{ type: 'br' }];
 
-      const soloFileSystemMessage = [{ type: 'br' }];
+      const multipleFileSystemMessage =
+        val.original_str.length === 0
+          ? [
+              { type: 'br' },
+              {
+                type: 'system',
+                content: Languages.t('scenes.apps.drive.message_added_mutiple_files', [
+                  UserService.getFullName(user),
+                ]),
+              },
+              { type: 'br' },
+            ]
+          : [{ type: 'br' }];
 
       const preparedFiles = filesAttachementsToTwacode.length
         ? [
-            filesAttachements.length > 1 && val.original_str.length > 1
+            filesAttachements.length >= 2
               ? [...multipleFileSystemMessage]
-              : [...soloFileSystemMessage],
+              : [...singleFileSystemMessage],
             ...filesAttachementsToTwacode,
           ]
         : [];

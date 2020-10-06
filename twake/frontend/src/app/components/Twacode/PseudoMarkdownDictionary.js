@@ -119,7 +119,7 @@ class PseudoMarkdownDictionary {
             data={{ id: object.content || '' }}
             notInDrive={true}
             mini={object.mode === 'mini' ? true : false}
-            style={{ marginBottom: 0, marginTop: 5 }}
+            style={{ marginBottom: 0, marginTop: 18 }}
           />
         ),
       },

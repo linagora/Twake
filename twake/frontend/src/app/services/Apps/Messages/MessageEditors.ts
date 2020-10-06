@@ -117,11 +117,11 @@ export class MessageEditors extends Observable {
     this.notify();
   }
 
-  onRemoveAttachement(threadId: string, id: string) {
+  onRemoveAttachement(threadId: string, fileId: string) {
     threadId = threadId || 'main';
     let filesAttachements;
     if (this.filesAttachements[threadId].length >= 0) {
-      filesAttachements = this.filesAttachements[threadId].filter(val => val !== id);
+      filesAttachements = this.filesAttachements[threadId].filter(val => val !== fileId);
       this.filesAttachements[threadId] = filesAttachements;
     }
 
