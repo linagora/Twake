@@ -21,7 +21,11 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
 
   async doInit(): Promise<this> {
     // TODO: Get server config from options
-    this.server = fastify({ logger: true });
+    this.server = fastify({
+      logger: {
+        level: this.configuration.get<string>("logger.level", "info")
+      }
+    });
     serverErrorHandler(this.server);
     configureWebsocket(this.server);
     // DIRTY HACK: THis needs to be registered here to avoid circular dep between auth and user.
@@ -33,7 +37,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
 
   async doStart(): Promise<this> {
     try {
-      await this.server.listen(this.configuration.get<number>("port"), "0.0.0.0");
+      await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
 
       return this;
     } catch (err) {
