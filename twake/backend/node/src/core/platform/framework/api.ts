@@ -13,6 +13,7 @@ class TwakeServiceOptions<TwakeServiceConfiguration> {
 
 class TwakeAppConfiguration extends TwakeServiceOptions<TwakeServiceConfiguration> {
   services: Array<string>;
+  servicesPath: string;
 }
 
 enum TwakeServiceState {

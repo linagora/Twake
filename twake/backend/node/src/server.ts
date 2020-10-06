@@ -1,3 +1,4 @@
+import path from "path";
 import { TwakeAppConfiguration } from "./core/platform/framework";
 import { Platform } from "./core/platform/platform";
 
@@ -8,6 +9,7 @@ const start = async (): Promise<void> => {
     const configuration: TwakeAppConfiguration = {
       name: "Twake",
       services: config.get("services"),
+      servicesPath: path.resolve(__dirname, "./services/")
     };
     const platform = new Platform(configuration);
     await platform.init();
