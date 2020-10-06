@@ -1,12 +1,12 @@
-import { TwakeServiceFactory } from "./factory";
-import classLoader from "./loader";
-import { TwakePlatform, TwakeService, TwakeServiceProvider } from "./api";
-import Configuration from "./configuration";
-import AuthService from "../../services/auth";
-import UserService from "../../services/user";
-import MessageService from "../../services/messages";
-import WebServerService from "../../services/webserver";
-import { logger } from "./logger";
+import { Loader, TwakePlatform, TwakeService, TwakeServiceProvider, TwakeServiceFactory, logger } from "./framework";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Class = { new(...args: any[]): any; };
+
+interface ServiceDefinition {
+  name: string;
+  clazz: Class;
+}
 
 export class Platform extends TwakePlatform {
   private services: Map<string, TwakeService<TwakeServiceProvider>> = new Map<string, TwakeService<TwakeServiceProvider>>();
@@ -17,37 +17,27 @@ export class Platform extends TwakePlatform {
 
   async doInit(): Promise<this> {
     logger.info("Init %s", this.name);
-    // TODO: Load services from options
-    // TODO: Dynamic loading
     logger.info("Init services %o", this.options.services);
 
     const context = {
       getProvider: this.getProvider.bind(this)
     };
 
-    const classes = await Promise.all(this.options.services.map(serviceName => classLoader(`../../services/${serviceName}`)));
+    // TODO: Create a loader which looks in several configured paths.
+    const loader = new Loader("../../../services");
 
-    console.log(classes);
-//
-    //classes.forEach(async clazz => {
-    //  const service = await TwakeServiceFactory.create(clazz, context, { prefix: "/api/XYZ", consumes: [], configuration: new Configuration("web")});
-    //  this.providers.set(service.name, service.api());
-    //  this.services.set(service.name, service);
-    //});
+    const serviceDefinitions: ServiceDefinition[] = await Promise.all(this.options.services.map(async name => {
+      const clazz = await loader.load(name);
 
+      return { clazz, name };
+    }));
 
-    const webserver = await TwakeServiceFactory.create(WebServerService, context, { configuration: new Configuration("web") });
-    this.providers.set(webserver.name, webserver.api());
+    await Promise.all(serviceDefinitions.map(async serviceDefinition => {
+      const instance = await TwakeServiceFactory.create(serviceDefinition.clazz, context, serviceDefinition.name);
 
-    const auth = await TwakeServiceFactory.create(AuthService, context);
-    const user = await TwakeServiceFactory.create(UserService, context);
-    const message = await TwakeServiceFactory.create(MessageService, context);
-
-    this.services.set(webserver.name, webserver);
-    this.services.set(auth.name, auth);
-    this.services.set(user.name, user);
-    this.services.set(message.name, message);
-
+      this.providers.set(instance.name, instance.api());
+      this.services.set(instance.name, instance);
+    }));
 
     await this.launchInit();
 

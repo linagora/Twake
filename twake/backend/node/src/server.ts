@@ -1,4 +1,6 @@
-import { TwakeAppConfiguration, Platform } from "./core/platform";
+import { TwakeAppConfiguration } from "./core/platform/framework";
+import { Platform } from "./core/platform/platform";
+
 import config from "./core/config";
 
 const start = async (): Promise<void> => {
