@@ -1,4 +1,4 @@
-import { TwakeServiceConfiguration } from "./service";
+import { TwakeServiceConfiguration } from "./api";
 import configuration from "../config";
 
 export default class Configuration implements TwakeServiceConfiguration {

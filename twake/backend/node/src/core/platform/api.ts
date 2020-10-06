@@ -1,4 +1,5 @@
-import log from "./logger";
+import { CONSUMES_METADATA, PREFIX_METADATA } from "./constants";
+import { logger } from "./logger";
 
 interface TwakeServiceConfiguration {
   get<T>(name: string): T;
@@ -6,8 +7,6 @@ interface TwakeServiceConfiguration {
 
 class TwakeServiceOptions<TwakeServiceConfiguration> {
   name?: string;
-  prefix: string;
-  consumes?: Array<string>;
   // TODO: configuration is abstract and comes from all others
   configuration?: TwakeServiceConfiguration;
 }
@@ -63,22 +62,26 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
 
   abstract api(): TwakeServiceProvider;
 
-  // TODO: Should be initialized from decorator or class property
+
+  public get prefix() : string {
+    return Reflect.getMetadata(PREFIX_METADATA, this) || "/";
+  }
+
   getConsumes(): Array<string> {
-    return this.options.consumes || [];
+    return Reflect.getMetadata(CONSUMES_METADATA, this) || [];
   }
 
   async init(): Promise<this> {
     try {
-      log.info("Initializing service %s", this.name);
+      logger.info("Initializing service %s", this.name);
       await this.doInit();
       this.state = TwakeServiceState.Initialized;
       this.isInitialized(this.name);
 
       return this;
     } catch (err) {
-      log.error("Error while initializing service %s", this.name);
-      log.error(err);
+      logger.error("Error while initializing service %s", this.name);
+      logger.error(err);
       this.state = TwakeServiceState.Errored;
       this.isInitFailure(err);
 
@@ -96,16 +99,16 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
 
   async start(): Promise<this> {
     try {
-      log.info("Starting service %s", this.name);
+      logger.info("Starting service %s", this.name);
       await this.doStart();
       this.state = TwakeServiceState.Started;
       this.isStarted(this.name);
-      log.info("Service %s is started", this.name);
+      logger.info("Service %s is started", this.name);
 
       return this;
     } catch (err) {
-      log.error("Error while starting service %s", this.name, err);
-      log.error(err);
+      logger.error("Error while starting service %s", this.name, err);
+      logger.error(err);
       this.state = TwakeServiceState.Errored;
       this.isStartFailure(err);
 

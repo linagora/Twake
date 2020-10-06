@@ -1,8 +1,10 @@
 import WebServerAPI from "../webserver/provider";
-import { TwakeService } from "../../core/platform/service";
+import { TwakeService, Prefix, Consumes } from "../../core/platform";
 import MessageServiceAPI from "./provider";
 import web from "./web/index";
 
+@Prefix("/api/messages")
+@Consumes(["webserver"])
 export default class MessageService extends TwakeService<MessageServiceAPI> implements MessageServiceAPI {
   version = "1";
   name = "messages";
@@ -15,7 +17,7 @@ export default class MessageService extends TwakeService<MessageServiceAPI> impl
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
 
     fastify.register((instance, _opts, next) => {
-      web(instance, { prefix: this.options.prefix });
+      web(instance, { prefix: this.prefix });
       next();
     });
 
