@@ -29,6 +29,7 @@ export default (props: Props) => {
   const [loading, setLoading] = useState(false);
   const messageEditorService: MessageEditors = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
+
   let autocomplete: any = null;
   let disable_app: any = {};
 
@@ -41,7 +42,7 @@ export default (props: Props) => {
       props.onSend(content);
       return;
     }
-    if (content.trim()) {
+    if (content.trim() || messageEditorService.filesAttachements[props.threadId || 'main']) {
       sendMessage(content);
       autocomplete.setContent('');
       autocomplete.blur();
@@ -68,18 +69,22 @@ export default (props: Props) => {
         parent_message_id: props.threadId || '',
       },
       props.collectionKey,
-    ).then(message => {
-      setLoading(false);
-      if (
-        messageEditorService.currentEditor ===
-        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-      ) {
-        autocomplete.focus();
-      }
-      if (!message.parent_message_id) {
-        messageEditorService.openEditor(message.id, props.messageId || '');
-      }
-    });
+    )
+      .then(message => {
+        setLoading(false);
+        if (
+          messageEditorService.currentEditor ===
+          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+        ) {
+          autocomplete.focus();
+        }
+        if (!message.parent_message_id) {
+          messageEditorService.openEditor(message.id, props.messageId || '');
+        }
+      })
+      .finally(() => {
+        messageEditorService.filesAttachements = {};
+      });
   };
 
   const focus = () => {
@@ -140,6 +145,7 @@ export default (props: Props) => {
       {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
           inputValue={content}
+          //isEmpty={!content && messageEditorService.}
           channelId={props.channelId}
           threadId={props.threadId}
           onSend={() => onSend()}

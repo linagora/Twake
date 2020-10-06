@@ -8,7 +8,7 @@ export default (props: { channelId: string; threadId: string }) => {
   editorManager.useListener(useState);
 
   return (
-    (editorManager.filesAttachements[props.threadId || 'main'] && (
+    (editorManager.filesAttachements[props.threadId || 'main'] !== undefined && (
       <div className="attached-files-container small-y-margin">
         {editorManager.filesAttachements[props.threadId || 'main'].map((id: string) => {
           return (
@@ -20,6 +20,7 @@ export default (props: { channelId: string; threadId: string }) => {
               removeIcon
               removeOnClick={(e: any) => {
                 e.stopPropagation();
+                e.preventDefault();
                 editorManager.onRemoveAttachement(props.threadId, id);
               }}
             />
