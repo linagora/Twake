@@ -14,7 +14,7 @@ class StaticTwakeServiceFactory {
       config = new Configuration(configuration);
     }
 
-    const instance = new module(config);
+    const instance = new module({ configuration: config });
 
     instance.state = TwakeServiceState.Ready;
     instance.context = context;
