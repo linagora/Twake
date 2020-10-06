@@ -1,6 +1,6 @@
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance } from "fastify";
-import { TwakeServiceProvider } from "../../core/platform/api";
+import { TwakeServiceProvider } from "../../core/platform/framework/api";
 
 export default interface WebServerAPI extends TwakeServiceProvider {
   /**
