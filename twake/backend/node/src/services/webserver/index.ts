@@ -2,7 +2,6 @@ import { TwakeService } from "../../core/platform/framework";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance, fastify } from "fastify";
 import { serverErrorHandler } from "./error";
-import configureWebsocket from "./websocket/index";
 import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
 
@@ -27,7 +26,6 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
       }
     });
     serverErrorHandler(this.server);
-    configureWebsocket(this.server);
     // DIRTY HACK: THis needs to be registered here to avoid circular dep between auth and user.
     // will have to create a core service for this, or another service which must be started first...
     this.server.register(jwtPlugin);

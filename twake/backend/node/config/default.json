@@ -1,5 +1,5 @@
 {
-  "services": ["auth", "user", "channels", "webserver"],
+  "services": ["auth", "user", "channels", "webserver", "websocket"],
   "webserver": {
     "port": 3000,
     "logger": {
@@ -7,9 +7,9 @@
     }
   },
   "websocket": {
-    "path": "/",
-    "adapter": {
-      "types": [""],
+    "path": "/ws",
+    "adapters": {
+      "types": ["redis"],
       "redis": {
         "host": "localhost",
         "port": 6379
