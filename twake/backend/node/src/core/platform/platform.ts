@@ -1,4 +1,4 @@
-import { Loader, TwakePlatform, TwakeService, TwakeServiceProvider, TwakeServiceFactory, logger } from "./framework";
+import { Loader, TwakePlatform, TwakeServiceProvider, TwakeServiceFactory, logger } from "./framework";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Class = { new(...args: any[]): any; };
@@ -9,8 +9,6 @@ interface ServiceDefinition {
 }
 
 export class Platform extends TwakePlatform {
-  private services: Map<string, TwakeService<TwakeServiceProvider>> = new Map<string, TwakeService<TwakeServiceProvider>>();
-
   api(): TwakeServiceProvider {
     return null;
   }
@@ -35,8 +33,7 @@ export class Platform extends TwakePlatform {
     await Promise.all(serviceDefinitions.map(async serviceDefinition => {
       const instance = await TwakeServiceFactory.create(serviceDefinition.clazz, context, serviceDefinition.name);
 
-      this.providers.set(instance.name, instance.api());
-      this.services.set(instance.name, instance);
+      this.serviceRegistry.register(instance);
     }));
 
     await this.launchInit();
@@ -46,11 +43,11 @@ export class Platform extends TwakePlatform {
 
   private async launchInit(): Promise<this> {
     const promisesToWaitFor: Map<string, Promise<string>[]> = new Map<string, Promise<string>[]>();
-    const allInitialized: Promise<string>[] = [...this.services.values()].map(service => service.initPromise);
+    const allInitialized: Promise<string>[] = [...this.serviceRegistry.list()].map(service => service.initPromise);
 
     logger.info("Initializing Twake...");
 
-    for(const [name, service] of this.services) {
+    for(const [name, service] of this.serviceRegistry.getMap()) {
       const consumes = service.getConsumes();
       logger.info("service '%s' service is consuming service '%s'", name, consumes);
 
@@ -58,13 +55,13 @@ export class Platform extends TwakePlatform {
         // TODO: Check for empty
         // TODO: Check for loops
         logger.info("service '%s' will wait for service '%s' to be initialized", name, serviceName);
-        return this.services.get(serviceName).initPromise;
+        return this.serviceRegistry.get(serviceName).initPromise;
       });
 
       promisesToWaitFor.set(name, promisesForService);
     }
 
-    for(const [name, service] of this.services) {
+    for(const [name, service] of this.serviceRegistry.getMap()) {
       Promise.all(promisesToWaitFor.get(name)).then(started => {
         logger.info("services %o are now initialized, now asking for service '%s' to init", started, name);
         service.init().then(() => {
@@ -93,24 +90,24 @@ export class Platform extends TwakePlatform {
 
   private async launchStart(): Promise<this> {
     const promisesToWaitFor: Map<string, Promise<string>[]> = new Map<string, Promise<string>[]>();
-    const allStarted: Promise<string>[] = [...this.services.values()].map(service => service.startupPromise);
+    const allStarted: Promise<string>[] = [...this.serviceRegistry.list()].map(service => service.startupPromise);
 
     logger.info("Starting Twake...");
 
-    for(const [name, service] of this.services) {
+    for(const [name, service] of this.serviceRegistry.getMap()) {
       const consumes = service.getConsumes();
       logger.info("service '%s' is consuming service '%s'", name, consumes);
 
       const promisesForService = consumes.map(serviceName => {
         logger.info("service '%s' will wait for service '%s'", name, serviceName);
-        return this.services.get(serviceName).startupPromise;
+        return this.serviceRegistry.get(serviceName).startupPromise;
       });
 
       promisesToWaitFor.set(name, promisesForService);
     }
 
 
-    for(const [name, service] of this.services) {
+    for(const [name, service] of this.serviceRegistry.getMap()) {
       Promise.all(promisesToWaitFor.get(name)).then(started => {
         logger.info("services %o are started, now asking for service '%s' to start...", started, name);
         service.start();

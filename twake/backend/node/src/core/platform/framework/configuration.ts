@@ -1,7 +1,9 @@
-import { TwakeServiceConfiguration } from "./api";
 import configuration from "../../config";
 import { IConfig } from "config";
 
+export interface TwakeServiceConfiguration {
+  get<T>(name: string): T;
+}
 export class Configuration implements TwakeServiceConfiguration {
   configuration: IConfig;
 

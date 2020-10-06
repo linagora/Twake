@@ -1,9 +1,9 @@
+import { TwakeServiceConfiguration } from "./configuration";
 import { CONSUMES_METADATA, PREFIX_METADATA } from "./constants";
 import { logger } from "./logger";
+import { Registry } from "./registry";
 
-interface TwakeServiceConfiguration {
-  get<T>(name: string): T;
-}
+
 
 class TwakeServiceOptions<TwakeServiceConfiguration> {
   name?: string;
@@ -62,7 +62,6 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
 
   abstract api(): TwakeServiceProvider;
 
-
   public get prefix() : string {
     return Reflect.getMetadata(PREFIX_METADATA, this) || "/";
   }
@@ -118,15 +117,22 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
 }
 
 abstract class TwakePlatform extends TwakeService<TwakeServiceProvider> implements TwakeContext {
+  protected serviceRegistry: Registry;
   name = "Twake";
-  protected providers: Map<string, TwakeServiceProvider> = new Map<string, TwakeServiceProvider>();
 
   constructor(protected options?: TwakeAppConfiguration) {
     super(options);
+    this.serviceRegistry = new Registry();
   }
 
   getProvider<T extends TwakeServiceProvider>(name: string): T {
-    return this.providers.get(name) as T;
+    const service = this.serviceRegistry.get(name);
+
+    if (!service) {
+      throw new Error(`Service "${name}" not found`);
+    }
+
+    return service.api() as T;
   }
 }
 
