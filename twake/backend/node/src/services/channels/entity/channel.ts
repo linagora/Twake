@@ -1,4 +1,4 @@
-export default class Message {
+export default class Channel {
   id: string;
 
   constructor(id: string) {

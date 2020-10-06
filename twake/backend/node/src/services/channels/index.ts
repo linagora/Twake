@@ -1,15 +1,15 @@
 import WebServerAPI from "../webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
-import MessageServiceAPI from "./provider";
+import ChannelServiceAPI from "./provider";
 import web from "./web/index";
 
-@Prefix("/api/messages")
+@Prefix("/api/channels")
 @Consumes(["webserver"])
-export default class MessageService extends TwakeService<MessageServiceAPI> implements MessageServiceAPI {
+export default class ChannelsService extends TwakeService<ChannelServiceAPI> implements ChannelServiceAPI {
   version = "1";
-  name = "messages";
+  name = "channels";
 
-  api(): MessageServiceAPI {
+  api(): ChannelServiceAPI {
     return this;
   }
 
