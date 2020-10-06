@@ -1,11 +1,12 @@
 import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { ChannelParams, CreateChannelBody } from "./types";
+import { createChannelSchema } from "./schemas";
 import * as controller from "./controller";
 import Channel from "../entity/channel";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
   fastify.get("/", async (req): Promise<Channel[]> => {
-    req.log.info("Get channels");
+    req.log.debug("Get channels");
 
     return controller.getChannels();
   });
@@ -13,31 +14,22 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) =>
   fastify.get<{
     Params: ChannelParams,
   }>("/:id", async (req): Promise<Channel> => {
-    req.log.info(`Get channel ${req.params.id}`);
+    req.log.debug(`Get channel ${req.params.id}`);
     return controller.getChannel(req.params.id);
   });
 
   const createOptions: RouteShorthandOptions = {
-    schema: {
-      body: {
-        type: "object",
-        properties: {
-          creator: {
-            type: "string",
-          },
-          text: {
-            type: "string"
-          }
-        }
-      }
-    }
+    schema: createChannelSchema
   };
 
   fastify.post<{
     Body: CreateChannelBody
-  }>("/", createOptions, async (req): Promise<Channel> => {
-    req.log.info(`Creating Channel ${JSON.stringify(req.body)}`);
-    return new Channel("1");
+  }>("/", createOptions, async (request, reply) => {
+    request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
+
+    const channel = await controller.create(request.body);
+
+    reply.status(201).send(channel);
   });
 
   next();

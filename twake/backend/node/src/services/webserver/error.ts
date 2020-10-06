@@ -2,7 +2,9 @@ import { FastifyInstance } from "fastify";
 
 function serverErrorHandler(server: FastifyInstance): void {
   server.setErrorHandler(async (err) => {
-    console.log(err);
+    server.log.debug(err);
+
+    return err;
   });
 }
 
