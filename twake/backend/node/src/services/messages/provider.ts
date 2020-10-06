@@ -1,4 +1,4 @@
-import { TwakeServiceProvider } from "../../core/platform/api";
+import { TwakeServiceProvider } from "../../core/platform/framework/api";
 
 export default interface MessageServiceAPI extends TwakeServiceProvider {
   // TODO

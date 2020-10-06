@@ -1,6 +1,6 @@
 {
   "services": ["auth", "user", "messages", "webserver"],
-  "web": {
+  "webserver": {
     "port": 3000
   },
   "websocket": {

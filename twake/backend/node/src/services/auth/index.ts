@@ -1,10 +1,11 @@
-import { TwakeService, Consumes, Prefix } from "../../core/platform";
+import { TwakeService, Consumes, Prefix, ServiceName } from "../../core/platform/framework";
 import web from "./web/index";
 import AuthServiceAPI from "./provider";
 import WebServerAPI from "../webserver/provider";
 
 @Prefix("/api/auth")
 @Consumes(["webserver"])
+@ServiceName("auth")
 export default class AuthService extends TwakeService<AuthServiceAPI> implements AuthServiceAPI {
   name = "auth";
   version = "1";

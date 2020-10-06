@@ -4,4 +4,5 @@ export * from "./api";
 export * from "./decorators";
 export * from "./configuration";
 export * from "./factory";
-export * from "./platform";
+export * from "./loader";
+export * from "./logger";
