@@ -4,7 +4,7 @@ import { Platform } from "./core/platform/platform";
 
 import config from "./core/config";
 
-const start = async (): Promise<void> => {
+const start = async (): Promise<Platform> => {
   try {
     const configuration: TwakeAppConfiguration = {
       name: "Twake",
@@ -14,6 +14,8 @@ const start = async (): Promise<void> => {
     const platform = new Platform(configuration);
     await platform.init();
     await platform.start();
+
+    return platform;
   } catch (err) {
     console.error(err);
     process.exit(-1);
