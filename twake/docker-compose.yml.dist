@@ -19,6 +19,13 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass some_password
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_REPLICATION_MODE=master
   node:
     image: twaketech/twake-node
     volumes:
@@ -30,6 +37,7 @@ services:
       - scylladb
       - rabbitmq
       - elasticsearch
+      - redis
     links:
       - websockets
       - scylladb

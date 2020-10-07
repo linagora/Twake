@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
       - run: cd twake && docker-compose up -d
+      - run: cd twake && docker-compose exec -T node npm run test
       - run: cd twake && docker-compose exec -T php php composer.phar install
       - run: cd twake && docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
       - run: cd twake && docker-compose exec -T php php bin/console twake:mapping #Test if es is live
