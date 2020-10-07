@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { UserParams, CreateUserBody } from "./types";
+import { createUserSchema } from "./schemas";
 import * as controller from "./controller";
 import User from "../entity/user";
 
@@ -30,22 +31,15 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) =>
 
   const routeOptions: RouteShorthandOptions = {
     //preValidation: [fastify.authenticate],
-    schema: {
-      body: {
-        type: "object",
-        properties: {
-          email: {
-            type: "string"
-          }
-        }
-      }
-    }
+    schema: createUserSchema
   };
 
   fastify.post<{
     Body: CreateUserBody
-  }>("/", routeOptions, async (req): Promise<User> => {
-    req.log.info(`Creating user ${JSON.stringify(req.body)}`);
+  }>("/", routeOptions, async (request, reply): Promise<User> => {
+    request.log.info(`Creating user ${JSON.stringify(request.body)}`);
+    reply.status(201);
+
     return new User("1");
   });
 
