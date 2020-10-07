@@ -90,6 +90,26 @@ class Messages extends Observable {
     return users;
   }
 
+  getFileSystemMessage(strlen, multiple = false) {
+    const user = UserService.getCurrentUser();
+    if (strlen === 0) {
+      return [
+        { type: 'br' },
+        {
+          type: 'system',
+          content: multiple
+            ? Languages.t('scenes.apps.drive.message_added_mutiple_files', [
+                UserService.getFullName(user),
+              ])
+            : Languages.t('scenes.apps.drive.message_added_file_no_name', [
+                UserService.getFullName(user),
+              ]),
+        },
+        { type: 'br' },
+      ];
+    } else return [{ type: 'br' }];
+  }
+
   async sendMessage(value, options, collectionKey) {
     return new Promise(resolve => {
       if (Globals.window.mixpanel_enabled)
@@ -155,46 +175,17 @@ class Messages extends Observable {
           };
         }) || {};
 
-      const user = UserService.getCurrentUser();
-
-      const singleFileSystemMessage =
-        val.original_str.length === 0
-          ? [
-              { type: 'br' },
-              {
-                type: 'system',
-                content: Languages.t('scenes.apps.drive.message_added_file_no_name', [
-                  UserService.getFullName(user),
-                ]),
-              },
-              { type: 'br' },
-            ]
-          : [{ type: 'br' }];
-
-      const multipleFileSystemMessage =
-        val.original_str.length === 0
-          ? [
-              { type: 'br' },
-              {
-                type: 'system',
-                content: Languages.t('scenes.apps.drive.message_added_mutiple_files', [
-                  UserService.getFullName(user),
-                ]),
-              },
-              { type: 'br' },
-            ]
-          : [{ type: 'br' }];
+      const fileSystemMessage = this.getFileSystemMessage(
+        val.original_str.length,
+        filesAttachementsToTwacode.length > 1,
+      );
 
       const preparedFiles = filesAttachementsToTwacode.length
-        ? [
-            filesAttachements.length >= 2
-              ? [...multipleFileSystemMessage]
-              : [...singleFileSystemMessage],
-            ...filesAttachementsToTwacode,
-          ]
+        ? [...fileSystemMessage, ...filesAttachementsToTwacode]
         : [];
 
-      val = { ...val, prepared: [val.original_str, ...preparedFiles] };
+      val.files = preparedFiles;
+      val.prepared.push({ type: 'nop', content: preparedFiles });
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
 
@@ -400,7 +391,14 @@ class Messages extends Observable {
 
   editMessage(messageId, value, messagesCollectionKey) {
     this.editedMessage = Collections.get('messages').find(messageId);
-    this.editedMessage.content = PseudoMarkdownCompiler.compileToJSON(value);
+    let content = PseudoMarkdownCompiler.compileToJSON(value);
+
+    let preparedFiles = this.editedMessage.content.files;
+    if (preparedFiles) {
+      content.prepared.push({ type: 'nop', content: preparedFiles });
+    }
+
+    this.editedMessage.content = Object.assign(this.editedMessage.content, content);
     Collections.get('messages').completeObject(this.editedMessage, this.editedMessage.front_id);
     Collections.get('messages').save(this.editedMessage, messagesCollectionKey);
   }

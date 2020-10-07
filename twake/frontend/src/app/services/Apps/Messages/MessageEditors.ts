@@ -127,4 +127,10 @@ export class MessageEditors extends Observable {
 
     this.notify();
   }
+
+  clearAttachments(threadId: string) {
+    threadId = threadId || 'main';
+    this.filesAttachements[threadId] = [];
+    this.notify();
+  }
 }

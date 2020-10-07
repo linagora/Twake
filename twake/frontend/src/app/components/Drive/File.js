@@ -25,7 +25,10 @@ export default class File extends DriveElement {
   render() {
     if (!this.state.element || !this.state.element.front_id) {
       return (
-        <div className="file mini" style={{ textAlign: 'center' }}>
+        <div
+          className={'file mini ' + (this.props.notInDrive ? 'notInDrive ' : '')}
+          style={{ textAlign: 'center' }}
+        >
           {this.state.loading && <Loader color="#CCC" className="file_loader" />}
           {!this.state.loading && (
             <span className="text" style={{ opacity: 0.5 }}>
@@ -47,7 +50,7 @@ export default class File extends DriveElement {
       <Draggable
         style={this.props.style}
         className={
-          'js-drive-multi-selector-selectable fade_in file ' +
+          'js-drive-multi-selector-selectable file ' +
           (this.state.selected ? 'is_selected ' : '') +
           (this.props.notInDrive ? 'notInDrive ' : '') +
           (mini ? 'mini ' : '') +
@@ -55,7 +58,7 @@ export default class File extends DriveElement {
         }
         refDraggable={node => (this.node = node)}
         onClick={evt => {
-          this.clickElement(evt);
+          if (!this.props.removeIcon) this.clickElement(evt);
         }}
         onDoubleClick={this.props.onDoubleClick}
         parentClassOnDrag="drive_view list"
@@ -71,7 +74,7 @@ export default class File extends DriveElement {
           menu={!this.props.removeIcon && this.common_menu}
           details={true}
           removeIcon={this.props.removeIcon}
-          removeOnClick={this.props.removeOnClick}
+          removeOnClick={() => this.props.removeOnClick()}
         />
       </Draggable>
     );

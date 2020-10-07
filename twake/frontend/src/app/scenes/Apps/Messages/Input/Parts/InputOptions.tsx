@@ -16,6 +16,7 @@ type Props = {
   onAddEmoji?: (emoji: any) => void;
   onSend?: () => void;
   triggerApp?: (app: any, fromIcon: any, evt: any) => void;
+  isEmpty: boolean;
 };
 
 export default (props: Props) => {
@@ -168,8 +169,8 @@ export default (props: Props) => {
       )}
       <div style={{ flex: 1 }} />
       <div
-        className={'option ' + (props.inputValue ? '' : 'disabled ')}
-        onClick={() => props.onSend && props.onSend()}
+        className={'option ' + (!props.isEmpty ? '' : 'disabled ')}
+        onClick={() => !props.isEmpty && props.onSend && props.onSend()}
       >
         <Send size={16} />
       </div>

@@ -32,7 +32,10 @@ export default (props: Props) => {
 
   let autocomplete: any = null;
   let disable_app: any = {};
-
+  let hasFilesAttached: boolean = messageEditorService.filesAttachements[props.threadId || 'main']
+    ?.length
+    ? true
+    : false;
   const onChange = (text: string) => {
     setContent(text);
   };
@@ -42,7 +45,10 @@ export default (props: Props) => {
       props.onSend(content);
       return;
     }
-    if (content.trim() || messageEditorService.filesAttachements[props.threadId || 'main']) {
+    if (
+      content.trim() ||
+      messageEditorService.filesAttachements[props.threadId || 'main']?.length
+    ) {
       sendMessage(content);
       autocomplete.setContent('');
       autocomplete.blur();
@@ -83,7 +89,7 @@ export default (props: Props) => {
         }
       })
       .finally(() => {
-        messageEditorService.filesAttachements = {};
+        messageEditorService.clearAttachments(props.threadId);
       });
   };
 
@@ -145,7 +151,7 @@ export default (props: Props) => {
       {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
           inputValue={content}
-          //isEmpty={!content && messageEditorService.}
+          isEmpty={!(content || hasFilesAttached)}
           channelId={props.channelId}
           threadId={props.threadId}
           onSend={() => onSend()}
