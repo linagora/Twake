@@ -113,14 +113,14 @@ class PseudoMarkdownDictionary {
       system: { object: child => <span style={{ color: '#888', fontSize: 13 }}>{child}</span> },
       file: {
         object: (child, object) => (
-          <File
-            className="drive_view grid"
-            key={this.counter++}
-            data={{ id: object.content || '' }}
-            notInDrive={true}
-            mini={object.mode === 'mini' ? true : false}
-            style={{ marginBottom: 0, marginTop: 18 }}
-          />
+          <div className="drive_view grid inline-files">
+            <File
+              key={this.counter++}
+              data={{ id: object.content || '' }}
+              notInDrive={true}
+              mini={object.mode === 'mini' ? true : false}
+            />
+          </div>
         ),
       },
       image: {
