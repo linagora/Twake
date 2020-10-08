@@ -18,6 +18,15 @@
     }
   }
 
+  .inline-files {
+    display: inline-block;
+    margin-top: 8px;
+
+    .file {
+      margin-right: 8px;
+    }
+  }
+
   a {
     overflow: hidden;
     max-width: 100%;

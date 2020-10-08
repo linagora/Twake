@@ -115,6 +115,10 @@ export default class File extends React.Component {
             <Icon type="ellipsis-h" className="m-icon-small" />
           </Menu>
         )}
+
+        {this.props.removeIcon === true && (
+          <Icon type="times" className="m-icon-small" onClick={this.props.removeOnClick} />
+        )}
       </div>,
     ];
   }
