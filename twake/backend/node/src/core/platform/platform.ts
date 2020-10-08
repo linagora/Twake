@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { Loader, TwakePlatform, TwakeServiceProvider, TwakeServiceFactory, logger } from "./framework";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
