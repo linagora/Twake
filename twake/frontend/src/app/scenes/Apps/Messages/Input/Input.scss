@@ -117,3 +117,12 @@
     width: 16px;
   }
 }
+
+.attached-files-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
