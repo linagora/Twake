@@ -1,15 +1,24 @@
 import { Entity, Column, ObjectID, ObjectIdColumn, PrimaryColumn } from "typeorm";
 
+export enum VisibilityEnum {
+  PRIVATE = "private",
+  PUBLIC = "public",
+  DIRECT = "direct"
+}
+
 @Entity({ name: "channels" })
 export class Channel {
+  // uuid-v4
   @PrimaryColumn()
-  company_id: string;//"uuid-v4",
+  company_id: string;
 
+  // "uuid-v4" | "direct"
   @PrimaryColumn()
-  workspace_id: string;//"uuid-v4" | "direct"
+  workspace_id: string;
 
+  //"uuid-v4"
   @ObjectIdColumn()
-  id: ObjectID;//"uuid-v4";
+  id: ObjectID;
 
   @Column()
   name: string;
@@ -23,9 +32,8 @@ export class Channel {
   @Column()
   channel_group: string;
 
-  // TODO: this is enum
-  @Column()
-  visibility: string;
+  @Column("text")
+  visibility: VisibilityEnum;
 
   @Column()
   default: boolean;
