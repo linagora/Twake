@@ -4,7 +4,5 @@ import { ConnectionOptions, Connection, Repository, EntityTarget, EntityManager 
 export default interface ORMServiceAPI extends TwakeServiceProvider {
   connect(options: ConnectionOptions): Promise<Connection>;
 
-  registerEntity<Entity>(entity: EntityTarget<Entity>): Repository<Entity>;
-
   readonly manager: EntityManager;
 }

@@ -11,12 +11,6 @@ export default class ORMService implements ORMServiceAPI {
     return this.connection;
   }
 
-  registerEntity<Entity>(entity: EntityTarget<Entity>): Repository<Entity> {
-    return this.isMongoDriver()
-        ? this.connection.getMongoRepository(entity)
-        : this.connection.getRepository(entity);
-  }
-
   get manager(): EntityManager {
     return this.isMongoDriver()
       ? this.connection.mongoManager

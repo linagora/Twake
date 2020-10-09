@@ -20,8 +20,6 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     const orm = this.context.getProvider<ORMServiceAPI>("orm");
 
-    // FIXME
-    //orm.registerEntity(Channel);
     this.service = new services.ChannelService(orm);
 
     fastify.register((instance, _opts, next) => {
