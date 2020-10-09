@@ -1,30 +1,34 @@
 import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
 import { ChannelParams, CreateChannelBody } from "./types";
-import { createChannelSchema } from "./schemas";
-import * as controller from "./controller";
-import Channel from "../entity/channel";
+import { createChannelSchema, getChannelSchema } from "./schemas";
+import ChannelController from "./controller";
+import { Channel } from "../entities";
+import ChannelServiceAPI from "../provider";
 
-const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
+const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
+  const controller = new ChannelController(options.service);
+  const createOptions: RouteShorthandOptions = { schema: createChannelSchema };
+  const getOptions: RouteShorthandOptions = { schema: getChannelSchema };
+
   fastify.get("/", async (req): Promise<Channel[]> => {
     req.log.debug("Get channels");
 
     return controller.getChannels();
   });
 
-  fastify.get<{
-    Params: ChannelParams,
-  }>("/:id", async (req): Promise<Channel> => {
-    req.log.debug(`Get channel ${req.params.id}`);
-    return controller.getChannel(req.params.id);
+  fastify.get<{ Params: ChannelParams }>("/:id", getOptions, async (req): Promise<Channel> => {
+    req.log.info(`Get channel ${req.params.id}`);
+
+    const channel = await controller.getChannel(req.params.id);
+
+    if (!channel) {
+      throw fastify.httpErrors.notFound(`Channel ${req.params.id} not found`);
+    }
+
+    return channel;
   });
 
-  const createOptions: RouteShorthandOptions = {
-    schema: createChannelSchema
-  };
-
-  fastify.post<{
-    Body: CreateChannelBody
-  }>("/", createOptions, async (request, reply) => {
+  fastify.post<{ Body: CreateChannelBody }>("/", createOptions, async (request, reply) => {
     request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
 
     const channel = await controller.create(request.body);

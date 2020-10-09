@@ -1,7 +1,10 @@
 import { TwakeServiceProvider } from "../../core/platform/framework/api";
+import { Channel } from "./entities";
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider {
-  // TODO
-  send(): Promise<void>;
-  receive(): Promise<void>
+  list(): Promise<Channel[]>;
+
+  getById(id: string): Promise<Channel>;
+
+  create(channel: Channel): Promise<Channel>;
 }

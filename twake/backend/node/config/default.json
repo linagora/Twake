@@ -1,5 +1,5 @@
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket"],
+  "services": ["auth", "user", "channels", "webserver", "websocket", "orm"],
   "webserver": {
     "port": 3000,
     "logger": {
@@ -9,7 +9,7 @@
   "websocket": {
     "path": "/ws",
     "adapters": {
-      "types": ["redis"],
+      "types": [],
       "redis": {
         "host": "redis",
         "port": 6379
@@ -19,6 +19,15 @@
   "auth": {
     "jwt": {
       "secret": "supersecret"
+    }
+  },
+  "orm": {
+    "connection": {
+      "type": "mongodb",
+      "host": "localhost",
+      "port": 27017,
+      "database": "test",
+      "logging": true
     }
   }
 }

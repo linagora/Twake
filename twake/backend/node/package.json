@@ -62,10 +62,13 @@
     "fastify": "3.4.1",
     "fastify-jwt": "^2.1.3",
     "fastify-plugin": "^2.3.4",
+    "fastify-sensible": "^3.0.1",
     "fastify-websocket": "^2.0.7",
+    "mongodb": "^3.6.2",
     "pino": "^6.6.1",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^2.3.0",
-    "socket.io-redis": "^5.4.0"
+    "socket.io-redis": "^5.4.0",
+    "typeorm": "^0.2.28"
   }
 }
