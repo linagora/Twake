@@ -12,7 +12,8 @@ export default class ORM extends TwakeService<ORMServiceAPI> {
     this.service = new ORMService();
     const configuration: ConnectionOptions = {
       ...this.configuration.get<ConnectionOptions>("connection"),
-      ...{ entities: ["dist/**/*.entity{ .ts,.js}", "dist/**/entities/*{ .ts,.js}"] }
+      ...{ entities: ["dist/**/*.entity{ .ts,.js}", "dist/**/entities/*{ .ts,.js}"] },
+      ...{ subscribers: ["dist/**/entities/*subscriber*{ .ts,.js}"]}
     };
 
     await this.service.connect(configuration);
