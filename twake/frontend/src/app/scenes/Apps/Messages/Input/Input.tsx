@@ -129,6 +129,7 @@ export default (props: Props) => {
       {!hasEphemeralMessage && (
         <InputAutocomplete
           messageId={props.messageId || ''}
+          onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
           channelId={props.channelId}
           threadId={props.threadId}
           onChange={(text: string) => {

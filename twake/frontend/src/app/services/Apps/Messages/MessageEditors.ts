@@ -94,7 +94,9 @@ export class MessageEditors extends Observable {
     return threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
   }
 
-  /* Get upload zone */
+  getUploadZone(threadId: string) {
+    return this.editorsUploadZones[threadId || 'main'];
+  }
 
   setUploadZone(threadId: string, node: any) {
     if (node) {
