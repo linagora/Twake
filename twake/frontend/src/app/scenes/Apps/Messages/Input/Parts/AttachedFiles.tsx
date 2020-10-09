@@ -17,7 +17,7 @@ export default (props: { channelId: string; threadId: string }) => {
               key={id}
               data={{ id: id }}
               notInDrive={true}
-              className="small-y-margin"
+              className="attached-file"
               removeIcon
               removeOnClick={() => editorManager.onRemoveAttachement(props.threadId, id)}
             />
