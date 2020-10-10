@@ -67,6 +67,7 @@
     "mongodb": "^3.6.2",
     "pino": "^6.6.1",
     "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.6.3",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
     "typeorm": "^0.2.28"
