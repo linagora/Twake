@@ -3,7 +3,6 @@ import { filter } from "rxjs/operators";
 import { TwakeServiceConfiguration } from "./configuration";
 import { CONSUMES_METADATA, PREFIX_METADATA } from "./constants";
 import { logger } from "./logger";
-import { Registry } from "./registry";
 
 
 class TwakeServiceOptions<TwakeServiceConfiguration> {
@@ -124,16 +123,15 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
 }
 
 abstract class TwakePlatform extends TwakeService<TwakeServiceProvider> implements TwakeContext {
-  protected serviceRegistry: Registry;
+  protected components: Map<string, TwakeComponent> = new Map<string, TwakeComponent>();
   name = "Twake";
 
   constructor(protected options?: TwakeAppConfiguration) {
     super(options);
-    this.serviceRegistry = Registry.getInstance();
   }
 
   getProvider<T extends TwakeServiceProvider>(name: string): T {
-    const service = this.serviceRegistry.get(name);
+    const service = this.components.get(name).getServiceInstance();
 
     if (!service) {
       throw new Error(`Service "${name}" not found`);
