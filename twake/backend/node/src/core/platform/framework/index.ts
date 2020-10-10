@@ -4,3 +4,4 @@ export * from "./configuration";
 export * from "./factory";
 export * from "./loader";
 export * from "./logger";
+export * from "./utils/component-utils";
