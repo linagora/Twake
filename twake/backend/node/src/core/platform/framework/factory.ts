@@ -1,4 +1,4 @@
-import { TwakeService, TwakeServiceOptions, TwakeServiceProvider, TwakeServiceState, TwakeServiceConfiguration, TwakeContext } from "./api";
+import { TwakeService, TwakeServiceOptions, TwakeServiceProvider, TwakeServiceConfiguration, TwakeContext } from "./api";
 import { Configuration } from "./configuration";
 
 class StaticTwakeServiceFactory {
@@ -16,7 +16,6 @@ class StaticTwakeServiceFactory {
 
     const instance = new module({ configuration: config });
 
-    instance.state = TwakeServiceState.Ready;
     instance.context = context;
 
     return instance;
