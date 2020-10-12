@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Collections from 'services/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ChannelsService from 'services/channels/channels.js';
 
 export default class CHan extends React.Component {

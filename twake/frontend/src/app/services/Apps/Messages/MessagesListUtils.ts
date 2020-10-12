@@ -5,11 +5,13 @@ import Collections from 'services/Collections/Collections';
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
   constructor() {}
-  get(collectionKey: string, serverService: MessagesListServerUtils) {
+  get(collectionKey: string, serverService?: MessagesListServerUtils) {
     if (this.services[collectionKey]) {
       return this.services[collectionKey];
     }
-    this.services[collectionKey] = new MessagesListUtils(serverService);
+    if (serverService) {
+      this.services[collectionKey] = new MessagesListUtils(serverService);
+    }
     return this.services[collectionKey];
   }
 }
@@ -20,21 +22,23 @@ export default new MessagesListUtilsManager();
   This class will manage react virtualized and scroll cases
 */
 export class MessagesListUtils extends Observable {
+  debug = false;
+
   //Internal variables
   scrollerNode: any;
   messagesContainerNode: any;
   messagesContainerNodeResizeObserver: any;
   ignoreNextScroll: number = 0;
   serverService: MessagesListServerUtils;
-  lockedScrollTimeout: any;
   initDate: number = 0;
   visiblesMessages: { [key: string]: boolean } = {};
   registeredRender: any[] = [];
+  lockedScrollTimeout: any;
+  loadMoreLocked: boolean = false;
 
   //State
   highlighted: string = '';
   fixBottom: boolean = true;
-  loadMoreLocked: boolean = false;
   currentScrollTop: number = 0;
   currentScrollHeight: number = 0;
   messagesContainerNodeScrollTop: number = 0;
@@ -74,7 +78,7 @@ export class MessagesListUtils extends Observable {
       node.addEventListener('scroll', this.onScroll);
     }
     this.scrollerNode = node;
-    this.messagesContainerNodeResizeObserver.observe(node);
+    this.messagesContainerNodeResizeObserver.observe(node, { subtree: true });
   }
 
   setMessagesContainer(node: any) {
@@ -94,7 +98,6 @@ export class MessagesListUtils extends Observable {
   }
 
   unsetScroller() {
-    if (this.lockedScrollTimeout) clearTimeout(this.lockedScrollTimeout);
     if (this.scrollerNode) {
       this.scrollerNode.removeEventListener('scroll', this.onScroll);
     }
@@ -145,15 +148,49 @@ export class MessagesListUtils extends Observable {
     }
   }
 
+  //Keep messages in position
+  fixScroll() {
+    if (!this.currentWitnessNode) {
+      return;
+    }
+
+    //If there is more stuff up then the view probably shifted
+    if (this.currentWitnessNode.offsetTop != this.currentWitnessNodeScrollTop) {
+      this.currentWitnessNodeScrollTop = this.currentWitnessNode.offsetTop;
+
+      if (this.debug) {
+        console.log('more stuff up', this.currentWitnessNodeClientTop);
+      }
+
+      //Force witness to keep the same clientTop
+      this.scrollTo(
+        (this.currentWitnessNode?.offsetTop || 0) +
+          this.messagesContainerNode?.offsetTop -
+          this.currentWitnessNodeClientTop,
+      );
+
+      if (this.debug) {
+        console.log('after more stuff up', this.getWitnessClientTop());
+      }
+    }
+  }
+
   setWitnessMessage(node: any) {
-    /*    console.log('new witness id', node);
-    if (this.currentWitnessNode) {
-      this.currentWitnessNode.style.backgroundColor = '';
-    }*/
+    this.fixScroll();
+    if (this.debug) {
+      console.log('previous witness scroll top ', this.getWitnessClientTop());
+      console.log('new witness id', node);
+      if (this.currentWitnessNode) {
+        this.currentWitnessNode.style.backgroundColor = '';
+      }
+    }
     this.getVisibleMessagesLastPosition = this.currentScrollTop;
     this.currentWitnessNode = node;
-    this.currentWitnessNodeScrollTop = this.currentWitnessNode?.offsetTop || 0;
-    //   this.currentWitnessNode.style.backgroundColor = 'red';
+    this.currentWitnessNodeClientTop = this.getWitnessClientTop();
+    if (this.debug) {
+      console.log('new witness is at ', this.currentWitnessNodeClientTop);
+      this.currentWitnessNode.style.backgroundColor = 'red';
+    }
   }
 
   // Update visible / invisible message and set the 'witness message' (message that's should not move)
@@ -239,8 +276,8 @@ export class MessagesListUtils extends Observable {
       ) {
         this.fixBottom = false;
         const offsetTop =
-          nodeMessage.node?.getDomElement()?.offsetTop + this.messagesContainerNodeScrollTop;
-        this.scrollTo(offsetTop - 64, true);
+          nodeMessage.node?.getDomElement()?.offsetTop;
+        this.scrollTo(offsetTop - 128, true);
         this.highlightMessage(message.id || '');
         return true;
       }
@@ -248,13 +285,17 @@ export class MessagesListUtils extends Observable {
   }
 
   highlightMessage(mid: string) {
-    this.highlighted = mid;
-    this.serverService.notify();
+    if (this.highlighted != mid) {
+      this.highlighted = mid;
+      this.serverService.notify();
+    }
   }
 
   removeHighlightMessage() {
-    this.highlighted = '';
-    this.serverService.notify();
+    if (this.highlighted) {
+      this.highlighted = '';
+      this.serverService.notify();
+    }
   }
 
   //Search for a message and scroll to it
@@ -274,6 +315,10 @@ export class MessagesListUtils extends Observable {
   }
 
   scrollTo(position: number | true, changeWitness: boolean = false) {
+    if (this.debug) {
+      console.log('scrollTo called', this.scrollerNode.scrollTop, position);
+    }
+
     if (!this.scrollerNode) {
       return;
     }
@@ -292,7 +337,7 @@ export class MessagesListUtils extends Observable {
       ) {
         this.scrollerNode.scroll({
           top: position,
-          //behavior: 'smooth', still need to did around this one
+          behavior: 'smooth', //still need to did around this one
         });
       } else {
         this.scrollerNode.scrollTop = position;
@@ -304,53 +349,31 @@ export class MessagesListUtils extends Observable {
   }
 
   onContentChange() {
-    this.ignoreNextScroll++; //Additional ignore for better results
-    if (!this.scrollerNode || !this.messagesContainerNode) {
-      return;
-    }
-    //In case top fake messages disapear
-
-    if (this.initDate === 0) {
-      this.initDate = new Date().getTime();
-    }
-
-    //Force witness node to keep at the same position
-    this.scrollTo(
-      (this.currentWitnessNode?.offsetTop || 0) +
-        this.messagesContainerNode?.offsetTop -
-        this.currentWitnessNodeClientTop,
-    );
-
-    const newClientTop =
-      (this.currentWitnessNode?.offsetTop || 0) +
-      this.messagesContainerNode?.offsetTop -
-      this.scrollerNode.scrollTop;
-
-    if (newClientTop != this.currentWitnessNodeClientTop) {
-      this.scrollTo(
-        this.scrollerNode.scrollTop + (newClientTop - this.currentWitnessNodeClientTop),
+    if (this.debug) {
+      console.log(
+        'onContentChange called',
+        this.currentScrollHeight,
+        this.messagesContainerNode.scrollHeight,
       );
     }
 
-    //Get current status to detect changes on new messages are added to the list
-    this.messagesContainerNodeScrollTop = this.messagesContainerNode?.offsetTop || 0;
-    this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
-    this.currentScrollTop = this.scrollerNode.scrollTop;
-
     this.updateScroll();
 
-    this.unlockScroll();
+    this.fixScroll();
 
-    this.getVisibleMessages(false);
+    this.unlockScroll();
   }
 
-  lockScroll() {
-    if (!this.scrollerNode) {
-      return;
-    }
+  getWitnessClientTop() {
+    return (
+      (this.currentWitnessNode?.offsetTop || 0) +
+      this.messagesContainerNode?.offsetTop -
+      this.scrollerNode.scrollTop
+    );
+  }
 
-    this.scrollerNode.style.pointerEvents = 'none';
-    this.scrollerNode.style.overflow = 'hidden';
+
+  lockScroll() {
     this.loadMoreLocked = true;
     if (this.lockedScrollTimeout) {
       clearTimeout(this.lockedScrollTimeout);
@@ -361,21 +384,19 @@ export class MessagesListUtils extends Observable {
   }
 
   unlockScroll() {
-    if (!this.scrollerNode) {
-      return;
-    }
-
-    this.scrollerNode.style.pointerEvents = 'all';
-    this.scrollerNode.style.overflow = 'auto';
     this.loadMoreLocked = false;
   }
 
   async onScroll(evt?: any) {
-    if (this.loadMoreLocked && evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
+    if (this.debug) {
+      console.log('onScroll called', this.scrollerNode.scrollTop);
+    }
+
+    if (!this.scrollerNode) {
       return;
     }
+
+    this.fixScroll();
 
     evt = {
       clientHeight: this.scrollerNode.clientHeight,
@@ -385,7 +406,6 @@ export class MessagesListUtils extends Observable {
 
     if (Math.abs(this.getVisibleMessagesLastPosition - this.currentScrollTop) > 50) {
       this.getVisibleMessages(this.ignoreNextScroll <= 0);
-      this.triggerDelayedRender();
     }
 
     const goingUp = this.currentScrollTop - this.scrollerNode.scrollTop > 0;
@@ -393,11 +413,11 @@ export class MessagesListUtils extends Observable {
     //Get current status to detect changes on new messages are added to the list
     this.currentScrollHeight = this.messagesContainerNode.scrollHeight;
     this.currentScrollTop = this.scrollerNode.scrollTop;
+    this.currentWitnessNodeClientTop = this.getWitnessClientTop();
 
-    this.currentWitnessNodeClientTop =
-      (this.currentWitnessNode?.offsetTop || 0) +
-      this.messagesContainerNode?.offsetTop -
-      this.scrollerNode.scrollTop;
+    if (this.debug) {
+      console.log('clientTop', this.currentWitnessNodeClientTop);
+    }
 
     //After this point, we only want to act if this is user scroll (and not ourselve scrolling)
     if (this.ignoreNextScroll > 0) {
@@ -415,26 +435,18 @@ export class MessagesListUtils extends Observable {
 
       return;
     }
-
-    if (!this.loadMoreLocked) {
-      const topFakeHeight = this.messagesContainerNode.childNodes[0].clientHeight || 0;
-      const bottomFakeHeight =
-        this.messagesContainerNode.childNodes[this.messagesContainerNode.childNodes.length - 1]
-          .clientHeight || 0;
+    
       if (evt.scrollTop <= this.scrollerNode.clientHeight && goingUp) {
-        const didRequest = await this.serverService.loadMore();
-        if (didRequest) console.log('load more up');
-        if (didRequest) this.lockScroll();
+        await this.serverService.loadMore();
+        this.lockScroll();
       }
       if (
         evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight &&
         !goingUp
       ) {
-        const didRequest = await this.serverService.loadMore(false);
-        if (didRequest) console.log('load more down');
-        if (didRequest) this.lockScroll();
+        await this.serverService.loadMore(false);
+        this.lockScroll();
       }
-    }
 
     if (
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&

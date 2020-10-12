@@ -15,13 +15,17 @@ import UserService from 'services/user/user.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import TimeSeparator from './TimeSeparator';
+import MessagesListServiceManager, {
+  MessagesListUtils as MessagesListService,
+} from 'app/services/Apps/Messages/MessagesListUtils';
 
 import Input from '../Input/Input';
 
 import Collections from 'services/Collections/Collections.js';
 
 type Props = {
-  message: Message & { fake: boolean };
+  fake?: boolean;
+  messageId: string;
   collectionKey: string;
   highlighted?: boolean;
   style?: any;
@@ -32,36 +36,39 @@ type Props = {
   unreadAfter?: number;
 };
 
-export default class MessageComponent extends Component<
-  Props,
-  { history: number; render: boolean }
-> {
+export default class MessageComponent extends Component<Props, { render: boolean }> {
   domNode: any;
   messageEditorService: MessageEditors;
   allowUpdates: boolean = false;
+  message: Message;
 
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      history: 5,
       render: !props.delayRender,
     };
 
+    this.message =
+      Collections.get('messages').find(props.messageId) ||
+      Collections.get('messages').findByFrontId(props.messageId);
+    Collections.get('messages').addListener(this, [props.messageId]);
+
     this.setDomElement = this.setDomElement.bind(this);
-    this.messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
+    this.messageEditorService = MessageEditorsManager.get(this.message?.channel_id || '');
     let savedCurrentEditor: string | false = '';
-    this.messageEditorService.addListener(this, () => {
+    this.messageEditorService.addListener(this, [], () => {
       const render =
         this.messageEditorService.currentEditor !== savedCurrentEditor &&
-        (this.messageEditorService.currentEditor === this.props.message?.id ||
-          savedCurrentEditor === this.props.message?.id);
+        (this.messageEditorService.currentEditor === this.message?.id ||
+          savedCurrentEditor === this.message?.id);
       savedCurrentEditor = this.messageEditorService.currentEditor;
       return render;
     });
 
-    Collections.get('messages').addListener(this);
-    Collections.get('messages').listenOnly(this, [props.message.id || props.message.front_id]);
+    if (this.message) {
+      MessagesListServiceManager.get(this.props.collectionKey).setMessageNode(this.message, this);
+    }
   }
 
   getDomElement() {
@@ -96,17 +103,15 @@ export default class MessageComponent extends Component<
       //@ts-ignore
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Drop message Event');
     }
-    MessagesService.dropMessage(message, this.props.message, this.props.collectionKey);
+    MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 
   render() {
-    if (this.props.message.fake === true) {
+    if (this.props.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
     }
 
-    const message =
-      Collections.get('messages').find(this.props.message.id) ||
-      Collections.get('messages').findByFrontId(this.props.message.front_id);
+    const message = this.message;
 
     if (message?.hidden_data?.type === 'init_channel') {
       if (!this.state.render) {
@@ -115,7 +120,7 @@ export default class MessageComponent extends Component<
       return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
     }
 
-    const max_responses = this.state.history;
+    const max_responses = 3;
     let previous_message: Message = message;
     let responses = Collections.get('messages')
       .findBy({
@@ -190,8 +195,8 @@ export default class MessageComponent extends Component<
               return [
                 <TimeSeparator
                   key={message.front_id + '_time'}
-                  message={message}
-                  previousMessage={tmp_previous_message}
+                  messageId={message?.id || ''}
+                  previousMessageId={tmp_previous_message?.id || ''}
                   unreadAfter={this.props.unreadAfter || 0}
                 />,
                 <ThreadSection

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import MessageComponent from './Message';
 import TimeSeparator from './TimeSeparator';
 import { Message } from 'services/Apps/Messages/MessagesListServerUtils';
 
 type Props = {
-  message: Message & { fake: boolean };
-  previousMessage: (Message & { fake: boolean }) | null;
+  fake?: boolean;
+  messageId: string;
+  previousMessageId: string;
   collectionKey: string;
   highlighted?: boolean;
   style?: any;
@@ -17,25 +18,25 @@ type Props = {
   refMessage?: (node: any) => void;
 };
 
-export default (props: Props) => {
+export default React.memo((props: Props) => {
   return (
     <>
       <TimeSeparator
         key={'time'}
-        message={props.message}
-        previousMessage={props.previousMessage}
+        messageId={props.messageId}
+        previousMessageId={props.previousMessageId}
         unreadAfter={props.unreadAfter}
       />
       <MessageComponent
+        fake={props.fake}
         delayRender
         repliesAsLink={props.repliesAsLink}
         key="message"
-        message={props.message}
+        messageId={props.messageId}
         highlighted={props.highlighted}
-        ref={props.refMessage}
         collectionKey={props.collectionKey}
         unreadAfter={props.unreadAfter}
       />
     </>
   );
-};
+});

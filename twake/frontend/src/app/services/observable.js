@@ -6,6 +6,7 @@ export default class Observable {
     this.observableName = 'observable_' + observables_count++;
     this.observableListenersList = [];
     this.observableListenersShouldNotifyList = [];
+    this.observableListenersOnlyList = [];
     this.onFirstListener = null;
     this.onLastListener = null;
     this.previousStore = {};
@@ -13,15 +14,16 @@ export default class Observable {
   setObservableName(name) {
     this.observableName = name;
   }
-  useListener(useState, shouldNotify = undefined) {
+  useListener(useState, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
     const [_, setState] = useState(0);
-    this.addListener(setState, shouldNotify);
+    this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
   }
-  addListener(listener, shouldNotify = undefined) {
+  addListener(listener, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {
       this.onFirstListener();
     }
     if (this.observableListenersList.indexOf(listener) < 0) {
+      this.observableListenersOnlyList.push(shouldNotifyOnlyFor);
       this.observableListenersShouldNotifyList.push(shouldNotify);
       this.observableListenersList.push(listener);
     }
@@ -45,12 +47,18 @@ export default class Observable {
     }
     listener._observable[this.observableName].listen_only = object_front_ids;
   }
-  shouldNotify(node) {
+  shouldNotify(node, listen_only = false) {
     return true;
   }
   notify(force = false) {
+    let count = [];
     for (var i = 0; i < this.observableListenersList.length; i++) {
-      var update = force || this.shouldNotify(this.observableListenersList[i]);
+      var update =
+        force ||
+        this.shouldNotify(
+          this.observableListenersList[i],
+          this.observableListenersOnlyList[i] || false,
+        );
       if (update && this.observableListenersShouldNotifyList[i]) {
         update = this.observableListenersShouldNotifyList[i]();
       }
@@ -58,6 +66,7 @@ export default class Observable {
         var data = {};
         data[this.observableName] = this;
         try {
+          count.push(this.observableListenersList[i]);
           if (typeof this.observableListenersList[i] === 'function') {
             this.observableListenersList[i](data);
           } else {
