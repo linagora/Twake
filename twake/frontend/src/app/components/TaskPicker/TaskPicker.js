@@ -3,7 +3,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import Button from 'components/Buttons/Button.js';
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Loader from 'components/Loader/Loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import LeftIcon from '@material-ui/icons/KeyboardArrowLeftOutlined';

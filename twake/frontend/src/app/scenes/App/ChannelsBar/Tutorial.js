@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import UserService from 'services/user/user.js';
 import CurrentUserService from 'services/user/current_user.js';
 import ElectronService from 'services/electron/electron.js';

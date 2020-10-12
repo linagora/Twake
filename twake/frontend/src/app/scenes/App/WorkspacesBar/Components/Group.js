@@ -10,7 +10,7 @@ import CreateCompanyView from 'scenes/App/Popup/CreateCompanyView/CreateCompanyV
 import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Notifications from 'services/user/notifications.js';
 import GroupSwitch from 'components/Leftbar/GroupSwitch/GroupSwitch.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 
 export default class Group extends Component {
   constructor() {

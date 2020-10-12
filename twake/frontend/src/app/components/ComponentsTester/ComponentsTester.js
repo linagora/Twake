@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
