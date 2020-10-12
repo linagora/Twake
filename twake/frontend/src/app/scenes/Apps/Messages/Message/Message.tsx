@@ -52,13 +52,16 @@ export default class MessageComponent extends Component<
     this.messageEditorService = MessageEditorsManager.get(props.message?.channel_id || '');
     let savedCurrentEditor: string | false = '';
     this.messageEditorService.addListener(this, () => {
-      const render =
-        this.messageEditorService.currentEditorMessageId !== savedCurrentEditor &&
-        (this.messageEditorService.currentEditorMessageId === this.props.message?.id ||
-          savedCurrentEditor === this.props.message?.id);
-
-      savedCurrentEditor = this.messageEditorService.currentEditorMessageId;
-      return render;
+      if (
+        this.messageEditorService.currentEditorMessageId === this.props.message?.id ||
+        this.messageEditorService.currentEditorThreadId === this.props.message?.id ||
+        savedCurrentEditor === this.props.message?.id
+      ) {
+        savedCurrentEditor = this.props.message?.id;
+        return true;
+      }
+      savedCurrentEditor = '';
+      return false;
     });
     Collections.get('messages').addListener(this);
     Collections.get('messages').listenOnly(this, [props.message.id || props.message.front_id]);
@@ -202,7 +205,11 @@ export default class MessageComponent extends Component<
                   delayRender={!this.state.render}
                   key={message.front_id}
                 >
-                  <MessageContent message={message} collectionKey={this.props.collectionKey} />
+                  <MessageContent
+                    message={message}
+                    collectionKey={this.props.collectionKey}
+                    edited={this.messageEditorService.currentEditorMessageId === message.id}
+                  />
                 </ThreadSection>,
               ];
             })}
