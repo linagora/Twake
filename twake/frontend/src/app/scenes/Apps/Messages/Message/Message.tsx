@@ -53,13 +53,13 @@ export default class MessageComponent extends Component<
     let savedCurrentEditor: string | false = '';
     this.messageEditorService.addListener(this, () => {
       const render =
-        this.messageEditorService.currentEditor !== savedCurrentEditor &&
-        (this.messageEditorService.currentEditor === this.props.message?.id ||
+        this.messageEditorService.currentEditorMessageId !== savedCurrentEditor &&
+        (this.messageEditorService.currentEditorMessageId === this.props.message?.id ||
           savedCurrentEditor === this.props.message?.id);
-      savedCurrentEditor = this.messageEditorService.currentEditor;
+
+      savedCurrentEditor = this.messageEditorService.currentEditorMessageId;
       return render;
     });
-
     Collections.get('messages').addListener(this);
     Collections.get('messages').listenOnly(this, [props.message.id || props.message.front_id]);
   }
