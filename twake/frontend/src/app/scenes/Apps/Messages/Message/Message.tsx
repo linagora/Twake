@@ -52,20 +52,24 @@ export default class MessageComponent extends Component<Props, { render: boolean
     this.message =
       Collections.get('messages').find(props.messageId) ||
       Collections.get('messages').findByFrontId(props.messageId);
-    Collections.get('messages').addListener(this, [props.messageId]);
+    Collections.get('messages').addListener(this, [props.messageId || this.message?.front_id]);
 
     this.setDomElement = this.setDomElement.bind(this);
     this.messageEditorService = MessageEditorsManager.get(this.message?.channel_id || '');
     let savedCurrentEditor: string | false = '';
     this.messageEditorService.addListener(this, [], () => {
-      const render =
-        this.messageEditorService.currentEditor !== savedCurrentEditor &&
-        (this.messageEditorService.currentEditor === this.message?.id ||
-          savedCurrentEditor === this.message?.id);
-      savedCurrentEditor = this.messageEditorService.currentEditor;
-      return render;
+      if (
+        this.messageEditorService.currentEditorMessageId === props.messageId ||
+        this.messageEditorService.currentEditorThreadId === props.messageId ||
+        savedCurrentEditor === props.messageId
+      ) {
+        savedCurrentEditor = props.messageId;
+        return true;
+      }
+      savedCurrentEditor = '';
+      return false;
     });
-
+    
     if (this.message) {
       MessagesListServiceManager.get(this.props.collectionKey).setMessageNode(this.message, this);
     }
@@ -207,7 +211,11 @@ export default class MessageComponent extends Component<Props, { render: boolean
                   delayRender={!this.state.render}
                   key={message.front_id}
                 >
-                  <MessageContent message={message} collectionKey={this.props.collectionKey} />
+                  <MessageContent
+                    message={message}
+                    collectionKey={this.props.collectionKey}
+                    edited={this.messageEditorService.currentEditorMessageId === message.id}
+                  />
                 </ThreadSection>,
               ];
             })}

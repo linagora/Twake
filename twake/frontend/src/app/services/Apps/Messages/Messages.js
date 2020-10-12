@@ -94,7 +94,6 @@ class Messages extends Observable {
     const user = UserService.getCurrentUser();
     if (strlen === 0) {
       return [
-        { type: 'br' },
         {
           type: 'system',
           content: multiple

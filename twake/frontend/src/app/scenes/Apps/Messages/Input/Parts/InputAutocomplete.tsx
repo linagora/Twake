@@ -14,6 +14,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 type Props = {
   onResize?: (evt: any) => void;
   onEscape?: (evt: any) => void;
+  onPaste?: (evt: any) => any;
   onFocus?: () => void;
   autocompleteRef?: (node: any) => void;
   onEditLastMessage?: () => void;
@@ -195,6 +196,7 @@ export default (props: Props) => {
       }}
       onKeyPress={(evt: any) => onKeyPress(evt)}
       onKeyUp={(evt: any) => onKeyUp(evt)}
+      onPaste={props.onPaste}
       position={'top'}
       onEscape={props.onEscape}
       onFocusChange={(status: boolean) => {

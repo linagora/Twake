@@ -17,7 +17,6 @@ export default class UploadZone extends React.Component {
   }
   componentWillUnmount() {
     UploadManager.removeListener(this);
-    window.document.removeEventListener('paste', this.paste);
   }
   componentDidMount() {
     this.watch(this.node);
@@ -119,8 +118,6 @@ export default class UploadZone extends React.Component {
       this.hover(false);
     });
     node.addEventListener('drop', e => this.change(e));
-
-    window.document.addEventListener('paste', this.paste);
   }
   paste(event) {
     if (this.props.allowPaste) {
@@ -128,7 +125,6 @@ export default class UploadZone extends React.Component {
       var items = clipboardData.items;
       var filename = (clipboardData.getData('Text') || 'image').split('\n')[0];
       filename = filename.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '');
-
       var types = [],
         hasImage = false,
         imageBlob = false,
@@ -143,12 +139,11 @@ export default class UploadZone extends React.Component {
         }
         types.push(item.type);
       }
-
-      if (hasImage && !types.indexOf('text/rtf') && !types.indexOf('text/html')) {
+      if (hasImage === true) {
         event.preventDefault();
         event.stopPropagation();
 
-        var blob = imageBlob.getAsFile();
+        var blob = imageBlob;
         filename = filename + '.' + (imageType.split('/')[1] || 'png');
         var file = new File([blob], filename, { type: imageType });
         var list = {};
