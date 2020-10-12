@@ -2,6 +2,24 @@
 
 ## Developer guide
 
+### Getting started
+
+1. Clone and install dependencies (assumes that you have Node.js 12 and npm installed):
+
+  ```sh
+  git clone git@github.com:TwakeApp/Twake.git
+  cd Twake/Twake/backend/node
+  npm install
+  ```
+
+2. Run in watch mode (will restart on each change)
+
+  ```sh
+  npm run watch
+  ```
+
+3. Backend is now running and available on [http://localhost:3000](http://localhost:3000)
+
 ### Component Framework
 
 The backend is developed using a software component approach in order to compose and adapt the platform based on needs and constraints.
