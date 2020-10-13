@@ -1085,6 +1085,7 @@ export default class Collection extends Observable {
       listen_only = node._observable[this.observableName].listen_only;
     }
     update = false;
+    console.log("sould update message content", listen_only);
     if(listen_only.length === 0){
       update = true;
     }else{
@@ -1102,7 +1103,7 @@ export default class Collection extends Observable {
           this.known_objects_by_front_id[item]._last_modified.getTime() >
             this._last_modified[item].getTime()
         ) {
-          this._last_modified[item] = this.known_objects_by_front_id[item]._last_modified;
+          setTimeout(()=>this._last_modified[item] = this.known_objects_by_front_id[item]._last_modified, 100);
           update = true;
         }
       });
