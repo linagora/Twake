@@ -6,6 +6,9 @@ import { FastifyInstance } from "fastify";
 export interface TestPlatform {
   platform: TwakePlatform;
   app: FastifyInstance;
+  auth: {
+    getJWTToken(): Promise<string>
+  }
   tearDown(): Promise<void>
 }
 
@@ -23,16 +26,27 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   await platform.init();
   await platform.start();
 
-  const fastify = platform.getProvider<WebServerAPI>("webserver").getServer();
+  const app = platform.getProvider<WebServerAPI>("webserver").getServer();
+
+  async function getJWTToken(): Promise<string> {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/auth/login"
+    });
+
+    return JSON.parse(response.payload).token;
+  }
 
   async function tearDown(): Promise<void> {
     await platform.stop();
-    return Promise.resolve();
   }
 
   return {
     platform,
-    app: fastify,
+    app,
+    auth: {
+      getJWTToken
+    },
     tearDown
   };
 }

@@ -7,7 +7,7 @@ describe("The /users API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user"]
+      services: ["webserver", "user", "auth"]
     });
   });
 
@@ -17,11 +17,25 @@ describe("The /users API", () => {
   });
 
   describe("The GET /users/:id route", () => {
-    it("should 404 when user does not exists", async (done) => {
-      const id = "123";
+    it("should 401 when not authenticated", async (done) => {
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${id}`
+        url: `${url}/1`
+      });
+
+      expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 404 when user does not exists", async (done) => {
+      const id = "123";
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/${id}`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        }
       });
 
       expect(response.statusCode).toBe(200);
@@ -42,13 +56,42 @@ describe("The /users API", () => {
       expect(response.statusCode).toBe(401);
       done();
     });
+
+    it("should 200 with array of users", async (done) => {
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url,
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        }
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(Array.isArray(response.json())).toBeTruthy;
+      done();
+    });
   });
 
   describe("The POST /users route", () => {
-    it("should 400 if body is not defined", async (done) => {
+    it("should 401 when not authenticated", async (done) => {
       const response = await platform.app.inject({
         method: "POST",
         url,
+      });
+
+      expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 400 if body is not defined", async (done) => {
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "POST",
+        url,
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        }
       });
 
       expect(response.statusCode).toBe(400);
@@ -56,10 +99,14 @@ describe("The /users API", () => {
     });
 
     it("should 400 if body is empty JSON", async (done) => {
+      const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
         url,
-        payload: {}
+        payload: {},
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        }
       });
 
       expect(response.statusCode).toBe(400);
@@ -67,11 +114,15 @@ describe("The /users API", () => {
     });
 
     it("should 400 if body.email is not defined", async (done) => {
+      const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
         url,
         payload: {
           notemail: "test"
+        },
+        headers: {
+          authorization: `Bearer ${jwtToken}`
         }
       });
 
@@ -80,11 +131,15 @@ describe("The /users API", () => {
     });
 
     it("should create the user and send it back", async (done) => {
+      const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
         url,
         payload: {
           email: "me@twakeapp.com"
+        },
+        headers: {
+          authorization: `Bearer ${jwtToken}`
         }
       });
 
