@@ -13,14 +13,15 @@ import Collections from 'services/Collections/Collections.js';
 import GoToBottom from './Parts/GoToBottom';
 import ScrollerParent from './Parts/ScrollerParent';
 import WritingUsers from './Input/WritingUsers';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import Loader from 'components/Loader/Loader.js';
+
 type Props = {
   channel: any;
   threadId: string;
   collectionKey: string;
   unreadAfter: number;
 };
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import Loader from 'components/Loader/Loader.js';
 
 export default class MessagesList extends Component<Props> {
   messagesListServerService: MessagesListServerUtils;

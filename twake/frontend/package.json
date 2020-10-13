@@ -4,12 +4,12 @@
   "repository": "https://github.com/TwakeApp/Twake",
   "license": "AGPL-3.0",
   "scripts": {
-    "start": "node scripts/start.js",
-    "dev-build": "node scripts/build.js",
-    "build": "scripts/build-version.sh patch && node scripts/build.js",
+    "dev-build": "CI=false craco build",
+    "build": "scripts/build-version.sh patch && CI=false craco build",
     "change-version": "scripts/build-version.sh",
-    "test": "node scripts/test.js",
-    "prettier": "prettier --write src/"
+    "prettier": "prettier --write src/",
+    "start": "craco start",
+    "test": "craco test"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -90,6 +90,7 @@
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-es2017": "^7.0.0-beta.53",
+    "@craco/craco": "^5.6.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
@@ -143,13 +144,13 @@
     "babel-preset-stage-0": "^6.24.1",
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
+    "craco-less": "^1.17.0",
     "crypto-js": "^4.0.0",
     "css-loader": "3.4.2",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "emoji-mart": "^3.0.0",
     "emojione": "^4.5.0",
-    "eslint": "^7.4.0",
     "eslint-config-react-app": "^5.2.0",
     "eslint-config-react-app-eslint-six": "^4.0.2",
     "eslint-loader": "3.0.3",
@@ -198,6 +199,7 @@
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.3",
     "react-scrollbar": "^0.5.6",
     "react-shortcuts": "^2.1.0",
     "react-showdown": "^2.1.0",
@@ -221,12 +223,10 @@
     "ts-pnp": "1.1.5",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
-    "webpack": "4.41.5",
-    "webpack-dev-server": "3.10.2",
-    "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "4.3.1"
   },
   "devDependencies": {
+    "craco-alias": "^2.1.1",
     "prettier": "^2.0.5"
   }
 }

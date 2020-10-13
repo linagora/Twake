@@ -182,7 +182,7 @@ export default class TagSelector extends React.Component {
         return false;
       })
       .sort((a, b) => {
-        this.props.disabledTags.indexOf(a.id) >= 0 ? -1 : 1;
+        return this.props.disabledTags.indexOf(a.id) >= 0 ? -1 : 1;
       });
     cb(res);
   }

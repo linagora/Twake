@@ -32,6 +32,9 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
+
+    const login = this.state.login;
+
     return (
       <div className="center_box_container login_view skew_in_bottom_nobounce">
         <div className="center_box white_box_with_shadow">

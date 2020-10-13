@@ -445,9 +445,7 @@ class PseudoMarkdownCompiler {
           (this.pseudo_markdown[char].end ? '?' : '') +
           ')' +
           (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : '');
-        this.pseudo_markdown[char].after_end
-          ? '(' + this.pseudo_markdown[char].after_end + ')'
-          : '';
+        
         match = str_right.substr(add_to_value.length).match(new RegExp(regex, ''));
       }
       let completion_end_char = '';
@@ -746,7 +744,7 @@ class PseudoMarkdownCompiler {
     //IE support
     if (document.selection) {
       myField.focus();
-      sel = document.selection.createRange();
+      let sel = document.selection.createRange();
       sel.text = myValue;
     }
     //MOZILLA and others
