@@ -74,7 +74,7 @@ export default (props: Props) => (
             '',
           )
         }
-        multiple={false}
+        multiple={true}
         allowPaste={true}
         disabled={
           !(
