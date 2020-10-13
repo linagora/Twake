@@ -26,14 +26,13 @@ export default (props: Props) => {
 
   if (messageEditorService.currentEditor !== props.threadId + '_main' && props.useButton) {
     return (
-      <Thread
-        withBlock
-        className="new-thread-button"
-        onClick={() => {
-          messageEditorService.openEditor(props.threadId, '', 'main');
-        }}
-      >
-        <ThreadSection noSenderSpace>
+      <Thread withBlock className="new-thread-button">
+        <ThreadSection
+          noSenderSpace
+          onClick={() => {
+            messageEditorService.openEditor(props.threadId, '', 'main');
+          }}
+        >
           <PlusCircle size={16} className="plus-icon" /> Start a new discussion
         </ThreadSection>
       </Thread>

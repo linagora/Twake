@@ -103,7 +103,7 @@ export default class UploadZone extends React.Component {
       this.hover(true, e);
     });
     node.addEventListener('dragenter', e => {
-      if (this.props.onDragEnter) {
+      if (!this.props.disabled && this.props.onDragEnter) {
         this.props.onDragEnter();
       }
       this.hover(true, e);

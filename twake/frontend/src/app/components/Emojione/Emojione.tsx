@@ -75,12 +75,10 @@ export default React.memo((props: Props) => {
     return fb;
   }
 
-  console.log();
-
   const uni =
     type_to_uni[props.type] ||
-  //@ts-ignore
-  getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
+    //@ts-ignore
+    getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
   type_to_uni[props.type] = uni;
 
   return (

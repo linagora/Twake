@@ -4,10 +4,12 @@ import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import { threadId } from 'worker_threads';
 
 type Props = {
   collectionKey?: string;
   channelId?: string;
+  threadId?: string;
   message?: any;
   loading?: boolean;
   highlighted?: boolean;
@@ -66,9 +68,20 @@ export default (props: Props) => (
             props.message?.channel_id || props.channelId || '',
           ).onAddAttachment(props.message?.id, file);
         }}
+        onDragEnter={() =>
+          MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').openEditor(
+            props.threadId || '',
+            '',
+          )
+        }
         multiple={false}
         allowPaste={true}
-        disabled={!(props.allowUpload || (props.message && props.collectionKey))}
+        disabled={
+          !(
+            props.allowUpload ||
+            (props.message && !props.message?.parent_message_id && props.collectionKey)
+          )
+        }
       >
         <Draggable
           dragHandler="js-drag-handler-message"

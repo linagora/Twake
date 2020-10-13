@@ -12,6 +12,7 @@ import './Threads.scss';
 type Props = {
   message?: Message;
   compact?: boolean;
+  onClick?: (value: any) => any | void;
   gradient?: boolean;
   small?: boolean;
   head?: boolean;
@@ -56,6 +57,7 @@ export default class ThreadSection extends Component<Props> {
           (this.props.message?.sender && this.props.message.pinned ? 'pinned-section ' : '') +
           (this.props.className ? this.props.className + ' ' : '')
         }
+        onClick={this.props.onClick}
         deactivated={!this.props.canDrag}
       >
         <div className="message">
