@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './Channel.scss';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
 import User from 'components/User/User.js';
 import Draggable from 'components/Draggable/Draggable.js';

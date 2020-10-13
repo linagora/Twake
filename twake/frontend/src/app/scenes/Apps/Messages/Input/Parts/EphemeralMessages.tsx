@@ -21,10 +21,11 @@ type Props = {
 };
 
 export default (props: Props) => {
-  Collections.get('messages').useListener(useState);
 
-  let lastEphemeral: any = null;
-  const ephemerals_messages = Collections.get('messages')
+  let savedList: any[] = [];
+
+  const getEphemeralMessages = ()=>{
+    return Collections.get('messages')
     .findBy({
       channel_id: props.channelId,
       parent_message_id: props.threadId,
@@ -38,13 +39,18 @@ export default (props: Props) => {
       } catch (e) {}
       return true;
     })
-    .sort((a: any, b: any) => a.creation_date - b.creation_date)
-    .forEach((item: any) => {
-      if (lastEphemeral) {
-        MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
-      }
-      lastEphemeral = item;
-    });
+    .sort((a: any, b: any) => a.creation_date - b.creation_date);
+  };
+
+  Collections.get('messages').useListener(useState);
+
+  let lastEphemeral: any = null;
+  getEphemeralMessages().forEach((item: any) => {
+    if (lastEphemeral) {
+      MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
+    }
+    lastEphemeral = item;
+  });
 
   if (!lastEphemeral) {
     props.onNotEphemeralMessage();
@@ -52,7 +58,7 @@ export default (props: Props) => {
   }
   props.onHasEphemeralMessage();
   return (
-    <div className="ephemerals">
+    <div className="ephemerals" key={lastEphemeral?.front_id+lastEphemeral?.content?.last_change}>
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
@@ -65,7 +71,7 @@ export default (props: Props) => {
             noBlock
             noReplies
             collectionKey={props.collectionKey}
-            message={message}
+            messageId={message.id || message.front_id}
           />
         );
       })}

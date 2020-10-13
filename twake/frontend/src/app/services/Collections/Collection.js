@@ -368,7 +368,6 @@ export default class Collection extends Observable {
     var request_key = JSON.stringify([base_url, this.collection_id, options]);
 
     this.doing_http_request++;
-    this.notify();
 
     var base_url = base_url || this.base_url;
 
@@ -471,7 +470,6 @@ export default class Collection extends Observable {
       };
 
       this.doing_http_request++;
-      this.notify();
 
       api.post(this.base_url + '/search', data, res => {
         if (res.data) {
@@ -1077,15 +1075,20 @@ export default class Collection extends Observable {
     return that.known_objects_by_front_id[front_id];
   }
 
-  shouldNotify(node) {
+  shouldNotify(node, listen_only = false) {
     var update = true;
     if (
       node._observable &&
       node._observable[this.observableName] &&
       node._observable[this.observableName].listen_only
     ) {
-      update = false;
-      node._observable[this.observableName].listen_only.map(item => {
+      listen_only = node._observable[this.observableName].listen_only;
+    }
+    update = false;
+    if(listen_only.length === 0){
+      update = true;
+    }else{
+      listen_only.map(item => {
         if (this.known_objects_by_id[item]) {
           item = this.known_objects_by_id[item].front_id || item;
         }

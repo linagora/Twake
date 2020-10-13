@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Strings from 'services/utils/strings.js';

@@ -5,7 +5,7 @@ import './CompanyHeader.scss';
 import User from 'components/User/User.js';
 import UserService from 'services/user/user.js';
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 
 export default class CompanyHeader extends React.Component {
   constructor(props) {

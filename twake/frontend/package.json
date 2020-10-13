@@ -8,7 +8,8 @@
     "dev-build": "node scripts/build.js",
     "build": "scripts/build-version.sh patch && node scripts/build.js",
     "change-version": "scripts/build-version.sh",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "prettier": "prettier --write src/"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -114,6 +115,8 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/antd": "^1.0.0",
     "@types/crypto-js": "^3.1.43",
+    "@types/emoji-mart": "^3.0.2",
+    "@types/emojione": "^2.2.6",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",

@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
 import Menu from 'components/Menus/Menu.js';

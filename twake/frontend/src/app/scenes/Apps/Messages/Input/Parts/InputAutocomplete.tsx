@@ -4,7 +4,7 @@ import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';

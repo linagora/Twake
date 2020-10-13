@@ -20,6 +20,7 @@ type Props = {
   unreadAfter: number;
 };
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import Loader from 'components/Loader/Loader.js';
 
 export default class MessagesList extends Component<Props> {
   messagesListServerService: MessagesListServerUtils;
@@ -99,6 +100,16 @@ export default class MessagesList extends Component<Props> {
       loadingMessagesBottom = [];
     }
 
+    if (messages.length === 0) {
+      return (
+        <div className="loading-full">
+          <div className="loading">
+            <Loader color="#CCC" className="app_loader" />
+          </div>
+        </div>
+      );
+    }
+
     return [
       <ScrollerParent messagesListService={this.messagesListService}>
         <PerfectScrollbar
@@ -113,7 +124,8 @@ export default class MessagesList extends Component<Props> {
                 <MessageComponent
                   delayRender
                   key={index}
-                  message={loadingMessagesTop[index]}
+                  fake
+                  messageId={''}
                   collectionKey={this.props.collectionKey}
                 />
               ))}
@@ -124,31 +136,34 @@ export default class MessagesList extends Component<Props> {
                 <MessageComponent
                   noReplies
                   key={headerMessage?.id}
-                  message={headerMessage}
+                  messageId={headerMessage?.id}
                   collectionKey={this.props.collectionKey}
                 />
               </div>
             )}
 
-            {messages.map((m, index) => (
-              <MessageAndTimeSeparator
-                delayRender
-                key={messages[index].front_id}
-                message={messages[index]}
-                previousMessage={messages[index - 1]}
-                unreadAfter={this.props.unreadAfter}
-                highlighted={this.messagesListService.highlighted === messages[index]?.id}
-                collectionKey={this.props.collectionKey}
-                refMessage={node => this.messagesListService.setMessageNode(m, node)}
-                repliesAsLink={!this.props.threadId}
-              />
-            ))}
+            {messages.map((m, index) => {
+              const highlighted = this.messagesListService.highlighted === messages[index]?.id;
+              return (
+                <MessageAndTimeSeparator
+                  delayRender
+                  key={messages[index].front_id}
+                  messageId={messages[index]?.id || messages[index]?.front_id}
+                  previousMessageId={messages[index - 1]?.id}
+                  unreadAfter={this.props.unreadAfter}
+                  highlighted={highlighted}
+                  collectionKey={this.props.collectionKey}
+                  repliesAsLink={!this.props.threadId}
+                />
+              );
+            })}
             <div className="fake-messages">
               {loadingMessagesBottom.map((_m, index) => (
                 <MessageComponent
                   delayRender
                   key={index}
-                  message={loadingMessagesBottom[index]}
+                  fake
+                  messageId={''}
                   collectionKey={this.props.collectionKey}
                 />
               ))}

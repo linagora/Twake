@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import User from 'services/user/user.js';
 import './MainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
