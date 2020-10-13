@@ -27,8 +27,8 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
 
   const fastify = platform.getProvider<WebServerAPI>("webserver").getServer();
 
-  function tearDown(): Promise<void> {
-    fastify.close();
+  async function tearDown(): Promise<void> {
+    await platform.stop();
     return Promise.resolve();
   }
 
