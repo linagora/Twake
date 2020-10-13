@@ -60,7 +60,7 @@ export default class Observable {
           this.observableListenersOnlyList[i] || false,
         );
       if (this.observableListenersShouldNotifyList[i]) {
-        update = this.observableListenersShouldNotifyList[i](update);
+        update = update || this.observableListenersShouldNotifyList[i](update);
       }
       if (update) {
         var data = {};

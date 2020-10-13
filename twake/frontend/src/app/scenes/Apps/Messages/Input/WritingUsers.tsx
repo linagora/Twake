@@ -12,14 +12,16 @@ type Props = {
 
 export default class WritingUsers extends Component<Props> {
   timeout: any = 0;
-  savedState: string = "";
+  savedState: string = '';
 
   constructor(props: Props) {
     super(props);
 
     Languages.addListener(this);
-    Collections.get('messages').addListener(this, [], ()=>{
-      const newState = JSON.stringify(MessagesService.getWritingUsers(this.props.channelId, this.props.threadId));
+    Collections.get('messages').addListener(this, [], () => {
+      const newState = JSON.stringify(
+        MessagesService.getWritingUsers(this.props.channelId, this.props.threadId),
+      );
       const savedState = this.savedState;
       this.savedState = newState;
       return newState != savedState;

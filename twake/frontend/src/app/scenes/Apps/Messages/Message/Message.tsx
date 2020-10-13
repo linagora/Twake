@@ -57,14 +57,18 @@ export default class MessageComponent extends Component<Props, { render: boolean
       Collections.get('messages').findByFrontId(props.messageId);
 
     let savedLength = 0;
-    Collections.get('messages').addListener(this, [props.messageId || this.message?.front_id], () => {
-      const length = this.getResponses().length;
-      if(length != savedLength){
-        savedLength = length;
-        return true;
-      }
-      return false;
-    });
+    Collections.get('messages').addListener(
+      this,
+      [props.messageId || this.message?.front_id],
+      () => {
+        const length = this.getResponses().length;
+        if (length != savedLength) {
+          savedLength = length;
+          return true;
+        }
+        return false;
+      },
+    );
 
     this.messageEditorService = MessageEditorsManager.get(this.message?.channel_id || '');
     let savedCurrentEditor: string | false = '';
@@ -80,7 +84,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
       savedCurrentEditor = '';
       return false;
     });
-    
+
     if (this.message) {
       MessagesListServiceManager.get(this.props.collectionKey).setMessageNode(this.message, this);
     }
@@ -121,9 +125,9 @@ export default class MessageComponent extends Component<Props, { render: boolean
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 
-  getResponses(){
+  getResponses() {
     const message = this.message;
-    if(!message){
+    if (!message) {
       return [];
     }
     return Collections.get('messages')
