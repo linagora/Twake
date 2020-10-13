@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { CONSUMES_METADATA, PREFIX_METADATA, SERVICENAME_METADATA } from "./constants";
+import { CONSUMES_METADATA, PREFIX_METADATA, SERVICENAME_METADATA } from "./api/constants";
 
 export function ServiceName(name: string): ClassDecorator {
   return function(target: Function): void {
