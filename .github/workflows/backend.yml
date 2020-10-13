@@ -5,6 +5,7 @@ on:
     branches: [main, "feature/*"]
     paths:
       - "twake/backend/core/**"
+      - "twake/backend/node/**"
 
 jobs:
   build:
