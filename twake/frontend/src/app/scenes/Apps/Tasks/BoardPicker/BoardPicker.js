@@ -25,7 +25,7 @@ export default class BoardPicker extends React.Component {
         websockets: [{ uri: 'boards/' + Workspaces.getCurrentUserId, options: { type: 'board' } }],
       },
       this.boards_collection_key,
-      () => {}
+      () => {},
     );
   }
   componentWillUnmount() {

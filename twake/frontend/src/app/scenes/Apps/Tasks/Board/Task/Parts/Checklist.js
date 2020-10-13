@@ -23,7 +23,8 @@ export default class Checklist extends React.Component {
     var progress =
       checklist.length > 0
         ? parseInt(
-            (100 * checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) / checklist.length
+            (100 * checklist.map(e => (e.value ? 1 : 0)).reduce((a, b) => a + b)) /
+              checklist.length,
           )
         : 0;
 

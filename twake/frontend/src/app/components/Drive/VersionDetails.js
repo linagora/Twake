@@ -68,7 +68,9 @@ export default class VersionDetails extends React.Component {
         }
         title={
           <div className="title allow_selection">
-            <ObjectModalTitle>{Languages.t('scenes.apps.drive.right_preview.versions', [], 'Versions')}</ObjectModalTitle>
+            <ObjectModalTitle>
+              {Languages.t('scenes.apps.drive.right_preview.versions', [], 'Versions')}
+            </ObjectModalTitle>
           </div>
         }
       >
@@ -116,7 +118,7 @@ export default class VersionDetails extends React.Component {
                           text: Languages.t(
                             'scenes.apps.drive.preview_bloc.operations_download',
                             [],
-                            'Télécharger'
+                            'Télécharger',
                           ),
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
@@ -130,7 +132,6 @@ export default class VersionDetails extends React.Component {
                   </div>
                 );
               })}
-
           </UploadZone>
         </div>
       </ObjectModal>

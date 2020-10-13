@@ -44,7 +44,7 @@ export default class RepetitionSelector extends React.Component {
           moment
             .localeData()
             .ordinal(
-              moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1
+              moment(this.state.date).week() - moment(this.state.date).startOf('month').week() + 1,
             ),
           moment(this.state.date).format('dddd'),
         ]),
@@ -111,7 +111,7 @@ export default class RepetitionSelector extends React.Component {
                   size: {
                     width: '400px',
                   },
-                }
+                },
               );
             }
             this.setState({ value: v });

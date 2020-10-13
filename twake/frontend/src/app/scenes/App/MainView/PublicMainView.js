@@ -45,7 +45,7 @@ export default class MainView extends Component {
           this.setState({});
           console.log('set state with ', this.state.group);
         }
-      }
+      },
     );
   }
   render() {
@@ -57,7 +57,7 @@ export default class MainView extends Component {
           {Languages.t(
             'scenes.app.mainview.link_expired',
             [],
-            'This public link is invalid or has expired.'
+            'This public link is invalid or has expired.',
           )}
         </div>
       </div>
@@ -81,7 +81,7 @@ export default class MainView extends Component {
               {Languages.t(
                 'scenes.app.mainview.create_account',
                 [],
-                'Créez votre espace de travail gratuitement sur '
+                'Créez votre espace de travail gratuitement sur ',
               )}
             </span>
             Twake &nbsp; 👉

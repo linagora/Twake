@@ -75,7 +75,7 @@ class UploadManager extends Observable {
                 }
                 resolve();
               }
-            })
+            }),
           );
         });
         Promise.all(promises).then(resolve);
@@ -131,7 +131,7 @@ class UploadManager extends Observable {
                     resolve();
                   }, resolve.bind());
                 } else readDirectory(entry, path + '/' + entry.name, resolve);
-              })
+              }),
             );
           });
           Promise.all(promises).then(resolve.bind());
@@ -152,7 +152,7 @@ class UploadManager extends Observable {
               } else if (entry.isDirectory) {
                 readDirectory(entry, null, resolve);
               }
-            })
+            }),
           );
         }
       });

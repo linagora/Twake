@@ -101,7 +101,7 @@ export default class PathElement extends DriveElement {
               </Menu>
             )}
         </div>
-      </DroppableZone>
+      </DroppableZone>,
     );
 
     return list;

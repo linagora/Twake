@@ -15,7 +15,7 @@ type Props = {
   className?: string;
   s64?: boolean;
   s128?: boolean;
-}
+};
 
 const type_to_uni: any = {};
 
@@ -50,13 +50,13 @@ export default React.memo((props: Props) => {
   }
 
   let size = props.size || 16;
-  let html = "";
+  let html = '';
 
   if (size > 32 || props.s64 || props.s128) {
     //Use from local server
     html = emojione.toImage(props.type);
     html = html.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
-    
+
     if (props.s64) {
       size = 32;
       html = html.replace('/32/', '/64/');
@@ -77,8 +77,10 @@ export default React.memo((props: Props) => {
 
   console.log();
 
+  const uni =
+    type_to_uni[props.type] ||
   //@ts-ignore
-  const uni = type_to_uni[props.type] || getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
+  getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
   type_to_uni[props.type] = uni;
 
   return (

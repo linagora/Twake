@@ -125,7 +125,7 @@ export default class TaskEditor extends React.Component {
           name={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-            'Description'
+            'Description',
           )}
           icon="align-left"
         />
@@ -136,7 +136,7 @@ export default class TaskEditor extends React.Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-            'Description'
+            'Description',
           )}
           onChange={evt => {
             this.change('description', evt.target.value);
@@ -173,7 +173,7 @@ export default class TaskEditor extends React.Component {
               'participants',
               ids_mails.map(id => {
                 return { user_id_or_mail: id };
-              })
+              }),
             );
             Menu.closeAll();
           }}

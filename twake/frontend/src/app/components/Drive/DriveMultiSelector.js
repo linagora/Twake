@@ -241,7 +241,7 @@ export default class DriveMultiSelector extends React.Component {
           this.currentSelection[element_id] = true;
           this.currentSelectionCount++;
         }
-      }
+      },
     );
   }
   render() {

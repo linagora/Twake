@@ -41,7 +41,7 @@ export default class TagPicker extends React.Component {
           },
           websockets: [{ uri: 'tags/' + Workspaces.currentWorkspaceId, options: { type: 'tags' } }],
         },
-        Workspaces.currentWorkspaceId
+        Workspaces.currentWorkspaceId,
       );
     }
   }
@@ -105,7 +105,7 @@ export default class TagPicker extends React.Component {
         menu,
         { x: evt.clientX, y: evt.clientY },
         this.props.menu_level,
-        'right'
+        'right',
       );
     } else {
       MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'right');
@@ -173,8 +173,7 @@ export default class TagPicker extends React.Component {
               this.addTags(evt);
             }}
           >
-            <Icon type="plus" className="m-icon-small" />{' '}
-            {Languages.t('general.add', [], 'Add')}
+            <Icon type="plus" className="m-icon-small" /> {Languages.t('general.add', [], 'Add')}
           </Button>
         )}
 

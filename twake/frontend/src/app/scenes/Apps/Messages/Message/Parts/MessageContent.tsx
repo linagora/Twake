@@ -23,7 +23,11 @@ export default (props: Props) => {
   const [loadingAction, setLoadingAction] = useState(false);
   let loading_interaction_timeout: any = 0;
 
-  Collections.get('messages').useListener(useState, [props.message?.id, props.message?.front_id, "msgcontent"]);
+  Collections.get('messages').useListener(useState, [
+    props.message?.id,
+    props.message?.front_id,
+    'msgcontent',
+  ]);
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
     var app_id = props.message.application_id;

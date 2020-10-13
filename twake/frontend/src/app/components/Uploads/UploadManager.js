@@ -53,7 +53,7 @@ class UploadManager extends Observable {
     drive_parent,
     upload_options,
     driveCollectionKey,
-    callback
+    callback,
   ) {
     if (this.addElementsRecursive(elements, '')) {
       this.uploadRecursive(elements, drive_parent, upload_options, driveCollectionKey, callback);
@@ -130,7 +130,7 @@ class UploadManager extends Observable {
       dir => {
         this.currentUploadingFilesNumber--;
         if (callback) callback(dir);
-      }
+      },
     );
   }
 
@@ -186,7 +186,7 @@ class UploadManager extends Observable {
                 }
                 resolve();
               }
-            })
+            }),
           );
         });
 
@@ -259,7 +259,7 @@ class UploadManager extends Observable {
                     resolve();
                   }, resolve.bind());
                 } else readDirectory(entry, path + '/' + entry.name, resolve);
-              })
+              }),
             );
           });
           Promise.all(promises).then(resolve.bind());
@@ -283,7 +283,7 @@ class UploadManager extends Observable {
               } else if (entry.isDirectory) {
                 readDirectory(entry, null, resolve);
               }
-            })
+            }),
           );
         }
       });
@@ -364,7 +364,7 @@ class UploadManager extends Observable {
           upload_options,
           driveCollectionKey,
           callback,
-          timeout_count + 1
+          timeout_count + 1,
         );
       }, Math.max(30000, 500 * (this.currentWaitingFilesNumber + 1) + Math.random() * 1000));
       return;
@@ -508,7 +508,7 @@ class UploadManager extends Observable {
           var file = r.getFromUniqueIdentifier('no_id');
           file.uniqueIdentifier = identifier;
           r.upload();
-        }
+        },
       );
     });
   }
