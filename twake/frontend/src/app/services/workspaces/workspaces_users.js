@@ -498,7 +498,7 @@ class WorkspacesUsers extends Observable {
   leaveWorkspace() {
     var that = this;
     var has_other_admin = false;
-    if (!workspaceUserRights.hasWorkspacePrivilege()) {
+    if (!workspaceService.hasWorkspacePrivilege()) {
       has_other_admin = true;
     } else {
       var users = WorkspacesMembersTable.getList(workspaceService.currentWorkspaceId, 'members');

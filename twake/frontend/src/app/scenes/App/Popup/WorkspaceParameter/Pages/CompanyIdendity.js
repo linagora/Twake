@@ -38,8 +38,7 @@ export default class CompanyIdendity extends Component {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
-          console.log(e);
-          $(that.groupLogo).css({ backgroundImage: "url('" + e.target.result + "')" });
+          that.groupLogo.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ groupLogo: first });
         console.log(that.state.groupLogo);
@@ -117,7 +116,7 @@ export default class CompanyIdendity extends Component {
           >
             <div
               onClick={event => {
-                $(this.fileinput).click();
+                this.fileinput.click();
               }}
             >
               <input

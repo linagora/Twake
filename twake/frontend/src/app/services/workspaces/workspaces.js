@@ -13,6 +13,8 @@ import WorkspaceUserRights from './workspace_user_rights.js';
 import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
+import workspacesApps from 'services/workspaces/workspaces_apps.js';
+import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
 

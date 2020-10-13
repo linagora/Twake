@@ -6,6 +6,7 @@ import Collections from 'services/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
 import Notifications from 'services/user/notifications.js';
+import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
 

@@ -9,6 +9,7 @@ import environment from 'environment/environment';
 import version from 'environment/version';
 // const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
+
 class Globals {
   constructor() {
     this.services = {};
@@ -37,7 +38,8 @@ class Globals {
     });
 
     if (!this.window.addEventListener) {
-      (this.window.addEventListener = () => {}), (this.window.removeEventListener = () => {});
+      this.window.addEventListener = () => {};
+      this.window.removeEventListener = () => {};
     }
     if (!this.window.document) {
       this.window.document = {
@@ -67,11 +69,12 @@ class Globals {
     }
 
     this.window.mixpanel_prefix = '';
-    if (typeof MixpanelInstance != 'undefined') {
+    
+    if (typeof MixpanelInstance != 'undefined') { // eslint-disable-line no-undef
       var mixpanel = undefined;
-      mixpanel = new MixpanelInstance('8d6e53f2820846e3784fcfd4b308acab');
+      mixpanel = new MixpanelInstance('8d6e53f2820846e3784fcfd4b308acab'); // eslint-disable-line no-undef
       if (this.isReactNative) {
-        if (mixpanel && Platform.OS === 'ios') {
+        if (mixpanel && Platform.OS === 'ios') { // eslint-disable-line no-undef
           this.window.mixpanel_prefix = 'mobile_';
 
           (async () => {
@@ -87,8 +90,8 @@ class Globals {
       }
     }
 
-    if (typeof PushNotification != 'undefined') {
-      this.PushNotification = PushNotification;
+    if (typeof PushNotification != 'undefined') { // eslint-disable-line no-undef
+      this.PushNotification = PushNotification; // eslint-disable-line no-undef
     }
 
     this.device = null;
@@ -188,16 +191,16 @@ class Globals {
   }
 
   localStorageSetItem(key, value) {
-    if (typeof SyncStorage != 'undefined') {
-      SyncStorage.set(key, value);
+    if (typeof SyncStorage != 'undefined') { // eslint-disable-line no-undef
+      SyncStorage.set(key, value); // eslint-disable-line no-undef
     } else if (window && window.localStorage) {
       window.localStorage.setItem(key, value);
     }
   }
 
   localStorageGetItem(key, callback) {
-    if (typeof SyncStorage != 'undefined') {
-      const data = SyncStorage.get(key);
+    if (typeof SyncStorage != 'undefined') { // eslint-disable-line no-undef
+      const data = SyncStorage.get(key); // eslint-disable-line no-undef
       if (callback) {
         callback(data);
       }
@@ -212,7 +215,7 @@ class Globals {
 
   localStorageClear() {
     if (typeof SyncStorage != 'undefined') {
-      SyncStorage.clear();
+      SyncStorage.clear(); // eslint-disable-line no-undef
     } else if (window && window.localStorage) {
       window.localStorage.clear();
     }
@@ -235,10 +238,10 @@ class Globals {
   }
 
   getDefaultLanguage() {
-    if (typeof NativeModules != 'undefined') {
-      var locale = ((NativeModules.SettingsManager || {}).settings || {}).AppleLocale || 'en';
+    if (typeof NativeModules != 'undefined') { // eslint-disable-line no-undef
+      var locale = ((NativeModules.SettingsManager || {}).settings || {}).AppleLocale || 'en'; // eslint-disable-line no-undef
       if (!locale) {
-        locale = (NativeModules.I18nManager || {}).localeIdentifier || 'en';
+        locale = (NativeModules.I18nManager || {}).localeIdentifier || 'en'; // eslint-disable-line no-undef
       }
       return locale;
     } else {
@@ -247,8 +250,8 @@ class Globals {
   }
 
   clearCookies() {
-    if (typeof Cookie != 'undefined') {
-      Cookie.clear();
+    if (typeof Cookie != 'undefined') { // eslint-disable-line no-undef
+      Cookie.clear(); // eslint-disable-line no-undef
     }
   }
 }

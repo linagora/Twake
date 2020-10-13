@@ -35,7 +35,7 @@ export default class WorkspaceIdentity extends Component {
     Languages.removeListener(this);
   }
   open() {
-    $(this.fileinput).click();
+    this.fileinput.click();
   }
   changeLogo(event) {
     var that = this;
@@ -46,8 +46,7 @@ export default class WorkspaceIdentity extends Component {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
-          console.log(e);
-          $(that.workspaceLogo).css({ backgroundImage: "url('" + e.target.result + "')" });
+          that.workspaceLogo.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ workspaceLogo: first });
         console.log(that.state.workspaceLogo);
@@ -138,7 +137,7 @@ export default class WorkspaceIdentity extends Component {
           >
             <div
               onClick={event => {
-                $(this.fileinput).click();
+                this.fileinput.click();
               }}
             >
               <input
