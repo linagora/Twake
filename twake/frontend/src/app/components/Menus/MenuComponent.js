@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import './Menu.scss';
 

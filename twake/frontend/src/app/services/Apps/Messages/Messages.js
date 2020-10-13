@@ -187,6 +187,7 @@ class Messages extends Observable {
       val.prepared.push({ type: 'nop', content: preparedFiles });
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
+      message.sender = CurrentUser.get().id;
 
       if (message.parent_message_id) {
         var parent = Collections.get('messages').find(message.parent_message_id);

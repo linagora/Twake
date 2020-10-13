@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Tutorial.scss';
 
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 
 export default class Tutorial extends React.Component {
   constructor(props) {

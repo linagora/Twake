@@ -7,7 +7,7 @@ import List from './List/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Loader from 'components/Loader/Loader.js';
 import './Board.scss';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Rounded from 'components/Inputs/Rounded.js';
 import Menu from 'components/Menus/Menu.js';
 import ListEditor from './List/ListEditor.js';

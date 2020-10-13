@@ -1,31 +1,36 @@
-import React from 'react';
-import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
+import React, { useState } from 'react';
 import './Message.scss';
-import Moment from 'react-moment';
 import moment from 'moment';
 import 'moment-timezone';
 import Languages from 'services/languages/languages.js';
 import CurrentUser from 'services/user/current_user.js';
+import Collections from 'services/Collections/Collections.js';
 
 type Props = {
-  message: Message;
-  previousMessage: Message | null;
+  messageId: string;
+  previousMessageId: string;
   unreadAfter: number;
 };
 
-export default (props: Props) => {
-  if (!props.previousMessage) {
+export default React.memo((props: Props) => {
+  if (!props.previousMessageId) {
     return <div />;
   }
+
+  const previousMessage = Collections.get('messages').find(props.previousMessageId);
+  const message = Collections.get('messages').find(props.messageId);
+
+  Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
+
   const isFirstNewMessage =
-    (props.message?.creation_date || 0) >= props.unreadAfter &&
-    (props.previousMessage?.creation_date || 0) < props.unreadAfter;
+    (message?.creation_date || 0) >= props.unreadAfter &&
+    (previousMessage?.creation_date || 0) < props.unreadAfter;
   const isNewMessage =
     !!(
-      !props.previousMessage ||
-      (props.message.creation_date && isFirstNewMessage && props.previousMessage?.creation_date)
-    ) && props.message.sender !== CurrentUser.get().id;
-  const creation_date = Math.min(new Date().getTime() / 1000, props.message?.creation_date || 0);
+      !previousMessage ||
+      (message?.creation_date && isFirstNewMessage && previousMessage?.creation_date)
+    ) && message?.sender !== CurrentUser.get().id;
+  const creation_date = Math.min(new Date().getTime() / 1000, message?.creation_date || 0);
   return (
     <div>
       {isNewMessage && (
@@ -39,14 +44,13 @@ export default (props: Props) => {
       )}
       {!isNewMessage &&
         !!(
-          !props.previousMessage ||
-          (props.message?.creation_date || 0) - (props.previousMessage?.creation_date || 0) >
-            60 * 60 * 2
+          !previousMessage ||
+          (message?.creation_date || 0) - (previousMessage?.creation_date || 0) > 60 * 60 * 2
         ) && (
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">
-                {(new Date().getTime() / 1000 - (props.message?.creation_date || 0) > 24 * 60 * 60
+                {(new Date().getTime() / 1000 - (message?.creation_date || 0) > 24 * 60 * 60
                   ? moment((creation_date || 0) * 1000).format('LL')
                   : moment((creation_date || 0) * 1000).fromNow()) || '-'}
               </div>
@@ -55,4 +59,4 @@ export default (props: Props) => {
         )}
     </div>
   );
-};
+});

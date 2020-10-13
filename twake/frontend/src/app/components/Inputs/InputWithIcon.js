@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Input from 'components/Inputs/Input.js';

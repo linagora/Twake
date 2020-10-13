@@ -69,7 +69,7 @@ class MenusManager extends Observable {
       options = {};
     }
 
-    var position = this.bestPosition(domRect, positionType, {margin: options.margin || 0});
+    var position = this.bestPosition(domRect, positionType, { margin: options.margin || 0 });
 
     this.menus.push({
       menu: menu,
@@ -137,12 +137,11 @@ class MenusManager extends Observable {
       y: rect.y - options.margin,
       right: rect.right + options.margin,
       bottom: rect.bottom + options.margin,
-      width: rect.width + 2*options.margin,
-      height: rect.height + 2*options.margin,
+      width: rect.width + 2 * options.margin,
+      height: rect.height + 2 * options.margin,
     };
 
-
-    var x = (rect.right || rect.x);
+    var x = rect.right || rect.x;
     var y = rect.y;
 
     if (position == 'top' || position == 'bottom' || position == 'center') {
