@@ -1,57 +1,31 @@
-import "reflect-metadata";
-
-import { TwakePlatform, TwakeServiceProvider, logger, TwakeServiceState } from "./framework";
+import { TwakeContainer, TwakeServiceProvider, TwakeComponent } from "./framework";
 import * as ComponentUtils from "./framework/utils/component-utils";
 
-export class Platform extends TwakePlatform {
+export class TwakePlatform extends TwakeContainer {
+
+  constructor(protected options: TwakePlatformConfiguration) {
+    super();
+  }
 
   api(): TwakeServiceProvider {
     return null;
   }
 
-  async doInit(): Promise<this> {
-    logger.info("Init %s", this.name);
-    logger.info("Init services %o", this.options.services);
-
-    this.components = await ComponentUtils.loadComponents(this.options.servicesPath, this.options.services, {
+  async loadComponents(): Promise<Map<string, TwakeComponent>> {
+    return await ComponentUtils.loadComponents(this.options.servicesPath, this.options.services, {
       getProvider: this.getProvider.bind(this)
     });
-
-    ComponentUtils.buildDependenciesTree(this.components);
-
-    await this.launchInit();
-
-    return this;
   }
+}
 
-  private async launchInit(): Promise<this> {
-    logger.info("Initializing Twake...");
+export class TwakePlatformConfiguration {
+  /**
+   * The services to load in the container
+   */
+  services: string[];
 
-    await this.switchToState(TwakeServiceState.Initialized);
-
-    return this;
-  }
-
-  async doStart(): Promise<this> {
-    logger.info("Starting Twake...");
-
-    await this.switchToState(TwakeServiceState.Started);
-
-    return this;
-  }
-
-  async doStop(): Promise<this> {
-    logger.info("Stopping Twake...");
-
-    await this.switchToState(TwakeServiceState.Stopped);
-
-    return this;
-  }
-
-  private async switchToState(state: TwakeServiceState.Started | TwakeServiceState.Initialized | TwakeServiceState.Stopped): Promise<void> {
-    const subject$ = ComponentUtils.switchComponentsToState(this.components, state);
-    await subject$.toPromise();
-
-    return;
-  }
+  /**
+   * The path to load services from
+   */
+  servicesPath: string;
 }

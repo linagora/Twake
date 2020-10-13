@@ -1,11 +1,10 @@
-import { TwakeAppConfiguration } from "../../../src/core/platform/framework";
-import { Platform } from "../../../src/core/platform/platform";
+import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
 import WebServerAPI from "../../../src/services/webserver/provider";
 import path from "path";
 import { FastifyInstance } from "fastify";
 
 export interface TestPlatform {
-  platform: Platform;
+  platform: TwakePlatform;
   app: FastifyInstance;
   tearDown(): Promise<void>
 }
@@ -15,12 +14,11 @@ export interface TestPlatformConfiguration {
 }
 
 export async function init(config: TestPlatformConfiguration): Promise<TestPlatform> {
-  const configuration: TwakeAppConfiguration = {
-    name: "Twake",
+  const configuration: TwakePlatformConfiguration = {
     services: config.services,
     servicesPath: path.resolve(__dirname, "../../../src/services/")
   };
-  const platform = new Platform(configuration);
+  const platform = new TwakePlatform(configuration);
 
   await platform.init();
   await platform.start();

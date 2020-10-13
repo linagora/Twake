@@ -4,6 +4,7 @@ import WebSocketAPI from "../provider";
 import { WebSocketServiceConfiguration } from "../types";
 
 export class WebSocketService implements WebSocketAPI {
+  version: "1";
   private io: socketIO.Server;
 
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {

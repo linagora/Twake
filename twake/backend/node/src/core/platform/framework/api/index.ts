@@ -3,7 +3,7 @@ export * from "./class";
 export * from "./component";
 export * from "./constants";
 export * from "./context";
-export * from "./platform";
+export * from "./container";
 export * from "./service-configuration";
 export * from "./service-definition";
 export * from "./service-interface";
