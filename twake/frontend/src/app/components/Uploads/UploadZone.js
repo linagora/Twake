@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import UploadManager from './UploadManager.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import './Uploads.scss';
 import Languages from 'services/languages/languages.js';
 

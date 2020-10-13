@@ -16,7 +16,7 @@ import MessagesListServerServicesManager, {
   MessagesListServerUtils,
   Message,
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
 
 type Props = {

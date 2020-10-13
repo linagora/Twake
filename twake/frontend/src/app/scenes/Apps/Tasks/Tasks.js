@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import UnconfiguredTab from './UnconfiguredTab.js';
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import User from 'components/User/User.js';
 import Loader from 'components/Loader/Loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';

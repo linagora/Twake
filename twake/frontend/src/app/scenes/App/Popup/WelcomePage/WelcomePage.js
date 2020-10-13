@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Collections from 'services/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 

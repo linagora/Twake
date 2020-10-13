@@ -5,7 +5,7 @@ import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 
 type Props = {
   message: Message;
