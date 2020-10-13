@@ -49,12 +49,23 @@ export default class MessageComponent extends Component<Props, { render: boolean
       render: !props.delayRender,
     };
 
+    this.getResponses = this.getResponses.bind(this);
+    this.setDomElement = this.setDomElement.bind(this);
+
     this.message =
       Collections.get('messages').find(props.messageId) ||
       Collections.get('messages').findByFrontId(props.messageId);
-    Collections.get('messages').addListener(this, [props.messageId || this.message?.front_id]);
 
-    this.setDomElement = this.setDomElement.bind(this);
+    let savedLength = 0;
+    Collections.get('messages').addListener(this, [props.messageId || this.message?.front_id], () => {
+      const length = this.getResponses().length;
+      if(length != savedLength){
+        savedLength = length;
+        return true;
+      }
+      return false;
+    });
+
     this.messageEditorService = MessageEditorsManager.get(this.message?.channel_id || '');
     let savedCurrentEditor: string | false = '';
     this.messageEditorService.addListener(this, [], () => {
@@ -110,6 +121,21 @@ export default class MessageComponent extends Component<Props, { render: boolean
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 
+  getResponses(){
+    const message = this.message;
+    if(!message){
+      return [];
+    }
+    return Collections.get('messages')
+      .findBy({
+        channel_id: message.channel_id,
+        parent_message_id: message.id,
+        _user_ephemeral: undefined,
+      })
+      .filter((i: Message) => !i._user_ephemeral)
+      .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
+  }
+
   render() {
     if (this.props.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
@@ -126,14 +152,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
 
     const max_responses = 3;
     let previous_message: Message = message;
-    let responses = Collections.get('messages')
-      .findBy({
-        channel_id: message.channel_id,
-        parent_message_id: message.id,
-        _user_ephemeral: undefined,
-      })
-      .filter((i: Message) => !i._user_ephemeral)
-      .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
+    let responses = this.getResponses();
 
     const linkToThread = !!message.parent_message_id && this.props.repliesAsLink;
 

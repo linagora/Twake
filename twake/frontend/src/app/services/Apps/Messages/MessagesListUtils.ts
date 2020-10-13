@@ -357,6 +357,8 @@ export class MessagesListUtils extends Observable {
       );
     }
 
+    this.ignoreNextScroll++;
+
     this.updateScroll();
 
     this.fixScroll();
