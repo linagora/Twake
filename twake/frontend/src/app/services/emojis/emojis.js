@@ -38,8 +38,6 @@ class Emojis {
       //Keep only displayable emojis
       if (emoji.display == 1) {
         emoji.id = emoji.shortname;
-        this.emojisByCode[emoji.id];
-        this.emojisByAscii[emoji.ascii];
 
         //Add emojis by category
         if (!this.emojisByCateg[emoji.category]) this.emojisByCateg[emoji.category] = [];

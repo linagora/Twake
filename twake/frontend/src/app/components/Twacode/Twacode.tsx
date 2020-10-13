@@ -54,7 +54,7 @@ export default (props: Props) => {
       saved_stringified = stringified;
       setLoadingInteraction(false);
     }
-    () => {
+    return () => {
       //Called when element is unmounted
       clearTimeout(loadingInteraction_timeout);
     };

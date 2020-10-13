@@ -72,7 +72,7 @@ export default class TagPicker extends React.Component {
               canCreate={this.props.canCreate}
               disabledTags={
                 this.state.value.map(item => {
-                  typeof item == 'string' ? item : item.id;
+                  return typeof item == 'string' ? item : item.id;
                 }) || []
               }
               onChange={value => {
@@ -80,7 +80,7 @@ export default class TagPicker extends React.Component {
                   if (
                     this.state.value
                       .map(item => {
-                        typeof item == 'string' ? item : item.id;
+                        return typeof item == 'string' ? item : item.id;
                       })
                       .indexOf(tag.id || tag.name || tag) < 0
                   ) {

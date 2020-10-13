@@ -16,6 +16,7 @@ import Switch from 'components/Inputs/Switch.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AppsParameters from 'scenes/App/Popup/AppsParameters/AppsParameters.js';
 import Button from 'components/Buttons/Button.js';
+import WorkspaceAppsEditor from '../../AppsParameters/Pages/WorkspaceAppsEditor.js';
 
 import WorkspaceAppsSearch from './WorkspaceAppsSearch.js';
 import Loader from 'components/Loader/Loader.js';

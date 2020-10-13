@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'services/Collections/Collections.js';
@@ -199,12 +200,12 @@ export default class ChannelsWorkspace extends Component {
       if (!window.did_remove_loading_class) {
         window.did_remove_loading_class_once = true;
         window.did_remove_loading_class = true;
-        body.classList.remove('loading_render');
+        Globals.window.document.body.classList.remove('loading_render');
       }
     } else if (!window.did_remove_loading_class_once) {
       if (!window.did_add_loading_class) {
         window.did_add_loading_class = true;
-        body.classList.add('loading_render');
+        Globals.window.document.body.classList.add('loading_render');
       }
     }
 

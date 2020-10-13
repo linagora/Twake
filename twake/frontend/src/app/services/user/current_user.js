@@ -9,6 +9,7 @@ import Number from 'services/utils/Numbers.js';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import Languages from 'services/languages/languages.js';
+import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
 

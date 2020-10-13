@@ -5,6 +5,7 @@ import './Footer.scss';
 import Icon from 'components/Icon/Icon.js';
 import LoginService from 'services/login/login.js';
 import Languages from 'services/languages/languages.js';
+import Globals from 'services/Globals.js';
 
 export default class Footer extends React.Component {
   constructor(props) {
@@ -24,8 +25,8 @@ export default class Footer extends React.Component {
             footer: 'View more changes',
           },
         };
-        if (typeof Headway != 'undefined') {
-          Headway.init(config);
+        if (typeof Globals.window?.Headway != 'undefined') {
+          Globals.window.Headway.init(config);
         }
       }
     } catch (err) {

@@ -93,7 +93,7 @@ export default class MultipleSecuredConnections {
   }
 
   closeAll() {
-    Object.keys(secured_connections).foEach(route => {
+    Object.keys(this.secured_connections).foEach(route => {
       this.removeConnection(route);
     });
   }

@@ -9,6 +9,7 @@ import Button from 'components/Buttons/Button.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import Select from 'components/Select/Select.js';
+import MenusManager from 'services/Menus/MenusManager.js';
 
 import {
   ObjectModalSeparator,
