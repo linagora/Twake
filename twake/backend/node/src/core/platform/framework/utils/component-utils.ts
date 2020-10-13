@@ -42,7 +42,7 @@ export async function loadComponents(path: string, names: string[] = [], context
   return result;
 }
 
-export function switchComponentsToState(components: Map<string, TwakeComponent>, state: TwakeServiceState.Initialized | TwakeServiceState.Started): Subject<boolean> {
+export function switchComponentsToState(components: Map<string, TwakeComponent>, state: TwakeServiceState.Initialized | TwakeServiceState.Started | TwakeServiceState.Stopped): Subject<boolean> {
   const subject = new Subject<boolean>();
   const states = [];
 

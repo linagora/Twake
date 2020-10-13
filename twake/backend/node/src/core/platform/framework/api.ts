@@ -30,12 +30,15 @@ enum TwakeServiceState {
   Initialized = "INITIALIZED",
   Starting = "STARTING",
   Started = "STARTED",
+  Stopping = "STOPPING",
+  Stopped = "STOPPED",
   Errored = "ERRORED"
 }
 
 interface TwakeServiceInterface<TwakeServiceProvider> {
   doInit(): Promise<this>;
   doStart(): Promise<this>;
+  doStop(): Promise<this>;
   api(): TwakeServiceProvider
 }
 
@@ -120,6 +123,38 @@ abstract class TwakeService<TwakeServiceProvider> implements TwakeServiceInterfa
       throw err;
     }
   }
+
+  async stop(): Promise<this> {
+    if (this.state.value === TwakeServiceState.Stopping || this.state.value === TwakeServiceState.Stopped) {
+      logger.info("Service %s is already stopped", this.name);
+      return this;
+    }
+
+    if (this.state.value !== TwakeServiceState.Started) {
+      logger.info("Service %s can not be stopped until started", this.name);
+      return this;
+    }
+
+    try {
+      logger.info("Stopping service %s", this.name);
+      this.state.next(TwakeServiceState.Stopping);
+      await this.doStop();
+      this.state.next(TwakeServiceState.Stopped);
+      logger.info("Service %s is stopped", this.name);
+
+      return this;
+    } catch (err) {
+      logger.error("Error while stopping service %s", this.name, err);
+      logger.error(err);
+      this.state.error(new Error(`Error while stopping service ${this.name}`));
+
+      throw err;
+    }
+  }
+
+  async doStop(): Promise<this> {
+    return this;
+  }
 }
 
 abstract class TwakePlatform extends TwakeService<TwakeServiceProvider> implements TwakeContext {
@@ -167,12 +202,13 @@ class TwakeComponent {
     return `${this.name}(${this.instance.state.value}) => {${this.components.map(component => component.getStateTree()).join(",")}}`;
   }
 
-  switchToState(state: TwakeServiceState.Initialized | TwakeServiceState.Started): void {
+  switchToState(state: TwakeServiceState.Initialized | TwakeServiceState.Started | TwakeServiceState.Stopped): void {
     const states: BehaviorSubject<TwakeServiceState>[] = this.components.map(component => component.instance.state);
 
     this.components.forEach(component => {
       state === TwakeServiceState.Initialized && component.instance.init();
       state === TwakeServiceState.Started && component.instance.start();
+      state === TwakeServiceState.Stopped && component.instance.stop();
     });
 
     const subscription = combineLatest(states).pipe(
@@ -182,6 +218,7 @@ class TwakeComponent {
       logger.info(this.getStateTree());
       state === TwakeServiceState.Initialized && this.instance.init();
       state === TwakeServiceState.Started && this.instance.start();
+      state === TwakeServiceState.Stopped && this.instance.stop();
 
       subscription.unsubscribe();
     });
