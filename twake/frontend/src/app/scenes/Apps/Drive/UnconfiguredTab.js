@@ -30,7 +30,7 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { directory_id: dir.id },
-      this.props.tab.id
+      this.props.tab.id,
     );
     this.props.onFinish();
     Menu.closeAll();
@@ -51,7 +51,7 @@ export default class UnconfiguredTab extends Component {
       this.props.tab.app_id,
       undefined,
       { file_id: file.id, directory_id: file.id, icon: icon },
-      this.props.tab.id
+      this.props.tab.id,
     );
     this.props.onFinish();
     Menu.closeAll();
@@ -64,7 +64,7 @@ export default class UnconfiguredTab extends Component {
           {Languages.t(
             'scenes.apps.drive.unconfigured_tab',
             [],
-            "Cet onglet n'est pas encore configuré."
+            "Cet onglet n'est pas encore configuré.",
           )}
         </div>
 

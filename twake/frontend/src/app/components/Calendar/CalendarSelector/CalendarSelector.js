@@ -42,7 +42,7 @@ export default class CalendarSelector extends React.Component {
         },
       ],
       { x: evt.clientX, y: evt.clientY, width: 150 },
-      'bottom'
+      'bottom',
     );
   }
 
@@ -60,7 +60,7 @@ export default class CalendarSelector extends React.Component {
               workspace_id: cal.workspace_id,
             };
           })
-          .filter(item => item)
+          .filter(item => item),
       );
   }
 
@@ -108,7 +108,7 @@ export default class CalendarSelector extends React.Component {
               {Languages.t(
                 'components.calendar.calendarselector.no_workspace_calendar',
                 [],
-                "Aucun calendrier d'espace de travail."
+                "Aucun calendrier d'espace de travail.",
               )}
             </div>
           )}
@@ -118,7 +118,7 @@ export default class CalendarSelector extends React.Component {
               {Languages.t(
                 'components.calendar.calendarselector.external_workspace',
                 [],
-                'Depuis un espace de travail externe.'
+                'Depuis un espace de travail externe.',
               )}
             </div>
           )}
@@ -161,7 +161,7 @@ export default class CalendarSelector extends React.Component {
                     ),
                     value: item.id,
                   };
-                })
+                }),
               )}
               onChange={v => {
                 var list = this.props.value.map(item => item.calendar_id);

@@ -55,7 +55,7 @@ export default class CompanyIdendity extends Component {
           {Languages.t(
             'scenes.app.popup.workspaceparameter.pages.company_identity_title',
             [],
-            "Identité de l'entreprise"
+            "Identité de l'entreprise",
           )}
         </div>
 
@@ -64,7 +64,7 @@ export default class CompanyIdendity extends Component {
             {Languages.t(
               'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle',
               [],
-              "Préférences d'affichage"
+              "Préférences d'affichage",
             )}
           </div>
 
@@ -72,12 +72,12 @@ export default class CompanyIdendity extends Component {
             label={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.company_name_label',
               [],
-              "Nom de l'entreprise"
+              "Nom de l'entreprise",
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.company_name_description',
               [],
-              'Modifiez le nom de cette entreprise'
+              'Modifiez le nom de cette entreprise',
             )}
             focusOnOpen={this.inputWorkspaceName}
           >
@@ -107,12 +107,12 @@ export default class CompanyIdendity extends Component {
             label={Languages.t(
               'scenes.apps.parameters.workspace_sections.workspace.logo_company',
               [],
-              "Logo de l'entreprise"
+              "Logo de l'entreprise",
             )}
             description={Languages.t(
               'scenes.app.popup.workspaceparameter.pages.logo_company_modify_description',
               [],
-              "Modifiez l'image de cet entreprise"
+              "Modifiez l'image de cet entreprise",
             )}
           >
             <div
@@ -140,7 +140,7 @@ export default class CompanyIdendity extends Component {
               {Languages.t(
                 'scenes.app.popup.workspaceparameter.pages.weight_max_small_text',
                 [],
-                'Maximum weight 5 mo.'
+                'Maximum weight 5 mo.',
               )}
               <br />
               <a

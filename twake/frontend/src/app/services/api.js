@@ -85,7 +85,7 @@ export default class Api {
         }
         callback(response);
       },
-      timeout
+      timeout,
     );
   }
 
@@ -158,7 +158,7 @@ export default class Api {
                   source,
                   this.searching_last_query[search_key],
                   collectionService,
-                  callback
+                  callback,
                 );
               } else {
                 callback && callback(res.data);

@@ -51,7 +51,7 @@ export default class CreateCompanyAccount extends Component {
                 {Languages.t(
                   'scenes.apps.account.account.send_info',
                   [],
-                  'Send this information to your member to let him now its new credentials.'
+                  'Send this information to your member to let him now its new credentials.',
                 )}
               </span>
             </div>
@@ -101,7 +101,7 @@ export default class CreateCompanyAccount extends Component {
                 : Languages.t(
                     'scenes.app.popup.workspace.create_temp',
                     [],
-                    'Create temporary account'
+                    'Create temporary account',
                   )}
             </ObjectModalTitle>
           }
@@ -110,13 +110,13 @@ export default class CreateCompanyAccount extends Component {
             {Languages.t(
               'scenes.apps.account.message_temporary',
               [],
-              'A temporary account works like a normal Twake account, but you generate its password and you will be able to reset it if necessary.'
+              'A temporary account works like a normal Twake account, but you generate its password and you will be able to reset it if necessary.',
             )}
             <br />
             {Languages.t(
               'scenes.apps.account.message_user_signin',
               [],
-              'Your user can sign in at anytime using this same email and change its temporary account to a normal account.'
+              'Your user can sign in at anytime using this same email and change its temporary account to a normal account.',
             )}
           </span>
 
@@ -147,7 +147,7 @@ export default class CreateCompanyAccount extends Component {
             placeholder={Languages.t(
               'scenes.apps.account.account.password_for_user',
               [],
-              'Password for your user'
+              'Password for your user',
             )}
             onChange={e => this.setState({ password: e.target.value })}
           />
@@ -158,7 +158,7 @@ export default class CreateCompanyAccount extends Component {
             {Languages.t(
               'scenes.login.create_account.too_short_password',
               [],
-              'Your password must contain at least 8 characters.'
+              'Your password must contain at least 8 characters.',
             )}
           </span>
 

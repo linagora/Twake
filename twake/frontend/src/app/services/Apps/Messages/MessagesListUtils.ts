@@ -275,8 +275,7 @@ export class MessagesListUtils extends Observable {
         nodeMessage.message?.front_id === message.front_id
       ) {
         this.fixBottom = false;
-        const offsetTop =
-          nodeMessage.node?.getDomElement()?.offsetTop;
+        const offsetTop = nodeMessage.node?.getDomElement()?.offsetTop;
         this.scrollTo(offsetTop - 128, true);
         this.highlightMessage(message.id || '');
         return true;
@@ -374,7 +373,6 @@ export class MessagesListUtils extends Observable {
     );
   }
 
-
   lockScroll() {
     this.loadMoreLocked = true;
     if (this.lockedScrollTimeout) {
@@ -437,18 +435,18 @@ export class MessagesListUtils extends Observable {
 
       return;
     }
-    
-      if (evt.scrollTop <= this.scrollerNode.clientHeight && goingUp) {
-        await this.serverService.loadMore();
-        this.lockScroll();
-      }
-      if (
-        evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight &&
-        !goingUp
-      ) {
-        await this.serverService.loadMore(false);
-        this.lockScroll();
-      }
+
+    if (evt.scrollTop <= this.scrollerNode.clientHeight && goingUp) {
+      await this.serverService.loadMore();
+      this.lockScroll();
+    }
+    if (
+      evt.scrollHeight - (evt.scrollTop + evt.clientHeight) <= this.scrollerNode.clientHeight &&
+      !goingUp
+    ) {
+      await this.serverService.loadMore(false);
+      this.lockScroll();
+    }
 
     if (
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&

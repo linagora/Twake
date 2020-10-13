@@ -5,12 +5,12 @@ module.exports = function (app) {
     '/internal',
     createProxyMiddleware({
       target: 'http://localhost:4000',
-    })
+    }),
   );
   app.use(
     '/__',
     createProxyMiddleware({
       target: 'http://localhost:4000',
-    })
+    }),
   );
 };

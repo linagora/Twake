@@ -154,7 +154,7 @@ export default class DayPicker extends React.Component {
                 }
               >
                 {day.date()}
-              </div>
+              </div>,
             );
             return list;
           })}

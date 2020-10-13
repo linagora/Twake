@@ -129,7 +129,7 @@ export default class RepetitionSelector extends React.Component {
                     .ordinal(
                       moment(this.state.date).week() -
                         moment(this.state.date).startOf('month').week() +
-                        1
+                        1,
                     ),
                   moment(this.state.date).format('dddd'),
                 ]),

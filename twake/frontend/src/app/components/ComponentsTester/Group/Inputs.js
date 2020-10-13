@@ -89,13 +89,13 @@ export default class GroupInputs extends React.Component {
             {Languages.t(
               'scenes.app.workspaces.create_company.importations.title_1',
               [],
-              'Already working with digital tools? Import or integrate your tools now!'
+              'Already working with digital tools? Import or integrate your tools now!',
             )}
             <br />
             {Languages.t(
               'scenes.app.workspaces.create_company.importations.title_2',
               [],
-              'No worries, you can do this later!'
+              'No worries, you can do this later!',
             )}
           </div>
 
