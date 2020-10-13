@@ -1,6 +1,7 @@
 import { Subject, combineLatest } from "rxjs";
 import { filter } from "rxjs/operators";
-import { logger, Loader, TwakeServiceFactory, TwakeContext, TwakeComponent, TwakeServiceState } from "../index";
+import { logger, TwakeServiceFactory, TwakeContext, TwakeComponent, TwakeServiceState } from "../index";
+import { Loader } from "./loader";
 
 export function buildDependenciesTree(components: Map<string, TwakeComponent>): void {
   for(const [name, component] of components) {
