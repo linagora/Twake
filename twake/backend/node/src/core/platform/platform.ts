@@ -40,7 +40,15 @@ export class Platform extends TwakePlatform {
     return this;
   }
 
-  private async switchToState(state: TwakeServiceState.Started | TwakeServiceState.Initialized): Promise<void> {
+  async doStop(): Promise<this> {
+    logger.info("Stopping Twake...");
+
+    await this.switchToState(TwakeServiceState.Stopped);
+
+    return this;
+  }
+
+  private async switchToState(state: TwakeServiceState.Started | TwakeServiceState.Initialized | TwakeServiceState.Stopped): Promise<void> {
     const subject$ = ComponentUtils.switchComponentsToState(this.components, state);
     await subject$.toPromise();
 
