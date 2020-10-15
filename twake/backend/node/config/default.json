@@ -20,7 +20,7 @@
     },
     "auth": {
       "jwt": {
-        "secret": "supersecret",
+        "secret": "supersecret"
       }
     }
   },
