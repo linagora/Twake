@@ -45,7 +45,6 @@ export default class UploadZone extends React.Component {
     };
   }
   open() {
-    console.log('hello mdr ');
     if (this.props.disabled) {
       return;
     }
