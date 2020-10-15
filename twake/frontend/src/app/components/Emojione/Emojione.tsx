@@ -1,4 +1,8 @@
-import React from 'react';
+//@ts-nocheck
+//We need this because of a bug in emoji_mart fallback implementationimport React, { Component } from 'react';
+
+import React, { Component } from 'react';
+
 import 'emoji-mart/css/emoji-mart.css';
 
 import { getEmojiDataFromNative, Emoji } from 'emoji-mart';
@@ -15,9 +19,39 @@ type Props = {
   className?: string;
   s64?: boolean;
   s128?: boolean;
+  emoji?: string;
 };
 
 const type_to_uni: any = {};
+
+const getFromEmojione = (props: Props) => {
+  //Use from local server
+  let html: string | '' = '';
+  let size = props.size || 16;
+  html = emojione.toImage(props.type || props.emoji || '');
+  html = html?.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
+
+  if (props.s64) {
+    size = 32;
+    html = html?.replace('/32/', '/64/');
+  } else if (props.s128) {
+    size = 64;
+    html = html?.replace('/32/', '/128/');
+  }
+  return { __html: html };
+};
+
+class EmojioneFallback extends Component<Props> {
+  constructor(props: any) {
+    super(props);
+  }
+  // WIP
+  render() {
+    return (
+      <i className={'emoji-container '} dangerouslySetInnerHTML={getFromEmojione(this.props)} />
+    );
+  }
+}
 
 export default React.memo((props: Props) => {
   if (typeof props.type != 'string') {
@@ -50,42 +84,24 @@ export default React.memo((props: Props) => {
   }
 
   let size = props.size || 16;
-  let html = '';
-
   if (size > 32 || props.s64 || props.s128) {
-    //Use from local server
-    html = emojione.toImage(props.type);
-    html = html.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
-
-    if (props.s64) {
-      size = 32;
-      html = html.replace('/32/', '/64/');
-    } else if (props.s128) {
-      size = 64;
-      html = html.replace('/32/', '/128/');
-    }
-
-    const fb = (
-      <i
-        className={'emoji-container ' + (props.className || '')}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    );
-
-    return fb;
+    return <EmojioneFallback {...props} />;
   }
-
-  console.log();
 
   const uni =
     type_to_uni[props.type] ||
-  //@ts-ignore
-  getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
+    //@ts-ignore
+    getEmojiDataFromNative(emojione.shortnameToUnicode(props.type), 'apple', data);
   type_to_uni[props.type] = uni;
 
   return (
     <span className={'emoji-container emoji-text ' + (props.className || '')}>
-      <Emoji emoji={uni || props.type} set="apple" size={size} />
+      <Emoji
+        emoji={uni || props.type}
+        set="apple"
+        size={size}
+        fallback={() => <EmojioneFallback {...props} />}
+      />
     </span>
   );
 });

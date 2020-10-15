@@ -28,9 +28,7 @@ export default class UploadZone extends React.Component {
       this.file_input.style.top = '-10000px';
       this.file_input.style.left = '-10000px';
       this.file_input.style.width = '100px';
-      if (this.props.multiple !== false) {
-        this.file_input.multiple = true;
-      }
+      this.file_input.multiple = this.props.multiple ? true : false;
 
       this.setCallback();
 
@@ -103,7 +101,7 @@ export default class UploadZone extends React.Component {
       this.hover(true, e);
     });
     node.addEventListener('dragenter', e => {
-      if (this.props.onDragEnter) {
+      if (!this.props.disabled && this.props.onDragEnter) {
         this.props.onDragEnter();
       }
       this.hover(true, e);
