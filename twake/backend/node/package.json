@@ -41,6 +41,7 @@
     "@types/node": "^14.11.2",
     "@types/pino": "^6.3.2",
     "@types/socket.io": "^2.1.11",
+    "@types/socket.io-client": "^1.4.34",
     "@types/socket.io-redis": "^1.0.26",
     "@types/supertest": "2.0.4",
     "@types/ws": "^7.2.7",
@@ -53,6 +54,7 @@
     "jest": "^26.4.2",
     "nodemon": "2.0.4",
     "rimraf": "^3.0.2",
+    "socket.io-client": "^2.3.1",
     "supertest": "4.0.2",
     "ts-jest": "^26.4.0",
     "ts-node": "^9.0.0",
@@ -72,6 +74,7 @@
     "rxjs": "^6.6.3",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
+    "socketio-jwt": "^4.6.2",
     "typeorm": "^0.2.28"
   }
 }
