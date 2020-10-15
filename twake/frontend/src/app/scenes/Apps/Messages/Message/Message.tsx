@@ -174,6 +174,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
         <Thread
           collectionKey={this.props.collectionKey}
           refDom={this.setDomElement}
+          threadId={message?.id || ''}
           highlighted={this.props.highlighted}
           hidden={!this.state.render}
           withBlock={!message.parent_message_id && !this.props.noBlock}

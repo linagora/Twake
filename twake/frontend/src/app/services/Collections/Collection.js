@@ -1085,7 +1085,6 @@ export default class Collection extends Observable {
       listen_only = node._observable[this.observableName].listen_only;
     }
     update = false;
-    console.log('sould update message content', listen_only);
     if (listen_only.length === 0) {
       update = true;
     } else {
