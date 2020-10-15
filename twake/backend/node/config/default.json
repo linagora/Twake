@@ -3,7 +3,7 @@
   "webserver": {
     "port": 3000,
     "logger": {
-      "level": "info"
+      "level": "error"
     },
     "cors": {
       "origin": "*"
@@ -16,6 +16,11 @@
       "redis": {
         "host": "redis",
         "port": 6379
+      }
+    },
+    "auth": {
+      "jwt": {
+        "secret": "supersecret",
       }
     }
   },

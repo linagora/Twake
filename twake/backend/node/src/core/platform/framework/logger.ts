@@ -1,7 +1,7 @@
 import pino from "pino";
 
 // TODO: Get from config
-const level = "debug";
+const level = "info";
 
 export const logger = pino({
   name: "TwakeApp",
