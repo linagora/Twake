@@ -11,7 +11,7 @@ export function RealtimeDeleted(path: string): MethodDecorator {
 
       // check if resource has been deleted from result
       // if yes then send event
-      eventBus.emit("entity:created", {
+      eventBus.emit("entity:deleted", {
         path,
         entity: args[0],
         result
