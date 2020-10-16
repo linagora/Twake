@@ -9,7 +9,6 @@ import environment from 'environment/environment';
 import version from 'environment/version';
 // const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
-
 class Globals {
   constructor() {
     this.services = {};
@@ -69,12 +68,14 @@ class Globals {
     }
 
     this.window.mixpanel_prefix = '';
-    
-    if (typeof MixpanelInstance != 'undefined') { // eslint-disable-line no-undef
+
+    if (typeof MixpanelInstance != 'undefined') {
+      // eslint-disable-line no-undef
       var mixpanel = undefined;
       mixpanel = new MixpanelInstance('8d6e53f2820846e3784fcfd4b308acab'); // eslint-disable-line no-undef
       if (this.isReactNative) {
-        if (mixpanel && Platform.OS === 'ios') { // eslint-disable-line no-undef
+        // eslint-disable-next-line no-undef
+        if (mixpanel && Platform.OS === 'ios') {
           this.window.mixpanel_prefix = 'mobile_';
 
           (async () => {
@@ -90,7 +91,8 @@ class Globals {
       }
     }
 
-    if (typeof PushNotification != 'undefined') { // eslint-disable-line no-undef
+    if (typeof PushNotification != 'undefined') {
+      // eslint-disable-line no-undef
       this.PushNotification = PushNotification; // eslint-disable-line no-undef
     }
 
@@ -191,7 +193,8 @@ class Globals {
   }
 
   localStorageSetItem(key, value) {
-    if (typeof SyncStorage != 'undefined') { // eslint-disable-line no-undef
+    if (typeof SyncStorage != 'undefined') {
+      // eslint-disable-line no-undef
       SyncStorage.set(key, value); // eslint-disable-line no-undef
     } else if (window && window.localStorage) {
       window.localStorage.setItem(key, value);
@@ -199,7 +202,8 @@ class Globals {
   }
 
   localStorageGetItem(key, callback) {
-    if (typeof SyncStorage != 'undefined') { // eslint-disable-line no-undef
+    if (typeof SyncStorage != 'undefined') {
+      // eslint-disable-line no-undef
       const data = SyncStorage.get(key); // eslint-disable-line no-undef
       if (callback) {
         callback(data);
@@ -238,7 +242,8 @@ class Globals {
   }
 
   getDefaultLanguage() {
-    if (typeof NativeModules != 'undefined') { // eslint-disable-line no-undef
+    if (typeof NativeModules != 'undefined') {
+      // eslint-disable-line no-undef
       var locale = ((NativeModules.SettingsManager || {}).settings || {}).AppleLocale || 'en'; // eslint-disable-line no-undef
       if (!locale) {
         locale = (NativeModules.I18nManager || {}).localeIdentifier || 'en'; // eslint-disable-line no-undef
@@ -250,7 +255,8 @@ class Globals {
   }
 
   clearCookies() {
-    if (typeof Cookie != 'undefined') { // eslint-disable-line no-undef
+    if (typeof Cookie != 'undefined') {
+      // eslint-disable-line no-undef
       Cookie.clear(); // eslint-disable-line no-undef
     }
   }

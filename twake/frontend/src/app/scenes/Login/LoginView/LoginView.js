@@ -32,7 +32,6 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
-
     const login = this.state.login;
 
     return (
