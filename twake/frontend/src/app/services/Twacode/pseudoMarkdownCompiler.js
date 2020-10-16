@@ -138,7 +138,7 @@ class PseudoMarkdownCompiler {
         object: PseudoMarkdownDictionary.render_block.italic.object,
         text_transform: PseudoMarkdownDictionary.render_block.italic.text_transform,
       },
-      '_': {
+      _: {
         name: 'italic',
         end: '_',
         allowed_char_before: '(^|\\B)',
@@ -717,21 +717,20 @@ class PseudoMarkdownCompiler {
       json.forEach(item => {
         if (typeof item == 'string') {
           var tmp = item;
-          Object.keys(this.pseudo_markdown)
-            .forEach(starting_value => {
-              var starting_value_reg = starting_value;
-              var allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
-              if (starting_value == '*') {
-                starting_value_reg = '\\*';
-              }
-              if (allowed_chars) {
-                var reg = new RegExp(starting_value_reg, 'gm');
-                tmp = tmp.replace(reg + '(' + allowed_chars + ')', '\\' + starting_value + '$1');
-              } else {
-                var reg = new RegExp(starting_value_reg, 'gm');
-                tmp = tmp.replace(reg, '\\' + starting_value);
-              }
-            });
+          Object.keys(this.pseudo_markdown).forEach(starting_value => {
+            var starting_value_reg = starting_value;
+            var allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
+            if (starting_value == '*') {
+              starting_value_reg = '\\*';
+            }
+            if (allowed_chars) {
+              var reg = new RegExp(starting_value_reg, 'gm');
+              tmp = tmp.replace(reg + '(' + allowed_chars + ')', '\\' + starting_value + '$1');
+            } else {
+              var reg = new RegExp(starting_value_reg, 'gm');
+              tmp = tmp.replace(reg, '\\' + starting_value);
+            }
+          });
 
           result += tmp;
         } else if (Array.isArray(item)) {
