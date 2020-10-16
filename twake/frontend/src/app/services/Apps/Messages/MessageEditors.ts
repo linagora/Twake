@@ -77,7 +77,11 @@ export class MessageEditors extends Observable {
   }
 
   openEditor(threadId: string, messageId: string, context: string = '') {
-    this.currentEditor = this.getEditorId(threadId, messageId, context);
+    const nextEditor = this.getEditorId(threadId, messageId, context);
+    if (nextEditor === this.currentEditor) {
+      return;
+    }
+    this.currentEditor = nextEditor;
     this.currentEditorThreadId = threadId;
     this.currentEditorMessageId = messageId;
     this.notify();

@@ -18,7 +18,7 @@ class WindowState {
 
     var result = {},
       tmp = [];
-      Globals.window.location.search
+    Globals.window.location.search
       .substr(1)
       .split('&')
       .forEach(function (item) {
@@ -35,7 +35,7 @@ class WindowState {
 
     var result = null,
       tmp = [];
-      Globals.window.location.search
+    Globals.window.location.search
       .substr(1)
       .split('&')
       .forEach(function (item) {
