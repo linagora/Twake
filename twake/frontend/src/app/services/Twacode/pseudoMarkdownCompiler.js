@@ -106,33 +106,41 @@ class PseudoMarkdownCompiler {
         object: PseudoMarkdownDictionary.render_block.icode.object,
         text_transform: PseudoMarkdownDictionary.render_block.icode.text_transform,
       },
-      _: {
+      __: {
         name: 'underline',
-        end: '_',
+        end: '__',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.underline.object,
         text_transform: PseudoMarkdownDictionary.render_block.underline.text_transform,
       },
-      '~': {
+      '~~': {
         name: 'strikethrough',
-        end: '~',
+        end: '~~',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.strikethrough.object,
         text_transform: PseudoMarkdownDictionary.render_block.strikethrough.text_transform,
       },
-      '*': {
+      '**': {
         name: 'bold',
-        end: '\\*',
+        end: '\\*\\*',
         allowed_char_before: '(^|\\B|.)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.bold.object,
         text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
       },
-      '°': {
+      '*': {
         name: 'italic',
-        end: '°',
+        end: '\\*',
+        allowed_char_before: '(^|\\B)',
+        allowed_chars: '.',
+        object: PseudoMarkdownDictionary.render_block.italic.object,
+        text_transform: PseudoMarkdownDictionary.render_block.italic.text_transform,
+      },
+      _: {
+        name: 'italic',
+        end: '_',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.italic.object,
@@ -388,37 +396,39 @@ class PseudoMarkdownCompiler {
     var min_index_of_key = null;
 
     var ret = [];
-    Object.keys(this.pseudo_markdown).forEach(starting_value => {
-      if (starting_value == 'text') {
-        return;
-      }
-
-      const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
-      let tmp = str;
-      let offset = 0;
-      let indexes = [];
-      let did_match = -1;
-      do {
-        did_match = tmp.indexOf(starting_value);
-
-        let match_char_before =
-          !allowed_char_before ||
-          null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
-        match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
-
-        tmp = tmp.slice(did_match + 1);
-        if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
-        offset = offset + did_match + 1;
-      } while (did_match >= 0);
-
-      if (indexes.length > 0) {
-        const mini = Math.min(...indexes);
-        if (min_index_of < 0 || mini < min_index_of) {
-          min_index_of = mini;
-          min_index_of_key = starting_value;
+    Object.keys(this.pseudo_markdown)
+      .sort((a, b) => b.length - a.length)
+      .forEach(starting_value => {
+        if (starting_value == 'text') {
+          return;
         }
-      }
-    });
+
+        const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
+        let tmp = str;
+        let offset = 0;
+        let indexes = [];
+        let did_match = -1;
+        do {
+          did_match = tmp.indexOf(starting_value);
+
+          let match_char_before =
+            !allowed_char_before ||
+            null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
+          match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
+
+          tmp = tmp.slice(did_match + 1);
+          if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
+          offset = offset + did_match + 1;
+        } while (did_match >= 0);
+
+        if (indexes.length > 0) {
+          const mini = Math.min(...indexes);
+          if (min_index_of < 0 || mini < min_index_of) {
+            min_index_of = mini;
+            min_index_of_key = starting_value;
+          }
+        }
+      });
 
     str = original_str;
 
@@ -445,7 +455,11 @@ class PseudoMarkdownCompiler {
           (this.pseudo_markdown[char].end ? '?' : '') +
           ')' +
           (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : '');
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
         match = str_right.substr(add_to_value.length).match(new RegExp(regex, ''));
       }
       let completion_end_char = '';
