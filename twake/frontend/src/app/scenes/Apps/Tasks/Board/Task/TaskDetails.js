@@ -14,7 +14,7 @@ import {
   ObjectModalFormTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-import Twacode from 'components/Twacode/Twacode.js';
+import Twacode from 'components/Twacode/Twacode';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 import moment from 'moment';
 import './Modal.scss';
@@ -76,7 +76,7 @@ export default class TaskDetails extends React.Component {
           console.log(task);
         }}
       />,
-      { size: { width: 600 } }
+      { size: { width: 600 } },
     );
   }
   render() {
@@ -199,7 +199,7 @@ export default class TaskDetails extends React.Component {
             this.changeParticipants(
               ids_mails.map(id => {
                 return { user_id_or_mail: id };
-              })
+              }),
             );
             Menu.closeAll();
           }}

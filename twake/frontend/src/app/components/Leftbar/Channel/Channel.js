@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './Channel.scss';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
 import User from 'components/User/User.js';
 import Draggable from 'components/Draggable/Draggable.js';
@@ -21,7 +21,7 @@ export default class Channel extends React.Component {
           (!!this.props.selected ? 'selected ' : '') +
           (!!this.props.muted ? 'muted ' : '') +
           (!!this.props.alinea ? 'extra-margin ' : '') +
-          (this.props.notifications > 0 ? 'has_notifications ' : '') + 
+          (this.props.notifications > 0 ? 'has_notifications ' : '') +
           (this.props.hasNewContent > 0 ? 'has_new_content ' : '')
         }
         parentClassOnDrag="dragging_channel_view"

@@ -45,7 +45,7 @@ export default class MultipleSecuredConnections {
     if (this.callback) this.callback(event, data);
   }
 
-  addConnection(route, option, http_options) {
+  addConnection(route, option, http_options, key) {
     if (this.secured_connections[route]) {
       this.secured_connections[route].removing = false;
       if (this.removing_secured_connections_timeouts[route]) {
@@ -65,7 +65,8 @@ export default class MultipleSecuredConnections {
       (event, data) => {
         this.event(route, event, data);
       },
-      http_options
+      http_options,
+      key,
     );
   }
 
@@ -92,7 +93,7 @@ export default class MultipleSecuredConnections {
   }
 
   closeAll() {
-    Object.keys(secured_connections).foEach(route => {
+    Object.keys(this.secured_connections).foEach(route => {
       this.removeConnection(route);
     });
   }

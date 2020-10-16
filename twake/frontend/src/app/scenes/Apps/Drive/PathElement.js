@@ -6,7 +6,7 @@ import Menu from 'components/Menus/Menu.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'services/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 
 export default class PathElement extends DriveElement {
@@ -101,7 +101,7 @@ export default class PathElement extends DriveElement {
               </Menu>
             )}
         </div>
-      </DroppableZone>
+      </DroppableZone>,
     );
 
     return list;

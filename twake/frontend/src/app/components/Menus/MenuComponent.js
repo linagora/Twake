@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import './Menu.scss';
 
@@ -82,7 +82,11 @@ export default class MenuComponent extends React.Component {
               );
             } else if (item.type == 'react-element') {
               return (
-                <div key={'menu_' + index} className="menu-custom" onClick={item.onClick}>
+                <div
+                  key={'menu_' + index}
+                  className={'menu-custom ' + item.className}
+                  onClick={item.onClick}
+                >
                   {typeof item.reactElement == 'function'
                     ? item.reactElement(this.props.level)
                     : item.reactElement}

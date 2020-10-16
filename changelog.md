@@ -1,28 +1,61 @@
+# Twake 2020.Q3.107
+
+## Changelogs
+
+### General
+
+- New apple emoji set
+- Fix unwanted deconnections and missing notifications
+- Fix autocompletion glitches
+
+### Messages
+
+- New message feed design
+- Improve performance in messages list and when getting previous messages
+- Ability to prepare files before sending them with a message
+- Ability to add files in a thread
+- Allow ctrl-v documents in messages
+- Ability to get a link to a specific thread
+- Change formatting rules to be markdown compatible
+
+# Twake 2020.Q3.70
+
+## Changelogs
+
+### General
+
+- Workspace members search and list improvement
+
+### Messages
+
+- New notifications parameters per channels (@mention, @all or nothing)
+- Channel description header
+
 # Twake v1.2.2
 
 ## Changelogs
 
 ### General
 
-Added Russian translations
-Improve missing translations
-Improve design with smaller components
-Simplier installation procedure
-OIDC auth mode for On-Premise installations
-Brand global style and logos customization
-New emoji style on Apple devices
+- Added Russian translations
+- Improve missing translations
+- Improve design with smaller components
+- Simplier installation procedure
+- OIDC auth mode for On-Premise installations
+- Brand global style and logos customization
+- New emoji style on Apple devices
 
 ### Messages
 
-Side view for threads
-Shortcuts for last message edition
-Show only relevant private channels
+- Side view for threads
+- Shortcuts for last message edition
+- Show only relevant private channels
 
 ### Connectors
 
-Built-in connectors, no second server required
-LinShare document selection connector for messages
-Jitsi select meeting name
+- Built-in connectors, no second server required
+- LinShare document selection connector for messages
+- Jitsi select meeting name
 
 # Twake v1.2.1
 
@@ -30,53 +63,53 @@ Jitsi select meeting name
 
 ### General
 
-Full new design
-External users
-Task advanced search
-Event advanced search
-Files advanced search
-Message advanced search
-Export your company
-Quick search and chanel change
-Tabs system
+- Full new design
+- External users
+- Task advanced search
+- Event advanced search
+- Files advanced search
+- Message advanced search
+- Export your company
+- Quick search and chanel change
+- Tabs system
 
 ### Tasks
 
-Improved Tasks
+- Improved Tasks
 
 ### Dive
 
-Upload for files over 100mo
-Link-files
-Files as tab
-Public directory/file link
-Files versioning
+- Upload for files over 100mo
+- Link-files
+- Files as tab
+- Public directory/file link
+- Files versioning
 
 ### Calendar
 
-Improved calendar
+- Improved calendar
 
 ### Mobile
 
-Drive on native mobile app
-Tabs on mobile
-Tasks on mobile (v1)
-Messages on native mobile app
+- Drive on native mobile app
+- Tabs on mobile
+- Tasks on mobile (v1)
+- Messages on native mobile app
 
 ### Connectors
 
-New public API and connectors manager
-Google Drive Sync
-Zapier integration enabled
-Gitlab (notifications in messages)
-Github (notifications in messages)
-Webhooks
-Reminder (reminder bot)
-Simple Poll (for messages)
-Giphy
-RSS (notifications for messages)
-Jitsi (video conferencing)
-ONLYOFFICE (integrated with drive)
+- New public API and connectors manager
+- Google Drive Sync
+- Zapier integration enabled
+- Gitlab (notifications in messages)
+- Github (notifications in messages)
+- Webhooks
+- Reminder (reminder bot)
+- Simple Poll (for messages)
+- Giphy
+- RSS (notifications for messages)
+- Jitsi (video conferencing)
+- ONLYOFFICE (integrated with drive)
 
 ## Changelogs
 

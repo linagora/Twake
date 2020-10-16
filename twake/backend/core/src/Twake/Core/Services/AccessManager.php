@@ -40,12 +40,17 @@ class AccessManager
                 return false;
             }
         } else if ($type == "Channel") {
+
+            
             $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $id));
             if (isset($channel)) {
                 $channel = $channel->getAsArray();
                 $workspace_id = $channel["original_workspace"];
                 $members = $channel["members"];
                 $ext_members = $channel["ext_members"];
+                if($edition && !$this->user_has_workspace_access($current_user_id, $channel["original_workspace"])){
+                    return false;
+                }
                 $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user_id . "", "channel_id" => $id));
                 if ($linkChannel) {
                     return true;

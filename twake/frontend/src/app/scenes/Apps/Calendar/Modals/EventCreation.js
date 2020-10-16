@@ -103,7 +103,7 @@ export default class EventCreation extends Component {
               placeholder={Languages.t(
                 'scenes.apps.calendar.modals.event_adresse_placeholder',
                 [],
-                'Adresse'
+                'Adresse',
               )}
               onChange={evt => {
                 this.change('location', evt.target.value);
@@ -116,7 +116,7 @@ export default class EventCreation extends Component {
             onClick={() => {
               this.change(
                 'location',
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id
+                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id,
               );
             }}
           >
@@ -132,7 +132,7 @@ export default class EventCreation extends Component {
           placeholder={Languages.t(
             'scenes.apps.calendar.modals.description_placeholder',
             [],
-            'Description'
+            'Description',
           )}
           onChange={evt => {
             this.change('description', evt.target.value);
@@ -170,7 +170,7 @@ export default class EventCreation extends Component {
                 event={CalendarService.edited}
                 collectionKey={this.props.collectionKey}
               />,
-              { size: { width: 600 } }
+              { size: { width: 600 } },
             );
           }}
         >

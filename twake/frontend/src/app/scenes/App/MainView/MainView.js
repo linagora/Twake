@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'services/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import User from 'services/user/user.js';
 import './MainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
@@ -295,8 +295,7 @@ export default class MainView extends Component {
               current_side_channel.original_group == Workspaces.currentGroupId) && (
               <div className="app_side">
                 <div className="side_header">
-                  {this.getSideAppName(side_app, current_side_channel)}
-
+                  <span>{this.getSideAppName(side_app, current_side_channel)}</span>
                   <CloseIcon
                     className="m-icon-medium close"
                     onClick={() => {

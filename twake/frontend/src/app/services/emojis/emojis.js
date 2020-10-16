@@ -1,6 +1,7 @@
 import emojis_json from 'emojione/emoji.json';
 
 import Globals from 'services/Globals.js';
+import { emojiIndex } from 'emoji-mart';
 
 class Emojis {
   constructor() {
@@ -37,8 +38,6 @@ class Emojis {
       //Keep only displayable emojis
       if (emoji.display == 1) {
         emoji.id = emoji.shortname;
-        this.emojisByCode[emoji.id];
-        this.emojisByAscii[emoji.ascii];
 
         //Add emojis by category
         if (!this.emojisByCateg[emoji.category]) this.emojisByCateg[emoji.category] = [];
@@ -76,7 +75,7 @@ class Emojis {
         //Add default emoji + all diversities
         if (!this.searcheableEmojis[keyword]) this.searcheableEmojis[keyword] = [];
         this.searcheableEmojis[keyword] = this.searcheableEmojis[keyword].concat(
-          Object.keys(this.emojisReduced[emoji_id]).map(key => this.emojisReduced[emoji_id][key])
+          Object.keys(this.emojisReduced[emoji_id]).map(key => this.emojisReduced[emoji_id][key]),
         );
       });
     });
@@ -123,83 +122,8 @@ class Emojis {
     this.emojisByCategByBloc = tmp[1];
   }
 
-  search(start_with, callback, no_blocs) {
-    var candidates = [];
-
-    if (this.searching) {
-      if (this.searchTimeout) clearTimeout(this.searchTimeout);
-      this.searchTimeout = setTimeout(() => {
-        this.search(start_with, callback);
-      }, 500);
-      return;
-    }
-
-    this.searching = true;
-
-    if (start_with) {
-      start_with = start_with.toLocaleLowerCase().replace(':', '');
-
-      Object.keys(this.emojisByCode).forEach(code => {
-        if (candidates.length > 20) {
-          return false;
-        }
-        if (code.startsWith(':' + start_with)) {
-          candidates.push(this.emojisByCode[code]);
-        }
-      });
-      Object.keys(this.searcheableEmojis).forEach(keyword => {
-        if (candidates.length > 60) {
-          return false;
-        }
-        if (keyword.startsWith(start_with)) {
-          this.searcheableEmojis[keyword].forEach(emot => {
-            if (candidates.indexOf(emot) == -1) {
-              candidates = candidates.concat(emot);
-            }
-          });
-        }
-      });
-
-      //Diversity versions after classic yellow versions
-      candidates.sort((a, b) => {
-        if (a.diversity && !b.diversity) {
-          return 1;
-        }
-        if (!a.diversity && b.diversity) {
-          return -1;
-        }
-        return a.order - b.order;
-      });
-
-      if (!no_blocs) {
-        candidates = this.emojiListToBloc(candidates)[0];
-        candidates = candidates.slice(0, 60);
-      } else {
-        candidates = candidates.slice(0, 10);
-      }
-    } else {
-      if (!no_blocs) {
-        candidates = this.emojisBlocs;
-      } else {
-        candidates = this.emojisByCateg['people'];
-        candidates.sort((a, b) => {
-          if (a.diversity && !b.diversity) {
-            return 1;
-          }
-          if (!a.diversity && b.diversity) {
-            return -1;
-          }
-          return a.order - b.order;
-        });
-      }
-    }
-
-    this.searching = false;
-    if (callback) {
-      callback(candidates);
-    } else {
-      return candidates;
-    }
+  search(start_with, callback) {
+    callback && callback(emojiIndex.search(start_with));
   }
 
   getByAscii(ascii) {

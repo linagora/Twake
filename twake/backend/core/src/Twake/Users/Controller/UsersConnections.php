@@ -15,7 +15,7 @@ class UsersConnections extends BaseController
     {
         $time = microtime(true);
         $focus = $request->request->get("focus", true);
-        if ($this->getUser() && $focus) {
+        if ($this->getUser() && !is_string($this->getUser()) && $focus) {
             $this->get("app.user")->alive($this->getUser()->getId());
         }
         return new Response(Array("data" => "ok"));

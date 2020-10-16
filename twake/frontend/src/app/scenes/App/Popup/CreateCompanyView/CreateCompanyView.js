@@ -4,10 +4,10 @@ import Languages from 'services/languages/languages.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import LoginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
 import CurrentUser from 'services/user/current_user.js';
@@ -442,7 +442,7 @@ export default class CreateCompanyView extends Component {
         <div
           className={
             'center_box_container login_view ' +
-            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom ')
+            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom_nobounce ')
           }
         >
           <div className="center_box ">

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import UsersService from 'services/user/user.js';
-import AutoComplete from 'components/AutoComplete/AutoComplete.js';
+import AutoComplete from 'components/AutoComplete/AutoComplete';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
@@ -26,7 +26,7 @@ export default class UserListManager extends React.Component {
     this.updateStateFromProps(props, true);
   }
   componentDidMount() {
-    this.setState({ editing: props.autoFocus });
+    this.setState({ editing: this.props.autoFocus });
   }
   updateStateFromProps(props, force, nextState) {
     var anti_duplicates = [];

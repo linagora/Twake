@@ -19,8 +19,6 @@ class DriveFileSystem
         $this->ws = $app->getServices()->get("app.websockets");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->attachementManager = new AttachementManager($this->em, $this->ws);
-
-        $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");
     }
 
     function setDriveResumable($drive_resumable)

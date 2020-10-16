@@ -92,7 +92,10 @@ class PseudoMarkdownCompiler {
         disable_recursion: true,
         object: PseudoMarkdownDictionary.render_block.mcode.object,
         text_transform: PseudoMarkdownDictionary.render_block.mcode.text_transform,
-        simple_object: (child, obj) => (obj.content || '').trim().substr(0, 20) + '[...]',
+        simple_object: (child, obj) => {
+          const str = (obj.content || '').trim();
+          return str.length > 40 ? str.substr(0, 37) + '...' : str;
+        },
       },
       '`': {
         name: 'icode',
@@ -103,33 +106,41 @@ class PseudoMarkdownCompiler {
         object: PseudoMarkdownDictionary.render_block.icode.object,
         text_transform: PseudoMarkdownDictionary.render_block.icode.text_transform,
       },
-      _: {
+      __: {
         name: 'underline',
-        end: '_',
+        end: '__',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.underline.object,
         text_transform: PseudoMarkdownDictionary.render_block.underline.text_transform,
       },
-      '~': {
+      '~~': {
         name: 'strikethrough',
-        end: '~',
+        end: '~~',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.strikethrough.object,
         text_transform: PseudoMarkdownDictionary.render_block.strikethrough.text_transform,
       },
-      '*': {
+      '**': {
         name: 'bold',
-        end: '\\*',
+        end: '\\*\\*',
         allowed_char_before: '(^|\\B|.)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.bold.object,
         text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
       },
-      '°': {
+      '*': {
         name: 'italic',
-        end: '°',
+        end: '\\*',
+        allowed_char_before: '(^|\\B)',
+        allowed_chars: '.',
+        object: PseudoMarkdownDictionary.render_block.italic.object,
+        text_transform: PseudoMarkdownDictionary.render_block.italic.text_transform,
+      },
+      _: {
+        name: 'italic',
+        end: '_',
         allowed_char_before: '(^|\\B)',
         allowed_chars: '.',
         object: PseudoMarkdownDictionary.render_block.italic.object,
@@ -173,11 +184,11 @@ class PseudoMarkdownCompiler {
       system: {
         apps_only: true,
         object: PseudoMarkdownDictionary.render_block.system.object,
+        simple_object: child => child,
         text_transform: PseudoMarkdownDictionary.render_block.system.text_transform,
       },
       file: {
         view: true,
-        apps_only: true,
         object: PseudoMarkdownDictionary.render_block.file.object,
         simple_object: child => '',
         text_transform: PseudoMarkdownDictionary.render_block.file.text_transform,
@@ -248,7 +259,7 @@ class PseudoMarkdownCompiler {
 
   compileStringToLinkObject(string) {
     //Monkey hack for new markdown links, not the best place for this code
-    var link_found = anchorme(string.replace(/\]\(/gm, '](_'), {
+    var link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
       list: true,
       ips: false,
       files: false,
@@ -368,15 +379,13 @@ class PseudoMarkdownCompiler {
         }
       });
 
-      if (original_str.length < 1500) {
-        return {
-          original_str: original_str,
-          fallback_string: original_str.substr(0, 280) + (original_str.length > 280 ? '...' : ''),
-          prepared: result,
-        };
-      }
+      const all = {
+        original_str: original_str,
+        fallback_string: original_str.substr(0, 280) + (original_str.length > 280 ? '...' : ''),
+        prepared: result,
+      };
 
-      return result;
+      return all;
     }
 
     var original_str = str;
@@ -387,37 +396,39 @@ class PseudoMarkdownCompiler {
     var min_index_of_key = null;
 
     var ret = [];
-    Object.keys(this.pseudo_markdown).forEach(starting_value => {
-      if (starting_value == 'text') {
-        return;
-      }
-
-      const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
-      let tmp = str;
-      let offset = 0;
-      let indexes = [];
-      let did_match = -1;
-      do {
-        did_match = tmp.indexOf(starting_value);
-
-        let match_char_before =
-          !allowed_char_before ||
-          null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
-        match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
-
-        tmp = tmp.slice(did_match + 1);
-        if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
-        offset = offset + did_match + 1;
-      } while (did_match >= 0);
-
-      if (indexes.length > 0) {
-        const mini = Math.min(...indexes);
-        if (min_index_of < 0 || mini < min_index_of) {
-          min_index_of = mini;
-          min_index_of_key = starting_value;
+    Object.keys(this.pseudo_markdown)
+      .sort((a, b) => b.length - a.length)
+      .forEach(starting_value => {
+        if (starting_value == 'text') {
+          return;
         }
-      }
-    });
+
+        const allowed_char_before = this.pseudo_markdown[starting_value].allowed_char_before;
+        let tmp = str;
+        let offset = 0;
+        let indexes = [];
+        let did_match = -1;
+        do {
+          did_match = tmp.indexOf(starting_value);
+
+          let match_char_before =
+            !allowed_char_before ||
+            null !== tmp.slice(0, did_match).match(new RegExp(allowed_char_before + '$', 'gmi'));
+          match_char_before = match_char_before && tmp[did_match - 1] !== '\\';
+
+          tmp = tmp.slice(did_match + 1);
+          if (did_match >= 0 && match_char_before) indexes.push(did_match + offset);
+          offset = offset + did_match + 1;
+        } while (did_match >= 0);
+
+        if (indexes.length > 0) {
+          const mini = Math.min(...indexes);
+          if (min_index_of < 0 || mini < min_index_of) {
+            min_index_of = mini;
+            min_index_of_key = starting_value;
+          }
+        }
+      });
 
     str = original_str;
 
@@ -444,9 +455,6 @@ class PseudoMarkdownCompiler {
           (this.pseudo_markdown[char].end ? '?' : '') +
           ')' +
           (this.pseudo_markdown[char].end ? '(' + this.pseudo_markdown[char].end + ')' : '');
-        this.pseudo_markdown[char].after_end
-          ? '(' + this.pseudo_markdown[char].after_end + ')'
-          : '';
         match = str_right.substr(add_to_value.length).match(new RegExp(regex, ''));
       }
       let completion_end_char = '';
@@ -491,7 +499,7 @@ class PseudoMarkdownCompiler {
     return ret;
   }
 
-  compileToHTML(json, is_app, event_container, text_transform) {
+  compileToHTML(json, is_app, event_container, text_transform = undefined) {
     if (!text_transform) {
       text_transform = {};
     }
@@ -500,11 +508,11 @@ class PseudoMarkdownCompiler {
       return this.pseudo_markdown['text'].object('');
     }
 
+    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
     if (typeof json == 'string') {
       json = [json];
     }
-
-    if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
     if (json.type || json.start) {
       json = [json];
@@ -584,7 +592,12 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  compileToSimpleHTML(json, is_app, text_transform) {
+  compileToSimpleHTML(
+    json,
+    is_app = false,
+    text_transform = undefined,
+    result_analysis = undefined,
+  ) {
     if (!text_transform) {
       text_transform = {};
     }
@@ -593,11 +606,17 @@ class PseudoMarkdownCompiler {
       return this.pseudo_markdown['text'].object('');
     }
 
-    if (typeof json == 'string') {
-      json = [json];
+    if (!result_analysis) {
+      result_analysis = {
+        has_string: false,
+      };
     }
 
     if (json.formatted || json.prepared) json = json.formatted || json.prepared;
+
+    if (typeof json == 'string') {
+      json = [json];
+    }
 
     if (json.type || json.start) {
       json = [json];
@@ -607,15 +626,26 @@ class PseudoMarkdownCompiler {
       var result = [];
       json.forEach(item => {
         if (typeof item == 'string') {
-          result.push(this.pseudo_markdown['text'].object(item, is_app, {}, text_transform));
+          result_analysis.has_string = true;
+          result.push(
+            this.pseudo_markdown['text'].object(item, is_app, {}, text_transform, result_analysis),
+          );
         } else if (Array.isArray(item)) {
-          result.push(this.compileToSimpleHTML(item, is_app, text_transform));
+          result.push(this.compileToSimpleHTML(item, is_app, text_transform, result_analysis));
         } else {
-          if (this.pseudo_markdown[item.start]) {
-            var type = this.pseudo_markdown[item.start];
+          let type = this.pseudo_markdown[item.start];
+          if (item.type) {
+            type = this.pseudo_markdown_types[item.type];
+          }
+          if (type) {
             if (item.type == 'compile' && is_app && typeof item.content == 'string') {
               result.push(
-                this.compileToSimpleHTML(this.compileToJSON(item.content), is_app, text_transform),
+                this.compileToSimpleHTML(
+                  this.compileToJSON(item.content),
+                  is_app,
+                  text_transform,
+                  result_analysis,
+                ),
               );
             } else {
               if (item.type) {
@@ -634,7 +664,12 @@ class PseudoMarkdownCompiler {
 
                   result.push(
                     (type.simple_object || type.object)(
-                      this.compileToSimpleHTML(item.content || '', is_app, text_transform),
+                      this.compileToSimpleHTML(
+                        item.content || '',
+                        is_app,
+                        text_transform,
+                        result_analysis,
+                      ),
                       item,
                       {},
                     ),
@@ -650,6 +685,10 @@ class PseudoMarkdownCompiler {
     } catch (e) {
       console.log(e);
       return this.pseudo_markdown['text'].object('An error occured while showing this message.');
+    }
+
+    if (!result_analysis.has_string) {
+      return this.pseudo_markdown['text'].object('No text content to display.');
     }
 
     return result;
@@ -714,7 +753,7 @@ class PseudoMarkdownCompiler {
     //IE support
     if (document.selection) {
       myField.focus();
-      sel = document.selection.createRange();
+      let sel = document.selection.createRange();
       sel.text = myValue;
     }
     //MOZILLA and others

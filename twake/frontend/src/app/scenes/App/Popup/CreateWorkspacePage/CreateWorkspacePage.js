@@ -4,9 +4,9 @@ import Languages from 'services/languages/languages.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import GroupService from 'services/workspaces/groups.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 import Input from 'components/Inputs/Input.js';
 import './CreateWorkspacePage.scss';
 
@@ -85,7 +85,9 @@ export default class CreateWorkspacePage extends Component {
       return (
         <AddUser
           inline
-          onChange={members => this.setState({ members: members })}
+          onChange={members => {
+            this.setState({ members: members });
+          }}
           previous={() => this.previous()}
           finish={() => this.next()}
           loading={this.state.workspaces.loading}
@@ -123,7 +125,7 @@ export default class CreateWorkspacePage extends Component {
         <div
           className={
             'center_box_container login_view ' +
-            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom ')
+            (this.state.willClose ? 'fade_out ' : 'skew_in_bottom_nobounce ')
           }
         >
           <div className="center_box ">

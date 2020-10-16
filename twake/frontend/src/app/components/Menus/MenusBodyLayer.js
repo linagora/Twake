@@ -122,7 +122,7 @@ export default class MenusBodyLayer extends React.Component {
         item.position.marginTop = Math.min(
           0,
           (item.position.marginTop || 0) -
-            (rect.bottom - Math.min(document.documentElement.clientHeight, max_bottom) + 5)
+            (rect.bottom - Math.min(document.documentElement.clientHeight, max_bottom) + 5),
         );
         MenusManager.notify();
       }
@@ -140,7 +140,7 @@ export default class MenusBodyLayer extends React.Component {
     ) {
       item.position.marginLeft = Math.min(
         0,
-        (item.position.marginLeft || 0) - (rect.right - document.documentElement.clientWidth + 5)
+        (item.position.marginLeft || 0) - (rect.right - document.documentElement.clientWidth + 5),
       );
       MenusManager.notify();
     }
@@ -169,9 +169,9 @@ export default class MenusBodyLayer extends React.Component {
               <OutsideClickHandler
                 key={item.id}
                 onOutsideClick={() => {
-                  i == this.state.menus_manager.menus.length - 1
-                    ? MenusManager.closeSubMenu(item.level - 1)
-                    : null;
+                  if (i == this.state.menus_manager.menus.length - 1) {
+                    MenusManager.closeSubMenu(item.level - 1);
+                  }
                 }}
               >
                 <div
@@ -195,10 +195,10 @@ export default class MenusBodyLayer extends React.Component {
                         ? 'fade_out'
                         : item.level == 0 || item.positionType
                         ? item.positionType == 'bottom'
-                          ? 'skew_in_bottom'
+                          ? 'skew_in_bottom_nobounce'
                           : item.left
-                          ? 'skew_in_left'
-                          : 'skew_in_right'
+                          ? 'skew_in_left_nobounce'
+                          : 'skew_in_right_nobounce'
                         : 'fade_in'
                     }
                   />

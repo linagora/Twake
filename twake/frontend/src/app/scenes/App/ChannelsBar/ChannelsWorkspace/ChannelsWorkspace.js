@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'services/Collections/Collections.js';
@@ -199,12 +200,12 @@ export default class ChannelsWorkspace extends Component {
       if (!window.did_remove_loading_class) {
         window.did_remove_loading_class_once = true;
         window.did_remove_loading_class = true;
-        body.classList.remove('loading_render');
+        Globals.window.document.body.classList.remove('loading_render');
       }
     } else if (!window.did_remove_loading_class_once) {
       if (!window.did_add_loading_class) {
         window.did_add_loading_class = true;
-        body.classList.add('loading_render');
+        Globals.window.document.body.classList.add('loading_render');
       }
     }
 
@@ -266,26 +267,13 @@ export default class ChannelsWorkspace extends Component {
                   <ChannelCategory
                     key={id}
                     text={id}
+                    editable={!!WorkspaceUserRights.hasWorkspacePrivilege()}
                     sub
                     onClick={evt => {
                       this.editGroupName(evt, id);
                     }}
                   />
                 )}
-                {/*id && <Menu
-                onClose={()=>{this.saveGroupName(channels_by_groups[id], id)}}
-                menu={[
-                  {type:"react-element", reactElement:(level) => {return <div className="menu-title">
-                      <Input refInput={(node)=>node?node.focus():""} type="text" defaultValue={id} onChange={(evt)=>this.changeGroupName(evt.target.value, channels_by_groups[id])} placeholder={"Nom du groupe"} style={{margin: 0}} onKeyPress={(e) => {(e.key === 'Enter' ? MenusManager.closeMenu() : null )}} />
-                  </div>}},
-                  {text: "Retirer le groupe", className: "danger", icon: "trash", onClick: ()=>this.changeGroupName("", channels_by_groups[id], id)}
-                ]}
-                position="bottom"
-                className="channel_sub_section_title">
-                  <ChannelCategory key={id} text={id} sub />
-                  <EditPenIcon className="edit_button m-icon-small" />
-                </Menu>
-              */}
                 {non_pinned_channels_by_groups[id].map(channel => (
                   <Channel key={channel.front_id} channel={channel} />
                 ))}

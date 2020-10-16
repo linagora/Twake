@@ -5,17 +5,27 @@ import Collections from 'services/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 
-export default class WritingUsers extends Component {
-  constructor(props) {
-    super(props);
-    this.props = props;
+type Props = {
+  channelId: string;
+  threadId: string;
+};
 
-    this.state = {
-      i18n: Languages,
-    };
+export default class WritingUsers extends Component<Props> {
+  timeout: any = 0;
+  savedState: string = '';
+
+  constructor(props: Props) {
+    super(props);
 
     Languages.addListener(this);
-    Collections.get('messages').addListener(this);
+    Collections.get('messages').addListener(this, [], () => {
+      const newState = JSON.stringify(
+        MessagesService.getWritingUsers(this.props.channelId, this.props.threadId),
+      );
+      const savedState = this.savedState;
+      this.savedState = newState;
+      return newState != savedState;
+    });
     MessagesService.addListener(this);
   }
   componentWillUnmount() {
@@ -24,7 +34,7 @@ export default class WritingUsers extends Component {
     MessagesService.removeListener(this);
   }
   componentDidUpdate() {
-    var writing_users = MessagesService.getWritingUsers(this.props.channel.id, this.props.parentId);
+    var writing_users = MessagesService.getWritingUsers(this.props.channelId, this.props.threadId);
     if (writing_users.length > 0) {
       if (this.timeout) clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
@@ -33,26 +43,18 @@ export default class WritingUsers extends Component {
     }
   }
   render() {
-    var writing_users = MessagesService.getWritingUsers(this.props.channel.id, this.props.parentId);
+    var writing_users = MessagesService.getWritingUsers(this.props.channelId, this.props.threadId);
 
     if (writing_users.length == 0) {
       return '';
     }
 
-    var phrase = Languages.t(
-      'scenes.apps.messages.messageslist.get_writing_users',
-      [],
-      "sont en train d'écrire...",
-    );
+    var phrase = Languages.t('scenes.apps.messages.messageslist.get_writing_users', []);
     if (writing_users.length == 1) {
-      phrase = Languages.t(
-        'scenes.apps.messages.messageslist.get_writing_user',
-        [],
-        "est en train d'écrire...",
-      );
+      phrase = Languages.t('scenes.apps.messages.messageslist.get_writing_user');
     }
 
-    return (
+    return [
       <div className="writing_message">
         {writing_users
           .map(id => {
@@ -60,7 +62,7 @@ export default class WritingUsers extends Component {
           })
           .join(', ')}{' '}
         {phrase}
-      </div>
-    );
+      </div>,
+    ];
   }
 }

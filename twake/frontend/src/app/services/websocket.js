@@ -53,6 +53,7 @@ class Websocket extends Observable {
     Globals.window.addEventListener(
       'focus',
       (() => {
+        this.reconnectIfNeeded(600);
         clearTimeout(this.deconnectionBlurTimeout);
         this.didFocusedLastMinute = true;
         this.window_focus = true;
@@ -109,6 +110,7 @@ class Websocket extends Observable {
         'users/alive',
         { focus: this.didFocusedLastMinute },
         () => {
+          this.reconnectIfNeeded();
           clearTimeout(this.alive_timeout);
           if (!this.alive_connected) {
             this.reconnect();
@@ -119,6 +121,14 @@ class Websocket extends Observable {
         5000,
       );
       this.didFocusedLastMinute = Globals.isReactNative || Globals.window.document.hasFocus();
+    }
+  }
+
+  reconnectIfNeeded(seconds = 300) {
+    if (new Date().getTime() - this.last_reconnect_call.getTime() > seconds * 1000) {
+      //5 minutes
+      this.last_reconnect_call = new Date();
+      this.reconnect();
     }
   }
 

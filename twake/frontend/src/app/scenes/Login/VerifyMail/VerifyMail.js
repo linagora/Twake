@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import WindowState from 'services/utils/window.js';
 
 export default class VerifyMail extends Component {
@@ -39,7 +39,7 @@ export default class VerifyMail extends Component {
   render() {
     return (
       <div className="verify_mail">
-        <div className="center_box_container login_view skew_in_bottom">
+        <div className="center_box_container login_view skew_in_bottom_nobounce">
           <div className="center_box white_box_with_shadow" style={{ width: '400px' }}>
             <div className="title">
               {Languages.t('scenes.login.verifymail.alert', [], 'Nous vérifions votre e-mail !')}

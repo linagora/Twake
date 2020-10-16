@@ -9,7 +9,7 @@ import Menu from 'components/Menus/Menu.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import popupManager from 'services/popupManager/popupManager.js';
-import AddUser from 'scenes/App/Popup/AddUser/AddUser.js';
+import AddUser from 'scenes/App/Popup/AddUser/AddUser';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import CreateCompanyAccount from '../CreateCompanyAccount.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';

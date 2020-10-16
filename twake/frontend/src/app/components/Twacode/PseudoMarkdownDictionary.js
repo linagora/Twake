@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
 import File from 'components/Drive/File.js';
 import User from './blocks/User.js';
@@ -28,14 +28,23 @@ class PseudoMarkdownDictionary {
           </span>
         ),
       },
-      br: { object: child => [<br />, child] },
-      emoji: { object: (child, object) => <Emojione type={':' + (object.content || '') + ':'} /> },
+      br: {
+        object: child => [<br key={this.counter++} />, <span key={this.counter++}>{child}</span>],
+      },
+      emoji: {
+        object: (child, object) => (
+          <Emojione key={this.counter++} type={':' + (object.content || '') + ':'} />
+        ),
+      },
       user: {
         object: (child, object) => {
           var data = (object.content || '').split(':');
           var id = object.id || data[1];
           var username = data[0];
-          return [<User key={this.counter++} id={id} username={username} />, ' '];
+          return [
+            <User key={this.counter++} id={id} username={username} />,
+            <span key={this.counter++}> </span>,
+          ];
         },
       },
       channel: {
@@ -43,7 +52,10 @@ class PseudoMarkdownDictionary {
           var data = (object.content || '').split(':');
           var id = object.id || data[1];
           var name = data[0];
-          return [<Chan key={this.counter++} id={id} name={name} />, ' '];
+          return [
+            <Chan key={this.counter++} id={id} name={name} />,
+            <span key={this.counter++}> </span>,
+          ];
         },
       },
       mcode: {
@@ -113,11 +125,12 @@ class PseudoMarkdownDictionary {
       system: { object: child => <span style={{ color: '#888', fontSize: 13 }}>{child}</span> },
       file: {
         object: (child, object) => (
-          <div key={this.counter++} className="drive_view grid" style={{ marginTop: 5 }}>
+          <div className="drive_view grid inline-files">
             <File
+              key={this.counter++}
               data={{ id: object.content || '' }}
               notInDrive={true}
-              style={{ marginBottom: 0 }}
+              mini={object.mode === 'mini' ? true : false}
             />
           </div>
         ),
@@ -127,7 +140,7 @@ class PseudoMarkdownDictionary {
           <img key={this.counter++} src={object.src} className={'image twacode'} />
         ),
       },
-      icon: { object: (child, object) => <Emojione type={object.src} /> },
+      icon: { object: (child, object) => <Emojione key={this.counter++} type={object.src} /> },
       progress_bar: {
         object: (child, object) => (
           <div key={this.counter++} className="progress_bar">

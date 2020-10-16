@@ -18,7 +18,7 @@ class WindowState {
 
     var result = {},
       tmp = [];
-    location.search
+    Globals.window.location.search
       .substr(1)
       .split('&')
       .forEach(function (item) {
@@ -35,7 +35,7 @@ class WindowState {
 
     var result = null,
       tmp = [];
-    location.search
+    Globals.window.location.search
       .substr(1)
       .split('&')
       .forEach(function (item) {
@@ -143,15 +143,19 @@ class WindowState {
     var url = document.location.pathname;
     if (url) {
       if (url.indexOf('/private/') == 0) {
-        var channel_id = url.split('-').pop();
-        result.channel_id = this.expandUUID4(channel_id);
+        url = url.split('/').pop();
+        var list = url.split('-');
+        result.channel_id = this.expandUUID4(list[1]);
+        result.message = list[2] ? this.expandUUID4(list[2]) : false;
         if (!result.channel_id) {
           result = {};
         }
       } else {
+        url = url.split('/').pop();
         var list = url.split('-');
-        var channel_id = list.pop();
-        var workspace_id = list.pop();
+        var channel_id = list[2];
+        var workspace_id = list[1];
+        result.message = list[3] ? this.expandUUID4(list[3]) : false;
         result.channel_id = this.expandUUID4(channel_id);
         result.workspace_id = this.expandUUID4(workspace_id);
         if (!result.workspace_id || !result.channel_id) {

@@ -7,10 +7,14 @@ import Collections from 'services/Collections/Collections.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import ChannelsService from 'services/channels/channels.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import MenusManager from 'services/Menus/MenusManager.js';
+import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 
 import Globals from 'services/Globals.js';
+import MessageEditors from './MessageEditors';
 
 class Messages extends Observable {
   constructor() {
@@ -86,87 +90,167 @@ class Messages extends Observable {
     return users;
   }
 
-  sendMessage(value, options, collectionKey) {
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
+  getFileSystemMessage(strlen, multiple = false) {
+    const user = UserService.getCurrentUser();
+    if (strlen === 0) {
+      return [
+        {
+          type: 'system',
+          content: multiple
+            ? Languages.t('scenes.apps.drive.message_added_mutiple_files', [
+                UserService.getFullName(user),
+              ])
+            : Languages.t('scenes.apps.drive.message_added_file_no_name', [
+                UserService.getFullName(user),
+              ]),
+        },
+        { type: 'br' },
+      ];
+    } else return [{ type: 'br' }];
+  }
 
-    var value = PseudoMarkdownCompiler.transformChannelsUsers(value);
-    var channel = Collections.get('channels').find(options.channel_id);
+  async sendMessage(value, options, collectionKey) {
+    return new Promise(resolve => {
+      if (Globals.window.mixpanel_enabled)
+        Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
 
-    if (value[0] == '/') {
-      var app = null;
-      var app_name = value.split(' ')[0].slice(1);
-      WorkspacesApps.getApps().map(_app => {
-        if (_app.simple_name == app_name) {
-          app = _app;
-        }
-      });
+      value = PseudoMarkdownCompiler.transformChannelsUsers(value);
+      var channel = Collections.get('channels').find(options.channel_id);
 
-      if (!app) {
-        AlertManager.alert(() => {}, {
-          text: Languages.t(
-            'services.apps.messages.no_command_possible',
-            [value, app_name],
-            "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
-          ),
-          title: Languages.t(
-            'services.apps.messages.no_app',
-            [],
-            "Cette application n'existe pas.",
-          ),
+      if (value[0] == '/') {
+        var app = null;
+        var app_name = value.split(' ')[0].slice(1);
+        WorkspacesApps.getApps().map(_app => {
+          if (_app.simple_name == app_name) {
+            app = _app;
+          }
         });
+
+        if (!app) {
+          AlertManager.alert(() => {}, {
+            text: Languages.t(
+              'services.apps.messages.no_command_possible',
+              [value, app_name],
+              "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
+            ),
+            title: Languages.t(
+              'services.apps.messages.no_app',
+              [],
+              "Cette application n'existe pas.",
+            ),
+          });
+          resolve(false);
+          return;
+        }
+        var data = {
+          command: value.split(' ').slice(1).join(' '),
+          channel: channel,
+          parent_message: options.parent_message_id
+            ? Collections.get('messages').find(options.parent_message_id) || null
+            : null,
+        };
+
+        WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
+
+        resolve(false);
         return;
       }
-      var data = {
-        command: value.split(' ').slice(1).join(' '),
-        channel: channel,
-        parent_message: options.parent_message_id
-          ? Collections.get('messages').find(options.parent_message_id) || null
-          : null,
-      };
 
-      WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
+      options = options || {};
 
+      var message = Collections.get('messages').edit();
+      var val = PseudoMarkdownCompiler.compileToJSON(value);
+
+      const editorManager = MessageEditorsManager.get(options.channel_id);
+      let filesAttachements =
+        editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
+
+      const filesAttachementsToTwacode =
+        filesAttachements.map(id => {
+          return {
+            type: 'file',
+            mode: filesAttachements.length > 1 ? 'mini' : 'preview',
+            content: id,
+          };
+        }) || {};
+
+      const fileSystemMessage = this.getFileSystemMessage(
+        val.original_str.length,
+        filesAttachementsToTwacode.length > 1,
+      );
+
+      const preparedFiles = filesAttachementsToTwacode.length
+        ? [...fileSystemMessage, ...filesAttachementsToTwacode]
+        : [];
+
+      val.files = preparedFiles;
+      val.prepared.push({ type: 'nop', content: preparedFiles });
+      message.channel_id = options.channel_id;
+      message.parent_message_id = options.parent_message_id || '';
+      message.sender = CurrentUser.get().id;
+
+      if (message.parent_message_id) {
+        var parent = Collections.get('messages').find(message.parent_message_id);
+        Collections.get('messages').completeObject(
+          { responses_count: parent.responses_count + 1 },
+          parent.front_id,
+        );
+        Collections.get('messages').share(parent);
+      }
+
+      message.hidden_data = {};
+      message.pinned = false;
+      message.responses_count = 0;
+
+      const max_message_time = Collections.get('messages')
+        .findBy({ channel_id: options.channel_id })
+        .map(i => i.creation_date)
+        .reduce((a, b) => a + b, 0);
+      message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
+      message.content = val;
+
+      ChannelsService.markFrontAsRead(channel.id, message.creation_date);
+
+      Collections.get('messages').save(message, collectionKey, message => {
+        ChannelsService.markFrontAsRead(channel.id);
+        ChannelsService.incrementChannel(channel);
+        resolve(message);
+      });
+
+      CurrentUser.updateTutorialStatus('first_message_sent');
+    });
+  }
+
+  triggerApp(channelId, threadId, app, from_icon, evt) {
+    if (app.simple_name == 'twake_drive') {
+      var menu = [];
+      var has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
+      if (has_drive_app) {
+        menu.push({
+          type: 'react-element',
+          reactElement: () => (
+            <FilePicker
+              mode={'select_file'}
+              onChoose={file => MessageEditors.get(channelId).onAddAttachment(threadId, file)}
+            />
+          ),
+        });
+      }
+
+      MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'center');
       return;
     }
 
-    options = options || {};
-
-    var message = Collections.get('messages').edit();
-    var val = PseudoMarkdownCompiler.compileToJSON(value);
-
-    message.channel_id = options.channel_id;
-    message.parent_message_id = options.parent_message_id || '';
-
-    if (message.parent_message_id) {
-      var parent = Collections.get('messages').find(message.parent_message_id);
-      Collections.get('messages').completeObject(
-        { responses_count: parent.responses_count + 1 },
-        parent.front_id,
-      );
-      Collections.get('messages').share(parent);
+    if ((((app.display || {}).messages_module || {}).in_plus || {}).should_wait_for_popup) {
+      WorkspacesApps.openAppPopup(app.id);
     }
 
-    message.hidden_data = {};
-    message.pinned = false;
-    message.responses_count = 0;
-    message.sender = UserService.getCurrentUserId();
-
-    const max_message_time = Collections.get('messages')
-      .findBy({ channel_id: options.channel_id })
-      .map(i => i.creation_date)
-      .reduce((a, b) => a + b, 0);
-    message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
-    message.content = val;
-
-    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
-
-    Collections.get('messages').save(message, collectionKey, message => {
-      ChannelsService.markFrontAsRead(channel.id);
-      ChannelsService.incrementChannel(channel);
-    });
-
-    CurrentUser.updateTutorialStatus('first_message_sent');
+    var data = {
+      channel: Collections.get('channels').find(channelId),
+      parent_message: (threadId ? Collections.get('messages').find(threadId) : null) || null,
+      from_icon: from_icon,
+    };
+    WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   }
 
   startEditingLastMessage(options) {
@@ -185,34 +269,12 @@ class Messages extends Observable {
       last_message &&
       new Date().getTime() / 1000 - last_message.creation_date < 60 * 60 * 24 * 7
     ) {
-      this.startEditing(last_message);
+      MessageEditors.get(last_message.channel_id).openEditor(
+        last_message.parent_message_id,
+        last_message.id,
+        'edition',
+      );
     }
-  }
-
-  startEditing(message) {
-    this.respondedMessage = {};
-    if (!message) {
-      this.editedMessage = {};
-      this.notify();
-      return;
-    }
-    this.editedMessage = Collections.get('messages').editCopy(message);
-    this.notify();
-  }
-
-  startRespond(message) {
-    this.editedMessage = {};
-    if (!message) {
-      this.respondedMessage = {};
-      this.notify();
-      return;
-    }
-    if (!message.id) {
-      return;
-    }
-    this.respondedMessage = Collections.get('messages').editCopy({});
-    this.respondedMessage.parent_message_id = message.id;
-    this.notify();
   }
 
   dropMessage(message, message_container, collectionKey) {
@@ -273,7 +335,7 @@ class Messages extends Observable {
     Collections.get('messages').completeObject(message, message.front_id);
     Collections.get('messages').save(message, collectionKey, () => {
       var parent = Collections.get('messages').find(message.parent_message_id);
-      if (parent.parent_message_id != '') {
+      if (parent && parent.parent_message_id != '') {
         Collections.get('messages').updateObject(
           { parent_message_id: parent.parent_message_id },
           message.front_id,
@@ -306,7 +368,7 @@ class Messages extends Observable {
 
     Collections.get('messages').completeObject({ _user_reaction: reaction }, message.front_id);
     Collections.get('messages').save(message, messagesCollectionKey);
-    this.startEditing(false);
+    MessageEditors.get(message.channel_id).closeEditor();
   }
 
   pinMessage(message, value, messagesCollectionKey) {
@@ -327,14 +389,18 @@ class Messages extends Observable {
     Collections.get('messages').remove(message, messagesCollectionKey);
   }
 
-  editMessage(value, messagesCollectionKey) {
-    if (!this.editedMessage.front_id) {
-      return;
+  editMessage(messageId, value, messagesCollectionKey) {
+    this.editedMessage = Collections.get('messages').find(messageId);
+    let content = PseudoMarkdownCompiler.compileToJSON(value);
+
+    let preparedFiles = this.editedMessage.content.files;
+    if (preparedFiles) {
+      content.prepared.push({ type: 'nop', content: preparedFiles });
     }
-    this.editedMessage.content = PseudoMarkdownCompiler.compileToJSON(value);
+
+    this.editedMessage.content = Object.assign(this.editedMessage.content, content);
     Collections.get('messages').completeObject(this.editedMessage, this.editedMessage.front_id);
     Collections.get('messages').save(this.editedMessage, messagesCollectionKey);
-    this.startEditing(false);
   }
 
   prepareContent(_content, user_specific_content) {

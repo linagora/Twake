@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Input from 'components/Inputs/Input.js';
@@ -104,11 +104,11 @@ export default class InputWithIcon extends React.Component {
     var menu = [
       {
         type: 'react-element',
+        className: 'menu-cancel-margin',
         reactElement: () => {
           return (
             <EmojiPicker
               refDom={node => (this.emojipicker_dom = node)}
-              preferedEmoji={preferedEmojis}
               onChange={emoji => this.selectEmoji(emoji)}
             />
           );
@@ -130,7 +130,7 @@ export default class InputWithIcon extends React.Component {
   }
   selectEmoji(emoji) {
     this.closeEmojiPicker();
-    var value = [emoji.shortname, this.props.value[1]];
+    var value = [emoji.native, this.props.value[1]];
     this.onChange(value);
   }
   onChange(value) {

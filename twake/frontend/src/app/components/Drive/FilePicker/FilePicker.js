@@ -39,7 +39,7 @@ export default class FilePicker extends React.Component {
 
     if (this.drive_channel) {
       Collections.get('drive').removeSource(
-        this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+        this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
       );
     }
   }
@@ -100,7 +100,7 @@ export default class FilePicker extends React.Component {
     var allow_go_parent = true;
     var drive_channel = ChannelsService.getChannelForApp(
       (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {}).id,
-      Workspaces.currentWorkspaceId
+      Workspaces.currentWorkspaceId,
     );
     if (!drive_channel && (this.props.initialDirectory || {}).id == directory_id) {
       allow_go_parent = false;
@@ -117,7 +117,9 @@ export default class FilePicker extends React.Component {
               }}
             />
           )}{' '}
-          {directory.parent_id ? directory.name : Languages.t('app.name.twake_drive', [], 'Documents')}
+          {directory.parent_id
+            ? directory.name
+            : Languages.t('app.name.twake_drive', [], 'Documents')}
         </div>
         <div className="drive_view list">
           {directories.map((item, index) => (
@@ -162,7 +164,7 @@ export default class FilePicker extends React.Component {
               placeholder={Languages.t(
                 'scenes.apps.drive.navigators.navigator_content.directory_name',
                 [],
-                'Nom du dossier'
+                'Nom du dossier',
               )}
               onKeyPress={e => {
                 if (e.key === 'Enter') {
@@ -173,7 +175,7 @@ export default class FilePicker extends React.Component {
                     DriveService.current_collection_key_channels[this.drive_channel],
                     res => {
                       this.changeCurrentDirectory(res);
-                    }
+                    },
                   );
                   this.setState({ creating_folder: false });
                 }

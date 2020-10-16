@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
 import UserServices from 'services/user/user.js';
 import './User-Card.scss';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 
 export default class UserCard extends Component {
   render() {

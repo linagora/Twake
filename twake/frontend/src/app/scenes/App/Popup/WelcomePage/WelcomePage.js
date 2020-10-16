@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Collections from 'services/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 
@@ -130,7 +130,7 @@ export default class WelcomePage extends Component {
   render() {
     return (
       <div className="welcomePage">
-        <div className=" skew_in_top">
+        <div className=" skew_in_top_nobounce">
           {this.displayPage(Object.keys(this.state.workspaces.user_workspaces).length > 0 ? 2 : 1)}
         </div>
       </div>

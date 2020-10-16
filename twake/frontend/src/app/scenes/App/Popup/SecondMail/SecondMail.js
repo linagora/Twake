@@ -20,7 +20,7 @@ export default class SecondMail extends Component {
     super();
     this.state = {
       i18n: Languages,
-      workspaceService: workspaceService,
+      workspaceService: WorkspaceService,
       users_repository: Collections.get('users'),
       loginService: loginService,
       mail: '',

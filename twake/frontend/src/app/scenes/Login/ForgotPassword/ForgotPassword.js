@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
@@ -317,7 +317,7 @@ export default class ForgotPassword extends Component {
   render() {
     return (
       <div className="forgotPassword">
-        <div className="center_box_container login_view skew_in_bottom">
+        <div className="center_box_container login_view skew_in_bottom_nobounce">
           <div className="center_box white_box_with_shadow" style={{ width: '400px' }}>
             <StepCounter total={4} current={this.state.page} />
             <div className="title">

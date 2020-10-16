@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Twacode from 'components/Twacode/Twacode.js';
+import Twacode from 'components/Twacode/Twacode';
 
 import './Pages.scss';
 
@@ -26,7 +26,7 @@ export default class TwacodeTester extends Component {
         content: Languages.t(
           'scenes.app.popup.appsparameters.pages.call_event_handlers',
           ['interactive_action', id, +JSON.stringify(passives)],
-          "Event of type '$1' and id '$2' with passives '$3'"
+          "Event of type '$1' and id '$2' with passives '$3'",
         ),
       });
       this.setState({});
@@ -50,7 +50,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages._appareance_message_twakcode',
               [],
-              "Testez l'apparence de vos messages Twacode"
+              "Testez l'apparence de vos messages Twacode",
             )}
           </div>
 
@@ -58,7 +58,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.instruction_message_twakecode',
               [],
-              'Commencez par écrire votre message sous le format JSON.'
+              'Commencez par écrire votre message sous le format JSON.',
             )}
           </div>
 
@@ -96,7 +96,7 @@ export default class TwacodeTester extends Component {
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.error_Json_Ttwakecode',
                   [],
-                  'Il y a une erreur dans votre JSON.'
+                  'Il y a une erreur dans votre JSON.',
                 )}
               </span>
             )}
@@ -122,7 +122,7 @@ export default class TwacodeTester extends Component {
             {Languages.t(
               'scenes.app.popup.appsparameters.pages.message_data_next_event',
               [],
-              'Données passives qui seront envoyées dans le prochain Événement'
+              'Données passives qui seront envoyées dans le prochain Événement',
             )}
           </div>
 

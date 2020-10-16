@@ -18,7 +18,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
-        if(!$current_user){
+        if(!$current_user || is_string($current_user)){
             return false;
         }
         if (str_replace("channels/direct_messages/", "", $route) == $current_user->getId()) {
@@ -48,7 +48,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         $member = $this->entity_manager->getRepository("Twake\Channels:ChannelMember")->findBy(
             Array("user_id" => $current_user->getId(), "direct" => true),
             Array(),
-            isset($options["max"]) ? $options["max"] : 20,
+            isset($options["max"]) ? $options["max"] : 40,
             isset($options["offset"]) ? $options["offset"] : 0,
             "last_activity_least_updated",
             0,

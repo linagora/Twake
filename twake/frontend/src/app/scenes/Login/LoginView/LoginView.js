@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 
@@ -32,8 +32,10 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
+    const login = this.state.login;
+
     return (
-      <div className="center_box_container login_view skew_in_bottom">
+      <div className="center_box_container login_view skew_in_bottom_nobounce">
         <div className="center_box white_box_with_shadow">
           <div className="title">
             {!((LoginService.server_infos || {}).branding || {}).logo &&

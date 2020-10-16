@@ -19,7 +19,7 @@ class DateTime extends Observable {
 
     this.observableName = 'dateTimeService';
     this.locale = this.cleanLocal(
-      Globals.window.navigator.userLanguage || Globals.window.navigator.language || 'en'
+      Globals.window.navigator.userLanguage || Globals.window.navigator.language || 'en',
     );
   }
   getCurrentLanguage() {
@@ -160,7 +160,7 @@ class DateTime extends Observable {
         (UserService.getCurrentUser() || {}).language ||
           Globals.window.navigator.language ||
           Globals.window.navigator.userLanguage ||
-          'en'
+          'en',
       ) >= 0
     ) {
       return 'H:mm';

@@ -104,7 +104,7 @@ class User {
 
     callback(res);
 
-    //Then search online
+    //Then search on server
     if (noHttp || query.length < 2 || (this.old_search_query || '').startsWith(query)) {
       this.old_search_query = query;
       return;
@@ -150,7 +150,7 @@ class User {
     );
   }
 
-  asyncGet(id, callback) {
+  asyncGet(id, callback = undefined) {
     if (this.users_repository.known_objects_by_id[id]) {
       return;
     }

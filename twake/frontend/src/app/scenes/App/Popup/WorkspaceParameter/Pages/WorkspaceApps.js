@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
 import Menu from 'components/Menus/Menu.js';
@@ -16,6 +16,7 @@ import Switch from 'components/Inputs/Switch.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AppsParameters from 'scenes/App/Popup/AppsParameters/AppsParameters.js';
 import Button from 'components/Buttons/Button.js';
+import WorkspaceAppsEditor from '../../AppsParameters/Pages/WorkspaceAppsEditor.js';
 
 import WorkspaceAppsSearch from './WorkspaceAppsSearch.js';
 import Loader from 'components/Loader/Loader.js';
@@ -277,9 +278,9 @@ export default class WorkspaceApps extends Component {
                 },
                 {
                   title: '',
-                  width: WorkspaceUserRights.hasWorkspacePrivilege('MANAGE_APPS') ? 30 : 1,
+                  width: WorkspaceUserRights.hasWorkspacePrivilege() ? 30 : 1,
                   render: row => {
-                    if (!WorkspaceUserRights.hasGroupPrivilege('MANAGE_APPS')) {
+                    if (!WorkspaceUserRights.hasWorkspacePrivilege()) {
                       return '';
                     }
                     return (

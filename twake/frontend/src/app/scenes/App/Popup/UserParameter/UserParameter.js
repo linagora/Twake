@@ -16,8 +16,8 @@ import './UserParameter.scss';
 import Input from 'components/Inputs/Input.js';
 
 export default class UserParameter extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     var user = Collections.get('users').find(userService.getCurrentUserId());
     this.state = {
       login: LoginService,
@@ -25,7 +25,7 @@ export default class UserParameter extends Component {
       users_repository: Collections.get('users'),
       loginService: loginService,
       currentUserService: currentUserService,
-      page: popupManager.popupStates['user_parameters'] || 1,
+      page: popupManager.popupStates['user_parameters'] || props.defaultPage || 1,
       attributeOpen: 0,
       subMenuOpened: 0,
       username: user ? user.username : '',
@@ -51,7 +51,7 @@ export default class UserParameter extends Component {
     Collections.get('users').removeListener(this);
   }
   open() {
-    $(this.fileinput).click();
+    this.fileinput.click();
   }
   changeThumbnail(event) {
     var that = this;
@@ -62,8 +62,7 @@ export default class UserParameter extends Component {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
-          console.log(e);
-          $(that.thumbnail).css({ backgroundImage: "url('" + e.target.result + "')" });
+          that.thumbnail.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ thumbnail: first });
         console.log(that.state.thumbnail);
@@ -94,7 +93,7 @@ export default class UserParameter extends Component {
                 <div className="parameters_form thumbnail_container" style={{ paddingTop: 16 }}>
                   <div
                     onClick={event => {
-                      $(this.fileinput).click();
+                      this.fileinput.click();
                     }}
                   >
                     <input
@@ -596,12 +595,6 @@ export default class UserParameter extends Component {
           </div>
           <div className="content">{this.displayScene()}</div>
         </div>
-        {/*<div className="bottom">
-            <div className="return">
-              <a className="blue_link"  onClick={()=>this.previous()}>{this.state.i18n.t("general.cancel")}</a>
-            </div>
-            <ButtonWithTimeout className="small " disabled={false} onClick={()=>console.log("click")} loading={false} value={this.state.i18n.t("general.update")} />
-          </div>*/}
       </div>
     );
   }

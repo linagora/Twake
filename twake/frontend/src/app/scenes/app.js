@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 
 import LoginService from 'services/login/login.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import './ui.scss';
 import './ui_new.scss';
 
@@ -70,6 +70,10 @@ export default class App extends Component {
     this.page_state = nextState.login.state;
     return true;
   }
+  getDerivedStateFromError(error) {
+    this.state.hasError = true;
+    return { hasError: true, error: [error] };
+  }
   componentDidCatch(error, info) {
     if (!this.state.hasError) {
       if (Globals.window.mixpanel_enabled)
@@ -94,7 +98,10 @@ export default class App extends Component {
       Globals.store_public_access_get_data = WindowService.allGetParameter();
     }
 
-    if (!public_access && (screen.width < 400 || screen.height < 400)) {
+    if (
+      !public_access &&
+      (Globals.window.screen.width < 400 || Globals.window.screen.height < 400)
+    ) {
       document.getElementById('app_loader').classList.remove('load');
 
       var valid_browser = false;
@@ -152,7 +159,7 @@ export default class App extends Component {
     if (this.state.hasError) {
       page.push(
         <div className="full_page_error" key="page_error">
-          <div className="error_message skew_in_top">
+          <div className="error_message skew_in_top_nobounce">
             <div className="title">
               <Emojione type=":boom:" /> {Languages.t('scenes.aie', [], 'Aïe !')}
             </div>

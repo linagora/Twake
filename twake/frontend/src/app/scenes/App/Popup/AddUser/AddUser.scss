@@ -25,10 +25,6 @@
     }
   }
 
-  input {
-    height: 38px !important;
-  }
-
   .new_member {
     width: 100%;
     display: flex;
@@ -125,4 +121,10 @@
       }
     }
   }
+}
+
+.adduser-container {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
 }

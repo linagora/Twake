@@ -1,200 +1,130 @@
-@import '~components/constants.scss';
-
-.write_message {
-  display: flex;
-  width: 100%;
-  position: relative;
-  margin-bottom: -3px;
-  max-width: 1400px;
-  margin: auto;
-
-  .input_info {
-    position: absolute;
-    bottom: 5px;
-    font-size: 12px;
-    left: 60px;
-    opacity: 0;
-    transition: opacity 0.5s;
-
-    &.visible {
-      opacity: 0.3;
-    }
-  }
-
-  .addons {
-    width: 22px;
-    height: 22px;
-    background: $primary;
-    box-sizing: border-box;
-    border-radius: var(--default-border-radius);
-    color: $white;
-    padding: 0px;
-    font-size: 20px;
-    padding-top: 1px;
-    margin: 23px;
-    margin-right: 5px;
-
-    i {
-      margin-left: -3px;
-      top: -2px;
-      position: relative;
-    }
-  }
-
-  .input_addons {
-    font-size: 18px;
-  }
-
-  .input_addons > * {
-    opacity: 0.3;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  .input_addons {
-    display: flex;
+.new-thread-button {
+  .message {
     align-items: center;
-    height: 65px;
-    margin-right: 4px;
-
-    & > * {
-      width: 20px;
-      height: 20px;
-      display: inline-block;
-      margin-right: 16px;
+    color: var(--secondary);
+    .plus-icon {
+      margin-right: 8px;
     }
-
-    span i {
-      font-size: 24px;
-      margin-left: -6px;
-      top: -3px;
-      position: relative;
-    }
-
-    .messages-input {
-      display: inline-block;
+  }
+  .thread.with-block {
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    &:hover {
       opacity: 0.8;
+    }
+    &:active {
+      .thread.with-block {
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.new-thread {
+  .message-input {
+    padding: 8px;
+  }
+}
+.message-input {
+  flex: 1;
+  background: #fff;
+
+  &.loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.unfocused {
+    opacity: 0.5;
+    .input-options {
+      opacity: 0.5;
+    }
+  }
+
+  .autocomplete {
+    div.input {
+      background: #fff;
+      textarea.input {
+        background: #fff;
+      }
+    }
+    .input.small {
+      margin-top: -2px;
+      padding: 0;
+    }
+    .input.autoheight_container.small textarea {
+      padding-left: 0px;
+    }
+  }
+
+  .input-options {
+    display: flex;
+    flex-direction: row;
+    margin-top: 8px;
+    .option {
+      color: var(--grey-light);
+
+      &:not(:last-child) {
+        margin-right: 12px;
+      }
+
+      &:not(.disabled):hover {
+        color: var(--black);
+      }
+
+      &:not(.disabled) {
+        cursor: pointer;
+        color: var(--grey-dark);
+      }
 
       .messages-input-app-icon {
-        width: 22px;
-        height: 22px;
+        width: 16px;
+        height: 16px;
         background-position: center;
         background-size: contain;
         border-radius: var(--default-border-radius);
       }
-
-      &:hover {
-        opacity: 1;
-      }
     }
   }
 
-  .send {
-    padding: 0px;
-    position: relative;
-    width: auto;
-    margin-right: 23px;
-    padding-top: 14px;
+  .ephemerals {
+    text-align: left;
 
-    .send_hidden,
-    .send_main {
-      position: absolute;
-      transition: transform 0.2s;
-      transform: rotateZ(0deg);
-    }
-
-    &.something_to_send {
-      opacity: 1;
-      cursor: pointer;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      .send_hidden,
-      .send_main {
-        transform: rotateZ(-90deg);
+    .thread-centerer {
+      width: 100%;
+      .message {
+        padding: 0px;
       }
     }
-    .send_hidden {
-      opacity: 0;
-    }
 
-    &.sent {
-      .send_hidden {
-        animation: send_button_hidden cubic-bezier(0, 0, 0.2, 1) 0.6s;
-      }
-      .send_main {
-        animation: send_button_main 0.6s;
-      }
+    .ephemerals_text {
+      font-size: 12px;
+      color: var(--grey-dark);
+      padding-bottom: 12px;
+      max-width: 1362px;
+      width: calc(100% - 48px);
+      display: inline-flex;
+      text-align: left;
     }
   }
+}
 
-  @keyframes send_button_main {
-    0% {
-      opacity: 1;
-      transform: rotateZ(-90deg) translateX(0px);
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: rotateZ(-90deg) translateX(50px);
-    }
+.small-section.alinea {
+  .ephemerals .thread-container .sender-space {
+    width: 16px;
   }
+}
 
-  @keyframes send_button_hidden {
-    0%,
-    40% {
-      opacity: 0;
-    }
-    80%,
-    100% {
-      opacity: 1;
-    }
-  }
+.attached-files-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 8px;
 
-  .input {
-    flex: 1;
-    background: $white;
-    display: flex;
-    border-radius: $base_border_radius;
-
-    .autocomplete.focused {
-      box-shadow: none !important;
-    }
-
-    .autocomplete {
-      flex: 1;
-      margin: 18px 0;
-
-      .dropmenu.inline {
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
-        border-radius: $base_border_radius !important;
-      }
-
-      .autoheight_container {
-        max-height: 500px;
-      }
-      textarea {
-        max-height: 500px;
-        overflow: auto;
-        margin: 0;
-        background: transparent !important;
-        padding: 8px 10px;
-        text-overflow: ellipsis;
-        font-weight: 500;
-        font-size: 14px;
-        height: 45px;
-        width: 100%;
-        border: 0px;
-        resize: none;
-        outline: none;
-      }
-    }
+  .attached-file {
+    margin: 0 8px 8px 0;
   }
 }

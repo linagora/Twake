@@ -2,21 +2,25 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import User from 'services/user/user.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import './FirstMessage.scss';
 
-export default class FirstMessage extends Component {
-  constructor(props) {
+type Props = {
+  channelId: string;
+  refDom?: (node: any) => any;
+};
+
+type State = {
+  channelId: string;
+};
+
+export default class FirstMessage extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
-    this.props = props;
 
-    this.state = {
-      i18n: Languages,
-      channels_repository: Collections.get('channels'),
-    };
-
-    var channel = this.state.channels_repository.find(this.props.channelId);
+    var channel = Collections.get('channels').find(props.channelId);
 
     Languages.addListener(this);
     Collections.get('channels').addListener(this);
@@ -29,7 +33,7 @@ export default class FirstMessage extends Component {
     Collections.get('channels').removeListener(this);
   }
   render() {
-    var channel = this.state.channels_repository.find(this.props.channelId);
+    var channel = Collections.get('channels').find(this.props.channelId);
     var i_user = 0;
 
     if (channel.app_id) {
@@ -40,7 +44,7 @@ export default class FirstMessage extends Component {
     }
 
     return (
-      <div className="first_message">
+      <div className="first_message" ref={this.props.refDom}>
         {channel.direct && channel.app_id && (
           <div className="content">
             <div className="channel_first_message_icon">
@@ -56,7 +60,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_message_text',
                 [],
-                "C'est le premier message"
+                "C'est le premier message",
               )}
             </div>
           </div>
@@ -64,7 +68,7 @@ export default class FirstMessage extends Component {
         {channel.direct && !channel.app_id && (
           <div className="content">
             <div className="channel_first_message_icon">
-              {channel.members.map(id => {
+              {channel.members.map((id: string) => {
                 if (id == User.getCurrentUserId() && channel.members_count > 1) {
                   return undefined;
                 }
@@ -84,7 +88,7 @@ export default class FirstMessage extends Component {
             </div>
             <div className="title">
               {channel.members
-                .map(id => {
+                .map((id: string) => {
                   if (id == User.getCurrentUserId() && channel.members_count > 1) {
                     return undefined;
                   }
@@ -107,7 +111,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_message_text',
                 [],
-                "C'est le premier message"
+                "C'est le premier message",
               )}
             </div>
           </div>
@@ -122,7 +126,7 @@ export default class FirstMessage extends Component {
               {Languages.t(
                 'scenes.apps.messages.message.types.first_channel_message_text',
                 [channel.name],
-                "C'est le premier message du canal"
+                "C'est le premier message du canal",
               )}
             </div>
           </div>

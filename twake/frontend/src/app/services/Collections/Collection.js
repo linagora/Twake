@@ -110,7 +110,7 @@ export default class Collection extends Observable {
     this.sources[key].websockets.forEach(websocket => {
       waiting_one_route =
         waiting_one_route ||
-        this.subscribe(websocket.uri, websocket.options, this.sources[key].http_options);
+        this.subscribe(websocket.uri, websocket.options, this.sources[key].http_options, key);
       routes.push(websocket.uri);
     });
     this.sources[key].did_first_load = this.did_load_first_time[key] || false;
@@ -133,7 +133,7 @@ export default class Collection extends Observable {
       } else {
         this.reload(res => {
           if (first_load_callback) first_load_callback(res);
-        });
+        }, key);
       }
     };
 
@@ -141,7 +141,9 @@ export default class Collection extends Observable {
       routes: routes,
       callback: (event, data) => {
         if (event == 'get') {
-          initHttp(data);
+          if (data.collectionId === key) {
+            initHttp(data.data);
+          }
         }
         if (event == 'init' && data._route == routes[0]) {
           //Only get reload from first route to avoid duplicate reload
@@ -155,8 +157,11 @@ export default class Collection extends Observable {
     }
   }
 
-  reload(callback) {
+  reload(callback, callbackForKey) {
     Object.keys(this.sources).map(key => {
+      if (!this.sources[key]) {
+        return;
+      }
       this.sources[key].http_loading = true;
       this.load(
         (this.sources[key] || {}).http_base_url,
@@ -164,10 +169,12 @@ export default class Collection extends Observable {
         undefined,
         undefined,
         res => {
-          this.sources[key].http_loading = false;
-          this.sources[key].did_first_load = true;
+          if (this.sources[key]) {
+            this.sources[key].http_loading = false;
+            this.sources[key].did_first_load = true;
+          }
           this.did_load_first_time[key] = true;
-          if (callback) callback(res);
+          if (callback && key == callbackForKey) callback(res);
         },
       );
     });
@@ -192,6 +199,9 @@ export default class Collection extends Observable {
   }
 
   sourceLoad(source_key, _options, callback) {
+    if (!this.sources[source_key]) {
+      return;
+    }
     this.sources[source_key].http_loading = true;
     var options = {};
     Object.keys(this.sources[source_key].http_options).forEach(key => {
@@ -206,7 +216,9 @@ export default class Collection extends Observable {
       options.offset || 0,
       options.limit || 0,
       res => {
-        this.sources[source_key].http_loading = false;
+        if (this.sources[source_key]) {
+          this.sources[source_key].http_loading = false;
+        }
         callback(res);
       },
     );
@@ -309,7 +321,7 @@ export default class Collection extends Observable {
   /** subscribe
    * Start subscription to collection and load collection
    */
-  subscribe(collection_id, options, http_options) {
+  subscribe(collection_id, options, http_options, key) {
     this.didSubscribe = true;
 
     this.total_subscribe_by_route[collection_id] =
@@ -318,7 +330,7 @@ export default class Collection extends Observable {
     if (this.total_subscribe_by_route[collection_id] == 1) {
       var ws_identifier = collection_id || this.collection_id;
       var options = options || this.options || {};
-      this.connections.addConnection(ws_identifier, options, http_options);
+      this.connections.addConnection(ws_identifier, options, http_options, key);
       return true;
     }
 
@@ -356,7 +368,6 @@ export default class Collection extends Observable {
     var request_key = JSON.stringify([base_url, this.collection_id, options]);
 
     this.doing_http_request++;
-    this.notify();
 
     var base_url = base_url || this.base_url;
 
@@ -459,7 +470,6 @@ export default class Collection extends Observable {
       };
 
       this.doing_http_request++;
-      this.notify();
 
       api.post(this.base_url + '/search', data, res => {
         if (res.data) {
@@ -1065,15 +1075,20 @@ export default class Collection extends Observable {
     return that.known_objects_by_front_id[front_id];
   }
 
-  shouldNotify(node) {
+  shouldNotify(node, listen_only = false) {
     var update = true;
     if (
       node._observable &&
       node._observable[this.observableName] &&
       node._observable[this.observableName].listen_only
     ) {
-      update = false;
-      node._observable[this.observableName].listen_only.map(item => {
+      listen_only = node._observable[this.observableName].listen_only;
+    }
+    update = false;
+    if (listen_only.length === 0) {
+      update = true;
+    } else {
+      listen_only.map(item => {
         if (this.known_objects_by_id[item]) {
           item = this.known_objects_by_id[item].front_id || item;
         }
@@ -1087,7 +1102,10 @@ export default class Collection extends Observable {
           this.known_objects_by_front_id[item]._last_modified.getTime() >
             this._last_modified[item].getTime()
         ) {
-          this._last_modified[item] = this.known_objects_by_front_id[item]._last_modified;
+          setTimeout(
+            () => (this._last_modified[item] = this.known_objects_by_front_id[item]._last_modified),
+            100,
+          );
           update = true;
         }
       });

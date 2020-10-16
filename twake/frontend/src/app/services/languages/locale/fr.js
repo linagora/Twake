@@ -20,7 +20,7 @@ export default {
   'general.unarchive': 'Désarchiver',
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
-  'general.send': 'Envoyer le message',
+  'general.send': 'Envoyer un message',
   'general.update': 'Mettre à jour',
   'general.remove': 'Supprimer',
   'general.add': 'Ajouter',
@@ -1132,7 +1132,7 @@ export default {
   'scenes.app.workspaces.create_company.importations.title_2':
     'Pas d’inquiétude, vous pourrez y revenir plus tard !',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
-    'Le nombre de champs augmente automatiquement.',
+    'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
   'scenes.app.workspaces.create_company.invitations.title_2': "Twake, c'est mieux à plusieurs.",
@@ -1299,7 +1299,7 @@ export default {
   'scenes.app.mainview.tabs.searching_connectors': 'Chercher des connecteurs...',
   'scenes.app.popup.adduser.adding_several_people': 'Ajouter plusieurs personnes à la fois',
   'scenes.app.popup.adduser.adresses_message':
-    "Veuillez séparer les adresses par une virgule. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
+    "Veuillez séparer les adresses par une virgule ou un espace. N'oubliez pas que Twake peut limiter le nombre d'invitation en fonction de votre abonnement.",
   'scenes.app.popup.adduser.message_instruction': 'Utiliser le formulaire classique',
   'scenes.app.popup.appsparameters.pages._app_identity': "Identité de l'application",
   'scenes.app.popup.appsparameters.pages._appareance_message_twakcode':
@@ -1595,6 +1595,7 @@ export default {
   'scenes.apps.calendar.workspace_menu': 'Espace de travail',
   'scenes.apps.drive.add_button': 'Ajouter',
   'scenes.apps.drive.message_added_file': '$1 a envoyé $2.',
+  'scenes.apps.drive.message_added_mutiple_files': '$1 a envoyé plusieurs fichiers.',
   'scenes.apps.drive.message_added_file_no_name': '$1 a envoyé un fichier.',
   'scenes.apps.drive.choose_folder_button': 'Choisir un dossier',
   'scenes.apps.drive.choose_file_button': 'Choisir un fichier',
@@ -1636,6 +1637,9 @@ export default {
   'scenes.apps.messages.message.cancel_button': 'Annuler',
   'scenes.apps.messages.message.modify_button': 'Modifier',
   'scenes.apps.messages.message.personal_message': 'Vous seul pouvez voir ce message.',
+  'scenes.apps.messages.message.unpin_button': 'Désépingler le message',
+  'scenes.apps.messages.message.pin_button': 'Épingler le message',
+  'scenes.apps.messages.message.copy_link': 'Copier le lien vers le message',
   'scenes.apps.messages.message.pinned': 'Épinglé',
   'scenes.apps.messages.message.remove_button': 'Supprimer',
   'scenes.apps.messages.message.reply_button': 'Répondre',
@@ -1899,4 +1903,6 @@ export default {
     'Identifiant espace de travail actuel',
   'scenes.app.popup.appsparameters.pages.smalltext_group_id': 'Identifiant de groupe actuel',
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
+  'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
+  'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
 };

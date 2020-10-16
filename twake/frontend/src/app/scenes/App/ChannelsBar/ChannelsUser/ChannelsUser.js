@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'services/Collections/Collections.js';
 import User from 'services/user/user.js';
@@ -207,7 +207,7 @@ export default class ChannelsUser extends Component {
                 keep = true;
               }
               if (
-                channel._user_last_access > new Date().getTime() / 1000 - 7 * 24 * 60 * 60 &&
+                channel._user_last_access > new Date().getTime() / 1000 - 14 * 24 * 60 * 60 &&
                 channel.messages_increment >= 1
               ) {
                 keep = true;

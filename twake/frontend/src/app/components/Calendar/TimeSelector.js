@@ -22,7 +22,7 @@ export default class TimeSelector extends React.Component {
       nextStates.time_ts = nextProps.ts;
       if (!this.focus) {
         nextStates.time_string = moment(new Date(nextProps.ts * 1000)).format(
-          DateTimeUtils.getDefaultTimeFormat()
+          DateTimeUtils.getDefaultTimeFormat(),
         );
       }
     }
@@ -80,7 +80,7 @@ export default class TimeSelector extends React.Component {
       this.state.time_ts = date.getTime() / 1000;
       this.state.error = false;
       this.state.time_string_formatted = moment(this.state.time_ts * 1000).format(
-        DateTimeUtils.getDefaultTimeFormat()
+        DateTimeUtils.getDefaultTimeFormat(),
       );
       this.props.onChange && this.props.onChange(this.state.time_ts);
     } else {

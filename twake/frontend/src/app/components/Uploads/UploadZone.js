@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
 import UploadManager from './UploadManager.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import './Uploads.scss';
 import Languages from 'services/languages/languages.js';
 
+let sharedFileInput = null;
 export default class UploadZone extends React.Component {
   constructor(props) {
     super();
@@ -16,35 +17,39 @@ export default class UploadZone extends React.Component {
   }
   componentWillUnmount() {
     UploadManager.removeListener(this);
-    window.document.removeEventListener('paste', this.paste);
-
-    if (this.file_input) {
-      document.body.removeChild(this.file_input);
-    }
   }
   componentDidMount() {
     this.watch(this.node);
 
-    this.file_input = document.createElement('input');
-    this.file_input.type = 'file';
-    this.file_input.style.position = 'absolute';
-    this.file_input.style.top = '-10000px';
-    this.file_input.style.left = '-10000px';
-    this.file_input.style.width = '100px';
-    if (this.props.multiple !== false) {
-      this.file_input.multiple = true;
-    }
+    if (!sharedFileInput) {
+      this.file_input = document.createElement('input');
+      this.file_input.type = 'file';
+      this.file_input.style.position = 'absolute';
+      this.file_input.style.top = '-10000px';
+      this.file_input.style.left = '-10000px';
+      this.file_input.style.width = '100px';
+      this.file_input.multiple = this.props.multiple ? true : false;
 
+      this.setCallback();
+
+      document.body.appendChild(this.file_input);
+
+      sharedFileInput = this.file_input;
+    } else {
+      this.file_input = sharedFileInput;
+    }
+  }
+  setCallback() {
     this.file_input.onchange = e => {
       this.change(e);
     };
-
-    document.body.appendChild(this.file_input);
   }
   open() {
     if (this.props.disabled) {
       return;
     }
+
+    this.setCallback();
 
     this.file_input.click();
   }
@@ -73,7 +78,7 @@ export default class UploadZone extends React.Component {
       this.props.parent,
       this.props.uploadOptions,
       this.props.driveCollectionKey,
-      this.props.onUploaded
+      this.props.onUploaded,
     );
   }
   change(event) {
@@ -86,6 +91,7 @@ export default class UploadZone extends React.Component {
     this.hover(false);
 
     UploadManager.getFilesTree(event, (tree, nb, totalSize) => {
+      this.file_input.value = '';
       this.upload(tree, nb, totalSize);
     });
   }
@@ -95,11 +101,13 @@ export default class UploadZone extends React.Component {
       this.hover(true, e);
     });
     node.addEventListener('dragenter', e => {
-      if (this.props.onDragEnter) {
+      if (!this.props.disabled && this.props.onDragEnter) {
         this.props.onDragEnter();
       }
       this.hover(true, e);
       e.preventDefault();
+
+      this.setCallback();
     });
     node.addEventListener('dragleave', e => {
       if (this.props.onDragLeave) {
@@ -108,8 +116,6 @@ export default class UploadZone extends React.Component {
       this.hover(false);
     });
     node.addEventListener('drop', e => this.change(e));
-
-    window.document.addEventListener('paste', this.paste);
   }
   paste(event) {
     if (this.props.allowPaste) {
@@ -117,7 +123,6 @@ export default class UploadZone extends React.Component {
       var items = clipboardData.items;
       var filename = (clipboardData.getData('Text') || 'image').split('\n')[0];
       filename = filename.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '');
-
       var types = [],
         hasImage = false,
         imageBlob = false,
@@ -132,12 +137,11 @@ export default class UploadZone extends React.Component {
         }
         types.push(item.type);
       }
-
-      if (hasImage && !types.indexOf('text/rtf') && !types.indexOf('text/html')) {
+      if (hasImage === true) {
         event.preventDefault();
         event.stopPropagation();
 
-        var blob = imageBlob.getAsFile();
+        var blob = imageBlob;
         filename = filename + '.' + (imageType.split('/')[1] || 'png');
         var file = new File([blob], filename, { type: imageType });
         var list = {};
@@ -174,23 +178,15 @@ export default class UploadZone extends React.Component {
           }
         }}
       >
-        <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
-          <div className="dashed">
-            <div className={'centered ' + (this.state.dragover ? 'skew_in_top ' : '')}>
-              <Emojione type=":page_facing_up:" s128 />
-              <div className="title">
-                {Languages.t('components.upload.upload_doc', [], 'Envoyer des documents')}
-              </div>
-              <div className="text">
-                {Languages.t(
-                  'components.upload.drop_files',
-                  [],
-                  'Relachez vos fichiers pour les télécharger.'
-                )}
+        {!this.props.disabled && (
+          <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
+            <div className="dashed">
+              <div className={'centered ' + (this.state.dragover ? 'skew_in_top_nobounce ' : '')}>
+                <div className="subtitle">{Languages.t('components.upload.drop_files')}</div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {this.props.children}
       </div>
