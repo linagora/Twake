@@ -15,3 +15,20 @@ export interface WebSocketServiceConfiguration {
   adapters?: AdaptersConfiguration;
   auth?: SocketIOJWTOptions;
 }
+
+export interface WebSocketUser {
+  _id: string,
+  token?: DecodedToken
+}
+
+export interface WebSockets {
+  [index: string]: WebSocket[];
+}
+
+export interface WebSocket extends SocketIO.Socket {
+  decoded_token: DecodedToken
+}
+
+interface DecodedToken {
+  _id: string;
+}
