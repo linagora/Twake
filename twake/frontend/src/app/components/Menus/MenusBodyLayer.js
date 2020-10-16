@@ -169,13 +169,8 @@ export default class MenusBodyLayer extends React.Component {
               <OutsideClickHandler
                 key={item.id}
                 onOutsideClick={() => {
-<<<<<<< HEAD
                   if (i == this.state.menus_manager.menus.length - 1) {
                     MenusManager.closeSubMenu(item.level - 1);
-=======
-                  if(i == this.state.menus_manager.menus.length - 1){
-                    MenusManager.closeSubMenu(item.level - 1)
->>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
                   }
                 }}
               >

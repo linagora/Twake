@@ -72,10 +72,7 @@ export default (props: Props) => (
           MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').openEditor(
             props.threadId || '',
             '',
-<<<<<<< HEAD
             'main',
-=======
->>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
           )
         }
         multiple={true}

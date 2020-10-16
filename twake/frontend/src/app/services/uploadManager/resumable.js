@@ -2,12 +2,8 @@ const window = {};
 
 window.setTimeout = (f, t) => setTimeout(f, t);
 
-<<<<<<< HEAD
 window.define =
   window.define ||
-=======
-window.define = window.define ||
->>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
   ((window.define = function (c) {
     try {
       delete window.define;

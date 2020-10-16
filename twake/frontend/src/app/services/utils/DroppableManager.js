@@ -29,11 +29,7 @@ class DroppableManager {
       //console.log("not dragging right now");
       return;
     }
-<<<<<<< HEAD
     this.drop.forEach(el => {
-=======
-    this.drop.forEach((el) => {
->>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
       if (el && el.callback) {
         el.callback(that.draggingData);
       }
