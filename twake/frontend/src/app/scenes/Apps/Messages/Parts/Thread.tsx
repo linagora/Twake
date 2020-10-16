@@ -4,6 +4,7 @@ import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import { threadId } from 'worker_threads';
 
 type Props = {
   collectionKey?: string;
@@ -71,7 +72,10 @@ export default (props: Props) => (
           MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').openEditor(
             props.threadId || '',
             '',
+<<<<<<< HEAD
             'main',
+=======
+>>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
           )
         }
         multiple={true}

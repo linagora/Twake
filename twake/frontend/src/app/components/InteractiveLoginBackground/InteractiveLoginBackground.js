@@ -61,6 +61,7 @@ export default class InteractiveLoginBackground extends React.Component {
     this.objects.forEach(div => {
       var fa, fb;
       if (div.classList.contains('speed-a')) {
+<<<<<<< HEAD
         fa = 50;
         fb = 15;
       }
@@ -71,6 +72,18 @@ export default class InteractiveLoginBackground extends React.Component {
       if (div.classList.contains('speed-c')) {
         fa = 30;
         fb = 5;
+=======
+        (fa = 50);
+         (fb = 15);
+      }
+      if (div.classList.contains('speed-b')) {
+        (fa = 40);
+         (fb = 10);
+      }
+      if (div.classList.contains('speed-c')) {
+        (fa = 30);
+         (fb = 5);
+>>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
       }
       div.style.marginLeft = (this.x - 0.5) * fa;
       div.style.marginTop = (this.y - 0.5) * fb;

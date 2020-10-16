@@ -98,10 +98,14 @@ export default class App extends Component {
       Globals.store_public_access_get_data = WindowService.allGetParameter();
     }
 
+<<<<<<< HEAD
     if (
       !public_access &&
       (Globals.window.screen.width < 400 || Globals.window.screen.height < 400)
     ) {
+=======
+    if (!public_access && (Globals.window.screen.width < 400 || Globals.window.screen.height < 400)) {
+>>>>>>> a9ad6c43894b9577cd925fa2d63e12060999acb1
       document.getElementById('app_loader').classList.remove('load');
 
       var valid_browser = false;

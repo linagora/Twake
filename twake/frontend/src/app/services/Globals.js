@@ -9,6 +9,7 @@ import environment from 'environment/environment';
 import version from 'environment/version';
 // const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
+
 class Globals {
   constructor() {
     this.services = {};
@@ -91,8 +92,8 @@ class Globals {
       }
     }
 
-    if (typeof PushNotification != 'undefined') {
-      // eslint-disable-line no-undef
+      // eslint-disable-next-line no-undef
+      if (typeof PushNotification != 'undefined') {
       this.PushNotification = PushNotification; // eslint-disable-line no-undef
     }
 
@@ -194,7 +195,7 @@ class Globals {
 
   localStorageSetItem(key, value) {
     if (typeof SyncStorage != 'undefined') {
-      // eslint-disable-line no-undef
+      // eslint-disable-next-line no-undef
       SyncStorage.set(key, value); // eslint-disable-line no-undef
     } else if (window && window.localStorage) {
       window.localStorage.setItem(key, value);
@@ -202,8 +203,8 @@ class Globals {
   }
 
   localStorageGetItem(key, callback) {
-    if (typeof SyncStorage != 'undefined') {
-      // eslint-disable-line no-undef
+      // eslint-disable-next-line no-undef
+      if (typeof SyncStorage != 'undefined') {
       const data = SyncStorage.get(key); // eslint-disable-line no-undef
       if (callback) {
         callback(data);
@@ -242,8 +243,8 @@ class Globals {
   }
 
   getDefaultLanguage() {
-    if (typeof NativeModules != 'undefined') {
-      // eslint-disable-line no-undef
+      // eslint-disable-next-line no-undef
+      if (typeof NativeModules != 'undefined') {
       var locale = ((NativeModules.SettingsManager || {}).settings || {}).AppleLocale || 'en'; // eslint-disable-line no-undef
       if (!locale) {
         locale = (NativeModules.I18nManager || {}).localeIdentifier || 'en'; // eslint-disable-line no-undef
@@ -255,8 +256,8 @@ class Globals {
   }
 
   clearCookies() {
-    if (typeof Cookie != 'undefined') {
-      // eslint-disable-line no-undef
+      // eslint-disable-next-line no-undef
+      if (typeof Cookie != 'undefined') {
       Cookie.clear(); // eslint-disable-line no-undef
     }
   }
