@@ -9,6 +9,7 @@
     "copy-assets": "npm run copy-config",
     "copy-config": "cp -R config dist",
     "lint": "eslint . --ext .ts --quiet --fix",
+    "lint-no-fix": "eslint . --ext .ts",
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
