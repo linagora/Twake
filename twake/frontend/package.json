@@ -4,12 +4,13 @@
   "repository": "https://github.com/TwakeApp/Twake",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev-build": "CI=false craco build",
-    "build": "scripts/build-version.sh patch && CI=false craco build",
-    "change-version": "scripts/build-version.sh",
+    "dev:start": "craco start",
+    "dev:test": "craco test",
+    "dev:build": "CI=false craco build",
     "prettier": "prettier --write src/",
-    "start": "craco start",
-    "test": "craco test"
+    "test": "CI=true craco test",
+    "build": "scripts/build-version.sh patch && CI=false craco build",
+    "change-version": "scripts/build-version.sh"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -27,24 +28,10 @@
     ]
   },
   "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts"
     ],
-    "setupFiles": [
-      "react-app-polyfill/jsdom"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
-    ],
-    "testEnvironment": "jest-environment-jsdom-fourteen",
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
@@ -53,28 +40,6 @@
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
       "^.+\\.module\\.(css|sass|scss)$"
-    ],
-    "modulePaths": [],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "web.ts",
-      "ts",
-      "web.tsx",
-      "tsx",
-      "json",
-      "web.jsx",
-      "jsx",
-      "node"
-    ],
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
     ]
   },
   "babel": {
@@ -173,6 +138,7 @@
     "jest-watch-typeahead": "0.4.2",
     "jquery": "^3.5.1",
     "mini-css-extract-plugin": "0.9.0",
+    "minimongo": "^6.7.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "node-sass": "^4.13.1",
