@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import LoginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AddUser from 'scenes/App/Popup/AddUser/AddUser';

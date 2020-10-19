@@ -5,6 +5,24 @@
   display: flex;
   flex-direction: column;
 
+  .loading-full {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1;
+    .loading {
+      position: absolute;
+      margin: auto;
+      width: 50px;
+      height: 50px;
+      right: 0px;
+      bottom: 0px;
+      top: 0px;
+      left: 0px;
+    }
+  }
+
   .messages-scroller-parent {
     flex: 1;
     min-height: 0;

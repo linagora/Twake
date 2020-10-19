@@ -69,7 +69,7 @@ export default class DatePicker extends React.Component {
           'oct',
           'nov',
           'dec',
-        ]
+        ],
       )
       .map(m => m.toLocaleLowerCase());
     this.months_long_names = this.months_long_names
@@ -88,13 +88,13 @@ export default class DatePicker extends React.Component {
     ) {
       this.months_names = this.months_names.concat(
         (moment.localeData(Globals.window.navigator.language).monthsShort() || []).map(m =>
-          m.toLocaleLowerCase()
-        )
+          m.toLocaleLowerCase(),
+        ),
       );
       this.months_long_names = this.months_long_names.concat(
         (moment.localeData(Globals.window.navigator.language).months() || []).map(m =>
-          m.toLocaleLowerCase()
-        )
+          m.toLocaleLowerCase(),
+        ),
       );
     }
 
@@ -302,7 +302,7 @@ export default class DatePicker extends React.Component {
     this.state.time_ts = date.getTime() / 1000;
     this.state.error = false;
     this.state.time_string_formatted = moment(this.state.time_ts * 1000).format(
-      this.display_format
+      this.display_format,
     );
 
     if (changeInput) {
@@ -358,7 +358,7 @@ export default class DatePicker extends React.Component {
         ],
         { x: pos.left + pos.width / 2, y: pos.bottom },
         'bottom',
-        { allowClickOut: false }
+        { allowClickOut: false },
       );
     }
   }

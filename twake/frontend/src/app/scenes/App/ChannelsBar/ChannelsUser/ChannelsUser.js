@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'services/Collections/Collections.js';
 import User from 'services/user/user.js';

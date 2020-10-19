@@ -60,7 +60,7 @@ export default class ConnectorsListManager extends React.Component {
             className="m-icon-small remove"
             onClick={() => {
               this.state.connectors_ids = this.state.connectors_ids.filter(id =>
-                typeof item == 'string' ? item != id : item.id != id
+                typeof item == 'string' ? item != id : item.id != id,
               );
               this.setState({});
               this.props.onChange(this.state.connectors_ids);

@@ -70,7 +70,7 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.predefined_participants',
               [],
-              'Participants prédéfinis...'
+              'Participants prédéfinis...',
             ),
             submenu_replace: true,
             submenu: [
@@ -79,7 +79,7 @@ export default class List extends React.Component {
                 text: Languages.t(
                   'scenes.apps.tasks.list_modal.predefined_participants',
                   [],
-                  'Participants prédéfinis'
+                  'Participants prédéfinis',
                 ),
               },
               {
@@ -117,7 +117,7 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.archive_all_tasks',
               [],
-              'Archiver toutes les tâches'
+              'Archiver toutes les tâches',
             ),
             hide: this.props.showArchived,
             onClick: () => {
@@ -128,7 +128,7 @@ export default class List extends React.Component {
             text: Languages.t(
               'scenes.apps.tasks.list_modal.remove_archived_tasks',
               [TasksService.getTasksInList(list.board_id, list.id, true).length],
-              'Supprimer les archivées ($1)'
+              'Supprimer les archivées ($1)',
             ),
             className: 'error',
             onClick: () => {
@@ -144,7 +144,7 @@ export default class List extends React.Component {
                 Collections.get('lists').remove(list, this.props.collectionKey);
               });
             },
-          }
+          },
         );
       }
     }
@@ -183,11 +183,11 @@ export default class List extends React.Component {
     var tasks = TasksService.getTasksInList(
       list.board_id,
       list.id,
-      this.props.showArchived ? true : false
+      this.props.showArchived ? true : false,
     );
     TasksService.setElementIndexPool(
       'tasks_' + list.id,
-      Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id })
+      Collections.get('tasks').findBy({ board_id: this.props.board.id, list_id: list.id }),
     );
 
     return (
@@ -244,7 +244,7 @@ export default class List extends React.Component {
                           .sort(
                             (a, b) =>
                               TasksService.getElementIndex(a, 'tasks_' + a.list_id) -
-                              TasksService.getElementIndex(b, 'tasks_' + b.list_id)
+                              TasksService.getElementIndex(b, 'tasks_' + b.list_id),
                           )
                           .map((item, index) => (
                             <Task

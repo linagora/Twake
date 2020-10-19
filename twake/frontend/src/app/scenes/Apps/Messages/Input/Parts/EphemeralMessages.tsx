@@ -21,30 +21,35 @@ type Props = {
 };
 
 export default (props: Props) => {
+  let savedList: any[] = [];
+
+  const getEphemeralMessages = () => {
+    return Collections.get('messages')
+      .findBy({
+        channel_id: props.channelId,
+        parent_message_id: props.threadId,
+        _user_ephemeral: true,
+      })
+      .filter((message: any) => {
+        try {
+          if (message.ephemeral_message_recipients) {
+            return (message.ephemeral_message_recipients || []).indexOf(CurrentUser.get().id) >= 0;
+          }
+        } catch (e) {}
+        return true;
+      })
+      .sort((a: any, b: any) => a.creation_date - b.creation_date);
+  };
+
   Collections.get('messages').useListener(useState);
 
   let lastEphemeral: any = null;
-  const ephemerals_messages = Collections.get('messages')
-    .findBy({
-      channel_id: props.channelId,
-      parent_message_id: props.threadId,
-      _user_ephemeral: true,
-    })
-    .filter((message: any) => {
-      try {
-        if (message.ephemeral_message_recipients) {
-          return (message.ephemeral_message_recipients || []).indexOf(CurrentUser.get().id) >= 0;
-        }
-      } catch (e) {}
-      return true;
-    })
-    .sort((a: any, b: any) => a.creation_date - b.creation_date)
-    .forEach((item: any) => {
-      if (lastEphemeral) {
-        MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
-      }
-      lastEphemeral = item;
-    });
+  getEphemeralMessages().forEach((item: any) => {
+    if (lastEphemeral) {
+      MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
+    }
+    lastEphemeral = item;
+  });
 
   if (!lastEphemeral) {
     props.onNotEphemeralMessage();
@@ -52,7 +57,7 @@ export default (props: Props) => {
   }
   props.onHasEphemeralMessage();
   return (
-    <div className="ephemerals">
+    <div className="ephemerals" key={lastEphemeral?.front_id + lastEphemeral?.content?.last_change}>
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
@@ -65,7 +70,7 @@ export default (props: Props) => {
             noBlock
             noReplies
             collectionKey={props.collectionKey}
-            message={message}
+            messageId={message.id || message.front_id}
           />
         );
       })}

@@ -33,8 +33,9 @@ export class MessageEditors extends Observable {
   currentEditor: string | false = false; //False no editor opened, string = parent message
   currentEditorThreadId: string | false = false; //False no editor opened, string = parent message
   currentEditorMessageId: string | false = false; //False no editor opened, string = parent message
-  editorsContents: { [key: string]: string } = {};
-  editorsUploadZones: { [key: string]: any } = {};
+  editorsContents: { [threadId: string]: string } = {};
+  filesAttachements: { [threadId: string]: string[] } = {};
+  editorsUploadZones: { [threadId: string]: any } = {};
 
   setInputNode(threadId: string, messageId: string, context: string, node: any) {}
 
@@ -76,7 +77,11 @@ export class MessageEditors extends Observable {
   }
 
   openEditor(threadId: string, messageId: string, context: string = '') {
-    this.currentEditor = this.getEditorId(threadId, messageId, context);
+    const nextEditor = this.getEditorId(threadId, messageId, context);
+    if (nextEditor === this.currentEditor) {
+      return;
+    }
+    this.currentEditor = nextEditor;
     this.currentEditorThreadId = threadId;
     this.currentEditorMessageId = messageId;
     this.notify();
@@ -93,7 +98,9 @@ export class MessageEditors extends Observable {
     return threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
   }
 
-  /* Get upload zone */
+  getUploadZone(threadId: string) {
+    return this.editorsUploadZones[threadId || 'main'];
+  }
 
   setUploadZone(threadId: string, node: any) {
     if (node) {
@@ -108,6 +115,27 @@ export class MessageEditors extends Observable {
   }
 
   onAddAttachment(threadId: string, file: any) {
-    DriveService.sendAsMessage(this.channelId, threadId, file);
+    threadId = threadId || 'main';
+    if (!this.filesAttachements[threadId]) this.filesAttachements[threadId] = [];
+    this.filesAttachements[threadId].push(file.id);
+
+    this.notify();
+  }
+
+  onRemoveAttachement(threadId: string, fileId: string) {
+    threadId = threadId || 'main';
+    let filesAttachements;
+    if (this.filesAttachements[threadId].length >= 0) {
+      filesAttachements = this.filesAttachements[threadId].filter(val => val !== fileId);
+      this.filesAttachements[threadId] = filesAttachements;
+    }
+
+    this.notify();
+  }
+
+  clearAttachments(threadId: string) {
+    threadId = threadId || 'main';
+    this.filesAttachements[threadId] = [];
+    this.notify();
   }
 }

@@ -79,10 +79,11 @@ export class MessagesListServerUtils extends Observable {
   // Option 1: no parameters or true = init at the end of the conversation
   // Option 2: from parameters = init next to a defined message
   async init(fromMessageId: string | boolean = false) {
+    Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
+
     if (this.httpLoading) {
       return;
     }
-    Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
     if (!this.destroyed && this.didInit && fromMessageId) {
       this.reset();
@@ -206,6 +207,8 @@ export class MessagesListServerUtils extends Observable {
       filter.parent_message_id = this.threadId;
     }
     let messages = Collections.get('messages').findBy(filter);
+
+    this.detectNewWebsocketsMessages(messages);
 
     messages = messages
       .filter((m: Message) => {

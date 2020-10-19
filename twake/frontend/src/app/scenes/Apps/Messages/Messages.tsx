@@ -25,7 +25,6 @@ export default class MainView extends Component<Props> {
     super(props);
     Languages.addListener(this);
     ChannelsService.addListener(this);
-    Collections.get('messages').addListener(this);
     MessagesService.addListener(this);
 
     this.options = props.options || {};
@@ -35,7 +34,6 @@ export default class MainView extends Component<Props> {
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
-    Collections.get('messages').removeListener(this);
     MessagesService.removeListener(this);
   }
 

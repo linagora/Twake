@@ -4,6 +4,7 @@ import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import MessagesService from 'services/Apps/Messages/Messages.js';
+import AttachedFiles from './Parts/AttachedFiles';
 import './Input.scss';
 
 type Props = {
@@ -28,9 +29,13 @@ export default (props: Props) => {
   const [loading, setLoading] = useState(false);
   const messageEditorService: MessageEditors = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
+
   let autocomplete: any = null;
   let disable_app: any = {};
-
+  let hasFilesAttached: boolean = messageEditorService.filesAttachements[props.threadId || 'main']
+    ?.length
+    ? true
+    : false;
   const onChange = (text: string) => {
     setContent(text);
   };
@@ -40,7 +45,10 @@ export default (props: Props) => {
       props.onSend(content);
       return;
     }
-    if (content.trim()) {
+    if (
+      content.trim() ||
+      messageEditorService.filesAttachements[props.threadId || 'main']?.length
+    ) {
       sendMessage(content);
       autocomplete.setContent('');
       autocomplete.blur();
@@ -67,18 +75,22 @@ export default (props: Props) => {
         parent_message_id: props.threadId || '',
       },
       props.collectionKey,
-    ).then(message => {
-      setLoading(false);
-      if (
-        messageEditorService.currentEditor ===
-        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-      ) {
-        autocomplete.focus();
-      }
-      if (!message.parent_message_id) {
-        messageEditorService.openEditor(message.id, props.messageId || '');
-      }
-    });
+    )
+      .then(message => {
+        setLoading(false);
+        if (
+          messageEditorService.currentEditor ===
+          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+        ) {
+          autocomplete.focus();
+        }
+        if (!message.parent_message_id) {
+          messageEditorService.openEditor(message.id, props.messageId || '');
+        }
+      })
+      .finally(() => {
+        messageEditorService.clearAttachments(props.threadId);
+      });
   };
 
   const focus = () => {
@@ -113,10 +125,11 @@ export default (props: Props) => {
           }
         }}
       />
-
+      <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
       {!hasEphemeralMessage && (
         <InputAutocomplete
           messageId={props.messageId || ''}
+          onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
           channelId={props.channelId}
           threadId={props.threadId}
           onChange={(text: string) => {
@@ -139,6 +152,7 @@ export default (props: Props) => {
       {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
           inputValue={content}
+          isEmpty={!(content || hasFilesAttached)}
           channelId={props.channelId}
           threadId={props.threadId}
           onSend={() => onSend()}

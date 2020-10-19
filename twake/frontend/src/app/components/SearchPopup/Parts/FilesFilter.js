@@ -24,7 +24,7 @@ export default class FilesFilter extends React.Component {
           name={Languages.t(
             'scenes.apps.parameters.group_sections.workspaces',
             [],
-            'Espaces de travails'
+            'Espaces de travails',
           )}
           icon="building"
         />
@@ -35,7 +35,7 @@ export default class FilesFilter extends React.Component {
           addText={Languages.t(
             'components.searchpopup.filter_ws',
             [],
-            'Filtrer les espaces de travail'
+            'Filtrer les espaces de travail',
           )}
           workspaces={this.state.options.workspaces || []}
           onUpdate={value => {
@@ -60,7 +60,7 @@ export default class FilesFilter extends React.Component {
           name={Languages.t(
             'scenes.apps.parameters.group_sections.apps.badge_extension',
             [],
-            'Extension'
+            'Extension',
           )}
           icon="triangle"
         />
