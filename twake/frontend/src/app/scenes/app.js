@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 
 import LoginService from 'services/login/login.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import './ui.scss';
 import './ui_new.scss';
 
@@ -70,9 +70,9 @@ export default class App extends Component {
     this.page_state = nextState.login.state;
     return true;
   }
-  getDerivedStateFromError() {
+  getDerivedStateFromError(error) {
     this.state.hasError = true;
-    return { hasError: true, error: [error, info] };
+    return { hasError: true, error: [error] };
   }
   componentDidCatch(error, info) {
     if (!this.state.hasError) {
@@ -98,7 +98,10 @@ export default class App extends Component {
       Globals.store_public_access_get_data = WindowService.allGetParameter();
     }
 
-    if (!public_access && (screen.width < 400 || screen.height < 400)) {
+    if (
+      !public_access &&
+      (Globals.window.screen.width < 400 || Globals.window.screen.height < 400)
+    ) {
       document.getElementById('app_loader').classList.remove('load');
 
       var valid_browser = false;

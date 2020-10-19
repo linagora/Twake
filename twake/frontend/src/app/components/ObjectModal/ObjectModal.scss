@@ -35,7 +35,8 @@
 
   & > .body {
     margin: 0 -16px;
-    .scrollbar-container, .child-with-margin {
+    .scrollbar-container,
+    .child-with-margin {
       padding: 0 16px;
       max-height: calc(80vh - 200px);
     }

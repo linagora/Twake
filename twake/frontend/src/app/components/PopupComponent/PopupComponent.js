@@ -9,10 +9,10 @@ export default class PopupComponent extends React.Component {
     this.state = {
       popupManager: popupManager,
     };
-    popupService.addListener(this);
+    popupManager.addListener(this);
   }
   componentWillUnmount() {
-    popupService.removeListener(this);
+    popupManager.removeListener(this);
     document.removeEventListener('keydown', this.eventClose);
   }
   componentDidMount() {

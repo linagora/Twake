@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import UserService from 'services/user/user.js';
 import CurrentUserService from 'services/user/current_user.js';
 import ElectronService from 'services/electron/electron.js';
@@ -52,9 +52,9 @@ export default class Tutorial extends Component {
         text: Languages.t(
           'scenes.app.channelsbar.tutorial_alert',
           [],
-          'Ne plus jamais afficher ce cadre ?'
+          'Ne plus jamais afficher ce cadre ?',
         ),
-      }
+      },
     );
   }
   render() {
@@ -85,7 +85,7 @@ export default class Tutorial extends Component {
               Languages.t(
                 'scenes.app.channelsbar.company_invitation_alert_title',
                 [],
-                "Vous êtes invité dans l'entreprise "
+                "Vous êtes invité dans l'entreprise ",
               ),
               <b>{group.name}</b>,
             ]}
@@ -95,7 +95,7 @@ export default class Tutorial extends Component {
                 : Languages.t(
                     'scenes.app.channelsbar.company_invitation_alert_subtitle',
                     [],
-                    'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.'
+                    'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
                   )
             }
             onClickFrame={e => {
@@ -114,14 +114,14 @@ export default class Tutorial extends Component {
             subtitle={Languages.t(
               'scenes.app.channelsbar.welcoming_message_subtitle',
               [],
-              'Devenez un pro de Twake en seulement quelques clics !'
+              'Devenez un pro de Twake en seulement quelques clics !',
             )}
             blocks={[
               {
                 text: Languages.t(
                   'scenes.app.channelsbar.initial_instructions_tutorial',
                   [],
-                  'Choisissez un prénom, un nom et une image de profil.'
+                  'Choisissez un prénom, un nom et une image de profil.',
                 ),
                 emoji: ':woman_juggling:',
                 done: tutorial_status.has_identity,
@@ -133,7 +133,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.sending_message_instruction',
                   [],
-                  'Envoyer un premier message dans une discussion'
+                  'Envoyer un premier message dans une discussion',
                 ),
                 emoji: ':love_letter:',
                 done: tutorial_status.first_message_sent,
@@ -148,7 +148,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.installation_desktop_tutorial',
                   [],
-                  "Installer l'application desktop"
+                  "Installer l'application desktop",
                 ),
                 emoji: ':desktop:',
                 done: tutorial_status.has_desktop_app,
@@ -160,7 +160,7 @@ export default class Tutorial extends Component {
                 text: Languages.t(
                   'scenes.app.channelsbar.invitation_collaboraors_tutorial',
                   [],
-                  'Invitez vos collaborateurs dans votre espace de travail.'
+                  'Invitez vos collaborateurs dans votre espace de travail.',
                 ),
                 emoji: ':handshake:',
                 done: tutorial_status.did_invite_collaborators,
@@ -168,7 +168,7 @@ export default class Tutorial extends Component {
                   popupManager.open(
                     <WorkspaceParameter initial_page={2} />,
                     true,
-                    'workspace_parameters'
+                    'workspace_parameters',
                   );
                 },
               },

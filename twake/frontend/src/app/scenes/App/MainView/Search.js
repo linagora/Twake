@@ -33,7 +33,7 @@ export default class MainView extends Component {
         placeholder={Languages.t(
           'scenes.app.mainview.quick_search_placeholder',
           [],
-          'Recherche rapide'
+          'Recherche rapide',
         )}
         small
         icon="search"

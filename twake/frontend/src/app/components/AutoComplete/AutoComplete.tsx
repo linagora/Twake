@@ -36,6 +36,7 @@ type Props = {
   onKeyUp?: any;
   onKeyDown?: any;
   onKeyPress?: any;
+  onPaste?: any;
   onFocusChange?: any;
   big?: boolean;
   small?: boolean;
@@ -317,6 +318,7 @@ export default class AutoComplete extends Component<Props, State> {
               onKeyUp={this.props.onKeyUp}
               onKeyDown={this.props.onKeyDown}
               onKeyPress={this.props.onKeyPress}
+              onPaste={this.props.onPaste}
               onFocus={() => {
                 if (this.props.onFocusChange) {
                   this.props.onFocusChange(true);
@@ -344,6 +346,7 @@ export default class AutoComplete extends Component<Props, State> {
               onKeyUp={this.props.onKeyUp}
               onKeyDown={this.props.onKeyDown}
               onKeyPress={this.props.onKeyPress}
+              onPaste={this.props.onPaste}
               onFocus={() => {
                 if (this.props.onFocusChange) {
                   this.props.onFocusChange(true);

@@ -95,7 +95,7 @@ class Languages extends Observable {
       Api.post(
         'users/account/language',
         { language: language, sentByLanguageService: true },
-        function (res) {}
+        function (res) {},
       );
     }
   }

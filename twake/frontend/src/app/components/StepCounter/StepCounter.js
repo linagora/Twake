@@ -20,7 +20,7 @@ export default class StepCounter extends React.Component {
           key={'step-' + i}
           className={'step ' + (i <= this.props.current - 1 ? 'setSelected' : '')}
           style={{ flex: 1 / this.props.total }}
-        />
+        />,
       );
     }
     return ret;

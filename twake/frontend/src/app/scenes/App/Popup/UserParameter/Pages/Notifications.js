@@ -34,7 +34,7 @@ export default class Notifications extends Component {
             {Languages.t(
               'scenes.app.popup.userparameter.pages.frequency_notif_subtitle',
               [],
-              'Fréquence des notifications'
+              'Fréquence des notifications',
             )}
           </div>
 
@@ -43,7 +43,7 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.keywords_notif_description',
               [],
-              'Ne recevez que des notifications correspondant à certains mots clés.'
+              'Ne recevez que des notifications correspondant à certains mots clés.',
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -61,13 +61,13 @@ export default class Notifications extends Component {
                   <div className="text bottom-margin">
                     {this.state.i18n.t(
                       'scenes.apps.account.notifications.keywords_activated_text',
-                      currentUserService.get().username
+                      currentUserService.get().username,
                     )}
                   </div>
                   <AutoHeight
                     value={NotificationParameters.preferences.keywords}
                     placeholder={this.state.i18n.t(
-                      'scenes.apps.account.notifications.keywords_placeholder'
+                      'scenes.apps.account.notifications.keywords_placeholder',
                     )}
                     className="bottom-margin"
                     onChange={evt => {
@@ -95,12 +95,12 @@ export default class Notifications extends Component {
             label={Languages.t(
               'scenes.app.popup.userparameter.pages.no_night_disturbing_label',
               [],
-              'Ne pas déranger la nuit'
+              'Ne pas déranger la nuit',
             )}
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description',
               [],
-              'Choisissez une période pendant laquelle vous ne recevez pas de notifications.'
+              'Choisissez une période pendant laquelle vous ne recevez pas de notifications.',
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -114,14 +114,14 @@ export default class Notifications extends Component {
                     NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
-                      -new Date().getTimezoneOffset() / 60
+                      -new Date().getTimezoneOffset() / 60,
                     )[0]
                   }
                   onChange={evt => {
                     NotificationParameters.preferences.dont_disturb_between = NotificationParameters.transform_period(
                       evt.target.value,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
-                      new Date().getTimezoneOffset() / 60
+                      new Date().getTimezoneOffset() / 60,
                     )[0];
                     NotificationParameters.notify();
                   }}
@@ -145,14 +145,14 @@ export default class Notifications extends Component {
                     NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       this.state.notifications_parameters.preferences.dont_disturb_and,
-                      -new Date().getTimezoneOffset() / 60
+                      -new Date().getTimezoneOffset() / 60,
                     )[1]
                   }
                   onChange={evt => {
                     NotificationParameters.preferences.dont_disturb_and = NotificationParameters.transform_period(
                       this.state.notifications_parameters.preferences.dont_disturb_between,
                       evt.target.value,
-                      new Date().getTimezoneOffset() / 60
+                      new Date().getTimezoneOffset() / 60,
                     )[1];
                     NotificationParameters.notify();
                   }}
@@ -186,7 +186,7 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description',
               [],
-              'Configurez la fréquence des notifications mobile.'
+              'Configurez la fréquence des notifications mobile.',
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -204,7 +204,7 @@ export default class Notifications extends Component {
               <Radio
                 small
                 label={this.state.i18n.t(
-                  'scenes.apps.account.notifications.devices_option_inactive'
+                  'scenes.apps.account.notifications.devices_option_inactive',
                 )}
                 value={this.state.notifications_parameters.preferences.devices == 1}
                 onChange={checked => {
@@ -238,7 +238,7 @@ export default class Notifications extends Component {
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description',
               [],
-              'Configurez la fréquence des notifications mail.'
+              'Configurez la fréquence des notifications mail.',
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
@@ -293,12 +293,12 @@ export default class Notifications extends Component {
             label={Languages.t(
               'scenes.app.popup.userparameter.pages.notif_content_label',
               [],
-              'Contenu des notifications'
+              'Contenu des notifications',
             )}
             description={Languages.t(
               'scenes.app.popup.userparameter.pages.notif_content_description',
               [],
-              'Masquer le contenu des notifications mobile.'
+              'Masquer le contenu des notifications mobile.',
             )}
           >
             <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>

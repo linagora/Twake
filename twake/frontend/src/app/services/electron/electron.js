@@ -7,7 +7,7 @@ class Electron {
         if (e.which === 123) {
           Globals.window.electron.remote.getCurrentWindow().toggleDevTools();
         } else if (e.which === 116) {
-          location.reload();
+          Globals.window.location.reload();
         }
       });
     }

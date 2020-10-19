@@ -26,7 +26,7 @@ export default class UserListManager extends React.Component {
     this.updateStateFromProps(props, true);
   }
   componentDidMount() {
-    this.setState({ editing: props.autoFocus });
+    this.setState({ editing: this.props.autoFocus });
   }
   updateStateFromProps(props, force, nextState) {
     var anti_duplicates = [];

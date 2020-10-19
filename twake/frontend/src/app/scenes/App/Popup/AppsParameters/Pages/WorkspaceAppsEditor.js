@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
@@ -65,7 +65,7 @@ export default class WorkspaceAppsEditor extends Component {
           text: Languages.t(
             'scenes.app.popup.appsparameters.pages.app_update',
             [this.state.application.name, this.state.application.install_count || 0],
-            "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)"
+            "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
           ),
         },
       );

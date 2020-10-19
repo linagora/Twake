@@ -4,7 +4,7 @@ import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
-import Emojione from 'components/Emojione/Emojione.js';
+import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
@@ -14,6 +14,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 type Props = {
   onResize?: (evt: any) => void;
   onEscape?: (evt: any) => void;
+  onPaste?: (evt: any) => any;
   onFocus?: () => void;
   autocompleteRef?: (node: any) => void;
   onEditLastMessage?: () => void;
@@ -195,6 +196,7 @@ export default (props: Props) => {
       }}
       onKeyPress={(evt: any) => onKeyPress(evt)}
       onKeyUp={(evt: any) => onKeyUp(evt)}
+      onPaste={props.onPaste}
       position={'top'}
       onEscape={props.onEscape}
       onFocusChange={(status: boolean) => {

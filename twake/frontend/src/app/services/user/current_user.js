@@ -9,6 +9,7 @@ import Number from 'services/utils/Numbers.js';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import Languages from 'services/languages/languages.js';
+import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
 
@@ -42,7 +43,7 @@ class CurrentUser extends Observable {
             ConfiguratorsManager.closeConfigurator(data.application);
           }
         }
-      }
+      },
     );
   }
 
@@ -66,7 +67,7 @@ class CurrentUser extends Observable {
 
   updateTutorialStatus(key, set_false) {
     var user = this.get();
-    if(!user){
+    if (!user) {
       return;
     }
     if (!user.tutorial_status || user.tutorial_status.length == 0) {
@@ -105,7 +106,7 @@ class CurrentUser extends Observable {
     setTimeout(() => {
       var data = {
         preferences: JSON.parse(
-          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences)
+          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences),
         ),
       };
       var update = {
@@ -231,7 +232,7 @@ class CurrentUser extends Observable {
           text: Languages.t(
             'services.user.update_password_alert',
             [],
-            'Votre mot de passe a été mis à jour.'
+            'Votre mot de passe a été mis à jour.',
           ),
         });
       } else {

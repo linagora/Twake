@@ -330,7 +330,7 @@ export default class CurrentUser extends Component {
           'Paramètres de notification',
         ),
         onClick: () => {
-          popupManager.open(<UserParameter initial_page={3} />);
+          popupManager.open(<UserParameter defaultPage={3} />, true, true);
         },
       },
       {

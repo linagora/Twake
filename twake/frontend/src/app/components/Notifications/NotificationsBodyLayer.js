@@ -59,14 +59,14 @@ export default class NotificationsBodyLayer extends React.Component {
               >
                 <div className="title">
                   {PseudoMarkdownCompiler.compileToSimpleHTML(
-                    PseudoMarkdownCompiler.compileToJSON(n.title)
+                    PseudoMarkdownCompiler.compileToJSON(n.title),
                   )}
                 </div>
                 <div className="text markdown">
                   {PseudoMarkdownCompiler.compileToSimpleHTML(
                     PseudoMarkdownCompiler.compileToJSON(
-                      (n.text || '').substr(0, 120) + ((n.text || '').length > 120 ? '...' : '')
-                    )
+                      (n.text || '').substr(0, 120) + ((n.text || '').length > 120 ? '...' : ''),
+                    ),
                   )}
                 </div>
               </div>

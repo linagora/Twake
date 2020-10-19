@@ -41,7 +41,7 @@ export default class Footer extends Component {
             PopupManager.open(
               <WorkspaceParameter initial_page={5} />,
               true,
-              'workspace_parameters'
+              'workspace_parameters',
             );
           }
         }}

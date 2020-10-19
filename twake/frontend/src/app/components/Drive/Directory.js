@@ -35,7 +35,7 @@ export default class Directory extends DriveElement {
               {Languages.t(
                 'components.drive.navigators.directory_not_found',
                 [],
-                'Directory not found.'
+                'Directory not found.',
               )}
             </span>
           )}
