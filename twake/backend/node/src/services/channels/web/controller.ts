@@ -1,18 +1,19 @@
-import fastify from "fastify";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { CreateChannelBody } from "./types";
 
 export default class ChannelController {
-  constructor(private service: ChannelServiceAPI) {}
+  constructor(private service: ChannelServiceAPI<Channel>) {}
 
   async create(channel: CreateChannelBody): Promise<Channel> {
     const entity = new Channel();
+    // TODO: Create the Channel entity from the CreateChannelBody
+    // The CreateChannelBody is already validated by the web framework
     entity.name = channel.name;
 
     const result = await this.service.create(entity);
 
-    return result;
+    return result.entity;
   }
 
   async getChannels(): Promise<Channel[]> {
@@ -20,11 +21,12 @@ export default class ChannelController {
   }
 
   async getChannel(id: string): Promise<Channel | void> {
-    return await this.service.getById(id);
+    return await this.service.get(id);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async remove(id: string): Promise<void> {
-    throw new Error("Not implemented");
+  async remove(id: string): Promise<boolean> {
+    const deleteResult = await this.service.delete(id);
+
+    return deleteResult.deleted;
   }
 }

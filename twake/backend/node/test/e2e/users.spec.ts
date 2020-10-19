@@ -7,7 +7,7 @@ describe("The /users API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth"]
+      services: ["websocket", "webserver", "user", "auth"]
     });
   });
 
