@@ -1,4 +1,5 @@
-import { PathResolver } from "..";
+import { PathResolver, getPath } from "..";
+import { CreateResult } from "../../api/crud-service";
 import { eventBus } from "../../realtime";
 
 export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecorator {
@@ -8,18 +9,15 @@ export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecora
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     descriptor.value = async function(...args: any[]) {
-      const result = await originalMethod.apply(this, args);
-      let computedPath;
+      const result: CreateResult<T> = await originalMethod.apply(this, args);
 
-      if (typeof path === "function") {
-        computedPath = path(result);
-      } else {
-        computedPath = path;
+      if (!(result instanceof CreateResult)) {
+        return result;
       }
 
       eventBus.emit("entity:created", {
-        path: computedPath,
-        entity: args[0],
+        path: getPath(path, result),
+        entity: result.entity,
         result
       });
 

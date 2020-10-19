@@ -1,4 +1,5 @@
-import { PathResolver } from "..";
+import { PathResolver, getPath } from "..";
+import { DeleteResult } from "../../api/crud-service";
 import { eventBus } from "../../realtime";
 
 export function RealtimeDeleted<T>(path: string | PathResolver<T>): MethodDecorator {
@@ -8,20 +9,17 @@ export function RealtimeDeleted<T>(path: string | PathResolver<T>): MethodDecora
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     descriptor.value = async function(...args: any[]) {
-      const result = await originalMethod.apply(this, args);
-      let computedPath;
+      const result: DeleteResult<T> = await originalMethod.apply(this, args);
 
-      if (typeof path === "function") {
-        computedPath = path(args[0]);
-      } else {
-        computedPath = path;
+      if (!(result instanceof DeleteResult)) {
+        return result;
       }
 
       // check if resource has been deleted from result
       // if yes then send event
-      eventBus.emit("entity:deleted", {
-        path: computedPath,
-        entity: args[0],
+      result.deleted && eventBus.emit("entity:deleted", {
+        path: getPath(path, result),
+        entity: result.entity,
         result
       });
 
