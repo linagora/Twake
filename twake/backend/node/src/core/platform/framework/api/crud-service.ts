@@ -32,6 +32,8 @@ export class DeleteResult<Entity> extends EntityTarget<Entity>  {
 
 export declare type EntityId = string | number;
 
+export declare type EntityOperationResult<Entity> = CreateResult<Entity> | UpdateResult<Entity> | DeleteResult<Entity>;
+
 export interface CRUDService<Entity> {
   create(item: Entity): Promise<CreateResult<Entity>>;
   get(id: EntityId): Promise<Entity>;

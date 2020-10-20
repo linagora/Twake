@@ -19,15 +19,15 @@ export default class RealtimeManager {
       console.log("User is disconnected", user);
     });
 
-    eventBus.on("entity:created", (event) => {
+    eventBus.subscribe("entity:created", event => {
       console.log("ENTITY CREATED", event);
     });
 
-    eventBus.on("entity:updated", (event) => {
+    eventBus.subscribe("entity:updated", (event) => {
       console.log("ENTITY UPDATED", event);
     });
 
-    eventBus.on("entity:deleted", (event) => {
+    eventBus.subscribe("entity:deleted", (event) => {
       console.log("ENTITY DELETED", event);
     });
   }
