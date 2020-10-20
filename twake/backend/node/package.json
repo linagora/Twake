@@ -19,7 +19,8 @@
     "watch-node": "nodemon dist/server.js",
     "watch-test": "npm run test -- --watchAll",
     "watch-test-unit": "npm run test-unit -- --watchAll",
-    "watch-ts": "tsc -w"
+    "watch-ts": "tsc -w",
+    "kill": "kill $(lsof -t -i:3000) | exit 0"
   },
   "repository": {
     "type": "git",
