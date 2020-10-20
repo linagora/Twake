@@ -2,13 +2,16 @@ import socketIO from "socket.io";
 import SocketIORedis from "socket.io-redis";
 import socketIOJWT from "socketio-jwt";
 import WebSocketAPI from "../provider";
-import { WebSocketServiceConfiguration } from "../types";
+import { WebSocket, WebSocketServiceConfiguration, WebSocketUser } from "../types";
+import { EventEmitter } from "events";
+import { User } from "../../../services/types";
 
-export class WebSocketService implements WebSocketAPI {
+export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";
   private io: socketIO.Server;
 
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
+    super();
     this.io = socketIO(serviceConfiguration.server, serviceConfiguration.options);
 
     if (serviceConfiguration.adapters?.types?.includes("redis")) {
@@ -20,13 +23,28 @@ export class WebSocketService implements WebSocketAPI {
         secret: serviceConfiguration.auth.secret,
         timeout: 15000
       }))
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .on("authenticated", (socket: any) => {
-        console.log(`User is authenticated! ${socket.decoded_token}`);
+      .on("authenticated", (socket: WebSocket) => {
+        const user = this.getUser(socket);
+
+        this.emit("user:connected", user);
+
+        socket.on("disconnect", () => this.emit("user:disconnected", user));
       });
+  }
+
+  getUser(socket: WebSocket): WebSocketUser {
+    return {
+      _id: socket.decoded_token._id,
+      token: socket.decoded_token
+    };
   }
 
   getIo(): socketIO.Server {
     return this.io;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isConnected(user: User): boolean {
+    return false;
   }
 }

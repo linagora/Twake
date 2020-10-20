@@ -190,6 +190,65 @@ interface AdaptersConfiguration {
 }
 ```
 
+### Realtime CRUD Services
+
+The framework provides simple way to create CRUD Services which will notify clients using Websockets by following some conventions:
+
+1. The service must implement the `CRUDService` generic interface
+2. In order to push notification to clients, Typescript decorators must be added on methods (Create, Update, Delete methods)
+
+For example, let's say that we want to implement a CRUD Service for `messages`:
+
+```js
+import { CRUDService, CreateResult, DeleteResult, UpdateResult, EntityId } from "@/core/platform/framework/api/crud-service";
+
+class Message {
+  text: string;
+  createdAt: Date;
+  author: string;
+}
+
+class MessageService implements CRUDService<Message> {
+  async create(item: Message): Promise<CreateResult<Message>> {
+    // save the message then return a CreateResult instance
+  }
+
+  async get(id: EntityId): Promise<Message> {
+    // get the message from its ID and return it
+  }
+
+  async update(id: EntityId, item: Message): Promise<UpdateResult<Message>> {
+    // update the message with the given id, patch it with `item` values
+    // then return an instance of UpdateResult
+  }
+
+  async delete(id: EntityId): Promise<DeleteResult<Message>> {
+    // delete the message from its id then return a DeleteResult instance
+  }
+
+  async list(): Promise<Message[]> {
+    // get a list of messages
+  }
+}
+```
+
+By implementing the CRUD service following the API, we can now add realtime message to clients connected to Websocket on a selected collection of CRUD operations. For example, if we want to just notify when a `message` is created, we just have to add the right decorator on the `create` method like:
+
+```js
+import { RealtimeCreated } from "@/core/platform/framework/decorators";
+
+// top and bottom code removed for clarity
+class MessageService implements CRUDService<Message> {
+  @RealtimeCreated<Message>("/messages")
+  async create(item: Message): Promise<CreateResult<Message>> {
+    // save the message then return a CreateResult instance
+  }
+  // ...
+}
+```
+
+The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients.
+
 ### ORM
 
 We use [TypeORM](https://typeorm.io/) as ORM for all the services of the Twake backend. There are several guidelines to follow in order to manage entities and listeners as described below.

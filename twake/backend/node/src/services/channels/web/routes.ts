@@ -5,7 +5,7 @@ import ChannelController from "./controller";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 
-const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
+const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (fastify: FastifyInstance, options, next) => {
   const controller = new ChannelController(options.service);
   const createOptions: RouteShorthandOptions = { schema: createChannelSchema };
   const getOptions: RouteShorthandOptions = { schema: getChannelSchema };
@@ -34,6 +34,12 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     const channel = await controller.create(request.body);
 
     reply.status(201).send(channel);
+  });
+
+  fastify.delete<{ Params: ChannelParams }>("/:id", async (request, reply) => {
+    await controller.remove(request.params.id);
+
+    reply.status(204).send();
   });
 
   next();
