@@ -1,18 +1,24 @@
 import CollectionStorage from '../CollectionStorage';
 
-test('Mongo collection upsert and remove', async () => {
+test('Mongo collection upsert', async () => {
   const listId = 10;
   expect((await CollectionStorage.find('lists/' + listId + '/tasks')).length).toBe(0);
 
   await CollectionStorage.upsert('lists/' + listId + '/tasks', { id: '1', content: 'Hello' });
   expect((await CollectionStorage.find('lists/' + listId + '/tasks')).length).toBe(1);
   expect((await CollectionStorage.findOne('lists/' + listId + '/tasks')).id).toBe('1');
-
-  await CollectionStorage.remove('lists/' + listId + '/tasks', { id: '1' });
-  expect((await CollectionStorage.find('lists/' + listId + '/tasks')).length).toBe(0);
 });
 
-test('Mongo collection update the id', async () => {
+test('Mongo collection remove', async () => {
+  const listId = 11;
+  await CollectionStorage.upsert('lists/' + listId + '/tasks', { id: '1', content: 'Hello' });
+  await CollectionStorage.upsert('lists/' + listId + '/tasks', { id: '2', content: 'Hello2' });
+  await CollectionStorage.remove('lists/' + listId + '/tasks', { id: '1' });
+
+  expect((await CollectionStorage.find('lists/' + listId + '/tasks')).length).toBe(1);
+});
+
+test('Mongo collection update the id field', async () => {
   const listId = 20;
   const task = await CollectionStorage.upsert('lists/' + listId + '/tasks', {
     id: '1',
@@ -85,7 +91,6 @@ test('Mongo collection finds', async () => {
     category: 'other',
   });
 
-  //Test finds
   expect((await CollectionStorage.find('lists/' + listIdA + '/tasks', { id: '1' })).length).toBe(1);
   expect(
     (await CollectionStorage.find('lists/' + listIdA + '/tasks', { category: 'sport' })).length,
@@ -102,13 +107,28 @@ test('Mongo collection finds', async () => {
     (await CollectionStorage.find('lists/' + listIdB + '/tasks', { category: 'work', id: '1' }))
       .length,
   ).toBe(0);
+});
 
-  //Test findOne
+test('Mongo collection findOne', async () => {
+  const listId = 50;
+  await CollectionStorage.upsert('lists/' + listId + '/tasks', {
+    id: '1',
+    category: 'sport',
+  });
+  await CollectionStorage.upsert('lists/' + listId + '/tasks', {
+    id: '2',
+    category: 'work',
+  });
+  await CollectionStorage.upsert('lists/' + listId + '/tasks', {
+    id: '3',
+    category: 'other',
+  });
+
   expect(
-    (await CollectionStorage.findOne('lists/' + listIdB + '/tasks', { category: 'work', id: '2' }))
+    (await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', id: '2' }))
       ?.category,
   ).toBe('work');
   expect(
-    await CollectionStorage.findOne('lists/' + listIdB + '/tasks', { category: 'work', id: '1' }),
+    await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', id: '1' }),
   ).toBe(undefined);
 });

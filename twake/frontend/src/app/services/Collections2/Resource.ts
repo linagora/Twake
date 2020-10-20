@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /**
  * This represent a Resource.
  * Collections contain Resources.
@@ -12,12 +14,7 @@ export default class Resource<T> {
   }
 
   private genId() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return 'tmp:' + s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    return 'tmp:' + uuidv4();
   }
 
   public get id(): string {

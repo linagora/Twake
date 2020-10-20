@@ -7,14 +7,9 @@ import Resource from './Resource';
  * Each action done on this Collection will trigger calls to backend.
  */
 export default class Collection<G extends Resource<any>> {
-  private type: new (data: any) => G;
-  private path: string = '';
   private resources: { [id: string]: G } = {};
 
-  constructor(path: string, type: new (data: any) => G) {
-    this.path = path;
-    this.type = type;
-  }
+  constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
   public insert(item: G): Promise<G> {
     return this.upsert(item);
@@ -24,48 +19,33 @@ export default class Collection<G extends Resource<any>> {
     return this.upsert(item);
   }
 
-  public upsert(item: G): Promise<G> {
-    return CollectionStorage.upsert(this.path, item.data).then(
-      mongoItem =>
-        new Promise(resolve => {
-          this.updateLocalResource(mongoItem, item);
-          resolve(item ? this.resources[mongoItem.id] : item);
-        }),
-    );
+  public async upsert(item: G): Promise<G> {
+    const mongoItem = await CollectionStorage.upsert(this.path, item.data);
+    this.updateLocalResource(mongoItem, item);
+    return item ? this.resources[mongoItem.id] : item;
   }
 
-  public remove(filter: any): Promise<any> {
-    return CollectionStorage.remove(this.path, filter).then(() => {
-      return new Promise(resolve => {
-        this.removeLocalResource(filter.id);
-        resolve();
-      });
+  public async remove(filter: any): Promise<void> {
+    await CollectionStorage.remove(this.path, filter);
+    this.removeLocalResource(filter.id);
+    return;
+  }
+
+  public async find(filter?: any, options?: any): Promise<G[]> {
+    const mongoItems = await CollectionStorage.find(this.path, filter, options);
+    mongoItems.forEach(mongoItem => {
+      this.updateLocalResource(mongoItem);
     });
+    return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 
-  public find(filter?: any, options?: any): Promise<G[]> {
-    return CollectionStorage.find(this.path, filter, options).then(
-      mongoItems =>
-        new Promise(resolve => {
-          mongoItems.forEach(mongoItem => {
-            this.updateLocalResource(mongoItem);
-          });
-          resolve(mongoItems.map(mongoItem => this.resources[mongoItem.id]));
-        }),
-    );
-  }
-
-  public findOne(filter?: any, options?: any): Promise<G> {
+  public async findOne(filter?: any, options?: any): Promise<G> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
-    return CollectionStorage.findOne(this.path, filter, options).then(
-      mongoItem =>
-        new Promise(resolve => {
-          this.updateLocalResource(mongoItem);
-          resolve(mongoItem ? this.resources[mongoItem.id] : mongoItem);
-        }),
-    );
+    const mongoItem = await CollectionStorage.findOne(this.path, filter, options);
+    this.updateLocalResource(mongoItem);
+    return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 
   private updateLocalResource(mongoItem: any, item?: G) {

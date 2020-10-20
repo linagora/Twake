@@ -1,11 +1,25 @@
 import minimongo from 'minimongo';
 
+/**
+ * This class is the link between minimongo and our Collections.
+ * - It choose the right db to use
+ * - It abstract the minimongo internal _id and try to not duplicates objects with same id
+ */
 export default class CollectionStorage {
   static mongoDb: minimongo.MinimongoDb;
 
   static getMongoDb(): minimongo.MinimongoDb {
     if (!CollectionStorage.mongoDb) {
-      CollectionStorage.mongoDb = new minimongo.MemoryDb();
+      //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
+      minimongo.utils.autoselectLocalDb(
+        { namespace: 'twake' },
+        (db: any) => {
+          CollectionStorage.mongoDb = db;
+        },
+        () => {
+          CollectionStorage.mongoDb = new minimongo.MemoryDb();
+        },
+      );
     }
     return CollectionStorage.mongoDb;
   }
