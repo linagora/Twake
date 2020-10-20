@@ -1,11 +1,12 @@
 import { filter } from "rxjs/operators";
 import WebSocketAPI from "../../services/websocket/provider";
 import { TwakeContainer, TwakeServiceProvider, TwakeComponent, TwakeServiceState } from "./framework";
-import RealtimeManager from "./framework/realtime/manager";
+import { RealtimeService } from "./framework/realtime";
 import * as ComponentUtils from "./framework/utils/component-utils";
 
 export class TwakePlatform extends TwakeContainer {
-  private realtimeManager: RealtimeManager;
+  // TODO: As a technical service, this one must be started by the platform
+  private realtimeService: RealtimeService;
 
   constructor(protected options: TwakePlatformConfiguration) {
     super();
@@ -30,9 +31,12 @@ export class TwakePlatform extends TwakeContainer {
       started$.unsubscribe();
 
       // TODO: The websocket service MUST be a platform service
+      // TODO: This block will be removed as soon as technical platform services are up and running
       const ws: WebSocketAPI = this.getProvider<WebSocketAPI>("websocket");
+
       if (ws) {
-        this.realtimeManager = new RealtimeManager(ws);
+        this.realtimeService = new RealtimeService();
+        this.realtimeService.bind(ws);
       }
     });
   }

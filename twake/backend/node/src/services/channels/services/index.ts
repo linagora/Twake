@@ -9,14 +9,14 @@ export class ChannelService implements ChannelServiceAPI<Channel> {
 
   constructor(private orm: ORMServiceAPI) {}
 
-  @RealtimeCreated<Channel>((channel: Channel) => `/channels/${channel.id}`)
+  @RealtimeCreated<Channel>("/channels")
   async create(channel: Channel): Promise<CreateResult<Channel>> {
     const entity = await this.orm.manager.save(channel);
 
-    return {
-      entity,
-      raw: entity
-    };
+    const result = new CreateResult<Channel>();
+    result.entity = entity;
+
+    return result;
   }
 
   get(id: string): Promise<Channel> {

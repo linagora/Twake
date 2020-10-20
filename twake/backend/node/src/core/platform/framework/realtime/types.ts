@@ -8,6 +8,7 @@ export class RealtimeEntityEvent<Entity> {
 
 export class JoinRoomEvent {
   name: string;
+  token?: string;
 }
 
 export class LeaveRoomEvent {
