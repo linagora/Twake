@@ -5,3 +5,11 @@ export class RealtimeEntityEvent<Entity> {
   entity: Entity;
   result: EntityOperationResult<Entity>;
 }
+
+export class JoinRoomEvent {
+  name: string;
+}
+
+export class LeaveRoomEvent {
+  name: string;
+}

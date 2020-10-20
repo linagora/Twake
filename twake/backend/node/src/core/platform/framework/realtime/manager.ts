@@ -11,12 +11,12 @@ export default class RealtimeManager {
   }
 
   init(): void {
-    this.ws.on("user:connected", (user) => {
-      console.log("A new user is connected", user);
+    this.ws.onUserConnected(event => {
+      console.log("A new user is connected", event.user._id);
     });
 
-    this.ws.on("user:disconnected", (user) => {
-      console.log("User is disconnected", user);
+    this.ws.onUserDisconnected(event => {
+      console.log("User is disconnected", event.user._id);
     });
 
     eventBus.subscribe("entity:created", event => {

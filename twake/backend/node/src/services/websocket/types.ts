@@ -29,6 +29,12 @@ export interface WebSocket extends SocketIO.Socket {
   decoded_token: DecodedToken
 }
 
+export interface WebsocketUserEvent {
+  event: string;
+  socket: WebSocket;
+  user: WebSocketUser;
+}
+
 interface DecodedToken {
   _id: string;
 }
