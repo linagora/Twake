@@ -285,8 +285,12 @@ socket.on("disconnected", () => console.log("Disconnected"));
 #### Joining rooms
 
 CRUD operations on resources are pushing events in Socket.io rooms. In order to receive events, clients must subscribe to rooms by sending an `realtime:join` on an authenticated socket with the name of the room to join and with a valid JWT token like `{ name: "room name", token: "the jwt token for this room" }`: Users can not subscribe to arbitratry rooms, they have to be authorized to.
-If there is an error authenticated the join call (the token is not valid for example), the client will receive an `realtime:join:error` event.
 
+
+As a result, the client will receive events:
+
+- `realtime:join:success` when join is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:join:error` when join failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
 
 **Example**
 
@@ -304,15 +308,16 @@ socket.on("connect", () => {
       socket.emit("realtime:join", { name: "/channels", token: "twake" });
       socket.on("realtime:join:error", (message) => {
         // will fire when join does not provide a valid token
-        console.log("Error on realtime", message);
+        console.log("Error on join", message);
       });
 
-      // will only occur when a resource is created and
-      // if and only if the client joined the room
-      socket.on("realtime:resource:created", event => {
-        console.log("New resource has been created", event);
+      // will be fired on each successful join.
+      // As event based, this event is not linked only to the join above
+      // but to all joins. So you have to dig into the message to know which one
+      // is successful.
+      socket.on("realtime:join:success", (message) => {
+        console.log("Successfully joined room", message.name);
       });
-
     })
     .on("unauthorized", err => {
       console.log("Unauthorized", err);
@@ -326,6 +331,13 @@ socket.on("disconnected", () => console.log("Disconnected"));
 
 The client can leave the room by emitting a `realtime:leave` event with the name of the room given as `{ name: "the room to leave" }`.
 
+As a result, the client will receive events:
+
+- `realtime:leave:success` when leave is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:leave:error` when leave failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
+
+Note: Asking to leave a room which has not been joined will not fire any error.
+
 **Example**
 
 ```js
@@ -335,6 +347,19 @@ socket.on("connect", () => {
     .on("authenticated", () => {
       // leave the "/channels" room
       socket.emit("realtime:leave", { name: "/channels" });
+
+      socket.on("realtime:leave:error", (message) => {
+        // will fire when join does not provide a valid token
+        console.log("Error on leave", message);
+      });
+
+      // will be fired on each successful leave.
+      // As event based, this event is not linked only to the leave above
+      // but to all leaves. So you have to dig into the message to know which one
+      // is successful.
+      socket.on("realtime:leave:success", (message) => {
+        console.log("Successfully left room", message.name);
+      });
     });
 });
 ```
