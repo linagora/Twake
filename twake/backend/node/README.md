@@ -247,7 +247,151 @@ class MessageService implements CRUDService<Message> {
 }
 ```
 
-The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients.
+The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients as described below.
+
+### Websocket API
+
+Services annotated as described above automatically publish events to WebSockets. Under the hood, it uses Socket.IO rooms to send events to the right clients.
+
+#### Authentication
+
+- Client have to provide a valid JWT token to be able to connect and be authenticated by providing it as string in the `authenticate` event like `{ token: "the jwt token value" }`
+- If the JWT token is valid, the client will receive a `authenticated` event
+- If the JWT token is not valid or empty, the client will receive a `unauthorized` event
+
+**Example**
+
+```js
+const io = require("socket.io-client");
+
+// Get a JWT token from the Twake API first
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
+const socket = io.connect("http://localhost:3000", { path: "/ws" });
+
+socket.on("connect", () => {
+  socket
+    .emit("authenticate", { token })
+    .on("authenticated", () => {
+      console.log("User Authenticated");
+    })
+    .on("unauthorized", err => {
+      console.log("User is not authorized", err);
+    });
+});
+
+socket.on("disconnected", () => console.log("Disconnected"));
+```
+
+#### Joining rooms
+
+CRUD operations on resources are pushing events in Socket.io rooms. In order to receive events, clients must subscribe to rooms by sending an `realtime:join` on an authenticated socket with the name of the room to join and with a valid JWT token like `{ name: "room name", token: "the jwt token for this room" }`: Users can not subscribe to arbitratry rooms, they have to be authorized to.
+
+
+As a result, the client will receive events:
+
+- `realtime:join:success` when join is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:join:error` when join failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
+
+**Example**
+
+```js
+const io = require("socket.io-client");
+
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
+const socket = io.connect("http://localhost:3000", { path: "/ws" });
+
+socket.on("connect", () => {
+  socket
+    .emit("authenticate", { token })
+    .on("authenticated", () => {
+      // join the /channels room
+      socket.emit("realtime:join", { name: "/channels", token: "twake" });
+      socket.on("realtime:join:error", (message) => {
+        // will fire when join does not provide a valid token
+        console.log("Error on join", message);
+      });
+
+      // will be fired on each successful join.
+      // As event based, this event is not linked only to the join above
+      // but to all joins. So you have to dig into the message to know which one
+      // is successful.
+      socket.on("realtime:join:success", (message) => {
+        console.log("Successfully joined room", message.name);
+      });
+    })
+    .on("unauthorized", err => {
+      console.log("Unauthorized", err);
+    });
+});
+
+socket.on("disconnected", () => console.log("Disconnected"));
+```
+
+#### Leaving rooms
+
+The client can leave the room by emitting a `realtime:leave` event with the name of the room given as `{ name: "the room to leave" }`.
+
+As a result, the client will receive events:
+
+- `realtime:leave:success` when leave is succesful with data containing the name of the linked room like `{ name: "room" }`.
+- `realtime:leave:error` when leave failed with data containing the name of the linked room and the error details like `{ name: "room", error: "some error message" }`.
+
+Note: Asking to leave a room which has not been joined will not fire any error.
+
+**Example**
+
+```js
+socket.on("connect", () => {
+  socket
+    .emit("authenticate", { token })
+    .on("authenticated", () => {
+      // leave the "/channels" room
+      socket.emit("realtime:leave", { name: "/channels" });
+
+      socket.on("realtime:leave:error", (message) => {
+        // will fire when join does not provide a valid token
+        console.log("Error on leave", message);
+      });
+
+      // will be fired on each successful leave.
+      // As event based, this event is not linked only to the leave above
+      // but to all leaves. So you have to dig into the message to know which one
+      // is successful.
+      socket.on("realtime:leave:success", (message) => {
+        console.log("Successfully left room", message.name);
+      });
+    });
+});
+```
+
+#### Subscribe to resource events
+
+Once the given room is joined, the user will receive `realtime:resource:*` events with the resource linked to the event as data:
+  - `realtime:resource:created`: A resource has been created
+  - `realtime:resource:updated`: A resource has been updated
+  - `realtime:resource:deleted`: A resource has been deleted
+
+**Example:**
+
+```js
+socket.on("connect", () => {
+  socket
+    .emit("authenticate", { token })
+    .on("authenticated", () => {
+      // join the "/channels" room
+      socket.emit("realtime:join", { name: "/channels", token: "twake" });
+
+      // will only occur when a resource is created and
+      // if and only if the client joined the room
+      socket.on("realtime:resource:created", event => {
+        console.log("New resource has been created", event);
+      });
+    })
+    .on("unauthorized", err => {
+      console.log("Unauthorized", err);
+    });
+});
+```
 
 ### ORM
 

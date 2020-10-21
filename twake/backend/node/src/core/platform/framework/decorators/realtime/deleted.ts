@@ -1,6 +1,6 @@
 import { PathResolver, getPath } from "..";
 import { DeleteResult } from "../../api/crud-service";
-import { eventBus } from "../../realtime";
+import { eventBus, RealtimeEntityEvent } from "../../realtime";
 
 export function RealtimeDeleted<T>(path: string | PathResolver<T>): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -17,11 +17,11 @@ export function RealtimeDeleted<T>(path: string | PathResolver<T>): MethodDecora
 
       // check if resource has been deleted from result
       // if yes then send event
-      result.deleted && eventBus.emit("entity:deleted", {
+      result.deleted && eventBus.publish<T>("entity:deleted", {
         path: getPath(path, result),
         entity: result.entity,
         result
-      });
+      } as RealtimeEntityEvent<T>);
 
       return result;
     };

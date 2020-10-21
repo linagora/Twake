@@ -1,0 +1,21 @@
+@baseURL = http://localhost:3000/api
+
+# @name login
+GET {{baseURL}}/auth/login
+
+###
+
+@authToken = {{login.response.body.token}}
+GET {{baseURL}}/channels
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+POST {{baseURL}}/channels
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "My channel",
+  "creator": "111"
+}

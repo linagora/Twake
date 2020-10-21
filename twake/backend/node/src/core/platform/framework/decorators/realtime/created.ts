@@ -1,6 +1,7 @@
 import { PathResolver, getPath } from "..";
 import { CreateResult } from "../../api/crud-service";
-import { eventBus } from "../../realtime";
+import { eventBus, RealtimeEntityEvent } from "../../realtime";
+
 
 export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -15,11 +16,11 @@ export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecora
         return result;
       }
 
-      eventBus.emit("entity:created", {
+      eventBus.publish<T>("entity:created", {
         path: getPath(path, result),
         entity: result.entity,
         result
-      });
+      } as RealtimeEntityEvent<T> );
 
       return result;
     };
