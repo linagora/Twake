@@ -28,7 +28,7 @@ class Parameters extends \Common\Configuration
             ],
             "db" => [
                 "driver" => "pdo_cassandra",
-                "host" => "scylladb",
+                "host" => ["scylladb", "scylladb2"],
                 "port" => 9042,
                 "dbname" => "twake",
                 "user" => "root",
