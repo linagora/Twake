@@ -25,8 +25,8 @@ class Message extends Resource<MessageType> {
 }
 
 class MessageCollection extends Collection<Message> {
-  get(channelId: string) {
-    return super.get('/channel/' + channelId + '/message/', Message);
+  public static get(path: string): Collection<Message> {
+    return Collections.get(path, Message, () => new Messages(path, Message)) as Collection<Message>;
   }
 }
 

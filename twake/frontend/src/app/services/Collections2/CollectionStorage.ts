@@ -8,7 +8,7 @@ import minimongo from 'minimongo';
 export default class CollectionStorage {
   static mongoDb: minimongo.MinimongoDb;
 
-  static getMongoDb(): minimongo.MinimongoDb {
+  static async getMongoDb(): Promise<minimongo.MinimongoDb> {
     if (!CollectionStorage.mongoDb) {
       //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
       minimongo.utils.autoselectLocalDb(
@@ -24,45 +24,51 @@ export default class CollectionStorage {
     return CollectionStorage.mongoDb;
   }
 
-  static addCollection(path: string) {
-    if (!CollectionStorage.getMongoDb().collections[path]) {
-      CollectionStorage.getMongoDb().addCollection(path);
+  static async addCollection(path: string) {
+    if (!(await CollectionStorage.getMongoDb()).collections[path]) {
+      (await CollectionStorage.getMongoDb()).addCollection(path);
     }
   }
 
   static upsert(path: string, item: any): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (!item.id) {
         reject('Every resources must contain an id');
         return;
       }
-      CollectionStorage.addCollection(path);
+      await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, { id: item.id })
-        .then(mongoItems => {
+        .then(async mongoItems => {
           if (mongoItems.length === 1) {
             item._id = mongoItems[0]._id; //Make sure _id are not duplicated
           }
-          CollectionStorage.getMongoDb().collections[path].upsert(item, resolve, reject);
+          (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
         })
         .catch(reject);
     });
   }
 
   static remove(path: string, item: any): Promise<void> {
-    return new Promise((resolve, reject) => {
-      CollectionStorage.addCollection(path);
+    return new Promise(async (resolve, reject) => {
+      await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, item)
-        .then(mongoItems => {
+        .then(async mongoItems => {
           if (mongoItems.length === 1) {
             const mongoItem = mongoItems[0];
             let mongoId = '';
             if (mongoItem) {
               mongoId = mongoItem._id;
             }
-            CollectionStorage.getMongoDb().collections[path].remove(mongoId, resolve, reject);
+            (await CollectionStorage.getMongoDb()).collections[path].remove(
+              mongoId,
+              resolve,
+              reject,
+            );
           } else if (mongoItems.length === 0) {
+            console.log('item not found', item);
             resolve();
           } else {
+            console.log(mongoItems);
             reject(
               'The remove filter was not precise enough, cannot remove multiple elements at once.',
             );
@@ -73,17 +79,17 @@ export default class CollectionStorage {
   }
 
   static find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {
-    CollectionStorage.addCollection(path);
-    return new Promise((resolve, reject) => {
-      CollectionStorage.getMongoDb()
-        .collections[path].find(filters, options)
+    return new Promise(async (resolve, reject) => {
+      await CollectionStorage.addCollection(path);
+      (await CollectionStorage.getMongoDb()).collections[path]
+        .find(filters, options)
         .fetch(resolve, reject);
     });
   }
 
   static findOne(path: string, filters: any = {}, options: any = {}): Promise<any> {
-    CollectionStorage.addCollection(path);
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, filters, options)
         .then((items: any[]) => {
           resolve(items[0]);

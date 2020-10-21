@@ -1,4 +1,6 @@
 import CollectionStorage from './CollectionStorage';
+import Collections from './Collections';
+import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 
 /**
@@ -13,32 +15,69 @@ type GeneralOptions = {
 
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
+  protected eventEmitter: EventEmitter = new EventEmitter(null);
 
   constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
-  public insert(item: G, options?: GeneralOptions): Promise<G> {
-    return this.upsert(item);
+  public attachEventEmitter = this.eventEmitter.attachEventEmitter;
+
+  /**
+   * Share information through websocket without asking backend
+   */
+  public async share(eventName: string, object: any, options?: GeneralOptions): Promise<void> {
+    return;
   }
 
-  public update(item: G, options?: GeneralOptions): Promise<G> {
-    return this.upsert(item);
+  /**
+   * Run an action on the backend (POST on `${this.path}/actionName`)
+   */
+  public async action(actionName: string, object: any, options?: GeneralOptions): Promise<any> {
+    return {};
   }
 
+  /**
+   * Insert document (this will call backend)
+   */
+  public insert = this.upsert;
+
+  /**
+   * Update document (this will call backend)
+   */
+  public update = this.upsert;
+
+  /**
+   * Upsert document (this will call backend)
+   */
   public async upsert(item: G, options?: GeneralOptions): Promise<G> {
     const mongoItem = await CollectionStorage.upsert(this.path, {
       ...item.data,
       _state: item.state,
     });
     this.updateLocalResource(mongoItem, item);
+    this.eventEmitter.notify();
+
     return item ? this.resources[mongoItem.id] : item;
   }
 
-  public async remove(filter: any, options?: GeneralOptions): Promise<void> {
-    await CollectionStorage.remove(this.path, filter);
-    this.removeLocalResource(filter.id);
+  /**
+   * Remove document (this will call backend)
+   */
+  public async remove(filter: G | any, options?: GeneralOptions): Promise<void> {
+    if (filter?.constructor?.name) {
+      filter = filter.data;
+    }
+    if (filter) {
+      await CollectionStorage.remove(this.path, filter);
+      this.removeLocalResource(filter.id);
+      this.eventEmitter.notify();
+    }
     return;
   }
 
+  /**
+   * Find documents according to a filter and some option (sorting etc)
+   * This will call backend if we ask for more items than existing in frontend.
+   */
   public async find(filter?: any, options?: GeneralOptions): Promise<G[]> {
     const mongoItems = await CollectionStorage.find(this.path, filter, options);
     mongoItems.forEach(mongoItem => {
@@ -47,6 +86,10 @@ export default class Collection<G extends Resource<any>> {
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 
+  /**
+   * Find a specific document
+   * This will call backend if we don't find this document in frontend.
+   */
   public async findOne(filter?: any, options?: GeneralOptions): Promise<G> {
     if (typeof filter === 'string') {
       filter = { id: filter };
