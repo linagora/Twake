@@ -17,7 +17,7 @@ export default class RoomManager implements RealtimeRoomManager {
         if (canJoin) {
           this.join(event.socket, joinEvent.name, event.user);
         } else {
-          this.sendError("realtime:join", event.socket, new Error(`User is not authorized to join room ${joinEvent.name}`));
+          this.sendError("join", event.socket, new Error(`User is not authorized to join room ${joinEvent.name}`));
         }
       });
 
@@ -54,18 +54,16 @@ export default class RoomManager implements RealtimeRoomManager {
     return joinEvent.token && joinEvent.token === "twake";
   }
 
-  sendError(event: string, websocket: WebSocket, err: Error): void {
-    websocket.emit(`${event}:error`, { message: err.message });
-  }
-
   join(websocket: WebSocket, room: string, user: WebSocketUser): void {
     logger.info(`User ${user._id} is joining room ${room}`);
     websocket.join(room, err => {
       if (err) {
         logger.error(`Error while joining room ${room}`, err);
+        this.sendError("join", websocket, new Error(`Error while joining room ${room}`));
         return;
       }
 
+      this.sendSuccess("join", websocket, { name: room });
       logger.info(`User ${user._id} joined room ${room}`);
     });
   }
@@ -76,9 +74,11 @@ export default class RoomManager implements RealtimeRoomManager {
     websocket.leave(room, (err: any) => {
       if (err) {
         logger.error(`Error while leaving room ${room}`, err);
+        this.sendError("leave", websocket, new Error(`Error while leaving room ${room}`));
         return;
       }
 
+      this.sendSuccess("leave", websocket, { name: room });
       logger.info(`User ${user._id} left room ${room}`);
     });
   }
@@ -86,5 +86,14 @@ export default class RoomManager implements RealtimeRoomManager {
   leaveAll(websocket: WebSocket, user: WebSocketUser): void {
     logger.info(`Leaving rooms for user ${user._id}`);
     websocket.leaveAll();
+  }
+
+  sendError(event: string, websocket: WebSocket, err: Error): void {
+    // TODO: Error need to extend Error and add the room name in the send object
+    websocket.emit(`realtime:${event}:error`, { message: err.message });
+  }
+
+  sendSuccess(event: string, websocket: WebSocket, message: {name: string}): void {
+    websocket.emit(`realtime:${event}:success`, message);
   }
 }

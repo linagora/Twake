@@ -22,7 +22,7 @@ describe("The Websocket authentication", () => {
     socket = null;
   });
 
-  describe.only("JWT-based Authenticating", () => {
+  describe("JWT-based Authenticating", () => {
     it("should not be able to connect without a JWT token", (done) => {
       socket.on("connect", () => {
         socket
