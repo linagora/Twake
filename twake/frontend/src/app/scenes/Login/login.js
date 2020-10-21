@@ -33,10 +33,6 @@ export default class Login extends Component {
     Languages.removeListener(this);
   }
   render() {
-    // if(this.state.login.state== "signin"){
-    //     return (<Signin />)
-    // }
-    // return(<WelcomePage/>)
     return (
       <div className={'loginPage ' + (this.props.willGoToApp ? 'willGoToApp ' : '')}>
         {this.state.login.server_infos_loaded && !this.state.login.server_infos.branding.name && (

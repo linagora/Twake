@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Globals from 'services/Globals.js';
 
 class WindowState {
@@ -99,7 +98,6 @@ class WindowState {
             .join('&');
       }
     }
-
     Globals.window.history.pushState({ pageTitle: document.title }, '', url);
   }
 

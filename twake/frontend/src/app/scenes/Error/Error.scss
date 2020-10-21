@@ -1,0 +1,21 @@
+.full_page_error {
+  background: var(--primary);
+  width: 100%;
+  height: 100%;
+
+  .error_message {
+    position: absolute;
+    margin: auto;
+    z-index: 1;
+    width: 380px;
+    height: 400px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--white);
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 0 20px 0 rgba(0, 0, 0, 0.15);
+    border-radius: var(--default-border-radius);
+    padding: 30px;
+  }
+}

@@ -4,11 +4,32 @@
 // import { Platform, NativeModules } from 'react-native';
 // var PushNotification = require('react-native-push-notification');
 // import { MixpanelInstance } from 'react-native-mixpanel';
+// const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
 import environment from 'environment/environment';
 import version from 'environment/version';
-// const mixpanel = new MixpanelInstance(window.mixpanel_id);
+import * as Sentry from '@sentry/browser';
 
+if (process.env.NODE_ENV === 'production' && window.sentry_dsn) {
+  Sentry.init({
+    dsn: window.sentry_dsn,
+  });
+}
+
+
+window.getBoundingClientRect = element => {
+  const rect = element.getBoundingClientRect();
+  return {
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height,
+    x: rect.x || rect.left,
+    y: rect.y || rect.top,
+  };
+};
 
 class Globals {
   constructor() {
@@ -92,8 +113,8 @@ class Globals {
       }
     }
 
-      // eslint-disable-next-line no-undef
-      if (typeof PushNotification != 'undefined') {
+    // eslint-disable-next-line no-undef
+    if (typeof PushNotification != 'undefined') {
       this.PushNotification = PushNotification; // eslint-disable-line no-undef
     }
 
@@ -203,8 +224,8 @@ class Globals {
   }
 
   localStorageGetItem(key, callback) {
-      // eslint-disable-next-line no-undef
-      if (typeof SyncStorage != 'undefined') {
+    // eslint-disable-next-line no-undef
+    if (typeof SyncStorage != 'undefined') {
       const data = SyncStorage.get(key); // eslint-disable-line no-undef
       if (callback) {
         callback(data);
@@ -243,8 +264,8 @@ class Globals {
   }
 
   getDefaultLanguage() {
-      // eslint-disable-next-line no-undef
-      if (typeof NativeModules != 'undefined') {
+    // eslint-disable-next-line no-undef
+    if (typeof NativeModules != 'undefined') {
       var locale = ((NativeModules.SettingsManager || {}).settings || {}).AppleLocale || 'en'; // eslint-disable-line no-undef
       if (!locale) {
         locale = (NativeModules.I18nManager || {}).localeIdentifier || 'en'; // eslint-disable-line no-undef
@@ -256,8 +277,8 @@ class Globals {
   }
 
   clearCookies() {
-      // eslint-disable-next-line no-undef
-      if (typeof Cookie != 'undefined') {
+    // eslint-disable-next-line no-undef
+    if (typeof Cookie != 'undefined') {
       Cookie.clear(); // eslint-disable-line no-undef
     }
   }

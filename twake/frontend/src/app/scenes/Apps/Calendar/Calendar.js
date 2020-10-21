@@ -28,7 +28,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Select from 'components/Select/Select.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import UnconfiguredTab from './UnconfiguredTab.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
