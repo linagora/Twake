@@ -14,6 +14,7 @@
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
     "test": "jest --forceExit --coverage --verbose --detectOpenHandles",
+    "test-e2e": "jest test/e2e --forceExit --coverage --verbose --detectOpenHandles",
     "test-unit": "jest test/unit --forceExit --coverage --verbose --detectOpenHandles",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "watch-node": "nodemon dist/server.js",

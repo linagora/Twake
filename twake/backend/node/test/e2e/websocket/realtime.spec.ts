@@ -24,13 +24,17 @@ describe("The Realtime API", () => {
   describe("Joining rooms", () => {
     it("should fail when token is not defined", async (done) => {
       const token = await platform.auth.getJWTToken();
+      const name = "testroom";
 
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token })
           .on("authenticated", () => {
-            socket.emit("realtime:join", { name: "test" });
-            socket.on("realtime:join:error", () => done());
+            socket.emit("realtime:join", { name });
+            socket.on("realtime:join:error", (event) => {
+              expect(event.name).toEqual(name);
+              done();
+            });
             socket.on("realtime:join:success", () => done(new Error("Should not occur")));
           })
           .on("unauthorized", () => {
@@ -41,14 +45,18 @@ describe("The Realtime API", () => {
 
     it("should fail when token is not valid", async (done) => {
       const token = await platform.auth.getJWTToken();
+      const name = "testroom";
       const roomToken = "invalid token";
 
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token })
           .on("authenticated", () => {
-            socket.emit("realtime:join", { name: "test", token: roomToken });
-            socket.on("realtime:join:error", () => done());
+            socket.emit("realtime:join", { name, token: roomToken });
+            socket.on("realtime:join:error", (event) => {
+              expect(event.name).toEqual(name);
+              done();
+            });
             socket.on("realtime:join:success", () => done(new Error("Should not occur")));
           })
           .on("unauthorized", () => {
@@ -84,14 +92,18 @@ describe("The Realtime API", () => {
   describe("Leaving rooms", () => {
     it("should not fail when room has not been joined first", async (done) => {
       const token = await platform.auth.getJWTToken();
+      const name = "roomtest";
 
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token })
           .on("authenticated", () => {
-            socket.emit("realtime:leave", { name: "test" });
+            socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", () => done());
+            socket.on("realtime:leave:success", (event) => {
+              expect(event.name).toEqual(name);
+              done();
+            });
           })
           .on("unauthorized", () => {
             done(new Error("Should not occur"));
@@ -102,15 +114,19 @@ describe("The Realtime API", () => {
     it("should send success when room has been joined first", async (done) => {
       const token = await platform.auth.getJWTToken();
       const roomToken = "twake";
+      const name = "roomtest";
 
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token })
           .on("authenticated", () => {
-            socket.emit("realtime:join", { name: "test", token: roomToken });
-            socket.emit("realtime:leave", { name: "test" });
+            socket.emit("realtime:join", { name, token: roomToken });
+            socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", () => done());
+            socket.on("realtime:leave:success", (event) => {
+              expect(event.name).toEqual(name);
+              done();
+            });
           })
           .on("unauthorized", () => {
             done(new Error("Should not occur"));

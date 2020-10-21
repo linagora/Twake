@@ -1,5 +1,5 @@
 import { logger } from "../../logger";
-import { JoinRoomEvent, LeaveRoomEvent } from "../types";
+import { JoinLeaveRoomError, JoinLeaveRoomSuccess, JoinRoomEvent, LeaveRoomEvent } from "../types";
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../../../services/websocket/types";
@@ -17,7 +17,10 @@ export default class RoomManager implements RealtimeRoomManager {
         if (canJoin) {
           this.join(event.socket, joinEvent.name, event.user);
         } else {
-          this.sendError("join", event.socket, new Error(`User is not authorized to join room ${joinEvent.name}`));
+          this.sendError("join", event.socket, {
+            name: joinEvent.name,
+            message: "User is not authorized to join room"
+          });
         }
       });
 
@@ -59,7 +62,10 @@ export default class RoomManager implements RealtimeRoomManager {
     websocket.join(room, err => {
       if (err) {
         logger.error(`Error while joining room ${room}`, err);
-        this.sendError("join", websocket, new Error(`Error while joining room ${room}`));
+        this.sendError("join", websocket, {
+          name: room,
+          message: "Error while joining room"
+         });
         return;
       }
 
@@ -71,10 +77,14 @@ export default class RoomManager implements RealtimeRoomManager {
   leave(websocket: WebSocket, room: string, user: WebSocketUser): void {
     logger.info(`User ${user._id} is leaving room ${room}`);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     websocket.leave(room, (err: any) => {
       if (err) {
         logger.error(`Error while leaving room ${room}`, err);
-        this.sendError("leave", websocket, new Error(`Error while leaving room ${room}`));
+        this.sendError("leave", websocket, {
+          name: room,
+          message: "Error while leaving room"
+         });
         return;
       }
 
@@ -88,12 +98,11 @@ export default class RoomManager implements RealtimeRoomManager {
     websocket.leaveAll();
   }
 
-  sendError(event: string, websocket: WebSocket, err: Error): void {
-    // TODO: Error need to extend Error and add the room name in the send object
-    websocket.emit(`realtime:${event}:error`, { message: err.message });
+  sendError(event: string, websocket: WebSocket, error: JoinLeaveRoomError): void {
+    websocket.emit(`realtime:${event}:error`, error);
   }
 
-  sendSuccess(event: string, websocket: WebSocket, message: {name: string}): void {
-    websocket.emit(`realtime:${event}:success`, message);
+  sendSuccess(event: string, websocket: WebSocket, success: JoinLeaveRoomSuccess): void {
+    websocket.emit(`realtime:${event}:success`, success);
   }
 }

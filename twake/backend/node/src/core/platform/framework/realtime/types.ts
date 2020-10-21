@@ -14,3 +14,14 @@ export class JoinRoomEvent {
 export class LeaveRoomEvent {
   name: string;
 }
+
+export interface JoinLeaveRoomError {
+  name: string;
+  message?: string;
+  type?: string;
+}
+
+export interface JoinLeaveRoomSuccess {
+  name: string;
+  message?: string;
+}
