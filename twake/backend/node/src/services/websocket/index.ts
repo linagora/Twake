@@ -1,5 +1,5 @@
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
-import { Consumes, TwakeService } from "../../core/platform/framework";
+import { Consumes, ServiceName, TwakeService } from "../../core/platform/framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
 import websocketPlugin from "./plugin";
@@ -7,6 +7,7 @@ import { WebSocketService } from "./services";
 import { AdaptersConfiguration } from "./types";
 
 @Consumes(["webserver"])
+@ServiceName("websocket")
 export default class WebSocket extends TwakeService<WebSocketAPI> {
   private service: WebSocketService;
   name = "websocket";

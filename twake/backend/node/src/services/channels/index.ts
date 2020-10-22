@@ -4,15 +4,16 @@ import ChannelServiceAPI from "./provider";
 import * as services from "./services";
 import web from "./web/index";
 import ORMServiceAPI from "../orm/provider";
+import { Channel } from "./entities";
 
 @Prefix("/api/channels")
 @Consumes(["webserver", "orm"])
-export default class ChannelService extends TwakeService<ChannelServiceAPI> {
+export default class ChannelService extends TwakeService<ChannelServiceAPI<Channel>> {
   version = "1";
   name = "channels";
-  service: ChannelServiceAPI;
+  service: ChannelServiceAPI<Channel>;
 
-  api(): ChannelServiceAPI {
+  api(): ChannelServiceAPI<Channel> {
     return this.service;
   }
 

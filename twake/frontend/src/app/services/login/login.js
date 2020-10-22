@@ -1,4 +1,3 @@
-import React from 'react';
 import Observable from 'services/observable.js';
 import Websocket from 'services/websocket.js';
 import Api from 'services/api.js';
@@ -10,8 +9,8 @@ import Groups from 'services/workspaces/groups.js';
 import Notifications from 'services/user/notifications.js';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
-
 import Globals from 'services/Globals.js';
+import RouterServices from '../RouterServices';
 
 class Login extends Observable {
   constructor() {
@@ -28,6 +27,7 @@ class Login extends Observable {
     this.server_infos = {
       branding: {},
       ready: {},
+      help_link: false,
     };
 
     Globals.window.login = this;
@@ -54,14 +54,13 @@ class Login extends Observable {
     this.notify();
   }
 
-  init(did_wait) {
+  init(did_wait = false) {
     if (!did_wait) {
       Globals.localStorageGetItem('api_root_url', res => {
         this.init(true);
       });
       return;
     }
-
     this.reset();
 
     Api.get('core/version', res => {
@@ -76,6 +75,10 @@ class Login extends Observable {
 
       if (this.server_infos.ready !== true && this.server_infos.ready !== undefined) {
         this.state = 'logged_out';
+        RouterServices.history.push(RouterServices.pathnames.SETUP, {
+          ...this.server_infos.ready,
+        });
+
         this.notify();
         setTimeout(() => {
           this.init();
@@ -87,8 +90,7 @@ class Login extends Observable {
             : false;
         if (logout) {
           this.logout(true);
-          WindowState.setUrl('/', true);
-          return;
+          return RouterServices.history.push(RouterServices.pathnames.LOGIN);
         }
 
         var subscribe =
@@ -102,7 +104,6 @@ class Login extends Observable {
           this.notify();
           return;
         }
-
         var verifymail =
           WindowState.findGetParameter('verify_mail') !== undefined
             ? WindowState.findGetParameter('verify_mail') === '1'
@@ -174,7 +175,7 @@ class Login extends Observable {
         that.notify();
 
         WindowState.setTitle();
-        WindowState.setUrl('/', true);
+        RouterServices.history.push(RouterServices.pathnames.LOGIN);
       } else {
         that.startApp(res.data);
       }
@@ -223,7 +224,6 @@ class Login extends Observable {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
             }
-
             WindowState.setUrl('/', true);
             that.login_loading = false;
             that.init();
@@ -317,6 +317,7 @@ class Login extends Observable {
 
     this.state = 'app';
     this.notify();
+    RouterServices.history.push(RouterServices.pathnames.CLIENT);
   }
 
   /**
@@ -371,7 +372,6 @@ class Login extends Observable {
         that.login_loading = false;
 
         that.notify();
-        //appel de function error
       }
     });
   }

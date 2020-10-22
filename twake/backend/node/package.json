@@ -9,14 +9,19 @@
     "copy-assets": "npm run copy-config",
     "copy-config": "cp -R config dist",
     "lint": "eslint . --ext .ts --quiet --fix",
+    "lint-no-fix": "eslint . --ext .ts",
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
     "test": "jest --forceExit --coverage --verbose --detectOpenHandles",
+    "test-e2e": "jest test/e2e --forceExit --coverage --verbose --detectOpenHandles",
+    "test-unit": "jest test/unit --forceExit --coverage --verbose --detectOpenHandles",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "watch-node": "nodemon dist/server.js",
     "watch-test": "npm run test -- --watchAll",
-    "watch-ts": "tsc -w"
+    "watch-test-unit": "npm run test-unit -- --watchAll",
+    "watch-ts": "tsc -w",
+    "kill": "kill $(lsof -t -i:3000) | exit 0"
   },
   "repository": {
     "type": "git",

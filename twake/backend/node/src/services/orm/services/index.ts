@@ -1,5 +1,5 @@
 import ORMServiceAPI from "../provider";
-import { createConnection, ConnectionOptions, Connection, Repository, EntityTarget, EntityManager } from "typeorm";
+import { createConnection, ConnectionOptions, Connection, EntityManager } from "typeorm";
 
 export default class ORMService implements ORMServiceAPI {
   version = "1";

@@ -1,26 +1,46 @@
 import ORMServiceAPI from "../../orm/provider";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
+import { RealtimeDeleted, RealtimeCreated, RealtimeUpdated } from "../../../core/platform/framework/decorators";
+import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
 
-// TODO: be able to inject the entity manager from the ORM service
-export class ChannelService implements ChannelServiceAPI {
+export class ChannelService implements ChannelServiceAPI<Channel> {
   version = "1";
 
   constructor(private orm: ORMServiceAPI) {}
 
-  async list(): Promise<Channel[]> {
-    const channels = await this.orm.manager.find<Channel>(Channel);
+  @RealtimeCreated<Channel>("/channels")
+  async create(channel: Channel): Promise<CreateResult<Channel>> {
+    const entity = await this.orm.manager.save(channel);
 
-    return channels;
+    const result = new CreateResult<Channel>();
+    result.entity = entity;
+
+    return result;
   }
 
-  async getById(id: string): Promise<Channel> {
-    const channel = await this.orm.manager.findOne<Channel>(Channel, id);
-
-    return channel;
+  get(id: string): Promise<Channel> {
+    return this.orm.manager.findOne<Channel>(Channel, id);
   }
 
-  async create(channel: Channel): Promise<Channel> {
-    return this.orm.manager.save(channel);
+  @RealtimeUpdated("/channels")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async update(id: string, entity: Channel): Promise<UpdateResult<Channel>> {
+    // TODO
+    return null;
+  }
+
+  @RealtimeDeleted<string>((channel: string) => `/channels/${channel}`)
+  async delete(id: string): Promise<DeleteResult<Channel>> {
+    const result = await this.orm.manager.delete(Channel, id);
+
+    return {
+      deleted: result.affected && result.affected >=1,
+      entity: null
+    };
+  }
+
+  list(/* TODO: Options */): Promise<Channel[]> {
+    return this.orm.manager.find<Channel>(Channel);
   }
 }

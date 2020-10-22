@@ -6,7 +6,8 @@
     "sourceType": "module"
   },
   "rules": {
-    "semi": ["error", "always"],
+    "semi": ["off"],
+    "@typescript-eslint/semi": ["error"],
     "quotes": ["error", "double"],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": 1,
@@ -15,6 +16,7 @@
         "ignoreParameters": true
       }
     ],
-    "@typescript-eslint/no-unused-vars": "warn"
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-extra-semi": ["error"]
   }
 }
