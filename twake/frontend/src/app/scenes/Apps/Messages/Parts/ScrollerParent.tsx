@@ -9,7 +9,7 @@ const ScrollerParent: FunctionComponent<Props> = ({ messagesListService, childre
   return (
     <div
       className={
-        'messages-scroller-parent ' + (messagesListService.fixBottom ? '' : 'scrolled-up ')
+        'messages-scroller-parent ' + (messagesListService.showScrollDown ? 'scrolled-up ' : '')
       }
     >
       {children}
