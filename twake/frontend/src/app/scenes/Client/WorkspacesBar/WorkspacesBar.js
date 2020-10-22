@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import { Layout } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -40,7 +41,7 @@ export default class WorkspacesBar extends Component {
     }
 
     return (
-      <div className="workspaces_view fade_in">
+      <Layout.Sider width="60px" className="workspaces_view fade_in">
         <PerfectScrollbar component="div" className="list">
           {Workspaces.getOrderedWorkspacesInGroup(Groups.currentGroupId).map(item => (
             <Workspace
@@ -56,7 +57,7 @@ export default class WorkspacesBar extends Component {
         </PerfectScrollbar>
 
         <Group group={{ id: Groups.currentGroupId }} />
-      </div>
+      </Layout.Sider>
     );
   }
 }

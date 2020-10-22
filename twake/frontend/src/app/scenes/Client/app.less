@@ -1,4 +1,4 @@
-@import '~components/constants.scss';
+@import '~antd/dist/antd.less';
 
 .appPage {
   display: flex;
@@ -33,7 +33,7 @@
   }
 
   .top {
-    background: $primary;
+    background: var(--primary);
     height: 50vh;
     position: relative;
     &:after {
@@ -57,7 +57,7 @@
 
   .title {
     margin-bottom: 40px;
-    color: $white;
+    color: var(--white);
   }
 
   .subtitle {

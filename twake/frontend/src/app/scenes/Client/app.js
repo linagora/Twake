@@ -8,8 +8,10 @@ import alertService from 'services/AlertManager/AlertManager.js';
 import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import AlertLayout from 'components/Alert/Layout.js';
-import './app.scss';
+import 'components/constants.scss';
+import './app.less';
 
+import { Layout } from 'antd';
 import MainView from './MainView/MainView.js';
 import PublicMainView from './MainView/PublicMainView.js';
 import ChannelsBar from './ChannelsBar/ChannelsBar.js';
@@ -71,7 +73,7 @@ export default class App extends Component {
         );
       } else {
         page = (
-          <div
+          <Layout
             key="appPage"
             className={
               'appPage ' +
@@ -79,13 +81,12 @@ export default class App extends Component {
                 ? 'no_workspaces '
                 : 'has_workspaces ') /* + (workspace_changes?"animated ":"")*/
             }
+            hasSider
           >
             <WorkspacesBar />
-
             <ChannelsBar />
-
             <MainView />
-          </div>
+          </Layout>
         );
       }
     }

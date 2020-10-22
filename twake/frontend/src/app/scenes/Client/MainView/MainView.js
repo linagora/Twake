@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import { Layout } from 'antd';
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -194,7 +195,7 @@ export default class MainView extends Component {
     }
 
     return (
-      <div className="main_view">
+      <Layout.Content className="main_view">
         <div className="header">
           <div className="inline_header">
             {!!current_channel.application && (
@@ -318,7 +319,7 @@ export default class MainView extends Component {
               </div>
             )}
         </div>
-      </div>
+      </Layout.Content>
     );
   }
 }
