@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenWorkspaces from 'services/workspaces/listen_workspace.js';
 import Notifications from 'services/user/notifications.js';

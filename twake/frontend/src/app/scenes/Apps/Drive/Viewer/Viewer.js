@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Menu from 'components/Menus/Menu.js';
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';

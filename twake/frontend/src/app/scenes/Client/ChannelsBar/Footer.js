@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import PopupManager from 'services/popupManager/popupManager.js';

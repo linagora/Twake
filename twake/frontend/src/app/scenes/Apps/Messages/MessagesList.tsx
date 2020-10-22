@@ -9,7 +9,7 @@ import MessageComponent from './Message/Message';
 import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import GoToBottom from './Parts/GoToBottom';
 import ScrollerParent from './Parts/ScrollerParent';
 import WritingUsers from './Input/WritingUsers';

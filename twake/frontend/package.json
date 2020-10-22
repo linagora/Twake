@@ -4,12 +4,15 @@
   "repository": "https://github.com/TwakeApp/Twake",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev-build": "CI=false craco build",
-    "build": "scripts/build-version.sh patch && CI=false craco build",
-    "change-version": "scripts/build-version.sh",
-    "prettier": "prettier --write src/",
+    "dev:start": "craco start",
+    "dev:test": "craco test",
+    "dev:build": "CI=false craco build",
+    "dev:prettier": "prettier --write src/",
+    "dev:linter": "eslint src/",
     "start": "craco start",
-    "test": "craco test"
+    "test": "CI=true craco test",
+    "build": "scripts/build-version.sh patch && CI=false craco build",
+    "change-version": "scripts/build-version.sh"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -27,24 +30,10 @@
     ]
   },
   "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts"
     ],
-    "setupFiles": [
-      "react-app-polyfill/jsdom"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
-    ],
-    "testEnvironment": "jest-environment-jsdom-fourteen",
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
@@ -53,28 +42,6 @@
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
       "^.+\\.module\\.(css|sass|scss)$"
-    ],
-    "modulePaths": [],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "web.ts",
-      "ts",
-      "web.tsx",
-      "tsx",
-      "json",
-      "web.jsx",
-      "jsx",
-      "node"
-    ],
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
     ]
   },
   "babel": {
@@ -118,13 +85,17 @@
     "@types/crypto-js": "^3.1.43",
     "@types/emoji-mart": "^3.0.2",
     "@types/emojione": "^2.2.6",
+    "@types/enzyme": "^3.10.7",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.6",
+    "@types/react-test-renderer": "^16.9.3",
     "@types/redux": "^3.6.0",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "anchorme": "1.1.2",
@@ -151,6 +122,8 @@
     "dotenv-expand": "5.1.0",
     "emoji-mart": "^3.0.0",
     "emojione": "^4.5.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
     "eslint-config-react-app": "^5.2.0",
     "eslint-config-react-app-eslint-six": "^4.0.2",
     "eslint-loader": "3.0.3",
@@ -159,6 +132,7 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.20.6",
     "eslint-plugin-react-hooks": "^1.6.1",
+    "events": "^3.2.0",
     "feather-icons": "^4.28.0",
     "file-loader": "4.3.0",
     "fs-extra": "^8.1.0",
@@ -173,6 +147,7 @@
     "jest-watch-typeahead": "0.4.2",
     "jquery": "^3.5.1",
     "mini-css-extract-plugin": "0.9.0",
+    "minimongo": "^6.7.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "node-sass": "^4.13.1",
@@ -207,6 +182,7 @@
     "react-sortable-hoc": "^1.11.0",
     "react-svg": "^11.0.29",
     "react-swipeable": "^5.5.1",
+    "react-test-renderer": "^17.0.0",
     "react-textarea-autosize": "^8.2.0",
     "react-touch": "^0.4.4",
     "react-transition-group": "^4.4.1",
@@ -223,6 +199,7 @@
     "ts-pnp": "1.1.5",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
+    "uuid": "^8.3.1",
     "workbox-webpack-plugin": "4.3.1"
   },
   "devDependencies": {

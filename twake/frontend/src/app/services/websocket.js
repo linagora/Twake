@@ -1,6 +1,6 @@
 import Number from 'services/utils/Numbers.js';
 import api from 'services/api.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import SocketCluster from 'services/socketcluster/socketcluster.js';
 import CryptoJS from 'crypto-js';
 

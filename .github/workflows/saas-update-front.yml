@@ -36,6 +36,7 @@ jobs:
       - run: cp twake/frontend/src/app/environment/environment.ts.dist twake/frontend/src/app/environment/environment.ts
       - if: ${{env.FRONTEND_ENV}}
         run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
+      - run: cd twake/frontend/ && yarn test
       - run: cd twake/frontend/ && yarn build
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v1

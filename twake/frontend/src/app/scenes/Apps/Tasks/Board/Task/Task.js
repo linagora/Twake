@@ -6,7 +6,7 @@ import { Draggable } from 'react-beautiful-dnd';
 
 import './Task.scss';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import TaskDetails from './TaskDetails.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import Icon from 'components/Icon/Icon.js';

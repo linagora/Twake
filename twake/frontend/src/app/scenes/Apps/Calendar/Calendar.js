@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
 import UserService from 'services/user/user.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';

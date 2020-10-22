@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';

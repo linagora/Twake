@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Input from 'components/Inputs/Input.js';
 import InputIcon from 'components/Inputs/InputIcon.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';
 import Participants from './Part/Participants.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';

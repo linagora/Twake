@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Search from 'services/search/search.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import './SearchPopup.scss';
 import InputIcon from 'components/Inputs/InputIcon.js';

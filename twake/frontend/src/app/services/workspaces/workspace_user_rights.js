@@ -1,5 +1,5 @@
 import React from 'react';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import WorkspacesUsers from './workspaces_users.js';
 import Workspaces from './workspaces.js';
 import CurrentUser from 'services/user/current_user.js';

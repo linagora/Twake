@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import ChannelsService from 'services/channels/channels.js';
 

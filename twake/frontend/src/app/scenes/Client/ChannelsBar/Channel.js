@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import Notifications from 'services/user/notifications.js';
 import MenusManager from 'services/Menus/MenusManager.js';
