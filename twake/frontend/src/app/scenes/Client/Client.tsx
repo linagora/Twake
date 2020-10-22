@@ -8,8 +8,10 @@ import alertService from 'services/AlertManager/AlertManager.js';
 import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import AlertLayout from 'components/Alert/Layout.js';
-import './app.scss';
 
+import { Layout } from 'antd';
+import 'antd/dist/antd.less';
+import './Client.scss';
 import MainView from './MainView/MainView.js';
 import PublicMainView from './MainView/PublicMainView.js';
 import ChannelsBar from './ChannelsBar/ChannelsBar.js';
@@ -27,16 +29,10 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
 
-export default class App extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      i18n: Languages,
-      workspaces: Workspaces,
-      popupService: popupService,
-      alertService: alertService,
-    };
+export default class Client extends Component {
+  no_workspace: any = '';
+  constructor(props: {}) {
+    super(props);
     alertService.addListener(this);
     popupService.addListener(this);
     Workspaces.addListener(this);
@@ -53,8 +49,8 @@ export default class App extends Component {
     Workspaces.removeListener(this);
   }
   render() {
-    var page = '';
-    if (this.state.popupService.isOpen()) {
+    var page: any = '';
+    if (popupService.isOpen()) {
       page = <PopupComponent key="PopupComponent" />;
     } else {
       var no_workspace =
@@ -71,7 +67,7 @@ export default class App extends Component {
         );
       } else {
         page = (
-          <div
+          <Layout
             key="appPage"
             className={
               'appPage ' +
@@ -79,13 +75,12 @@ export default class App extends Component {
                 ? 'no_workspaces '
                 : 'has_workspaces ') /* + (workspace_changes?"animated ":"")*/
             }
+            hasSider
           >
             <WorkspacesBar />
-
             <ChannelsBar />
-
             <MainView />
-          </div>
+          </Layout>
         );
       }
     }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import { Layout } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -9,6 +10,7 @@ import PopupManager from 'services/popupManager/popupManager.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import WorkspaceAdd from 'components/Leftbar/Workspace/WorkspaceAdd.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import ElectronService from 'services/electron/electron.js';
 import './WorkspacesBar.scss';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -40,7 +42,7 @@ export default class WorkspacesBar extends Component {
     }
 
     return (
-      <div className="workspaces_view fade_in">
+      <Layout.Sider width={() => ElectronService.isElectron()} className="workspaces_view fade_in">
         <PerfectScrollbar component="div" className="list">
           {Workspaces.getOrderedWorkspacesInGroup(Groups.currentGroupId).map(item => (
             <Workspace
@@ -56,7 +58,7 @@ export default class WorkspacesBar extends Component {
         </PerfectScrollbar>
 
         <Group group={{ id: Groups.currentGroupId }} />
-      </div>
+      </Layout.Sider>
     );
   }
 }

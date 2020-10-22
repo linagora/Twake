@@ -118,6 +118,7 @@ class Globals {
     }
 
     this.device = null;
+    this.store_public_access_get_data = undefined;
   }
 
   changeRootUrl(url) {

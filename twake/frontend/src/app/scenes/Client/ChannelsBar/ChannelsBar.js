@@ -6,8 +6,8 @@ import UserService from 'services/user/user.js';
 import ChannelsService from 'services/channels/channels.js';
 import Groups from 'services/workspaces/groups.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import { Layout } from 'antd';
 import GroupSwitch from 'components/Leftbar/GroupSwitch/GroupSwitch.js';
-
 import Languages from 'services/languages/languages.js';
 import CurrentUser from './CurrentUser/CurrentUser.js';
 import ChannelsApps from './ChannelsApps/ChannelsApps.js';
@@ -15,6 +15,7 @@ import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace.js';
 import ChannelsUser from './ChannelsUser/ChannelsUser.js';
 import Tutorial from './Tutorial.js';
 import Footer from './Footer.js';
+import ElectronService from 'services/electron/electron.js';
 
 import './ChannelsBar.scss';
 
@@ -85,21 +86,16 @@ export default class ChannelsBar extends Component {
       Object.keys(Groups.user_groups).length <= 1;
 
     return (
-      <div className="channels_view fade_in">
+      <Layout.Sider width={() => ElectronService.isElectron()} className="channels_view fade_in">
         <CurrentUser />
-
         <PerfectScrollbar component="div">
           <ChannelsApps />
-
           <ChannelsWorkspace />
-
           <ChannelsUser />
         </PerfectScrollbar>
-
         <Tutorial />
-
         <Footer />
-      </div>
+      </Layout.Sider>
     );
   }
 }

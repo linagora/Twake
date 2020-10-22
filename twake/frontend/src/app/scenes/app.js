@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
-import AppPage from 'app/scenes/Client/app.js';
+import ClientPage from 'app/scenes/Client/Client';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WelcomePage from 'app/scenes/Client/Popup/WelcomePage/WelcomePage.js';
 import Globals from 'services/Globals.js';
@@ -89,6 +89,6 @@ export default class App extends Component {
       );
     }
 
-    return <AppPage />;
+    return <ClientPage />;
   }
 }
