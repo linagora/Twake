@@ -4,6 +4,7 @@ echo $1
 
 if [ "$1" = "dev" ]
 then
+  npm install
   npm run build
   npm run watch
 else
@@ -11,7 +12,6 @@ else
     cp /configuration/* /twake-node/config/
   fi
 
-  npm run build
   npm run serve
 fi
 

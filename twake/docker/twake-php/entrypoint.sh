@@ -27,6 +27,8 @@ then
   else
     cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
   fi
+
+  php composer.phar install
 else
   if test -f "/configuration/Parameters.php"; then
     cp /configuration/Parameters.php /twake-core/app/Configuration/Parameters.php
