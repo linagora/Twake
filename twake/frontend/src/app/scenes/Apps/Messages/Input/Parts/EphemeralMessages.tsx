@@ -6,7 +6,7 @@ import MenusManager from 'services/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Collections from 'services/Collections/Collections.js';
 import CurrentUser from 'services/user/current_user.js';
 import MessageComponent from '../../Message/Message';

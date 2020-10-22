@@ -18,7 +18,7 @@ import AlertManager from 'services/AlertManager/AlertManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
