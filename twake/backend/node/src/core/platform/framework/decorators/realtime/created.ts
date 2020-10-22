@@ -1,9 +1,13 @@
 import { PathResolver, getPath } from "..";
 import { CreateResult } from "../../api/crud-service";
-import { eventBus, RealtimeEntityEvent } from "../../realtime";
+import { eventBus, RealtimeEntityEvent, RealtimeEntityActionType } from "../../realtime";
 
-
-export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecorator {
+/**
+ *
+ * @param path the path to push the notification to
+ * @param resourcePath the path of the resource itself
+ */
+export function RealtimeCreated<T>(path: string | PathResolver<T>, resourcePath?: string | PathResolver<T>): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
   return function(target: Object, propertyKey: string, descriptor: PropertyDescriptor ): void {
     const originalMethod = descriptor.value;
@@ -16,8 +20,10 @@ export function RealtimeCreated<T>(path: string | PathResolver<T>): MethodDecora
         return result;
       }
 
-      eventBus.publish<T>("entity:created", {
+      eventBus.publish<T>(RealtimeEntityActionType.Created, {
+        type: result.type,
         path: getPath(path, result),
+        resourcePath: getPath(resourcePath, result),
         entity: result.entity,
         result
       } as RealtimeEntityEvent<T> );

@@ -366,10 +366,18 @@ socket.on("connect", () => {
 
 #### Subscribe to resource events
 
-Once the given room is joined, the user will receive `realtime:resource:*` events with the resource linked to the event as data:
-  - `realtime:resource:created`: A resource has been created
-  - `realtime:resource:updated`: A resource has been updated
-  - `realtime:resource:deleted`: A resource has been deleted
+Once the given room has been joined, the client will receive `realtime:resource` events with the resource linked to the event as data:
+
+```json
+{
+  "action": "created",
+  "type": "channel"
+  "path": "/channels/5f905327e3e1626399aaad79",
+  "resource": {
+    "name": "My channel",
+    "id": "5f905327e3e1626399aaad79"
+  }
+```
 
 **Example:**
 
@@ -381,10 +389,11 @@ socket.on("connect", () => {
       // join the "/channels" room
       socket.emit("realtime:join", { name: "/channels", token: "twake" });
 
-      // will only occur when a resource is created and
-      // if and only if the client joined the room
-      socket.on("realtime:resource:created", event => {
-        console.log("New resource has been created", event);
+      // will only occur when an action occured on a resource
+      // and if and only if the client joined the room
+      // in which the resource is linked
+      socket.on("realtime:resource", event => {
+        console.log("Resource has been ${event.action}", event.resource);
       });
     })
     .on("unauthorized", err => {

@@ -1,4 +1,5 @@
 import { logger } from "../../logger";
+import { RealtimeEntityActionType, RealtimeEntityEvent } from "../types";
 import WebSocketAPI from "../../../../../services/websocket/provider";
 import { eventBus } from "../bus";
 
@@ -6,28 +7,27 @@ export default class RealtimeEntityManager {
   constructor(private ws: WebSocketAPI) {}
 
   init(): void {
-    eventBus.subscribe("entity:created", event => {
-      logger.debug("Entity has been created");
-      this.ws.getIo().to(event.path).emit("resource:created", {
-        path: event.path,
-        resource: event.entity
-      });
+    eventBus.subscribe(RealtimeEntityActionType.Created, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Created);
     });
 
-    eventBus.subscribe("entity:updated", (event) => {
-      logger.debug("Entity has been updated");
-      this.ws.getIo().to(event.path).emit("resource:updated", {
-        path: event.path,
-        resource: event.entity
-      });
+    eventBus.subscribe(RealtimeEntityActionType.Updated, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Updated);
     });
 
-    eventBus.subscribe("entity:deleted", (event) => {
-      logger.debug("Entity has been deleted");
-      this.ws.getIo().to(event.path).emit("resource:deleted", {
-        path: event.path,
-        resource: event.entity
-      });
+    eventBus.subscribe(RealtimeEntityActionType.Deleted, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Deleted);
+    });
+  }
+
+  private pushResourceEvent(event: RealtimeEntityEvent<any>, action: RealtimeEntityActionType): boolean {
+    logger.info(`Pushing ${action} entity to room ${event.path}`);
+
+    return this.ws.getIo().to(event.path).emit("realtime:resource", {
+      action,
+      type: event.type,
+      path: event.resourcePath,
+      resource: event.entity
     });
   }
 }

@@ -18,8 +18,12 @@ socket.on("connect", () => {
         console.log("Error on realtime", message);
       });
 
-      socket.on("resource:created", event => {
-        console.log("New resource has been created", event);
+      socket.on("realtime:join:success", event => {
+        console.log("Joined room", event.name);
+      });
+
+      socket.on("realtime:resource", event => {
+        console.log(`Resource has been ${event.action}`, event);
       });
 
     })
