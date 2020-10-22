@@ -12,6 +12,7 @@ import emojione from 'emojione';
 import Number from 'services/utils/Numbers.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
+import RouterServices from 'services/RouterServices';
 
 class Channels extends Observable {
   constructor() {
@@ -499,7 +500,7 @@ class Channels extends Observable {
         this.updateURL();
       }, 1000);
     }
-    WindowService.setUrl(url);
+    WindowService.setUrl(RouterServices.pathnames.CLIENT + url);
     this.updateTitle(channel);
   }
 

@@ -22,23 +22,14 @@ export default () => {
           <Emojione type=":boom:" /> {Languages.t('scenes.aie', [], 'Aïe !')}
         </div>
         <div className="subtitle">
-          {Languages.t(
-            'scenes.error_on_twake',
-            [],
-            'Vous avez trouvé une erreur sur la plateforme Twake !',
-          )}
+          {Languages.t('scenes.error_on_twake', 'You found an error on the Twake platform !')}
         </div>
         <div className="text">
-          {Languages.t(
-            'scenes.no_panic',
-            [],
-            'Pas de panique, il vous suffit de recharger cette page pour retrouver Twake.',
-          )}
+          {Languages.t('scenes.no_panic', "Don't panic! Simply reload this page to find Twake.")}
           <br />
           {Languages.t(
             'scenes.help_us',
-            [],
-            'Cependant si vous souhaitez nous aider à réparer cette erreur, envoyer nous le message ci-dessous :',
+            'However, if you would like to help us fix this error, send us a message below: ',
           )}
           <br />
           <br />

@@ -16,7 +16,6 @@ if (process.env.NODE_ENV === 'production' && window.sentry_dsn) {
   });
 }
 
-
 window.getBoundingClientRect = element => {
   const rect = element.getBoundingClientRect();
   return {

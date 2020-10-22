@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
-
+import React from 'react';
 import Emojione from 'components/Emojione/Emojione';
 import RouterServices from 'services/RouterServices';
-
 import './Setup.scss';
 
-type ReadyState =
-  | {
-      elasticsearch_connection: boolean;
-      elasticsearch_mapping: boolean;
-      db_connection: boolean;
-      db_mapping: boolean;
-      init: boolean;
-    }
-  | true;
+type ReadyState = {
+  elasticsearch_connection: boolean;
+  elasticsearch_mapping: boolean;
+  db_connection: boolean;
+  db_mapping: boolean;
+  init: boolean;
+};
 
 export default function Setup() {
   let status: string = '(1/4) Starting backend...';
   let comment: string = '';
-  // Get ready state from history
-  const ready: ReadyState = RouterServices.history.location.state as ReadyState;
+  let ready: ReadyState | boolean = isReady();
+
+  function isReady(): ReadyState | boolean {
+    const state: ReadyState = RouterServices.history.location.state as ReadyState;
+    return state ? state : true;
+  }
 
   if (typeof ready === 'object') {
     if (!ready.db_connection) {

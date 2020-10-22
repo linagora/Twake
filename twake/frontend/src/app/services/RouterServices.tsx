@@ -1,4 +1,3 @@
-import React from 'react';
 import { createBrowserHistory } from 'history';
 
 // Import your component here
@@ -8,7 +7,7 @@ import Setup from 'app/scenes/Setup/Setup';
 import Error from 'app/scenes/Error/Error';
 
 type Route = {
-  path: object;
+  path: string;
   exact?: boolean | false;
   key?: string;
   routes?: Route[];
@@ -16,11 +15,15 @@ type Route = {
   options?: any;
 };
 
+type Pathnames = {
+  [key: string]: string;
+};
+
 class RouterServices {
   history = createBrowserHistory();
 
   // Define your route here
-  pathnames: Readonly<any> = {
+  pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
     LOGIN: '/login',
     SETUP: '/setup',

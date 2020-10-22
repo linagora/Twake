@@ -19,7 +19,7 @@ export default () => {
           {RouterServices.routes.map((route: any, index: number) => {
             return (
               <Route
-                key={route.name + ' ' + index}
+                key={`${route.name} ${index}`}
                 exact={route.exact ? route.exact : false}
                 path={route.path}
                 component={() => {

@@ -1,18 +1,12 @@
 import React from 'react';
-import RouterServices from '../../services/RouterServices';
+import RouterServices from 'services/RouterServices';
 import 'app/ui.scss';
 
-type State = {
-  hasError: boolean;
-  error: any;
-};
-
-export default class ErrorBoundary extends React.Component<{}, State> {
-  constructor(props: any) {
+export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       hasError: false,
-      error: {},
     };
   }
 
