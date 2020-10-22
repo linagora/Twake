@@ -9,35 +9,33 @@ export class ChannelService implements ChannelServiceAPI<Channel> {
 
   constructor(private orm: ORMServiceAPI) {}
 
-  @RealtimeCreated<Channel>("/channels")
+  @RealtimeCreated<Channel>("/channels", channel => `/channels/${channel.id}`)
   async create(channel: Channel): Promise<CreateResult<Channel>> {
     const entity = await this.orm.manager.save(channel);
 
-    const result = new CreateResult<Channel>();
-    result.entity = entity;
-
-    return result;
+    return new CreateResult<Channel>("channel", entity);
   }
 
   get(id: string): Promise<Channel> {
     return this.orm.manager.findOne<Channel>(Channel, id);
   }
 
-  @RealtimeUpdated("/channels")
+  @RealtimeUpdated<string>("/channels", id => `/channels/${id}`)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async update(id: string, entity: Channel): Promise<UpdateResult<Channel>> {
     // TODO
     return null;
   }
 
-  @RealtimeDeleted<string>((channel: string) => `/channels/${channel}`)
+  @RealtimeDeleted<Channel>("/channels", channel => `/channels/${channel.id}`)
   async delete(id: string): Promise<DeleteResult<Channel>> {
-    const result = await this.orm.manager.delete(Channel, id);
+    await this.orm.manager.delete(Channel, id);
 
-    return {
-      deleted: result.affected && result.affected >=1,
-      entity: null
-    };
+    const result = new DeleteResult<Channel>("channel", { id } as Channel, true);
+    // TODO: Be able to get delete status from the ORM
+    // result.deleted = ormResult.affected && ormResult.affected >=1;
+
+    return result;
   }
 
   list(/* TODO: Options */): Promise<Channel[]> {

@@ -31,12 +31,9 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated("/foo/bar")
+      @RealtimeUpdated("/foo/bar", "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
-        const result = new UpdateResult<string>();
-        result.entity = input.split("").reverse().join("");
-
-        return result;
+        return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
     }
 
@@ -48,11 +45,16 @@ describe("The RealtimeUpdated decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:updated", {
-      path: "/foo/bar",
+    expect(emitSpy).toHaveBeenCalledWith("updated", {
       entity: "oloy",
+      path: "/foo/bar",
+      resourcePath: "/foo/bar/baz",
+      type: "string",
       result: {
+        type: "string",
         entity: "oloy",
+        affected: undefined,
+        raw: undefined
       } as UpdateResult<string>
     });
 
@@ -64,12 +66,9 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated((result) => `/foo/bar/${result}`)
+      @RealtimeUpdated((result) => `/foo/bar/${result}`, "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
-        const result = new UpdateResult<string>();
-        result.entity = input.split("").reverse().join("");
-
-        return result;
+        return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
     }
 
@@ -81,11 +80,16 @@ describe("The RealtimeUpdated decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:updated", {
-      path: "/foo/bar/oloy",
+    expect(emitSpy).toHaveBeenCalledWith("updated", {
       entity: "oloy",
+      path: "/foo/bar/oloy",
+      resourcePath: "/foo/bar/baz",
+      type: "string",
       result: {
+        type: "string",
         entity: "oloy",
+        affected: undefined,
+        raw: undefined
       } as UpdateResult<string>
     });
 

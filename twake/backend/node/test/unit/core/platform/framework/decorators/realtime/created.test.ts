@@ -31,12 +31,9 @@ describe("The RealtimeCreated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeCreated("/foo/bar")
+      @RealtimeCreated("/foo/bar", "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
-        const result: CreateResult<string> = new CreateResult<string>();
-        result.entity = input.split("").reverse().join("");
-
-        return result;
+        return new CreateResult<string>("string", input.split("").reverse().join(""));
       }
     }
 
@@ -48,11 +45,15 @@ describe("The RealtimeCreated decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:created", {
+    expect(emitSpy).toHaveBeenCalledWith("created", {
       path: "/foo/bar",
+      resourcePath: "/foo/bar/baz",
       entity: "oloy",
+      type: "string",
       result: {
-        entity: "oloy"
+        entity: "oloy",
+        type: "string",
+        raw: undefined
       } as CreateResult<string>
     });
 
@@ -64,12 +65,9 @@ describe("The RealtimeCreated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeCreated<string>((input) => `/foo/bar/${input}`)
+      @RealtimeCreated<string>((input) => `/foo/bar/${input}`, "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
-        const result: CreateResult<string> = new CreateResult<string>();
-        result.entity = input.split("").reverse().join("");
-
-        return result;
+        return new CreateResult<string>("string", input.split("").reverse().join(""));
       }
     }
 
@@ -81,11 +79,15 @@ describe("The RealtimeCreated decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:created", {
+    expect(emitSpy).toHaveBeenCalledWith("created", {
       path: "/foo/bar/oloy",
+      resourcePath: "/foo/bar/baz",
       entity: "oloy",
+      type: "string",
       result: {
-        entity: "oloy"
+        entity: "oloy",
+        type: "string",
+        raw: undefined
       } as CreateResult<string>
     });
 

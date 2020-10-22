@@ -31,13 +31,9 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted("/foo/bar")
+      @RealtimeDeleted("/foo/bar", "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
-        const result = new DeleteResult<string>();
-        result.entity = input.split("").reverse().join("");
-        result.deleted = true;
-
-        return result;
+        return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
     }
 
@@ -49,12 +45,15 @@ describe("The RealtimeDeleted decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:deleted", {
+    expect(emitSpy).toHaveBeenCalledWith("deleted", {
       path: "/foo/bar",
+      resourcePath: "/foo/bar/baz",
       entity: "oloy",
+      type: "string",
       result: {
         entity: "oloy",
-        deleted: true
+        deleted: true,
+        type: "string"
       } as DeleteResult<string>
     });
 
@@ -66,13 +65,9 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted((result) => `/foo/bar/${result}`)
+      @RealtimeDeleted((result) => `/foo/bar/${result}`, "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
-        const result = new DeleteResult<string>();
-        result.entity = input.split("").reverse().join("");
-        result.deleted = true;
-
-        return result;
+        return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
     }
 
@@ -84,12 +79,15 @@ describe("The RealtimeDeleted decorator", () => {
     expect(originalSpy).toHaveBeenCalledTimes(1);
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith("entity:deleted", {
+    expect(emitSpy).toHaveBeenCalledWith("deleted", {
       path: "/foo/bar/oloy",
+      resourcePath: "/foo/bar/baz",
       entity: "oloy",
+      type: "string",
       result: {
         entity: "oloy",
-        deleted: true
+        deleted: true,
+        type: "string"
       } as DeleteResult<string>
     });
 

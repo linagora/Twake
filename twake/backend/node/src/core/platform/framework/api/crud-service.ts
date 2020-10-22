@@ -1,5 +1,10 @@
 export class EntityTarget<Entity> {
-  entity: Entity;
+  /**
+   *
+   * @param type type of entity
+   * @param entity the entity itself
+   */
+  constructor(readonly type: string, readonly entity: Entity) {}
 }
 
 export class UpdateResult<Entity> extends EntityTarget<Entity> {
@@ -24,10 +29,16 @@ export class CreateResult<Entity> extends EntityTarget<Entity> {
 }
 
 export class DeleteResult<Entity> extends EntityTarget<Entity>  {
-  /**
-   * True if the entity has been removed from the database
+    /**
+   *
+   * @param type type of entity
+   * @param entity the entity itself
+   * @param deleted the entity has been deleted or not
    */
-  deleted: boolean;
+  constructor(readonly type: string, readonly entity: Entity, readonly deleted: boolean) {
+    super(type, entity);
+  }
+
 }
 
 export declare type EntityId = string | number;
