@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import FolderIcon from '@material-ui/icons/FolderOutlined';
 import Menu from 'components/Menus/Menu.js';
 import Numbers from 'services/utils/Numbers.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import '../Drive.scss';
 import 'moment-timezone';

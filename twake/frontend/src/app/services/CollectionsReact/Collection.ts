@@ -3,8 +3,8 @@ import OriginalCollections, {
   Collection as OriginalCollection,
   Resource as OriginalResource,
   EventEmitter as CollectionsEventEmitter,
-} from '../Collections2/Collections';
-import Observable from '../Observables2/Observable';
+} from '../Collections/Collections';
+import Observable from '../Observable/Observable';
 
 export default class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
   protected observable: Observable = new Observable();

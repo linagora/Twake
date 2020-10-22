@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Menu from 'components/Menus/Menu.js';
 import ChannelsService from 'services/channels/channels.js';
 import Button from 'components/Buttons/Button.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Calendar.scss';
 
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';

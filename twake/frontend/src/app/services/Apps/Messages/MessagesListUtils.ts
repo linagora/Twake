@@ -1,6 +1,6 @@
 import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
-import Observable from 'services/observable';
-import Collections from 'services/Collections/Collections';
+import Observable from 'app/services/Depreciated/observable';
+import Collections from 'app/services/Depreciated/Collections/Collections';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};

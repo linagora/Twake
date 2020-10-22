@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import ChannelsService from 'services/channels/channels.js';
 import Groups from 'services/workspaces/groups.js';

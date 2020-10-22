@@ -6,7 +6,7 @@ import ChannelsService from 'services/channels/channels.js';
 import MessagesList from './MessagesList';
 import './Messages.scss';
 import NewThread from './Input/NewThread';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 
 type Props = {

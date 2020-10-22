@@ -1,5 +1,5 @@
 import React from 'react';
-import Collections, { Resource } from 'app/services/Collections2/Collections';
+import Collections, { Resource } from 'app/services/Collections/Collections';
 import Collection from '../Collection';
 import { shallow } from 'enzyme';
 
@@ -24,7 +24,7 @@ const MessagesComponent = (props: { channelId: string }) => {
   const channelId = props.channelId;
   const MessagesCollection = Messages.get(`/channels/${channelId}/messages/`);
 
-  const messages = MessagesCollection.useWatcher(async () => await MessagesCollection.find());
+  const messages = MessagesCollection.useWatcher(async () => await MessagesCollection.find()) || [];
 
   return (
     <div>

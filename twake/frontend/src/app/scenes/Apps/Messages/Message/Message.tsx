@@ -21,7 +21,7 @@ import MessagesListServiceManager, {
 
 import Input from '../Input/Input';
 
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
 type Props = {
   fake?: boolean;

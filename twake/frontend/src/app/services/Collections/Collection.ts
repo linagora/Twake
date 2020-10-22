@@ -1,7 +1,8 @@
-import CollectionStorage from './CollectionStorage';
+import Storage from './Storage';
 import Collections from './Collections';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
+import Transport from './Transport';
 
 /**
  * This is a Collection.
@@ -16,10 +17,15 @@ type GeneralOptions = {
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter = new EventEmitter(null);
+  protected transport: Transport<G> = new Transport(this);
 
   constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
   public attachEventEmitter = this.eventEmitter.attachEventEmitter;
+
+  public getPath() {
+    return this.path;
+  }
 
   /**
    * Share information through websocket without asking backend
@@ -49,7 +55,7 @@ export default class Collection<G extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: G, options?: GeneralOptions): Promise<G> {
-    const mongoItem = await CollectionStorage.upsert(this.path, {
+    const mongoItem = await Storage.upsert(this.path, {
       ...item.data,
       _state: item.state,
     });
@@ -67,7 +73,7 @@ export default class Collection<G extends Resource<any>> {
       filter = filter.data;
     }
     if (filter) {
-      await CollectionStorage.remove(this.path, filter);
+      await Storage.remove(this.path, filter);
       this.removeLocalResource(filter.id);
       this.eventEmitter.notify();
     }
@@ -79,7 +85,7 @@ export default class Collection<G extends Resource<any>> {
    * This will call backend if we ask for more items than existing in frontend.
    */
   public async find(filter?: any, options?: GeneralOptions): Promise<G[]> {
-    const mongoItems = await CollectionStorage.find(this.path, filter, options);
+    const mongoItems = await Storage.find(this.path, filter, options);
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
@@ -94,7 +100,7 @@ export default class Collection<G extends Resource<any>> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
-    const mongoItem = await CollectionStorage.findOne(this.path, filter, options);
+    const mongoItem = await Storage.findOne(this.path, filter, options);
     this.updateLocalResource(mongoItem);
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }

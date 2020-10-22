@@ -1,6 +1,6 @@
 import React from 'react';
 import api from 'services/api.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
 import LocalStorage from 'services/localStorage.js';

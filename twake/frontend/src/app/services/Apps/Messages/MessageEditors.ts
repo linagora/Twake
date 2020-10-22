@@ -1,4 +1,4 @@
-import Observable from 'services/observable';
+import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'services/localStorage.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 

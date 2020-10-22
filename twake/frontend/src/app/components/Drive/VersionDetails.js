@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import UploadZone from 'components/Uploads/UploadZone.js';

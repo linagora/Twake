@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import User from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import Moment from 'react-moment';
 import moment from 'moment';

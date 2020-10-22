@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
 import Globals from 'services/Globals.js';
 import Api from 'services/api.js';

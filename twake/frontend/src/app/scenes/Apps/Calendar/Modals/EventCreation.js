@@ -9,7 +9,7 @@ import InputIcon from 'components/Inputs/InputIcon.js';
 import Participants from './Part/Participants.js';
 import DateSelector from './Part/DateSelector.js';
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
 import Select from 'components/Select/Select.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';

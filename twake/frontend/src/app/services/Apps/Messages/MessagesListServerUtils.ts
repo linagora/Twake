@@ -1,6 +1,6 @@
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Numbers from 'services/utils/Numbers.js';
-import Observable from 'services/observable';
+import Observable from 'app/services/Depreciated/observable';
 
 export type Message = {
   application_id?: string | null;

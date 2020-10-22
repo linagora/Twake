@@ -1,4 +1,4 @@
-import CollectionStorage from '../CollectionStorage';
+import CollectionStorage from '../Storage';
 
 test('Mongo collection upsert', async () => {
   const listId = 10;

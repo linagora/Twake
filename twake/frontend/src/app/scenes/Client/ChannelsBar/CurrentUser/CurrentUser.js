@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import CurrentUserService from 'services/user/current_user.js';
 import MenusManager from 'services/Menus/MenusManager.js';

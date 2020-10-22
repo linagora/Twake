@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 
 import Languages from 'services/languages/languages.js';

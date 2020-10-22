@@ -1,5 +1,5 @@
 import React from 'react';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/api.js';
 import locale_en from './locale/en.js';
 import locale_fr from './locale/fr.js';

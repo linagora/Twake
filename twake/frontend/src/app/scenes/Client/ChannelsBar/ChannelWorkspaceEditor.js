@@ -6,7 +6,7 @@ import ChannelsService from 'services/channels/channels.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor.js';
 import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
 export default class ChannelWorkspaceEditor extends Component {
   constructor(props) {

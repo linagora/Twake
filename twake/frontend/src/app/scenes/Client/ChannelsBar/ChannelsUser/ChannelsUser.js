@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Emojione from 'components/Emojione/Emojione';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';
 import UserService from 'services/user/user.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';

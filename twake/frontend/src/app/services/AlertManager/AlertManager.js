@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Confirm from 'components/Alert/Confirm.js';
 import Alert from 'components/Alert/Alert.js';
 

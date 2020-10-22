@@ -7,7 +7,9 @@
     "dev:start": "craco start",
     "dev:test": "craco test",
     "dev:build": "CI=false craco build",
-    "prettier": "prettier --write src/",
+    "dev:prettier": "prettier --write src/",
+    "dev:linter": "eslint src/",
+    "start": "craco start",
     "test": "CI=true craco test",
     "build": "scripts/build-version.sh patch && CI=false craco build",
     "change-version": "scripts/build-version.sh"
