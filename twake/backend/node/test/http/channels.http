@@ -11,6 +11,8 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 ###
+
+# @name createChannel
 POST {{baseURL}}/channels
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
@@ -19,3 +21,9 @@ Authorization: Bearer {{authToken}}
   "name": "My channel",
   "creator": "111"
 }
+
+###
+
+@deleteId = {{createChannel.response.body.id}}
+
+DELETE {{baseURL}}/channels/{{deleteId}}
