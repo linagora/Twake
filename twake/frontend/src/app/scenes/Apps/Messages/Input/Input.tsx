@@ -78,14 +78,16 @@ export default (props: Props) => {
     )
       .then(message => {
         setLoading(false);
-        if (
-          messageEditorService.currentEditor ===
-          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-        ) {
-          autocomplete.focus();
-        }
-        if (!message.parent_message_id) {
-          messageEditorService.openEditor(message.id, props.messageId || '');
+        if (message) {
+          if (
+            messageEditorService.currentEditor ===
+            messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+          ) {
+            autocomplete.focus();
+          }
+          if (!message.parent_message_id) {
+            messageEditorService.openEditor(message.id, props.messageId || '');
+          }
         }
       })
       .finally(() => {
