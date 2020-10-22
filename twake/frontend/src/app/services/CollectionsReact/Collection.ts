@@ -14,11 +14,11 @@ export default class Collection<G extends OriginalResource<any>> extends Origina
     super(path, type);
   }
 
-  public useWatcher = this.observable.useWatcher;
-  public useEvent = this.observable.useWatcher;
+  public useWatcher = this.observable.useWatcher.bind(this.observable);
+  public useEvent = this.observable.useWatcher.bind(this.observable);
 
-  public addWatcher = this.observable.addWatcher;
-  public removeWatcher = this.observable.removeWatcher;
-  public addEventListener = this.observable.addWatcher;
-  public removeEventListener = this.observable.removeWatcher;
+  public addWatcher = this.observable.addWatcher.bind(this.observable);
+  public removeWatcher = this.observable.removeWatcher.bind(this.observable);
+  public addEventListener = this.observable.addWatcher.bind(this.observable);
+  public removeEventListener = this.observable.removeWatcher.bind(this.observable);
 }

@@ -21,17 +21,17 @@ export default class Observable {
     this.addWatcher = this.addWatcher.bind(this);
     this.notify = this.notify.bind(this);
     this.removeWatcher = this.removeWatcher.bind(this);
+    this.getChanges = this.getChanges.bind(this);
   }
 
   useWatcher<G>(observedChanges: () => Promise<G>, options?: any): G | undefined {
     const [state, setState] = useState<G>();
 
-    useMemo(() => {
+    useMemo(async () => {
+      console.log(this);
       const watcher = this.addWatcher(setState, observedChanges, options);
-      (async () => {
-        const changes = await this.getChanges<G>(watcher);
-        setState(changes.changes);
-      })();
+      const changes = await this.getChanges<G>(watcher);
+      setState(changes.changes);
     }, []);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ export default class Observable {
       const changes = await this.getChanges(watcher);
       if (changes.didChange) {
         //If things changed
-        watcher.callback({});
+        watcher.callback(changes.changes);
       }
     });
   }
