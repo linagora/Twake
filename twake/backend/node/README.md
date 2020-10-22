@@ -239,15 +239,29 @@ import { RealtimeCreated } from "@/core/platform/framework/decorators";
 
 // top and bottom code removed for clarity
 class MessageService implements CRUDService<Message> {
-  @RealtimeCreated<Message>("/messages")
+
+  @RealtimeCreated<Message>(
+    "/messages",
+    message => `/messages/${message.id}`
+  )
   async create(item: Message): Promise<CreateResult<Message>> {
     // save the message then return a CreateResult instance
+    const created: Message = new Message(/* */);
+
+    return new CreateResult<Message>("message", created)
   }
   // ...
 }
 ```
 
-The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients as described below.
+The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients as described next.
+
+The Realtime* decorators to add on methods to intercept calls and publish data are all following the same API.
+A decorator takes two parameters as input:
+  - First one is the room name to publish the notification to (`/messages` in the example above)
+  - Second one is the full path of the resource linked to the action (`message => /messages/${message.id}` in the example above)
+
+Both parameters can take a string or an arrow function as parameter. If arrow function is used, the input parameter will be the result element. By doing this, the paths can be generated dynamically at runtime.
 
 ### Websocket API
 
