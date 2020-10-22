@@ -10,6 +10,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import Input from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 
 type Props = {
   message: Message;
@@ -22,9 +23,11 @@ export default (props: Props) => {
   messageEditorService.setContent(
     props.message?.parent_message_id || '',
     props.message?.id || '',
-    typeof props.message?.content === 'string'
-      ? props.message?.content
-      : props.message?.content?.original_str,
+    PseudoMarkdownCompiler.transformBackChannelsUsers(
+      typeof props.message?.content === 'string'
+        ? props.message?.content
+        : props.message?.content?.original_str,
+    ),
   );
 
   const save = () => {

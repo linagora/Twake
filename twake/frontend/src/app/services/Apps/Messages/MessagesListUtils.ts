@@ -39,6 +39,7 @@ export class MessagesListUtils extends Observable {
   //State
   highlighted: string = '';
   fixBottom: boolean = true;
+  showScrollDown: boolean = false;
   currentScrollTop: number = 0;
   currentScrollHeight: number = 0;
   messagesContainerNodeScrollTop: number = 0;
@@ -275,6 +276,7 @@ export class MessagesListUtils extends Observable {
         nodeMessage.message?.front_id === message.front_id
       ) {
         this.fixBottom = false;
+        this.showScrollDown = true;
         const offsetTop = nodeMessage.node?.getDomElement()?.offsetTop;
         this.scrollTo(offsetTop - 128, true);
         this.highlightMessage(message.id || '');
@@ -429,6 +431,7 @@ export class MessagesListUtils extends Observable {
       ) {
         if (!this.fixBottom) {
           this.fixBottom = true;
+          this.showScrollDown = false;
           this.notify();
         }
       }
@@ -447,20 +450,32 @@ export class MessagesListUtils extends Observable {
       await this.serverService.loadMore(false);
       this.lockScroll();
     }
-
     if (
       evt.clientHeight + evt.scrollTop >= evt.scrollHeight &&
       this.serverService.hasLastMessage()
     ) {
       if (!this.fixBottom) {
         this.fixBottom = true;
-        this.notify();
       }
       this.removeHighlightMessage();
       this.updateScroll();
     } else {
       if (this.fixBottom) {
         this.fixBottom = false;
+      }
+    }
+
+    if (
+      evt.clientHeight + evt.scrollTop >= evt.scrollHeight - 100 &&
+      this.serverService.hasLastMessage()
+    ) {
+      if (this.showScrollDown) {
+        this.showScrollDown = false;
+        this.notify();
+      }
+    } else {
+      if (!this.showScrollDown) {
+        this.showScrollDown = true;
         this.notify();
       }
     }

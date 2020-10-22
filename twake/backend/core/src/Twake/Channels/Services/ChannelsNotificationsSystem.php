@@ -56,35 +56,39 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
                 $user = $userRepo->find($member->getUserId());
 
-                if($mention_level === 1){
-                    $mention_text = "@".($all_mention?"all":"here");
-                }
-                if($mention_level === 2){
-                    $mention_text = "@".$user->getUsername(); 
-                }
+                if($user){
 
-                $member->setLastActivity(new \DateTime());
-                if($mention_text){
-                    $member->setLastQuotedMessageId("" . $message->getId());
-                    $member->setLastMessagesIncrement($channel->getMessagesIncrement());
-                }
-                
-                $channel_array = $channel->getAsArray();
-                $channel_array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
-                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel_array)), "notifications/" . $member->getUserId());
+                    if($mention_level === 1){
+                        $mention_text = "@".($all_mention?"all":"here");
+                    }
+                    if($mention_level === 2){
+                        $mention_text = "@".$user->getUsername(); 
+                    }
 
-                //Updating workspace and group notifications
-                if (!$channel->getDirect()) {
+                    $member->setLastActivity(new \DateTime());
+                    if($mention_text){
+                        $member->setLastQuotedMessageId("" . $message->getId());
+                        $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                    }
+                    
+                    $channel_array = $channel->getAsArray();
+                    $channel_array["_user_last_quoted_message_id"] = $member->getLastQuotedMessageId();
+                    $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel_array)), "notifications/" . $member->getUserId());
 
-                    $this->addNotificationOnWorkspace($workspace, $user, false);
+                    //Updating workspace and group notifications
+                    if (!$channel->getDirect()) {
 
-                }
+                        $this->addNotificationOnWorkspace($workspace, $user, false);
 
-                if($mention_text){
-                    $mentions_types[$mention_text] = $mentions_types[$mention_text] ?: [];
-                    $mentions_types[$mention_text][] = $user;
-                }else{
-                  $users_to_notify[] = $user;
+                    }
+
+                    if($mention_text){
+                        $mentions_types[$mention_text] = $mentions_types[$mention_text] ?: [];
+                        $mentions_types[$mention_text][] = $user;
+                    }else{
+                    $users_to_notify[] = $user;
+                    }
+
                 }
 
             }

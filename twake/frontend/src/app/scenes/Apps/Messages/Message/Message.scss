@@ -94,6 +94,7 @@
     opacity: 0;
     display: flex;
     flex-direction: row;
+    transition: opacity 0.2s;
 
     &.drag {
       left: -8px;
@@ -131,6 +132,7 @@
   &:hover {
     .message-options {
       opacity: 1;
+      transition-delay: 0.2s;
     }
   }
 
