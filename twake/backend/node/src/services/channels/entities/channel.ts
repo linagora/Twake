@@ -18,7 +18,7 @@ export class Channel {
 
   //"uuid-v4"
   @ObjectIdColumn()
-  id: ObjectID;
+  id: ObjectID | string;
 
   @Column()
   name: string;
