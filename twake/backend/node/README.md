@@ -4,7 +4,7 @@
 
 ### Getting started
 
-1. Clone and install dependencies (assumes that you have Node.js 12 and npm installed):
+1. Clone and install dependencies (assumes that you have Node.js 12 and npm installed. If not, we suggest to use [nvm](https://github.com/nvm-sh/nvm/)):
 
   ```sh
   git clone git@github.com:TwakeApp/Twake.git
@@ -12,10 +12,10 @@
   npm install
   ```
 
-2. Run in watch mode (will restart on each change)
+2. Run in developer mode (will restart on each change)
 
   ```sh
-  npm run watch
+  npm run dev
   ```
 
 3. Backend is now running and available on [http://localhost:3000](http://localhost:3000)
