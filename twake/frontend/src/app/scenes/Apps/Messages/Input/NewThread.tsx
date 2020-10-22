@@ -26,7 +26,13 @@ export default (props: Props) => {
 
   if (messageEditorService.currentEditor !== props.threadId + '_main' && props.useButton) {
     return (
-      <Thread withBlock className="new-thread-button">
+      <Thread
+        withBlock
+        className="new-thread-button"
+        threadMain
+        allowUpload
+        channelId={props.channelId}
+      >
         <ThreadSection
           noSenderSpace
           onClick={() => {
@@ -45,6 +51,7 @@ export default (props: Props) => {
         withBlock
         className="new-thread"
         allowUpload
+        threadMain
       >
         <ThreadSection noSenderSpace>
           <Input

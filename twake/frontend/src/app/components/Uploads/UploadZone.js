@@ -164,7 +164,9 @@ export default class UploadZone extends React.Component {
       return;
     }
     if (this.stopHoverTimeout) clearTimeout(this.stopHoverTimeout);
-    this.setState({ dragover: state });
+    if(this.state.dragover != state){
+      this.setState({ dragover: state });
+    }
   }
   render() {
     return (
