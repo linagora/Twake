@@ -41,9 +41,6 @@ class DownloadFile
         $zip_archive = null;
         $zip = false;
 
-        //TODO reimplement oldFileSystem for retrocompatibility
-        $this->oldFileSystem = null;
-
         $this->download = $download;
         $this->versionId = $versionId;
         $this->workspace_id = $workspace_id;
