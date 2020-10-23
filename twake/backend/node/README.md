@@ -149,7 +149,7 @@ The list of services to start is defined in the `services` array like:
 
 ```json
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket", "orm"]
+  "services": ["auth", "user", "channels", "webserver", "websocket", "database", "realtime"]
 }
 ```
 
@@ -190,7 +190,21 @@ interface AdaptersConfiguration {
 }
 ```
 
-### Realtime CRUD Services
+### Platform
+
+The Twake Platform is built using the component framework described just before and so, is composed of several technical services on which business services can rely on to provide a micro-services based platform.
+
+The current chapter describes the technical services of the plaform, how to use them, how to build business services on top of them...
+
+Current technical services are located in `src/core/platform/services`:
+
+- `auth`: To manage authentication
+- `database`: To manage database connections
+- `realtime`: To provide realtime notification on platform resources
+- `webserver`: To expose services as REST ones
+- `websocket`: To communicate between client and server using websockets
+
+#### Realtime Technical Service
 
 The framework provides simple way to create CRUD Services which will notify clients using Websockets by following some conventions:
 
@@ -263,11 +277,11 @@ A decorator takes two parameters as input:
 
 Both parameters can take a string or an arrow function as parameter. If arrow function is used, the input parameter will be the result element. By doing this, the paths can be generated dynamically at runtime.
 
-### Websocket API
+#### Websocket Technical Service
 
 Services annotated as described above automatically publish events to WebSockets. Under the hood, it uses Socket.IO rooms to send events to the right clients.
 
-#### Authentication
+##### Authentication
 
 - Client have to provide a valid JWT token to be able to connect and be authenticated by providing it as string in the `authenticate` event like `{ token: "the jwt token value" }`
 - If the JWT token is valid, the client will receive a `authenticated` event
@@ -296,7 +310,7 @@ socket.on("connect", () => {
 socket.on("disconnected", () => console.log("Disconnected"));
 ```
 
-#### Joining rooms
+##### Joining rooms
 
 CRUD operations on resources are pushing events in Socket.io rooms. In order to receive events, clients must subscribe to rooms by sending an `realtime:join` on an authenticated socket with the name of the room to join and with a valid JWT token like `{ name: "room name", token: "the jwt token for this room" }`: Users can not subscribe to arbitratry rooms, they have to be authorized to.
 
@@ -341,7 +355,7 @@ socket.on("connect", () => {
 socket.on("disconnected", () => console.log("Disconnected"));
 ```
 
-#### Leaving rooms
+##### Leaving rooms
 
 The client can leave the room by emitting a `realtime:leave` event with the name of the room given as `{ name: "the room to leave" }`.
 
@@ -378,7 +392,7 @@ socket.on("connect", () => {
 });
 ```
 
-#### Subscribe to resource events
+##### Subscribe to resource events
 
 Once the given room has been joined, the client will receive `realtime:resource` events with the resource linked to the event as data:
 
@@ -414,54 +428,4 @@ socket.on("connect", () => {
       console.log("Unauthorized", err);
     });
 });
-```
-
-### ORM
-
-We use [TypeORM](https://typeorm.io/) as ORM for all the services of the Twake backend. There are several guidelines to follow in order to manage entities and listeners as described below.
-
-#### Entities
-
-1. Entities have to be defined in folders named `entities`. This comes from the typeorm API which does not allow to register new entities at runtime but allows to define `glob` expression to lookup entities in folders.
-2. Entities must follow the typeorm declaration as defined in the [entity documentation](https://typeorm.io/#/entities).
-
-```js
-import { Entity, Column, ObjectID, ObjectIdColumn } from "typeorm";
-
-@Entity({ name: "channels" })
-export class Channel {
-  @ObjectIdColumn()
-  id: ObjectID;
-
-  @Column()
-  name: string;
-}
-```
-
-#### Subscribers
-
-TypeORM allows to create [subscribers](https://typeorm.io/#/listeners-and-subscribers) as [classes](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) which will be called on defined events.
-As for the entities, the subscribers must follow some TypeORM rules and restrictions:
-
-1. Subscribers has to be defined in folders named `entities` and file name must contain `subscriber`.
-2. Subscribers must implement the `EntitySubscriberInterface` interface and have be annotated with the `@EventSubscriber` decorator.
-3. It is up to the developer to add the `after*()` and `before*()` event listeners.
-4. The subscriber is instanciated by TypeORM, so this is not easy to inject some services in it as is for now.
-
-```js
-import { EventSubscriber, EntitySubscriberInterface, InsertEvent, UpdateEvent, RemoveEvent } from "typeorm";
-import { Channel } from "./channel";
-
-@EventSubscriber()
-export class ChannelSubscriber implements EntitySubscriberInterface<Channel> {
-
-  /* This is required to define which entity this listener listens to */
-  listenTo(): Function {
-    return Channel;
-  }
-
-  afterInsert(event: InsertEvent<Channel>): void {
-    console.log("Channel has been created", event.entity);
-  }
-}
 ```
