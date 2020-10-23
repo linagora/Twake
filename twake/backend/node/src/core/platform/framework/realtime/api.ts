@@ -1,5 +1,5 @@
-import WebSocketAPI from "../../../../services/websocket/provider";
-import { WebSocketUser, WebSocket } from "../../../../services/websocket/types";
+import WebSocketAPI from "../../services/websocket/provider";
+import { WebSocketUser, WebSocket } from "../../services/websocket/types";
 import { TwakeServiceProvider } from "../api/service-provider";
 import RealtimeEntityManager from "./services/entity-manager";
 import { RealtimeEntityEvent } from "./types";

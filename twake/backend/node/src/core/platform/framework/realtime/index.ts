@@ -1,4 +1,4 @@
-import WebSocketAPI from "../../../../services/websocket/provider";
+import WebSocketAPI from "../../services/websocket/provider";
 import { TwakeService } from "../api/service";
 import { ServiceName } from "../decorators";
 import { RealtimeEventBus, RealtimeServiceAPI, RealtimeRoomManager } from "./api";

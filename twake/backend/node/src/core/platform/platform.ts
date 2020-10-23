@@ -1,8 +1,9 @@
 import { filter } from "rxjs/operators";
-import WebSocketAPI from "../../services/websocket/provider";
+import WebSocketAPI from "./services/websocket/provider";
 import { TwakeContainer, TwakeServiceProvider, TwakeComponent, TwakeServiceState } from "./framework";
 import { RealtimeService } from "./framework/realtime";
 import * as ComponentUtils from "./framework/utils/component-utils";
+import path from "path";
 
 export class TwakePlatform extends TwakeContainer {
   // TODO: As a technical service, this one must be started by the platform
@@ -18,9 +19,13 @@ export class TwakePlatform extends TwakeContainer {
   }
 
   async loadComponents(): Promise<Map<string, TwakeComponent>> {
-    return await ComponentUtils.loadComponents(this.options.servicesPath, this.options.services, {
-      getProvider: this.getProvider.bind(this)
-    });
+    return await ComponentUtils.loadComponents(
+      [this.options.servicesPath, path.resolve(__dirname, "./services/")],
+      this.options.services,
+      {
+        getProvider: this.getProvider.bind(this)
+      }
+    );
   }
 
   buildRealtimeManager(): void {

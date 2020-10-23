@@ -46,7 +46,6 @@
     },
     "cassandra": {
       "contactPoints": ["localhost:9042"]
-
     }
   }
 }

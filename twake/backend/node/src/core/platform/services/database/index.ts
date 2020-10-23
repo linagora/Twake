@@ -1,4 +1,4 @@
-import { TwakeService } from "../../core/platform/framework";
+import { TwakeService } from "../../framework";
 import { DatabaseServiceAPI } from "./api";
 import DatabaseService from "./services";
 import { DatabaseType } from "./services";

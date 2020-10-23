@@ -1,6 +1,6 @@
 import { logger } from "../../logger";
 import { RealtimeEntityActionType, RealtimeEntityEvent } from "../types";
-import WebSocketAPI from "../../../../../services/websocket/provider";
+import WebSocketAPI from "../../../services/websocket/provider";
 import { eventBus } from "../bus";
 
 export default class RealtimeEntityManager {

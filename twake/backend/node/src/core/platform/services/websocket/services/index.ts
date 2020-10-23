@@ -4,7 +4,7 @@ import socketIOJWT from "socketio-jwt";
 import WebSocketAPI from "../provider";
 import { WebSocket, WebSocketServiceConfiguration, WebSocketUser, WebsocketUserEvent } from "../types";
 import { EventEmitter } from "events";
-import { User } from "../../../services/types";
+import { User } from "../../../../../services/types";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";

@@ -1,8 +1,8 @@
 import { logger } from "../../logger";
 import { JoinLeaveRoomError, JoinLeaveRoomSuccess, JoinRoomEvent, LeaveRoomEvent } from "../types";
 import { RealtimeRoomManager } from "../api";
-import WebSocketAPI from "../../../../../services/websocket/provider";
-import { WebSocketUser, WebSocket } from "../../../../../services/websocket/types";
+import WebSocketAPI from "../../../services/websocket/provider";
+import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
 
 export default class RoomManager implements RealtimeRoomManager {
   constructor(private ws: WebSocketAPI) {}

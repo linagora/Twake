@@ -1,10 +1,10 @@
-import WebServerAPI from "../webserver/provider";
+import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import ChannelServiceAPI from "./provider";
 import { getService } from "./services";
 import web from "./web/index";
 import { Channel } from "./entities";
-import { DatabaseServiceAPI } from "../database/api";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 
 @Prefix("/api/channels")
 @Consumes(["webserver", "database"])

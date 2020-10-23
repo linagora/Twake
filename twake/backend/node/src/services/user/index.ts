@@ -1,4 +1,4 @@
-import WebServerAPI from "../webserver/provider";
+import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import User from "./entity/user";
 import UserServiceAPI from "./provider";

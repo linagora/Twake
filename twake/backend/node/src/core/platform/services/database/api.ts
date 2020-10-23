@@ -1,4 +1,4 @@
-import { TwakeServiceProvider } from "../../core/platform/framework";
+import { TwakeServiceProvider } from "../../framework";
 import { Connector } from "./services/connectors";
 
 export interface DatabaseServiceAPI extends TwakeServiceProvider {
