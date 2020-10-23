@@ -433,19 +433,9 @@ class Channels extends Observable {
       //Workspace chan
 
       url = WindowService.nameToUrl(channel.name);
-      url =
-        '/' +
-        WindowService.nameToUrl(group.name.toLocaleLowerCase()) +
-        '-' +
-        WindowService.nameToUrl(workspace.name.toLocaleLowerCase()) +
-        '/' +
-        url +
-        '-' +
-        WindowService.reduceUUID4(workspace.id) +
-        '-' +
-        WindowService.reduceUUID4(channel.id) +
-        '-' +
-        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
+      url = `${WindowService.reduceUUID4(workspace.id)}/c/${WindowService.reduceUUID4(channel.id)}${
+        messageId ? WindowService.reduceUUID4(messageId || '') : ''
+      }`;
     } else if (channel && channel.application && channel.app_id) {
       //Workspace chan
 
@@ -456,17 +446,7 @@ class Channels extends Observable {
       }
 
       url = WindowService.nameToUrl(application.name);
-      url =
-        '/' +
-        WindowService.nameToUrl(group.name.toLocaleLowerCase()) +
-        '-' +
-        WindowService.nameToUrl(workspace.name.toLocaleLowerCase()) +
-        '/' +
-        url +
-        '-' +
-        WindowService.reduceUUID4(workspace.id) +
-        '-' +
-        WindowService.reduceUUID4(channel.id);
+      url = `${WindowService.reduceUUID4(workspace.id)}/c/${WindowService.reduceUUID4(channel.id)}`;
     } else if (channel.direct) {
       //Private chan
       var name = [];
@@ -482,25 +462,23 @@ class Channels extends Observable {
         return false;
       }
       name = name.join('+');
-      url =
-        '/private/' +
-        WindowService.nameToUrl(name) +
-        '-' +
-        WindowService.reduceUUID4(channel.id) +
-        '-' +
-        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
+      url = `${WindowService.reduceUUID4(workspace.id)}/c/${WindowService.reduceUUID4(
+        channel.id,
+      )}-${messageId ? WindowService.reduceUUID4(messageId || '') : ''}`;
     }
     return url;
   }
 
   updateURL(channel) {
     const url = this.getURL(channel, this.url_values.message);
-    if (!url) {
+    /*if (!url) {
       this._url_timeout = setTimeout(() => {
         this.updateURL();
       }, 1000);
     }
     WindowService.setUrl(RouterServices.pathnames.CLIENT + url);
+    */
+    RouterServices.history.push(`${RouterServices.pathnames.CLIENT}/${url}`);
     this.updateTitle(channel);
   }
 

@@ -208,7 +208,7 @@ class Login extends Observable {
     this.login_error = false;
     this.notify();
 
-    var that = this;
+    const that = this;
 
     Globals.getDevice(device => {
       Api.post(
@@ -220,11 +220,10 @@ class Login extends Observable {
           device: device,
         },
         function (res) {
-          if (res.data.status == 'connected') {
+          if (res.data.status === 'connected') {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
             }
-            WindowState.setUrl('/', true);
             that.login_loading = false;
             that.init();
           } else {

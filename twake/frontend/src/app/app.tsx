@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import LoginService from 'services/login/login.js';
 import Integration from 'scenes/Integration/integration.js';
-import RouterServices from './services/RouterServices';
+import RouterServices, { RouteType } from './services/RouterServices';
 import { Switch, Route } from 'react-router-dom';
 import { Router } from 'react-router';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
@@ -16,10 +16,10 @@ export default () => {
     <Integration>
       <Router history={RouterServices.history}>
         <Switch>
-          {RouterServices.routes.map((route: any, index: number) => {
+          {RouterServices.routes.map((route: RouteType, index: number) => {
             return (
               <Route
-                key={`${route.name} ${index}`}
+                key={`${route.key}_${index}`}
                 exact={route.exact ? route.exact : false}
                 path={route.path}
                 component={() => {
