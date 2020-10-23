@@ -29,15 +29,6 @@
       "secret": "supersecret"
     }
   },
-  "orm": {
-    "connection": {
-      "type": "mongodb",
-      "host": "localhost",
-      "port": 27017,
-      "database": "test",
-      "logging": true
-    }
-  },
   "database": {
     "type": "mongodb",
     "mongodb": {
