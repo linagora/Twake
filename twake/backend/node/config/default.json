@@ -1,5 +1,5 @@
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket", "orm"],
+  "services": ["auth", "user", "channels", "webserver", "websocket", "database"],
   "webserver": {
     "port": 3000,
     "logger": {
@@ -36,6 +36,16 @@
       "port": 27017,
       "database": "test",
       "logging": true
+    }
+  },
+  "database": {
+    "type": "mongodb",
+    "mongodb": {
+      "uri": "mongodb://localhost:27017",
+      "database": "twake"
+    },
+    "cassandra": {
+      "TODO": "Add the cassandra driver configuration here"
     }
   }
 }
