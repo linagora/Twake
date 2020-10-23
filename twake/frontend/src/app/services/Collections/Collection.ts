@@ -2,7 +2,8 @@ import Storage from './Storage';
 import Collections from './Collections';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
-import Transport from './Transport';
+import Transport from './Transport/Transport';
+import CollectionTransport from './Transport/CollectionTransport';
 
 /**
  * This is a Collection.
@@ -16,15 +17,17 @@ type GeneralOptions = {
 
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
-  protected eventEmitter: EventEmitter = new EventEmitter(null);
-  protected transport: Transport<G> = new Transport(this);
+  protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
+  protected transport: CollectionTransport<G> = new CollectionTransport(this);
 
   constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
-  public attachEventEmitter = this.eventEmitter.attachEventEmitter;
-
   public getPath() {
     return this.path;
+  }
+
+  public getTransport() {
+    return this.transport;
   }
 
   /**

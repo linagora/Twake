@@ -6,9 +6,14 @@ import OriginalCollections, {
 } from '../Collections/Collections';
 import Observable from '../Observable/Observable';
 
+class ObservableAdapter extends Observable {}
+
 export default class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
-  protected observable: Observable = new Observable();
-  protected eventEmitter = new CollectionsEventEmitter(this.observable);
+  protected observable: ObservableAdapter = new ObservableAdapter();
+  protected eventEmitter: CollectionsEventEmitter<G> = new CollectionsEventEmitter(
+    this,
+    this.observable,
+  );
 
   constructor(path: string = '', type: new (data: any) => G) {
     super(path, type);

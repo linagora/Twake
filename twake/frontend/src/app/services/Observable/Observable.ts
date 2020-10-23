@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import EventListener from 'events';
 
 /**
  * Observable service
@@ -14,10 +15,11 @@ type Watcher = {
   options?: any;
 };
 
-export default class Observable {
-  private watchers: Watcher[] = [];
+export default class Observable extends EventListener {
+  protected watchers: Watcher[] = [];
 
   constructor() {
+    super();
     this.addWatcher = this.addWatcher.bind(this);
     this.notify = this.notify.bind(this);
     this.removeWatcher = this.removeWatcher.bind(this);
@@ -35,11 +37,11 @@ export default class Observable {
     }, []);
 
     useEffect(() => {
-      //Called on each update
+      //Called on component unmount
       return () => {
         this.removeWatcher(setState);
       };
-    });
+    }, []);
 
     return state;
   }
@@ -79,11 +81,20 @@ export default class Observable {
       observedChanges: observedChanges,
       savedChanges: null,
     };
+    if (this.watchers.length === 0) {
+      console.log('emit add watcher');
+      this.emit('watcher:exists');
+    }
     this.watchers.push(watcher);
     return watcher;
   }
 
   removeWatcher(callback: (transform: any) => void) {
+    const lengthBefore = this.watchers.length;
     this.watchers = this.watchers.filter(i => i.callback !== callback);
+    if (lengthBefore > 0 && this.watchers.length === 0) {
+      console.log('emit remove');
+      this.emit('watcher:none');
+    }
   }
 }

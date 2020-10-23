@@ -3,12 +3,12 @@ version: "2"
 services:
   scylladb:
     image: scylladb/scylla:4.1.0
-    command: --seeds=scylladb,scylladb2 --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
+    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
   scylladb2:
     image: scylladb/scylla:4.1.0
-    command: --seeds=scylladb,scylladb2 --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
+    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
     volumes:
       - ./docker-data/scylladb2:/var/lib/scylla
   rabbitmq:

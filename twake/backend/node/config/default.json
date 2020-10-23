@@ -10,7 +10,7 @@
     }
   },
   "websocket": {
-    "path": "/ws",
+    "path": "/socket.io/",
     "adapters": {
       "types": [],
       "redis": {
