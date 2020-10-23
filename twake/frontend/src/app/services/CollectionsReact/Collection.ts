@@ -19,7 +19,16 @@ export default class Collection<G extends OriginalResource<any>> extends Origina
     super(path, type);
   }
 
-  public useWatcher = this.observable.useWatcher.bind(this.observable);
+  public useWatcher = <G>(observedScope: () => Promise<G>, options?: any) =>
+    this.observable.useWatcher(observedScope, {
+      observedChanges: (changes: any) => {
+        if (changes?.constructor?.name === 'Array' && changes.length > 1) {
+          return changes.map((e: any) => e?.id || e);
+        }
+        return changes;
+      },
+      ...options,
+    });
   public useEvent = this.observable.useWatcher.bind(this.observable);
 
   public addWatcher = this.observable.addWatcher.bind(this.observable);

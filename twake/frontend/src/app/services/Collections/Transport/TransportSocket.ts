@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 
 export default class TransportSocket {
   private socket: SocketIOClient.Socket | null = null;
+  private listeners: { [path: string]: (event: any) => void } = {};
   constructor(private readonly transport: Transport) {}
 
   connect() {
@@ -20,12 +21,24 @@ export default class TransportSocket {
         .on('unauthorized', (err: any) => {
           console.log('Unauthorize', err);
         });
+      socket.on('realtime:resource', (event: any) => {
+        this.listeners[Object.keys(this.listeners)[0]](event);
+      });
     });
   }
 
-  join(path: string) {
+  join(path: string, callback: (event: any) => void) {
+    path = path.replace(/\/$/, '');
     if (this.socket) {
       this.socket.emit('realtime:join', { name: path, token: 'twake' });
+      this.listeners[path] = callback;
+    }
+  }
+
+  leave(path: string) {
+    path = path.replace(/\/$/, '');
+    if (this.socket) {
+      this.socket.emit('realtime:leave', { name: path });
     }
   }
 }

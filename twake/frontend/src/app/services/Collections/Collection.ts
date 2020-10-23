@@ -30,6 +30,10 @@ export default class Collection<G extends Resource<any>> {
     return this.transport;
   }
 
+  public getType() {
+    return this.type;
+  }
+
   /**
    * Share information through websocket without asking backend
    */
@@ -65,6 +69,14 @@ export default class Collection<G extends Resource<any>> {
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
+    if (!options?.withoutBackend) {
+      this.transport.upsert(this.resources[mongoItem.id]).then(resource => {
+        item.setPersisted(true);
+        item.id = resource.id;
+        this.upsert(item, { withoutBackend: true });
+      });
+    }
+
     return item ? this.resources[mongoItem.id] : item;
   }
 
@@ -76,9 +88,17 @@ export default class Collection<G extends Resource<any>> {
       filter = filter.data;
     }
     if (filter) {
-      await Storage.remove(this.path, filter);
-      this.removeLocalResource(filter.id);
-      this.eventEmitter.notify();
+      const resource = await this.findOne(filter);
+      if (resource) {
+        await Storage.remove(this.path, filter);
+        this.removeLocalResource(filter.id);
+        this.eventEmitter.notify();
+        if (!options?.withoutBackend && resource.state.persisted) {
+          this.transport.remove(resource.id).then(() => {
+            console.log(resource);
+          });
+        }
+      }
     }
     return;
   }
@@ -92,6 +112,9 @@ export default class Collection<G extends Resource<any>> {
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
+
+    this.transport.get();
+
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 
@@ -105,6 +128,11 @@ export default class Collection<G extends Resource<any>> {
     }
     const mongoItem = await Storage.findOne(this.path, filter, options);
     this.updateLocalResource(mongoItem);
+
+    if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
+      this.transport.get();
+    }
+
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 

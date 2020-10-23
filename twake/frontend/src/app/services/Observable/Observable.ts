@@ -10,9 +10,11 @@ import EventListener from 'events';
 
 type Watcher = {
   callback: (transform: any) => void;
-  observedChanges: () => any;
+  observedScope: () => any;
   savedChanges: any;
-  options?: any;
+  options?: {
+    observedChanges: (changes: any) => any;
+  } & any;
 };
 
 export default class Observable extends EventListener {
@@ -26,12 +28,11 @@ export default class Observable extends EventListener {
     this.getChanges = this.getChanges.bind(this);
   }
 
-  useWatcher<G>(observedChanges: () => Promise<G>, options?: any): G | undefined {
+  useWatcher<G>(observedScope: () => Promise<G>, options?: any): G | undefined {
     const [state, setState] = useState<G>();
 
     useMemo(async () => {
-      console.log(this);
-      const watcher = this.addWatcher(setState, observedChanges, options);
+      const watcher = this.addWatcher(setState, observedScope, options);
       const changes = await this.getChanges<G>(watcher);
       setState(changes.changes);
     }, []);
@@ -51,38 +52,41 @@ export default class Observable extends EventListener {
       const changes = await this.getChanges(watcher);
       if (changes.didChange) {
         //If things changed
-        watcher.callback(changes.changes);
+        watcher.callback(
+          //Could be imporved ?
+          typeof changes.changes === 'object' && changes.changes?.constructor?.name != 'Array'
+            ? Object.assign(Object.create(Object.getPrototypeOf(changes.changes)), changes.changes)
+            : changes.changes,
+        );
       }
     });
   }
 
   async getChanges<G>(watcher: Watcher): Promise<{ changes: G; didChange: boolean }> {
-    const changes = await watcher.observedChanges();
+    const changes = await watcher.observedScope();
 
-    if (watcher.savedChanges) {
-      const snapshot = JSON.stringify(changes);
-      if (watcher.savedChanges === snapshot) {
-        return { changes: changes, didChange: false };
-      } else {
-        watcher.savedChanges = snapshot;
-      }
+    let observed = changes;
+    if (watcher.options?.observedChanges) {
+      observed = watcher.options?.observedChanges(changes);
     }
+
+    const snapshot = JSON.stringify(observed);
+    if (watcher.savedChanges === snapshot) {
+      return { changes: changes, didChange: false };
+    }
+    watcher.savedChanges = snapshot;
 
     return { changes: changes, didChange: true };
   }
 
-  addWatcher(
-    callback: (transform: any) => void,
-    observedChanges: () => any,
-    options?: any,
-  ): Watcher {
+  addWatcher(callback: (transform: any) => void, observedScope: () => any, options?: any): Watcher {
     const watcher = {
       callback: callback,
-      observedChanges: observedChanges,
+      observedScope: observedScope,
       savedChanges: null,
+      options: options,
     };
     if (this.watchers.length === 0) {
-      console.log('emit add watcher');
       this.emit('watcher:exists');
     }
     this.watchers.push(watcher);
@@ -93,7 +97,6 @@ export default class Observable extends EventListener {
     const lengthBefore = this.watchers.length;
     this.watchers = this.watchers.filter(i => i.callback !== callback);
     if (lengthBefore > 0 && this.watchers.length === 0) {
-      console.log('emit remove');
       this.emit('watcher:none');
     }
   }

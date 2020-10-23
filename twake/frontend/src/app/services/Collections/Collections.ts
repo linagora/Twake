@@ -37,6 +37,10 @@ class Collections {
     this.transport.connect();
   }
 
+  public getTransport() {
+    return this.transport;
+  }
+
   public get<G extends Resource<any>, C extends Collection<G>>(
     path: string,
     type?: new (data: any) => G,

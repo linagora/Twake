@@ -18,4 +18,12 @@ export default class Transport {
   public connect() {
     this.socket.connect();
   }
+
+  public getHttp() {
+    return this.http;
+  }
+
+  public getSocket() {
+    return this.socket;
+  }
 }
