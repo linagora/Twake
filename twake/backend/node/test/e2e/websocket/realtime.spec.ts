@@ -8,7 +8,7 @@ describe("The Realtime API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth", "websocket"]
+      services: ["webserver", "user", "auth", "websocket", "realtime"]
     });
 
     socket = io.connect("http://localhost:3000", { path: "/ws" });
