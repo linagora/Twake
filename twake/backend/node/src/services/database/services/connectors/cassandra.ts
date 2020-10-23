@@ -1,17 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import cassandra from "cassandra-driver";
 import { AbstractConnector } from "./abstract-connector";
 
 export interface CassandraConnectionOptions {
-  url: string;
+  contactPoints: string[];
+  username: string;
+  password: string;
 }
 
-export class CassandraConnector extends AbstractConnector<CassandraConnectionOptions, any> {
+export class CassandraConnector extends AbstractConnector<CassandraConnectionOptions, cassandra.Client> {
+  private client: cassandra.Client;
 
-  getClient(): any {
-    throw new Error("Method not implemented.");
+  getClient(): cassandra.Client {
+    return this.client;
   }
 
   async connect(): Promise<this> {
-    throw new Error("Not implemented");
+    if (this.client) {
+      return this;
+    }
+
+    const cassandraOptions: cassandra.DseClientOptions = {
+      contactPoints: this.options.contactPoints,
+    };
+    if (this.options.username && this.options.password) {
+      cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(this.options.username, this.options.password);
+    }
+
+    this.client = new cassandra.Client(cassandraOptions);
+    await this.client.connect();
+
+    return this;
   }
 }

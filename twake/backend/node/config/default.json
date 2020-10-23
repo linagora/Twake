@@ -45,7 +45,8 @@
       "database": "twake"
     },
     "cassandra": {
-      "TODO": "Add the cassandra driver configuration here"
+      "contactPoints": ["localhost:9042"]
+
     }
   }
 }
