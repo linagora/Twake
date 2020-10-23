@@ -1,4 +1,4 @@
-import { logger } from "../../logger";
+import { logger } from "../../../framework/logger";
 import { JoinLeaveRoomError, JoinLeaveRoomSuccess, JoinRoomEvent, LeaveRoomEvent } from "../types";
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";

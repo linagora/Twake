@@ -1,16 +1,9 @@
-import WebSocketAPI from "../../services/websocket/provider";
+import { TwakeServiceProvider } from "../../framework";
 import { WebSocketUser, WebSocket } from "../../services/websocket/types";
-import { TwakeServiceProvider } from "../api/service-provider";
 import RealtimeEntityManager from "./services/entity-manager";
 import { RealtimeEntityEvent } from "./types";
 
 export interface RealtimeServiceAPI extends TwakeServiceProvider {
-
-  /**
-   * FIXME: This has to be remobed once technical services are ready
-   * Bind Websocket Service
-   */
-  bind(ws: WebSocketAPI): void;
 
   /**
    * Get the realtime event bus instance
