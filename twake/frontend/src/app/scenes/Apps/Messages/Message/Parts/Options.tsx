@@ -7,6 +7,7 @@ import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
+import Workspaces from 'services/workspaces/workspaces.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
@@ -15,6 +16,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import RouterServices from 'app/services/RouterServices';
 
 type Props = {
   message: Message;
@@ -66,12 +68,13 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
+            const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
             const url =
               document.location.origin +
-              ChannelsService.getURL(
-                props.message.channel_id,
-                props.message.parent_message_id || props.message.id,
-              );
+              RouterServices.generateClientRoute({
+                workspaceId: workspace.id,
+                channelId: props.message.channel_id,
+              });
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);

@@ -18,6 +18,8 @@ import MessagesListServerServicesManager, {
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import RouterServices from 'app/services/RouterServices';
 
 type Props = {
   message: Message;
@@ -75,10 +77,12 @@ export default class MessageHeader extends Component<Props, State> {
     };
 
     const updateMessageLink = () => {
-      const url = ChannelsService.getURL(
-        this.props.message.channel_id,
-        this.props.message.parent_message_id || this.props.message.id,
-      );
+      const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
+      const url = RouterServices.generateClientRoute({
+        workspaceId: workspace.id,
+        channelId: this.props.message.channel_id,
+        messageId: this.props.message.parent_message_id || this.props.message.id,
+      });
       this.setState({ messageLink: url });
     };
 

@@ -35,6 +35,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import RouterServices from 'app/services/RouterServices';
 
 export default class Drive extends Component {
   constructor() {
@@ -311,7 +312,16 @@ export default class Drive extends Component {
     var directory_id = directory.id;
 
     if (directory_id) {
-      Globals.window.location.hash = '#' + directory_id;
+      const url = RouterServices.generateClientRoute({
+        workspaceId: workspace_id,
+        channelId: this.props.channel.id,
+        messageId: directory_id,
+      });
+      /*
+      TODO Add route for drive
+      */
+      console.log(RouterServices.history);
+      debugger;
     }
 
     if (!directory_id) {

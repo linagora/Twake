@@ -1,4 +1,5 @@
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory, History } from 'history';
+import short, { Translator } from 'short-uuid';
 
 // Import your component here
 import App from 'app/scenes/app';
@@ -15,12 +16,19 @@ export type RouteType = {
   options?: any;
 };
 
+export type ParamsType = {
+  workspaceId: string;
+  channelId?: string;
+  messageId?: string;
+};
+
 export type Pathnames = {
   [key: string]: string;
 };
 
 class RouterServices {
-  history = createBrowserHistory();
+  translator: Translator = short();
+  history: History<unknown> = createBrowserHistory();
 
   // Define your route here
   public pathnames: Readonly<Pathnames> = {
@@ -74,6 +82,18 @@ class RouterServices {
       component: Error,
     },
   ];
+
+  // Generate shortened UUID
+  public generateClientRoute(params: ParamsType) {
+    const shorterWorkspaceId = this.translator.fromUUID(params.workspaceId);
+    const shorterChannelId = params.channelId ? this.translator.fromUUID(params.channelId) : 'main';
+    /*
+      TODO - Multiple routes dispatch 
+    */
+    return `${this.pathnames.CLIENT}/${shorterWorkspaceId}/c/${shorterChannelId}${
+      params.messageId ? '-' + params.messageId : ''
+    }`;
+  }
 }
 
 export default new RouterServices();
