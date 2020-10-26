@@ -399,6 +399,7 @@ Once the given room has been joined, the client will receive `realtime:resource`
 ```json
 {
   "action": "created",
+  "room": "/channels",
   "type": "channel",
   "path": "/channels/5f905327e3e1626399aaad79",
   "resource": {
