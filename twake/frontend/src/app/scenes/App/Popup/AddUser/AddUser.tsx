@@ -98,9 +98,9 @@ export default class AddUser extends Component<Props, State> {
   stringToArray(str: string) {
     let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
     let mailToArray: string[] = [];
-    const stringToArray = str.matchAll(regex);
+    const stringToArray = str.match(regex);
 
-    Array.from(stringToArray).map((item: any) => mailToArray.push(item[0].toLocaleLowerCase()));
+    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
 
     const members = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
 
