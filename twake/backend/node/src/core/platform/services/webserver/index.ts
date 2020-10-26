@@ -1,4 +1,4 @@
-import { TwakeService } from "../../core/platform/framework";
+import { TwakeService } from "../../framework";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance, fastify } from "fastify";
 import sensible from "fastify-sensible";

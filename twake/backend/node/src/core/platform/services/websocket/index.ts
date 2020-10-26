@@ -1,5 +1,5 @@
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
-import { Consumes, ServiceName, TwakeService } from "../../core/platform/framework";
+import { Consumes, ServiceName, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
 import websocketPlugin from "./plugin";

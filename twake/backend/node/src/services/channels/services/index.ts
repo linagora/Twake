@@ -1,6 +1,6 @@
-import { MongoConnector } from "../../database/services/connectors/mongodb";
-import { CassandraConnector } from "../../database/services/connectors/cassandra";
-import { DatabaseServiceAPI } from "../../database/api";
+import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
+import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
+import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 

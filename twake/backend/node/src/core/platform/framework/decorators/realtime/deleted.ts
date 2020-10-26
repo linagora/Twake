@@ -1,6 +1,7 @@
 import { PathResolver, getPath } from "..";
 import { DeleteResult } from "../../api/crud-service";
-import { eventBus, RealtimeEntityEvent, RealtimeEntityActionType } from "../../realtime";
+import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
+import { eventBus } from "../../../services/realtime/bus";
 
 /**
  *
@@ -20,10 +21,6 @@ export function RealtimeDeleted<T>(path: string | PathResolver<T>, resourcePath?
         return result;
       }
 
-      console.log(result);
-
-      // check if resource has been deleted from result
-      // if yes then send event
       result.deleted && eventBus.publish<T>(RealtimeEntityActionType.Deleted, {
         type: result.type,
         path: getPath(path, result),
