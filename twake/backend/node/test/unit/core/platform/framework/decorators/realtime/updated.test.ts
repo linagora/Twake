@@ -1,7 +1,7 @@
 import {describe, expect, it, jest} from "@jest/globals";
 import { UpdateResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeUpdated } from "../../../../../../../src/core/platform/framework/decorators";
-import { eventBus } from "../../../../../../../src/core/platform/framework/realtime";
+import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 
 describe("The RealtimeUpdated decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async (done) => {
