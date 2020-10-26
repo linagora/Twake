@@ -193,6 +193,7 @@
     "rrule": "=2.6.4",
     "sass-loader": "8.0.2",
     "semver": "6.3.0",
+    "short-uuid": "^4.1.0",
     "socketcluster-client": "^16.0.1",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "2.3.4",
