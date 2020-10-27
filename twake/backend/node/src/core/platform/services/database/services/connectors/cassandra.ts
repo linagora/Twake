@@ -2,6 +2,7 @@
 import cassandra from "cassandra-driver";
 import { AbstractConnector } from "./abstract-connector";
 
+
 export interface CassandraConnectionOptions {
   contactPoints: string[];
   username: string;
@@ -10,6 +11,7 @@ export interface CassandraConnectionOptions {
 
 export class CassandraConnector extends AbstractConnector<CassandraConnectionOptions, cassandra.Client> {
   private client: cassandra.Client;
+
 
   getClient(): cassandra.Client {
     return this.client;
@@ -22,7 +24,10 @@ export class CassandraConnector extends AbstractConnector<CassandraConnectionOpt
 
     const cassandraOptions: cassandra.DseClientOptions = {
       contactPoints: this.options.contactPoints,
+      localDataCenter: 'datacenter1',
     };
+
+
     if (this.options.username && this.options.password) {
       cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(this.options.username, this.options.password);
     }

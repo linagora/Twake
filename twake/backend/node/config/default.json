@@ -1,5 +1,13 @@
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket", "database", "realtime"],
+  "services": [
+    "auth",
+    "user",
+    "channels",
+    "webserver",
+    "websocket",
+    "database",
+    "realtime"
+  ],
   "webserver": {
     "port": 3000,
     "logger": {
@@ -30,13 +38,15 @@
     }
   },
   "database": {
-    "type": "mongodb",
+    "type": "cassandra",
     "mongodb": {
       "uri": "mongodb://localhost:27017",
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": ["localhost:9042"]
+      "contactPoints": [
+        "scylladb:9042"
+      ]
     }
   }
 }

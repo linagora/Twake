@@ -28,10 +28,10 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     return channel;
   });
 
-  fastify.post<{ Body: CreateChannelBody }>("/", createOptions, async (request, reply) => {
+  fastify.post<{ Body: { resource: CreateChannelBody } }>("/", createOptions, async (request, reply) => {
     request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
 
-    const channel = await controller.create(request.body);
+    const channel = await controller.create(request.body.resource);
 
     reply.status(201).send(channel);
   });

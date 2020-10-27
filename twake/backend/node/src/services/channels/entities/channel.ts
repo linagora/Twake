@@ -3,7 +3,7 @@ import { ObjectID } from "mongodb";
 export enum VisibilityEnum {
   PRIVATE = "private",
   PUBLIC = "public",
-  DIRECT = "direct"
+  DIRECT = "direct"
 }
 
 export class Channel {
@@ -13,7 +13,7 @@ export class Channel {
   // "uuid-v4" | "direct"
   workspace_id: string;
 
-  _id: ObjectID | string;
+  _id: ObjectID | string;
 
   id: string;
 
@@ -31,5 +31,7 @@ export class Channel {
 
   archived: boolean;
 
-  archivation_date: Date;
+  archivation_date: number;
+
+  owner: string;
 }
