@@ -3,6 +3,7 @@ import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { RealtimeDeleted, RealtimeCreated, RealtimeUpdated } from "../../../core/platform/framework/decorators";
 import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import { getChannelPath } from "../realtime";
 
 export class MongoChannelService implements ChannelServiceAPI<Channel> {
   version = "1";
@@ -12,7 +13,7 @@ export class MongoChannelService implements ChannelServiceAPI<Channel> {
     this.collection = this.db.collection<Channel>("channels");
   }
 
-  @RealtimeCreated<Channel>("/channels", channel => `/channels/${channel.id}`)
+  @RealtimeCreated<Channel>("/channels", channel => getChannelPath(channel))
   async create(channel: Channel): Promise<CreateResult<Channel>> {
     const result = await this.collection.insertOne(channel, { w:1 });
 
@@ -36,14 +37,14 @@ export class MongoChannelService implements ChannelServiceAPI<Channel> {
     return channel;
   }
 
-  @RealtimeUpdated<string>("/channels", id => `/channels/${id}`)
+  @RealtimeUpdated<Channel>("/channels", channel => getChannelPath(channel))
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async update(id: string, entity: Channel): Promise<UpdateResult<Channel>> {
     // TODO
     return null;
   }
 
-  @RealtimeDeleted<Channel>("/channels", channel => `/channels/${channel.id}`)
+  @RealtimeDeleted<Channel>("/channels", channel => getChannelPath(channel))
   async delete(id: string): Promise<DeleteResult<Channel>> {
     const deleteResult = await this.collection.deleteOne({ _id: new mongo.ObjectID(id)});
 

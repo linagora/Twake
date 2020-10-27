@@ -6,6 +6,7 @@ import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
+import { getWebsocketInformation } from "../realtime";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
@@ -30,7 +31,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
       const resources = await controller.getChannels(req.params, req.query);
 
       return {
-        websockets: [],
+        websockets: resources.map(channel => getWebsocketInformation(channel)),
         resources,
         next_page_token: ""
       };
@@ -43,7 +44,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     preHandler: accessControl,
     schema: getChannelSchema,
     handler: async (req): Promise<ChannelGetResponse> => {
-      debugger;
       req.log.info(`Get channel ${req.params}`);
 
       const resource = await controller.getChannel(req.params);
@@ -52,7 +52,10 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
         throw fastify.httpErrors.notFound(`Channel ${req.params.id} not found`);
       }
 
-      return { resource };
+      return {
+        websocket: getWebsocketInformation(resource),
+        resource
+      };
     }
   });
 
@@ -70,7 +73,10 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
         reply.code(201);
       }
 
-      return { resource };
+      return {
+        websocket: getWebsocketInformation(resource),
+        resource
+      };
     }
   });
 

@@ -1,3 +1,12 @@
+const webSocketSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    room: { type: "string" },
+    encryption_key: { type: "string" }
+  }
+};
+
 export const createChannelSchema = {
   body: {
     type: "object",
@@ -12,6 +21,7 @@ export const createChannelSchema = {
     201: {
       type: "object",
       properties: {
+        websocket: webSocketSchema,
         resource: {
           type: "object",
           properties: {
@@ -39,6 +49,7 @@ export const getChannelSchema =  {
     200: {
       type: "object",
       properties: {
+        websocket: webSocketSchema,
         resource: {
           type: "object",
           properties: {

@@ -92,8 +92,9 @@ describe("The /api/channels API", () => {
       const result = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
-      expect(result.websockets.length).toEqual(0);
+      expect(result.websockets.length).toEqual(1);
       expect(result.resources.length).toEqual(1);
+      expect(result.websockets[0]).toMatchObject({ name: creationResult.entity.name, room: `/channels/${creationResult.entity._id}`, encryption_key: ""});
       expect(result.resources[0]).toMatchObject({ _id: String(creationResult.entity._id), name: channel.name });
 
       done();
@@ -145,6 +146,8 @@ describe("The /api/channels API", () => {
         id: String(creationResult.entity._id),
         name: creationResult.entity.name
       });
+      expect(channelGetResult.websocket).toBeDefined();
+      expect(channelGetResult.websocket).toMatchObject({ name: creationResult.entity.name, room: `/channels/${creationResult.entity._id}`, encryption_key: ""});
 
       done();
     });
@@ -187,10 +190,12 @@ describe("The /api/channels API", () => {
       const channelCreateResult = deserialize(ChannelCreateResponse, response.body);
 
       expect(channelCreateResult.resource).toBeDefined();
+      expect(channelCreateResult.websocket).toBeDefined();
 
       const channelId = channelCreateResult.resource.id;
       const createdChannel = await channelService.get(channelId);
 
+      expect(channelCreateResult.websocket).toMatchObject({ room: `/channels/${createdChannel._id}`, encryption_key: ""});
       expect(createdChannel).toBeDefined();
       done();
     });
