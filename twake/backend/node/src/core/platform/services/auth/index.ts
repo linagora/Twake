@@ -1,4 +1,4 @@
-import { TwakeService, Consumes, Prefix, ServiceName } from "../../core/platform/framework";
+import { TwakeService, Consumes, Prefix, ServiceName } from "../../framework";
 import web from "./web/index";
 import AuthServiceAPI from "./provider";
 import WebServerAPI from "../webserver/provider";

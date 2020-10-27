@@ -1,7 +1,7 @@
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 import fastifyJwt from "fastify-jwt";
 import fp from "fastify-plugin";
-import config from "../../../core/config";
+import config from "../../../../config";
 
 const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
   fastify.register(fastifyJwt, {

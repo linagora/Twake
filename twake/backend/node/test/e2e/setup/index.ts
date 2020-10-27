@@ -1,5 +1,5 @@
 import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
-import WebServerAPI from "../../../src/services/webserver/provider";
+import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
 import path from "path";
 import { FastifyInstance } from "fastify";
 

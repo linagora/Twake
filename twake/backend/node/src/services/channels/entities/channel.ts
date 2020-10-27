@@ -1,4 +1,4 @@
-import { Entity, Column, ObjectID, ObjectIdColumn, PrimaryColumn } from "typeorm";
+import { ObjectID } from "mongodb";
 
 export enum VisibilityEnum {
   PRIVATE = "private",
@@ -6,41 +6,30 @@ export enum VisibilityEnum {
   DIRECT = "direct"
 }
 
-@Entity({ name: "channels" })
 export class Channel {
   // uuid-v4
-  @PrimaryColumn()
   company_id: string;
 
   // "uuid-v4" | "direct"
-  @PrimaryColumn()
   workspace_id: string;
 
-  //"uuid-v4"
-  @ObjectIdColumn()
-  id: ObjectID | string;
+  _id: ObjectID | string;
 
-  @Column()
+  id: string;
+
   name: string;
 
-  @Column()
   icon: string;
 
-  @Column()
   description: string;
 
-  @Column()
   channel_group: string;
 
-  @Column("text")
   visibility: VisibilityEnum;
 
-  @Column()
   default: boolean;
 
-  @Column()
   archived: boolean;
 
-  @Column({ type: Date })
   archivation_date: Date;
 }

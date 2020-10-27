@@ -1,13 +1,13 @@
-import WebServerAPI from "../webserver/provider";
+import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import ChannelServiceAPI from "./provider";
-import * as services from "./services";
+import { getService } from "./services";
 import web from "./web/index";
-import ORMServiceAPI from "../orm/provider";
 import { Channel } from "./entities";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 
 @Prefix("/api/channels")
-@Consumes(["webserver", "orm"])
+@Consumes(["webserver", "database"])
 export default class ChannelService extends TwakeService<ChannelServiceAPI<Channel>> {
   version = "1";
   name = "channels";
@@ -19,9 +19,9 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI<Chann
 
   public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-    const orm = this.context.getProvider<ORMServiceAPI>("orm");
+    const database = this.context.getProvider<DatabaseServiceAPI>("database");
 
-    this.service = new services.ChannelService(orm);
+    this.service = getService(database);
 
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });

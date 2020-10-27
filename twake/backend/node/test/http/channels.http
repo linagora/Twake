@@ -3,14 +3,14 @@
 # @name login
 GET {{baseURL}}/auth/login
 
-###
+### List channels
 
 @authToken = {{login.response.body.token}}
 GET {{baseURL}}/channels
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
-###
+### Create a channel
 
 # @name createChannel
 POST {{baseURL}}/channels
@@ -22,7 +22,14 @@ Authorization: Bearer {{authToken}}
   "creator": "111"
 }
 
-###
+### Get a single channel
+
+@getId = {{createChannel.response.body.id}}
+
+GET {{baseURL}}/channels/{{getId}}
+
+
+### Delete a channel
 
 @deleteId = {{createChannel.response.body.id}}
 

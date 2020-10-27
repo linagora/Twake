@@ -22,9 +22,16 @@ export function buildDependenciesTree(components: Map<string, TwakeComponent>): 
   }
 }
 
-export async function loadComponents(path: string, names: string[] = [], context: TwakeContext): Promise<Map<string, TwakeComponent>> {
+/**
+ * Load specified components from given list of paths
+ *
+ * @param paths Paths to search components in
+ * @param names Components to load
+ * @param context
+ */
+export async function loadComponents(paths: string[], names: string[] = [], context: TwakeContext): Promise<Map<string, TwakeComponent>> {
   const result = new Map<string, TwakeComponent>();
-  const loader = new Loader(path);
+  const loader = new Loader(paths);
 
   const components: TwakeComponent[] = await Promise.all(names.map(async name => {
     const clazz = await loader.load(name);

@@ -1,18 +1,13 @@
-import WebSocketAPI from "../../../../services/websocket/provider";
-import { TwakeService } from "../api/service";
-import { ServiceName } from "../decorators";
+import { Consumes, ServiceName, TwakeService } from "../../framework";
+import WebSocketAPI from "../../services/websocket/provider";
 import { RealtimeEventBus, RealtimeServiceAPI, RealtimeRoomManager } from "./api";
 import { eventBus } from "./bus";
 import RealtimeEntityManager from "./services/entity-manager";
 import RoomManagerImpl from "./services/room-manager";
 
-export * from "./types";
-export * from "./services/entity-manager";
-export * from "./bus";
-
+@Consumes(["websocket"])
 @ServiceName("realtime")
-export class RealtimeService extends TwakeService<RealtimeServiceAPI> implements RealtimeServiceAPI {
-  private ws: WebSocketAPI;
+export default class RealtimeService extends TwakeService<RealtimeServiceAPI> implements RealtimeServiceAPI {
   private roomManager: RoomManagerImpl;
   private entityManager: RealtimeEntityManager;
   version = "1";
@@ -21,13 +16,15 @@ export class RealtimeService extends TwakeService<RealtimeServiceAPI> implements
     return this;
   }
 
-  // TODO: This will have to be managed in doStart
-  bind(ws: WebSocketAPI): void {
-    this.ws = ws;
-    this.roomManager = new RoomManagerImpl(this.ws);
+  async doStart(): Promise<this> {
+    const ws = this.context.getProvider<WebSocketAPI>("websocket");
+
+    this.roomManager = new RoomManagerImpl(ws);
     this.roomManager.init();
-    this.entityManager = new RealtimeEntityManager(this.ws);
+    this.entityManager = new RealtimeEntityManager(ws);
     this.entityManager.init();
+
+    return this;
   }
 
   getBus(): RealtimeEventBus {

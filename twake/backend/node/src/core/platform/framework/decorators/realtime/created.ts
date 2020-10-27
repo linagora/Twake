@@ -1,6 +1,7 @@
 import { PathResolver, getPath } from "..";
 import { CreateResult } from "../../api/crud-service";
-import { eventBus, RealtimeEntityEvent, RealtimeEntityActionType } from "../../realtime";
+import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
+import { eventBus } from "../../../services/realtime/bus";
 
 /**
  *

@@ -1,4 +1,4 @@
-import { EntityOperationResult } from "../api/crud-service";
+import { EntityOperationResult } from "../../framework/api/crud-service";
 
 export enum RealtimeEntityActionType {
   Created = "created",

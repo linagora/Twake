@@ -1,4 +1,4 @@
-import { TwakeServiceProvider } from "../../core/platform/framework/api";
+import { TwakeServiceProvider } from "../../framework/api";
 
 export default interface AuthServiceAPI extends TwakeServiceProvider {
   /**

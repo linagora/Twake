@@ -1,5 +1,5 @@
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket", "orm"],
+  "services": ["auth", "user", "channels", "webserver", "websocket", "database", "realtime"],
   "webserver": {
     "port": 3000,
     "logger": {
@@ -29,13 +29,14 @@
       "secret": "supersecret"
     }
   },
-  "orm": {
-    "connection": {
-      "type": "mongodb",
-      "host": "localhost",
-      "port": 27017,
-      "database": "test",
-      "logging": true
+  "database": {
+    "type": "mongodb",
+    "mongodb": {
+      "uri": "mongodb://localhost:27017",
+      "database": "twake"
+    },
+    "cassandra": {
+      "contactPoints": ["localhost:9042"]
     }
   }
 }
