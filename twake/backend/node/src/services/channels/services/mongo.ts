@@ -30,7 +30,9 @@ export class MongoChannelService implements ChannelServiceAPI<Channel> {
     const channel = await this.collection.findOne<Channel>({ _id: new mongo.ObjectID(id) });
 
     // TODO: Automate this: a decorator with class-transformer will be nice
-    channel.id = String(channel._id);
+    if (channel) {
+      channel.id = String(channel._id);
+    }
     return channel;
   }
 

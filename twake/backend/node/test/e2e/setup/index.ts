@@ -1,11 +1,14 @@
-import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
-import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
 import path from "path";
 import { FastifyInstance } from "fastify";
+import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
+import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
+import { DatabaseServiceAPI } from "../../../src/core/platform/services/database/api";
+import { MongoConnector } from "../../../src/core/platform/services/database/services/connectors/mongodb";
 
 export interface TestPlatform {
   platform: TwakePlatform;
   app: FastifyInstance;
+  database: DatabaseServiceAPI;
   auth: {
     getJWTToken(): Promise<string>
   }
@@ -27,6 +30,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   await platform.start();
 
   const app = platform.getProvider<WebServerAPI>("webserver").getServer();
+  const database = platform.getProvider<DatabaseServiceAPI>("database");
 
   async function getJWTToken(): Promise<string> {
     const response = await app.inject({
@@ -39,11 +43,22 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
 
   async function tearDown(): Promise<void> {
     await platform.stop();
+    await dropDatabase();
+  }
+
+  async function dropDatabase(): Promise<void> {
+    if (!database) {
+      return;
+    }
+
+    const mongo = database.getConnector() as MongoConnector;
+    await mongo.getDatabase().dropDatabase();
   }
 
   return {
     platform,
     app,
+    database,
     auth: {
       getJWTToken
     },

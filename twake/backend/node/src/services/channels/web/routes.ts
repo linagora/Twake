@@ -1,45 +1,98 @@
-import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
-import { ChannelParams, CreateChannelBody } from "./types";
+import { FastifyInstance, FastifyPluginCallback } from "fastify";
+import { BaseChannelsParameters, ChannelParameters, CreateChannelBody, ChannelListQueryParameters, ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "./types";
 import { createChannelSchema, getChannelSchema } from "./schemas";
 import ChannelController from "./controller";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
+import { checkCompanyAndWorkspaceForUser } from "./middleware";
+import { FastifyRequest } from "fastify/types/request";
+
+const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
 const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (fastify: FastifyInstance, options, next) => {
   const controller = new ChannelController(options.service);
-  const createOptions: RouteShorthandOptions = { schema: createChannelSchema };
-  const getOptions: RouteShorthandOptions = { schema: getChannelSchema };
 
-  fastify.get("/", async (req): Promise<Channel[]> => {
-    req.log.debug("Get channels");
+  const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
+    const authorized = await checkCompanyAndWorkspaceForUser(request.params.company_id, request.params.workspace_id);
 
-    return controller.getChannels();
-  });
-
-  fastify.get<{ Params: ChannelParams }>("/:id", getOptions, async (req): Promise<Channel> => {
-    req.log.info(`Get channel ${req.params.id}`);
-
-    const channel = await controller.getChannel(req.params.id);
-
-    if (!channel) {
-      throw fastify.httpErrors.notFound(`Channel ${req.params.id} not found`);
+    if (!authorized) {
+      throw fastify.httpErrors.badRequest("Invalid company/workspace");
     }
+  };
 
-    return channel;
+  fastify.route<{ Querystring: ChannelListQueryParameters, Params: BaseChannelsParameters }>({
+    method: "GET",
+    url,
+    preHandler: accessControl,
+    handler: async (req): Promise<ChannelListResponse> => {
+      req.log.info(`Get channels ${req.params}`);
+
+      const resources = await controller.getChannels(req.params, req.query);
+
+      return {
+        websockets: [],
+        resources,
+        next_page_token: ""
+      };
+    }
   });
 
-  fastify.post<{ Body: CreateChannelBody }>("/", createOptions, async (request, reply) => {
-    request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
+  fastify.route<{ Params: ChannelParameters }>({
+    method: "GET",
+    url: `${url}/:id`,
+    preHandler: accessControl,
+    schema: getChannelSchema,
+    handler: async (req): Promise<ChannelGetResponse> => {
+      debugger;
+      req.log.info(`Get channel ${req.params}`);
 
-    const channel = await controller.create(request.body);
+      const resource = await controller.getChannel(req.params);
 
-    reply.status(201).send(channel);
+      if (!resource) {
+        throw fastify.httpErrors.notFound(`Channel ${req.params.id} not found`);
+      }
+
+      return { resource };
+    }
   });
 
-  fastify.delete<{ Params: ChannelParams }>("/:id", async (request, reply) => {
-    await controller.remove(request.params.id);
+  fastify.route<{ Body: CreateChannelBody, Params: ChannelParameters }>({
+    method: "POST",
+    url,
+    preHandler: accessControl,
+    schema: createChannelSchema,
+    handler: async (request, reply): Promise<ChannelCreateResponse> => {
+      request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
 
-    reply.status(204).send();
+      const resource = await controller.create(request.params, request.body);
+
+      if (resource) {
+        reply.code(201);
+      }
+
+      return { resource };
+    }
+  });
+
+  fastify.route<{ Params: ChannelParameters }>({
+    method: "DELETE",
+    url: `${url}/:id`,
+    preHandler: accessControl,
+    handler: async (request, reply): Promise<ChannelDeleteResponse> => {
+      const removed = await controller.remove(request.params);
+
+      if (removed) {
+        reply.code(204);
+
+        return {
+          status: "success"
+        };
+      }
+
+      return {
+        status: "error"
+      };
+    }
   });
 
   next();

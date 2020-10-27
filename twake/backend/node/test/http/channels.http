@@ -1,4 +1,6 @@
-@baseURL = http://localhost:3000/api
+@company_id = 0
+@workspace_id = 0
+@baseURL = http://localhost:3000/api/channels/companies/{{company_id}}/workspaces/{{workspace_id}}
 
 # @name login
 GET {{baseURL}}/auth/login
@@ -18,19 +20,18 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "My channel",
-  "creator": "111"
+  "name": "My channel"
 }
 
 ### Get a single channel
 
-@getId = {{createChannel.response.body.id}}
+@getId = {{createChannel.response.body.resource.id}}
 
 GET {{baseURL}}/channels/{{getId}}
 
 
 ### Delete a channel
 
-@deleteId = {{createChannel.response.body.id}}
+@deleteId = {{createChannel.response.body.resource.id}}
 
 DELETE {{baseURL}}/channels/{{deleteId}}
