@@ -312,16 +312,15 @@ export default class Drive extends Component {
     var directory_id = directory.id;
 
     if (directory_id) {
+      /*
+      // TODO -> Get document id and replace url
       const url = RouterServices.generateClientRoute({
         workspaceId: workspace_id,
         channelId: this.props.channel.id,
-        messageId: directory_id,
+        directoryId: directory_id,
       });
-      /*
-      TODO Add route for drive
+      RouterServices.history.replace(url);
       */
-      console.log(RouterServices.history);
-      debugger;
     }
 
     if (!directory_id) {

@@ -46,7 +46,7 @@ export default class MainView extends Component {
     Collections.get('users').removeListener(this);
   }
   shouldComponentUpdate(nextProps, nextState) {
-    var key = this.state.channels.currentChannelFrontId + '_' + this.state.channels.current_tab_id;
+    var key = ChannelsService.currentChannelFrontId + '_' + ChannelsService.current_tab_id;
     if (key != this.old_key) {
       this.old_key = key;
       nextState.loading = true;
@@ -110,24 +110,22 @@ export default class MainView extends Component {
   }
   render() {
     var current_side_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentSideChannelFrontId,
+      ChannelsService.currentSideChannelFrontId,
     );
     var current_channel = Collections.get('channels').findByFrontId(
-      this.state.channels.currentChannelFrontId,
+      ChannelsService.currentChannelFrontId,
     );
-    var current_channel_tab = Collections.get('channel_tabs').find(
-      this.state.channels.current_tab_id,
-    );
+    var current_channel_tab = Collections.get('channel_tabs').find(ChannelsService.current_tab_id);
 
-    if (this.state.channels.current_tab_id) {
+    if (ChannelsService.current_tab_id) {
       current_channel.tabs.every(item => {
         if (
-          item.id == this.state.channels.current_tab_id &&
+          item.id == ChannelsService.current_tab_id &&
           JSON.stringify(current_channel_tab) != JSON.stringify(item)
         ) {
           Collections.get('channel_tabs').completeObject(item);
           current_channel_tab = Collections.get('channel_tabs').find(
-            this.state.channels.current_tab_id,
+            ChannelsService.current_tab_id,
           );
           return false;
         }
@@ -216,7 +214,7 @@ export default class MainView extends Component {
                   <Emojione type={current_channel.icon} /> {current_channel.name}
                   {!!current_channel.private && <Icon className="lock_icon" type="lock" />}
                 </div>
-                <Tabs channel={current_channel} currentTab={this.state.channels.current_tab_id} />
+                <Tabs channel={current_channel} currentTab={ChannelsService.current_tab_id} />
               </div>
             )}
 
@@ -308,12 +306,12 @@ export default class MainView extends Component {
                   <AppView
                     key={
                       current_side_channel +
-                      JSON.stringify(this.state.channels.currentSideChannelOptions)
+                      JSON.stringify(ChannelsService.currentSideChannelOptions)
                     }
                     app={side_app}
                     noapp={noapp}
                     current_channel={current_side_channel}
-                    options={this.state.channels.currentSideChannelOptions}
+                    options={ChannelsService.currentSideChannelOptions}
                   />
                 </div>
               </div>
