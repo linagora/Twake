@@ -1,31 +1,36 @@
+import { plainToClass } from "class-transformer";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
-import { CreateChannelBody } from "./types";
+import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters, CreateChannelBody } from "./types";
 
 export default class ChannelController {
   constructor(private service: ChannelServiceAPI<Channel>) {}
 
-  async create(channel: CreateChannelBody): Promise<Channel> {
-    const entity = new Channel();
-    // TODO: Create the Channel entity from the CreateChannelBody
-    // The CreateChannelBody is already validated by the web framework
-    entity.name = channel.name;
+  async create(params: BaseChannelsParameters, channel: CreateChannelBody): Promise<Channel> {
+    const entity = plainToClass(Channel, {
+      ...channel,
+      ...{
+        company_id: params.company_id,
+        workspace_id: params.workspace_id
+      }
+    });
 
     const result = await this.service.create(entity);
 
     return result.entity;
   }
 
-  async getChannels(): Promise<Channel[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getChannels(params: BaseChannelsParameters, query: ChannelListQueryParameters): Promise<Channel[]> {
     return this.service.list();
   }
 
-  async getChannel(id: string): Promise<Channel | void> {
-    return await this.service.get(id);
+  async getChannel(params: ChannelParameters): Promise<Channel | void> {
+    return await this.service.get(params.id);
   }
 
-  async remove(id: string): Promise<boolean> {
-    const deleteResult = await this.service.delete(id);
+  async remove(params: ChannelParameters): Promise<boolean> {
+    const deleteResult = await this.service.delete(params.id);
 
     return deleteResult.deleted;
   }
