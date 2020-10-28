@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const io = require("socket.io-client");
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjAzODk3MDI3fQ.SLgSEQtsKSgh3k4YEQPmQCVER-_sMkeqrqepMgLT3BE";
 const socket = io.connect("http://localhost:3000", { path: "/ws" });
 
 socket.on("connect", () => {

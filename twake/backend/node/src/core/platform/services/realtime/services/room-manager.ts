@@ -9,7 +9,7 @@ export default class RoomManager implements RealtimeRoomManager {
 
   init(): void {
     this.ws.onUserConnected(event => {
-      logger.info(`User ${event.user._id} is connected`);
+      logger.info(`User ${event.user.id} is connected`);
 
       event.socket.on("realtime:join", async (joinEvent: JoinRoomEvent) => {
         const canJoin = await this.userCanJoinRoom(event.user, joinEvent);
@@ -30,7 +30,7 @@ export default class RoomManager implements RealtimeRoomManager {
     });
 
     this.ws.onUserDisconnected(event => {
-      logger.info(`User ${event.user._id} is disconnected`);
+      logger.info(`User ${event.user.id} is disconnected`);
       this.leaveAll(event.socket, event.user);
     });
   }
@@ -51,14 +51,14 @@ export default class RoomManager implements RealtimeRoomManager {
    * @return Promise<boolean> true if can join, false otherwise. Never rejects.
    */
   async userCanJoinRoom(user: WebSocketUser, joinEvent: JoinRoomEvent): Promise<boolean> {
-    logger.info(`Checking if user ${user._id} can join room ${joinEvent.name}`);
+    logger.info(`Checking if user ${user.id} can join room ${joinEvent.name}`);
 
     // FIXME: We will use JWT to validate the token
     return joinEvent.token && joinEvent.token === "twake";
   }
 
   join(websocket: WebSocket, room: string, user: WebSocketUser): void {
-    logger.info(`User ${user._id} is joining room ${room}`);
+    logger.info(`User ${user.id} is joining room ${room}`);
     websocket.join(room, err => {
       if (err) {
         logger.error(`Error while joining room ${room}`, err);
@@ -70,12 +70,12 @@ export default class RoomManager implements RealtimeRoomManager {
       }
 
       this.sendSuccess("join", websocket, { name: room });
-      logger.info(`User ${user._id} joined room ${room}`);
+      logger.info(`User ${user.id} joined room ${room}`);
     });
   }
 
   leave(websocket: WebSocket, room: string, user: WebSocketUser): void {
-    logger.info(`User ${user._id} is leaving room ${room}`);
+    logger.info(`User ${user.id} is leaving room ${room}`);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     websocket.leave(room, (err: any) => {
@@ -89,12 +89,12 @@ export default class RoomManager implements RealtimeRoomManager {
       }
 
       this.sendSuccess("leave", websocket, { name: room });
-      logger.info(`User ${user._id} left room ${room}`);
+      logger.info(`User ${user.id} left room ${room}`);
     });
   }
 
   leaveAll(websocket: WebSocket, user: WebSocketUser): void {
-    logger.info(`Leaving rooms for user ${user._id}`);
+    logger.info(`Leaving rooms for user ${user.id}`);
     websocket.leaveAll();
   }
 
