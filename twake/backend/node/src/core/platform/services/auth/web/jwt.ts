@@ -8,11 +8,12 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
     secret: config.get("auth.jwt.secret")
   });
 
-  fastify.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.decorate("authenticate", async (request: FastifyRequest) => {
     try {
-      await request.jwtVerify();
+      request.currentUser = await request.jwtVerify();
+      request.log.debug(`Authenticated as user ${request.currentUser.id}`);
     } catch (err) {
-      reply.status(401).send("You are not authenticated");
+      throw fastify.httpErrors.unauthorized("Bad credentials");
     }
   });
 

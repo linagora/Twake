@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import SocketIO from "socket.io";
+import { User } from "../services/types";
 
 export interface authenticateDecorator {
   (request: FastifyRequest): FastifyRequest,
@@ -10,5 +11,9 @@ declare module "fastify" {
   interface FastifyInstance {
     authenticate(): void;
     io: SocketIO.Server;
+  }
+
+  interface FastifyRequest {
+    currentUser: User;
   }
 }
