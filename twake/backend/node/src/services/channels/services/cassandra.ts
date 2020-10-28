@@ -5,7 +5,7 @@ import ChannelServiceAPI from "../provider";
 import { RealtimeDeleted, RealtimeCreated, RealtimeUpdated } from "../../../core/platform/framework/decorators";
 import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
 
-export class CassandraChannelService implements ChannelServiceAPI<Channel> {
+export class CassandraChannelService implements ChannelServiceAPI {
   version = "1";
 
   constructor(private client: cassandra.Client) {}

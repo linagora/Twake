@@ -74,7 +74,7 @@ describe("The /api/channels API", () => {
       const companyId = "0";
       const workspaceId = "0";
 
-      const channelService = platform.platform.getProvider<ChannelServiceAPI<Channel>>("channels");
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
       const creationResult = await channelService.create(channel);
@@ -168,7 +168,7 @@ describe("The /api/channels API", () => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI<Channel>>("channels");
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
       channel.company_id = companyId;
@@ -218,7 +218,7 @@ describe("The /api/channels API", () => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI<Channel>>("channels");
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       const response = await platform.app.inject({
         method: "POST",
@@ -266,7 +266,7 @@ describe("The /api/channels API", () => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI<Channel>>("channels");
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
       channel.company_id = companyId;

@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters, CreateChannelBody, ChannelListQueryParameters, ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "./types";
 import { createChannelSchema, getChannelSchema } from "./schemas";
 import ChannelController from "./controller";
-import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
@@ -10,7 +9,7 @@ import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
-const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (fastify: FastifyInstance, options, next) => {
+const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
   const controller = new ChannelController(options.service);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
