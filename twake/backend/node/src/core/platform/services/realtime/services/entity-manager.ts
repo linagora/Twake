@@ -26,6 +26,7 @@ export default class RealtimeEntityManager {
 
     return this.ws.getIo().to(event.path).emit("realtime:resource", {
       action,
+      room: event.path,
       type: event.type,
       path: event.resourcePath,
       resource: event.entity

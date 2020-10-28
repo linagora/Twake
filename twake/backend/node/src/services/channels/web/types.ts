@@ -1,22 +1,54 @@
-import { VisibilityEnum } from "../entities/channel";
+import { Channel } from "../entities";
 
+export declare type DirectChannel = "direct";
+export declare type DeleteStatus = "success" | "error";
 
-export interface ChannelParams {
-  id?: string
+export interface BaseChannelsParameters {
+  company_id: string;
+  workspace_id: string | DirectChannel;
 }
 
-export interface CreateChannelBody {
-  creator: string,
-  company_id: string,//"uuid-v4",
-  workspace_id: string, //"uuid-v4" | "direct",
-  id: string, //"uuid-v4"
-  owner: string,//"uuid-v4", //User-id of the channel owner (invisible but used on some access restriction-
-  icon: string,
-  name: string,
-  description: string,
-  channel_group: string,
-  visibility: VisibilityEnum,   //"private" | "public" | "direct",
-  default: boolean, //The new members join by default this channel
-  archived: boolean,
-  archivation_date: number, //Timestamp
+export interface ChannelParameters extends BaseChannelsParameters {
+  id: string;
+}
+
+export interface PaginationQueryParameters {
+  page_token?: string;
+  max_results?: number;
+}
+
+export interface ChannelListQueryParameters extends PaginationQueryParameters {
+  search_query?: string;
+  mine?: boolean;
+  websockets?: boolean;
+}
+
+export class ChannelListResponse {
+  websockets: ChannelWebsocket[];
+  resources: Channel[];
+  next_page_token: string;
+}
+
+export class ChannelGetResponse {
+  websocket?: ChannelWebsocket;
+  resource: Channel;
+}
+export class ChannelCreateResponse {
+  websocket?: ChannelWebsocket;
+  resource: Channel;
+}
+
+export class ChannelDeleteResponse {
+  status: DeleteStatus;
+}
+
+export interface ChannelWebsocket {
+  name: string;
+  room: string;
+  encryption_key: string;
+}
+
+export class CreateChannelBody {
+  creator: string;
+  name: string;
 }
