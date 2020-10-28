@@ -6,7 +6,7 @@ import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
-import { getWebsocketInformation } from "../realtime";
+import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
@@ -31,9 +31,10 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
       const resources = await controller.getChannels(req.params, req.query);
 
       return {
-        websockets: resources.map(channel => getWebsocketInformation(channel)),
-        resources,
-        next_page_token: ""
+        ...{
+          resources
+        },
+        ...(req.query.websockets && { websockets: getWorkspaceRooms(req.params, req.currentUser, req.query.mine) })
       };
     }
   });
