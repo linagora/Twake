@@ -69,12 +69,10 @@ export default class Collection<G extends Resource<any>> {
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
+    console.log('here insert', mongoItem);
+
     if (!options?.withoutBackend) {
-      this.transport.upsert(this.resources[mongoItem.id]).then(resource => {
-        item.setPersisted(true);
-        item.id = resource.id;
-        this.upsert(item, { withoutBackend: true });
-      });
+      this.transport.upsert(this.resources[mongoItem.id]);
     }
 
     return item ? this.resources[mongoItem.id] : item;
@@ -94,9 +92,7 @@ export default class Collection<G extends Resource<any>> {
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
-          this.transport.remove(resource.id).then(() => {
-            console.log(resource);
-          });
+          this.transport.remove(resource);
         }
       }
     }
@@ -113,7 +109,7 @@ export default class Collection<G extends Resource<any>> {
       this.updateLocalResource(mongoItem);
     });
 
-    this.transport.get();
+    //this.transport.get();
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }

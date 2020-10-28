@@ -16,12 +16,7 @@ export default class TransportHTTP {
       },
       body: options?.body,
     });
-    if ([200, 201, 204].indexOf(response.status) >= 0) {
-      //Request succeeded
-      return await response.json();
-    } else {
-      throw response;
-    }
+    return await response.json();
   }
 
   public async post(route: string, body: any, options: any = {}) {
