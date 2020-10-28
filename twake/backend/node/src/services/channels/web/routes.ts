@@ -59,18 +59,18 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     }
   });
 
-  fastify.route<{ Body: CreateChannelBody, Params: ChannelParameters }>({
+  fastify.route<{ Body: { resource: CreateChannelBody }, Params: ChannelParameters }>({
     method: "POST",
-    url,
+    url: `${url}/:id`,
     preHandler: accessControl,
     schema: createChannelSchema,
     handler: async (request, reply): Promise<ChannelCreateResponse> => {
-      request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
-
-      const resource = await controller.create(request.params, request.body);
+      request.log.debug(`Save Channel ${JSON.stringify(request.body)}`);
+      const resource = await controller.save(request.params, request.body.resource);
 
       if (resource) {
-        reply.code(201);
+        console.log(request.params, request.body);
+        reply.code(200);
       }
 
       return {

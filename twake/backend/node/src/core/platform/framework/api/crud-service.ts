@@ -4,23 +4,10 @@ export class EntityTarget<Entity> {
    * @param type type of entity
    * @param entity the entity itself
    */
-  constructor(readonly type: string, readonly entity: Entity) {}
+  constructor(readonly type: string, readonly entity: Entity) { }
 }
 
-export class UpdateResult<Entity> extends EntityTarget<Entity> {
-  /**
-   * Result sent back by the underlying database
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  raw?: any;
-
-  /**
-   * Number of rows affected by the update.
-   */
-  affected?: number;
-}
-
-export class CreateResult<Entity> extends EntityTarget<Entity> {
+export class SaveResult<Entity> extends EntityTarget<Entity> {
   /**
    * Result sent back by the underlying database
    */
@@ -29,12 +16,12 @@ export class CreateResult<Entity> extends EntityTarget<Entity> {
 }
 
 export class DeleteResult<Entity> extends EntityTarget<Entity>  {
-    /**
-   *
-   * @param type type of entity
-   * @param entity the entity itself
-   * @param deleted the entity has been deleted or not
-   */
+  /**
+ *
+ * @param type type of entity
+ * @param entity the entity itself
+ * @param deleted the entity has been deleted or not
+ */
   constructor(readonly type: string, readonly entity: Entity, readonly deleted: boolean) {
     super(type, entity);
   }
@@ -43,12 +30,11 @@ export class DeleteResult<Entity> extends EntityTarget<Entity>  {
 
 export declare type EntityId = string | number;
 
-export declare type EntityOperationResult<Entity> = CreateResult<Entity> | UpdateResult<Entity> | DeleteResult<Entity>;
+export declare type EntityOperationResult<Entity> = SaveResult<Entity> | DeleteResult<Entity>;
 
 export interface CRUDService<Entity> {
-  create(item: Entity): Promise<CreateResult<Entity>>;
-  get(id: EntityId): Promise<Entity>;
-  update(id: EntityId, item: Entity, /* TODO: Options */): Promise<UpdateResult<Entity>>;
-  delete(id: EntityId): Promise<DeleteResult<Entity>>;
-  list(/* TODO: Options */): Promise<Entity[]>;
+  save(item: Entity): Promise<SaveResult<Entity>>;
+  get(pk: { [column: string]: EntityId }): Promise<Entity>;
+  delete(pk: { [column: string]: EntityId }): Promise<DeleteResult<Entity>>;
+  list(pk: { [column: string]: EntityId }/* TODO: Options */): Promise<Entity[]>;
 }

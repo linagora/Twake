@@ -5,33 +5,51 @@ import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters, 
 
 
 export default class ChannelController {
-  constructor(private service: ChannelServiceAPI<Channel>) { }
+  constructor(private db: ChannelServiceAPI<Channel>) { }
 
-  async create(params: BaseChannelsParameters, channel: CreateChannelBody): Promise<Channel> {
+  async save(params: ChannelParameters, channel: CreateChannelBody): Promise<Channel> {
+
+    //get existing channel if params.id is defined
+
+    //get existing channel archived status
+
+    //If archived: you can't change anything
+
     const entity = plainToClass(Channel, {
       ...channel,
       ...{
         company_id: params.company_id,
-        workspace_id: params.workspace_id
-      }
+        workspace_id: params.workspace_id,
+        id: params.id
+      },
     });
 
-    const result = await this.service.create(entity);
-
+    const result = await this.db.save(entity);
     return result.entity;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getChannels(params: BaseChannelsParameters, query: ChannelListQueryParameters): Promise<Channel[]> {
-    return this.service.list();
+    return this.db.list({
+      company_id: params.company_id,
+      workspace_id: params.workspace_id,
+    });
   }
 
   async getChannel(params: ChannelParameters): Promise<Channel | void> {
-    return await this.service.get(params.id);
+    return await this.db.get({
+      id: params.id,
+      company_id: params.company_id,
+      workspace_id: params.workspace_id,
+    });
   }
 
   async remove(params: ChannelParameters): Promise<boolean> {
-    const deleteResult = await this.service.delete(params.id);
+    const deleteResult = await this.db.delete({
+      id: params.id,
+      company_id: params.company_id,
+      workspace_id: params.workspace_id,
+    });
 
     return deleteResult.deleted;
   }

@@ -4,15 +4,11 @@ import WebSocketAPI from "../../../services/websocket/provider";
 import { eventBus } from "../bus";
 
 export default class RealtimeEntityManager {
-  constructor(private ws: WebSocketAPI) {}
+  constructor(private ws: WebSocketAPI) { }
 
   init(): void {
-    eventBus.subscribe(RealtimeEntityActionType.Created, event => {
-      this.pushResourceEvent(event, RealtimeEntityActionType.Created);
-    });
-
-    eventBus.subscribe(RealtimeEntityActionType.Updated, event => {
-      this.pushResourceEvent(event, RealtimeEntityActionType.Updated);
+    eventBus.subscribe(RealtimeEntityActionType.Saved, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Saved);
     });
 
     eventBus.subscribe(RealtimeEntityActionType.Deleted, event => {

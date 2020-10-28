@@ -14,18 +14,6 @@ export const createChannelSchema = {
       resource: {
         type: "object",
         properties: {
-          compagny_id: {
-            type: "string",
-          },
-          workspace_id: {
-            type: "string"
-          },
-          id: {
-            type: "string",
-          },
-          owner: {
-            type: "string"
-          },
           icon: {
             type: "string",
           },
@@ -47,12 +35,9 @@ export const createChannelSchema = {
           archived: {
             type: "string",
           },
-          archivation_date: {
-            type: "string"
-          }
 
         },
-        required: ["company_id", "workspace_id", "id", "owner", "icon", "name", "description", "channel_group", "visibility", "default", "archived", "archivation_date"]
+        required: ["icon", "name", "description", "channel_group", "visibility", "default", "archived"]
       },
     },
     required: ["resource"]
@@ -104,3 +89,4 @@ export const getChannelSchema = {
     }
   }
 };
+

@@ -51,4 +51,10 @@ export interface ChannelWebsocket {
 export class CreateChannelBody {
   creator: string;
   name: string;
+  icon: string;
+  description: string;
+  channel_groupe: string;
+  visibility: string;
+  defaut: string;
+  archived: string;
 }
