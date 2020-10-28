@@ -65,7 +65,6 @@ describe("The /api/channels API", () => {
       const result = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
-      expect(result.websockets.length).toEqual(0);
       expect(result.resources.length).toEqual(0);
 
       done();
@@ -92,10 +91,57 @@ describe("The /api/channels API", () => {
       const result = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
-      expect(result.websockets.length).toEqual(1);
       expect(result.resources.length).toEqual(1);
-      expect(result.websockets[0]).toMatchObject({ name: creationResult.entity.name, room: `/channels/${creationResult.entity._id}`, encryption_key: ""});
       expect(result.resources[0]).toMatchObject({ _id: String(creationResult.entity._id), name: channel.name });
+
+      done();
+    });
+
+    it("should return websockets information", async (done) => {
+      const companyId = "0";
+      const workspaceId = "0";
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        },
+        query: {
+          websockets: "true"
+        }
+      });
+
+      const result = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.websockets.length).toEqual(2);
+
+      done();
+    });
+
+    it("should return websockets and direct information", async (done) => {
+      const companyId = "0";
+      const workspaceId = "0";
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`
+        },
+        query: {
+          websockets: "true",
+          mine: "true"
+        }
+      });
+
+      const result = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.websockets.length).toEqual(3);
 
       done();
     });
