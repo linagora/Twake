@@ -1,12 +1,13 @@
 import { plainToClass } from "class-transformer";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
-import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters, CreateChannelBody } from "./types";
+import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters } from "./types";
+import * as Types from "./typebox";
 
 export default class ChannelController {
   constructor(private service: ChannelServiceAPI<Channel>) {}
 
-  async create(params: BaseChannelsParameters, channel: CreateChannelBody): Promise<Channel> {
+  async create(params: Types.ChannelsRouteParameters, channel: Types.CreateChannelBody): Promise<Channel> {
     const entity = plainToClass(Channel, {
       ...channel,
       ...{

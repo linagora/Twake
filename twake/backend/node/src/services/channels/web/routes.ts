@@ -7,6 +7,7 @@ import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
 import { getWebsocketInformation } from "../realtime";
+import * as Types from "./typebox";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
@@ -21,7 +22,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     }
   };
 
-  fastify.route<{ Querystring: ChannelListQueryParameters, Params: BaseChannelsParameters }>({
+  fastify.route<{ Querystring: ChannelListQueryParameters, Params: Types.ChannelsRouteParameters }>({
     method: "GET",
     url,
     preHandler: accessControl,
@@ -38,7 +39,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     }
   });
 
-  fastify.route<{ Params: ChannelParameters }>({
+  fastify.route<{ Params: Types.ChannelRouteParameters }>({
     method: "GET",
     url: `${url}/:id`,
     preHandler: accessControl,
@@ -59,7 +60,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     }
   });
 
-  fastify.route<{ Body: CreateChannelBody, Params: ChannelParameters }>({
+  fastify.route<{ Body: Types.CreateChannelBody, Params: Types.ChannelRouteParameters }>({
     method: "POST",
     url,
     preHandler: accessControl,

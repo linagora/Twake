@@ -1,66 +1,15 @@
-const webSocketSchema = {
-  type: "object",
-  properties: {
-    name: { type: "string" },
-    room: { type: "string" },
-    encryption_key: { type: "string" }
-  }
-};
+import * as Types from "./typebox";
 
 export const createChannelSchema = {
-  body: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string"
-      }
-    },
-    required: ["name"]
-  },
+  body: Types.createChannelSchema,
   response: {
-    201: {
-      type: "object",
-      properties: {
-        websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {
-            id: { type: "string"},
-            company_id: { type: "string" },
-            workspace_id: { type: "string" }
-          },
-          required: ["id", "company_id", "workspace_id"]
-        }
-      },
-      required: ["resource"]
-    }
+    201: Types.createChannelResponseSchema
   }
 };
 
 export const getChannelSchema =  {
-  request: {
-    properties: {
-      company_id: { type: "string" },
-      workspace_id: { type: "string" }
-    },
-    required: ["company_id", "workspace_id"]
-  },
+  request: Types.channelSchema,
   response: {
-    200: {
-      type: "object",
-      properties: {
-        websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {
-            id: { type: "string"},
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-            name: { type: "string" },
-          },
-          required: ["id", "company_id", "workspace_id", "name"]
-        }
-      }
-    }
+    200: Types.createChannelResponseSchema
   }
 };
