@@ -17,23 +17,27 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
+  mongo:
+    container_name: mongo
+    image: mongo
   node:
     image: twaketech/twake-node
     environment:
       - DEV=dev
     build:
       context: .
+      target: development
       dockerfile: docker/twake-node/Dockerfile
     volumes:
-      - ./backend/node/:/twake-node:cached
-      - ./docker-data/drive/:/twake-core/drive/
-      - ./docker-data/drive-preview/:/twake-core/web/medias/
-      - ./docker-data/uploads/:/twake-core/web/upload/
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
+      - mongo
       - scylladb
       - rabbitmq
       - elasticsearch
     links:
+      - mongo
       - websockets
       - scylladb
   php:

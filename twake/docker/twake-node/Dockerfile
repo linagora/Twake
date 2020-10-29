@@ -1,23 +1,34 @@
-FROM node:12
+# Test Stage
 
-MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
+FROM node:12.19-alpine as test
 
-WORKDIR /twake-node/
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
 
-COPY backend/node /twake-node/
-COPY docker/twake-node/entrypoint.sh /
+# Development Stage
 
-#Crontab
-RUN apt-get update && apt-get install -y cron
-ADD docker/twake-php/crontab /etc/cron.d/twake-cron
-RUN chmod 0644 /etc/cron.d/twake-cron
-RUN touch /var/log/cron.log
+FROM node:12.19-alpine as development
 
-RUN npm i
-
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
 RUN npm run build
 
-RUN chmod 777 /entrypoint.sh
-ENTRYPOINT /entrypoint.sh "$DEV"
+# Production Stage
+
+FROM node:12.19-alpine as production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install --only=production
+COPY . .
+COPY --from=development /usr/src/app/dist ./dist
 
 EXPOSE 3000
+
+CMD ["npm", "run serve"]

@@ -19,6 +19,9 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  mongo:
+    container_name: mongo
+    image: mongo
   redis:
     image: "redis:alpine"
     command: redis-server --requirepass some_password
@@ -27,20 +30,18 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=master
   node:
-    image: twaketech/twake-node
-    volumes:
-      - ./backend/node/:/twake-node:cached
-      - ./docker-data/drive/:/twake-core/drive/
-      - ./docker-data/drive-preview/:/twake-core/web/medias/
-      - ./docker-data/uploads/:/twake-core/web/upload/
+    image: twaketech/twake-node:test
+    build:
+      context: ./backend/node
+      dockerfile: ../../docker/twake-node/Dockerfile.test
+      #target is not supported in compose v2 file
+      #target: test
+    environment:
+      - NODE_ENV=test
     depends_on:
-      - scylladb
-      - rabbitmq
-      - elasticsearch
-      - redis
+      - mongo
     links:
-      - websockets
-      - scylladb
+      - mongo
   php:
     image: twaketech/twake-php
     volumes:
