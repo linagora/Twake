@@ -1,4 +1,5 @@
 import { ObjectID } from "mongodb";
+import Uuid from "cassandra-driver"
 
 export enum VisibilityEnum {
   PRIVATE = "private",
@@ -27,7 +28,7 @@ export class Channel {
 
   visibility: VisibilityEnum;
 
-  default: boolean;
+  is_default: boolean;
 
   archived: boolean;
 

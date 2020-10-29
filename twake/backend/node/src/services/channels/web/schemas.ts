@@ -14,30 +14,12 @@ export const createChannelSchema = {
       resource: {
         type: "object",
         properties: {
-          icon: {
-            type: "string",
-          },
           name: {
             type: "string"
-          },
-          description: {
-            type: "string",
-          },
-          channel_groupe: {
-            type: "string"
-          },
-          visibility: {
-            type: "string",
-          },
-          defaut: {
-            type: "string"
-          },
-          archived: {
-            type: "string",
-          },
+          }
 
         },
-        required: ["icon", "name", "description", "channel_group", "visibility", "default", "archived"]
+        required: ["name"]
       },
     },
     required: ["resource"]

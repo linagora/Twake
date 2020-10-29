@@ -1,7 +1,7 @@
 @company_id = 0
 @workspace_id = 0
-@baseURL = http://localhost:3000/api
-@channelsURL = {{baseURL}}/channels/companies/{{company_id}}/workspaces/{{workspace_id}}
+@baseURL = http://localhost:8000/internal/services/channels/v1
+@channelsURL = {{baseURL}}/companies/bcfe2f79-8e81-42a3-b551-3a32d49b2b4c/workspaces/3328552c-5ccd-4172-b84a-d876d56aa71b
 
 # @name login
 GET {{baseURL}}/auth/login
@@ -16,12 +16,21 @@ Authorization: Bearer {{authToken}}
 ### Create a channel
 
 # @name createChannel
-POST {{channelsURL}}/channels
+POST {{channelsURL}}/channels/
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "My channel"
+   "resource": {
+        "name": "123",
+        "icon": "none",
+        "description": "123",
+        "channel_group": "2",
+        "visibility": "public",
+        "default": true,
+        "archived": false
+        
+    }
 }
 
 ### Get a single channel
