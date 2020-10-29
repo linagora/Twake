@@ -109,7 +109,7 @@ export default class Collection<G extends Resource<any>> {
       this.updateLocalResource(mongoItem);
     });
 
-    //this.transport.get();
+    this.transport.get();
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }

@@ -6,9 +6,12 @@ import OriginalCollections, {
 } from '../Collections/Collections';
 import Observable from '../Observable/Observable';
 
+export { Resource } from '../Collections/Collections';
+export { default } from '../Collections/Collections';
+
 class ObservableAdapter extends Observable {}
 
-export default class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
+export class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
   protected observable: ObservableAdapter = new ObservableAdapter();
   protected eventEmitter: CollectionsEventEmitter<G> = new CollectionsEventEmitter(
     this,
@@ -17,6 +20,15 @@ export default class Collection<G extends OriginalResource<any>> extends Origina
 
   constructor(path: string = '', type: new (data: any) => G) {
     super(path, type);
+  }
+
+  public static get<T extends OriginalResource<any>>(
+    path: string,
+    type: new (data: any) => T,
+  ): Collection<T> {
+    return OriginalCollections.get(path, type, () => new Collection<T>(path, type)) as Collection<
+      T
+    >;
   }
 
   public useWatcher = <G>(observedScope: () => Promise<G>, options?: any) =>

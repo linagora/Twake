@@ -45,17 +45,16 @@ export default class CollectionTransport<G extends Resource<any>> {
   async onWebsocketEvent(action: string, resource: any) {
     if (action === 'created' || action === 'updated') {
       let localResource = await this.collection.findOne(resource.id);
-      console.log(resource, localResource, new Date().getTime());
       if (!localResource) {
         localResource = new (this.collection.getType())(resource);
       }
       localResource.setShared();
-      console.log(localResource);
       this.collection.upsert(localResource, {
         withoutBackend: true,
       });
     }
     if (action === 'deleted') {
+      console.log('delete', resource);
       let localResource = await this.collection.findOne(resource.id);
       this.collection.remove(localResource, {
         withoutBackend: true,
@@ -113,7 +112,6 @@ export default class CollectionTransport<G extends Resource<any>> {
   }
 
   async get(options?: any) {
-    /*
     this.lockHttp();
     try {
       const result = await Collections.getTransport().getHttp().get(this.collection.getPath());
@@ -123,7 +121,7 @@ export default class CollectionTransport<G extends Resource<any>> {
       console.log(err);
       //TODO retry system
       this.unlockHttp();
-    }*/
+    }
   }
 
   async upsert(resource: G) {
@@ -162,8 +160,6 @@ export default class CollectionTransport<G extends Resource<any>> {
       if (result?.resource) {
         resource.setPersisted(true);
         resource.data = Object.assign(resource.data, result?.resource);
-        console.log(resource, '(upsert)', new Date().getTime());
-
         await this.collection.upsert(resource, { withoutBackend: true });
       } else {
         //This resource is invalid, remove it
