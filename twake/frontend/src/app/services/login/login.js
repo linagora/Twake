@@ -208,7 +208,7 @@ class Login extends Observable {
     this.login_error = false;
     this.notify();
 
-    var that = this;
+    const that = this;
 
     Globals.getDevice(device => {
       Api.post(
@@ -220,11 +220,10 @@ class Login extends Observable {
           device: device,
         },
         function (res) {
-          if (res.data.status == 'connected') {
+          if (res.data.status === 'connected') {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
             }
-            WindowState.setUrl('/', true);
             that.login_loading = false;
             that.init();
           } else {
@@ -304,11 +303,12 @@ class Login extends Observable {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
 
     this.currentUserId = user.id;
-
+    this.url = '';
     Collections.get('users').updateObject(user);
     user.workspaces.forEach(workspace => {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
+      this.url = RouterServices.generateClientRoute({ workspaceId: workspace.id });
     });
     Workspaces.initSelection();
     Notifications.start();
@@ -317,7 +317,7 @@ class Login extends Observable {
 
     this.state = 'app';
     this.notify();
-    RouterServices.history.push(RouterServices.pathnames.CLIENT);
+    RouterServices.history.push(this.url);
   }
 
   /**

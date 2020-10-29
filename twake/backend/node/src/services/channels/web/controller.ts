@@ -4,7 +4,7 @@ import ChannelServiceAPI from "../provider";
 import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters, CreateChannelBody } from "./types";
 
 export default class ChannelController {
-  constructor(private service: ChannelServiceAPI<Channel>) {}
+  constructor(private service: ChannelServiceAPI) {}
 
   async create(params: BaseChannelsParameters, channel: CreateChannelBody): Promise<Channel> {
     const entity = plainToClass(Channel, {

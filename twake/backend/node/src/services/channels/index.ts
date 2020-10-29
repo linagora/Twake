@@ -3,17 +3,16 @@ import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import ChannelServiceAPI from "./provider";
 import { getService } from "./services";
 import web from "./web/index";
-import { Channel } from "./entities";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 
 @Prefix("/api/channels")
 @Consumes(["webserver", "database"])
-export default class ChannelService extends TwakeService<ChannelServiceAPI<Channel>> {
+export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   version = "1";
   name = "channels";
-  service: ChannelServiceAPI<Channel>;
+  service: ChannelServiceAPI;
 
-  api(): ChannelServiceAPI<Channel> {
+  api(): ChannelServiceAPI {
     return this.service;
   }
 

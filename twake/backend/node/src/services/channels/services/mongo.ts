@@ -5,7 +5,7 @@ import { RealtimeDeleted, RealtimeCreated, RealtimeUpdated } from "../../../core
 import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
 import { getChannelPath } from "../realtime";
 
-export class MongoChannelService implements ChannelServiceAPI<Channel> {
+export class MongoChannelService implements ChannelServiceAPI {
   version = "1";
   private collection: mongo.Collection<Channel>;
 

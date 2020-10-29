@@ -42,7 +42,7 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
 
   getUser(socket: WebSocket): WebSocketUser {
     return {
-      _id: socket.decoded_token._id,
+      id: socket.decoded_token.id,
       token: socket.decoded_token
     };
   }

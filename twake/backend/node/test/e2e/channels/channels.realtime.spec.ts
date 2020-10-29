@@ -75,7 +75,7 @@ describe("The Channels Realtime feature", () => {
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
 
-      const channelService = platform.platform.getProvider<ChannelServiceAPI<Channel>>("channels");
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = channelName;
       channel.company_id = companyId;

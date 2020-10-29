@@ -24,9 +24,9 @@ export interface ChannelListQueryParameters extends PaginationQueryParameters {
 }
 
 export class ChannelListResponse {
-  websockets: ChannelWebsocket[];
   resources: Channel[];
-  next_page_token: string;
+  websockets?: ChannelWebsocket[];
+  next_page_token?: string;
 }
 
 export class ChannelGetResponse {
@@ -43,9 +43,8 @@ export class ChannelDeleteResponse {
 }
 
 export interface ChannelWebsocket {
-  name: string;
   room: string;
-  encryption_key: string;
+  encryption_key?: string;
 }
 
 export class CreateChannelBody {
