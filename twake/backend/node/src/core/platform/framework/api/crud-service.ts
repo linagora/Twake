@@ -1,4 +1,6 @@
 export class EntityTarget<Entity> {
+  context?: ExecutionContext;
+
   /**
    *
    * @param type type of entity
@@ -45,10 +47,17 @@ export declare type EntityId = string | number;
 
 export declare type EntityOperationResult<Entity> = CreateResult<Entity> | UpdateResult<Entity> | DeleteResult<Entity>;
 
+export interface ExecutionContext {
+  user: { id: string };
+  url: string;
+  method: string;
+  transport: "http" | "ws"
+}
+
 export interface CRUDService<Entity> {
-  create(item: Entity): Promise<CreateResult<Entity>>;
-  get(id: EntityId): Promise<Entity>;
-  update(id: EntityId, item: Entity, /* TODO: Options */): Promise<UpdateResult<Entity>>;
-  delete(id: EntityId): Promise<DeleteResult<Entity>>;
-  list(/* TODO: Options */): Promise<Entity[]>;
+  create(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
+  get(id: EntityId, context?: ExecutionContext): Promise<Entity>;
+  update(id: EntityId, item: Entity, context?: ExecutionContext,/* TODO: Options */): Promise<UpdateResult<Entity>>;
+  delete(id: EntityId, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+  list(context: ExecutionContext/* TODO: Options */): Promise<Entity[]>;
 }
