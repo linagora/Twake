@@ -18,7 +18,7 @@ export default class ConnectionIndicator extends React.Component {
     return (
       <div
         className={
-          'connection_indicator fade_in ' + (WebsocketsManager.connected === false ? 'visible' : '')
+          'connection_indicator ' + (WebsocketsManager.connected === false ? 'visible' : '')
         }
       >
         {WebsocketsManager.connected === false && WebsocketsManager.is_reconnecting !== true && (

@@ -1,4 +1,3 @@
-import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'services/user/current_user.js';
 import UserService from 'services/user/user.js';
@@ -413,95 +412,15 @@ class Channels extends Observable {
     return true;
   }
 
-  getURL(channel, messageId) {
-    var url = '/';
-
-    channel = channel.id ? channel : Collections.get('channels').find(channel);
-
-    if (this._url_timeout) clearTimeout(this._title_timeout);
-
-    var workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-    var group = Collections.get('groups').find(Workspaces.currentGroupId);
-
-    if (!channel) {
-      return false;
-    }
-    if (!channel.id) {
-      return false;
-    }
-    if (channel && channel.icon) {
-      //Workspace chan
-
-      url = WindowService.nameToUrl(channel.name);
-      url =
-        '/' +
-        WindowService.nameToUrl(group.name.toLocaleLowerCase()) +
-        '-' +
-        WindowService.nameToUrl(workspace.name.toLocaleLowerCase()) +
-        '/' +
-        url +
-        '-' +
-        WindowService.reduceUUID4(workspace.id) +
-        '-' +
-        WindowService.reduceUUID4(channel.id) +
-        '-' +
-        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
-    } else if (channel && channel.application && channel.app_id) {
-      //Workspace chan
-
-      var application = Collections.get('applications').find(channel.app_id);
-
-      if (!application) {
-        return;
-      }
-
-      url = WindowService.nameToUrl(application.name);
-      url =
-        '/' +
-        WindowService.nameToUrl(group.name.toLocaleLowerCase()) +
-        '-' +
-        WindowService.nameToUrl(workspace.name.toLocaleLowerCase()) +
-        '/' +
-        url +
-        '-' +
-        WindowService.reduceUUID4(workspace.id) +
-        '-' +
-        WindowService.reduceUUID4(channel.id);
-    } else if (channel.direct) {
-      //Private chan
-      var name = [];
-      ((channel || {}).members || []).forEach(id => {
-        if (channel.members.length == 1 || id != CurrentUser.get().id) {
-          var user = Collections.get('users').find(id);
-          if (user) {
-            name.push('@' + user.username);
-          }
-        }
-      });
-      if (name.length == 0) {
-        return false;
-      }
-      name = name.join('+');
-      url =
-        '/private/' +
-        WindowService.nameToUrl(name) +
-        '-' +
-        WindowService.reduceUUID4(channel.id) +
-        '-' +
-        (messageId ? WindowService.reduceUUID4(messageId || '') : '');
-    }
-    return url;
-  }
-
   updateURL(channel) {
-    const url = this.getURL(channel, this.url_values.message);
-    if (!url) {
-      this._url_timeout = setTimeout(() => {
-        this.updateURL();
-      }, 1000);
-    }
-    WindowService.setUrl(RouterServices.pathnames.CLIENT + url);
+    const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
+    const url = RouterServices.generateClientRoute({
+      workspaceId: workspace.id,
+      channelId: channel.id || '',
+    });
+
     this.updateTitle(channel);
+    return RouterServices.history.replace(url);
   }
 
   search(query, callback) {

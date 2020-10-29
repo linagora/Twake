@@ -1,4 +1,6 @@
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory, History } from 'history';
+import { matchPath, match } from 'react-router';
+import short, { Translator } from 'short-uuid';
 
 // Import your component here
 import App from 'app/scenes/app';
@@ -6,64 +8,117 @@ import Login from 'app/scenes/Login/login';
 import Setup from 'app/scenes/Setup/Setup';
 import Error from 'app/scenes/Error/Error';
 
-type Route = {
+export type RouteType = {
   path: string;
   exact?: boolean | false;
   key?: string;
-  routes?: Route[];
+  routes?: RouteType[];
   component?: any;
-  options?: any;
+  options?: {
+    withErrorBoundary?: boolean;
+  };
 };
 
-type Pathnames = {
+export type ParamsType = {
+  workspaceId: string;
+  channelId?: string;
+  messageId?: string;
+  threadId?: string;
+  directoryId?: string;
+};
+
+export type Pathnames = {
   [key: string]: string;
 };
 
-class RouterServices {
-  history = createBrowserHistory();
+function RouterServices() {
+  const translator: Translator = short();
+  const history: History<unknown> = createBrowserHistory();
+  const match = (pathSchema: string): match<object> | null =>
+    matchPath(history.location.pathname, { path: pathSchema });
 
   // Define your route here
-  pathnames: Readonly<Pathnames> = {
+  const pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
+    CLIENT_APP: '/client/:workspaceId/c/:channelId',
+    //TODO
+    //CLIENT_APP_THREAD: '/client/:workspaceId/c/:channelId/t/:threadId',
+    //CLIENT_APP_DIRECTORY: '/client/:workspaceId/c/:channelId/d/:directoryId',
     LOGIN: '/login',
     SETUP: '/setup',
     ERROR: '/error',
   };
 
   // Setup your route here
-  routes: Readonly<Route[]> = [
+  const routes: Readonly<RouteType[]> = [
     {
-      path: this.pathnames.LOGIN,
+      path: pathnames.LOGIN,
       exact: true,
-      key: 'login_page',
+      key: 'login',
       component: Login,
       options: {
         withErrorBoundary: true,
       },
     },
     {
-      path: this.pathnames.SETUP,
+      path: pathnames.SETUP,
       exact: true,
-      key: 'twake_not_ready',
+      key: 'setup',
       component: Setup,
       options: {
         withErrorBoundary: true,
       },
     },
     {
-      path: this.pathnames.CLIENT,
-      key: 'root',
+      path: pathnames.CLIENT,
+      key: 'client',
+      exact: true,
       component: App,
       options: {
         withErrorBoundary: true,
       },
     },
     {
-      path: this.pathnames.ERROR,
+      path: pathnames.CLIENT_APP,
+      key: 'client_app',
+      component: App,
+      options: {
+        withErrorBoundary: true,
+      },
+    },
+    {
+      path: pathnames.ERROR,
       exact: true,
       component: Error,
     },
   ];
+
+  // Generate UUID to shortened and create url
+  function generateClientRoute(params: ParamsType) {
+    const shorter = {
+      workspaceId: translator.fromUUID(params.workspaceId),
+      channelId: params.channelId ? `/c/${translator.fromUUID(params.channelId)}` : '/c/unknown',
+      directoryId: params.directoryId ? `/d/${translator.fromUUID(params.directoryId)}` : '',
+      threadId: params.threadId ? `/t/${translator.fromUUID(params.threadId)}` : '',
+      messageId: params.messageId ? `/m/${translator.fromUUID(params.messageId)}` : '',
+    };
+    return `${pathnames.CLIENT}/${shorter.workspaceId}${shorter.channelId}${shorter.directoryId}${shorter.threadId}${shorter.messageId}`;
+  }
+
+  // Translate shortened param to UUID
+  function translateToUUID(param: string) {
+    return translator.toUUID(param);
+  }
+
+  return {
+    generateClientRoute,
+    history,
+    match,
+    pathnames,
+    routes,
+    translateToUUID,
+    translator,
+  };
 }
 
-export default new RouterServices();
+export default RouterServices();

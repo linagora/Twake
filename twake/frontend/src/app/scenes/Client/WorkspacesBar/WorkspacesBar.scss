@@ -10,10 +10,12 @@
   width: 60px;
   min-width: 60px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  .list {
-    padding-top: 20px;
+  div {
+    display: flex;
+    flex-direction: column;
+    .list {
+      padding-top: 20px;
+    }
   }
 }
 .no_workspaces {

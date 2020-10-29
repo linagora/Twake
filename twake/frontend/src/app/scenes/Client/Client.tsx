@@ -15,7 +15,7 @@ import './Client.scss';
 import MainView from './MainView/MainView.js';
 import PublicMainView from './MainView/PublicMainView.js';
 import ChannelsBar from './ChannelsBar/ChannelsBar.js';
-import WorkspacesBar from './WorkspacesBar/WorkspacesBar.js';
+import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import NotificationsBodyLayer from 'components/Notifications/NotificationsBodyLayer.js';
@@ -28,6 +28,8 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
+import LoginServices from 'services/login/login';
+import RouterServices from 'app/services/RouterServices';
 
 export default class Client extends Component {
   no_workspace: any = '';
@@ -37,6 +39,7 @@ export default class Client extends Component {
     popupService.addListener(this);
     Workspaces.addListener(this);
     Languages.addListener(this);
+    LoginServices.addListener(this);
   }
   componentWillMount() {
     ListenWorkspacesList.startListen();
@@ -47,8 +50,11 @@ export default class Client extends Component {
     alertService.removeListener(this);
     Languages.removeListener(this);
     Workspaces.removeListener(this);
+    LoginServices.removeListener(this);
   }
   render() {
+    if (LoginServices.state !== 'app') return <div></div>;
+
     var page: any = '';
     if (popupService.isOpen()) {
       page = <PopupComponent key="PopupComponent" />;
@@ -79,7 +85,23 @@ export default class Client extends Component {
           >
             <WorkspacesBar />
             <ChannelsBar />
-            <MainView />
+            {
+              // TO REMOVE
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <h1>MainView will be disabled for the moment</h1>
+                <br />
+                <small>Waiting for the router implementation</small>
+              </div>
+            }
+            {/* <MainView /> */}
           </Layout>
         );
       }
