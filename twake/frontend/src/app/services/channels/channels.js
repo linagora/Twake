@@ -420,7 +420,7 @@ class Channels extends Observable {
     });
 
     this.updateTitle(channel);
-    return RouterServices.history.push(url);
+    return RouterServices.history.replace(url);
   }
 
   search(query, callback) {

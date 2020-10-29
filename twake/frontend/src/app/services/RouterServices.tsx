@@ -93,7 +93,7 @@ function RouterServices() {
     },
   ];
 
-  // Generate shortened UUID
+  // Generate UUID to shortened and create url
   function generateClientRoute(params: ParamsType) {
     const shorter = {
       workspaceId: translator.fromUUID(params.workspaceId),
@@ -105,12 +105,18 @@ function RouterServices() {
     return `${pathnames.CLIENT}/${shorter.workspaceId}${shorter.channelId}${shorter.directoryId}${shorter.threadId}${shorter.messageId}`;
   }
 
+  // Translate shortened param to UUID
+  function translateToUUID(param: string) {
+    return translator.toUUID(param);
+  }
+
   return {
     generateClientRoute,
     history,
     match,
     pathnames,
     routes,
+    translateToUUID,
     translator,
   };
 }

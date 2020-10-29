@@ -14,6 +14,7 @@ import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
+import RouterServices from 'services/RouterServices';
 import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
@@ -24,7 +25,8 @@ class Workspaces extends Observable {
     Globals.window.workspaceService = this;
 
     this.setObservableName('workspaces');
-    this.currentWorkspaceId = null;
+    // TODO getCurrentWorkspaceId()
+    this.currentWorkspaceId = () => this.getCurrentWorkspaceId();
     this.currentWorkspaceIdByGroup = {};
     this.currentGroupId = null;
 
@@ -38,6 +40,18 @@ class Workspaces extends Observable {
     this.url_values = WindowService.getInfoFromUrl() || {};
 
     this.didFirstSelection = false;
+  }
+
+  updateCurrentWorkspaceId() {
+    const match = RouterServices.match(RouterServices.pathnames.CLIENT_APP);
+    if (match.params.workspaceId) {
+      const nextCurrentWorkspaceId = RouterServices.translateToUUID(match.params.workspaceId);
+      if (nextCurrentWorkspaceId != this.currentWorkspaceId) {
+        this.currentWorkspaceId = nextCurrentWorkspaceId;
+        console.log(this.currentWorkspaceId);
+        this.notify();
+      }
+    }
   }
 
   setWelcomePage(page) {
@@ -171,7 +185,7 @@ class Workspaces extends Observable {
       });
     }
 
-    this.currentWorkspaceId = workspace.id;
+    RouterServices.history.push(RouterServices.generateClientRoute({ workspaceId: workspace.id }));
     this.currentWorkspaceIdByGroup[workspace.group.id] = workspace.id;
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
