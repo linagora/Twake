@@ -14,7 +14,7 @@ import UserListManager from 'components/UserListManager/UserListManager.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import ChannelUserAdd from './ChannelUserAdd.js';
 import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor.js';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 
 import ChannelUI from 'components/Leftbar/Channel/Channel.js';
 
@@ -185,7 +185,7 @@ export default class Channel extends Component {
                     ? 'scenes.app.channelsbar.modify_channel_title_private'
                     : 'scenes.app.channelsbar.modify_channel_title_public'
                 }
-                channel={channel}
+                channel={channel || {}}
               />,
               {
                 position: 'center',
