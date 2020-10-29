@@ -2,15 +2,14 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters, CreateChannelBody, ChannelListQueryParameters, ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "./types";
 import { createChannelSchema, getChannelSchema } from "./schemas";
 import ChannelController from "./controller";
-import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
-import { getWebsocketInformation } from "../realtime";
+import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
-const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (fastify: FastifyInstance, options, next) => {
+const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
   const controller = new ChannelController(options.service);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
@@ -25,15 +24,17 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     method: "GET",
     url,
     preHandler: accessControl,
+    preValidation: [fastify.authenticate],
     handler: async (req): Promise<ChannelListResponse> => {
       req.log.info(`Get channels ${req.params}`);
 
       const resources = await controller.getChannels(req.params, req.query);
 
       return {
-        websockets: resources.map(channel => getWebsocketInformation(channel)),
-        resources,
-        next_page_token: ""
+        ...{
+          resources
+        },
+        ...(req.query.websockets && { websockets: getWorkspaceRooms(req.params, req.currentUser, req.query.mine) })
       };
     }
   });
@@ -42,6 +43,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     method: "GET",
     url: `${url}/:id`,
     preHandler: accessControl,
+    preValidation: [fastify.authenticate],
     schema: getChannelSchema,
     handler: async (req): Promise<ChannelGetResponse> => {
       req.log.info(`Get channel ${req.params}`);
@@ -63,6 +65,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     method: "POST",
     url,
     preHandler: accessControl,
+    preValidation: [fastify.authenticate],
     schema: createChannelSchema,
     handler: async (request, reply): Promise<ChannelCreateResponse> => {
       request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
@@ -84,6 +87,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
     method: "DELETE",
     url: `${url}/:id`,
     preHandler: accessControl,
+    preValidation: [fastify.authenticate],
     handler: async (request, reply): Promise<ChannelDeleteResponse> => {
       const removed = await controller.remove(request.params);
 

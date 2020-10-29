@@ -3,6 +3,7 @@ import { Server as HttpsServer } from "https";
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import socketIO from "socket.io";
 import SocketIORedis from "socket.io-redis";
+import { User } from "../../../../services/types";
 
 export interface AdaptersConfiguration {
   types: Array<string>,
@@ -16,9 +17,8 @@ export interface WebSocketServiceConfiguration {
   auth?: SocketIOJWTOptions;
 }
 
-export interface WebSocketUser {
-  _id: string,
-  token?: DecodedToken
+export interface WebSocketUser extends User {
+  token?: DecodedToken;
 }
 
 export interface WebSockets {
@@ -37,4 +37,5 @@ export interface WebsocketUserEvent {
 
 interface DecodedToken {
   _id: string;
+  id: string;
 }

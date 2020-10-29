@@ -1,13 +1,12 @@
 import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
 import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 
 import { MongoChannelService } from "./mongo";
 import { CassandraChannelService } from "./cassandra";
 
-export function getService(databaseService: DatabaseServiceAPI): ChannelServiceAPI<Channel> {
+export function getService(databaseService: DatabaseServiceAPI): ChannelServiceAPI {
   const type = databaseService.getConnector().getType();
 
   switch(type) {
