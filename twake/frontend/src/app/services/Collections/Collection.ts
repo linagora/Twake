@@ -2,7 +2,8 @@ import Storage from './Storage';
 import Collections from './Collections';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
-import Transport from './Transport';
+import Transport from './Transport/Transport';
+import CollectionTransport from './Transport/CollectionTransport';
 
 /**
  * This is a Collection.
@@ -16,15 +17,21 @@ type GeneralOptions = {
 
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
-  protected eventEmitter: EventEmitter = new EventEmitter(null);
-  protected transport: Transport<G> = new Transport(this);
+  protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
+  protected transport: CollectionTransport<G> = new CollectionTransport(this);
 
   constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
-  public attachEventEmitter = this.eventEmitter.attachEventEmitter;
-
   public getPath() {
     return this.path;
+  }
+
+  public getTransport() {
+    return this.transport;
+  }
+
+  public getType() {
+    return this.type;
   }
 
   /**
@@ -62,6 +69,12 @@ export default class Collection<G extends Resource<any>> {
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
+    console.log('here insert', mongoItem);
+
+    if (!options?.withoutBackend) {
+      this.transport.upsert(this.resources[mongoItem.id]);
+    }
+
     return item ? this.resources[mongoItem.id] : item;
   }
 
@@ -73,9 +86,15 @@ export default class Collection<G extends Resource<any>> {
       filter = filter.data;
     }
     if (filter) {
-      await Storage.remove(this.path, filter);
-      this.removeLocalResource(filter.id);
-      this.eventEmitter.notify();
+      const resource = await this.findOne(filter);
+      if (resource) {
+        await Storage.remove(this.path, filter);
+        this.removeLocalResource(filter.id);
+        this.eventEmitter.notify();
+        if (!options?.withoutBackend && resource.state.persisted) {
+          this.transport.remove(resource);
+        }
+      }
     }
     return;
   }
@@ -89,6 +108,9 @@ export default class Collection<G extends Resource<any>> {
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
+
+    this.transport.get();
+
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 
@@ -102,6 +124,11 @@ export default class Collection<G extends Resource<any>> {
     }
     const mongoItem = await Storage.findOne(this.path, filter, options);
     this.updateLocalResource(mongoItem);
+
+    if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
+      this.transport.get();
+    }
+
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 

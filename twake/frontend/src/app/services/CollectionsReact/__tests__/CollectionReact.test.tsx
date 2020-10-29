@@ -1,6 +1,5 @@
 import React from 'react';
-import Collections, { Resource } from 'app/services/Collections/Collections';
-import Collection from '../Collection';
+import Collections, { Resource, Collection } from '../Collections';
 import { shallow } from 'enzyme';
 
 /** Messages example component */
@@ -14,15 +13,9 @@ class Message extends Resource<any> {
   }
 }
 
-class Messages extends Collection<Message> {
-  public static get(path: string): Collection<Message> {
-    return Collections.get(path, Message, () => new Messages(path, Message)) as Collection<Message>;
-  }
-}
-
 const MessagesComponent = (props: { channelId: string }) => {
   const channelId = props.channelId;
-  const MessagesCollection = Messages.get(`/channels/${channelId}/messages/`);
+  const MessagesCollection = Collection.get(`/channels/${channelId}/messages/`, Message);
 
   const messages = MessagesCollection.useWatcher(async () => await MessagesCollection.find()) || [];
 
@@ -68,10 +61,10 @@ test('Test Observable linked to Collection', async () => {
   component = shallow(<MessagesComponent channelId={channelId} />);
   expect(component.find('button').text()).toBe('Add');
 
-  const Collection = Messages.get(`/channels/${channelId}/messages/`);
+  const collection = Collection.get(`/channels/${channelId}/messages/`, Message);
 
   //To be able to wait for collection changes
-  Collection.addEventListener(
+  collection.addEventListener(
     () => {
       setTimeout(() => setImmediate(), 10);
     },
@@ -79,17 +72,17 @@ test('Test Observable linked to Collection', async () => {
   );
 
   const msg = new Message({ content: 'message_to_remove' });
-  Collection.insert(msg);
+  collection.insert(msg);
   await flushPromises();
   expect(component.find('#message_list').children().length).toBe(1);
   expect(component.find('#message_list').children().text()).toBe('message_to_remove');
 
   msg.setContent('message_to_remove_edited');
-  Collection.update(msg);
+  collection.update(msg);
   await flushPromises();
   expect(component.find('#message_list').children().text()).toBe('message_to_remove_edited');
 
-  Collection.remove(msg);
+  collection.remove(msg);
   await flushPromises();
   expect(component.find('#message_list').children().length).toBe(0);
 

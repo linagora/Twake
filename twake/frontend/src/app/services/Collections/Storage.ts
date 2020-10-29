@@ -14,7 +14,7 @@ export default class CollectionStorage {
       minimongo.utils.autoselectLocalDb(
         { namespace: 'twake' },
         (db: any) => {
-          CollectionStorage.mongoDb = db;
+          CollectionStorage.mongoDb = new minimongo.MemoryDb(); //db;
         },
         () => {
           CollectionStorage.mongoDb = new minimongo.MemoryDb();

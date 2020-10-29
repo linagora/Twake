@@ -11,7 +11,7 @@ We use minimongo and typescript now! 🔥🔥🔥
 ### How we'll use it ?
 
 ```typescript
-import Collections, { Resource, Collection } from 'services/Collections2/Collections';
+import Collections, { Resource, Collection } from 'services/Collections/Collections';
 
 type MessageType = {
   id: string;
@@ -24,17 +24,11 @@ class Message extends Resource<MessageType> {
   }
 }
 
-class MessageCollection extends Collection<Message> {
-  public static get(path: string): Collection<Message> {
-    return Collections.get(path, Message, () => new Messages(path, Message)) as Collection<Message>;
-  }
-}
-
 () => {
   const channelId = 'some-id';
-  const MessagesCollection = MessageCollection.get(channelId);
+  const messagesCollection = Collections.get(channelId, Message);
 
-  const messages = MessagesCollection.useWatcher(() => MessagesCollection.find());
+  const messages = messagesCollection.useWatcher(() => messagesCollection.find({}));
 
   return (
     <div>
