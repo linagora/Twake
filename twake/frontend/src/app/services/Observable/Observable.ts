@@ -53,8 +53,7 @@ export default class Observable extends EventListener {
       if (changes.didChange) {
         //If things changed
         watcher.callback(
-          //Could be imporved ?
-          typeof changes.changes === 'object' && changes.changes?.constructor?.name != 'Array'
+          typeof changes.changes === 'object' && changes.changes?.constructor?.name !== 'Array'
             ? Object.assign(Object.create(Object.getPrototypeOf(changes.changes)), changes.changes)
             : changes.changes,
         );

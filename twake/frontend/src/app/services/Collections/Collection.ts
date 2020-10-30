@@ -1,8 +1,6 @@
 import Storage from './Storage';
-import Collections from './Collections';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
-import Transport from './Transport/Transport';
 import CollectionTransport from './Transport/CollectionTransport';
 
 /**
@@ -13,6 +11,7 @@ import CollectionTransport from './Transport/CollectionTransport';
 
 type GeneralOptions = {
   withoutBackend: boolean;
+  alwaysNotify: boolean;
 } & any;
 
 export default class Collection<G extends Resource<any>> {
@@ -69,8 +68,6 @@ export default class Collection<G extends Resource<any>> {
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
-    console.log('here insert', mongoItem);
-
     if (!options?.withoutBackend) {
       this.transport.upsert(this.resources[mongoItem.id]);
     }
@@ -95,6 +92,9 @@ export default class Collection<G extends Resource<any>> {
           this.transport.remove(resource);
         }
       }
+    }
+    if (options?.alwaysNotify) {
+      this.eventEmitter.notify();
     }
     return;
   }

@@ -15,9 +15,11 @@ class Message extends Resource<any> {
 
 const MessagesComponent = (props: { channelId: string }) => {
   const channelId = props.channelId;
-  const MessagesCollection = Collection.get(`/channels/${channelId}/messages/`, Message);
+  const messagesCollection = Collection.get(`/channels/${channelId}/messages/`, Message);
 
-  const messages = MessagesCollection.useWatcher(async () => await MessagesCollection.find()) || [];
+  const messages = messagesCollection.useWatcher(async () => await messagesCollection.find()) || [];
+
+  console.log(messages);
 
   return (
     <div>
@@ -30,7 +32,7 @@ const MessagesComponent = (props: { channelId: string }) => {
       <button
         id="add_button"
         onClick={() =>
-          MessagesCollection.insert(new Message({ content: 'Time is: ' + new Date().getTime() }))
+          messagesCollection.insert(new Message({ content: 'Time is: ' + new Date().getTime() }))
         }
       >
         Add
@@ -72,17 +74,17 @@ test('Test Observable linked to Collection', async () => {
   );
 
   const msg = new Message({ content: 'message_to_remove' });
-  collection.insert(msg);
+  await collection.insert(msg);
   await flushPromises();
   expect(component.find('#message_list').children().length).toBe(1);
   expect(component.find('#message_list').children().text()).toBe('message_to_remove');
 
   msg.setContent('message_to_remove_edited');
-  collection.update(msg);
+  await collection.update(msg);
   await flushPromises();
   expect(component.find('#message_list').children().text()).toBe('message_to_remove_edited');
 
-  collection.remove(msg);
+  await collection.remove(msg);
   await flushPromises();
   expect(component.find('#message_list').children().length).toBe(0);
 

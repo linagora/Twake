@@ -1,4 +1,3 @@
-import Collections, { Collection, Resource } from '../Collections';
 import TransportHTTP from './TransportHTTP';
 import TransportSocket from './TransportSocket';
 
@@ -10,8 +9,6 @@ export default class Transport {
   };
   private readonly http: TransportHTTP = new TransportHTTP(this);
   private readonly socket: TransportSocket = new TransportSocket(this);
-
-  constructor() {}
 
   /** Transport API */
 
