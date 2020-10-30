@@ -1,12 +1,19 @@
-import { TwakeService, TwakeServiceOptions, TwakeServiceProvider, TwakeServiceConfiguration, TwakeContext } from "./api";
+import {
+  TwakeService,
+  TwakeServiceOptions,
+  TwakeServiceProvider,
+  TwakeServiceConfiguration,
+  TwakeContext,
+} from "./api";
 import { Configuration } from "./configuration";
 
 class StaticTwakeServiceFactory {
-
-  public async create<T extends TwakeService<TwakeServiceProvider> = TwakeService<TwakeServiceProvider>>(
+  public async create<
+    T extends TwakeService<TwakeServiceProvider> = TwakeService<TwakeServiceProvider>
+  >(
     module: { new (options?: TwakeServiceOptions<TwakeServiceConfiguration>): T },
     context: TwakeContext,
-    configuration?: string
+    configuration?: string,
   ): Promise<T> {
     let config;
 

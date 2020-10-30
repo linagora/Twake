@@ -1,4 +1,4 @@
-import {describe, it, beforeEach, afterEach, expect} from "@jest/globals";
+import { describe, it, beforeEach, afterEach, expect } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 
@@ -8,7 +8,7 @@ describe("The Realtime API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth", "websocket", "realtime"]
+      services: ["webserver", "user", "auth", "websocket", "realtime"],
     });
 
     socket = io.connect("http://localhost:3000", { path: "/ws" });
@@ -22,7 +22,7 @@ describe("The Realtime API", () => {
   });
 
   describe("Joining rooms", () => {
-    it("should fail when token is not defined", async (done) => {
+    it("should fail when token is not defined", async done => {
       const token = await platform.auth.getJWTToken();
       const name = "testroom";
 
@@ -31,7 +31,7 @@ describe("The Realtime API", () => {
           .emit("authenticate", { token })
           .on("authenticated", () => {
             socket.emit("realtime:join", { name });
-            socket.on("realtime:join:error", (event) => {
+            socket.on("realtime:join:error", event => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -43,7 +43,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should fail when token is not valid", async (done) => {
+    it("should fail when token is not valid", async done => {
       const token = await platform.auth.getJWTToken();
       const name = "testroom";
       const roomToken = "invalid token";
@@ -53,7 +53,7 @@ describe("The Realtime API", () => {
           .emit("authenticate", { token })
           .on("authenticated", () => {
             socket.emit("realtime:join", { name, token: roomToken });
-            socket.on("realtime:join:error", (event) => {
+            socket.on("realtime:join:error", event => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -65,7 +65,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should receive a realtime:join:success when token is valid and room has been joined", async (done) => {
+    it("should receive a realtime:join:success when token is valid and room has been joined", async done => {
       const token = await platform.auth.getJWTToken();
       const name = "test";
       const roomToken = "twake";
@@ -86,11 +86,10 @@ describe("The Realtime API", () => {
           });
       });
     });
-
   });
 
   describe("Leaving rooms", () => {
-    it("should not fail when room has not been joined first", async (done) => {
+    it("should not fail when room has not been joined first", async done => {
       const token = await platform.auth.getJWTToken();
       const name = "roomtest";
 
@@ -100,7 +99,7 @@ describe("The Realtime API", () => {
           .on("authenticated", () => {
             socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", (event) => {
+            socket.on("realtime:leave:success", event => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -111,7 +110,7 @@ describe("The Realtime API", () => {
       });
     });
 
-    it("should send success when room has been joined first", async (done) => {
+    it("should send success when room has been joined first", async done => {
       const token = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const name = "roomtest";
@@ -123,7 +122,7 @@ describe("The Realtime API", () => {
             socket.emit("realtime:join", { name, token: roomToken });
             socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", (event) => {
+            socket.on("realtime:leave:success", event => {
               expect(event.name).toEqual(name);
               done();
             });

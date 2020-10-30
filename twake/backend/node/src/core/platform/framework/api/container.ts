@@ -9,7 +9,9 @@ import * as ComponentUtils from "../utils/component-utils";
 /**
  * A container contains components. It provides methods to manage and to retrieve them.
  */
-export abstract class TwakeContainer extends TwakeService<TwakeServiceProvider> implements TwakeContext {
+export abstract class TwakeContainer
+  extends TwakeService<TwakeServiceProvider>
+  implements TwakeContext {
   private components: Map<string, TwakeComponent>;
   name = "TwakeContainer";
 
@@ -28,7 +30,6 @@ export abstract class TwakeContainer extends TwakeService<TwakeServiceProvider> 
 
     return service.api() as T;
   }
-
 
   async doInit(): Promise<this> {
     this.components = await this.loadComponents();
@@ -57,7 +58,9 @@ export abstract class TwakeContainer extends TwakeService<TwakeServiceProvider> 
     return this;
   }
 
-  protected async switchToState(state: TwakeServiceState.Started | TwakeServiceState.Initialized | TwakeServiceState.Stopped): Promise<void> {
+  protected async switchToState(
+    state: TwakeServiceState.Started | TwakeServiceState.Initialized | TwakeServiceState.Stopped,
+  ): Promise<void> {
     const subject$ = ComponentUtils.switchComponentsToState(this.components, state);
     await subject$.toPromise();
 

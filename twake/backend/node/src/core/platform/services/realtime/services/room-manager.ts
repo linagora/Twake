@@ -19,7 +19,7 @@ export default class RoomManager implements RealtimeRoomManager {
         } else {
           this.sendError("join", event.socket, {
             name: joinEvent.name,
-            message: "User is not authorized to join room"
+            message: "User is not authorized to join room",
           });
         }
       });
@@ -64,8 +64,8 @@ export default class RoomManager implements RealtimeRoomManager {
         logger.error(`Error while joining room ${room}`, err);
         this.sendError("join", websocket, {
           name: room,
-          message: "Error while joining room"
-         });
+          message: "Error while joining room",
+        });
         return;
       }
 
@@ -83,8 +83,8 @@ export default class RoomManager implements RealtimeRoomManager {
         logger.error(`Error while leaving room ${room}`, err);
         this.sendError("leave", websocket, {
           name: room,
-          message: "Error while leaving room"
-         });
+          message: "Error while leaving room",
+        });
         return;
       }
 

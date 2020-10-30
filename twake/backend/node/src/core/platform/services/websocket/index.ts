@@ -23,14 +23,14 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     this.service = new WebSocketService({
       server: fastify.server,
       options: {
-        path: this.configuration.get<string>("path", "/ws")
+        path: this.configuration.get<string>("path", "/ws"),
       },
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
-      auth: this.configuration.get<SocketIOJWTOptions>("auth.jwt")
+      auth: this.configuration.get<SocketIOJWTOptions>("auth.jwt"),
     });
 
     fastify.register(websocketPlugin, {
-      io: this.service.getIo()
+      io: this.service.getIo(),
     });
 
     return this;

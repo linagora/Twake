@@ -1,9 +1,9 @@
 export interface UserParams {
-  id?: string
+  id?: string;
 }
 
 export interface CreateUserBody {
-  email: string,
-  firstname?: string,
-  lastname?: string
+  email: string;
+  firstname?: string;
+  lastname?: string;
 }

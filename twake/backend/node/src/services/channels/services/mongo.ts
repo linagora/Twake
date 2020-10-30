@@ -1,7 +1,11 @@
 import * as mongo from "mongodb";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
-import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  UpdateResult,
+  CreateResult,
+  DeleteResult,
+} from "../../../core/platform/framework/api/crud-service";
 
 export class MongoChannelService implements ChannelServiceAPI {
   version = "1";
@@ -12,7 +16,7 @@ export class MongoChannelService implements ChannelServiceAPI {
   }
 
   async create(channel: Channel): Promise<CreateResult<Channel>> {
-    const result = await this.collection.insertOne(channel, { w:1 });
+    const result = await this.collection.insertOne(channel, { w: 1 });
 
     if (result.insertedCount) {
       const created: Channel = result.ops[0];
@@ -40,12 +44,15 @@ export class MongoChannelService implements ChannelServiceAPI {
   }
 
   async delete(id: string): Promise<DeleteResult<Channel>> {
-    const deleteResult = await this.collection.deleteOne({ _id: new mongo.ObjectID(id)});
+    const deleteResult = await this.collection.deleteOne({ _id: new mongo.ObjectID(id) });
 
     return new DeleteResult<Channel>("channel", { id } as Channel, deleteResult.deletedCount === 1);
   }
 
   async list(): Promise<Channel[]> {
-    return this.collection.find().map(document => ({...document, ...{id: String(document._id)}})).toArray();
+    return this.collection
+      .find()
+      .map(document => ({ ...document, ...{ id: String(document._id) } }))
+      .toArray();
   }
 }

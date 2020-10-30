@@ -7,7 +7,9 @@ import RoomManagerImpl from "./services/room-manager";
 
 @Consumes(["websocket"])
 @ServiceName("realtime")
-export default class RealtimeService extends TwakeService<RealtimeServiceAPI> implements RealtimeServiceAPI {
+export default class RealtimeService
+  extends TwakeService<RealtimeServiceAPI>
+  implements RealtimeServiceAPI {
   private roomManager: RoomManagerImpl;
   private entityManager: RealtimeEntityManager;
   version = "1";

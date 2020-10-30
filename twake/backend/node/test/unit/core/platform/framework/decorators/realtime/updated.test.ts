@@ -1,10 +1,10 @@
-import {describe, expect, it, jest} from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { UpdateResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeUpdated } from "../../../../../../../src/core/platform/framework/decorators";
 import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 
 describe("The RealtimeUpdated decorator", () => {
-  it("should call the original method send back original result but do not emit event if result type is wrong", async (done) => {
+  it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
@@ -27,7 +27,7 @@ describe("The RealtimeUpdated decorator", () => {
     done();
   });
 
-  it("should call the original method send back original result and emit event", async (done) => {
+  it("should call the original method send back original result and emit event", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
@@ -54,19 +54,19 @@ describe("The RealtimeUpdated decorator", () => {
         type: "string",
         entity: "oloy",
         affected: undefined,
-        raw: undefined
-      } as UpdateResult<string>
+        raw: undefined,
+      } as UpdateResult<string>,
     });
 
     emitSpy.mockRestore();
     done();
   });
 
-  it("should emit event with path computed from function", async (done) => {
+  it("should emit event with path computed from function", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated((result) => `/foo/bar/${result}`, "/foo/bar/baz")
+      @RealtimeUpdated(result => `/foo/bar/${result}`, "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
         return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
@@ -89,8 +89,8 @@ describe("The RealtimeUpdated decorator", () => {
         type: "string",
         entity: "oloy",
         affected: undefined,
-        raw: undefined
-      } as UpdateResult<string>
+        raw: undefined,
+      } as UpdateResult<string>,
     });
 
     emitSpy.mockRestore();

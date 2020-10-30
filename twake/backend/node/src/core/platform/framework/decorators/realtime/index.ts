@@ -8,7 +8,11 @@ export interface PathResolver<T> {
   (type: T, context?: ExecutionContext): string;
 }
 
-export function getPath<T>(path : string | PathResolver<T> = "/", entity: EntityTarget<T>, context: ExecutionContext): string {
+export function getPath<T>(
+  path: string | PathResolver<T> = "/",
+  entity: EntityTarget<T>,
+  context: ExecutionContext,
+): string {
   let result;
 
   if (typeof path === "function") {

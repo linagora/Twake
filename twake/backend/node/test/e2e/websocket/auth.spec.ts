@@ -1,4 +1,4 @@
-import {describe, it, beforeEach, afterEach} from "@jest/globals";
+import { describe, it, beforeEach, afterEach } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 import { UnauthorizedError } from "socketio-jwt";
@@ -9,7 +9,7 @@ describe("The Websocket authentication", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth", "websocket"]
+      services: ["webserver", "user", "auth", "websocket"],
     });
 
     socket = io.connect("http://localhost:3000", { path: "/ws" });
@@ -23,7 +23,7 @@ describe("The Websocket authentication", () => {
   });
 
   describe("JWT-based Authenticating", () => {
-    it("should not be able to connect without a JWT token", (done) => {
+    it("should not be able to connect without a JWT token", done => {
       socket.on("connect", () => {
         socket
           .emit("authenticate", {})
@@ -37,7 +37,7 @@ describe("The Websocket authentication", () => {
       });
     });
 
-    it("should not be able to connect with something which is not a JWT token", (done) => {
+    it("should not be able to connect with something which is not a JWT token", done => {
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token: "Not a JWT token" })
@@ -51,7 +51,7 @@ describe("The Websocket authentication", () => {
       });
     });
 
-    it("should be able to connect with a JWT token", async (done) => {
+    it("should be able to connect with a JWT token", async done => {
       const token = await platform.auth.getJWTToken();
 
       socket.on("connect", () => {

@@ -8,7 +8,10 @@ export interface CassandraConnectionOptions {
   password: string;
 }
 
-export class CassandraConnector extends AbstractConnector<CassandraConnectionOptions, cassandra.Client> {
+export class CassandraConnector extends AbstractConnector<
+  CassandraConnectionOptions,
+  cassandra.Client
+> {
   private client: cassandra.Client;
 
   getClient(): cassandra.Client {
@@ -24,7 +27,10 @@ export class CassandraConnector extends AbstractConnector<CassandraConnectionOpt
       contactPoints: this.options.contactPoints,
     };
     if (this.options.username && this.options.password) {
-      cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(this.options.username, this.options.password);
+      cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
+        this.options.username,
+        this.options.password,
+      );
     }
 
     this.client = new cassandra.Client(cassandraOptions);

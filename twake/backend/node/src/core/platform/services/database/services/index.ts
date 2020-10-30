@@ -8,8 +8,7 @@ export default class DatabaseService implements DatabaseServiceAPI {
   version = "1";
   private connector: Connector;
 
-  constructor(readonly type: DatabaseType, private options: ConnectionOptions) {
-  }
+  constructor(readonly type: DatabaseType, private options: ConnectionOptions) {}
 
   getConnector(): Connector {
     if (this.connector) {

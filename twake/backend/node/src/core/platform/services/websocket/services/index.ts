@@ -2,7 +2,12 @@ import socketIO from "socket.io";
 import SocketIORedis from "socket.io-redis";
 import socketIOJWT from "socketio-jwt";
 import WebSocketAPI from "../provider";
-import { WebSocket, WebSocketServiceConfiguration, WebSocketUser, WebsocketUserEvent } from "../types";
+import {
+  WebSocket,
+  WebSocketServiceConfiguration,
+  WebSocketUser,
+  WebsocketUserEvent,
+} from "../types";
 import { EventEmitter } from "events";
 import { User } from "../../../../../services/types";
 
@@ -19,16 +24,29 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
     }
 
     this.io.sockets
-      .on("connection", socketIOJWT.authorize({
-        secret: serviceConfiguration.auth.secret,
-        timeout: 15000
-      }))
+      .on(
+        "connection",
+        socketIOJWT.authorize({
+          secret: serviceConfiguration.auth.secret,
+          timeout: 15000,
+        }),
+      )
       .on("authenticated", (socket: WebSocket) => {
         const user = this.getUser(socket);
 
-        this.emit("user:connected", { user, socket, event: "user:connected" } as WebsocketUserEvent);
+        this.emit("user:connected", {
+          user,
+          socket,
+          event: "user:connected",
+        } as WebsocketUserEvent);
 
-        socket.on("disconnect", () => this.emit("user:disconnected", { user, socket, event: "user:disconnected" } as WebsocketUserEvent));
+        socket.on("disconnect", () =>
+          this.emit("user:disconnected", {
+            user,
+            socket,
+            event: "user:disconnected",
+          } as WebsocketUserEvent),
+        );
       });
   }
 
@@ -43,7 +61,7 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
   getUser(socket: WebSocket): WebSocketUser {
     return {
       id: socket.decoded_token.id,
-      token: socket.decoded_token
+      token: socket.decoded_token,
     };
   }
 

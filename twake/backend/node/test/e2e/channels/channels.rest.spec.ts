@@ -1,7 +1,12 @@
-import {describe, expect, it, beforeEach, afterEach} from "@jest/globals";
+import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
-import { ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "../../../src/services/channels/web/types";
+import {
+  ChannelListResponse,
+  ChannelGetResponse,
+  ChannelCreateResponse,
+  ChannelDeleteResponse,
+} from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
 import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
@@ -12,7 +17,7 @@ describe("The /api/channels API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["websocket", "webserver", "channels", "auth", "database"]
+      services: ["websocket", "webserver", "channels", "auth", "database"],
     });
   });
 
@@ -27,8 +32,8 @@ describe("The /api/channels API", () => {
       method,
       url,
       headers: {
-        authorization: `Bearer ${jwtToken}`
-      }
+        authorization: `Bearer ${jwtToken}`,
+      },
     });
 
     expect(response.statusCode).toBe(400);
@@ -36,21 +41,21 @@ describe("The /api/channels API", () => {
   }
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
-    it("should 400 when companyId is not valid", async (done) => {
+    it("should 400 when companyId is not valid", async done => {
       const companyId = "123";
       const workspaceId = "0";
 
       testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "GET", done);
     });
 
-    it("should 400 when workspaceId is not valid", async (done) => {
+    it("should 400 when workspaceId is not valid", async done => {
       const companyId = "0";
       const workspaceId = "123";
 
       testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "GET", done);
     });
 
-    it("should return empty list of channels", async (done) => {
+    it("should return empty list of channels", async done => {
       const companyId = "0";
       const workspaceId = "0";
 
@@ -59,8 +64,8 @@ describe("The /api/channels API", () => {
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
-        }
+          authorization: `Bearer ${jwtToken}`,
+        },
       });
 
       const result = deserialize(ChannelListResponse, response.body);
@@ -71,7 +76,7 @@ describe("The /api/channels API", () => {
       done();
     });
 
-    it("should return list of channels the user has access to", async (done) => {
+    it("should return list of channels the user has access to", async done => {
       const companyId = "0";
       const workspaceId = "0";
 
@@ -85,20 +90,23 @@ describe("The /api/channels API", () => {
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
-        }
+          authorization: `Bearer ${jwtToken}`,
+        },
       });
 
       const result = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
-      expect(result.resources[0]).toMatchObject({ _id: String(creationResult.entity._id), name: channel.name });
+      expect(result.resources[0]).toMatchObject({
+        _id: String(creationResult.entity._id),
+        name: channel.name,
+      });
 
       done();
     });
 
-    it("should return websockets information", async (done) => {
+    it("should return websockets information", async done => {
       const companyId = "0";
       const workspaceId = "0";
 
@@ -107,11 +115,11 @@ describe("The /api/channels API", () => {
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
+          authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          websockets: "true"
-        }
+          websockets: "true",
+        },
       });
 
       const result = deserialize(ChannelListResponse, response.body);
@@ -119,13 +127,18 @@ describe("The /api/channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.websockets).toMatchObject([
         { room: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }) },
-        { room: getPrivateRoomName({ workspace_id: workspaceId, company_id: companyId }, { id: "1" }) },
+        {
+          room: getPrivateRoomName(
+            { workspace_id: workspaceId, company_id: companyId },
+            { id: "1" },
+          ),
+        },
       ]);
 
       done();
     });
 
-    it("should return websockets and direct information", async (done) => {
+    it("should return websockets and direct information", async done => {
       const companyId = "0";
       const workspaceId = "0";
 
@@ -134,12 +147,12 @@ describe("The /api/channels API", () => {
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
+          authorization: `Bearer ${jwtToken}`,
         },
         query: {
           websockets: "true",
-          mine: "true"
-        }
+          mine: "true",
+        },
       });
 
       const result = deserialize(ChannelListResponse, response.body);
@@ -152,23 +165,31 @@ describe("The /api/channels API", () => {
   });
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
-    it("should 400 when companyId is not valid", async (done) => {
+    it("should 400 when companyId is not valid", async done => {
       const companyId = "123";
       const workspaceId = "0";
       const channelId = "1";
 
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`, "GET", done);
+      testAccess(
+        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
+        "GET",
+        done,
+      );
     });
 
-    it("should 400 when workspaceId is not valid", async (done) => {
+    it("should 400 when workspaceId is not valid", async done => {
       const companyId = "0";
       const workspaceId = "123";
       const channelId = "1";
 
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`, "GET", done);
+      testAccess(
+        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
+        "GET",
+        done,
+      );
     });
 
-    it("should return the requested channel", async (done) => {
+    it("should return the requested channel", async done => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
@@ -183,8 +204,8 @@ describe("The /api/channels API", () => {
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
-        }
+          authorization: `Bearer ${jwtToken}`,
+        },
       });
 
       expect(response.statusCode).toEqual(200);
@@ -194,31 +215,35 @@ describe("The /api/channels API", () => {
       expect(channelGetResult.resource).toBeDefined();
       expect(channelGetResult.resource).toMatchObject({
         id: String(creationResult.entity._id),
-        name: creationResult.entity.name
+        name: creationResult.entity.name,
       });
       expect(channelGetResult.websocket).toBeDefined();
-      expect(channelGetResult.websocket).toMatchObject({ name: creationResult.entity.name, room: `/channels/${creationResult.entity._id}`, encryption_key: ""});
+      expect(channelGetResult.websocket).toMatchObject({
+        name: creationResult.entity.name,
+        room: `/channels/${creationResult.entity._id}`,
+        encryption_key: "",
+      });
 
       done();
     });
   });
 
   describe("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
-    it("should 400 when companyId is not valid", async (done) => {
+    it("should 400 when companyId is not valid", async done => {
       const companyId = "123";
       const workspaceId = "0";
 
       testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
     });
 
-    it("should 400 when workspaceId is not valid", async (done) => {
+    it("should 400 when workspaceId is not valid", async done => {
       const companyId = "0";
       const workspaceId = "123";
 
       testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
     });
 
-    it("should create a channel", async (done) => {
+    it("should create a channel", async done => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
@@ -228,11 +253,11 @@ describe("The /api/channels API", () => {
         method: "POST",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
+          authorization: `Bearer ${jwtToken}`,
         },
         payload: {
-          name: "Test channel"
-        }
+          name: "Test channel",
+        },
       });
 
       expect(response.statusCode).toEqual(201);
@@ -245,28 +270,39 @@ describe("The /api/channels API", () => {
       const channelId = channelCreateResult.resource.id;
       const createdChannel = await channelService.get(channelId);
 
-      expect(channelCreateResult.websocket).toMatchObject({ room: `/channels/${createdChannel._id}`, encryption_key: ""});
+      expect(channelCreateResult.websocket).toMatchObject({
+        room: `/channels/${createdChannel._id}`,
+        encryption_key: "",
+      });
       expect(createdChannel).toBeDefined();
       done();
     });
   });
 
   describe("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
-    it("should 400 when companyId is not valid", async (done) => {
+    it("should 400 when companyId is not valid", async done => {
       const companyId = "123";
       const workspaceId = "0";
 
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`, "DELETE", done);
+      testAccess(
+        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`,
+        "DELETE",
+        done,
+      );
     });
 
-    it("should 400 when workspaceId is not valid", async (done) => {
+    it("should 400 when workspaceId is not valid", async done => {
       const companyId = "0";
       const workspaceId = "123";
 
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`, "DELETE", done);
+      testAccess(
+        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`,
+        "DELETE",
+        done,
+      );
     });
 
-    it("should delete a channel", async (done) => {
+    it("should delete a channel", async done => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
@@ -282,8 +318,8 @@ describe("The /api/channels API", () => {
         method: "DELETE",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
         headers: {
-          authorization: `Bearer ${jwtToken}`
-        }
+          authorization: `Bearer ${jwtToken}`,
+        },
       });
 
       expect(response.statusCode).toEqual(204);

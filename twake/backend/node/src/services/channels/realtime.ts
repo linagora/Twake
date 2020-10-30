@@ -6,15 +6,19 @@ export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {
     name: channel.name,
     room: getChannelPath(channel),
-    encryption_key: ""
+    encryption_key: "",
   };
 }
 
-export function getWorkspaceRooms(workspace: Workspace, user: User, includeDirect: boolean): WebsocketMetadata[] {
+export function getWorkspaceRooms(
+  workspace: Workspace,
+  user: User,
+  includeDirect: boolean,
+): WebsocketMetadata[] {
   return [
     { room: getPublicRoomName(workspace) },
     { room: getPrivateRoomName(workspace, user) },
-    ...(includeDirect? [{ room: getDirectChannelRoomName(workspace, user)}]: [])
+    ...(includeDirect ? [{ room: getDirectChannelRoomName(workspace, user) }] : []),
   ];
 }
 
@@ -40,7 +44,7 @@ export function getChannelPath(channel: Channel, context?: WorkspaceExecutionCon
 }
 
 export function getChannelsPath(workspace?: Workspace): string {
-  return workspace ?
-    `/companies/${workspace.company_id}/workspaces/${workspace.workspace_id}/channels`:
-    "/channels";
+  return workspace
+    ? `/companies/${workspace.company_id}/workspaces/${workspace.workspace_id}/channels`
+    : "/channels";
 }

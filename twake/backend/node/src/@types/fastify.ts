@@ -3,9 +3,9 @@ import SocketIO from "socket.io";
 import { User } from "../services/types";
 
 export interface authenticateDecorator {
-  (request: FastifyRequest): FastifyRequest,
-  (reply: FastifyReply): FastifyReply
- }
+  (request: FastifyRequest): FastifyRequest;
+  (reply: FastifyReply): FastifyReply;
+}
 
 declare module "fastify" {
   interface FastifyInstance {

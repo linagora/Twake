@@ -8,11 +8,18 @@ import { FastifyRequest } from "fastify/types/request";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
-const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
+const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
+  fastify: FastifyInstance,
+  options,
+  next,
+) => {
   const controller = new ChannelCrudController(options.service);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
-    const authorized = await checkCompanyAndWorkspaceForUser(request.params.company_id, request.params.workspace_id);
+    const authorized = await checkCompanyAndWorkspaceForUser(
+      request.params.company_id,
+      request.params.workspace_id,
+    );
 
     if (!authorized) {
       throw fastify.httpErrors.badRequest("Invalid company/workspace");
@@ -24,7 +31,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     url,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    handler: controller.list.bind(controller)
+    handler: controller.list.bind(controller),
   });
 
   fastify.route({
@@ -33,7 +40,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     schema: getChannelSchema,
-    handler: controller.get.bind(controller)
+    handler: controller.get.bind(controller),
   });
 
   fastify.route({
@@ -42,7 +49,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     schema: createChannelSchema,
-    handler: controller.save.bind(controller)
+    handler: controller.save.bind(controller),
   });
 
   fastify.route<{ Params: ChannelParameters }>({
@@ -50,7 +57,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     url: `${url}/:id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    handler: controller.delete.bind(controller)
+    handler: controller.delete.bind(controller),
   });
 
   next();

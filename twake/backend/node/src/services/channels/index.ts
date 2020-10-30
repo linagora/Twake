@@ -30,5 +30,3 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     return this;
   }
 }
-
-

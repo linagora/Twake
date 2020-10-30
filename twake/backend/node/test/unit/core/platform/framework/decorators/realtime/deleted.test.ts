@@ -1,10 +1,10 @@
-import {describe, expect, it, jest} from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { DeleteResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeDeleted } from "../../../../../../../src/core/platform/framework/decorators";
 import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
 
 describe("The RealtimeDeleted decorator", () => {
-  it("should call the original method send back original result but do not emit event if result type is wrong", async (done) => {
+  it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
@@ -27,7 +27,7 @@ describe("The RealtimeDeleted decorator", () => {
     done();
   });
 
-  it("should call the original method send back original result and emit event", async (done) => {
+  it("should call the original method send back original result and emit event", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
@@ -53,19 +53,19 @@ describe("The RealtimeDeleted decorator", () => {
       result: {
         entity: "oloy",
         deleted: true,
-        type: "string"
-      } as DeleteResult<string>
+        type: "string",
+      } as DeleteResult<string>,
     });
 
     emitSpy.mockRestore();
     done();
   });
 
-  it("should emit event with path computed from function", async (done) => {
+  it("should emit event with path computed from function", async done => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted((result) => `/foo/bar/${result}`, "/foo/bar/baz")
+      @RealtimeDeleted(result => `/foo/bar/${result}`, "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
@@ -87,8 +87,8 @@ describe("The RealtimeDeleted decorator", () => {
       result: {
         entity: "oloy",
         deleted: true,
-        type: "string"
-      } as DeleteResult<string>
+        type: "string",
+      } as DeleteResult<string>,
     });
 
     emitSpy.mockRestore();

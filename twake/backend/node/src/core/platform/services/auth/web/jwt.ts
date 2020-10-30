@@ -1,11 +1,11 @@
-import { FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyPluginCallback, FastifyRequest } from "fastify";
 import fastifyJwt from "fastify-jwt";
 import fp from "fastify-plugin";
 import config from "../../../../config";
 
 const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
   fastify.register(fastifyJwt, {
-    secret: config.get("auth.jwt.secret")
+    secret: config.get("auth.jwt.secret"),
   });
 
   fastify.decorate("authenticate", async (request: FastifyRequest) => {
@@ -21,5 +21,5 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
 };
 
 export default fp(jwtPlugin, {
-  name: "authenticate"
+  name: "authenticate",
 });

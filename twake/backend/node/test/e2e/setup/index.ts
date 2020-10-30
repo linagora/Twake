@@ -10,19 +10,19 @@ export interface TestPlatform {
   app: FastifyInstance;
   database: DatabaseServiceAPI;
   auth: {
-    getJWTToken(): Promise<string>
-  }
-  tearDown(): Promise<void>
+    getJWTToken(): Promise<string>;
+  };
+  tearDown(): Promise<void>;
 }
 
 export interface TestPlatformConfiguration {
-  services: string[]
+  services: string[];
 }
 
 export async function init(config: TestPlatformConfiguration): Promise<TestPlatform> {
   const configuration: TwakePlatformConfiguration = {
     services: config.services,
-    servicesPath: path.resolve(__dirname, "../../../src/services/")
+    servicesPath: path.resolve(__dirname, "../../../src/services/"),
   };
   const platform = new TwakePlatform(configuration);
 
@@ -35,7 +35,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   async function getJWTToken(): Promise<string> {
     const response = await app.inject({
       method: "GET",
-      url: "/api/auth/login"
+      url: "/api/auth/login",
     });
 
     return JSON.parse(response.payload).token;
@@ -60,8 +60,8 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
     app,
     database,
     auth: {
-      getJWTToken
+      getJWTToken,
     },
-    tearDown
+    tearDown,
   };
 }
