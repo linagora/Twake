@@ -1,6 +1,6 @@
-import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { User, Workspace, WebsocketMetadata } from "../types";
 import { Channel } from "./entities";
+import { WorkspaceExecutionContext } from "./types";
 
 export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {
@@ -27,15 +27,20 @@ export function getPrivateRoomName(workspace: Workspace, user: User): string {
 }
 
 export function getPublicRoomName(workspace: Workspace): string {
-  return `/companies/${workspace.company_id}/workspaces/${workspace.workspace_id}/channels?type=public`;
+  return `/companies/${workspace?.company_id}/workspaces/${workspace?.workspace_id}/channels?type=public`;
 }
 
-// TODO: The channel path depends on the execution context
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getChannelPath(channel: Channel, context?: ExecutionContext): string {
-  return `${getChannelsPath()}/${channel.id}`;
+export function getRoomName(channel: Channel, context?: WorkspaceExecutionContext): string {
+  return getPublicRoomName(context.workspace);
 }
 
-export function getChannelsPath(): string {
-  return "/channels";
+export function getChannelPath(channel: Channel, context?: WorkspaceExecutionContext): string {
+  return `${getChannelsPath(context?.workspace)}/${channel.id}`;
+}
+
+export function getChannelsPath(workspace?: Workspace): string {
+  return workspace ?
+    `/companies/${workspace.company_id}/workspaces/${workspace.workspace_id}/channels`:
+    "/channels";
 }

@@ -1,21 +1,25 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
+import { WorkspaceExecutionContext } from "../types";
 import { BaseChannelsParameters, ChannelCreateResponse, ChannelDeleteResponse, ChannelGetResponse, ChannelListQueryParameters, ChannelListResponse, ChannelParameters, CreateChannelBody } from "./types";
 
 export class ChannelCrudController implements CrudController<ChannelGetResponse, ChannelCreateResponse, ChannelListResponse, ChannelDeleteResponse> {
   constructor(protected service: ChannelServiceAPI) {}
 
-  getExecutionContext(request: FastifyRequest): ExecutionContext {
+  getExecutionContext(request: FastifyRequest<{ Params: BaseChannelsParameters }>): WorkspaceExecutionContext {
     return {
       user: request.currentUser,
       url: request.url,
       method: request.routerMethod,
-      transport: "http"
+      transport: "http",
+      workspace: {
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id
+      }
     };
   }
 
