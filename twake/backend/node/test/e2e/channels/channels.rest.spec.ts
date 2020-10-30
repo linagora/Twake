@@ -4,6 +4,7 @@ import { TestPlatform, init } from "../setup";
 import { ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
+import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
 
 describe("The /api/channels API", () => {
   const url = "/api/channels";
@@ -116,7 +117,10 @@ describe("The /api/channels API", () => {
       const result = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
-      expect(result.websockets.length).toEqual(2);
+      expect(result.websockets).toMatchObject([
+        { room: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }) },
+        { room: getPrivateRoomName({ workspace_id: workspaceId, company_id: companyId }, { id: "1" }) },
+      ]);
 
       done();
     });

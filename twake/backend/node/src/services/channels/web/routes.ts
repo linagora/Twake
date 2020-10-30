@@ -1,16 +1,15 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { BaseChannelsParameters, ChannelParameters, CreateChannelBody, ChannelListQueryParameters, ChannelListResponse, ChannelGetResponse, ChannelCreateResponse, ChannelDeleteResponse } from "./types";
+import { BaseChannelsParameters, ChannelParameters } from "./types";
 import { createChannelSchema, getChannelSchema } from "./schemas";
-import ChannelController from "./controller";
+import { ChannelCrudController } from "./controller";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
-import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
 
 const url = "/companies/:company_id/workspaces/:workspace_id/channels";
 
 const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: FastifyInstance, options, next) => {
-  const controller = new ChannelController(options.service);
+  const controller = new ChannelCrudController(options.service);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
     const authorized = await checkCompanyAndWorkspaceForUser(request.params.company_id, request.params.workspace_id);
@@ -20,67 +19,30 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     }
   };
 
-  fastify.route<{ Querystring: ChannelListQueryParameters, Params: BaseChannelsParameters }>({
+  fastify.route({
     method: "GET",
     url,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    handler: async (req): Promise<ChannelListResponse> => {
-      req.log.info(`Get channels ${req.params}`);
-
-      const resources = await controller.getChannels(req.params, req.query);
-
-      return {
-        ...{
-          resources
-        },
-        ...(req.query.websockets && { websockets: getWorkspaceRooms(req.params, req.currentUser, req.query.mine) })
-      };
-    }
+    handler: controller.list.bind(controller)
   });
 
-  fastify.route<{ Params: ChannelParameters }>({
+  fastify.route({
     method: "GET",
     url: `${url}/:id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     schema: getChannelSchema,
-    handler: async (req): Promise<ChannelGetResponse> => {
-      req.log.info(`Get channel ${req.params}`);
-
-      const resource = await controller.getChannel(req.params);
-
-      if (!resource) {
-        throw fastify.httpErrors.notFound(`Channel ${req.params.id} not found`);
-      }
-
-      return {
-        websocket: getWebsocketInformation(resource),
-        resource
-      };
-    }
+    handler: controller.get.bind(controller)
   });
 
-  fastify.route<{ Body: CreateChannelBody, Params: ChannelParameters }>({
+  fastify.route({
     method: "POST",
     url,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     schema: createChannelSchema,
-    handler: async (request, reply): Promise<ChannelCreateResponse> => {
-      request.log.debug(`Creating Channel ${JSON.stringify(request.body)}`);
-
-      const resource = await controller.create(request.params, request.body);
-
-      if (resource) {
-        reply.code(201);
-      }
-
-      return {
-        websocket: getWebsocketInformation(resource),
-        resource
-      };
-    }
+    handler: controller.save.bind(controller)
   });
 
   fastify.route<{ Params: ChannelParameters }>({
@@ -88,21 +50,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (fastify: 
     url: `${url}/:id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    handler: async (request, reply): Promise<ChannelDeleteResponse> => {
-      const removed = await controller.remove(request.params);
-
-      if (removed) {
-        reply.code(204);
-
-        return {
-          status: "success"
-        };
-      }
-
-      return {
-        status: "error"
-      };
-    }
+    handler: controller.delete.bind(controller)
   });
 
   next();

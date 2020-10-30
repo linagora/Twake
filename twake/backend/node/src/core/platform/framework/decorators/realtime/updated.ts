@@ -16,6 +16,7 @@ export function RealtimeUpdated<T>(path: string | PathResolver<T>, resourcePath?
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     descriptor.value = async function(...args: any[]) {
       const result: UpdateResult<T> = await originalMethod.apply(this, args);
+      const context = args && args[args.length -1];
 
       if (!(result instanceof UpdateResult)) {
         return result;
@@ -23,8 +24,8 @@ export function RealtimeUpdated<T>(path: string | PathResolver<T>, resourcePath?
 
       eventBus.publish<T>(RealtimeEntityActionType.Updated, {
         type: result.type,
-        path: getPath(path, result),
-        resourcePath: getPath(resourcePath, result),
+        path: getPath(path, result, context),
+        resourcePath: getPath(resourcePath, result, context),
         entity: result.entity,
         result
       } as RealtimeEntityEvent<T>);

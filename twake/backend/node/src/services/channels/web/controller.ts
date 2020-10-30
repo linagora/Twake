@@ -1,37 +1,86 @@
 import { plainToClass } from "class-transformer";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { CrudController } from "../../../core/platform/services/webserver/types";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
-import { BaseChannelsParameters, ChannelListQueryParameters, ChannelParameters, CreateChannelBody } from "./types";
+import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
+import { WorkspaceExecutionContext } from "../types";
+import { BaseChannelsParameters, ChannelCreateResponse, ChannelDeleteResponse, ChannelGetResponse, ChannelListQueryParameters, ChannelListResponse, ChannelParameters, CreateChannelBody } from "./types";
 
-export default class ChannelController {
-  constructor(private service: ChannelServiceAPI) {}
+export class ChannelCrudController implements CrudController<ChannelGetResponse, ChannelCreateResponse, ChannelListResponse, ChannelDeleteResponse> {
+  constructor(protected service: ChannelServiceAPI) {}
 
-  async create(params: BaseChannelsParameters, channel: CreateChannelBody): Promise<Channel> {
+  getExecutionContext(request: FastifyRequest<{ Params: BaseChannelsParameters }>): WorkspaceExecutionContext {
+    return {
+      user: request.currentUser,
+      url: request.url,
+      method: request.routerMethod,
+      transport: "http",
+      workspace: {
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id
+      }
+    };
+  }
+
+  async get(request: FastifyRequest<{ Params: ChannelParameters }>, reply: FastifyReply): Promise<ChannelGetResponse> {
+    const resource = await this.service.get(request.params.id, this.getExecutionContext(request));
+
+    if (!resource) {
+      throw reply.notFound(`Channel ${request.params.id} not found`);
+    }
+
+    return {
+      websocket: getWebsocketInformation(resource),
+      resource
+    };
+  }
+
+  async save(request: FastifyRequest<{ Body: CreateChannelBody, Params: ChannelParameters }>, reply: FastifyReply): Promise<ChannelCreateResponse> {
     const entity = plainToClass(Channel, {
-      ...channel,
+      ...request.body,
       ...{
-        company_id: params.company_id,
-        workspace_id: params.workspace_id
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id
       }
     });
 
-    const result = await this.service.create(entity);
+    const result = await this.service.create(entity, this.getExecutionContext(request));
 
-    return result.entity;
+    if (result.entity) {
+      reply.code(201);
+    }
+
+    return {
+      websocket: getWebsocketInformation(result.entity),
+      resource: result.entity
+    };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getChannels(params: BaseChannelsParameters, query: ChannelListQueryParameters): Promise<Channel[]> {
-    return this.service.list();
+  async list(request: FastifyRequest<{ Querystring: ChannelListQueryParameters, Params: BaseChannelsParameters }>): Promise<ChannelListResponse> {
+    const resources = await this.service.list(this.getExecutionContext(request));
+
+    return {
+      ...{
+        resources
+      },
+      ...(request.query.websockets && { websockets: getWorkspaceRooms(request.params, request.currentUser, request.query.mine) })
+    };
   }
 
-  async getChannel(params: ChannelParameters): Promise<Channel | void> {
-    return await this.service.get(params.id);
-  }
+  async delete(request: FastifyRequest<{ Params: ChannelParameters }>, reply: FastifyReply): Promise<ChannelDeleteResponse> {
+    const deleteResult = await this.service.delete(request.params.id, this.getExecutionContext(request));
 
-  async remove(params: ChannelParameters): Promise<boolean> {
-    const deleteResult = await this.service.delete(params.id);
+      if (deleteResult.deleted) {
+        reply.code(204);
 
-    return deleteResult.deleted;
-  }
+        return {
+          status: "success"
+        };
+      }
+
+      return {
+        status: "error"
+      };
+    }
 }

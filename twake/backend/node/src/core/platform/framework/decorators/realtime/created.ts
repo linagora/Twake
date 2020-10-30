@@ -16,6 +16,8 @@ export function RealtimeCreated<T>(path: string | PathResolver<T>, resourcePath?
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     descriptor.value = async function(...args: any[]) {
       const result: CreateResult<T> = await originalMethod.apply(this, args);
+      // context should always be the last arg
+      const context = args && args[args.length -1];
 
       if (!(result instanceof CreateResult)) {
         return result;
@@ -23,8 +25,8 @@ export function RealtimeCreated<T>(path: string | PathResolver<T>, resourcePath?
 
       eventBus.publish<T>(RealtimeEntityActionType.Created, {
         type: result.type,
-        path: getPath(path, result),
-        resourcePath: getPath(resourcePath, result),
+        path: getPath(path, result, context),
+        resourcePath: getPath(resourcePath, result, context),
         entity: result.entity,
         result
       } as RealtimeEntityEvent<T> );
