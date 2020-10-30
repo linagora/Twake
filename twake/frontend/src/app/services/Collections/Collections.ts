@@ -21,7 +21,7 @@ type Options = {
 };
 class Collections {
   private collections: { [key: string]: Collection<Resource<any>> } = {};
-  private options: Options = { transport: { rest: { url: '' }, socket: { url: '' } } };
+  private options: Options = { transport: {} };
   protected transport: Transport = new Transport();
 
   public setOptions(options: Options) {

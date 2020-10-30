@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import OriginalCollections, {
   Collection as OriginalCollection,
   Resource as OriginalResource,

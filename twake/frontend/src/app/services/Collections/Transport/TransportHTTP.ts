@@ -1,11 +1,15 @@
-import Collections, { Collection, Resource } from '../Collections';
+import Collections from '../Collections';
 import Transport from './Transport';
 
 export default class TransportHTTP {
   constructor(private readonly transport: Transport) {}
 
   private async request(method: string, route: string, options: any) {
-    route = Collections.getOptions().transport?.rest?.url + route;
+    const prefix = Collections.getOptions().transport?.rest?.url;
+    if (!prefix) {
+      return { offline: true };
+    }
+    route = prefix + route;
 
     const response = await fetch(route, {
       method: method,
