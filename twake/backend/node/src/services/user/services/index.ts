@@ -25,5 +25,5 @@ function findByUsername(username: string): User {
 export default {
   findByUsername,
   remove,
-  get
+  get,
 };

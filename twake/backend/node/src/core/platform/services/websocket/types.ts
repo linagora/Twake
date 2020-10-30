@@ -6,8 +6,8 @@ import SocketIORedis from "socket.io-redis";
 import { User } from "../../../../services/types";
 
 export interface AdaptersConfiguration {
-  types: Array<string>,
-  redis: SocketIORedis.SocketIORedisOptions
+  types: Array<string>;
+  redis: SocketIORedis.SocketIORedisOptions;
 }
 
 export interface WebSocketServiceConfiguration {
@@ -26,7 +26,7 @@ export interface WebSockets {
 }
 
 export interface WebSocket extends SocketIO.Socket {
-  decoded_token: DecodedToken
+  decoded_token: DecodedToken;
 }
 
 export interface WebsocketUserEvent {

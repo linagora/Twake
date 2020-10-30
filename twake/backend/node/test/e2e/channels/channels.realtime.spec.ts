@@ -1,4 +1,4 @@
-import {describe, expect, it, beforeEach, afterEach} from "@jest/globals";
+import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { ObjectId } from "mongodb";
 import io from "socket.io-client";
 import { Channel } from "../../../src/services/channels/entities";
@@ -14,7 +14,7 @@ describe("The Channels Realtime feature", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["websocket", "webserver", "channels", "auth", "database", "realtime"]
+      services: ["websocket", "webserver", "channels", "auth", "database", "realtime"],
     });
     socket = io.connect("http://localhost:3000", { path: "/socket.io" });
   });
@@ -27,7 +27,7 @@ describe("The Channels Realtime feature", () => {
   });
 
   describe("On channel creation", () => {
-    it("should notify the client", async (done) => {
+    it("should notify the client", async done => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
@@ -39,18 +39,21 @@ describe("The Channels Realtime feature", () => {
         socket
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
-            socket.emit("realtime:join", { name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }), token: roomToken });
+            socket.emit("realtime:join", {
+              name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }),
+              token: roomToken,
+            });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
               const response = await platform.app.inject({
                 method: "POST",
                 url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
                 headers: {
-                  authorization: `Bearer ${jwtToken}`
+                  authorization: `Bearer ${jwtToken}`,
                 },
                 payload: {
-                  name: channelName
-                }
+                  name: channelName,
+                },
               });
 
               expect(response.statusCode).toEqual(201);
@@ -70,7 +73,7 @@ describe("The Channels Realtime feature", () => {
   });
 
   describe("On channel removal", () => {
-    it("should notify the client", async (done) => {
+    it("should notify the client", async done => {
       const companyId = "0";
       const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
@@ -101,21 +104,26 @@ describe("The Channels Realtime feature", () => {
               expect(event.path).toEqual(
                 getChannelPath(
                   { id: creationResult.entity.id } as Channel,
-                  { workspace: { workspace_id: workspaceId, company_id: companyId }} as WorkspaceExecutionContext
-                )
+                  {
+                    workspace: { workspace_id: workspaceId, company_id: companyId },
+                  } as WorkspaceExecutionContext,
+                ),
               );
               expect(event.resource.id).toEqual(creationResult.entity.id);
               done();
             });
-            socket.emit("realtime:join", { name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }), token: roomToken });
+            socket.emit("realtime:join", {
+              name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }),
+              token: roomToken,
+            });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
               await platform.app.inject({
                 method: "DELETE",
                 url: `${url}/companies/${creationResult.entity.company_id}/workspaces/${creationResult.entity.workspace_id}/channels/${creationResult.entity.id}`,
                 headers: {
-                  authorization: `Bearer ${jwtToken}`
-                }
+                  authorization: `Bearer ${jwtToken}`,
+                },
               });
             });
           })

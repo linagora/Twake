@@ -9,5 +9,5 @@ const socketIOPlugin: FastifyPluginCallback<{ io: socketIO.Server }> = (fastify,
 };
 
 export default fp(socketIOPlugin, {
-  name: "fastify-socketio"
+  name: "fastify-socketio",
 });

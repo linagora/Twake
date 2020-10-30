@@ -4,7 +4,6 @@ import RealtimeEntityManager from "./services/entity-manager";
 import { RealtimeEntityEvent } from "./types";
 
 export interface RealtimeServiceAPI extends TwakeServiceProvider {
-
   /**
    * Get the realtime event bus instance
    */

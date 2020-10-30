@@ -2,7 +2,11 @@
 import cassandra from "cassandra-driver";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
-import { UpdateResult, CreateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  UpdateResult,
+  CreateResult,
+  DeleteResult,
+} from "../../../core/platform/framework/api/crud-service";
 
 export class CassandraChannelService implements ChannelServiceAPI {
   version = "1";

@@ -5,5 +5,5 @@ const level = "info";
 
 export const logger = pino({
   name: "TwakeApp",
-  level
+  level,
 });

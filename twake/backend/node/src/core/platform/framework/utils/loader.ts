@@ -9,13 +9,15 @@ export class Loader {
 
     logger.debug(`Loading ${componentName} from ${modulesPaths.join(" - ")}`);
 
-    let classes = await Promise.all(modulesPaths.map(async modulePath => {
-      try {
-        return await import(modulePath);
-      } catch (err) {
-        logger.debug(`${modulePath} not found`);
-      }
-    }));
+    let classes = await Promise.all(
+      modulesPaths.map(async modulePath => {
+        try {
+          return await import(modulePath);
+        } catch (err) {
+          logger.debug(`${modulePath} not found`);
+        }
+      }),
+    );
 
     classes = classes.filter(Boolean);
 

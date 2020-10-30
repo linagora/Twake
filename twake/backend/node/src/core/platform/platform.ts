@@ -16,8 +16,8 @@ export class TwakePlatform extends TwakeContainer {
       [this.options.servicesPath, path.resolve(__dirname, "./services/")],
       this.options.services,
       {
-        getProvider: this.getProvider.bind(this)
-      }
+        getProvider: this.getProvider.bind(this),
+      },
     );
   }
 }

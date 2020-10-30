@@ -20,8 +20,11 @@ export default class RealtimeEntityManager {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private pushResourceEvent(event: RealtimeEntityEvent<any>, action: RealtimeEntityActionType): boolean {
+  private pushResourceEvent(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event: RealtimeEntityEvent<any>,
+    action: RealtimeEntityActionType,
+  ): boolean {
     logger.info(`Pushing ${action} entity to room ${event.path}`);
 
     return this.ws.getIo().to(event.path).emit("realtime:resource", {
@@ -29,7 +32,7 @@ export default class RealtimeEntityManager {
       room: event.path,
       type: event.type,
       path: event.resourcePath,
-      resource: event.entity
+      resource: event.entity,
     });
   }
 }

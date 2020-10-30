@@ -6,5 +6,5 @@ export enum TwakeServiceState {
   Started = "STARTED",
   Stopping = "STOPPING",
   Stopped = "STOPPED",
-  Errored = "ERRORED"
+  Errored = "ERRORED",
 }

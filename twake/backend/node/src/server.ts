@@ -7,7 +7,7 @@ const start = async (): Promise<TwakePlatform> => {
   try {
     const configuration: TwakePlatformConfiguration = {
       services: config.get("services"),
-      servicesPath: path.resolve(__dirname, "./services/")
+      servicesPath: path.resolve(__dirname, "./services/"),
     };
     const platform = new TwakePlatform(configuration);
     await platform.init();

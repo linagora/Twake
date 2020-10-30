@@ -8,7 +8,8 @@ import { TwakeServiceOptions } from "./service-options";
 import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
 import { logger } from "../logger";
 
-export abstract class TwakeService<T extends TwakeServiceProvider> implements TwakeServiceInterface<TwakeServiceProvider> {
+export abstract class TwakeService<T extends TwakeServiceProvider>
+  implements TwakeServiceInterface<TwakeServiceProvider> {
   state: BehaviorSubject<TwakeServiceState>;
   readonly name: string;
   protected readonly configuration: TwakeServiceConfiguration;
@@ -21,7 +22,7 @@ export abstract class TwakeService<T extends TwakeServiceProvider> implements Tw
 
   abstract api(): T;
 
-  public get prefix() : string {
+  public get prefix(): string {
     return Reflect.getMetadata(PREFIX_METADATA, this) || "/";
   }
 
@@ -60,7 +61,10 @@ export abstract class TwakeService<T extends TwakeServiceProvider> implements Tw
   }
 
   async start(): Promise<this> {
-    if (this.state.value === TwakeServiceState.Starting || this.state.value === TwakeServiceState.Started) {
+    if (
+      this.state.value === TwakeServiceState.Starting ||
+      this.state.value === TwakeServiceState.Started
+    ) {
       logger.info("Service %s is already started", this.name);
       return this;
     }
@@ -83,7 +87,10 @@ export abstract class TwakeService<T extends TwakeServiceProvider> implements Tw
   }
 
   async stop(): Promise<this> {
-    if (this.state.value === TwakeServiceState.Stopping || this.state.value === TwakeServiceState.Stopped) {
+    if (
+      this.state.value === TwakeServiceState.Stopping ||
+      this.state.value === TwakeServiceState.Stopped
+    ) {
       logger.info("Service %s is already stopped", this.name);
       return this;
     }

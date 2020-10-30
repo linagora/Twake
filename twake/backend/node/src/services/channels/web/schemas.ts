@@ -3,8 +3,8 @@ const webSocketSchema = {
   properties: {
     name: { type: "string" },
     room: { type: "string" },
-    encryption_key: { type: "string" }
-  }
+    encryption_key: { type: "string" },
+  },
 };
 
 export const createChannelSchema = {
@@ -12,10 +12,10 @@ export const createChannelSchema = {
     type: "object",
     properties: {
       name: {
-        type: "string"
-      }
+        type: "string",
+      },
     },
-    required: ["name"]
+    required: ["name"],
   },
   response: {
     201: {
@@ -25,25 +25,25 @@ export const createChannelSchema = {
         resource: {
           type: "object",
           properties: {
-            id: { type: "string"},
+            id: { type: "string" },
             company_id: { type: "string" },
-            workspace_id: { type: "string" }
+            workspace_id: { type: "string" },
           },
-          required: ["id", "company_id", "workspace_id"]
-        }
+          required: ["id", "company_id", "workspace_id"],
+        },
       },
-      required: ["resource"]
-    }
-  }
+      required: ["resource"],
+    },
+  },
 };
 
-export const getChannelSchema =  {
+export const getChannelSchema = {
   request: {
     properties: {
       company_id: { type: "string" },
-      workspace_id: { type: "string" }
+      workspace_id: { type: "string" },
     },
-    required: ["company_id", "workspace_id"]
+    required: ["company_id", "workspace_id"],
   },
   response: {
     200: {
@@ -53,14 +53,14 @@ export const getChannelSchema =  {
         resource: {
           type: "object",
           properties: {
-            id: { type: "string"},
+            id: { type: "string" },
             company_id: { type: "string" },
             workspace_id: { type: "string" },
             name: { type: "string" },
           },
-          required: ["id", "company_id", "workspace_id", "name"]
-        }
-      }
-    }
-  }
+          required: ["id", "company_id", "workspace_id", "name"],
+        },
+      },
+    },
+  },
 };

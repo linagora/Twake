@@ -5,7 +5,7 @@ import { MongoConnectionOptions, MongoConnector } from "./connectors/mongodb";
 
 export class ConnectorFactory {
   public create(type: DatabaseType, options: ConnectionOptions): Connector {
-    switch(type) {
+    switch (type) {
       case "cassandra":
         return new CassandraConnector(type, options as CassandraConnectionOptions);
       case "mongodb":

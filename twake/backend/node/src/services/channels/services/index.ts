@@ -1,5 +1,13 @@
-import { RealtimeCreated, RealtimeUpdated, RealtimeDeleted } from "../../../core/platform/framework";
-import { CreateResult, UpdateResult, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  RealtimeCreated,
+  RealtimeUpdated,
+  RealtimeDeleted,
+} from "../../../core/platform/framework";
+import {
+  CreateResult,
+  UpdateResult,
+  DeleteResult,
+} from "../../../core/platform/framework/api/crud-service";
 import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
 import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
@@ -18,11 +26,15 @@ export function getService(databaseService: DatabaseServiceAPI): ChannelServiceA
 function getServiceInstance(databaseService: DatabaseServiceAPI): ChannelServiceAPI {
   const type = databaseService.getConnector().getType();
 
-  switch(type) {
+  switch (type) {
     case "mongodb":
-      return new MongoChannelService((databaseService.getConnector() as MongoConnector).getDatabase());
+      return new MongoChannelService(
+        (databaseService.getConnector() as MongoConnector).getDatabase(),
+      );
     case "cassandra":
-      return new CassandraChannelService((databaseService.getConnector() as CassandraConnector).getClient());
+      return new CassandraChannelService(
+        (databaseService.getConnector() as CassandraConnector).getClient(),
+      );
     default:
       throw new Error(`${type} service is not supported`);
   }
@@ -35,9 +47,12 @@ class Service implements ChannelServiceAPI {
 
   @RealtimeCreated<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext)
+    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  async create(channel: Channel, context: WorkspaceExecutionContext): Promise<CreateResult<Channel>> {
+  async create(
+    channel: Channel,
+    context: WorkspaceExecutionContext,
+  ): Promise<CreateResult<Channel>> {
     return this.service.create(channel, context);
   }
 
@@ -47,15 +62,20 @@ class Service implements ChannelServiceAPI {
 
   @RealtimeUpdated<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext)
+    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  update(id: string, channel: Channel, context: WorkspaceExecutionContext): Promise<UpdateResult<Channel>> {
+  update(
+    id: string,
+    channel: Channel,
+    context: WorkspaceExecutionContext,
+  ): Promise<UpdateResult<Channel>> {
     return this.service.update(id, channel, context);
   }
 
   @RealtimeDeleted<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext))
+    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
+  )
   delete(id: string, context: WorkspaceExecutionContext): Promise<DeleteResult<Channel>> {
     return this.service.delete(id, context);
   }

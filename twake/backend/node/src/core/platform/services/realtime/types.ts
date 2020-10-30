@@ -3,7 +3,7 @@ import { EntityOperationResult } from "../../framework/api/crud-service";
 export enum RealtimeEntityActionType {
   Created = "created",
   Updated = "updated",
-  Deleted = "deleted"
+  Deleted = "deleted",
 }
 export class RealtimeEntityEvent<Entity> {
   // the type of the resource
