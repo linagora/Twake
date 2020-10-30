@@ -1,12 +1,16 @@
-export class EntityTarget<Entity> {
+export class ContextualizedTarget {
   context?: ExecutionContext;
+}
 
+export class EntityTarget<Entity> extends ContextualizedTarget {
   /**
    *
    * @param type type of entity
    * @param entity the entity itself
    */
-  constructor(readonly type: string, readonly entity: Entity) {}
+  constructor(readonly type: string, readonly entity: Entity) {
+    super();
+  }
 }
 
 export class UpdateResult<Entity> extends EntityTarget<Entity> {
@@ -42,6 +46,16 @@ export class DeleteResult<Entity> extends EntityTarget<Entity> {
   }
 }
 
+export class ListResult<Entity> extends ContextualizedTarget implements Paginable {
+  // next page token
+  page_token: string;
+
+  constructor(readonly type: string, readonly entities: Entity[], nextPage?: Paginable) {
+    super();
+    this.page_token = nextPage?.page_token;
+  }
+}
+
 export declare type EntityId = string | number;
 
 export declare type EntityOperationResult<Entity> =
@@ -56,6 +70,15 @@ export interface ExecutionContext {
   transport: "http" | "ws";
 }
 
+export interface Paginable {
+  page_token?: string;
+  max_results?: string;
+}
+
+export class Pagination implements Paginable {
+  constructor(readonly page_token = "1", readonly max_results = "100") {}
+}
+
 export interface CRUDService<Entity> {
   create(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
   get(id: EntityId, context?: ExecutionContext): Promise<Entity>;
@@ -65,5 +88,9 @@ export interface CRUDService<Entity> {
     context?: ExecutionContext /* TODO: Options */,
   ): Promise<UpdateResult<Entity>>;
   delete(id: EntityId, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
-  list(context: ExecutionContext /* TODO: Options */): Promise<Entity[]>;
+  list(
+    pagination: Paginable,
+    /* TODO options */
+    context: ExecutionContext,
+  ): Promise<ListResult<Entity>>;
 }
