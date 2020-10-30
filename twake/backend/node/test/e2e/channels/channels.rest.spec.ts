@@ -106,6 +106,136 @@ describe("The /api/channels API", () => {
       done();
     });
 
+    it("should return pagination information when not all channels are returned", async done => {
+      const companyId = "0";
+      const workspaceId = "0";
+
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+
+      await Promise.all(
+        "0123456789".split("").map(name => {
+          const channel = new Channel();
+          channel.name = name;
+          return channelService.create(channel);
+        }),
+      ).catch(() => done(new Error("Failed on creation")));
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          max_results: "5",
+        },
+      });
+
+      const result = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toEqual(5);
+      expect(result.next_page_token).toBeDefined;
+
+      done();
+    });
+
+    it("should be able to paginate over channels from pagination information", async done => {
+      const companyId = "0";
+      const workspaceId = "0";
+
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+
+      await Promise.all(
+        "0123456789".split("").map(name => {
+          const channel = new Channel();
+          channel.name = name;
+          return channelService.create(channel);
+        }),
+      ).catch(() => done(new Error("Failed on creation")));
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const firstPage = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          max_results: "5",
+        },
+      });
+
+      const firstPageChannels = deserialize(ChannelListResponse, firstPage.body);
+
+      expect(firstPage.statusCode).toBe(200);
+      expect(firstPageChannels.resources.length).toEqual(5);
+      expect(firstPageChannels.next_page_token).toBeDefined;
+
+      const nextPage = firstPageChannels.next_page_token;
+      const secondPage = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          max_results: "5",
+          page_token: nextPage,
+        },
+      });
+
+      const secondPageChannels = deserialize(ChannelListResponse, secondPage.body);
+
+      expect(secondPage.statusCode).toBe(200);
+      expect(secondPageChannels.resources.length).toEqual(5);
+
+      expect(
+        new Set([
+          ...firstPageChannels.resources.map(resource => resource.id),
+          ...secondPageChannels.resources.map(resource => resource.id),
+        ]).size,
+      ).toEqual(10);
+
+      done();
+    });
+
+    it("should not return pagination information when all channels are returned", async done => {
+      const companyId = "0";
+      const workspaceId = "0";
+
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+
+      await Promise.all(
+        "0123456789".split("").map(name => {
+          const channel = new Channel();
+          channel.name = name;
+          return channelService.create(channel);
+        }),
+      ).catch(() => done(new Error("Failed on creation")));
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          max_results: "11",
+        },
+      });
+
+      const result = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toEqual(10);
+      expect(result.next_page_token).not.toBeDefined;
+
+      done();
+    });
+
     it("should return websockets information", async done => {
       const companyId = "0";
       const workspaceId = "0";

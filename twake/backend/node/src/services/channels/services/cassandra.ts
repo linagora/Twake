@@ -6,6 +6,7 @@ import {
   UpdateResult,
   CreateResult,
   DeleteResult,
+  ListResult,
 } from "../../../core/platform/framework/api/crud-service";
 
 export class CassandraChannelService implements ChannelServiceAPI {
@@ -29,7 +30,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
     throw new Error("Not implemented");
   }
 
-  async list(/* TODO: Options */): Promise<Channel[]> {
+  async list(/* TODO: Options */): Promise<ListResult<Channel>> {
     throw new Error("Not implemented");
   }
 }

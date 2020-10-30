@@ -7,6 +7,8 @@ import {
   CreateResult,
   UpdateResult,
   DeleteResult,
+  Pagination,
+  ListResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
 import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
@@ -80,7 +82,7 @@ class Service implements ChannelServiceAPI {
     return this.service.delete(id, context);
   }
 
-  list(context: WorkspaceExecutionContext): Promise<Channel[]> {
-    return this.service.list(context);
+  list(pagination: Pagination, context: WorkspaceExecutionContext): Promise<ListResult<Channel>> {
+    return this.service.list(pagination, context);
   }
 }

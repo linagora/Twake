@@ -1,5 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
@@ -87,14 +88,20 @@ export class ChannelCrudController
       Params: BaseChannelsParameters;
     }>,
   ): Promise<ChannelListResponse> {
-    const resources = await this.service.list(this.getExecutionContext(request));
+    const list = await this.service.list(
+      new Pagination(request.query.page_token, request.query.max_results),
+      this.getExecutionContext(request),
+    );
 
     return {
       ...{
-        resources,
+        resources: list.entities || [],
       },
       ...(request.query.websockets && {
         websockets: getWorkspaceRooms(request.params, request.currentUser, request.query.mine),
+      }),
+      ...(list.page_token && {
+        next_page_token: list.page_token,
       }),
     };
   }
