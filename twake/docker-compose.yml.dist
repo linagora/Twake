@@ -52,7 +52,7 @@ services:
   nginx:
     image: twaketech/twake-nginx
     ports:
-      - 8000:80
+      - 8001:80
     links:
       - php
       - websockets
