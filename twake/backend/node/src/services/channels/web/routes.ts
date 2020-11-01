@@ -69,7 +69,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
       const resource = await controller.save(request.params, request.body.resource);
 
       if (resource) {
-        console.log(request.params, request.body);
         reply.code(200);
       }
 
@@ -91,7 +90,8 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI<Channel> }> = (
         reply.code(204);
 
         return {
-          status: "success"
+          status: "success",
+
         };
       }
 

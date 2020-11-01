@@ -24,7 +24,7 @@ export class CassandraConnector extends AbstractConnector<CassandraConnectionOpt
 
     const cassandraOptions: cassandra.DseClientOptions = {
       contactPoints: this.options.contactPoints,
-      localDataCenter: 'datacenter1',
+      localDataCenter: 'datacenter1', //don't find where define this 
     };
 
 

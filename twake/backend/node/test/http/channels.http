@@ -1,7 +1,7 @@
-@company_id = 0
-@workspace_id = 0
+@company_id = bcfe2f79-8e81-42a3-b551-3a32d49b2b4c 
+@workspace_id = 3328552c-5ccd-4172-b84a-d876d56aa71b
 @baseURL = http://localhost:8000/internal/services/channels/v1
-@channelsURL = {{baseURL}}/companies/bcfe2f79-8e81-42a3-b551-3a32d49b2b4c/workspaces/3328552c-5ccd-4172-b84a-d876d56aa71b
+@channelsURL = {{baseURL}}/companies/{{company_id}}/workspaces/{{workspace_id}}
 
 # @name login
 GET {{baseURL}}/auth/login
@@ -22,12 +22,12 @@ Authorization: Bearer {{authToken}}
 
 {
    "resource": {
-        "name": "123",
-        "icon": "none",
-        "description": "123",
-        "channel_group": "2",
+        "name": "FT- Twake",
+        "icon": "twake logo",
+        "description": "this channel allow twake's team to chat easily",
+        "channel_group": "twake",
         "visibility": "public",
-        "default": true,
+        "is_default": true,
         "archived": false
         
     }
@@ -39,6 +39,25 @@ Authorization: Bearer {{authToken}}
 
 GET {{channelsURL}}/channels/{{getId}}
 
+### Update a channel
+
+@updateId = {{createChannel.response.body.resource.id}}
+
+POST {{channelsURL}}/channels/{{updateId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+   "resource": {
+        "name": "modified",
+        "icon": "modified",
+        "description": "modified",
+        "channel_group": "modified",
+        "visibility": "modified",
+        "is_default": false,
+        "archived": true
+    }
+}
 
 ### Delete a channel
 

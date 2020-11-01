@@ -10,7 +10,9 @@ export default class ChannelController {
   async save(params: ChannelParameters, channel: CreateChannelBody): Promise<Channel> {
 
     //get existing channel if params.id is defined
-
+    if (params.id) {
+      this.getChannel(params);
+    }
     //get existing channel archived status
 
     //If archived: you can't change anything
@@ -37,6 +39,7 @@ export default class ChannelController {
   }
 
   async getChannel(params: ChannelParameters): Promise<Channel | void> {
+
     return await this.db.get({
       id: params.id,
       company_id: params.company_id,
@@ -50,7 +53,6 @@ export default class ChannelController {
       company_id: params.company_id,
       workspace_id: params.workspace_id,
     });
-
     return deleteResult.deleted;
   }
 }
