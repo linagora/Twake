@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { ObjectID } from "mongodb";
 
 export enum VisibilityEnum {
@@ -8,13 +9,17 @@ export enum VisibilityEnum {
 
 export class Channel {
   // uuid-v4
+  @Type(() => String)
   company_id: string;
 
   // "uuid-v4" | "direct"
+  @Type(() => String)
   workspace_id: string;
 
+  @Type(() => String)
   _id: ObjectID | string;
 
+  @Type(() => String)
   id: string;
 
   name: string;
