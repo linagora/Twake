@@ -5,54 +5,40 @@ import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplate
 import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
 import Collections, { Resource } from 'app/services/CollectionsReact/Collections';
+import { ChannelType } from 'app/models/Channel';
 
 type Props = {
   title: string;
-  // Use this props to open/hide modal component
-  visible: boolean;
-  // Use real channel type
-  channel?: Channel;
+  channel?: ChannelType;
 };
 
-// To remove && Use real channel type
-type Channel = {
-  id?: string;
-  name: string;
-  description?: string;
-  front_id: string;
-  icon: string;
-  members?: string[];
-  original_group: string;
-  original_workspace: string;
-  private: boolean;
-};
-
-const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, visible }) => {
-  const [newChannel, setNewChannel] = useState<Channel>({
+const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
+  const [newChannel, setNewChannel] = useState<ChannelType>({
     name: '',
-    front_id: '',
     icon: '',
-    original_group: '',
-    original_workspace: '',
-    private: false,
+    company_id: '',
+    workspace_id: '',
+    visibility: 'private',
   });
 
-  const collectionPath: string = `/companies/${newChannel.original_group}/workspaces/${newChannel.original_workspace}/channels/`;
+  const collectionPath: string = `/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
   const ChannelsCollections = Collections.get(collectionPath);
 
-  const getNewChannelEntries = (channelEntries: Channel): void => {
+  const onChange = (channelEntries: ChannelType): void => {
     return setNewChannel(Object.assign({}, channelEntries));
   };
 
   const updateChannel = async (): Promise<any> => {
     // TODO use class based on the resource
-    await ChannelsCollections.update(new Resource<Channel>(newChannel));
+    await ChannelsCollections.update(new Resource<ChannelType>(newChannel));
     await getChannels();
   };
 
   const insertChannel = async (): Promise<any> => {
     // TODO use class based on the resource
-    await ChannelsCollections.insert(new Resource<Channel>(newChannel));
+
+    // use upsert
+    await ChannelsCollections.insert(new Resource<ChannelType>(newChannel));
     await getChannels();
   };
 
@@ -80,7 +66,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, visible }) => {
         </Button>
       }
     >
-      <ChannelTemplateEditor channel={channel} newChannel={getNewChannelEntries} disableButton />
+      <ChannelTemplateEditor channel={channel} onChange={onChange} />
     </ObjectModal>
   );
 };

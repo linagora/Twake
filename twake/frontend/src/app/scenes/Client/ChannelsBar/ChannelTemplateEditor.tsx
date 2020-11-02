@@ -9,7 +9,6 @@ import {
   ObjectModalSeparator,
   ObjectModalSectionTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-
 import RouterServices from 'services/RouterServices';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 
