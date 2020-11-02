@@ -6,6 +6,7 @@ import {
   ChannelGetResponse,
   ChannelCreateResponse,
   ChannelDeleteResponse,
+  ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
@@ -83,7 +84,7 @@ describe("The /api/channels API", () => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -329,7 +330,7 @@ describe("The /api/channels API", () => {
       channel.company_id = companyId;
       channel.workspace_id = workspaceId;
 
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
@@ -398,13 +399,64 @@ describe("The /api/channels API", () => {
       expect(channelCreateResult.websocket).toBeDefined();
 
       const channelId = channelCreateResult.resource.id;
-      const createdChannel = await channelService.get(channelId);
+      const createdChannel = await channelService.get({ id: channelId });
 
       expect(channelCreateResult.websocket).toMatchObject({
         room: `/channels/${createdChannel._id}`,
         encryption_key: "",
       });
       expect(createdChannel).toBeDefined();
+      done();
+    });
+  });
+
+  describe("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+    it("should 400 when companyId is not valid", async done => {
+      const companyId = "123";
+      const workspaceId = "0";
+
+      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
+    });
+
+    it("should 400 when workspaceId is not valid", async done => {
+      const companyId = "0";
+      const workspaceId = "123";
+
+      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
+    });
+
+    it("should update an existing channel", async done => {
+      const companyId = "0";
+      const workspaceId = "0";
+      const jwtToken = await platform.auth.getJWTToken();
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+      const channel = new Channel();
+      channel.name = "Test Channel";
+      channel.company_id = companyId;
+      channel.workspace_id = workspaceId;
+
+      const creationResult = await channelService.save(channel);
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity.id}`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          name: "Update the channel name",
+        },
+      });
+
+      const channelUpdateResult = deserialize(ChannelUpdateResponse, response.body);
+
+      expect(channelUpdateResult.resource).toBeDefined();
+      expect(channelUpdateResult.websocket).toBeDefined();
+
+      const channelId = channelUpdateResult.resource.id;
+      const updatedChannel = await channelService.get({ id: channelId });
+
+      expect(updatedChannel.name).toEqual("Update the channel name");
       done();
     });
   });
@@ -442,7 +494,7 @@ describe("The /api/channels API", () => {
       channel.company_id = companyId;
       channel.workspace_id = workspaceId;
 
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
 
       const response = await platform.app.inject({
         method: "DELETE",
@@ -457,7 +509,7 @@ describe("The /api/channels API", () => {
 
       expect(channelDeleteResult.status === "success");
 
-      const deleteChannel = await channelService.get(String(creationResult.entity._id));
+      const deleteChannel = await channelService.get({ id: String(creationResult.entity._id) });
 
       expect(deleteChannel).toBeNull();
       done();

@@ -1,5 +1,6 @@
-@company_id = 0
-@workspace_id = 0
+@company_id = bcfe2f79-8e81-42a3-b551-3a32d49b2b4c
+@workspace_id = 3328552c-5ccd-4172-b84a-d876d56aa71b
+
 @baseURL = http://localhost:3000/api
 @channelsURL = {{baseURL}}/channels/companies/{{company_id}}/workspaces/{{workspace_id}}
 
@@ -21,7 +22,13 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "My channel"
+  "name": "My channel",
+  "icon": "twake logo",
+  "description": "This channel allow twake's team to chat easily",
+  "channel_group": "twake",
+  "visibility": "public",
+  "is_default": true,
+  "archived": false
 }
 
 ### Get a single channel
@@ -31,6 +38,16 @@ Authorization: Bearer {{authToken}}
 GET {{channelsURL}}/channels/{{getId}}
 Authorization: Bearer {{authToken}}
 
+### Update a channel
+@updateId = {{createChannel.response.body.resource.id}}
+
+POST {{channelsURL}}/channels/{{updateId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "My channel update"
+}
 
 ### Delete a channel
 
@@ -39,8 +56,15 @@ Authorization: Bearer {{authToken}}
 DELETE {{channelsURL}}/channels/{{deleteId}}
 Authorization: Bearer {{authToken}}
 
+### Errors Tests
+
 ### Call without the JWT token should HTTP 401
 
 GET {{channelsURL}}/channels
 Content-Type: application/json
+
+### Get a channel which may not exists
+
+GET {{channelsURL}}/channels/0b0e1492-f596-46b9-a4fb-c12d71b2696e
+Authorization: Bearer {{authToken}}
 

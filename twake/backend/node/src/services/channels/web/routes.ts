@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters } from "./types";
-import { createChannelSchema, getChannelSchema } from "./schemas";
+import { createChannelSchema, getChannelSchema, updateChannelSchema } from "./schemas";
 import { ChannelCrudController } from "./controller";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
@@ -50,6 +50,15 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     preValidation: [fastify.authenticate],
     schema: createChannelSchema,
     handler: controller.save.bind(controller),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${url}/:id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: updateChannelSchema,
+    handler: controller.update.bind(controller),
   });
 
   fastify.route<{ Params: ChannelParameters }>({
