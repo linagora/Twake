@@ -79,18 +79,51 @@ export class Pagination implements Paginable {
   constructor(readonly page_token = "1", readonly max_results = "100") {}
 }
 
-export interface CRUDService<Entity> {
+export interface CRUDService<Entity, PrimaryKey> {
+  /**
+   * Creates a resource
+   *
+   * @param item
+   * @param context
+   */
   create(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
-  get(id: EntityId, context?: ExecutionContext): Promise<Entity>;
+
+  /**
+   * Get a resource
+   *
+   * @param pk
+   * @param context
+   */
+  get(pk: PrimaryKey, context?: ExecutionContext): Promise<Entity>;
+
+  /**
+   * Update a resource
+   *
+   * @param pk
+   * @param item
+   * @param context
+   */
   update(
-    id: EntityId,
+    pk: PrimaryKey,
     item: Entity,
     context?: ExecutionContext /* TODO: Options */,
   ): Promise<UpdateResult<Entity>>;
-  delete(id: EntityId, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+
+  /**
+   * Delete a resource
+   *
+   * @param pk
+   * @param context
+   */
+  delete(pk: PrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+
+  /**
+   * List a resource
+   *
+   * @param context
+   */
   list(
     pagination: Paginable,
-    /* TODO options */
-    context: ExecutionContext,
+    context?: ExecutionContext /* TODO: Options */,
   ): Promise<ListResult<Entity>>;
 }

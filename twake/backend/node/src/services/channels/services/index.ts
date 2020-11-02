@@ -13,7 +13,7 @@ import {
 import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
 import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import ChannelServiceAPI from "../provider";
+import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
 
 import { MongoChannelService } from "./mongo";
 import { CassandraChannelService } from "./cassandra";
@@ -58,8 +58,8 @@ class Service implements ChannelServiceAPI {
     return this.service.create(channel, context);
   }
 
-  get(id: string, context: WorkspaceExecutionContext): Promise<Channel> {
-    return this.service.get(id, context);
+  get(pk: ChannelPrimaryKey, context: WorkspaceExecutionContext): Promise<Channel> {
+    return this.service.get(pk, context);
   }
 
   @RealtimeUpdated<Channel>(
@@ -67,19 +67,22 @@ class Service implements ChannelServiceAPI {
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   update(
-    id: string,
+    pk: ChannelPrimaryKey,
     channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<Channel>> {
-    return this.service.update(id, channel, context);
+    return this.service.update(pk, channel, context);
   }
 
   @RealtimeDeleted<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  delete(id: string, context: WorkspaceExecutionContext): Promise<DeleteResult<Channel>> {
-    return this.service.delete(id, context);
+  delete(
+    pk: ChannelPrimaryKey,
+    context: WorkspaceExecutionContext,
+  ): Promise<DeleteResult<Channel>> {
+    return this.service.delete(pk, context);
   }
 
   list(pagination: Pagination, context: WorkspaceExecutionContext): Promise<ListResult<Channel>> {
