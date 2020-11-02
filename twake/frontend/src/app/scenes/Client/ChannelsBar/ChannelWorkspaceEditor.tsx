@@ -4,8 +4,8 @@ import Button from 'components/Buttons/Button.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor';
 import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
-import Collections, { Resource } from 'app/services/CollectionsReact/Collections';
-import { ChannelType } from 'app/models/Channel';
+import Collections from 'app/services/CollectionsReact/Collections';
+import { ChannelType, ChannelResource } from 'app/models/Channel';
 
 type Props = {
   title: string;
@@ -28,23 +28,9 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
     return setNewChannel(Object.assign({}, channelEntries));
   };
 
-  const updateChannel = async (): Promise<any> => {
-    // TODO use class based on the resource
-    await ChannelsCollections.update(new Resource<ChannelType>(newChannel));
-    await getChannels();
-  };
-
-  const insertChannel = async (): Promise<any> => {
-    // TODO use class based on the resource
-
-    // use upsert
-    await ChannelsCollections.insert(new Resource<ChannelType>(newChannel));
-    await getChannels();
-  };
-
-  const getChannels = async (): Promise<any> => {
-    const channels = await ChannelsCollections.find({});
-    console.log('Channels -->', channels);
+  const upsertChannel = async (): Promise<any> => {
+    await ChannelsCollections.upsert(new ChannelResource(newChannel));
+    await MediumPopupComponent.closeAll();
   };
 
   return (
@@ -57,10 +43,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
           className="small primary"
           style={{ width: 'auto', float: 'right' }}
           disabled={!newChannel.name}
-          onClick={() => {
-            //updateChannel()
-            insertChannel();
-          }}
+          onClick={() => upsertChannel()}
         >
           {Languages.t('general.continue', 'Continue')}
         </Button>

@@ -29,7 +29,6 @@ export type ChannelType = {
   archived?: false | true;
   archivation_date?: number; //Timestamp
   user_member?: userMemberType;
-  members?: any;
 };
 
 export class ChannelResource extends Resource<ChannelType> {}

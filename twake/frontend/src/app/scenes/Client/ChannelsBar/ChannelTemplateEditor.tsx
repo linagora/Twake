@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Languages from 'services/languages/languages.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
@@ -17,19 +17,18 @@ type Props = {
   onChange: (channelEntries: any) => void;
 };
 
-const ChannelTemplateEditor = (props: Props) => {
-  const [icon, setIcon] = useState<string>(props.channel?.icon || '');
-  const [name, setName] = useState<string>(props.channel?.name || '');
-  const [description, setDescription] = useState<string>(props.channel?.description || '');
-  const [visibility, setVisibility] = useState<string>(props.channel?.visibility || 'private');
+const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
+  const [icon, setIcon] = useState<string>(channel?.icon || '');
+  const [name, setName] = useState<string>(channel?.name || '');
+  const [description, setDescription] = useState<string>(channel?.description || '');
+  const [visibility, setVisibility] = useState<string>(channel?.visibility || 'private');
 
   // TODO find a better way to get workspace id
   const params: any = useParams();
   const workspaceId = RouterServices.translateToUUID(params.workspaceId);
 
-  // On component update
   useEffect(() => {
-    props.onChange({
+    onChange({
       icon,
       name,
       description,
@@ -56,7 +55,7 @@ const ChannelTemplateEditor = (props: Props) => {
           }}
         />
       }
-      <div>
+      <div style={{ marginBottom: '8px' }}>
         <ObjectModalSeparator />
         <ObjectModalSectionTitle
           title={Languages.t(
