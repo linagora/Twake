@@ -38,6 +38,11 @@ export class ChannelCreateResponse {
   resource: Channel;
 }
 
+export class ChannelUpdateResponse {
+  websocket?: ChannelWebsocket;
+  resource: Channel;
+}
+
 export class ChannelDeleteResponse {
   status: DeleteStatus;
 }
@@ -49,5 +54,9 @@ export interface ChannelWebsocket {
 
 export class CreateChannelBody {
   creator: string;
+  name: string;
+}
+
+export class UpdateChannelBody {
   name: string;
 }

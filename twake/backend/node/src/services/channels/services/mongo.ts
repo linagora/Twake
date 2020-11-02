@@ -3,11 +3,13 @@ import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
 import { MongoPagination } from "../../../core/platform/services/database/services/connectors/mongodb";
 import {
-  UpdateResult,
   CreateResult,
   DeleteResult,
   Pagination,
   ListResult,
+  OperationType,
+  SaveResult,
+  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 
 export class MongoChannelService implements ChannelServiceAPI {
@@ -18,17 +20,48 @@ export class MongoChannelService implements ChannelServiceAPI {
     this.collection = this.db.collection<Channel>("channels");
   }
 
-  async create(channel: Channel): Promise<CreateResult<Channel>> {
-    const result = await this.collection.insertOne(channel, { w: 1 });
+  async save(channel: Channel): Promise<SaveResult<Channel>> {
+    const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
+    let result: SaveResult<Channel>;
 
-    if (result.insertedCount) {
-      const created: Channel = result.ops[0];
-      created.id = String(created._id);
+    if (mode === OperationType.CREATE) {
+      const created = await this.create(channel);
 
-      return new CreateResult<Channel>("channel", created);
+      result = new SaveResult<Channel>("channel", created.entity, mode);
+    } else if (mode === OperationType.UPDATE) {
+      const updated = await this.update({ id: String(channel.id) }, channel);
+
+      result = new SaveResult<Channel>("channel", updated.entity, mode);
     } else {
-      throw new Error("Channel has not been created");
+      throw new Error("Can not define operation to apply to channel");
     }
+
+    return result;
+  }
+
+  async create(channel: Channel): Promise<CreateResult<Channel>> {
+    const inserted = await this.collection.insertOne(channel, { w: 1 });
+
+    if (!inserted.insertedCount) {
+      throw new Error("No channel created");
+    }
+
+    const createdChannel: Channel = inserted.ops[0];
+    createdChannel.id = String(createdChannel._id);
+
+    return new CreateResult<Channel>("channel", createdChannel);
+  }
+
+  async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
+    const updated = await this.collection.updateOne(
+      { _id: new mongo.ObjectID(pk.id) },
+      { $set: channel },
+    );
+
+    const result = new UpdateResult<Channel>("channel", channel);
+    result.affected = updated.modifiedCount;
+
+    return result;
   }
 
   async get(pk: ChannelPrimaryKey): Promise<Channel> {
@@ -39,11 +72,6 @@ export class MongoChannelService implements ChannelServiceAPI {
       channel.id = String(channel._id);
     }
     return channel;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
-    return new UpdateResult("channel", { id: pk.id } as Channel);
   }
 
   async delete(pk: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {

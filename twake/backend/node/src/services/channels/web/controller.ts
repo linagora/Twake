@@ -14,7 +14,9 @@ import {
   ChannelListQueryParameters,
   ChannelListResponse,
   ChannelParameters,
+  ChannelUpdateResponse,
   CreateChannelBody,
+  UpdateChannelBody,
 } from "./types";
 
 export class ChannelCrudController
@@ -81,7 +83,32 @@ export class ChannelCrudController
       },
     });
 
-    const result = await this.service.create(entity, this.getExecutionContext(request));
+    const result = await this.service.save(entity, this.getExecutionContext(request));
+
+    if (result.entity) {
+      reply.code(201);
+    }
+
+    return {
+      websocket: getWebsocketInformation(result.entity),
+      resource: result.entity,
+    };
+  }
+
+  async update(
+    request: FastifyRequest<{ Body: UpdateChannelBody; Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<ChannelUpdateResponse> {
+    const entity = plainToClass(Channel, {
+      ...request.body,
+      ...{
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id,
+        id: request.params.id,
+      },
+    });
+
+    const result = await this.service.save(entity, this.getExecutionContext(request));
 
     if (result.entity) {
       reply.code(201);

@@ -1,14 +1,10 @@
+import { RealtimeSaved, RealtimeUpdated, RealtimeDeleted } from "../../../core/platform/framework";
 import {
-  RealtimeCreated,
-  RealtimeUpdated,
-  RealtimeDeleted,
-} from "../../../core/platform/framework";
-import {
-  CreateResult,
   UpdateResult,
   DeleteResult,
   Pagination,
   ListResult,
+  SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { MongoConnector } from "../../../core/platform/services/database/services/connectors/mongodb";
 import { CassandraConnector } from "../../../core/platform/services/database/services/connectors/cassandra";
@@ -47,15 +43,12 @@ class Service implements ChannelServiceAPI {
 
   constructor(private service: ChannelServiceAPI) {}
 
-  @RealtimeCreated<Channel>(
+  @RealtimeSaved<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  async create(
-    channel: Channel,
-    context: WorkspaceExecutionContext,
-  ): Promise<CreateResult<Channel>> {
-    return this.service.create(channel, context);
+  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
+    return this.service.save(channel, context);
   }
 
   get(pk: ChannelPrimaryKey, context: WorkspaceExecutionContext): Promise<Channel> {

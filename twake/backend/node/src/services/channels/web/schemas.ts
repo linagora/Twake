@@ -37,6 +37,35 @@ export const createChannelSchema = {
   },
 };
 
+export const updateChannelSchema = {
+  body: {
+    type: "object",
+    properties: {
+      name: {
+        type: "string",
+      },
+    },
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        websocket: webSocketSchema,
+        resource: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            company_id: { type: "string" },
+            workspace_id: { type: "string" },
+          },
+          required: ["id", "company_id", "workspace_id"],
+        },
+      },
+      required: ["resource"],
+    },
+  },
+};
+
 export const getChannelSchema = {
   request: {
     properties: {
