@@ -4,6 +4,7 @@ import { AbstractConnector } from "./abstract-connector";
 
 export interface CassandraConnectionOptions {
   contactPoints: string[];
+  localDataCenter: string;
   username: string;
   password: string;
 }
@@ -25,6 +26,7 @@ export class CassandraConnector extends AbstractConnector<
 
     const cassandraOptions: cassandra.DseClientOptions = {
       contactPoints: this.options.contactPoints,
+      localDataCenter: this.options.localDataCenter,
     };
     if (this.options.username && this.options.password) {
       cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
