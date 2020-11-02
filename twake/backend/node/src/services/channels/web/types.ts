@@ -14,7 +14,7 @@ export interface ChannelParameters extends BaseChannelsParameters {
 
 export interface PaginationQueryParameters {
   page_token?: string;
-  max_results?: number;
+  max_results?: string;
 }
 
 export interface ChannelListQueryParameters extends PaginationQueryParameters {

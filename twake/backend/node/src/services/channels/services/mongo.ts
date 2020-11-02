@@ -1,10 +1,13 @@
 import * as mongo from "mongodb";
 import { Channel } from "../entities";
 import ChannelServiceAPI from "../provider";
+import { MongoPagination } from "../../../core/platform/services/database/services/connectors/mongodb";
 import {
   UpdateResult,
   CreateResult,
   DeleteResult,
+  Pagination,
+  ListResult,
 } from "../../../core/platform/framework/api/crud-service";
 
 export class MongoChannelService implements ChannelServiceAPI {
@@ -49,10 +52,16 @@ export class MongoChannelService implements ChannelServiceAPI {
     return new DeleteResult<Channel>("channel", { id } as Channel, deleteResult.deletedCount === 1);
   }
 
-  async list(): Promise<Channel[]> {
-    return this.collection
+  async list(pagination: Pagination): Promise<ListResult<Channel>> {
+    const paginate = MongoPagination.from(pagination);
+
+    const channels = await this.collection
       .find()
+      .skip(paginate.skip)
+      .limit(paginate.limit)
       .map(document => ({ ...document, ...{ id: String(document._id) } }))
       .toArray();
+
+    return new ListResult("channel", channels, MongoPagination.next(paginate, channels));
   }
 }

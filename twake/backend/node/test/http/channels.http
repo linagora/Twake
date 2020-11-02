@@ -9,7 +9,7 @@ GET {{baseURL}}/auth/login
 ### List channels with all websockets
 
 @authToken = {{login.response.body.token}}
-GET {{channelsURL}}/channels?websockets=true&mine=true
+GET {{channelsURL}}/channels?websockets=true&mine=true&max_results=5
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
