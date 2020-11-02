@@ -27,9 +27,11 @@ export class Channel {
 
   visibility: VisibilityEnum;
 
-  default: boolean;
+  is_default: boolean;
 
   archived: boolean;
 
-  archivation_date: Date;
+  archivation_date: number;
+
+  owner: string;
 }
