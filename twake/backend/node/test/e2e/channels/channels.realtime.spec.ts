@@ -28,8 +28,6 @@ describe("The Channels Realtime feature", () => {
 
   describe("On channel creation", () => {
     it("should notify the client", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
@@ -40,14 +38,14 @@ describe("The Channels Realtime feature", () => {
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
             socket.emit("realtime:join", {
-              name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }),
+              name: getPublicRoomName(platform.workspace),
               token: roomToken,
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
               const response = await platform.app.inject({
                 method: "POST",
-                url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+                url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
                 headers: {
                   authorization: `Bearer ${jwtToken}`,
                 },
@@ -76,8 +74,6 @@ describe("The Channels Realtime feature", () => {
 
   describe("On channel removal", () => {
     it("should notify the client", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
@@ -85,8 +81,8 @@ describe("The Channels Realtime feature", () => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = channelName;
-      channel.company_id = companyId;
-      channel.workspace_id = workspaceId;
+      channel.company_id = platform.workspace.company_id;
+      channel.workspace_id = platform.workspace.workspace_id;
 
       const creationResult = await channelService.create(channel);
 
@@ -107,7 +103,7 @@ describe("The Channels Realtime feature", () => {
                 getChannelPath(
                   { id: creationResult.entity.id } as Channel,
                   {
-                    workspace: { workspace_id: workspaceId, company_id: companyId },
+                    workspace: platform.workspace,
                   } as WorkspaceExecutionContext,
                 ),
               );
@@ -115,7 +111,7 @@ describe("The Channels Realtime feature", () => {
               done();
             });
             socket.emit("realtime:join", {
-              name: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }),
+              name: getPublicRoomName(platform.workspace),
               token: roomToken,
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
