@@ -30,19 +30,29 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     >;
   }
 
+  private observedChangesReactOptionsAdapter = (changes: any) => {
+    if (changes?.constructor?.name === 'Array' && changes.length > 1) {
+      return changes.map((e: any) => e?.id || e);
+    }
+    return changes;
+  };
+
   public useWatcher = <G>(observedScope: () => Promise<G>, options?: any) =>
     this.observable.useWatcher(observedScope, {
-      observedChanges: (changes: any) => {
-        if (changes?.constructor?.name === 'Array' && changes.length > 1) {
-          return changes.map((e: any) => e?.id || e);
-        }
-        return changes;
-      },
+      observedChanges: this.observedChangesReactOptionsAdapter,
       ...options,
     });
   public useEvent = this.observable.useWatcher.bind(this.observable);
 
-  public addWatcher = this.observable.addWatcher.bind(this.observable);
+  public addWatcher = <G>(
+    callback: (transform: any) => void,
+    observedScope: () => Promise<G>,
+    options?: any,
+  ) =>
+    this.observable.addWatcher(callback, observedScope, {
+      observedChanges: this.observedChangesReactOptionsAdapter,
+      ...options,
+    });
   public removeWatcher = this.observable.removeWatcher.bind(this.observable);
   public addEventListener = this.observable.addWatcher.bind(this.observable);
   public removeEventListener = this.observable.removeWatcher.bind(this.observable);
