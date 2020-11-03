@@ -14,7 +14,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Globals from 'services/Globals.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 

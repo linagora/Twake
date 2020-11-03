@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import EventModification from './EventModification.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Input from 'components/Inputs/Input.js';

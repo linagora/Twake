@@ -14,7 +14,7 @@ import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelec
 import Button from 'components/Buttons/Button.js';
 import Select from 'components/Select/Select.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Modals.scss';

@@ -7,7 +7,7 @@ import Menu from 'components/Menus/Menu.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import TaskEditor from './TaskEditor.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Checklist from './Parts/Checklist.js';
 import {
   ObjectModal,

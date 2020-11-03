@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'components/Select/Select.js';
 import Languages from 'services/languages/languages.js';
 import moment from 'moment';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Repetitionpopup from 'components/Calendar/RepetitionSelector/RepetitionPopup.js';
 
 export default class RepetitionSelector extends React.Component {

@@ -6,7 +6,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import {
   ObjectModal,
   ObjectModalFormTitle,

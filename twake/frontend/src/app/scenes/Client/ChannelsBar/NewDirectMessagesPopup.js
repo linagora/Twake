@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
 import ChannelsService from 'services/channels/channels.js';
-import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 
