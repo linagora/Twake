@@ -71,8 +71,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
     channel.id = String(cassandra.types.Uuid.random());
     channel.workspace_id = context.workspace.workspace_id;
     channel.company_id = context.workspace.company_id;
-    // FIXME: Temporary, will need to have uuid in JWT token
-    channel.owner = cassandra.types.Uuid.random().toString();
+    channel.owner = context.user.id;
 
     const query = `INSERT INTO ${this.table}
       (
