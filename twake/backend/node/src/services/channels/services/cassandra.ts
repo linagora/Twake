@@ -3,14 +3,20 @@ import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
 import { CassandraPagination } from "../../../core/platform/services/database/services/connectors/cassandra";
 import {
+  CreateResult,
   DeleteResult,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
+  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext } from "../types";
 import { plainToClass } from "class-transformer";
+import { pick } from "../../../utils/pick";
+
+const UPDATE_KEYS = ["name", "company_id", "workspace_id", "id"] as const;
+const UPDATABLE_KEYS = ["name"] as const;
 
 export class CassandraChannelService implements ChannelServiceAPI {
   version = "1";
@@ -18,13 +24,62 @@ export class CassandraChannelService implements ChannelServiceAPI {
 
   constructor(private client: cassandra.Client) {}
 
-  async save(channel: Channel): Promise<SaveResult<Channel>> {
+  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
+    let resultChannel: Channel;
+
+    if (mode === OperationType.CREATE) {
+      resultChannel = (await this.create(channel, context)).entity;
+    } else if (mode === OperationType.UPDATE) {
+      resultChannel = (
+        await this.update(
+          {
+            id: channel.id,
+            company_id: channel.company_id,
+            workspace_id: channel.workspace_id,
+          },
+          channel,
+        )
+      ).entity;
+    }
+
+    return new SaveResult<Channel>("channel", resultChannel, mode);
+  }
+
+  async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
+    const channelToUpdate = await this.get(pk);
+
+    if (!channelToUpdate) {
+      throw new Error("Can not find the channel to update");
+    }
+
+    const updatableChannel = pick(channel, ...UPDATABLE_KEYS);
+    const fullChannelUpdate = { ...channelToUpdate, ...updatableChannel };
+    const columnList = UPDATE_KEYS.map(key => `"${key}"`).join(",");
+    const columnValues = "?".repeat(UPDATE_KEYS.length).split("").join(",");
+    const query = `INSERT INTO ${this.table} (${columnList}) VALUES (${columnValues})`;
+
+    await this.client.execute(query, pick(fullChannelUpdate, ...UPDATE_KEYS));
+
+    return new UpdateResult<Channel>("channel", fullChannelUpdate);
+  }
+
+  async create(
+    channel: Channel,
+    context: WorkspaceExecutionContext,
+  ): Promise<CreateResult<Channel>> {
+    channel.id = String(cassandra.types.Uuid.random());
+    channel.workspace_id = context.workspace.workspace_id;
+    channel.company_id = context.workspace.company_id;
+    // FIXME: Temporary, will need to have uuid in JWT token
+    channel.owner = cassandra.types.Uuid.random().toString();
+
     const query = `INSERT INTO ${this.table}
       (
       "company_id",
       "workspace_id",
       "id",
+      "owner",
       "icon",
       "name",
       "description",
@@ -33,15 +88,11 @@ export class CassandraChannelService implements ChannelServiceAPI {
       "is_default",
       "archived"
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?)`;
+      VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
 
-    if (!channel.id) {
-      channel.id = String(cassandra.types.Uuid.random());
-    }
+    await this.client.execute(query, channel, { prepare: false });
 
-    await this.client.execute(query, channel);
-
-    return new SaveResult<Channel>("channel", channel, mode);
+    return new CreateResult<Channel>("channel", channel);
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {

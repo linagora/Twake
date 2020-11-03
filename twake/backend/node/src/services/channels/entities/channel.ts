@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Exclude, Type } from "class-transformer";
 import { ObjectID } from "mongodb";
 
 export enum VisibilityEnum {
@@ -17,6 +17,7 @@ export class Channel {
   workspace_id: string;
 
   @Type(() => String)
+  @Exclude({ toPlainOnly: true })
   _id: ObjectID | string;
 
   @Type(() => String)
@@ -38,5 +39,7 @@ export class Channel {
 
   archivation_date: number;
 
+  // uuid
+  @Type(() => String)
   owner: string;
 }
