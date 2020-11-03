@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
@@ -23,13 +23,152 @@ import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import UploadViewer from 'components/Uploads/UploadViewer.js';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
-import MediumPopupComponent from 'components/MediumPopup/MediumPopupComponent.js';
+import MediumPopupComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
 import LoginServices from 'services/login/login';
 import RouterServices from 'app/services/RouterServices';
+
+import Collections, { Resource, Collection } from 'app/services/CollectionsReact/Collections';
+
+/*
+Collections.connect({
+  transport: {
+    socket: {
+      url: 'ws://localhost:8000/',
+      authenticate: {
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjAzODk3MDI3fQ.SLgSEQtsKSgh3k4YEQPmQCVER-_sMkeqrqepMgLT3BE',
+      },
+    },
+    rest: {
+      url: 'http://localhost:8000/internal/services',
+      headers: {
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjAzODk3MDI3fQ.SLgSEQtsKSgh3k4YEQPmQCVER-_sMkeqrqepMgLT3BE',
+      },
+    },
+  },
+});
+
+type ChannelType = {
+  id?: string;
+  creator: string;
+  name: string;
+};
+
+class Channel extends Resource<ChannelType> {
+  setName(name: string) {
+    this.data.name = (name || '').trim();
+  }
+  getName() {
+    return this.data.name;
+  }
+}
+
+const ChannelComponent = (props: { channelId: string; collectionPath: string }) => {
+  const ChannelsCollection = Collection.get(props.collectionPath, Channel);
+
+  const channel = ChannelsCollection.useWatcher(
+    async () => await ChannelsCollection.findOne(props.channelId),
+  );
+
+  if (!channel) {
+    return <tr />;
+  }
+
+  console.log('render ', props.channelId);
+
+  return (
+    <tr key={channel.id}>
+      <td>{channel.id?.substr(0, 40)}</td>
+      <td>{channel.getName()} </td>
+      <td style={{ backgroundColor: channel.state.persisted ? 'green' : 'red' }}></td>
+      <td style={{ backgroundColor: channel.state.shared ? 'green' : 'red' }}></td>
+      <td style={{ backgroundColor: channel.state.upToDate ? 'green' : 'red' }}></td>
+      <td>
+        <button
+          onClick={() => {
+            channel.data.name = 'name_' + Math.floor(new Date().getTime() / 1000);
+            ChannelsCollection.update(channel);
+          }}
+        >
+          Change
+        </button>
+        <button onClick={() => ChannelsCollection.remove(channel)}>Delete</button>
+      </td>
+    </tr>
+  );
+};
+
+export const test = (props: {}) => {
+  const companyId = '0';
+  const workspaceId = '0';
+  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+
+  const ChannelsCollection = Collection.get(collectionPath, Channel);
+
+  const [limit, setLimit] = useState(10);
+  const channels =
+    ChannelsCollection.useWatcher(async () => await ChannelsCollection.find({})) || [];
+
+  //@ts-ignore
+  window.ChannelsCollection = ChannelsCollection;
+
+  console.log('render list', channels);
+
+  return (
+    <div>
+      <table id="channel_list" style={{ border: '1px solid #000', borderCollapse: 'separate' }}>
+        <thead>
+          <tr>
+            <td>Id</td>
+            <td>Name</td>
+            <td>Persi.</td>
+            <td>Shared</td>
+            <td>UpToD.</td>
+            <td>Op</td>
+          </tr>
+        </thead>
+        <tbody>
+          {channels
+            .sort((a, b) => (a.data.name as String).localeCompare(b.data.name))
+            .map(channel => {
+              return (
+                <ChannelComponent
+                  collectionPath={collectionPath}
+                  channelId={channel.id}
+                  key={channel.id}
+                />
+              );
+            })}
+        </tbody>
+      </table>
+
+      <button
+        id="add_button"
+        onClick={() => {
+          const channel = new Channel({
+            creator: 'creator_' + Math.floor(new Date().getTime() / 1000),
+            name: '',
+          });
+
+          channel.setName('name_' + Math.floor(new Date().getTime() / 1000));
+
+          ChannelsCollection.insert(channel);
+        }}
+      >
+        Add
+      </button>
+
+      <button id="add_button" onClick={() => setLimit(channels.length + 10)}>
+        More
+      </button>
+    </div>
+  );
+};*/
 
 export default class Client extends Component {
   no_workspace: any = '';

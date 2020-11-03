@@ -7,7 +7,7 @@ import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'services/localStorage.js';
 
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';

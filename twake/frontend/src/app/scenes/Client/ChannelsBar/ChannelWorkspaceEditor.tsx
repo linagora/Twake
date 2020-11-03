@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor';
-import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupComponent from 'services/Modal/ModalManager';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';

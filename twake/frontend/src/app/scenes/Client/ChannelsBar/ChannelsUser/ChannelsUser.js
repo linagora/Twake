@@ -15,7 +15,7 @@ import Channel from '../Channel.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup.js';
 
 export default class ChannelsUser extends Component {

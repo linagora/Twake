@@ -1,23 +1,21 @@
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/services/Observable/Observable';
 import MenusManager from 'services/Menus/MenusManager.js';
 
-import Globals from 'services/Globals.js';
+class ModalManager extends Observable {
+  static service: ModalManager = new ModalManager();
+  private component: any[] = [];
+  private popupStates: any = {};
+  private position: any = null;
+  private mountedComponent: any = null;
+  private closing: boolean = false;
+  private creationTimeout: any = null;
 
-class MediumPopupManager extends Observable {
-  constructor() {
-    super();
-    this.setObservableName('mediumPopupService');
-    Globals.window.mediumPopupService = this;
-    this.component = []; // element as {component,canClose}
-    this.popupStates = {};
-    this.position = null;
-    this.mountedComponent = null;
-  }
-  updateHighlight(highlight) {
+  updateHighlight(highlight: any) {
     if (this.position) this.position.highlight = highlight;
     this.notify();
   }
-  open(component, position, canClose, clearState) {
+
+  open(component: any, position: any, canClose: boolean, clearState: any) {
     this.close();
 
     this.mountedComponent = null;
@@ -34,9 +32,11 @@ class MediumPopupManager extends Observable {
       this.notify();
     }, 100);
   }
+
   isOpen() {
     return this.component.length > 0;
   }
+
   close() {
     if (this.closing) {
       return false;
@@ -69,13 +69,8 @@ class MediumPopupManager extends Observable {
     return null;
   }
   getComponent() {
-    if (this.isOpen()) {
-      return this.component[this.component.length - 1].component;
-    }
-    return null;
+    return this.component[this.component.length - 1]?.component || '';
   }
 }
 
-Globals.services.mediumPopupService =
-  Globals.services.mediumPopupService || new MediumPopupManager();
-export default Globals.services.mediumPopupService;
+export default ModalManager.service;

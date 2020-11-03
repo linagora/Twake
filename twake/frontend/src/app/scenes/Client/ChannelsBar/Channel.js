@@ -13,7 +13,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import UserListManager from 'components/UserListManager/UserListManager.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import ChannelUserAdd from './ChannelUserAdd.js';
-import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 
 import ChannelUI from 'components/Leftbar/Channel/Channel.js';

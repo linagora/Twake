@@ -12,7 +12,7 @@ import Switch from 'components/Inputs/Switch.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import UserService from 'services/user/user.js';
 import CreateCompanyAccount from './CreateCompanyAccount.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import './Pages.scss';
 import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending.js';
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';

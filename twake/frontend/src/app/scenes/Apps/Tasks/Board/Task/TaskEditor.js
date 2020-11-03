@@ -9,7 +9,7 @@ import Input from 'components/Inputs/Input.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import TimeSelector from 'components/Calendar/TimeSelector.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';

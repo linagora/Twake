@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import Input from 'components/Inputs/Input.js';
 import Button from 'components/Buttons/Button.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/services/Modal/ModalManager';
 import {
   ObjectModal,
   ObjectModalFormTitle,
