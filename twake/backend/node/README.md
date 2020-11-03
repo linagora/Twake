@@ -204,6 +204,58 @@ Current technical services are located in `src/core/platform/services`:
 - `webserver`: To expose services as REST ones
 - `websocket`: To communicate between client and server using websockets
 
+#### Database Technical Service
+
+Database technical service provides an abstraction layer over several databases to get a connection through the help of drivers and to use them in any other services.
+
+Supported databases are currently [MongoDB](https://www.mongodb.com/) and [Cassandra](https://cassandra.apache.org/). Switching from one to other one is achieved from the database configuration document by switching the `database.type` flag:
+
+```json
+{
+  "database": {
+    "type": "cassandra",
+    "mongodb": {
+      "uri": "mongodb://localhost:27017",
+      "database": "twake"
+    },
+    "cassandra": {
+      "contactPoints": ["localhost:9042"],
+      "localDataCenter": "datacenter1",
+      "keyspace": "twake"
+    }
+  }
+}
+```
+
+In the example above, the `type` is set to `cassandra`, so the `database.cassandra` document will be used to connect to cassandra.
+
+##### Cassandra
+
+In order to use Cassandra, we will have to:
+
+1. Create a keyspace. From the configuration above, the keyspace is `twake`
+2. Create all the required tables
+
+To achieve these steps, you have to use [cqlsh](https://cassandra.apache.org/doc/latest/tools/cqlsh.html) from a terminal then:
+
+1. Create the keyspace:
+
+```sh
+CREATE KEYSPACE twake WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;
+```
+
+2. Create the required tables
+
+```sh
+USE twake;
+
+CREATE TABLE channels(company_id uuid, workspace_id uuid, id uuid, archivation_date date, archived boolean, channel_group text, description text, icon text, is_default boolean, name text, owner uuid, visibility text, PRIMARY KEY ((company_id, workspace_id), id));
+```
+
+##### MongoDB
+
+There are no special steps to achieve to use MongoDB.
+
 #### Realtime Technical Service
 
 The framework provides simple way to create CRUD Services which will notify clients using Websockets by following some conventions:
