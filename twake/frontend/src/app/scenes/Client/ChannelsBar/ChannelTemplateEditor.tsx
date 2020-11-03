@@ -9,8 +9,6 @@ import {
   ObjectModalSeparator,
   ObjectModalSectionTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-import RouterServices from 'services/RouterServices';
-import OldCollections from 'services/Depreciated/Collections/Collections';
 
 type Props = {
   channel: ChannelType | undefined;
@@ -23,19 +21,12 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
   const [description, setDescription] = useState<string>(channel?.description || '');
   const [visibility, setVisibility] = useState<string>(channel?.visibility || 'private');
 
-  // TODO find a better way to get workspace id
-  const params: any = useParams();
-  const workspaceId = RouterServices.translateToUUID(params.workspaceId);
-
   useEffect(() => {
     onChange({
       icon,
       name,
       description,
       visibility,
-      // TODO find a better way to get company id
-      company_id: OldCollections.get('workspaces').find(workspaceId)?.group?.id,
-      workspace_id: workspaceId,
     });
   }, [icon, name, description, visibility]);
 

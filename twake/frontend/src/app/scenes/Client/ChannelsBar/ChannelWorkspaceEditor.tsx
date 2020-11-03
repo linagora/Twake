@@ -7,25 +7,35 @@ import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModa
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 
+import { useParams } from 'react-router-dom';
+import RouterServices from 'services/RouterServices';
+import OldCollections from 'services/Depreciated/Collections/Collections';
+
 type Props = {
   title: string;
   channel?: ChannelType;
 };
 
 const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
-  const [newChannel, setNewChannel] = useState<ChannelType>({
+  const params: any = useParams();
+  const workspaceId = RouterServices.translateToUUID(params.workspaceId);
+
+  const [disabled, setDisabled] = useState<boolean>(true);
+  let newChannel: ChannelType = {
     name: '',
     icon: '',
-    company_id: '',
-    workspace_id: '',
     visibility: 'private',
-  });
+    // TODO find a better way to get company id and workspace id
+    company_id: OldCollections.get('workspaces').find(workspaceId)?.group?.id,
+    workspace_id: workspaceId,
+  };
 
   const collectionPath: string = `/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
   const ChannelsCollections = Collections.get(collectionPath);
 
-  const onChange = (channelEntries: ChannelType): void => {
-    return setNewChannel(Object.assign({}, channelEntries));
+  const onChange = (channelEntries: ChannelType): ChannelType => {
+    setDisabled(channelEntries.name?.length ? true : false);
+    return (newChannel = channelEntries);
   };
 
   const upsertChannel = async (): Promise<any> => {
@@ -42,7 +52,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
         <Button
           className="small primary"
           style={{ width: 'auto', float: 'right' }}
-          disabled={!newChannel.name}
+          disabled={!disabled}
           onClick={() => upsertChannel()}
         >
           {Languages.t('general.continue', 'Continue')}
