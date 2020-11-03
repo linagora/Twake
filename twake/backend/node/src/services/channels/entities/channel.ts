@@ -1,4 +1,4 @@
-import { ObjectID } from "mongodb";
+import { Type } from "class-transformer";
 
 export enum VisibilityEnum {
   PRIVATE = "private",
@@ -8,13 +8,14 @@ export enum VisibilityEnum {
 
 export class Channel {
   // uuid-v4
+  @Type(() => String)
   company_id: string;
 
   // "uuid-v4" | "direct"
+  @Type(() => String)
   workspace_id: string;
 
-  _id: ObjectID | string;
-
+  @Type(() => String)
   id: string;
 
   name: string;
@@ -27,9 +28,13 @@ export class Channel {
 
   visibility: VisibilityEnum;
 
-  default: boolean;
+  is_default: boolean;
 
   archived: boolean;
 
-  archivation_date: Date;
+  archivation_date: number;
+
+  // uuid
+  @Type(() => String)
+  owner: string;
 }

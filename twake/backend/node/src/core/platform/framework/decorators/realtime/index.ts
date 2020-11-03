@@ -3,6 +3,7 @@ import { EntityTarget, ExecutionContext } from "../../api/crud-service";
 export * from "./created";
 export * from "./deleted";
 export * from "./updated";
+export * from "./saved";
 
 export interface PathResolver<T> {
   (type: T, context?: ExecutionContext): string;

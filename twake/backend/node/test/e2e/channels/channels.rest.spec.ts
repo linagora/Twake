@@ -6,6 +6,7 @@ import {
   ChannelGetResponse,
   ChannelCreateResponse,
   ChannelDeleteResponse,
+  ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
@@ -42,27 +43,26 @@ describe("The /api/channels API", () => {
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
     it("should 400 when companyId is not valid", async done => {
-      const companyId = "123";
-      const workspaceId = "0";
-
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "GET", done);
+      testAccess(
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
+        "GET",
+        done,
+      );
     });
 
     it("should 400 when workspaceId is not valid", async done => {
-      const companyId = "0";
-      const workspaceId = "123";
-
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "GET", done);
+      testAccess(
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels`,
+        "GET",
+        done,
+      );
     });
 
     it("should return empty list of channels", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -77,18 +77,15 @@ describe("The /api/channels API", () => {
     });
 
     it("should return list of channels the user has access to", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -99,7 +96,7 @@ describe("The /api/channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
       expect(result.resources[0]).toMatchObject({
-        _id: String(creationResult.entity._id),
+        id: creationResult.entity.id,
         name: channel.name,
       });
 
@@ -107,9 +104,6 @@ describe("The /api/channels API", () => {
     });
 
     it("should return pagination information when not all channels are returned", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       await Promise.all(
@@ -123,7 +117,7 @@ describe("The /api/channels API", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -142,9 +136,6 @@ describe("The /api/channels API", () => {
     });
 
     it("should be able to paginate over channels from pagination information", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       await Promise.all(
@@ -158,7 +149,7 @@ describe("The /api/channels API", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const firstPage = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -176,7 +167,7 @@ describe("The /api/channels API", () => {
       const nextPage = firstPageChannels.next_page_token;
       const secondPage = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -202,9 +193,6 @@ describe("The /api/channels API", () => {
     });
 
     it("should not return pagination information when all channels are returned", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       await Promise.all(
@@ -218,7 +206,7 @@ describe("The /api/channels API", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -237,13 +225,10 @@ describe("The /api/channels API", () => {
     });
 
     it("should return websockets information", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -256,26 +241,18 @@ describe("The /api/channels API", () => {
 
       expect(response.statusCode).toBe(200);
       expect(result.websockets).toMatchObject([
-        { room: getPublicRoomName({ workspace_id: workspaceId, company_id: companyId }) },
-        {
-          room: getPrivateRoomName(
-            { workspace_id: workspaceId, company_id: companyId },
-            { id: "1" },
-          ),
-        },
+        { room: getPublicRoomName(platform.workspace) },
+        { room: getPrivateRoomName(platform.workspace, { id: "1" }) },
       ]);
 
       done();
     });
 
     it("should return websockets and direct information", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
-
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -296,43 +273,37 @@ describe("The /api/channels API", () => {
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
     it("should 400 when companyId is not valid", async done => {
-      const companyId = "123";
-      const workspaceId = "0";
       const channelId = "1";
 
       testAccess(
-        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/${channelId}`,
         "GET",
         done,
       );
     });
 
     it("should 400 when workspaceId is not valid", async done => {
-      const companyId = "0";
-      const workspaceId = "123";
       const channelId = "1";
 
       testAccess(
-        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/${channelId}`,
         "GET",
         done,
       );
     });
 
     it("should return the requested channel", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      channel.company_id = companyId;
-      channel.workspace_id = workspaceId;
+      channel.company_id = platform.workspace.company_id;
+      channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -344,13 +315,13 @@ describe("The /api/channels API", () => {
 
       expect(channelGetResult.resource).toBeDefined();
       expect(channelGetResult.resource).toMatchObject({
-        id: String(creationResult.entity._id),
+        id: String(creationResult.entity.id),
         name: creationResult.entity.name,
       });
       expect(channelGetResult.websocket).toBeDefined();
       expect(channelGetResult.websocket).toMatchObject({
         name: creationResult.entity.name,
-        room: `/channels/${creationResult.entity._id}`,
+        room: `/channels/${creationResult.entity.id}`,
         encryption_key: "",
       });
 
@@ -360,33 +331,35 @@ describe("The /api/channels API", () => {
 
   describe("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
     it("should 400 when companyId is not valid", async done => {
-      const companyId = "123";
-      const workspaceId = "0";
-
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
+      testAccess(
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
+        "POST",
+        done,
+      );
     });
 
     it("should 400 when workspaceId is not valid", async done => {
-      const companyId = "0";
-      const workspaceId = "123";
-
-      testAccess(`${url}/companies/${companyId}/workspaces/${workspaceId}/channels`, "POST", done);
+      testAccess(
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels`,
+        "POST",
+        done,
+      );
     });
 
     it("should create a channel", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
         payload: {
-          name: "Test channel",
+          resource: {
+            name: "Test channel",
+          },
         },
       });
 
@@ -398,10 +371,10 @@ describe("The /api/channels API", () => {
       expect(channelCreateResult.websocket).toBeDefined();
 
       const channelId = channelCreateResult.resource.id;
-      const createdChannel = await channelService.get(channelId);
+      const createdChannel = await channelService.get({ id: channelId });
 
       expect(channelCreateResult.websocket).toMatchObject({
-        room: `/channels/${createdChannel._id}`,
+        room: `/channels/${createdChannel.id}`,
         encryption_key: "",
       });
       expect(createdChannel).toBeDefined();
@@ -409,44 +382,88 @@ describe("The /api/channels API", () => {
     });
   });
 
+  describe("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+    it("should 400 when companyId is not valid", async done => {
+      testAccess(
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
+        "POST",
+        done,
+      );
+    });
+
+    it("should 400 when workspaceId is not valid", async done => {
+      testAccess(
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
+        "POST",
+        done,
+      );
+    });
+
+    it("should update an existing channel", async done => {
+      const jwtToken = await platform.auth.getJWTToken();
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+      const channel = new Channel();
+      channel.name = "Test Channel";
+      channel.company_id = platform.workspace.company_id;
+      channel.workspace_id = platform.workspace.workspace_id;
+
+      const creationResult = await channelService.save(channel);
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource: {
+            name: "Update the channel name",
+          },
+        },
+      });
+
+      const channelUpdateResult = deserialize(ChannelUpdateResponse, response.body);
+
+      expect(channelUpdateResult.resource).toBeDefined();
+      expect(channelUpdateResult.websocket).toBeDefined();
+
+      const channelId = channelUpdateResult.resource.id;
+      const updatedChannel = await channelService.get({ id: channelId });
+
+      expect(updatedChannel.name).toEqual("Update the channel name");
+      done();
+    });
+  });
+
   describe("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
     it("should 400 when companyId is not valid", async done => {
-      const companyId = "123";
-      const workspaceId = "0";
-
       testAccess(
-        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`,
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
         "DELETE",
         done,
       );
     });
 
     it("should 400 when workspaceId is not valid", async done => {
-      const companyId = "0";
-      const workspaceId = "123";
-
       testAccess(
-        `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/1`,
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
         "DELETE",
         done,
       );
     });
 
     it("should delete a channel", async done => {
-      const companyId = "0";
-      const workspaceId = "0";
       const jwtToken = await platform.auth.getJWTToken();
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      channel.company_id = companyId;
-      channel.workspace_id = workspaceId;
+      channel.company_id = platform.workspace.company_id;
+      channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -457,7 +474,7 @@ describe("The /api/channels API", () => {
 
       expect(channelDeleteResult.status === "success");
 
-      const deleteChannel = await channelService.get(String(creationResult.entity._id));
+      const deleteChannel = await channelService.get({ id: creationResult.entity.id });
 
       expect(deleteChannel).toBeNull();
       done();

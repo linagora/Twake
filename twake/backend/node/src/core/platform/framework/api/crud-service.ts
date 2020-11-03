@@ -1,5 +1,6 @@
 export class ContextualizedTarget {
   context?: ExecutionContext;
+  readonly operation: OperationType;
 }
 
 export class EntityTarget<Entity> extends ContextualizedTarget {
@@ -14,6 +15,8 @@ export class EntityTarget<Entity> extends ContextualizedTarget {
 }
 
 export class UpdateResult<Entity> extends EntityTarget<Entity> {
+  readonly operation = OperationType.UPDATE;
+
   /**
    * Result sent back by the underlying database
    */
@@ -27,6 +30,8 @@ export class UpdateResult<Entity> extends EntityTarget<Entity> {
 }
 
 export class CreateResult<Entity> extends EntityTarget<Entity> {
+  readonly operation = OperationType.CREATE;
+
   /**
    * Result sent back by the underlying database
    */
@@ -34,7 +39,25 @@ export class CreateResult<Entity> extends EntityTarget<Entity> {
   raw?: any;
 }
 
+export class SaveResult<Entity> extends EntityTarget<Entity> {
+  /**
+   * Result sent back by the underlying database
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  raw?: any;
+
+  constructor(
+    readonly type: string,
+    readonly entity: Entity,
+    readonly operation: OperationType.UPDATE | OperationType.CREATE,
+  ) {
+    super(type, entity);
+  }
+}
+
 export class DeleteResult<Entity> extends EntityTarget<Entity> {
+  readonly operation = OperationType.DELETE;
+
   /**
    *
    * @param type type of entity
@@ -56,11 +79,17 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
   }
 }
 
-export declare type EntityId = string | number;
+export enum OperationType {
+  CREATE = "create",
+  UPDATE = "update",
+  SAVE = "save",
+  DELETE = "delete",
+}
 
 export declare type EntityOperationResult<Entity> =
   | CreateResult<Entity>
   | UpdateResult<Entity>
+  | SaveResult<Entity>
   | DeleteResult<Entity>;
 
 export interface ExecutionContext {
@@ -76,21 +105,64 @@ export interface Paginable {
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token = "1", readonly max_results = "100") {}
+  constructor(readonly page_token: string, readonly max_results = "100") {}
 }
 
-export interface CRUDService<Entity> {
-  create(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
-  get(id: EntityId, context?: ExecutionContext): Promise<Entity>;
-  update(
-    id: EntityId,
+export interface CRUDService<Entity, PrimaryKey> {
+  /**
+   * Creates a resource
+   *
+   * @param item
+   * @param context
+   */
+  create?(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
+
+  /**
+   * Get a resource
+   *
+   * @param pk
+   * @param context
+   */
+  get(pk: PrimaryKey, context?: ExecutionContext): Promise<Entity>;
+
+  /**
+   * Update a resource
+   *
+   * @param pk
+   * @param item
+   * @param context
+   */
+  update?(
+    pk: PrimaryKey,
     item: Entity,
     context?: ExecutionContext /* TODO: Options */,
   ): Promise<UpdateResult<Entity>>;
-  delete(id: EntityId, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+
+  /**
+   * Save a resource.
+   * If the resource exists, it is updated, if it does not exists, it is created.
+   *
+   * @param pk
+   * @param item
+   * @param context
+   */
+  save?(item: Entity, context?: ExecutionContext): Promise<SaveResult<Entity>>;
+
+  /**
+   * Delete a resource
+   *
+   * @param pk
+   * @param context
+   */
+  delete(pk: PrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+
+  /**
+   * List a resource
+   *
+   * @param context
+   */
   list(
     pagination: Paginable,
-    /* TODO options */
-    context: ExecutionContext,
+    context?: ExecutionContext /* TODO: Options */,
   ): Promise<ListResult<Entity>>;
 }

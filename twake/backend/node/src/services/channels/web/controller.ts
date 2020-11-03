@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import { Channel } from "../entities";
-import ChannelServiceAPI from "../provider";
+import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../realtime";
 import { WorkspaceExecutionContext } from "../types";
 import {
@@ -14,7 +14,9 @@ import {
   ChannelListQueryParameters,
   ChannelListResponse,
   ChannelParameters,
+  ChannelUpdateResponse,
   CreateChannelBody,
+  UpdateChannelBody,
 } from "./types";
 
 export class ChannelCrudController
@@ -42,11 +44,22 @@ export class ChannelCrudController
     };
   }
 
+  getPrimaryKey(request: FastifyRequest<{ Params: ChannelParameters }>): ChannelPrimaryKey {
+    return {
+      id: request.params.id,
+      company_id: request.params.company_id,
+      workspace_id: request.params.workspace_id,
+    };
+  }
+
   async get(
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ChannelGetResponse> {
-    const resource = await this.service.get(request.params.id, this.getExecutionContext(request));
+    const resource = await this.service.get(
+      this.getPrimaryKey(request),
+      this.getExecutionContext(request),
+    );
 
     if (!resource) {
       throw reply.notFound(`Channel ${request.params.id} not found`);
@@ -63,14 +76,39 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ChannelCreateResponse> {
     const entity = plainToClass(Channel, {
-      ...request.body,
+      ...request.body.resource,
       ...{
         company_id: request.params.company_id,
         workspace_id: request.params.workspace_id,
       },
     });
 
-    const result = await this.service.create(entity, this.getExecutionContext(request));
+    const result = await this.service.save(entity, this.getExecutionContext(request));
+
+    if (result.entity) {
+      reply.code(201);
+    }
+
+    return {
+      websocket: getWebsocketInformation(result.entity),
+      resource: result.entity,
+    };
+  }
+
+  async update(
+    request: FastifyRequest<{ Body: UpdateChannelBody; Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<ChannelUpdateResponse> {
+    const entity = plainToClass(Channel, {
+      ...request.body.resource,
+      ...{
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id,
+        id: request.params.id,
+      },
+    });
+
+    const result = await this.service.save(entity, this.getExecutionContext(request));
 
     if (result.entity) {
       reply.code(201);
@@ -111,7 +149,7 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ChannelDeleteResponse> {
     const deleteResult = await this.service.delete(
-      request.params.id,
+      this.getPrimaryKey(request),
       this.getExecutionContext(request),
     );
 

@@ -18,6 +18,10 @@ export default class RealtimeEntityManager {
     eventBus.subscribe(RealtimeEntityActionType.Deleted, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Deleted);
     });
+
+    eventBus.subscribe(RealtimeEntityActionType.Saved, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Saved);
+    });
   }
 
   private pushResourceEvent(
