@@ -14,7 +14,7 @@ import ChannelsService from 'services/channels/channels.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import MediumPopupComponent from 'services/mediumPopupManager/mediumPopupManager.js';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor.js';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 import InputEnter from 'components/Inputs/InputEnter.js';
 
 export default class ChannelsWorkspace extends Component {
