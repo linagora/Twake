@@ -52,7 +52,9 @@ describe("The Channels Realtime feature", () => {
                   authorization: `Bearer ${jwtToken}`,
                 },
                 payload: {
-                  name: channelName,
+                  resource: {
+                    name: channelName,
+                  },
                 },
               });
 

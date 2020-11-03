@@ -22,13 +22,15 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "My channel",
-  "icon": "twake logo",
-  "description": "This channel allow twake's team to chat easily",
-  "channel_group": "twake",
-  "visibility": "public",
-  "is_default": true,
-  "archived": false
+  "resource": {
+    "name": "My channel",
+    "icon": "twake logo",
+    "description": "This channel allow twake's team to chat easily",
+    "channel_group": "twake",
+    "visibility": "public",
+    "is_default": true,
+    "archived": false
+  }
 }
 
 ### Get a single channel
@@ -46,7 +48,9 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "My channel update"
+  "resource": {
+    "name": "My channel update"
+  }
 }
 
 ### Delete a channel

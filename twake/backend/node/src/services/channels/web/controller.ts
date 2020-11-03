@@ -76,7 +76,7 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ChannelCreateResponse> {
     const entity = plainToClass(Channel, {
-      ...request.body,
+      ...request.body.resource,
       ...{
         company_id: request.params.company_id,
         workspace_id: request.params.workspace_id,
@@ -100,7 +100,7 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ChannelUpdateResponse> {
     const entity = plainToClass(Channel, {
-      ...request.body,
+      ...request.body.resource,
       ...{
         company_id: request.params.company_id,
         workspace_id: request.params.workspace_id,

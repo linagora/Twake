@@ -387,7 +387,9 @@ describe("The /api/channels API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         payload: {
-          name: "Test channel",
+          resource: {
+            name: "Test channel",
+          },
         },
       });
 
@@ -444,7 +446,9 @@ describe("The /api/channels API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         payload: {
-          name: "Update the channel name",
+          resource: {
+            name: "Update the channel name",
+          },
         },
       });
 

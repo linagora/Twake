@@ -53,10 +53,13 @@ export interface ChannelWebsocket {
 }
 
 export class CreateChannelBody {
-  creator: string;
-  name: string;
+  resource: ChannelCreateResource;
 }
 
 export class UpdateChannelBody {
-  name: string;
+  resource: ChannelUpdateResource;
 }
+
+export type ChannelCreateResource = Pick<Channel, "name">;
+
+export type ChannelUpdateResource = Pick<Channel, "name">;

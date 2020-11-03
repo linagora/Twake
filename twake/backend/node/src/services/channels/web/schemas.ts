@@ -11,11 +11,15 @@ export const createChannelSchema = {
   body: {
     type: "object",
     properties: {
-      name: {
-        type: "string",
+      resource: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+        },
+        required: ["name"],
       },
     },
-    required: ["name"],
+    required: ["resource"],
   },
   response: {
     201: {
@@ -41,10 +45,15 @@ export const updateChannelSchema = {
   body: {
     type: "object",
     properties: {
-      name: {
-        type: "string",
+      resource: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+        },
+        required: ["name"],
       },
     },
+    required: ["resource"],
   },
   response: {
     200: {
