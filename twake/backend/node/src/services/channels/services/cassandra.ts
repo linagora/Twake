@@ -1,6 +1,7 @@
 import cassandra from "cassandra-driver";
 import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
+import { CassandraPagination } from "../../../core/platform/services/database/services/connectors/cassandra";
 import {
   DeleteResult,
   ListResult,
@@ -65,16 +66,23 @@ export class CassandraChannelService implements ChannelServiceAPI {
     pagination: Pagination,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
+    const paginate = CassandraPagination.from(pagination);
     const query = `SELECT * FROM ${this.table} WHERE company_id = ? AND workspace_id = ?`;
+    const result = await this.client.execute(query, context.workspace, {
+      fetchSize: paginate.limit,
+      pageState: paginate.page_token,
+    });
 
-    const result = await this.client.execute(query, context.workspace);
     if (!result.rowLength) {
       return new ListResult<Channel>("channel", []);
     }
 
+    result.nextPage;
+
     return new ListResult<Channel>(
       "channel",
       result.rows.map(row => this.mapRowToChannel(row)),
+      CassandraPagination.next(paginate, result.pageState),
     );
   }
 
