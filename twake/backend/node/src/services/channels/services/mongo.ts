@@ -1,4 +1,5 @@
 import * as mongo from "mongodb";
+import { v4 as uuidv4 } from "uuid";
 import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
 import { MongoPagination } from "../../../core/platform/services/database/services/connectors/mongodb";
@@ -21,12 +22,12 @@ export class MongoChannelService implements ChannelServiceAPI {
     this.collection = this.db.collection<Channel>("channels");
   }
 
-  async save(channel: Channel): Promise<SaveResult<Channel>> {
+  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     let result: SaveResult<Channel>;
 
     if (mode === OperationType.CREATE) {
-      const created = await this.create(channel);
+      const created = await this.create(channel, context);
 
       result = new SaveResult<Channel>("channel", created.entity, mode);
     } else if (mode === OperationType.UPDATE) {
@@ -45,6 +46,8 @@ export class MongoChannelService implements ChannelServiceAPI {
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
     channel.owner = context.user.id;
+    channel.id = uuidv4();
+
     const inserted = await this.collection.insertOne(channel, { w: 1 });
 
     if (!inserted.insertedCount) {
@@ -52,16 +55,12 @@ export class MongoChannelService implements ChannelServiceAPI {
     }
 
     const createdChannel: Channel = inserted.ops[0];
-    createdChannel.id = String(createdChannel._id);
 
     return new CreateResult<Channel>("channel", createdChannel);
   }
 
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
-    const updated = await this.collection.updateOne(
-      { _id: new mongo.ObjectID(pk.id) },
-      { $set: channel },
-    );
+    const updated = await this.collection.updateOne({ id: pk.id }, { $set: channel });
 
     const result = new UpdateResult<Channel>("channel", channel);
     result.affected = updated.modifiedCount;
@@ -70,17 +69,11 @@ export class MongoChannelService implements ChannelServiceAPI {
   }
 
   async get(pk: ChannelPrimaryKey): Promise<Channel> {
-    const channel = await this.collection.findOne<Channel>({ _id: new mongo.ObjectID(pk.id) });
-
-    // TODO: Automate this: a decorator with class-transformer will be nice
-    if (channel) {
-      channel.id = String(channel._id);
-    }
-    return channel;
+    return await this.collection.findOne<Channel>({ id: pk.id });
   }
 
   async delete(pk: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {
-    const deleteResult = await this.collection.deleteOne({ _id: new mongo.ObjectID(pk.id) });
+    const deleteResult = await this.collection.deleteOne({ id: pk.id });
 
     return new DeleteResult<Channel>(
       "channel",
@@ -96,7 +89,6 @@ export class MongoChannelService implements ChannelServiceAPI {
       .find()
       .skip(paginate.skip)
       .limit(paginate.limit)
-      .map(document => ({ ...document, ...{ id: String(document._id) } }))
       .toArray();
 
     return new ListResult("channel", channels, MongoPagination.next(paginate, channels));

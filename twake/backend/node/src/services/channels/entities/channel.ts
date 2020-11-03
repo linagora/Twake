@@ -17,10 +17,6 @@ export class Channel {
   workspace_id: string;
 
   @Type(() => String)
-  @Exclude({ toPlainOnly: true })
-  _id: ObjectID | string;
-
-  @Type(() => String)
   id: string;
 
   name: string;

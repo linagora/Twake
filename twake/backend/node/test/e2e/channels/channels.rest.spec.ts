@@ -100,7 +100,7 @@ describe("The /api/channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
       expect(result.resources[0]).toMatchObject({
-        _id: String(creationResult.entity._id),
+        id: creationResult.entity.id,
         name: channel.name,
       });
 
@@ -333,7 +333,7 @@ describe("The /api/channels API", () => {
       const creationResult = await channelService.save(channel);
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity.id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -345,13 +345,13 @@ describe("The /api/channels API", () => {
 
       expect(channelGetResult.resource).toBeDefined();
       expect(channelGetResult.resource).toMatchObject({
-        id: String(creationResult.entity._id),
+        id: String(creationResult.entity.id),
         name: creationResult.entity.name,
       });
       expect(channelGetResult.websocket).toBeDefined();
       expect(channelGetResult.websocket).toMatchObject({
         name: creationResult.entity.name,
-        room: `/channels/${creationResult.entity._id}`,
+        room: `/channels/${creationResult.entity.id}`,
         encryption_key: "",
       });
 
@@ -404,7 +404,7 @@ describe("The /api/channels API", () => {
       const createdChannel = await channelService.get({ id: channelId });
 
       expect(channelCreateResult.websocket).toMatchObject({
-        room: `/channels/${createdChannel._id}`,
+        room: `/channels/${createdChannel.id}`,
         encryption_key: "",
       });
       expect(createdChannel).toBeDefined();
@@ -502,7 +502,7 @@ describe("The /api/channels API", () => {
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity._id}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/channels/${creationResult.entity.id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -513,7 +513,7 @@ describe("The /api/channels API", () => {
 
       expect(channelDeleteResult.status === "success");
 
-      const deleteChannel = await channelService.get({ id: String(creationResult.entity._id) });
+      const deleteChannel = await channelService.get({ id: creationResult.entity.id });
 
       expect(deleteChannel).toBeNull();
       done();
