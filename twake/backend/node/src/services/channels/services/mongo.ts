@@ -11,6 +11,7 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
+import { WorkspaceExecutionContext } from "../types";
 
 export class MongoChannelService implements ChannelServiceAPI {
   version = "1";
@@ -39,7 +40,11 @@ export class MongoChannelService implements ChannelServiceAPI {
     return result;
   }
 
-  async create(channel: Channel): Promise<CreateResult<Channel>> {
+  async create(
+    channel: Channel,
+    context: WorkspaceExecutionContext,
+  ): Promise<CreateResult<Channel>> {
+    channel.owner = context.user.id;
     const inserted = await this.collection.insertOne(channel, { w: 1 });
 
     if (!inserted.insertedCount) {
