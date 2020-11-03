@@ -10,9 +10,13 @@ import CollectionTransport from './Transport/CollectionTransport';
  */
 
 type GeneralOptions = {
-  withoutBackend: boolean;
   alwaysNotify: boolean;
+  withoutBackend: boolean;
 } & any;
+
+type ServerRequestOptions = {
+  httpOptions: any;
+};
 
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
@@ -60,7 +64,7 @@ export default class Collection<G extends Resource<any>> {
   /**
    * Upsert document (this will call backend)
    */
-  public async upsert(item: G, options?: GeneralOptions): Promise<G> {
+  public async upsert(item: G, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
     const mongoItem = await Storage.upsert(this.path, {
       ...item.data,
       _state: item.state,
@@ -69,7 +73,7 @@ export default class Collection<G extends Resource<any>> {
     this.eventEmitter.notify();
 
     if (!options?.withoutBackend) {
-      this.transport.upsert(this.resources[mongoItem.id]);
+      this.transport.upsert(this.resources[mongoItem.id], options?.httpOptions);
     }
 
     return item ? this.resources[mongoItem.id] : item;
@@ -78,7 +82,10 @@ export default class Collection<G extends Resource<any>> {
   /**
    * Remove document (this will call backend)
    */
-  public async remove(filter: G | any, options?: GeneralOptions): Promise<void> {
+  public async remove(
+    filter: G | any,
+    options?: GeneralOptions & ServerRequestOptions,
+  ): Promise<void> {
     if (filter?.constructor?.name) {
       filter = filter.data;
     }
@@ -89,7 +96,7 @@ export default class Collection<G extends Resource<any>> {
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
-          this.transport.remove(resource);
+          this.transport.remove(resource, options?.httpOptions);
         }
       }
     }
@@ -103,13 +110,13 @@ export default class Collection<G extends Resource<any>> {
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
    */
-  public async find(filter?: any, options?: GeneralOptions): Promise<G[]> {
+  public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
     const mongoItems = await Storage.find(this.path, filter, options);
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
 
-    this.transport.get();
+    this.transport.get(options?.httpOptions);
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
@@ -118,7 +125,7 @@ export default class Collection<G extends Resource<any>> {
    * Find a specific document
    * This will call backend if we don't find this document in frontend.
    */
-  public async findOne(filter?: any, options?: GeneralOptions): Promise<G> {
+  public async findOne(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
@@ -126,7 +133,7 @@ export default class Collection<G extends Resource<any>> {
     this.updateLocalResource(mongoItem);
 
     if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
-      this.transport.get();
+      this.transport.get(options?.httpOptions);
     }
 
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;

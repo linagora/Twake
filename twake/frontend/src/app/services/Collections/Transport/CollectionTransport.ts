@@ -44,11 +44,11 @@ export default class CollectionTransport<G extends Resource<any>> {
         if (buffer[i].action === 'create' || buffer[i].action === 'update') {
           const resource = await this.collection.findOne({ id: buffer[i].resourceId });
           if (resource) {
-            await this.callUpsert(resource);
+            await this.callUpsert(resource, buffer[i].options);
           }
         }
         if (buffer[i].action === 'delete') {
-          await this.callRemove(buffer[i].resourceId);
+          await this.callRemove(buffer[i].resourceId, buffer[i].options);
         }
       } catch (err) {
         console.log(err);
@@ -99,41 +99,41 @@ export default class CollectionTransport<G extends Resource<any>> {
     }
   }
 
-  async upsert(resource: G) {
+  async upsert(resource: G, options: any) {
     this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
     this.buffer.push({
       action: resource.state.persisted ? 'update' : 'create',
       resourceId: resource.id,
-      options: {},
+      options: options || {},
     });
 
     this.flushBuffer();
   }
 
-  async remove(resource: G) {
+  async remove(resource: G, options: any) {
     this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
     if (resource.state.persisted) {
       this.buffer.push({
         action: 'delete',
         resourceId: resource.id,
-        options: {},
+        options: options || {},
       });
 
       this.flushBuffer();
     }
   }
 
-  async callUpsert(resource: G) {
+  async callUpsert(resource: G, options: any) {
     this.lockHttp();
     try {
       const result = await Collections.getTransport()
         .getHttp()
-        .post(
-          this.collection.getPath().replace(/\/$/, resource.state.persisted ? '/' : ''),
-          resource.data,
-        );
+        .post(this.collection.getPath().replace(/\/$/, resource.state.persisted ? '/' : ''), {
+          resource: resource.data,
+          options: options,
+        });
       if (!result?.offline) {
         if (result?.resource) {
           resource.setPersisted(true);
@@ -155,7 +155,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     }
   }
 
-  async callRemove(resourceId: string) {
+  async callRemove(resourceId: string, options: any) {
     this.lockHttp();
     try {
       const result = await Collections.getTransport()
