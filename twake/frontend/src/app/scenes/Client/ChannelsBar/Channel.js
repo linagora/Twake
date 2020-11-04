@@ -16,7 +16,7 @@ import ChannelUserAdd from './ChannelUserAdd.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 
-import ChannelUI from 'components/Leftbar/Channel/Channel.js';
+import ChannelUI from 'components/Leftbar/Channel/Channel';
 
 export default class Channel extends Component {
   constructor(props) {

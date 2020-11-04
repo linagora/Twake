@@ -15,7 +15,7 @@ class ModalManager extends Observable {
     this.notify();
   }
 
-  open(component: any, position: any, canClose: boolean, clearState: any) {
+  open(component: any, position: any, canClose?: boolean, clearState?: any) {
     this.close();
 
     this.mountedComponent = null;

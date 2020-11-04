@@ -7,7 +7,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import UserService from 'services/user/user.js';
 
 import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
-import ChannelUI from 'components/Leftbar/Channel/Channel.js';
+import ChannelUI from 'components/Leftbar/Channel/Channel';
 import Channel from '../Channel.js';
 
 export default class ChannelsApps extends Component {
@@ -33,7 +33,7 @@ export default class ChannelsApps extends Component {
     ) {
       return (
         <div className="apps_channels loading_render">
-          <ChannelCategory text="" style={{ marginTop: '14px' }} />
+          <ChannelCategory text="" />
           <ChannelUI text="" />
           <ChannelUI text="" />
         </div>

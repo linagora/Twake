@@ -1230,6 +1230,7 @@ export default {
     'Никаких личных сообщений, приглашайте своих сотрудников!',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Личные сообщения',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'КАНАЛЫ',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Избранное',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Создать канал',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Название группы',
   'scenes.app.channelsbar.channelsworkspace.no_channel': 'Нет каналов в этом рабочем пространстве!',
