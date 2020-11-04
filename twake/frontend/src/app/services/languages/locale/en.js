@@ -1833,4 +1833,6 @@ export default {
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
   'scenes.app.popup.adduser.add_another_mail': 'Add another email',
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    'Automatically show this channel in the channel list of all members',
 };

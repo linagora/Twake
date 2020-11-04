@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import Input from 'components/Inputs/Input.js';
+//import Input from 'components/Inputs/Input.js';
+import ModalManager from 'services/Modal/ModalManager';
+import { Input } from 'antd';
 import './Inputs.scss';
 
 export default class InputWithIcon extends React.Component {
@@ -156,7 +158,6 @@ export default class InputWithIcon extends React.Component {
           <Emojione type={icon} />
         </div>
         <Input
-          className="full_width medium"
           autoFocus
           refInput={obj => (this.input = obj)}
           type="text"

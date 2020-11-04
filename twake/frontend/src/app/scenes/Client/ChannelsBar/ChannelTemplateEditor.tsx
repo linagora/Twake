@@ -1,25 +1,24 @@
 import React, { FC, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import Languages from 'services/languages/languages.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
-import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Select from 'components/Select/Select.js';
 import { ChannelType } from 'app/models/Channel';
-import {
-  ObjectModalSeparator,
-  ObjectModalSectionTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+import { Select, Typography, Divider, Checkbox, Input } from 'antd';
 
 type Props = {
   channel: ChannelType | undefined;
   onChange: (channelEntries: any) => void;
 };
 
+const { TextArea } = Input;
+const { Option } = Select;
+const { Title } = Typography;
+
 const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
   const [visibility, setVisibility] = useState<string>(channel?.visibility || 'private');
+  const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
 
   useEffect(() => {
     onChange({
@@ -27,11 +26,12 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
       name,
       description,
       visibility,
+      default: defaultChannel,
     });
-  }, [icon, name, description, visibility]);
+  });
 
   return (
-    <div>
+    <>
       {
         <InputWithIcon
           focusOnDidMount
@@ -46,59 +46,47 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
           }}
         />
       }
-      <div style={{ marginBottom: '8px' }}>
-        <ObjectModalSeparator />
-        <ObjectModalSectionTitle
-          title={Languages.t(
-            'scenes.app.popup.appsparameters.pages.description_label',
-            'Description',
-          )}
-          smallMargin
-        />
-        <AutoHeight
-          minHeight="40px"
-          maxHeight="150px"
-          placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
-          value={description}
-          onChange={(e: any) => {
-            setDescription(e.target.value);
-          }}
-        />
-        <ObjectModalSeparator />
-        <ObjectModalSectionTitle
-          title={Languages.t(
-            'scenes.apps.calendar.event_edition.title_participants',
-            'Participants',
-          )}
-          action={
-            <Select
-              value={visibility}
-              style={{ width: 'auto' }}
-              onChange={(value: any) => {
-                console.log(value);
-                setVisibility(value);
-              }}
-              options={[
-                {
-                  value: 'public',
-                  text: Languages.t(
-                    'scenes.app.channelsbar.public_channel_label',
-                    'Public channel',
-                  ),
-                },
-                {
-                  value: 'private',
-                  text: Languages.t(
-                    'scenes.app.channelsbar.private_channel_label',
-                    'Private channel',
-                  ),
-                },
-              ]}
-            />
-          }
-        />
-      </div>
-    </div>
+      <Divider />
+      <Title level={5}>
+        {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
+      </Title>
+      <TextArea
+        placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
+        value={description}
+        onChange={(e: any) => {
+          setDescription(e.target.value);
+        }}
+        rows={1}
+        style={{
+          minHeight: '40px',
+          maxHeight: '150px',
+        }}
+      />
+      <Divider />
+      <Title level={5}>
+        {Languages.t('scenes.apps.calendar.event_edition.title_participants', 'Participants')}
+      </Title>
+      <Select
+        value={visibility ? visibility : 'private'}
+        onChange={(value: any) => {
+          console.log(value);
+          setVisibility(value);
+        }}
+      >
+        <Option value="private">
+          {Languages.t('scenes.app.channelsbar.private_channel_label', 'Private channel')}
+        </Option>
+        <Option value="public">
+          {Languages.t('scenes.app.channelsbar.public_channel_label', 'Public channel')}
+        </Option>
+      </Select>
+      <br />
+      {visibility === 'public' && (
+        <Checkbox style={{ margin: '8px 0' }} onChange={() => setDefaultChannel(!defaultChannel)}>
+          {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
+        </Checkbox>
+      )}
+    </>
   );
 };
 

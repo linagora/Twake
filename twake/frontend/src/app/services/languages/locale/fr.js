@@ -1906,4 +1906,6 @@ export default {
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
   'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    'Afficher automatiquement cette chaîne dans la liste des chaînes de tous les membres',
 };
