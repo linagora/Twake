@@ -51,8 +51,8 @@
 .channel {
   height: 28px;
   width: auto;
-  margin-left: 12px;
-  margin-right: 12px;
+  margin-left: 15px;
+  margin-right: 15px;
   border-radius: var(--default-border-radius);
   max-width: 216px;
   box-sizing: border-box;
@@ -65,8 +65,6 @@
   color: $black;
   display: flex;
   cursor: pointer;
-  padding-left: 4px;
-  padding-right: 4px;
   line-height: normal;
 
   .user_list {
@@ -181,6 +179,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
+    margin-left: 8px;
     padding-right: 4px;
     line-height: 28px;
   }
@@ -227,7 +226,6 @@
   .icon {
     display: flex;
     align-items: center;
-    padding-right: 8px;
     font-size: 16px;
 
     .icon-unicon {

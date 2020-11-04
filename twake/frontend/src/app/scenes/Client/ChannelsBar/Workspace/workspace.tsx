@@ -1,5 +1,103 @@
 import React, { Component } from 'react';
 
+import { useParams } from 'react-router-dom';
+import { ChannelType } from 'app/models/Channel';
+import { ChannelResource } from 'app/models/Channel';
+import { Collection } from 'services/CollectionsReact/Collections';
+import RouterServices from 'services/RouterServices';
+import OldCollections from 'services/Depreciated/Collections/Collections';
+import WorkspaceChannels from 'components/Leftbar/Channel/workspaceChannels';
+
+type channelCategoryType = {
+  favorite: { data: ChannelType }[];
+  workspace: { data: ChannelType }[];
+  inGroup: { data: ChannelType }[];
+};
+
+export function Workspace() {
+  let channelCategory: channelCategoryType = {
+    favorite: [],
+    workspace: [],
+    inGroup: [],
+  };
+
+  const params: any = useParams();
+  const workspaceId: string = RouterServices.translateToUUID(params.workspaceId);
+  const companyId: string = OldCollections.get('workspaces').find(workspaceId)?.group?.id;
+  const url: string = `/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+  const channelsCollection = Collection.get(url, ChannelResource);
+
+  const channels =
+    channelsCollection.useWatcher(async () => await channelsCollection.find({})) || [];
+
+  channels.map(channel => {
+    switch (true) {
+      case channel.data.user_member?.favorite:
+        channelCategory.workspace.push(channel);
+        channelCategory.favorite.push(channel);
+        break;
+      case channel.data.channel_group && channel.data.channel_group.length > 1:
+        channelCategory.inGroup.push(channel);
+        break;
+      default:
+        channelCategory.workspace.push(channel);
+    }
+  });
+
+  let groupsName: string[] = [];
+  let groups: { name: string; channels: { data: object }[] }[] = [];
+
+  channelCategory.inGroup.map(channel => {
+    if (channel.data.channel_group && channel.data.channel_group.length > 1) {
+      if (groups.length === 0) {
+        groupsName.push(channel.data.channel_group);
+        groups.push({
+          name: channel.data.channel_group,
+          channels: [channel],
+        });
+      } else {
+        if (groupsName.includes(channel.data.channel_group)) {
+          const groupIndex = groups.findIndex(group => group.name === channel.data.channel_group);
+          groups[groupIndex].channels.push(channel);
+        } else {
+          groupsName.push(channel.data.channel_group);
+          groups.push({
+            name: channel.data.channel_group,
+            channels: [channel],
+          });
+        }
+      }
+    }
+  });
+
+  return (
+    <div className="workspace_channels">
+      {channelCategory.favorite.length !== 0 && (
+        <WorkspaceChannels
+          key={'favoriteChannels'}
+          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
+          channelsApp={channelCategory.favorite}
+        />
+      )}
+      {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
+        <WorkspaceChannels
+          key={'channels'}
+          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
+          channelsApp={channelCategory.workspace}
+        />
+      )}
+      {groups.map((group, index) => (
+        <WorkspaceChannels key={index} workspaceTitle={group.name} channelsApp={group.channels} />
+      ))}
+    </div>
+  );
+}
+
+/*
+ChannelsWorkspace.js
+
+import React, { Component } from 'react';
+
 import Globals from 'services/Globals.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -317,3 +415,5 @@ export default class ChannelsWorkspace extends Component {
     );
   }
 }
+
+*/

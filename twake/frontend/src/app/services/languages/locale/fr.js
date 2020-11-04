@@ -1241,6 +1241,7 @@ export default {
     'Aucun message privé, invitez vos collaborateurs !',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Messages directs',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'CHAÎNES',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORIS',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Créer une chaîne',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Nom du groupe',
   'scenes.app.channelsbar.channelsworkspace.no_channel':

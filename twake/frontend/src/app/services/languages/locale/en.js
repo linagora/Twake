@@ -1185,6 +1185,7 @@ export default {
     'No private messages. Invite your collaborators!',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Direct messages',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'CHANNELS',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORITES',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Create a channel',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name of the group',
   'scenes.app.channelsbar.channelsworkspace.no_channel': 'No channels in this worspace!',

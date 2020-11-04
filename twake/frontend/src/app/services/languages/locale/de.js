@@ -1186,6 +1186,7 @@ export default {
     'Keine private Nachricht, laden Sie Ihre Mitarbeiter ein !',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Private Nachrichten',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'KANÄLE',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Favoriten',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Erstelle einen Kanal',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name der Gruppe',
   'scenes.app.channelsbar.channelsworkspace.no_channel': 'Keine Kanäle in diesem Arbeitsbereich !',
