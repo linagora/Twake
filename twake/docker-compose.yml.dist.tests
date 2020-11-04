@@ -22,6 +22,8 @@ services:
   mongo:
     container_name: mongo
     image: mongo
+    ports:
+      - 27017:27017
   redis:
     image: "redis:alpine"
     command: redis-server --requirepass some_password
