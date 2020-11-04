@@ -40,10 +40,13 @@ services:
       #target: test
     environment:
       - NODE_ENV=test
+      - DB_DRIVER
     depends_on:
       - mongo
+      - scylladb
     links:
       - mongo
+      - scylladb
   php:
     image: twaketech/twake-php
     volumes:
