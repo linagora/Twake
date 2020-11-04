@@ -11,29 +11,9 @@ export default class CollectionStorage {
   static async getMongoDb(): Promise<minimongo.MinimongoDb> {
     if (!CollectionStorage.mongoDb) {
       return new Promise(resolve => {
-        if (
-          //@ts-ignore
-          window.indexedDB ||
-          //@ts-ignore
-          window.mozIndexedDB ||
-          //@ts-ignore
-          window.webkitIndexedDB ||
-          //@ts-ignore
-          window.msIndexedDB
-        ) {
-          CollectionStorage.mongoDb = new minimongo.IndexedDb(
-            //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
-            { namespace: 'twake' },
-            () => resolve(CollectionStorage.mongoDb),
-            () => {
-              CollectionStorage.mongoDb = new minimongo.MemoryDb();
-              resolve(CollectionStorage.mongoDb);
-            },
-          );
-        } else {
-          CollectionStorage.mongoDb = new minimongo.MemoryDb();
-          resolve(CollectionStorage.mongoDb);
-        }
+        setTimeout(() => {
+          CollectionStorage.getMongoDb().then(resolve);
+        }, 100);
       });
     }
     return CollectionStorage.mongoDb;
@@ -112,4 +92,26 @@ export default class CollectionStorage {
         .catch(reject);
     });
   }
+}
+
+if (
+  //@ts-ignore
+  window.indexedDB ||
+  //@ts-ignore
+  window.mozIndexedDB ||
+  //@ts-ignore
+  window.webkitIndexedDB ||
+  //@ts-ignore
+  window.msIndexedDB
+) {
+  CollectionStorage.mongoDb = new minimongo.IndexedDb(
+    //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
+    { namespace: 'twake' },
+    () => {},
+    () => {
+      CollectionStorage.mongoDb = new minimongo.MemoryDb();
+    },
+  );
+} else {
+  CollectionStorage.mongoDb = new minimongo.MemoryDb();
 }
