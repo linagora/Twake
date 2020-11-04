@@ -22,7 +22,7 @@ export abstract class TwakeContainer
   abstract loadComponents(): Promise<Map<string, TwakeComponent>>;
 
   getProvider<T extends TwakeServiceProvider>(name: string): T {
-    const service = this.components.get(name).getServiceInstance();
+    const service = this.components.get(name)?.getServiceInstance();
 
     if (!service) {
       throw new Error(`Service "${name}" not found`);

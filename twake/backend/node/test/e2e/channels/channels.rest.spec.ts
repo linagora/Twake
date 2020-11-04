@@ -110,7 +110,7 @@ describe("The /api/channels API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.create(channel);
+          return channelService.save(channel);
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -142,7 +142,7 @@ describe("The /api/channels API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.create(channel);
+          return channelService.save(channel);
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -199,7 +199,7 @@ describe("The /api/channels API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.create(channel);
+          return channelService.save(channel);
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -242,7 +242,8 @@ describe("The /api/channels API", () => {
       expect(response.statusCode).toBe(200);
       expect(result.websockets).toMatchObject([
         { room: getPublicRoomName(platform.workspace) },
-        { room: getPrivateRoomName(platform.workspace, { id: "1" }) },
+        // user id is randomly generated
+        { room: expect.stringContaining(getPrivateRoomName(platform.workspace, { id: "" })) },
       ]);
 
       done();

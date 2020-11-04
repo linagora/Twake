@@ -37,7 +37,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   const workspace: Workspace = {
     company_id: uuidv4(),
     workspace_id: uuidv4(),
-  }
+  };
 
   async function getJWTToken(): Promise<string> {
     const response = await app.inject({

@@ -52,6 +52,8 @@ describe("The RealtimeDeleted decorator", () => {
       type: "string",
       result: {
         entity: "oloy",
+        context: undefined,
+        operation: "delete",
         deleted: true,
         type: "string",
       } as DeleteResult<string>,
@@ -86,6 +88,8 @@ describe("The RealtimeDeleted decorator", () => {
       type: "string",
       result: {
         entity: "oloy",
+        context: undefined,
+        operation: "delete",
         deleted: true,
         type: "string",
       } as DeleteResult<string>,

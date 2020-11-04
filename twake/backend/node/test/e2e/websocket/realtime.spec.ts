@@ -8,10 +8,18 @@ describe("The Realtime API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth", "websocket", "realtime"],
+      services: [
+        "webserver",
+        "user",
+        "auth",
+        "websocket",
+        "realtime",
+        "database",
+        "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
+      ],
     });
 
-    socket = io.connect("http://localhost:3000", { path: "/ws" });
+    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
   });
 
   afterEach(async () => {
