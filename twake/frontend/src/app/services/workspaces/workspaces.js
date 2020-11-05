@@ -55,7 +55,9 @@ class Workspaces extends Observable {
     let { workspaceId } = RouterServices.getStateFromRoute();
 
     if (!workspaceId) {
-      const autoload_workspaces = await LocalStorage.getItem('autoload_workspaces');
+      const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
+      console.log(workspaceId);
+
       workspaceId = workspaceId || autoload_workspaces.id || '';
 
       let workspace = Collections.get('workspaces').find(workspaceId);
@@ -63,8 +65,6 @@ class Workspaces extends Observable {
         workspace = Collections.get('workspaces').findBy({})[0];
         workspaceId = workspace?.id;
       }
-
-      console.log(workspace);
 
       if (workspace && workspaceId !== this.currentWorkspaceId) {
         this.select(workspace, true);

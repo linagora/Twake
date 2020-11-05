@@ -8,11 +8,12 @@ export default class LocalStorage {
     Globals.localStorageSetItem(key, value);
   }
   static async getItem(key, callback) {
-    return new Promise((resolve) =>{
+    return new Promise(resolve => {
       let value = Globals.localStorageGetItem(key);
 
       if (!value) {
         if (callback) callback(value);
+        resolve(value);
         return;
       }
       try {
