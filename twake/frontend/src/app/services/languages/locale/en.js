@@ -1596,7 +1596,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Minimum window identifier:',
   'scenes.apps.messages.messageslist.no_message_alert': 'Can not find this message.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Number of visible messages:',
-  'scenes.error_on_twake': 'You found an error on the Twake platform!',
+  'scenes.error_on_twake': '“Houston we have a problem“',
   'scenes.help_us':
     'However, if you would like to help us fix this error, send us a message below: ',
   'scenes.login.loginview.beta_warning':
@@ -1606,7 +1606,7 @@ export default {
   'scenes.login.verifymail.signin_button': 'Log in',
   'scenes.login.verifymail.success': 'Your e-mail was successfully verified!',
   'scenes.login.verifymail.verification_waiting': 'Waiting for verification...',
-  'scenes.no_panic': "Don't panic! Simply reload this page to find Twake.",
+  'scenes.no_panic': "Don't panic! Just reload this page to fix Twake.",
   'services.apps.calendar.deadline_icon': 'Deadline',
   'services.apps.calendar.event_icon': 'Event',
   'services.apps.calendar.move_icon': 'Move',

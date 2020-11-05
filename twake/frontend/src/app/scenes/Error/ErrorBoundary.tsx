@@ -17,7 +17,7 @@ export default class ErrorBoundary extends React.Component<{}, { hasError: boole
   }
 
   componentDidCatch(error: any, errorInfo: any) {
-    RouterServices.history.push(RouterServices.pathnames.ERROR, {
+    RouterServices.history.replace(RouterServices.addRedirection(RouterServices.pathnames.ERROR), {
       error: {
         name: error,
         info: errorInfo.componentStack,

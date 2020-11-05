@@ -25,9 +25,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 
 export function ChannelsUser() {
-  const params: any = useParams();
-  const workspaceId: string = RouterServices.translateToUUID(params.workspaceId);
-  const companyId: string = OldCollections.get('workspaces').find(workspaceId)?.group?.id;
+  const { companyId } = RouterServices.useStateFromRoute();
   const url: string = `/companies/${companyId}/workspaces/direct/channels/`;
   const channelsCollection = Collection.get(url, ChannelResource);
   console.log('channelsCollection', channelsCollection);

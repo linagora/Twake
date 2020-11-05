@@ -3,7 +3,7 @@ import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import PopupManager from 'services/popupManager/popupManager.js';
 import User from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from 'services/workspaces/groups.js';
@@ -15,6 +15,7 @@ import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'services/RouterServices';
+import LoginService from 'services/login/login';
 import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
@@ -42,64 +43,34 @@ class Workspaces extends Observable {
     this.didFirstSelection = false;
   }
 
-  updateCurrentWorkspaceId() {
-    const match = RouterServices.match(RouterServices.pathnames.CLIENT_APP);
-    if (match.params.workspaceId) {
-      const nextCurrentWorkspaceId = RouterServices.translateToUUID(match.params.workspaceId);
-      if (nextCurrentWorkspaceId != this.currentWorkspaceId) {
-        this.currentWorkspaceId = nextCurrentWorkspaceId;
-        console.log(this.currentWorkspaceId);
-        this.notify();
-      }
-    }
+  updateCurrentWorkspaceId(workspaceId) {
+    this.currentWorkspaceId = workspaceId;
   }
 
   setWelcomePage(page) {
     this.welcomePage = page;
   }
 
-  initSelection(group_id) {
-    if (!Object.keys(this.user_workspaces).length) {
-      this.openWelcomePage(this.welcomePage);
-      return;
+  async initSelection() {
+    let { workspaceId } = RouterServices.getStateFromRoute();
+
+    if (!workspaceId) {
+      const autoload_workspaces = await LocalStorage.getItem('autoload_workspaces');
+      workspaceId = workspaceId || autoload_workspaces.id || '';
+
+      let workspace = Collections.get('workspaces').find(workspaceId);
+      if (!workspace) {
+        workspace = Collections.get('workspaces').findBy({})[0];
+        workspaceId = workspace?.id;
+      }
+
+      console.log(workspace);
+
+      if (workspace && workspaceId !== this.currentWorkspaceId) {
+        this.select(workspace, true);
+      }
     }
-
-    LocalStorage.getItem('autoload_workspaces', autoload_workspaces => {
-      this.didFirstSelection = true;
-
-      var workspace =
-        (this.url_values.workspace_id ? { id: this.url_values.workspace_id } : null) ||
-        autoload_workspaces ||
-        {};
-
-      if (
-        workspace.id &&
-        this.user_workspaces[workspace.id] &&
-        (!group_id || (workspace.group && workspace.group.id == group_id))
-      ) {
-        this.select(this.user_workspaces[workspace.id]);
-      } else {
-        //Search best workspace for user
-        var firstWorkspace = this.getOrderedWorkspacesInGroup(group_id);
-
-        if (firstWorkspace.length == 0) {
-          firstWorkspace = this.getOrderedWorkspacesInGroup();
-        }
-
-        if (firstWorkspace.length == 0) {
-          //No workspaces for current user or new user
-          this.openWelcomePage(this.welcomePage);
-          return;
-        }
-
-        firstWorkspace = firstWorkspace[0];
-        this.select(firstWorkspace);
-      }
-
-      if (Collections.get('users').known_objects_by_id[User.getCurrentUserId()].is_new) {
-        this.openWelcomePage(this.welcomePage);
-      }
-    });
+    return;
   }
 
   openWelcomePage(page) {
@@ -140,27 +111,21 @@ class Workspaces extends Observable {
       this.select(this.user_workspaces[this.currentWorkspaceIdByGroup[group.id]]);
       return;
     }
-    this.initSelection(group.id);
+    this.select(this.getOrderedWorkspacesInGroup(group.id)[0]);
   }
 
-  select(workspace) {
-    if (!this.didFirstSelection) {
+  select(workspace, replace = false) {
+    if (!workspace) {
       return;
     }
-
-    if (this.currentWorkspaceId == workspace.id) {
-      return;
-    }
-
-    if (workspace.id && !Collections.get('workspaces').find(workspace.id)) {
-      setTimeout(() => {
-        this.initSelection();
-      }, 1000);
+    if (workspace.id === this.currentWorkspaceId) {
       return;
     }
 
     workspacesUsers.unload(this.currentWorkspaceId);
     workspacesApps.unload(this.currentWorkspaceId);
+    this.currentWorkspaceId = workspace.id;
+    this.currentWorkspaceIdByGroup[workspace.group.id] = workspace.id;
 
     if (!this.getting_details[workspace.id]) {
       this.getting_details[workspace.id] = true;
@@ -185,12 +150,14 @@ class Workspaces extends Observable {
       });
     }
 
-    RouterServices.history.push(RouterServices.generateClientRoute({ workspaceId: workspace.id }));
-    this.currentWorkspaceIdByGroup[workspace.group.id] = workspace.id;
+    const route = RouterServices.generateRouteFromState({ workspaceId: workspace.id });
+    if (replace) {
+      RouterServices.history.replace(route);
+    } else {
+      RouterServices.history.push(route);
+    }
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
-
-    Groups.select(Collections.get('groups').known_objects_by_id[workspace.group.id]);
 
     this.notify();
   }
@@ -202,18 +169,6 @@ class Workspaces extends Observable {
 
     if (workspace._user_hasnotifications) {
       workspace.group._user_hasnotifications = true;
-    }
-
-    Groups.addToUser(workspace.group);
-    if (
-      (this.showWelcomePage && this.loading) ||
-      !this.currentGroupId ||
-      !this.currentWorkspaceId
-    ) {
-      this.loading = false;
-      this.showWelcomePage = false;
-      this.notify();
-      this.select(workspace);
     }
 
     Notifications.updateBadge('workspace', workspace.id, workspace._user_hasnotifications ? 1 : 0);

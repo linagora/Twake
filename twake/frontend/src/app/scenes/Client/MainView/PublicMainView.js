@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './MainView.scss';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Globals from 'services/Globals.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import GroupSwitch from 'components/Leftbar/GroupSwitch/GroupSwitch.js';
 
 export default class MainView extends Component {

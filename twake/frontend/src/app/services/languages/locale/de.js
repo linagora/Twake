@@ -1632,7 +1632,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Minimale Fensterkennung:',
   'scenes.apps.messages.messageslist.no_message_alert': 'Kann diese Nachricht nicht finden.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Anzahl sichtbarer Nachrichten:',
-  'scenes.error_on_twake': 'Sie haben einen Fehler auf der Twake-Plattform gefunden !',
+  'scenes.error_on_twake': '"Houston, wir haben ein Problem"',
   'scenes.help_us':
     'Wenn Sie uns jedoch bei der Behebung dieses Fehlers helfen möchten, senden Sie uns die folgende Nachricht :',
   'scenes.login.loginview.beta_warning':

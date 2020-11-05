@@ -1,6 +1,6 @@
 import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';

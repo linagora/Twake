@@ -1647,7 +1647,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Минимальный идентификатор окна :',
   'scenes.apps.messages.messageslist.no_message_alert': 'Не могу найти это сообщение.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Число видимых сообщений:',
-  'scenes.error_on_twake': 'Вы нашли ошибку на платформе Twake !',
+  'scenes.error_on_twake': '“Хьюстон у нас проблема“',
   'scenes.help_us':
     'Однако, если вы хотите помочь нам исправить эту ошибку, отправьте нам сообщение ниже:',
   'scenes.login.loginview.beta_warning':

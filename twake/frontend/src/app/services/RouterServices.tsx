@@ -3,10 +3,14 @@ import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';
 
 // Import your component here
-import App from 'app/scenes/app';
+import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/login';
 import Setup from 'app/scenes/Setup/Setup';
 import Error from 'app/scenes/Error/Error';
+import Collections from 'services/Depreciated/Collections/Collections';
+import { useParams } from 'react-router-dom';
+
+import Workspaces from 'services/workspaces/workspaces';
 
 export type RouteType = {
   path: string;
@@ -19,8 +23,9 @@ export type RouteType = {
   };
 };
 
-export type ParamsType = {
-  workspaceId: string;
+export type ClientStateType = {
+  companyId?: string;
+  workspaceId?: string;
   channelId?: string;
   messageId?: string;
   threadId?: string;
@@ -31,28 +36,33 @@ export type Pathnames = {
   [key: string]: string;
 };
 
-function RouterServices() {
-  const translator: Translator = short();
-  const history: History<unknown> = createBrowserHistory();
-  const match = (pathSchema: string): match<object> | null =>
-    matchPath(history.location.pathname, { path: pathSchema });
+class RouterServices {
+  public translator: Translator = short();
+  public history: History<unknown> = createBrowserHistory();
+  public match = (pathSchema: string): match<object> | null =>
+    matchPath(this.history.location.pathname, { path: pathSchema });
+
+  //List of client sub paths
+  clientSubPathnames: string[] = [
+    '/client/:workspaceId',
+    '/client/:workspaceId/c/:channelId',
+    '/client/:workspaceId/c/:channelId/t/:threadId',
+    '/client/:workspaceId/c/:channelId/m/:messageId',
+    '/client/:workspaceId/c/:channelId/t/:threadId/m/:messageId',
+  ];
 
   // Define your route here
-  const pathnames: Readonly<Pathnames> = {
+  pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
-    CLIENT_APP: '/client/:workspaceId/c/:channelId',
-    //TODO
-    //CLIENT_APP_THREAD: '/client/:workspaceId/c/:channelId/t/:threadId',
-    //CLIENT_APP_DIRECTORY: '/client/:workspaceId/c/:channelId/d/:directoryId',
     LOGIN: '/login',
     SETUP: '/setup',
     ERROR: '/error',
   };
 
   // Setup your route here
-  const routes: Readonly<RouteType[]> = [
+  routes: Readonly<RouteType[]> = [
     {
-      path: pathnames.LOGIN,
+      path: this.pathnames.LOGIN,
       exact: true,
       key: 'login',
       component: Login,
@@ -61,7 +71,7 @@ function RouterServices() {
       },
     },
     {
-      path: pathnames.SETUP,
+      path: this.pathnames.SETUP,
       exact: true,
       key: 'setup',
       component: Setup,
@@ -70,55 +80,115 @@ function RouterServices() {
       },
     },
     {
-      path: pathnames.CLIENT,
+      path: this.pathnames.CLIENT,
       key: 'client',
-      exact: true,
+      exact: false,
       component: App,
       options: {
         withErrorBoundary: true,
       },
     },
     {
-      path: pathnames.CLIENT_APP,
-      key: 'client_app',
-      component: App,
-      options: {
-        withErrorBoundary: true,
-      },
-    },
-    {
-      path: pathnames.ERROR,
+      path: this.pathnames.ERROR,
       exact: true,
       component: Error,
     },
   ];
 
-  // Generate UUID to shortened and create url
-  function generateClientRoute(params: ParamsType) {
-    const shorter = {
-      workspaceId: translator.fromUUID(params.workspaceId),
-      channelId: params.channelId ? `/c/${translator.fromUUID(params.channelId)}` : '/c/unknown',
-      directoryId: params.directoryId ? `/d/${translator.fromUUID(params.directoryId)}` : '',
-      threadId: params.threadId ? `/t/${translator.fromUUID(params.threadId)}` : '',
-      messageId: params.messageId ? `/m/${translator.fromUUID(params.messageId)}` : '',
+  useStateFromRoute(): ClientStateType {
+    const params = useParams();
+    return this.getStateFromRoute();
+  }
+
+  // Generate state from routing
+  getStateFromRoute(): ClientStateType {
+    let match: any = null;
+    this.clientSubPathnames
+      .sort((a, b) => a.length - b.length)
+      .map(route => {
+        if (!match) {
+          match = this.match(route) as any;
+        }
+      });
+    const reducedState: any = {
+      companyId: '',
+      workspaceId: match?.params?.workspaceId || '',
+      channelId: match?.params?.channelId || '',
+      messageId: match?.params?.messageId || '',
+      threadId: match?.params?.threadId || '',
+      directoryId: match?.params?.directoryId || '',
     };
-    return `${pathnames.CLIENT}/${shorter.workspaceId}${shorter.channelId}${shorter.directoryId}${shorter.threadId}${shorter.messageId}`;
+
+    const state: any = {};
+    Object.keys(reducedState).map(key => {
+      try {
+        state[key] = reducedState[key] ? this.shortToUUID(reducedState[key]) : '';
+      } catch (err) {
+        state[key] = reducedState[key];
+      }
+    });
+
+    //Retrocompatibility with old code
+    state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id;
+    Workspaces.currentWorkspaceId = state.workspaceId;
+
+    return state;
+  }
+
+  // Generate UUID to shortened and create url
+  generateRouteFromState(params: ClientStateType, replace: boolean = false) {
+    const currentState = this.getStateFromRoute();
+    const expandedState: any = replace ? params : Object.assign(currentState, params);
+    const state: any = {};
+    Object.keys(expandedState).map(key => {
+      try {
+        state[key] = expandedState[key] ? this.UUIDToShort(expandedState[key]) : '';
+      } catch (err) {
+        state[key] = expandedState[key];
+      }
+    });
+    return (
+      `${this.pathnames.CLIENT}/${state.workspaceId}` +
+      (state.channelId ? `/c/${state.channelId}` : '') +
+      (state.threadId ? `/t/${state.threadId}` : '') +
+      (state.messageId ? `/m/${state.messageId}` : '')
+    );
   }
 
   // Translate shortened param to UUID
-  function translateToUUID(param: string) {
-    return translator.toUUID(param);
+  shortToUUID(param: string) {
+    return this.translator.toUUID(param);
   }
 
-  return {
-    generateClientRoute,
-    history,
-    match,
-    pathnames,
-    routes,
-    translateToUUID,
-    translator,
-  };
+  // Translate shortened param to UUID
+  UUIDToShort(param: string) {
+    return this.translator.fromUUID(param);
+  }
+
+  // Add redirection in url
+  addRedirection(route: string) {
+    const existingRef = decodeURIComponent(
+      (this.history.location.search.split('ref=')[1] || '').split('&')[0],
+    );
+    const ref = existingRef ? existingRef : document.location + '';
+    const separator = route.indexOf('?') < 0 ? '?' : '&';
+    if (route === document.location.pathname) {
+      return route;
+    }
+    return route + separator + 'ref=' + encodeURIComponent(ref);
+  }
+
+  // If redirection is present in url we redirect the user to it. Otherwise we return false;
+  useRedirection(): boolean {
+    const existingRef = decodeURIComponent(
+      (this.history.location.search.split('ref=')[1] || '').split('&')[0],
+    );
+    if (existingRef) {
+      document.location.assign(existingRef);
+      return true;
+    }
+    return false;
+  }
 }
 
-export default RouterServices();
+export default new RouterServices();

@@ -7,15 +7,42 @@ import minimongo from 'minimongo';
  */
 export default class CollectionStorage {
   static mongoDb: minimongo.MinimongoDb;
+  static mongoDbPromises: ((db: minimongo.MinimongoDb) => void)[] = [];
 
   static async getMongoDb(): Promise<minimongo.MinimongoDb> {
     if (!CollectionStorage.mongoDb) {
+      if (CollectionStorage.mongoDbPromises.length === 0) {
+        if (
+          //@ts-ignore
+          window.indexedDB ||
+          //@ts-ignore
+          window.mozIndexedDB ||
+          //@ts-ignore
+          window.webkitIndexedDB ||
+          //@ts-ignore
+          window.msIndexedDB
+        ) {
+          CollectionStorage.mongoDb = new minimongo.IndexedDb(
+            //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
+            { namespace: 'twake' },
+            () => {
+              CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+            },
+            () => {
+              CollectionStorage.mongoDb = new minimongo.MemoryDb();
+              CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+            },
+          );
+        } else {
+          CollectionStorage.mongoDb = new minimongo.MemoryDb();
+          CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+        }
+      }
       return new Promise(resolve => {
-        setTimeout(() => {
-          CollectionStorage.getMongoDb().then(resolve);
-        }, 100);
+        CollectionStorage.mongoDbPromises.push(resolve);
       });
     }
+
     return CollectionStorage.mongoDb;
   }
 
@@ -92,26 +119,4 @@ export default class CollectionStorage {
         .catch(reject);
     });
   }
-}
-
-if (
-  //@ts-ignore
-  window.indexedDB ||
-  //@ts-ignore
-  window.mozIndexedDB ||
-  //@ts-ignore
-  window.webkitIndexedDB ||
-  //@ts-ignore
-  window.msIndexedDB
-) {
-  CollectionStorage.mongoDb = new minimongo.IndexedDb(
-    //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
-    { namespace: 'twake' },
-    () => {},
-    () => {
-      CollectionStorage.mongoDb = new minimongo.MemoryDb();
-    },
-  );
-} else {
-  CollectionStorage.mongoDb = new minimongo.MemoryDb();
 }

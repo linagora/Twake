@@ -7,7 +7,7 @@ import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
-
+import InitService from 'services/InitService';
 export default class Signin extends Component {
   constructor() {
     super();
@@ -165,9 +165,9 @@ export default class Signin extends Component {
             {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
             <Emojione type=":raised_hand:" />
           </div>
-          {(!LoginService.server_infos.branding.name ||
-            LoginService.server_infos.branding.enable_newsletter) &&
-            ((LoginService.server_infos || {}).branding || {}).enable_newsletter !== false && (
+          {(!InitService.server_infos.branding.name ||
+            InitService.server_infos.branding.enable_newsletter) &&
+            ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && (
               <div className="subtitle">
                 {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
               </div>
@@ -200,9 +200,9 @@ export default class Signin extends Component {
             value={this.state.firstName}
             onChange={evt => this.setState({ firstName: evt.target.value })}
           />
-          {(!LoginService.server_infos.branding.name ||
-            LoginService.server_infos.branding.enable_newsletter) &&
-            ((LoginService.server_infos || {}).branding || {}).enable_newsletter !== false && [
+          {(!InitService.server_infos.branding.name ||
+            InitService.server_infos.branding.enable_newsletter) &&
+            ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && [
               <Input
                 key="phone"
                 id="phone_number_create"
@@ -246,7 +246,7 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      !(((LoginService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+      !(((InitService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
     ) {
       var mail_inputs = 0;
       var last_not_empty = 0;
@@ -284,7 +284,7 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      (((LoginService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+      (((InitService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
     ) {
       return (
         <div className="">

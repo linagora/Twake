@@ -39,9 +39,9 @@ export class MessageEditors extends Observable {
 
   setInputNode(threadId: string, messageId: string, context: string, node: any) {}
 
-  setContent(threadId: string, messageId: string, content: string) {
+  async setContent(threadId: string, messageId: string, content: string) {
     if (!messageId) {
-      const all = LocalStorage.getItem('m_input') || {};
+      const all = (await LocalStorage.getItem('m_input')) || {};
       all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
         content,
         new Date().getTime(),

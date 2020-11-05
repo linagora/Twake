@@ -10,7 +10,7 @@ import {
   ObjectModalFormTitle,
   ObjectModalTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import './Pages.scss';
 

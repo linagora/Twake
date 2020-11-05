@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'services/user/current_user.js';
 import UserService from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LocalStorage from 'services/localStorage.js';

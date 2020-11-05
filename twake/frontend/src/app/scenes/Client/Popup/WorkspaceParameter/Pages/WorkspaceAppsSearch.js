@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';

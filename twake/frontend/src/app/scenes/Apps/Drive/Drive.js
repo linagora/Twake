@@ -314,7 +314,7 @@ export default class Drive extends Component {
     if (directory_id) {
       /*
       // TODO -> Get document id and replace url
-      const url = RouterServices.generateClientRoute({
+      const url = RouterServices.generateRouteFromState({
         workspaceId: workspace_id,
         channelId: this.props.channel.id,
         directoryId: directory_id,

@@ -10,6 +10,8 @@
   width: 60px;
   min-width: 60px;
   overflow: hidden;
+  padding-bottom: 8px;
+  transition: width 0.2s;
   div {
     display: flex;
     flex-direction: column;

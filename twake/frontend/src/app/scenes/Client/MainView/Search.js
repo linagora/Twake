@@ -4,6 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Search from 'services/search/search.js';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import LoginService from 'services/login/login.js';
+import InitService from 'services/InitService';
 
 export default class MainView extends Component {
   constructor() {
@@ -22,7 +23,7 @@ export default class MainView extends Component {
   }
 
   render() {
-    if ((LoginService.server_infos || {}).elastic_search_available === false) {
+    if ((InitService.server_infos || {}).elastic_search_available === false) {
       return '';
     }
 

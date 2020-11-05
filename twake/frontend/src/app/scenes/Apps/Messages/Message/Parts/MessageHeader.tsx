@@ -78,7 +78,7 @@ export default class MessageHeader extends Component<Props, State> {
 
     const updateMessageLink = () => {
       const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-      const url = RouterServices.generateClientRoute({
+      const url = RouterServices.generateRouteFromState({
         workspaceId: workspace.id,
         channelId: this.props.message.channel_id,
         messageId: this.props.message.parent_message_id || this.props.message.id,

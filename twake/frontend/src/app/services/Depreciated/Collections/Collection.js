@@ -1,5 +1,5 @@
 import React from 'react';
-import api from 'services/api.js';
+import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';

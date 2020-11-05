@@ -15,7 +15,7 @@ import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
 
 import WorkspaceAppsEditor from './WorkspaceAppsEditor.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 
 import './Pages.scss';
 

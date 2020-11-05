@@ -11,6 +11,7 @@ import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
 import CurrentUser from 'services/user/current_user.js';
+import InitService from 'services/InitService';
 
 export default class CreateCompanyView extends Component {
   constructor() {
@@ -391,7 +392,7 @@ export default class CreateCompanyView extends Component {
     } else {
       if (
         (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
-          (((LoginService.server_infos || {}).auth || {}).internal || {})
+          (((InitService.server_infos || {}).auth || {}).internal || {})
             .disable_email_verification) &&
         this.state.page == 3
       ) {
@@ -420,7 +421,7 @@ export default class CreateCompanyView extends Component {
       //Pass usage form
       if (
         (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
-          (((LoginService.server_infos || {}).auth || {}).internal || {})
+          (((InitService.server_infos || {}).auth || {}).internal || {})
             .disable_email_verification) &&
         this.state.page == 1
       ) {

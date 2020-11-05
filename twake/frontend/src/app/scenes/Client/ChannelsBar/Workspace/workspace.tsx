@@ -21,9 +21,7 @@ export function Workspace() {
     inGroup: [],
   };
 
-  const params: any = useParams();
-  const workspaceId: string = RouterServices.translateToUUID(params.workspaceId);
-  const companyId: string = OldCollections.get('workspaces').find(workspaceId)?.group?.id;
+  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
   const url: string = `/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(url, ChannelResource);
 

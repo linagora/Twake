@@ -1,5 +1,5 @@
 import Number from 'services/utils/Numbers.js';
-import api from 'services/api.js';
+import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import SocketCluster from 'services/socketcluster/socketcluster.js';
 import CryptoJS from 'crypto-js';
@@ -130,11 +130,6 @@ class Websocket extends Observable {
       this.last_reconnect_call = new Date();
       this.reconnect();
     }
-  }
-
-  useOldMode(bool) {
-    this.autobahn = SocketCluster;
-    this.use_old_mode = bool;
   }
 
   setPublicKey(pk) {
@@ -295,9 +290,6 @@ class Websocket extends Observable {
             var connection = null;
 
             var suffix = '';
-            if (this.use_old_mode) {
-              suffix = '/ws/';
-            }
 
             var method = '?';
             var route = Globals.window.websocket_url || '';
