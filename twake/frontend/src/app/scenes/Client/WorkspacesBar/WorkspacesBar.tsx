@@ -25,7 +25,7 @@ export default () => {
       width={ElectronService.isElectron() ? '70px' : '60px'}
     >
       <PerfectScrollbar component="div" className="list">
-        {Workspaces.getOrderedWorkspacesInGroup(companyId, false).map((item: any) => (
+        {Workspaces.getOrderedWorkspacesInGroup(companyId).map((item: any) => (
           <Workspace key={item.id} workspace={item} isSelected={workspaceId === item.id} />
         ))}
       </PerfectScrollbar>

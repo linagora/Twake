@@ -18,7 +18,6 @@ import ChannelsBar from './ChannelsBar/ChannelsBar.js';
 import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
-import NotificationsBodyLayer from 'components/Notifications/NotificationsBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import UploadViewer from 'components/Uploads/UploadViewer.js';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
@@ -247,7 +246,6 @@ export default class Client extends Component {
     var comp = [
       page,
       <MenusBodyLayer key="MenusBodyLayer" />,
-      <NotificationsBodyLayer key="NotificationsBodyLayer" />,
       <DraggableBodyLayer key="DraggableBodyLayer" />,
       <UploadViewer key="UploadViewer" />,
       <ConfigBodyLayer key="ConfigBodyLayer" />,

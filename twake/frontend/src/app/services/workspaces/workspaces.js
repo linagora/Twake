@@ -187,42 +187,14 @@ class Workspaces extends Observable {
     }
   }
 
-  getOrderedWorkspacesInGroup(group_id, no_filter) {
+  getOrderedWorkspacesInGroup(group_id) {
     var object = [];
-    var that = this;
-    Object.keys(this.user_workspaces).forEach(function (e) {
-      if (no_filter) {
+    Object.keys(this.user_workspaces).forEach(e => {
+      var e = this.user_workspaces[e];
+      if (!group_id || e?.group?.id == group_id) {
         object.push(e);
-        return;
       }
-      var favoris = 0;
-      var e = that.user_workspaces[e];
-      if (!group_id || e.group.id == group_id) {
-        if (
-          (!that.searchQuery &&
-            (that.currentWorkspaceId == e.id ||
-              !e.isHidden)) /* || Notifications.notifications[e.id] && Notifications.notifications[e.id].total > 0 */ ||
-          (that.searchQuery && that.testSearch(e))
-        ) {
-          object.push(e);
-        }
-        if (e.isFavorite) {
-          favoris = 1;
-        }
-      }
-      e['favoris'] = favoris;
     });
-    object = object.sort(function (a, b) {
-      if (a.favoris != b.favoris) {
-        return b.favoris - a.favoris;
-      }
-      return String(a.name).localeCompare(String(b.name));
-    });
-
-    if (object.length == 0 && !no_filter) {
-      return this.getOrderedWorkspacesInGroup(group_id, true);
-    }
-
     return object;
   }
 

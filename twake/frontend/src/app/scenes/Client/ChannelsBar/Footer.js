@@ -36,7 +36,7 @@ export default class Footer extends Component {
 
     return (
       <FooterUI
-        planName={group.plan}
+        planName={group?.plan}
         onClickPlan={() => {
           if (false && WorkspaceUserRights.hasGroupPrivilege('MANAGE_PRICINGS')) {
             PopupManager.open(
