@@ -1,0 +1,12 @@
+{
+  "database": {
+    "mongodb": {
+      "uri": "mongodb://mongo:27017"
+    },
+    "cassandra": {
+      "contactPoints": [
+        "scylladb:9042"
+      ]
+    }
+  }
+}

@@ -45,7 +45,7 @@ export class MongoChannelService implements ChannelServiceAPI {
     channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
-    channel.owner = context.user.id;
+    channel.owner = context?.user.id;
     channel.id = uuidv4();
 
     const inserted = await this.collection.insertOne(channel, { w: 1 });

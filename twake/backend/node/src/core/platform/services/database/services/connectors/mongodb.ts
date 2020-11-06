@@ -12,6 +12,10 @@ export interface MongoConnectionOptions {
 export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mongo.MongoClient> {
   private client: mongo.MongoClient;
 
+  async init(): Promise<this> {
+    return this;
+  }
+
   async connect(): Promise<this> {
     if (this.client && this.client.isConnected) {
       return this;
@@ -28,6 +32,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
 
   getDatabase(): mongo.Db {
     return this.client.db(this.options.database);
+  }
+
+  async drop(): Promise<this> {
+    await this.getDatabase().dropDatabase();
+
+    return this;
   }
 }
 

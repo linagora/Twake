@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { ObjectId } from "mongodb";
 import io from "socket.io-client";
@@ -8,7 +9,7 @@ import { WorkspaceExecutionContext } from "../../../src/services/channels/types"
 import { TestPlatform, init } from "../setup";
 
 describe("The Channels Realtime feature", () => {
-  const url = "/api/channels";
+  const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
@@ -60,7 +61,7 @@ describe("The Channels Realtime feature", () => {
             });
             socket.on("realtime:resource", event => {
               expect(event.type).toEqual("channel");
-              expect(event.action).toEqual("created");
+              expect(event.action).toEqual("saved");
               expect(event.resource.name).toEqual(channelName);
               done();
             });
@@ -84,7 +85,7 @@ describe("The Channels Realtime feature", () => {
       channel.company_id = platform.workspace.company_id;
       channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.create(channel);
+      const creationResult = await channelService.save(channel);
 
       socket.connect();
       socket.on("connect", () => {

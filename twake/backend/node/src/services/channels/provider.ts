@@ -1,5 +1,5 @@
 import { CRUDService } from "../../core/platform/framework/api/crud-service";
-import { TwakeServiceProvider } from "../../core/platform/framework/api";
+import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import { Channel } from "./entities";
 
 export type ChannelPrimaryKey = {
@@ -10,4 +10,5 @@ export type ChannelPrimaryKey = {
 
 export default interface ChannelServiceAPI
   extends TwakeServiceProvider,
+    Initializable,
     CRUDService<Channel, ChannelPrimaryKey> {}

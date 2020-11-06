@@ -334,7 +334,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Время окончания',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Описание',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Место',
-  'scenes.apps.calendar.event_edition.title_participants': 'Участники',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Участники',
   'scenes.apps.calendar.event_edition.title_reminder': 'Напоминание',
   'scenes.apps.calendar.event_edition.title_details': 'Подробности',
   'scenes.apps.calendar.event_edition.participant': 'Участник(и)',

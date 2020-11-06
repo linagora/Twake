@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { TestPlatform, init } from "./setup";
 
-describe("The /users API", () => {
+describe.skip("The /users API", () => {
   const url = "/api/users";
   let platform: TestPlatform;
 

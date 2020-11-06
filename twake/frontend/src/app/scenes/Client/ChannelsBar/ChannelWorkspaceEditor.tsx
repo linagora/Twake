@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
-import Button from 'components/Buttons/Button.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor';
-import MediumPopupComponent from 'services/Modal/ModalManager';
-import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
+import ModalManager from 'services/Modal/ModalManager';
+import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
+import { Typography, Button } from 'antd';
 
 import { useParams } from 'react-router-dom';
 import RouterServices from 'services/RouterServices';
@@ -15,6 +15,8 @@ type Props = {
   title: string;
   channel?: ChannelType;
 };
+
+const { Title } = Typography;
 
 const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
   const { workspaceId } = RouterServices.useStateFromRoute();
@@ -39,22 +41,27 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
 
   const upsertChannel = async (): Promise<any> => {
     await ChannelsCollections.upsert(new ChannelResource(newChannel));
-    await MediumPopupComponent.closeAll();
+    return ModalManager.closeAll();
   };
 
   return (
     <ObjectModal
-      title={<ObjectModalTitle>{Languages.t(title)}</ObjectModalTitle>}
-      onClose={() => MediumPopupComponent.closeAll()}
+      title={<Title level={5}>{Languages.t(title)}</Title>}
+      onClose={() => ModalManager.closeAll()}
       noScrollBar={false}
       footer={
         <Button
-          className="small primary"
-          style={{ width: 'auto', float: 'right' }}
+          className="small"
+          block={true}
+          type="primary"
+          style={{
+            width: 'auto',
+            float: 'right',
+          }}
           disabled={!disabled}
           onClick={() => upsertChannel()}
         >
-          {Languages.t('general.continue', 'Continue')}
+          {Languages.t('general.create', 'Create')}
         </Button>
       }
     >

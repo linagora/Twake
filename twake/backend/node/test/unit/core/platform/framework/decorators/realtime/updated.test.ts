@@ -54,6 +54,8 @@ describe("The RealtimeUpdated decorator", () => {
         type: "string",
         entity: "oloy",
         affected: undefined,
+        context: undefined,
+        operation: "update",
         raw: undefined,
       } as UpdateResult<string>,
     });
@@ -87,6 +89,8 @@ describe("The RealtimeUpdated decorator", () => {
       type: "string",
       result: {
         type: "string",
+        context: undefined,
+        operation: "update",
         entity: "oloy",
         affected: undefined,
         raw: undefined,

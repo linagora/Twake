@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'services/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import Input from 'components/Inputs/Input.js';
+import { Input, Col, Row } from 'antd';
 import './Inputs.scss';
 
 export default class InputWithIcon extends React.Component {
@@ -145,29 +145,41 @@ export default class InputWithIcon extends React.Component {
       icon = this.allChanEmojies[0];
     }
     return (
-      <div className="full_width input_with_emoji">
-        <div
-          className="emoji"
-          ref={node => (this.emoji_dom = node)}
-          onClick={evt => {
-            this.openEmojiPicker();
-          }}
+      <Input.Group size="small">
+        <Row
+          // Default wrapping elements
+          // Wrap props isn't provided until antd version 4.8
+          // This is a way to prevent wrapping
+          style={{ flexWrap: 'nowrap' }}
+          align="middle"
+          gutter={[8, 0]}
         >
-          <Emojione type={icon} />
-        </div>
-        <Input
-          className="full_width medium"
-          autoFocus
-          refInput={obj => (this.input = obj)}
-          type="text"
-          placeholder={this.props.placeholder}
-          value={this.props.value[1]}
-          onEnter={this.props.onEnter}
-          onChange={evt => {
-            if (this.onChange) this.onChange([this.props.value[0], evt.target.value]);
-          }}
-        />
-      </div>
+          <Col flex="none">
+            <div
+              className="emoji"
+              ref={node => (this.emoji_dom = node)}
+              onClick={evt => {
+                this.openEmojiPicker();
+              }}
+            >
+              <Emojione type={icon} />
+            </div>
+          </Col>
+          <Col flex="auto">
+            <Input
+              autoFocus
+              refInput={obj => (this.input = obj)}
+              type="text"
+              placeholder={this.props.placeholder}
+              value={this.props.value[1]}
+              onEnter={this.props.onEnter}
+              onChange={evt => {
+                if (this.onChange) this.onChange([this.props.value[0], evt.target.value]);
+              }}
+            />
+          </Col>
+        </Row>
+      </Input.Group>
     );
   }
 }

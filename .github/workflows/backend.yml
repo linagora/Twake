@@ -8,13 +8,22 @@ on:
       - "twake/backend/node/**"
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
+      - name: mongo-test
+        run: cd twake && docker-compose run -e DB_DRIVER=mongodb node npm run test
+      - name: cassandra-test
+        if: always()
+        run: cd twake && docker-compose run -e DB_DRIVER=cassandra node npm run test
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
       - run: cd twake && docker-compose up -d
-      - run: cd twake && docker-compose exec -T node npm run test
       - run: cd twake && docker-compose exec -T php php composer.phar install
       - run: cd twake && docker-compose exec -T php php bin/console twake:schema:update #Test if scylla is live
       - run: cd twake && docker-compose exec -T php php bin/console twake:mapping #Test if es is live

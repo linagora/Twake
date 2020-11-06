@@ -1,7 +1,10 @@
 import cassandra from "cassandra-driver";
 import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
-import { CassandraPagination } from "../../../core/platform/services/database/services/connectors/cassandra";
+import {
+  CassandraConnectionOptions,
+  CassandraPagination,
+} from "../../../core/platform/services/database/services/connectors/cassandra";
 import {
   CreateResult,
   DeleteResult,
@@ -22,7 +25,28 @@ export class CassandraChannelService implements ChannelServiceAPI {
   version = "1";
   table = "channels";
 
-  constructor(private client: cassandra.Client) {}
+  constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
+
+  async init(): Promise<this> {
+    this.createTable();
+
+    return this;
+  }
+
+  async createTable(): Promise<boolean> {
+    let result = true;
+
+    try {
+      await this.client.execute(
+        `CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.table}(company_id uuid, workspace_id uuid, id uuid, archivation_date date, archived boolean, channel_group text, description text, icon text, is_default boolean, name text, owner uuid, visibility text, PRIMARY KEY ((company_id, workspace_id), id));`,
+      );
+    } catch (err) {
+      console.error("Table creation error for channels", err);
+      result = false;
+    }
+
+    return result;
+  }
 
   async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
@@ -57,7 +81,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
     const fullChannelUpdate = { ...channelToUpdate, ...updatableChannel };
     const columnList = UPDATE_KEYS.map(key => `"${key}"`).join(",");
     const columnValues = "?".repeat(UPDATE_KEYS.length).split("").join(",");
-    const query = `INSERT INTO ${this.table} (${columnList}) VALUES (${columnValues})`;
+    const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
     await this.client.execute(query, pick(fullChannelUpdate, ...UPDATE_KEYS));
 
@@ -73,7 +97,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
     channel.company_id = context.workspace.company_id;
     channel.owner = context.user.id;
 
-    const query = `INSERT INTO ${this.table}
+    const query = `INSERT INTO ${this.options.keyspace}.${this.table}
       (
       "company_id",
       "workspace_id",
@@ -95,7 +119,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
-    const query = `SELECT * FROM ${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
     const row = (await this.client.execute(query, key)).first();
 
     if (!row) {
@@ -106,7 +130,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
   }
 
   async delete(key: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {
-    const query = `DELETE FROM ${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
+    const query = `DELETE FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
     await this.client.execute(query, key);
 
     return new DeleteResult<Channel>("channel", key as Channel, true);
@@ -117,7 +141,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.table} WHERE company_id = ? AND workspace_id = ?`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?`;
     const result = await this.client.execute(query, context.workspace, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,

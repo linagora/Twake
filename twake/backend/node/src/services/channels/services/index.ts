@@ -30,9 +30,9 @@ function getServiceInstance(databaseService: DatabaseServiceAPI): ChannelService
         (databaseService.getConnector() as MongoConnector).getDatabase(),
       );
     case "cassandra":
-      return new CassandraChannelService(
-        (databaseService.getConnector() as CassandraConnector).getClient(),
-      );
+      const connector = databaseService.getConnector() as CassandraConnector;
+
+      return new CassandraChannelService(connector.getClient(), connector.getOptions());
     default:
       throw new Error(`${type} service is not supported`);
   }
@@ -42,6 +42,16 @@ class Service implements ChannelServiceAPI {
   version: "1";
 
   constructor(private service: ChannelServiceAPI) {}
+
+  async init(): Promise<this> {
+    try {
+      this.service.init && (await this.service.init());
+    } catch (err) {
+      console.error("Can not initialize database service");
+    }
+
+    return this;
+  }
 
   @RealtimeSaved<Channel>(
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),

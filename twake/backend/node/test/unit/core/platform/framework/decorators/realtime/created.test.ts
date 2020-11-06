@@ -53,6 +53,8 @@ describe("The RealtimeCreated decorator", () => {
       result: {
         entity: "oloy",
         type: "string",
+        context: undefined,
+        operation: "create",
         raw: undefined,
       } as CreateResult<string>,
     });
@@ -86,6 +88,8 @@ describe("The RealtimeCreated decorator", () => {
       type: "string",
       result: {
         entity: "oloy",
+        context: undefined,
+        operation: "create",
         type: "string",
         raw: undefined,
       } as CreateResult<string>,
