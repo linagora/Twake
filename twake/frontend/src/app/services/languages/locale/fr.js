@@ -331,7 +331,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Heure de fin',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Description',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Lieu',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participants',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Participants',
   'scenes.apps.calendar.event_edition.title_reminder': 'Rappel',
   'scenes.apps.calendar.event_edition.title_details': 'Détails',
   'scenes.apps.calendar.event_edition.participant': 'Participant(s)',
@@ -1906,4 +1906,6 @@ export default {
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
   'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    "Inviter automatiquement tous les membres de l'espace de travail sur cette chaîne",
 };

@@ -3,6 +3,7 @@ import Icon from 'components/Icon/Icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Tabs from 'components/Tabs/Tabs.js';
 import './ObjectModal.scss';
+import { Divider } from 'antd';
 
 export class ObjectModalTitle extends Component {
   render() {
@@ -105,7 +106,12 @@ export class ObjectModal extends Component {
         )}
 
         {this.props.footer && <div class="separator" style={{ marginTop: 0 }} />}
-        {this.props.footer && <div className="footer">{this.props.footer}</div>}
+        {this.props.footer && (
+          <div className="footer bottom-margin">
+            <Divider />
+            <div className="right-margin">{this.props.footer}</div>
+          </div>
+        )}
       </div>
     );
   }

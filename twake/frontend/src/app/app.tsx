@@ -6,6 +6,7 @@ import { Switch, Route } from 'react-router-dom';
 import { Router } from 'react-router';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import 'app/ui.scss';
+import 'app/theme.less';
 
 export default () => {
   useEffect(() => {

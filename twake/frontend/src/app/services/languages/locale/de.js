@@ -321,7 +321,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Ende',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Beschreibung',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Ort',
-  'scenes.apps.calendar.event_edition.title_participants': 'Teilnehmer',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Teilnehmer',
   'scenes.apps.calendar.event_edition.title_reminder': 'Erinnerung',
   'scenes.apps.calendar.event_edition.title_details': 'Details',
   'scenes.apps.calendar.event_edition.participant': 'Teilnehmer',

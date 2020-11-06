@@ -321,7 +321,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'End time',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Description',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Location',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participants',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Confidentiality',
   'scenes.apps.calendar.event_edition.title_reminder': 'Reminder',
   'scenes.apps.calendar.event_edition.title_details': 'Details',
   'scenes.apps.calendar.event_edition.participant': 'Participant(s)',
@@ -1215,8 +1215,8 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Install the desktop application',
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Invite your collaborators into your workspace.',
-  'scenes.app.channelsbar.public_channel_label': 'Public channel',
-  'scenes.app.channelsbar.private_channel_label': 'Private channel',
+  'scenes.app.channelsbar.public_channel_label': 'Public',
+  'scenes.app.channelsbar.private_channel_label': 'Private',
   'scenes.app.channelsbar.private_channel_message':
     'This is a public channel. The whole workspace will be invited!',
   'scenes.app.channelsbar.save_channel_button': 'Save',
@@ -1833,4 +1833,6 @@ export default {
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
   'scenes.app.popup.adduser.add_another_mail': 'Add another email',
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    'Automatically invite all workspace members to this channel',
 };

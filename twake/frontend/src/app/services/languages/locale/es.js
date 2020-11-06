@@ -189,7 +189,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Hora de finalización',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Descripción',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Ubicación',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participantes',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Participantes',
   'scenes.apps.calendar.event_edition.title_reminder': 'Recordatorio',
   'scenes.apps.calendar.event_edition.title_details': 'Detalles',
   //--EventView
