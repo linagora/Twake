@@ -145,9 +145,16 @@ export default class InputWithIcon extends React.Component {
       icon = this.allChanEmojies[0];
     }
     return (
-      <Input.Group>
-        <Row align="middle" gutter={[8, 0]}>
-          <Col>
+      <Input.Group size="small">
+        <Row
+          // Default wrapping elements
+          // Wrap props isn't provided until antd version 4.8
+          // This is a way to prevent wrapping
+          style={{ flexWrap: 'nowrap' }}
+          align="middle"
+          gutter={[8, 0]}
+        >
+          <Col flex="none">
             <div
               className="emoji"
               ref={node => (this.emoji_dom = node)}
