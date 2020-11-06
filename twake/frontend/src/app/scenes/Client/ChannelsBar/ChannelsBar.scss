@@ -10,8 +10,11 @@
   background: $grey_background;
   width: 220px;
   padding-top: 16px;
-  display: flex;
-  flex-direction: column;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+  }
 
   .channel_small_text {
     font-size: 12px;
