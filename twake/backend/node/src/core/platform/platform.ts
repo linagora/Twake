@@ -1,8 +1,7 @@
-import { TwakeContainer, TwakeServiceProvider, TwakeComponent, ServiceName } from "./framework";
+import { TwakeContainer, TwakeServiceProvider, TwakeComponent } from "./framework";
 import * as ComponentUtils from "./framework/utils/component-utils";
 import path from "path";
 
-@ServiceName("platform")
 export class TwakePlatform extends TwakeContainer {
   constructor(protected options: TwakePlatformConfiguration) {
     super();

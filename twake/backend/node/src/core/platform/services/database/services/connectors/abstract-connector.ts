@@ -7,7 +7,13 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
 
   abstract connect(): Promise<this>;
 
+  abstract drop(): Promise<this>;
+
   abstract getClient(): DatabaseClient;
+
+  getOptions(): T {
+    return this.options;
+  }
 
   getType(): DatabaseType {
     return this.type;
