@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cassandra from "cassandra-driver";
+import { Subject } from "rxjs";
 import { Paginable, Pagination } from "../../../../../platform/framework/api/crud-service";
 import { AbstractConnector } from "./abstract-connector";
 
@@ -37,7 +38,7 @@ export class CassandraConnector extends AbstractConnector<
 
   createKeyspace(): Promise<cassandra.types.ResultSet> {
     return this.client.execute(
-      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`,
+      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'SimpleStrategy'} AND durable_writes = true;`,
     );
   }
 
@@ -52,6 +53,8 @@ export class CassandraConnector extends AbstractConnector<
   }
 
   async connect(): Promise<this> {
+    const subject = new Subject<this>();
+
     if (this.client) {
       return this;
     }
@@ -69,9 +72,18 @@ export class CassandraConnector extends AbstractConnector<
     }
 
     this.client = new cassandra.Client(cassandraOptions);
+    this.client.on("connected", err => {
+      if (err) {
+        console.error(err);
+        return subject.error(new Error("Connection error"));
+      }
+
+      subject.complete();
+    });
+
     await this.client.connect();
 
-    return this;
+    return subject.toPromise();
   }
 }
 
