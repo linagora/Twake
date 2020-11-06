@@ -12,8 +12,8 @@ import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
 import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
 
-describe("The /api/channels API", () => {
-  const url = "/api/channels";
+describe("The /internal/services/channels/v1 API", () => {
+  const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
 
   beforeEach(async () => {

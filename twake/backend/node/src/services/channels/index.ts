@@ -5,7 +5,7 @@ import { getService } from "./services";
 import web from "./web/index";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 
-@Prefix("/api/channels")
+@Prefix("/internal/services/channels/v1")
 @Consumes(["webserver", "database"])
 export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   version = "1";

@@ -9,7 +9,7 @@ import { WorkspaceExecutionContext } from "../../../src/services/channels/types"
 import { TestPlatform, init } from "../setup";
 
 describe("The Channels Realtime feature", () => {
-  const url = "/api/channels";
+  const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 

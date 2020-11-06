@@ -6,6 +6,6 @@ export default (
   fastify: FastifyInstance,
   options: FastifyRegisterOptions<{ prefix: string; service: ChannelServiceAPI }>,
 ): void => {
-  fastify.log.info("Configuring /api/channels routes");
+  fastify.log.info("Configuring /internal/services/channels/v1 routes");
   fastify.register(routes, options);
 };
