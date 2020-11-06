@@ -4,7 +4,6 @@ import { FastifyInstance } from "fastify";
 import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
 import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
 import { DatabaseServiceAPI } from "../../../src/core/platform/services/database/api";
-import { MongoConnector } from "../../../src/core/platform/services/database/services/connectors/mongodb";
 import { Workspace } from "../../../src/services/types";
 
 export interface TestPlatform {
@@ -58,8 +57,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
       return;
     }
 
-    const mongo = database.getConnector() as MongoConnector;
-    await mongo.getDatabase().dropDatabase();
+    await database.getConnector().drop();
   }
 
   return {
