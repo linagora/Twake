@@ -21,6 +21,36 @@ export class CassandraConnector extends AbstractConnector<
     return this.client;
   }
 
+  async init(): Promise<this> {
+    if (!this.client) {
+      await this.connect();
+    }
+
+    try {
+      await this.createKeyspace();
+    } catch (err) {
+      console.warn("Keyspace can not be created", err);
+    }
+
+    return this;
+  }
+
+  createKeyspace(): Promise<cassandra.types.ResultSet> {
+    return this.client.execute(
+      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`,
+    );
+  }
+
+  async drop(): Promise<this> {
+    try {
+      await this.client.execute(`DROP KEYSPACE IF EXISTS ${this.options.keyspace};`);
+    } catch (err) {
+      console.error("Error while dropping keyspace", err);
+    }
+
+    return this;
+  }
+
   async connect(): Promise<this> {
     if (this.client) {
       return this;
@@ -29,8 +59,8 @@ export class CassandraConnector extends AbstractConnector<
     const cassandraOptions: cassandra.DseClientOptions = {
       contactPoints: this.options.contactPoints,
       localDataCenter: this.options.localDataCenter,
-      keyspace: this.options.keyspace,
     };
+
     if (this.options.username && this.options.password) {
       cassandraOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
         this.options.username,

@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd twake && docker build -t twaketech/twake-node -f docker/twake-node/Dockerfile .
+      - run: cd twake/backend/node && docker build --target production -t twaketech/twake-node -f ../../docker/twake-node/Dockerfile .
 
   build-websockets:
     runs-on: ubuntu-latest

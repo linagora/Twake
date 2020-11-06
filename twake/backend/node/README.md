@@ -20,6 +20,22 @@
 
 3. Backend is now running and available on [http://localhost:3000](http://localhost:3000)
 
+### Docker
+
+Run all tests
+
+```sh
+docker-compose -f ./docker-compose.test.yml up
+```
+
+Run specific tests
+
+```sh
+docker-compose -f ./docker-compose.test.yml run node npm run test:unit
+```
+
+will run unit tests only (`test:unit`). For possible tests to run, check the `package.json` scripts.
+
 ### Component Framework
 
 The backend is developed using a software component approach in order to compose and adapt the platform based on needs and constraints.

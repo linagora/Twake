@@ -9,21 +9,29 @@ describe("The Websocket authentication", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["webserver", "user", "auth", "websocket"],
+      services: [
+        "websocket",
+        "webserver",
+        "auth",
+        "database",
+        "realtime",
+        "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
+      ],
     });
 
-    socket = io.connect("http://localhost:3000", { path: "/ws" });
+    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
   });
 
   afterEach(async () => {
-    await platform.tearDown();
+    platform && (await platform.tearDown());
     platform = null;
     socket && socket.close();
     socket = null;
   });
 
-  describe("JWT-based Authenticating", () => {
+  describe("JWT-based Authentication", () => {
     it("should not be able to connect without a JWT token", done => {
+      socket.connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", {})
@@ -38,6 +46,7 @@ describe("The Websocket authentication", () => {
     });
 
     it("should not be able to connect with something which is not a JWT token", done => {
+      socket.connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token: "Not a JWT token" })
@@ -54,6 +63,7 @@ describe("The Websocket authentication", () => {
     it("should be able to connect with a JWT token", async done => {
       const token = await platform.auth.getJWTToken();
 
+      socket.connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token })
