@@ -48,10 +48,6 @@ export default (): JSX.Element => {
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
-    var no_workspace =
-      Object.keys(Workspaces.user_workspaces).length <= 1 &&
-      Object.keys(Groups.user_groups).length <= 1;
-
     if (Globals.store_public_access_get_data) {
       page = (
         <div key="appPage" className={'appPage public'}>
@@ -59,38 +55,32 @@ export default (): JSX.Element => {
         </div>
       );
     } else {
-      page = (
-        <Layout
-          key="appPage"
-          className={
-            'appPage ' +
-            (no_workspace
-              ? 'no_workspaces '
-              : 'has_workspaces ') /* + (workspace_changes?"animated ":"")*/
-          }
-          hasSider
-        >
-          <WorkspacesBar />
-          {/*<ChannelsBar />*/}
-          {
-            // TO REMOVE
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <h1>MainView will be disabled for the moment</h1>
-              <br />
-              <small>Waiting for the router implementation</small>
-            </div>
-          }
-          {/* <MainView /> */}
-        </Layout>
-      );
+      //Wait for the user to be connected
+      if (LoginService.currentUserId) {
+        page = (
+          <Layout key="appPage" className={'appPage '} hasSider>
+            <WorkspacesBar />
+            <ChannelsBar />
+            {
+              // TO REMOVE
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <h1>MainView will be disabled for the moment</h1>
+                <br />
+                <small>Waiting for the router implementation</small>
+              </div>
+            }
+            {/* <MainView /> */}
+          </Layout>
+        );
+      }
     }
   }
 

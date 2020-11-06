@@ -11,6 +11,8 @@ import Collections from 'services/Depreciated/Collections/Collections';
 import { useParams } from 'react-router-dom';
 
 import Workspaces from 'services/workspaces/workspaces';
+import Groups from 'services/workspaces/groups';
+import Channels from 'services/channels/channels';
 
 export type RouteType = {
   path: string;
@@ -61,6 +63,7 @@ class RouterServices {
 
   // Setup your route here
   routes: Readonly<RouteType[]> = [
+    //TODO add parameters / account / workspace creation pages
     {
       path: this.pathnames.LOGIN,
       exact: true,
@@ -96,7 +99,7 @@ class RouterServices {
   ];
 
   useStateFromRoute(): ClientStateType {
-    const params = useParams();
+    useParams();
     return this.getStateFromRoute();
   }
 
@@ -122,7 +125,7 @@ class RouterServices {
     const state: any = {};
     Object.keys(reducedState).map(key => {
       try {
-        state[key] = reducedState[key] ? this.shortToUUID(reducedState[key]) : '';
+        state[key] = reducedState[key] ? this.translator.toUUID(reducedState[key]) : '';
       } catch (err) {
         state[key] = reducedState[key];
       }
@@ -131,6 +134,8 @@ class RouterServices {
     //Retrocompatibility with old code
     state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id;
     Workspaces.currentWorkspaceId = state.workspaceId;
+    Groups.currentGroupId = state.companyId;
+    Channels.currentChannelFrontId = Collections.get('channels').find(state.channelId)?.front_id;
 
     return state;
   }
@@ -142,7 +147,7 @@ class RouterServices {
     const state: any = {};
     Object.keys(expandedState).map(key => {
       try {
-        state[key] = expandedState[key] ? this.UUIDToShort(expandedState[key]) : '';
+        state[key] = expandedState[key] ? this.translator.fromUUID(expandedState[key]) : '';
       } catch (err) {
         state[key] = expandedState[key];
       }
@@ -153,16 +158,6 @@ class RouterServices {
       (state.threadId ? `/t/${state.threadId}` : '') +
       (state.messageId ? `/m/${state.messageId}` : '')
     );
-  }
-
-  // Translate shortened param to UUID
-  shortToUUID(param: string) {
-    return this.translator.toUUID(param);
-  }
-
-  // Translate shortened param to UUID
-  UUIDToShort(param: string) {
-    return this.translator.fromUUID(param);
   }
 
   // Add redirection in url
