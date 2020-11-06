@@ -92,7 +92,11 @@ export default class ChannelsBar extends Component {
     //   Object.keys(Groups.user_groups).length <= 1;
 
     return (
-      <Layout.Sider width={() => ElectronService.isElectron()} className="channels_view fade_in">
+      <Layout.Sider
+        theme="light"
+        width={() => ElectronService.isElectron()}
+        className="channels_view fade_in"
+      >
         <CurrentUser />
         <PerfectScrollbar component="div">
           <ChannelsApps />

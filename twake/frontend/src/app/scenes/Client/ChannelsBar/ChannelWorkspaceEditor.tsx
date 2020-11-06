@@ -47,26 +47,22 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
 
   return (
     <ObjectModal
-      title={<Title level={3}>{Languages.t(title)}</Title>}
+      title={<Title level={5}>{Languages.t(title)}</Title>}
       onClose={() => ModalManager.closeAll()}
       noScrollBar={false}
       footer={
         <Button
           className="small"
           block={true}
+          type="primary"
           style={{
             width: 'auto',
             float: 'right',
-            /*
-            backgroundColor: 'var(--primary)',
-            opacity: !disabled ? '0.7' : '1',
-            color: 'var(--white)',
-            */
           }}
           disabled={!disabled}
           onClick={() => upsertChannel()}
         >
-          {Languages.t('general.continue', 'Continue')}
+          {Languages.t('general.create', 'Create')}
         </Button>
       }
     >

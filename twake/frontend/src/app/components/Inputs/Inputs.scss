@@ -337,32 +337,20 @@ select,
   padding-right: 40px;
 }
 
-.input_with_emoji {
-  display: inline-flex;
+.emoji {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background: $grey_background;
+  border-radius: var(--default-border-radius);
+  padding: 11px;
+  font-size: 18px;
+  line-height: 20px;
+  box-sizing: border-box;
+  cursor: pointer;
 
-  .right_input {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-    border-radius: var(--default-border-radius);
-  }
-
-  .emoji {
-    width: 40px;
-    height: 40px;
-    display: inline-block;
-    background: $grey_background;
-    border-radius: var(--default-border-radius);
-    margin-right: 4px;
-    padding: 11px;
-    font-size: 18px;
-    line-height: 20px;
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &:hover {
-      background: $grey_light;
-    }
+  &:hover {
+    background: $grey_light;
   }
 }
 

@@ -12,7 +12,6 @@ type Props = {
 const { TextArea } = Input;
 const { Option } = Select;
 const { Title } = Typography;
-
 const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
@@ -32,7 +31,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
 
   return (
     <>
-      {
+      <div className="x-margin">
         <InputWithIcon
           focusOnDidMount
           placeholder={Languages.t(
@@ -45,46 +44,55 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
             setName(value[1]);
           }}
         />
-      }
+      </div>
       <Divider />
-      <Title level={5}>
-        {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
-      </Title>
-      <TextArea
-        placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
-        value={description}
-        onChange={(e: any) => {
-          setDescription(e.target.value);
-        }}
-        rows={1}
-        style={{
-          minHeight: '40px',
-          maxHeight: '150px',
-        }}
-      />
+      <div className="x-margin">
+        <Title level={5}>
+          {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
+        </Title>
+        <TextArea
+          autoSize={{ minRows: 1, maxRows: 4 }}
+          placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
+          value={description}
+          onChange={(e: any) => {
+            setDescription(e.target.value);
+          }}
+          rows={1}
+        />
+      </div>
       <Divider />
-      <Title level={5}>
-        {Languages.t('scenes.apps.calendar.event_edition.title_participants', 'Participants')}
-      </Title>
-      <Select
-        value={visibility ? visibility : 'private'}
-        onChange={(value: any) => {
-          console.log(value);
-          setVisibility(value);
-        }}
-      >
-        <Option value="private">
-          {Languages.t('scenes.app.channelsbar.private_channel_label', 'Private channel')}
-        </Option>
-        <Option value="public">
-          {Languages.t('scenes.app.channelsbar.public_channel_label', 'Public channel')}
-        </Option>
-      </Select>
-      <br />
+      <div className="x-margin">
+        <Title level={5}>
+          {Languages.t(
+            'scenes.apps.calendar.event_edition.title_confidentiality',
+            'Confidentiality',
+          )}
+        </Title>
+        <Select
+          value={visibility ? visibility : 'private'}
+          onChange={(value: any) => {
+            console.log(value);
+            setVisibility(value);
+          }}
+        >
+          <Option value="private">
+            {Languages.t('scenes.app.channelsbar.private_channel_label', 'Private channel')}
+          </Option>
+          <Option value="public">
+            {Languages.t('scenes.app.channelsbar.public_channel_label', 'Public channel')}
+          </Option>
+        </Select>
+      </div>
+      {visibility === 'private' && <div style={{ height: '49px' }}></div>}
       {visibility === 'public' && (
-        <Checkbox style={{ margin: '8px 0' }} onChange={() => setDefaultChannel(!defaultChannel)}>
-          {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
-        </Checkbox>
+        <div style={{ height: '49px' }}>
+          <Checkbox
+            style={{ marginTop: '16px', marginLeft: '16px' }}
+            onChange={() => setDefaultChannel(!defaultChannel)}
+          >
+            {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
+          </Checkbox>
+        </div>
       )}
     </>
   );

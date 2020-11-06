@@ -10,7 +10,6 @@ import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import AlertLayout from 'components/Alert/Layout.js';
 
 import { Layout } from 'antd';
-import 'antd/dist/antd.less';
 import './Client.scss';
 import MainView from './MainView/MainView.js';
 import PublicMainView from './MainView/PublicMainView.js';

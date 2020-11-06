@@ -59,14 +59,16 @@ const NewDirectMessagesPopup: FC = () => {
         </Button>
       }
     >
-      <UserListManager
-        users={[]}
-        canRemoveMyself
-        noPlaceholder
-        scope="group"
-        autoFocus
-        onUpdate={(ids: string[]) => setNewUserDiscussion(ids)}
-      />
+      <div className="x-margin">
+        <UserListManager
+          users={[]}
+          canRemoveMyself
+          noPlaceholder
+          scope="group"
+          autoFocus
+          onUpdate={(ids: string[]) => setNewUserDiscussion(ids)}
+        />
+      </div>
     </ObjectModal>
   );
 };
