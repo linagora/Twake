@@ -19,8 +19,6 @@ const MessagesComponent = (props: { channelId: string }) => {
 
   const messages = messagesCollection.useWatcher(async () => await messagesCollection.find()) || [];
 
-  console.log(messages);
-
   return (
     <div>
       <div id="message_list">

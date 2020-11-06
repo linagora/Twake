@@ -11,35 +11,36 @@ export default class CollectionStorage {
 
   static async getMongoDb(): Promise<minimongo.MinimongoDb> {
     if (!CollectionStorage.mongoDb) {
-      if (CollectionStorage.mongoDbPromises.length === 0) {
-        if (
-          //@ts-ignore
-          window.indexedDB ||
-          //@ts-ignore
-          window.mozIndexedDB ||
-          //@ts-ignore
-          window.webkitIndexedDB ||
-          //@ts-ignore
-          window.msIndexedDB
-        ) {
-          CollectionStorage.mongoDb = new minimongo.IndexedDb(
-            //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
-            { namespace: 'twake' },
-            () => {
-              CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
-            },
-            () => {
-              CollectionStorage.mongoDb = new minimongo.MemoryDb();
-              CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
-            },
-          );
-        } else {
-          CollectionStorage.mongoDb = new minimongo.MemoryDb();
-          CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
-        }
-      }
       return new Promise(resolve => {
         CollectionStorage.mongoDbPromises.push(resolve);
+        if (CollectionStorage.mongoDbPromises.length === 1) {
+          if (
+            //@ts-ignore
+            window.indexedDB ||
+            //@ts-ignore
+            window.mozIndexedDB ||
+            //@ts-ignore
+            window.webkitIndexedDB ||
+            //@ts-ignore
+            window.msIndexedDB
+          ) {
+            const db = new minimongo.IndexedDb(
+              //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
+              { namespace: 'twake' },
+              () => {
+                CollectionStorage.mongoDb = db;
+                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+              },
+              () => {
+                CollectionStorage.mongoDb = new minimongo.MemoryDb();
+                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+              },
+            );
+          } else {
+            CollectionStorage.mongoDb = new minimongo.MemoryDb();
+            CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+          }
+        }
       });
     }
 
@@ -90,7 +91,7 @@ export default class CollectionStorage {
             console.log('item not found', item);
             resolve();
           } else {
-            console.log(mongoItems);
+            console.log('too many items', mongoItems);
             reject(
               'The remove filter was not precise enough, cannot remove multiple elements at once.',
             );
