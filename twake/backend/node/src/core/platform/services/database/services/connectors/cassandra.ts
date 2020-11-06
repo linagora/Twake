@@ -38,7 +38,7 @@ export class CassandraConnector extends AbstractConnector<
 
   createKeyspace(): Promise<cassandra.types.ResultSet> {
     return this.client.execute(
-      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'SimpleStrategy'} AND durable_writes = true;`,
+      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'SimpleStrategy', replication_factor: '1'} AND durable_writes = true;`,
     );
   }
 
