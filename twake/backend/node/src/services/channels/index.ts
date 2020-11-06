@@ -21,6 +21,7 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
 
     this.service = getService(database);
+    this.service.init && (await this.service.init());
 
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
