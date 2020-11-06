@@ -106,14 +106,6 @@
     white-space: nowrap;
     text-transform: capitalize;
   }
-
-  &.workspaceadd {
-    .image {
-      padding-top: 8px;
-      box-sizing: border-box;
-      line-height: normal;
-    }
-  }
 }
 
 .loading_render {
@@ -135,9 +127,6 @@
       height: 12px;
       font-size: 0px;
       margin-bottom: 28px;
-    }
-    &.workspaceadd {
-      display: none;
     }
   }
 }

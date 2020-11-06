@@ -45,6 +45,17 @@
   position: relative;
   margin: -8px !important;
 
+  &.menu .icon {
+    .letter,
+    .emojione {
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 13px;
+      margin: 0px;
+    }
+  }
+
   .group_notification {
     .notification,
     .badge {
