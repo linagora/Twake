@@ -1,0 +1,124 @@
+/****************************************************************/
+/* _____             _          _____ _                         */
+/*|_   _|           | |        |_   _| |                        */
+/*  | |_      ____ _| | _____    | | | |__   ___ _ __ ___   ___ */
+/*  | \ \ /\ / / _` | |/ / _ \   | | | '_ \ / _ \ '_ ` _ \ / _ \*/
+/*  | |\ V  V / (_| |   <  __/   | | | | | |  __/ | | | | |  __/*/
+/*  \_/ \_/\_/ \__,_|_|\_\___|   \_/ |_| |_|\___|_| |_| |_|\___|*/
+/*                                                              */
+/****************************************************************/
+
+@import '~antd/lib/style/themes/default.less';
+@import '~antd/dist/antd.less';
+
+// --- Twake colors --- //
+@black: #444;
+@black-alpha-2: #18295255;
+@error: #ff5154;
+@primary: #837dff;
+@primary-background: #f3f2ff;
+@primary-hover: #5d58d7;
+@grey-background: #f5f5f7;
+@grey-light: #eeeeee;
+@grey-dark: #92929c;
+@secondary: #182952;
+@success: #18af2c;
+@warning: #faad14;
+@white: #fff;
+
+// --- Twake shadows --- //
+@checkbox-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3);
+
+// --- ant-colors --- //
+@border-color-base: @grey-background; // major border color
+@disabled-bg: fade(@primary-color, 80%); // disable state background
+@disabled-color: @white; // disable state color
+@error-color: @error; // error state color
+@heading-color: @black; // heading text color
+@link-color: @primary-color; // link color
+@primary-color: @primary; // primary color for all components
+@success-color: @success; // success state color
+@warning-color: @warning; // warning state color
+
+// --- sizing --- //
+@border-radius-base: 3px; // major border radius
+@font-size-base: 14px; // major text font size
+
+// --- ant-btn --- //
+@btn-border-width: 0;
+@btn-primary-color: @white;
+
+// --- ant-divider --- //
+.ant-divider-horizontal {
+  margin: 16px 0;
+}
+
+// --- ant-checkbox --- //
+@checkbox-check-bg: @white;
+@checkbox-color: @white;
+@checkbox-check-color: @primary;
+@checkbox-border-width: 4px;
+
+.ant-checkbox-wrapper {
+  font-size: 12px;
+}
+
+.ant-checkbox-inner,
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner,
+.ant-checkbox-checked:hover {
+  border: 0;
+  box-shadow: @checkbox-shadow;
+  border-radius: @checkbox-border-width;
+}
+
+// --- ant-input --- //
+@input-color: @black; // input text color
+@input-border-color: @grey-background; // input border color
+@input-bg: @grey-background; // input background color
+@input-height-base: 40px; // input default size
+@input-hover-border-color: none; // input border color on hover
+@input-placeholder-color: @grey-dark; // placeholder input color
+
+.ant-input,
+.ant-input:focus,
+.ant-input-focused  {
+  border: none;
+  box-shadow: none;
+}
+
+textarea.ant-input,
+.ant-input {
+  resize: none;
+  min-height: 40px !important;
+}
+
+// --- ant-layout-sider ---//
+@layout-body-background: @white;
+@layout-sider-background: @secondary;
+@layout-sider-background-light: @grey-background;
+
+// --- ant-modal-body --- //
+@modal-body-padding: 0;
+
+// --- ant-select --- //
+@select-background: @grey-background;
+@select-border-color: @grey-background;
+@select-dropdown-bg: @white;
+
+.ant-select {
+  width: 172px;
+}
+
+.ant-select-focused .ant-select-selector,
+.ant-select-selector:focus,
+.ant-select-selector:active,
+.ant-select-open .ant-select-selector {
+  border: @grey-background !important;
+  box-shadow: none !important;
+}
+
+.ant-select-arrow {
+  color: @grey-dark;
+}
