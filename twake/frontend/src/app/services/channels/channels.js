@@ -111,6 +111,8 @@ class Channels extends Observable {
       this.currentChannelFrontId = channel.front_id;
       this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
 
+      RouterServices.history.push(RouterServices.generateRouteFromState({ channelId: channel.id }));
+
       this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
 
       LocalStorage.setItem('autoload_channel', {

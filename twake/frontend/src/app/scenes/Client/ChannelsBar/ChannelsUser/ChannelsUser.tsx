@@ -28,7 +28,6 @@ export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
   const url: string = `/companies/${companyId}/workspaces/direct/channels/`;
   const channelsCollection = Collection.get(url, ChannelResource);
-  console.log('channelsCollection', channelsCollection);
 
   const directChannels =
     channelsCollection.useWatcher(async () => await channelsCollection.find({})) || [];

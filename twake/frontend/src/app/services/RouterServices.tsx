@@ -107,7 +107,7 @@ class RouterServices {
   getStateFromRoute(): ClientStateType {
     let match: any = null;
     this.clientSubPathnames
-      .sort((a, b) => a.length - b.length)
+      .sort((a, b) => b.length - a.length)
       .map(route => {
         if (!match) {
           match = this.match(route) as any;

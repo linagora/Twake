@@ -18,6 +18,30 @@ export default class ChannelsApps extends Component {
       i18n: Languages,
     };
 
+    Collections.get('channels').addSource(
+      {
+        http_base_url: 'channels',
+        http_options: {
+          workspace_id: Workspaces.currentWorkspaceId,
+        },
+        websockets: [
+          {
+            uri: 'channels/workspace/' + Workspaces.currentWorkspaceId,
+            options: { type: 'channels/workspace' },
+          },
+          {
+            uri:
+              'channels/workspace_private/' +
+              Workspaces.currentWorkspaceId +
+              '/' +
+              UserService.getCurrentUserId(),
+            options: { type: 'channels/workspace_private' },
+          },
+        ],
+      },
+      'channels_' + Workspaces.currentWorkspaceId,
+    );
+
     Collections.get('channels').addListener(this);
     Collections.get('applications').addListener(this);
     Languages.addListener(this);
@@ -31,13 +55,7 @@ export default class ChannelsApps extends Component {
     if (
       !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
     ) {
-      return (
-        <div className="apps_channels loading_render">
-          <ChannelCategory text="" />
-          <ChannelUI text="" />
-          <ChannelUI text="" />
-        </div>
-      );
+      return <div />;
     }
 
     var workspace_apps_channels = Collections.get('channels').findBy({
@@ -61,10 +79,16 @@ export default class ChannelsApps extends Component {
       workspace_channels_by_app_id[ch.app_id] = ch;
     });
 
-    var workspace_apps = WorkspacesApps.getApps().filter(app => (app.display || {}).app);
+    console.log(workspace_channels_by_app_id);
 
     return (
-      <div className={'apps_channels'}>
+      <div style={{ marginTop: -8 }}>
+        <ChannelCategory
+          refAdd={node => {
+            node = node;
+          }}
+          text={Languages.t('scenes.app.channelsbar.channelsapps.apps')}
+        />
         <div>
           {Object.keys(workspace_channels_by_app_id).map(id => {
             var channel = workspace_channels_by_app_id[id];

@@ -21,6 +21,7 @@ type Props = {
   directMembers?: string[];
   notifications: number;
   options: object;
+  onClick?: (evt: any) => void;
 };
 
 export default class Channel extends React.Component<Props, {}> {
@@ -32,7 +33,10 @@ export default class Channel extends React.Component<Props, {}> {
 
   render() {
     return (
-      <div className="channel fade_in">
+      <div
+        className={'channel fade_in ' + (this.props.selected ? 'selected ' : '')}
+        onClick={this.props.onClick}
+      >
         {this.props.visibility === 'direct' &&
           this.props.directMembers &&
           this.props.directMembers.length === 1 && (
