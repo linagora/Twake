@@ -6,7 +6,7 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
 import Globals from 'services/Globals.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 
 class UploadManager extends Observable {
   constructor() {

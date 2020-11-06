@@ -71,7 +71,7 @@ export default (props: Props) => {
             const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
             const url =
               document.location.origin +
-              RouterServices.generateClientRoute({
+              RouterServices.generateRouteFromState({
                 workspaceId: workspace.id,
                 channelId: props.message.channel_id,
               });

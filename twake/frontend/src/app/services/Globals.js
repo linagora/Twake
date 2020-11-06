@@ -30,6 +30,17 @@ window.getBoundingClientRect = element => {
   };
 };
 
+
+document.body.addEventListener('dragover', e => {
+  e.preventDefault();
+});
+document.body.addEventListener('dragenter', e => {
+  e.preventDefault();
+});
+document.body.addEventListener('drop', e => {
+  e.preventDefault();
+});
+
 class Globals {
   constructor() {
     this.services = {};

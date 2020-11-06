@@ -7,21 +7,25 @@ export default class LocalStorage {
     value = JSON.stringify(value);
     Globals.localStorageSetItem(key, value);
   }
-  static getItem(key, callback) {
-    let value = Globals.localStorageGetItem(key);
+  static async getItem(key, callback) {
+    return new Promise(resolve => {
+      let value = Globals.localStorageGetItem(key);
 
-    if (!value) {
+      if (!value) {
+        if (callback) callback(value);
+        resolve(value);
+        return;
+      }
+      try {
+        value = JSON.parse(value);
+      } catch (e) {
+        value = null;
+        console.log(e);
+      }
       if (callback) callback(value);
-      return;
-    }
-    try {
-      value = JSON.parse(value);
-    } catch (e) {
-      value = null;
-      console.log(e);
-    }
-    if (callback) callback(value);
-    return value;
+      resolve(value);
+      return value;
+    });
   }
   static clear() {
     Globals.localStorageClear();

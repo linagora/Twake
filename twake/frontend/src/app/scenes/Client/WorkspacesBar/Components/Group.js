@@ -110,11 +110,8 @@ export default class Group extends Component {
     MenusManager.openMenu(this.change_group_menu, { x: pos.x, y: pos.y - 10 }, 'top');
   }
   render() {
-    if (!this.props.group) {
-      return '';
-    }
-
-    this.group = Collections.get('groups').known_objects_by_id[this.props.group.id];
+    
+    this.group = Collections.get('groups').find(this.props.selected);
     if (!this.group) {
       return '';
     }

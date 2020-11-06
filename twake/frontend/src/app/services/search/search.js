@@ -6,7 +6,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ChannelsService from 'services/channels/channels.js';
 import UserService from 'services/user/user.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Strings from 'services/utils/strings.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';

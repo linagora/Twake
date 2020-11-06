@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 import Websocket from 'services/websocket.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
 import WindowState from 'services/utils/window.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -63,91 +63,67 @@ class Login extends Observable {
     }
     this.reset();
 
-    Api.get('core/version', res => {
-      if (!res.data) {
-        res.data = {};
-      }
-      this.server_infos = res.data;
-      this.server_infos.branding = this.server_infos.branding ? this.server_infos.branding : {};
-      this.server_infos_loaded = true;
-      Websocket.useOldMode(false);
-      Websocket.setPublicKey(this.server_infos.websocket_public_key);
+    var logout =
+      WindowState.findGetParameter('logout') !== undefined
+        ? WindowState.findGetParameter('logout') === '1'
+        : false;
+    if (logout) {
+      this.logout(true);
+      return RouterServices.history.push(RouterServices.pathnames.LOGIN);
+    }
 
-      if (this.server_infos.ready !== true && this.server_infos.ready !== undefined) {
-        this.state = 'logged_out';
-        RouterServices.history.push(RouterServices.pathnames.SETUP, {
-          ...this.server_infos.ready,
-        });
+    var subscribe =
+      WindowState.findGetParameter('subscribe') !== undefined
+        ? WindowState.findGetParameter('subscribe') === '1'
+        : false;
+    if (subscribe) {
+      this.firstInit = true;
+      this.setPage('signin');
+      this.emailInit = WindowState.findGetParameter('mail') || '';
+      this.notify();
+      return;
+    }
+    var verifymail =
+      WindowState.findGetParameter('verify_mail') !== undefined
+        ? WindowState.findGetParameter('verify_mail') === '1'
+        : false;
+    if (verifymail) {
+      this.firstInit = true;
+      this.setPage('verify_mail');
+      this.notify();
+      return;
+    }
 
-        this.notify();
-        setTimeout(() => {
-          this.init();
-        }, 1000);
-      } else {
-        var logout =
-          WindowState.findGetParameter('logout') !== undefined
-            ? WindowState.findGetParameter('logout') === '1'
-            : false;
-        if (logout) {
-          this.logout(true);
-          return RouterServices.history.push(RouterServices.pathnames.LOGIN);
-        }
-
-        var subscribe =
-          WindowState.findGetParameter('subscribe') !== undefined
-            ? WindowState.findGetParameter('subscribe') === '1'
-            : false;
-        if (subscribe) {
-          this.firstInit = true;
-          this.setPage('signin');
-          this.emailInit = WindowState.findGetParameter('mail') || '';
-          this.notify();
-          return;
-        }
-        var verifymail =
-          WindowState.findGetParameter('verify_mail') !== undefined
-            ? WindowState.findGetParameter('verify_mail') === '1'
-            : false;
-        if (verifymail) {
-          this.firstInit = true;
-          this.setPage('verify_mail');
-          this.notify();
-          return;
-        }
-
-        var external_login_result =
-          WindowState.findGetParameter('external_login') !== undefined
-            ? WindowState.findGetParameter('external_login')
-            : false;
+    var external_login_result =
+      WindowState.findGetParameter('external_login') !== undefined
+        ? WindowState.findGetParameter('external_login')
+        : false;
+    try {
+      external_login_result = JSON.parse(external_login_result);
+    } catch (err) {
+      console.error(err);
+      external_login_result = false;
+    }
+    if (external_login_result) {
+      if (external_login_result.token && external_login_result.message == 'success') {
+        //Login with token
         try {
-          external_login_result = JSON.parse(external_login_result);
+          const token = JSON.parse(external_login_result.token);
+          this.login(token.username, token.token, true, true);
+          this.firstInit = true;
+          return;
         } catch (err) {
           console.error(err);
-          external_login_result = false;
+          this.external_login_error = 'Unknown error';
         }
-        if (external_login_result) {
-          if (external_login_result.token && external_login_result.message == 'success') {
-            //Login with token
-            try {
-              const token = JSON.parse(external_login_result.token);
-              this.login(token.username, token.token, true, true);
-              this.firstInit = true;
-              return;
-            } catch (err) {
-              console.error(err);
-              this.external_login_error = 'Unknown error';
-            }
-          } else {
-            this.external_login_error =
-              (external_login_result.message || {}).error || 'Unknown error';
-          }
-          this.firstInit = true;
-          this.notify();
-        }
-
-        this.updateUser();
+      } else {
+        this.external_login_error = (external_login_result.message || {}).error || 'Unknown error';
       }
-    });
+      this.firstInit = true;
+      this.notify();
+    }
+
+    this.updateUser();
   }
 
   updateUser() {
@@ -175,7 +151,7 @@ class Login extends Observable {
         that.notify();
 
         WindowState.setTitle();
-        RouterServices.history.push(RouterServices.pathnames.LOGIN);
+        RouterServices.history.push(RouterServices.addRedirection(RouterServices.pathnames.LOGIN));
       } else {
         that.startApp(res.data);
       }
@@ -303,21 +279,18 @@ class Login extends Observable {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
 
     this.currentUserId = user.id;
-    this.url = '';
     Collections.get('users').updateObject(user);
     user.workspaces.forEach(workspace => {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
-      this.url = RouterServices.generateClientRoute({ workspaceId: workspace.id });
     });
-    Workspaces.initSelection();
     Notifications.start();
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
     this.state = 'app';
     this.notify();
-    RouterServices.history.push(this.url);
+    RouterServices.history.push(RouterServices.generateRouteFromState({}));
   }
 
   /**

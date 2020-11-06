@@ -3,10 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import LoginService from 'services/login/login.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import PopupManager from 'services/popupManager/popupManager.js';
-import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import InitService from 'services/InitService';
 
 import FooterUI from 'components/Leftbar/Footer/Footer.js';
 
@@ -35,20 +32,11 @@ export default class Footer extends Component {
 
     return (
       <FooterUI
-        planName={group.plan}
-        onClickPlan={() => {
-          if (false && WorkspaceUserRights.hasGroupPrivilege('MANAGE_PRICINGS')) {
-            PopupManager.open(
-              <WorkspaceParameter initial_page={5} />,
-              true,
-              'workspace_parameters',
-            );
-          }
-        }}
+        planName={group?.plan}
         onClickHelp={
-          LoginService.server_infos.help_link &&
+          InitService.server_infos.help_link &&
           (() => {
-            window.open(LoginService.server_infos.help_link);
+            window.open(InitService.server_infos.help_link);
           })
         }
       />

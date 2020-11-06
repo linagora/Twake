@@ -27,7 +27,7 @@
 @white: #fff;
 
 // --- Twake shadows --- //
-@checkbox-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3);
+@checkbox-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
 
 // --- ant-colors --- //
 @border-color-base: @grey-background; // major border color
@@ -44,7 +44,7 @@
 @border-radius-base: 3px; // major border radius
 @font-size-base: 14px; // major text font size
 
-// --- ant-btn --- //
+// --- ant-btn --
 @btn-border-width: 0;
 @btn-primary-color: @white;
 
@@ -57,7 +57,7 @@
 @checkbox-check-bg: @white;
 @checkbox-color: @white;
 @checkbox-check-color: @primary;
-@checkbox-border-width: 4px;
+@checkbox-shadow-unselected: 0px 0px 0px 1px rgba(0, 0, 0, 0.05);
 
 .ant-checkbox-wrapper {
   font-size: 12px;
@@ -69,8 +69,13 @@
 .ant-checkbox-input:focus + .ant-checkbox-inner,
 .ant-checkbox-checked:hover {
   border: 0;
+  box-shadow: @checkbox-shadow-unselected;
+  border-radius: @border-radius-base;
+  transition: box-shadow 0.2s;
+}
+
+.ant-checkbox-checked {
   box-shadow: @checkbox-shadow;
-  border-radius: @checkbox-border-width;
 }
 
 // --- ant-input --- //
@@ -88,10 +93,17 @@
   box-shadow: none;
 }
 
+.ant-input:hover,
+.ant-input:focus,
+.ant-input-focused  {
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.03) inset;
+}
+
 textarea.ant-input,
 .ant-input {
   resize: none;
   min-height: 40px !important;
+  padding: 9px 12px;
 }
 
 // --- ant-layout-sider ---//
@@ -121,4 +133,25 @@ textarea.ant-input,
 
 .ant-select-arrow {
   color: @grey-dark;
+}
+
+// --- ant-notifications --- //
+
+@notification-bg: @component-background;
+@notification-padding-vertical: 8px;
+@notification-padding-horizontal: 12px;
+
+.ant-notification-hook-holder,
+.ant-notification-notice {
+  width: 260px;
+}
+
+.ant-notification-notice-close {
+  color: @grey-dark;
+  top: 12px;
+  right: 12px;
+}
+
+.ant-notification-notice-message {
+  margin-bottom: 0px;
 }

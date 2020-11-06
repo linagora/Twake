@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import User from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import groupService from 'services/workspaces/groups.js';

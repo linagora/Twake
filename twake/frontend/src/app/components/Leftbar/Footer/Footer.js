@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Footer.scss';
 
 import Icon from 'components/Icon/Icon.js';
-import LoginService from 'services/login/login.js';
+import InitService from 'services/InitService';
 import Languages from 'services/languages/languages.js';
 import Globals from 'services/Globals.js';
 
@@ -11,7 +11,7 @@ export default class Footer extends React.Component {
   constructor(props) {
     super();
 
-    this.onpremise = !!((LoginService.server_infos || {}).branding || {}).name;
+    this.onpremise = !!((InitService.server_infos || {}).branding || {}).name;
   }
   componentDidMount() {
     try {
@@ -54,7 +54,7 @@ export default class Footer extends React.Component {
           )}
           {this.onpremise && (
             <div className={'plan'}>
-              {((LoginService.server_infos || {}).branding || {}).name} Server
+              {((InitService.server_infos || {}).branding || {}).name} Server
             </div>
           )}
         </div>

@@ -3,6 +3,8 @@ import RouterServices from 'services/RouterServices';
 import 'app/ui.scss';
 
 export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+  static lastError: any = null;
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -17,12 +19,13 @@ export default class ErrorBoundary extends React.Component<{}, { hasError: boole
   }
 
   componentDidCatch(error: any, errorInfo: any) {
-    RouterServices.history.push(RouterServices.pathnames.ERROR, {
+    ErrorBoundary.lastError = {
       error: {
         name: error,
         info: errorInfo.componentStack,
       },
-    });
+    };
+    RouterServices.history.replace(RouterServices.addRedirection(RouterServices.pathnames.ERROR));
   }
 
   render() {

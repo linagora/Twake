@@ -15,6 +15,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
 import Languages from 'services/languages/languages.js';
+import InitService from 'services/InitService';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -30,7 +31,7 @@ export default class SearchPopup extends React.Component {
       filterType: Search.type || false,
     };
 
-    this.search_enabled = (LoginService.server_infos || {}).elastic_search_available !== false;
+    this.search_enabled = (InitService.server_infos || {}).elastic_search_available !== false;
   }
   componentDidMount() {
     if (!this.search_enabled) {

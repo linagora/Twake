@@ -9,19 +9,18 @@
 .channels_view {
   background: $grey_background;
   width: 220px;
-  padding-top: 12px;
-  display: flex;
-  flex-direction: column;
+  padding-top: 16px;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+  }
 
   .channel_small_text {
     font-size: 12px;
     margin: 0 16px;
     color: $grey_dark;
     font-weight: 500;
-  }
-
-  .apps_channels {
-    padding-top: 8px;
   }
 
   .current_group {

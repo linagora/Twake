@@ -177,7 +177,7 @@ export default class MenusBodyLayer extends React.Component {
                 <div
                   ref={node => this.fixMenuPosition(node, item, i)}
                   style={{
-                    zIndex: 10,
+                    zIndex: 1050,
                     position: 'absolute',
                     transform: item.positionType == 'bottom' ? '' : 'translateY(-50%)',
                     left: item.position.x,

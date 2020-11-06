@@ -1,5 +1,5 @@
 import React from 'react';
-import api from 'services/api.js';
+import api from 'services/Api';
 import ws from 'services/websocket.js';
 import CryptoJS from 'crypto-js';
 import sha256 from 'crypto-js/sha256';

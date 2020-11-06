@@ -10,6 +10,8 @@
   width: 60px;
   min-width: 60px;
   overflow: hidden;
+  padding-bottom: 8px;
+  transition: width 0.2s;
   div {
     display: flex;
     flex-direction: column;
@@ -42,6 +44,17 @@
 .group_in_selector {
   position: relative;
   margin: -8px !important;
+
+  &.menu .icon {
+    .letter,
+    .emojione {
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 13px;
+      margin: 0px;
+    }
+  }
 
   .group_notification {
     .notification,

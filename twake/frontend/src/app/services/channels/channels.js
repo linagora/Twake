@@ -1,7 +1,7 @@
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'services/user/current_user.js';
 import UserService from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LocalStorage from 'services/localStorage.js';
@@ -111,6 +111,8 @@ class Channels extends Observable {
       this.currentChannelFrontId = channel.front_id;
       this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
 
+      RouterServices.history.push(RouterServices.generateRouteFromState({ channelId: channel.id }));
+
       this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
 
       LocalStorage.setItem('autoload_channel', {
@@ -125,6 +127,7 @@ class Channels extends Observable {
   }
 
   initSelection() {
+    return;
     var currentWorkspaceId = Workspaces.currentWorkspaceId;
     var currentGroupId = Workspaces.currentGroupId;
 
@@ -413,8 +416,9 @@ class Channels extends Observable {
   }
 
   updateURL(channel) {
+    return;
     const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-    const url = RouterServices.generateClientRoute({
+    const url = RouterServices.generateRouteFromState({
       workspaceId: workspace.id,
       channelId: channel.id || '',
     });

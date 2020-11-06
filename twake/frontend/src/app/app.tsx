@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
-import LoginService from 'services/login/login.js';
-import Integration from 'scenes/Integration/integration.js';
+import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterServices';
 import { Switch, Route } from 'react-router-dom';
 import { Router } from 'react-router';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import 'app/ui.scss';
+import InitService from './services/InitService';
 import 'app/theme.less';
 
 export default () => {
   useEffect(() => {
-    LoginService.init();
+    InitService.init();
   }, []);
 
   return (
@@ -36,6 +36,13 @@ export default () => {
               />
             );
           })}
+          <Route
+            path="/"
+            component={() => {
+              RouterServices.history.replace(RouterServices.pathnames.LOGIN);
+              return <div />;
+            }}
+          />
         </Switch>
       </Router>
     </Integration>

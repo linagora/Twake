@@ -1,6 +1,6 @@
 import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';
@@ -10,8 +10,27 @@ import ElectronService from 'services/electron/electron.js';
 import emojione from 'emojione';
 import popupManager from 'services/popupManager/popupManager.js';
 import windowState from 'services/utils/window.js';
-
+import { notification } from 'antd';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import { X } from 'react-feather';
 import Globals from 'services/Globals.js';
+
+const openNotification = (n, callback) => {
+  notification.open({
+    message: PseudoMarkdownCompiler.compileToSimpleHTML(
+      PseudoMarkdownCompiler.compileToJSON(n.title),
+    ),
+    description: PseudoMarkdownCompiler.compileToSimpleHTML(
+      PseudoMarkdownCompiler.compileToJSON(
+        (n.text || '').substr(0, 120) + ((n.text || '').length > 120 ? '...' : ''),
+      ),
+    ),
+    onClick: () => {
+      callback();
+    },
+    closeIcon: <X size={16} />,
+  });
+};
 
 class Notifications extends Observable {
   constructor() {
@@ -316,15 +335,14 @@ class Notifications extends Observable {
     } catch (e) {}
 
     var notification = notification;
-    this.last_notification_callback = () => {
+    const callback = () => {
       popupManager.closeAll();
       if (notification.workspace_id) {
         WorkspacesService.select(Collections.get('workspaces').find(notification.workspace_id));
       }
       ChannelsService.select(Collections.get('channels').find(notification.channel_id));
     };
-    this.last_notification = notification;
-    this.notify();
+    openNotification(notification, callback);
 
     if ('Notification' in window && Globals.window.document.hasFocus) {
       if (
@@ -334,9 +352,8 @@ class Notifications extends Observable {
         var n = new Notification(emojione.shortnameToUnicode(notification.title), {
           body: emojione.shortnameToUnicode(notification.text),
         });
-        var that = this;
         n.onclick = function () {
-          that.last_notification_callback();
+          callback();
           Globals.window.focus();
           this.close();
         };

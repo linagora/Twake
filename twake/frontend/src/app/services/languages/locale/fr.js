@@ -1667,7 +1667,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Identifiant de fenêtre minimum : ',
   'scenes.apps.messages.messageslist.no_message_alert': 'Impossible de trouver ce message.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Nombre de messages visibles : ',
-  'scenes.error_on_twake': 'Vous avez trouvé une erreur sur la plateforme Twake !',
+  'scenes.error_on_twake': '“Houston nous avons un problème“',
   'scenes.help_us':
     'Cependant, si vous souhaitez nous aider à réparer cette erreur, envoyez nous le message ci-dessous :',
   'scenes.login.loginview.beta_warning':

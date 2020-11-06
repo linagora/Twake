@@ -16,10 +16,8 @@ import OldCollections from 'services/Depreciated/Collections/Collections';
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
 
-  // TODO find a better way to get company id
-  const params: any = useParams();
-  const workspaceId = RouterServices.translateToUUID(params.workspaceId);
-  const company_id = OldCollections.get('workspaces').find(workspaceId)?.group?.id;
+  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+  const company_id = companyId;
 
   const collectionPath: string = `companies/${company_id}/workspaces/direct/channels/`;
   const ChannelsCollections = Collections.get(collectionPath);
