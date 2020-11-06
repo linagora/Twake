@@ -79,8 +79,6 @@ export default class ChannelsApps extends Component {
       workspace_channels_by_app_id[ch.app_id] = ch;
     });
 
-    console.log(workspace_channels_by_app_id);
-
     return (
       <div style={{ marginTop: -8 }}>
         <ChannelCategory

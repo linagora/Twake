@@ -12,12 +12,11 @@ import popupManager from 'services/popupManager/popupManager.js';
 import windowState from 'services/utils/window.js';
 import { notification } from 'antd';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
-
+import { X } from 'react-feather';
 import Globals from 'services/Globals.js';
 
 const openNotification = (n, callback) => {
   notification.open({
-    duration: 100000,
     message: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(n.title),
     ),
@@ -29,6 +28,7 @@ const openNotification = (n, callback) => {
     onClick: () => {
       callback();
     },
+    closeIcon: <X size={16} />,
   });
 };
 
