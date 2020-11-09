@@ -7,9 +7,10 @@ import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
 
-import { useParams } from 'react-router-dom';
 import RouterServices from 'services/RouterServices';
 import OldCollections from 'services/Depreciated/Collections/Collections';
+
+import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
 
 type Props = {
   title: string;
@@ -59,7 +60,17 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
             float: 'right',
           }}
           disabled={!disabled}
-          onClick={() => upsertChannel()}
+          onClick={() => {
+            return ModalManager.open(
+              <ChannelMembersEditor onClose={() => ModalManager.closeAll()} />,
+              {
+                position: 'center',
+                size: { width: '600px', minHeight: '329px' },
+              },
+            );
+
+            /*upsertChannel()*/
+          }}
         >
           {Languages.t('general.create', 'Create')}
         </Button>
