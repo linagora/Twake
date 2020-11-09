@@ -19,6 +19,7 @@ class Parameters extends \Common\Configuration
               "server_name" => "http://localhost:8000/",
               "internal_server_name" => "http://nginx/",
               "secret" => "",
+              "jwt_secret" => "supersecret"
             ],
             "websocket" => [
                 "host" => "websockets",

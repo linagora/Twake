@@ -12,6 +12,7 @@ use Twake\Users\Entity\Device;
 use Twake\Users\Entity\ExternalUserRepository;
 use Twake\Users\Entity\Mail;
 use Twake\Users\Entity\VerificationNumberMail;
+use \Firebase\JWT\JWT;
 
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
@@ -253,6 +254,47 @@ class User
         }
 
         return false;
+
+    }
+
+    public function generateJWT($user, $workspaces = []){
+
+        $key = $this->app->getContainer()->getParameter("env.jwt_secret");
+
+        $expiration = date("U") + 60 * 60; //1 hour
+        $refreshExpiration = date("U") + 60 * 60 * 24 * 31; //1 month
+
+        $orgs = [];
+        if($workspaces){
+            foreach($workspaces as $workspace){
+                $gid = $workspace["group"]["id"];
+                $wid = $workspace["id"];
+                if(!isset($orgs[$gid])){
+                    $orgs[$gid] = [
+                        "role" => "",
+                        "wks" => []
+                    ];
+                }
+                $orgs[$gid]["wks"][$wid] = [
+                    "adm" => $workspace["_user_is_admin"]
+                ];
+            }
+        }
+
+        $payload = [
+            "exp" => $expiration,
+            "refresh_exp" => $refreshExpiration,
+            "usr" => $user->getId(),
+            "org" => $orgs
+        ];
+        $jwt = JWT::encode($payload, $key);
+
+        return [
+            "expiration" => $expiration,
+            "refresh_exiration" => $refreshExpiration,
+            "value" => $jwt,
+            "type" => "Bearer"
+        ];
 
     }
 
@@ -1140,5 +1182,7 @@ class User
             $this->em->remove($r);
         }
     }
+
+    
 
 }
