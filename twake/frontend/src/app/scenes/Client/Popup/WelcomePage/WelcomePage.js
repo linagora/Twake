@@ -99,6 +99,7 @@ export default class WelcomePage extends Component {
         !this.state.group.currentGroupId ||
         !Collections.get('groups').find(this.state.group.currentGroupId)
       ) {
+        popupManager.closeAll();
         return '';
       }
       return (
