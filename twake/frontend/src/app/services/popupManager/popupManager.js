@@ -14,14 +14,14 @@ class PopupService extends Observable {
     this.component = []; // element as {component,canClose}
     this.popupStates = {};
   }
-  open(component, canClose, clearState) {
+  open(component, canClose, key) {
+    if (this.component[this.component.length - 1]?.key === key) {
+      return;
+    }
     WindowService.setTitle();
     MenusManager.closeMenu();
-    if (clearState) {
-      delete this.popupStates[clearState];
-    }
-    this.component.push({ component: component, canClose: canClose !== false });
-    console.log('did open and will notify');
+
+    this.component.push({ component: component, key: key, canClose: canClose !== false });
     this.notify();
   }
   isOpen() {

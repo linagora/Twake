@@ -21,7 +21,7 @@ import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import UploadViewer from 'components/Uploads/UploadViewer.js';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
-import MediumPopupComponent from 'app/components/Modal/ModalComponent';
+import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
@@ -90,7 +90,7 @@ export default (): JSX.Element => {
       <UploadViewer />
       <ConfigBodyLayer />
       <Viewer />
-      <MediumPopupComponent />
+      <ModalComponent />
       <SearchPopup />
       <ConnectionIndicator />
       {alertService.isOpen() && <AlertLayout />}

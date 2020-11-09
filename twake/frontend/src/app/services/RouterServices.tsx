@@ -134,6 +134,7 @@ class RouterServices {
     //Retrocompatibility with old code
     state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id;
     Workspaces.currentWorkspaceId = state.workspaceId;
+    Workspaces.currentGroupId = state.companyId;
     Groups.currentGroupId = state.companyId;
     Channels.currentChannelFrontId = Collections.get('channels').find(state.channelId)?.front_id;
 
