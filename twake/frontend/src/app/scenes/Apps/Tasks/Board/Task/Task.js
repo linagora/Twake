@@ -10,7 +10,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import TaskDetails from './TaskDetails.js';
 import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 

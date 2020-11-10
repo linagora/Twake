@@ -25,7 +25,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import Board from './Board/Board.js';
 
 import './Tasks.scss';
-import UserListManager from 'app/components/UserListManager/UserListManager.js';
+import UserListManager from 'app/components/UserListManager/UserListManager';
 
 export default class Tasks extends Component {
   constructor(props) {

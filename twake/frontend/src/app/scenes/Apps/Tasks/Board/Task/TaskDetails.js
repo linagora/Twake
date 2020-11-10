@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import Menu from 'components/Menus/Menu.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';

@@ -105,7 +105,7 @@ export class ObjectModal extends Component {
           </div>
         )}
 
-        {this.props.footer && <div class="separator" style={{ marginTop: 0 }} />}
+        {this.props.footer && <div className="separator" style={{ marginTop: 0 }} />}
         {this.props.footer && (
           <div className="footer bottom-margin">
             <Divider />

@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Switch from 'components/Inputs/Switch.js';
 
 export default class ChannelUserAdd extends Component {

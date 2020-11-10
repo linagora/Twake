@@ -1,4 +1,4 @@
-import React, { FC /*useState*/ } from 'react';
+import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
@@ -14,7 +14,7 @@ type Props = {
 const { Title } = Typography;
 
 const ChannelMembersEditor: FC<Props> = props => {
-  //const [MemberList, setMemberList] = useState<string[]>();
+  const [MemberList, setMemberList] = useState<string[]>([]);
   return (
     <ObjectModal
       title={
@@ -54,7 +54,7 @@ const ChannelMembersEditor: FC<Props> = props => {
           noPlaceholder
           scope="group"
           autoFocus
-          //onUpdate={(array: string[]) => setMemberList(array)}
+          onUpdate={(array: string[]) => setMemberList(array)}
         />
       </div>
     </ObjectModal>
