@@ -10,7 +10,7 @@ import { ChannelType } from 'app/models/Channel';
 
 type Props = {
   workspaceTitle: string;
-  channelsApp: { data: ChannelType }[];
+  channels: { data: ChannelType }[];
 };
 
 export default class WorkspaceChannels extends React.Component<Props, {}> {
@@ -35,14 +35,14 @@ export default class WorkspaceChannels extends React.Component<Props, {}> {
   render() {
     let channels;
 
-    if (this.props.channelsApp.length === 0) {
+    if (this.props.channels.length === 0) {
       channels = (
         <div className="channel_small_text">
           {Languages.t('scenes.app.channelsbar.channelsworkspace.no_channel')}
         </div>
       );
     } else {
-      channels = this.props.channelsApp.map(({ data }) => {
+      channels = this.props.channels.map(({ data }) => {
         return (
           <ChannelUI
             key={data.id}
