@@ -34,6 +34,10 @@ class JWTStorage {
     this.jwtData.refresh_expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
   }
 
+  getJWT() {
+    return this.jwtData.value;
+  }
+
   getAutorizationHeader() {
     return this.jwtData.type + ' ' + this.jwtData.value;
   }
@@ -47,8 +51,7 @@ class JWTStorage {
   }
 
   authenticateCall(callback: () => void) {
-    if (this.isAccessExpired() && this.jwtData.value) {
-      this.jwtData.value = '';
+    if (this.isAccessExpired()) {
       LoginService.updateUser(callback);
     } else {
       callback();

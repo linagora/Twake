@@ -284,7 +284,7 @@ class User
         $payload = [
             "exp" => $expiration,
             "refresh_exp" => $refreshExpiration,
-            "updated_at" => date("U"),
+            "updated_at" => intval(date("U")),
             "sub" => $user->getId(),
             "org" => $orgs
         ];

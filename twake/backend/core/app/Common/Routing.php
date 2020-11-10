@@ -67,7 +67,7 @@ class Routing
         });
     }
 
-    //Allow any origin and set cookies in json response
+    //Allow any origin
     private function beforeRender(Response $response)
     {
 
@@ -82,20 +82,6 @@ class Routing
         $response->setHeader('x-decompressed-content-length: ' . $length, true);
 
         $content = $response->getContent();
-
-        if (is_array($content)) {
-            $cookies = [];
-            foreach ($response->headers->all() as $header) {
-                if (strpos("Set-Cookie: ", $header) == 0) {
-                    $ex = explode("Set-Cookie: ", $header);
-                    if (count($ex) == 2) {
-                        $cookies[] = $ex[1];
-                    }
-                }
-            }
-            $content["_cookies"] = $cookies;
-            $response->setContent($content);
-        }
 
         return $response;
     }

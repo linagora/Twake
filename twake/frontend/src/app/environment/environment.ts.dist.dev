@@ -5,5 +5,6 @@ export default {
   mixpanel_id: false,
   front_root_url: 'http://localhost:3000',
   api_root_url: 'http://localhost:8000',
+  socketio_url: 'ws://localhost:8000',
   websocket_url: 'ws://localhost:8000'
 };

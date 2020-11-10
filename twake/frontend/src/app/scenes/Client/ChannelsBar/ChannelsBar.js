@@ -11,16 +11,18 @@ import RouterServices from 'services/RouterServices';
 import './ChannelsBar.scss';
 
 export default () => {
-  const { workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
 
   return (
     <Layout.Sider theme="light" width={220} className="channels_view fade_in">
       <CurrentUser />
-      <PerfectScrollbar component="div">
-        <ChannelsApps key={workspaceId} />
-        <Workspace />
-        <ChannelsUser />
-      </PerfectScrollbar>
+      {!!companyId && !!workspaceId && (
+        <PerfectScrollbar component="div">
+          <ChannelsApps key={workspaceId} />
+          <Workspace />
+          <ChannelsUser />
+        </PerfectScrollbar>
+      )}
       <Tutorial />
       <Footer />
     </Layout.Sider>

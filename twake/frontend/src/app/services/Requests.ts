@@ -14,8 +14,9 @@ class Requests {
     route: string,
     data: string,
     callback: (result: string | any) => void,
+    options: { disableJWTAuthentication?: boolean } = {},
   ) {
-    JWTStorage.authenticateCall(() => {
+    if (options?.disableJWTAuthentication) {
       fetch(route, {
         credentials: 'same-origin',
         method: type,
@@ -39,6 +40,12 @@ class Requests {
             callback(JSON.stringify({ errors: [err] }));
           }
         });
+      return;
+    }
+    JWTStorage.authenticateCall(() => {
+      options = options || {};
+      options.disableJWTAuthentication = true;
+      this.request(type, route, data, callback, options);
     });
   }
 

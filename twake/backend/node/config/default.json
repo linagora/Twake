@@ -30,15 +30,13 @@
     }
   },
   "database": {
-    "type": "mongodb",
+    "type": "cassandra",
     "mongodb": {
       "uri": "mongodb://localhost:27017",
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": [
-        "localhost:9042"
-      ],
+      "contactPoints": ["scylladb:9042"],
       "localDataCenter": "datacenter1",
       "keyspace": "twake"
     }

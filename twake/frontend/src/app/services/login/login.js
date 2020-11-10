@@ -3,7 +3,8 @@ import Websocket from 'services/websocket.js';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
 import WindowState from 'services/utils/window.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
 import Notifications from 'services/user/notifications.js';
@@ -130,38 +131,46 @@ class Login extends Observable {
 
   updateUser(callback) {
     var that = this;
-    Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
-      that.firstInit = true;
-      if (res.errors.length > 0) {
-        if (
-          (res.errors.indexOf('redirect_to_openid') >= 0 ||
-            ((that.server_infos.auth || {}).openid || {}).use) &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/openid');
-          return;
-        } else if (
-          (res.errors.indexOf('redirect_to_cas') >= 0 ||
-            ((that.server_infos.auth || {}).cas || {}).use) &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/cas/login');
-          return;
+    Api.post(
+      'users/current/get',
+      { timezone: new Date().getTimezoneOffset() },
+      function (res) {
+        that.firstInit = true;
+        if (res.errors.length > 0) {
+          if (
+            (res.errors.indexOf('redirect_to_openid') >= 0 ||
+              ((that.server_infos.auth || {}).openid || {}).use) &&
+            !that.external_login_error
+          ) {
+            document.location = Api.route('users/openid');
+            return;
+          } else if (
+            (res.errors.indexOf('redirect_to_cas') >= 0 ||
+              ((that.server_infos.auth || {}).cas || {}).use) &&
+            !that.external_login_error
+          ) {
+            document.location = Api.route('users/cas/login');
+            return;
+          }
+
+          that.state = 'logged_out';
+          that.notify();
+
+          WindowState.setTitle();
+          RouterServices.history.push(
+            RouterServices.addRedirection(RouterServices.pathnames.LOGIN),
+          );
+        } else {
+          that.startApp(res.data);
         }
 
-        that.state = 'logged_out';
-        that.notify();
-
-        WindowState.setTitle();
-        RouterServices.history.push(RouterServices.addRedirection(RouterServices.pathnames.LOGIN));
-      } else {
-        that.startApp(res.data);
-      }
-
-      if (callback) {
-        callback();
-      }
-    });
+        if (callback) {
+          callback();
+        }
+      },
+      false,
+      { disableJWTAuthentication: true },
+    );
   }
 
   setPage(page) {
@@ -229,7 +238,7 @@ class Login extends Observable {
 
     if (Globals.isReactNative) {
       Globals.clearCookies();
-      Collections.clearAll();
+      DepreciatedCollections.clearAll();
       this.state = '';
       this.notify();
     } else {
@@ -285,7 +294,7 @@ class Login extends Observable {
       Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
 
     this.currentUserId = user.id;
-    Collections.get('users').updateObject(user);
+    DepreciatedCollections.get('users').updateObject(user);
     user.workspaces.forEach(workspace => {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
@@ -294,9 +303,31 @@ class Login extends Observable {
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
+    this.configurateCollections();
+
     this.state = 'app';
     this.notify();
     RouterServices.history.push(RouterServices.generateRouteFromState({}));
+  }
+
+  configurateCollections() {
+    Collections.setOptions({
+      transport: {
+        socket: {
+          url: Globals.window.socketio_url,
+          authenticate: {
+            token: JWTStorage.getJWT(),
+          },
+        },
+        rest: {
+          url: Globals.window.api_root_url + '/internal/services',
+          headers: {
+            Authorization: JWTStorage.getAutorizationHeader(),
+          },
+        },
+      },
+    });
+    Collections.connect();
   }
 
   /**
@@ -521,9 +552,9 @@ class Login extends Observable {
         that.error_code = true;
         that.notify();
       } else {
-        var user = Collections.get('users').find(that.currentUserId);
+        var user = DepreciatedCollections.get('users').find(that.currentUserId);
         user.mails.push({ email: mail, main: false, id: res.data.idMail });
-        Collections.get('users').updateObject(user);
+        DepreciatedCollections.get('users').updateObject(user);
         that.error_code = false;
         cb(thot);
         that.notify();

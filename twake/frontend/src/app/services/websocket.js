@@ -118,7 +118,6 @@ class Websocket extends Observable {
           this.alive_connected = true;
         },
         false,
-        5000,
       );
       this.didFocusedLastMinute = Globals.isReactNative || Globals.window.document.hasFocus();
     }
@@ -327,7 +326,6 @@ class Websocket extends Observable {
         }
       },
       false,
-      5000,
     );
   }
 

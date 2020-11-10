@@ -47,7 +47,6 @@ class GroupedQueryApi {
           }
         },
         false,
-        0,
       );
     }, 50);
   }
@@ -78,7 +77,7 @@ export default class Api {
     data: any,
     callback: any = false,
     raw: boolean = false,
-    timeout: number = 0,
+    options: { disableJWTAuthentication?: boolean } = {},
   ) {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route == 'core/collections/init') {
@@ -91,22 +90,28 @@ export default class Api {
         route = Globals.window.api_root_url + '/ajax/' + route;
       }
 
-      Requests.request('post', route, JSON.stringify(data), (resp: any) => {
-        if (raw) {
-          resolve(resp);
-          if (callback) callback(resp);
-          return;
-        }
-        let response: any = '';
-        try {
-          response = JSON.parse(resp);
-        } catch (e) {
-          console.log('Server internal error, bad JSON.');
-          response = { errors: 'bad_json' };
-        }
-        resolve(response);
-        if (callback) callback(response);
-      });
+      Requests.request(
+        'post',
+        route,
+        JSON.stringify(data),
+        (resp: any) => {
+          if (raw) {
+            resolve(resp);
+            if (callback) callback(resp);
+            return;
+          }
+          let response: any = '';
+          try {
+            response = JSON.parse(resp);
+          } catch (e) {
+            console.log('Server internal error, bad JSON.');
+            response = { errors: 'bad_json' };
+          }
+          resolve(response);
+          if (callback) callback(response);
+        },
+        options,
+      );
     });
   }
 
@@ -197,7 +202,6 @@ export default class Api {
               }
             },
             false,
-            0,
           );
         } catch (e) {
           this.searching_http[search_key] = false;
