@@ -1908,4 +1908,5 @@ export default {
   'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
     "Inviter automatiquement tous les membres de l'espace de travail sur cette chaîne",
+  'scenes.client.channelbar.channelmemberseditor.title' : 'Ajouter des membres dans $1'
 };

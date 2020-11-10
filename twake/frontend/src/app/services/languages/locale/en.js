@@ -1835,4 +1835,5 @@ export default {
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
     'Automatically invite all workspace members to this channel',
+  'scenes.client.channelbar.channelmemberseditor.title' : 'Add members in $1'
 };
