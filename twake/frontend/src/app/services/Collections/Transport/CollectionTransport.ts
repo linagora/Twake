@@ -131,7 +131,7 @@ export default class CollectionTransport<G extends Resource<any>> {
       const result = await Collections.getTransport()
         .getHttp()
         .post(this.collection.getPath().replace(/\/$/, resource.state.persisted ? '/' : ''), {
-          resource: resource.data,
+          resource: resource.getDataForRest(),
           options: options,
         });
       if (!result?.offline) {
