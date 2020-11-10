@@ -136,6 +136,7 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "events": "^3.2.0",
     "feather-icons": "^4.28.0",
+    "fetch-polyfill": "^0.8.2",
     "file-loader": "4.3.0",
     "fs-extra": "^8.1.0",
     "fullcalendar": "^5.1.0",

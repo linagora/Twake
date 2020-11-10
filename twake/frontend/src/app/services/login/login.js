@@ -11,6 +11,7 @@ import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
 import RouterServices from '../RouterServices';
+import JWTStorage from 'services/JWTStorage';
 
 class Login extends Observable {
   constructor() {
@@ -34,12 +35,6 @@ class Login extends Observable {
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
-
-    ws.onReconnect('login', () => {
-      if (this.firstInit && this.currentUserId) {
-        this.updateUser();
-      }
-    });
   }
 
   reset() {
@@ -54,7 +49,7 @@ class Login extends Observable {
     this.notify();
   }
 
-  init(did_wait = false) {
+  async init(did_wait = false) {
     if (!did_wait) {
       Globals.localStorageGetItem('api_root_url', res => {
         this.init(true);
@@ -62,6 +57,13 @@ class Login extends Observable {
       return;
     }
     this.reset();
+    await JWTStorage.init();
+
+    ws.onReconnect('login', () => {
+      if (this.firstInit && this.currentUserId) {
+        this.updateUser();
+      }
+    });
 
     var logout =
       WindowState.findGetParameter('logout') !== undefined
@@ -126,7 +128,7 @@ class Login extends Observable {
     this.updateUser();
   }
 
-  updateUser() {
+  updateUser(callback) {
     var that = this;
     Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
       that.firstInit = true;
@@ -154,6 +156,10 @@ class Login extends Observable {
         RouterServices.history.push(RouterServices.addRedirection(RouterServices.pathnames.LOGIN));
       } else {
         that.startApp(res.data);
+      }
+
+      if (callback) {
+        callback();
       }
     });
   }
@@ -196,7 +202,7 @@ class Login extends Observable {
           device: device,
         },
         function (res) {
-          if (res.data.status === 'connected') {
+          if (res && res.data && res.data.status === 'connected') {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
             }
@@ -308,7 +314,6 @@ class Login extends Observable {
     Api.post('users/recover/mail', data, function (res) {
       if (res.data.token) {
         that.recover_token = res.data.token;
-        //that.changeState("RecoverPasswordCode");
 
         that.login_loading = false;
         that.notify();
@@ -335,7 +340,6 @@ class Login extends Observable {
     Api.post('users/recover/verify', data, function (res) {
       if (res.data.status == 'success') {
         that.recover_code = code;
-        //                that.changeState("RecoverPasswordNewPassword");
 
         that.login_loading = false;
         that.notify();
@@ -482,6 +486,7 @@ class Login extends Observable {
       that.notify();
     });
   }
+
   addNewMail(mail, cb, thot) {
     var that = this;
     that.loading = true;
@@ -501,6 +506,7 @@ class Login extends Observable {
       }
     });
   }
+
   verifySecondMail(mail, code, cb, thot) {
     var that = this;
     that.loading = true;

@@ -238,7 +238,7 @@ class User
 
         if(isset($tokenLogin["expiration"]) && $tokenLogin["expiration"] > date("U")){
           if(isset($tokenLogin["token"]) && $tokenLogin["token"] == $passwordOrToken){
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
           }
         }
@@ -248,7 +248,7 @@ class User
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
 
         }
@@ -284,12 +284,14 @@ class User
         $payload = [
             "exp" => $expiration,
             "refresh_exp" => $refreshExpiration,
-            "usr" => $user->getId(),
+            "updated_at" => date("U"),
+            "sub" => $user->getId(),
             "org" => $orgs
         ];
         $jwt = JWT::encode($payload, $key);
 
         return [
+            "time" => date("U"),
             "expiration" => $expiration,
             "refresh_exiration" => $refreshExpiration,
             "value" => $jwt,
@@ -622,7 +624,7 @@ class User
 
 
                 // User auto log in
-                if($login) $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
+                if($login) $this->app->getServices()->get("app.session_handler")->setUser($user);
 
             }
 

@@ -1,4 +1,5 @@
 import Globals from 'services/Globals.js';
+import Requests from 'services/Requests';
 
 //@ts-ignore old code
 Globals.window.addApiUrlIfNeeded = url => {
@@ -60,22 +61,15 @@ export default class Api {
       //@ts-ignore old code to fix
       route = Globals.window.api_root_url + '/ajax/' + route;
 
-      Globals.request(
-        'GET',
-        route,
-        '',
-        {},
-        (resp: any) => {
-          if (raw) {
-            resolve(resp);
-            if (callback) callback(resp);
-            return;
-          }
-          resolve(JSON.parse(resp));
-          if (callback) callback(JSON.parse(resp));
-        },
-        0,
-      );
+      Requests.request('get', route, '', (resp: any) => {
+        if (raw) {
+          resolve(resp);
+          if (callback) callback(resp);
+          return;
+        }
+        resolve(JSON.parse(resp));
+        if (callback) callback(JSON.parse(resp));
+      });
     });
   }
 
@@ -97,29 +91,22 @@ export default class Api {
         route = Globals.window.api_root_url + '/ajax/' + route;
       }
 
-      Globals.request(
-        'POST',
-        route,
-        JSON.stringify(data),
-        {},
-        (resp: any) => {
-          if (raw) {
-            resolve(resp);
-            if (callback) callback(resp);
-            return;
-          }
-          let response: any = '';
-          try {
-            response = JSON.parse(resp);
-          } catch (e) {
-            console.log('Server internal error, bad JSON.');
-            response = { errors: 'bad_json' };
-          }
-          resolve(response);
-          if (callback) callback(response);
-        },
-        timeout,
-      );
+      Requests.request('post', route, JSON.stringify(data), (resp: any) => {
+        if (raw) {
+          resolve(resp);
+          if (callback) callback(resp);
+          return;
+        }
+        let response: any = '';
+        try {
+          response = JSON.parse(resp);
+        } catch (e) {
+          console.log('Server internal error, bad JSON.');
+          response = { errors: 'bad_json' };
+        }
+        resolve(response);
+        if (callback) callback(response);
+      });
     });
   }
 
