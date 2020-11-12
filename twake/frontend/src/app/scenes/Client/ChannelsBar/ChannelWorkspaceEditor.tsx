@@ -6,8 +6,8 @@ import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
+import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
 
-import { useParams } from 'react-router-dom';
 import RouterServices from 'services/RouterServices';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 
@@ -59,7 +59,19 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
             float: 'right',
           }}
           disabled={!disabled}
-          onClick={() => upsertChannel()}
+          onClick={() => {
+            //upsertChannel()
+            return ModalManager.open(
+              <ChannelMembersEditor
+                channelName={newChannel.name}
+                onClose={() => ModalManager.closeAll()}
+              />,
+              {
+                position: 'center',
+                size: { width: '600px', minHeight: '329px' },
+              },
+            );
+          }}
         >
           {Languages.t('general.create', 'Create')}
         </Button>

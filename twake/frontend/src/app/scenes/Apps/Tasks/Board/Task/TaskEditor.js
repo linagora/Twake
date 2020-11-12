@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
 import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Menu from 'components/Menus/Menu.js';
 import Input from 'components/Inputs/Input.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';

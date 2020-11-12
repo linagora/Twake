@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import WorkspaceListManager from 'components/WorkspaceListManager/WorkspaceListManager.js';

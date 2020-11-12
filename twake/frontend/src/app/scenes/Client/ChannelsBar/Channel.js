@@ -10,7 +10,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import ChannelUserAdd from './ChannelUserAdd.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';

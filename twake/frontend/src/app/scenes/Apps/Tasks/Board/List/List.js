@@ -11,7 +11,7 @@ import AlertManager from 'services/AlertManager/AlertManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AddTask from './AddTask.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import './List.scss';
 
 import '../Task/Task.scss';

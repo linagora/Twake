@@ -4,7 +4,7 @@ import {
   ObjectModalFormTitle,
   ObjectModalSectionTitle,
 } from 'components/ObjectModal/ObjectModal.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import Checkbox from 'components/Inputs/Checkbox.js';

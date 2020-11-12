@@ -85,11 +85,8 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
       </div>
       {visibility === 'private' && <div style={{ height: '49px' }}></div>}
       {visibility === 'public' && (
-        <div style={{ height: '49px' }}>
-          <Checkbox
-            style={{ marginTop: '16px', marginLeft: '16px' }}
-            onChange={() => setDefaultChannel(!defaultChannel)}
-          >
+        <div style={{ height: '49px' }} className="top-margin left-margin">
+          <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>
             {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
           </Checkbox>
         </div>
