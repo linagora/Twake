@@ -23,6 +23,16 @@ class JWTStorage {
     this.updateJWT(await LocalStorage.getItem('jwt'));
   }
 
+  clear() {
+    this.jwtData = {
+      time: 0,
+      expiration: 0,
+      refresh_expiration: 0,
+      value: '',
+      type: 'Bearer',
+    };
+  }
+
   updateJWT(jwtData: JWTDataType) {
     if (!jwtData) {
       return;

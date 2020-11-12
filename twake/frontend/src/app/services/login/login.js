@@ -236,6 +236,8 @@ class Login extends Observable {
 
     Globals.localStorageClear();
 
+    JWTStorage.clear();
+
     if (Globals.isReactNative) {
       Globals.clearCookies();
       DepreciatedCollections.clearAll();
@@ -246,7 +248,6 @@ class Login extends Observable {
     }
 
     Globals.getDevice(device => {
-      console.log(device);
       var that = this;
       Api.post(
         'users/logout',
