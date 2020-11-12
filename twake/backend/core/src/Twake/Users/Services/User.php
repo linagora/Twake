@@ -12,6 +12,7 @@ use Twake\Users\Entity\Device;
 use Twake\Users\Entity\ExternalUserRepository;
 use Twake\Users\Entity\Mail;
 use Twake\Users\Entity\VerificationNumberMail;
+use \Firebase\JWT\JWT;
 
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
@@ -27,7 +28,6 @@ class User
     /** @var ManagerAdapter */
     private $em;
     private $pusher;
-    private $core_remember_me_manager;
     private $twake_mailer;
     private $string_cleaner;
     private $workspace_members_service;
@@ -45,7 +45,6 @@ class User
         $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->pusher = $app->getServices()->get("app.pusher");
-        $this->core_remember_me_manager = $app->getServices()->get("app.core_remember_me_manager");
         $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->workspace_members_service = $app->getServices()->get("app.workspace_members");
@@ -237,7 +236,7 @@ class User
 
         if(isset($tokenLogin["expiration"]) && $tokenLogin["expiration"] > date("U")){
           if(isset($tokenLogin["token"]) && $tokenLogin["token"] == $passwordOrToken){
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
           }
         }
@@ -247,12 +246,55 @@ class User
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
 
         }
 
         return false;
+
+    }
+
+    public function generateJWT($user, $workspaces = []){
+
+        $key = $this->app->getContainer()->getParameter("jwt.secret");
+
+        $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
+        $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
+
+        $orgs = [];
+        if($workspaces){
+            foreach($workspaces as $workspace){
+                $gid = $workspace["group"]["id"];
+                $wid = $workspace["id"];
+                if(!isset($orgs[$gid])){
+                    $orgs[$gid] = [
+                        "role" => "",
+                        "wks" => []
+                    ];
+                }
+                $orgs[$gid]["wks"][$wid] = [
+                    "adm" => $workspace["_user_is_admin"]
+                ];
+            }
+        }
+
+        $payload = [
+            "exp" => $expiration,
+            "refresh_exp" => $refreshExpiration,
+            "updated_at" => intval(date("U")),
+            "sub" => $user->getId(),
+            "org" => $orgs
+        ];
+        $jwt = JWT::encode($payload, $key);
+
+        return [
+            "time" => date("U"),
+            "expiration" => $expiration,
+            "refresh_exiration" => $refreshExpiration,
+            "value" => $jwt,
+            "type" => "Bearer"
+        ];
 
     }
 
@@ -580,7 +622,7 @@ class User
 
 
                 // User auto log in
-                if($login) $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
+                if($login) $this->app->getServices()->get("app.session_handler")->setUser($user);
 
             }
 
@@ -1140,5 +1182,7 @@ class User
             $this->em->remove($r);
         }
     }
+
+    
 
 }

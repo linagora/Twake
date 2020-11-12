@@ -14,7 +14,7 @@ class PopupService extends Observable {
     this.component = []; // element as {component,canClose}
     this.popupStates = {};
   }
-  open(component, canClose, key) {
+  open(component, canClose, key = 'no-key') {
     if (this.component[this.component.length - 1]?.key === key) {
       return;
     }

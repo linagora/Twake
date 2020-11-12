@@ -726,15 +726,26 @@ class WorkspaceMembers
         }
         $link = $workspaceUserRepository->findBy(Array("user_id" => $user->getId()));
         $workspaces = Array();
-        foreach ($link as $workspace) {
-            if ($workspace->getWorkspace($this->doctrine)->getUser() == null && $workspace->getWorkspace($this->doctrine)->getGroup() != null && !$workspace->getWorkspace($this->doctrine)->getis_deleted()) {
+        foreach ($link as $workspaceMember) {
+            $workspace = $workspaceMember->getWorkspace($this->doctrine);
+            if ($workspace && $workspace->getUser() == null && $workspace->getGroup() != null && !$workspace->getis_deleted()) {
+
+                $levels = $this->wls->getLevels($workspace->getId(), $userId);
+                $isAdmin = false;
+                foreach ($levels as $level) {
+                    if($level->getId() === $workspaceMember->getLevelId() && $level->getIsAdmin()){
+                        $isAdmin = true;
+                    }
+                }
+
                 $workspaces[] = Array(
-                    "last_access" => $workspace->getLastAccess(),
-                    "workspace" => $workspace->getWorkspace($this->doctrine),
-                    "ishidden" => $workspace->getisHidden(),
-                    "isfavorite" => $workspace->getisFavorite(),
-                    "hasnotifications" => $workspace->getHasNotifications(),
-                    "isArchived" => $workspace->getWorkspace($this->doctrine)->getisArchived()
+                    "last_access" => $workspaceMember->getLastAccess(),
+                    "workspace" => $workspace,
+                    "ishidden" => $workspaceMember->getisHidden(),
+                    "isfavorite" => $workspaceMember->getisFavorite(),
+                    "isadmin" => $isAdmin,
+                    "hasnotifications" => $workspaceMember->getHasNotifications(),
+                    "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getisArchived()
                 );
             }
         }

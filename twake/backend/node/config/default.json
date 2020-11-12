@@ -36,9 +36,7 @@
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": [
-        "localhost:9042"
-      ],
+      "contactPoints": ["scylladb:9042"],
       "localDataCenter": "datacenter1",
       "keyspace": "twake"
     }

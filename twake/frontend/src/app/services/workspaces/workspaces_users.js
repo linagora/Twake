@@ -13,6 +13,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import CurrentUser from 'services/user/current_user.js';
 import AlertManager from 'services/AlertManager/AlertManager.js';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
+import LoginService from 'services/login/login';
 
 import Globals from 'services/Globals.js';
 
@@ -222,6 +223,10 @@ class WorkspacesUsers extends Observable {
   }
   removeUserFromWorkspaceList(user) {}
   recieveWS(res) {
+    if (res.workspace_user.user.id === User.getCurrentUserId()) {
+      LoginService.updateUser();
+    }
+
     if (res.type == 'add' || res.type == 'update_workspace_level') {
       var userlink = {
         externe: res.workspace_user.externe,

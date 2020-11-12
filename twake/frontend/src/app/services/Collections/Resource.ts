@@ -52,6 +52,15 @@ export default class Resource<T> {
     this._state = state;
   }
 
+  public getDataForRest() {
+    return {
+      ...this.data,
+      _id: undefined,
+      _state: undefined,
+      id: this.state.persisted ? this.id : undefined,
+    };
+  }
+
   public setShared(state: boolean = true) {
     if (!this._state.shared && state) {
       this.setPersisted(); //If found from websocket, then it comes from the server

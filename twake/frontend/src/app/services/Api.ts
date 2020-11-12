@@ -1,4 +1,5 @@
 import Globals from 'services/Globals.js';
+import Requests from 'services/Requests';
 
 //@ts-ignore old code
 Globals.window.addApiUrlIfNeeded = url => {
@@ -46,7 +47,6 @@ class GroupedQueryApi {
           }
         },
         false,
-        0,
       );
     }, 50);
   }
@@ -60,22 +60,15 @@ export default class Api {
       //@ts-ignore old code to fix
       route = Globals.window.api_root_url + '/ajax/' + route;
 
-      Globals.request(
-        'GET',
-        route,
-        '',
-        {},
-        (resp: any) => {
-          if (raw) {
-            resolve(resp);
-            if (callback) callback(resp);
-            return;
-          }
-          resolve(JSON.parse(resp));
-          if (callback) callback(JSON.parse(resp));
-        },
-        0,
-      );
+      Requests.request('get', route, '', (resp: any) => {
+        if (raw) {
+          resolve(resp);
+          if (callback) callback(resp);
+          return;
+        }
+        resolve(JSON.parse(resp));
+        if (callback) callback(JSON.parse(resp));
+      });
     });
   }
 
@@ -84,7 +77,7 @@ export default class Api {
     data: any,
     callback: any = false,
     raw: boolean = false,
-    timeout: number = 0,
+    options: { disableJWTAuthentication?: boolean } = {},
   ) {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route == 'core/collections/init') {
@@ -97,11 +90,10 @@ export default class Api {
         route = Globals.window.api_root_url + '/ajax/' + route;
       }
 
-      Globals.request(
-        'POST',
+      Requests.request(
+        'post',
         route,
         JSON.stringify(data),
-        {},
         (resp: any) => {
           if (raw) {
             resolve(resp);
@@ -118,7 +110,7 @@ export default class Api {
           resolve(response);
           if (callback) callback(response);
         },
-        timeout,
+        options,
       );
     });
   }
@@ -210,7 +202,6 @@ export default class Api {
               }
             },
             false,
-            0,
           );
         } catch (e) {
           this.searching_http[search_key] = false;

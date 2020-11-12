@@ -67,14 +67,14 @@ class Routing
         });
     }
 
-    //Allow any origin and set cookies in json response
+    //Allow any origin
     private function beforeRender(Response $response)
     {
 
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
         }
-        $response->setHeader('Access-Control-Allow-Headers: ' . 'All-Cookies, Content-Type, *', true);
+        $response->setHeader('Access-Control-Allow-Headers: ' . 'authorization, Content-Type, *', true);
         $response->setHeader('Access-Control-Allow-Credentials: ' . 'true', true);
         $response->setHeader('Access-Control-Allow-Methods: ' . 'GET, POST', true);
         $response->setHeader('Access-Control-Max-Age: ' . '600', true);
@@ -82,22 +82,6 @@ class Routing
         $response->setHeader('x-decompressed-content-length: ' . $length, true);
 
         $content = $response->getContent();
-
-        if (is_array($content)) {
-            $cookies = [];
-            foreach ($response->headers->all() as $header) {
-                if (strpos("Set-Cookie: ", $header) == 0) {
-                    $ex = explode("Set-Cookie: ", $header);
-                    if (count($ex) == 2) {
-                        $cookies[] = $ex[1];
-                    }
-                }
-            }
-            $content["_cookies"] = $cookies;
-            $response->setContent($content);
-        }
-
-        $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
 
         return $response;
     }

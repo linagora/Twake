@@ -29,6 +29,11 @@ abstract class BaseController
         return $this->app->getServices()->get($key);
     }
 
+    public function isConnected()
+    {
+        return $this->getUser() && !is_string($this->getUser());
+    }
+
     public function getUser()
     {
 
@@ -46,7 +51,6 @@ abstract class BaseController
     public function redirect($url)
     {
         $response = new Response("");
-        $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
         $response->setHeader("Location: " . $url, true);
         $response->sendHeaders();
         exit();

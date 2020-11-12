@@ -24,6 +24,11 @@ export default class TransportSocket {
       return;
     }
 
+    if (this.socket) {
+      //Already connected
+      return;
+    }
+
     this.socket = io.connect(socketEndpoint || '', {
       reconnectionDelayMax: 10000,
     });

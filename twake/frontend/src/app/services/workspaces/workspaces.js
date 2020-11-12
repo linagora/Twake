@@ -47,6 +47,7 @@ class Workspaces extends Observable {
 
   async initSelection() {
     let { workspaceId } = RouterServices.getStateFromRoute();
+    const routerWorkspaceId = workspaceId;
 
     const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
 
@@ -58,14 +59,17 @@ class Workspaces extends Observable {
       workspaceId = workspace?.id;
     }
 
-    if (
-      !workspace ||
-      Collections.get('users').known_objects_by_id[User.getCurrentUserId()].is_new
-    ) {
-      this.openWelcomePage();
-    } else if (workspaceId !== this.currentWorkspaceId) {
-      this.select(workspace, true);
+    if (!routerWorkspaceId || !workspace) {
+      if (
+        !workspace ||
+        Collections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
+      ) {
+        this.openWelcomePage();
+      } else if (workspaceId !== this.currentWorkspaceId) {
+        this.select(workspace, true);
+      }
     }
+    return;
   }
 
   openWelcomePage(page) {
@@ -184,12 +188,18 @@ class Workspaces extends Observable {
 
   getOrderedWorkspacesInGroup(group_id) {
     var object = [];
-    Object.keys(this.user_workspaces).forEach(e => {
-      var e = this.user_workspaces[e];
-      if (!group_id || e?.group?.id == group_id) {
-        object.push(e);
-      }
-    });
+    Object.keys(this.user_workspaces)
+      .sort((_a, _b) => {
+        var a = this.user_workspaces[_a] || {};
+        var b = this.user_workspaces[_b] || {};
+        return (a.name || '').localeCompare(b.name || '');
+      })
+      .forEach(e => {
+        var e = this.user_workspaces[e];
+        if (!group_id || e?.group?.id == group_id) {
+          object.push(e);
+        }
+      });
     return object;
   }
 

@@ -14,7 +14,7 @@ class Routing extends BaseRouting
         "autoLogin" => ["handler" => "UsersConnections:autoLogin", "methods" => ["POST"]],
         "logout" => ["handler" => "UsersConnections:logout", "methods" => ["POST"]],
         "current/isLogged" => ["handler" => "UsersConnections:isLogged", "methods" => ["POST"]],
-        "current/get" => ["handler" => "UsersConnections:currentUser", "methods" => ["POST"]],
+        "current/get" => ["handler" => "UsersConnections:currentUser", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "mobile_redirect" => ["handler" => "UsersConnections:mobileRedirect", "methods" => ["GET"]],
         "alive" => ["handler" => "UsersConnections:alive", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "set/isNew" => ["handler" => "UsersConnections:setIsNew", "methods" => ["POST"], "security" => ["user_connected_security"]],

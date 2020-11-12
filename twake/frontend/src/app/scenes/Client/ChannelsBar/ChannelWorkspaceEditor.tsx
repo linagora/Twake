@@ -31,7 +31,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
     workspace_id: workspaceId,
   };
 
-  const collectionPath: string = `/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
+  const collectionPath: string = `/channels/v1/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
   const ChannelsCollections = Collections.get(collectionPath);
 
   const onChange = (channelEntries: ChannelType): ChannelType => {

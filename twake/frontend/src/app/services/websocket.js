@@ -27,7 +27,7 @@ class Websocket extends Observable {
     this.firstTime = true;
     this.last_reconnect_call = new Date();
 
-    Globals.window.websocketsManager = this;
+    window.websocketsManager = this;
     this.autobahn = SocketCluster;
 
     var updateOnlineStatus = () => {
@@ -41,7 +41,7 @@ class Websocket extends Observable {
     };
     updateOnlineStatus = updateOnlineStatus.bind(this);
 
-    Globals.window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('online', updateOnlineStatus);
     Globals.window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
@@ -118,7 +118,6 @@ class Websocket extends Observable {
           this.alive_connected = true;
         },
         false,
-        5000,
       );
       this.didFocusedLastMinute = Globals.isReactNative || Globals.window.document.hasFocus();
     }
@@ -327,7 +326,6 @@ class Websocket extends Observable {
         }
       },
       false,
-      5000,
     );
   }
 

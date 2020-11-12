@@ -25,11 +25,10 @@ services:
     environment:
       - DEV=dev
     build:
-      context: .
-      target: development
-      dockerfile: docker/twake-node/Dockerfile
+      context: ./backend/node
+      dockerfile: ../../docker/twake-node/Dockerfile.dev
     volumes:
-      - .:/usr/src/app
+      - ./backend/node:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
       - mongo
