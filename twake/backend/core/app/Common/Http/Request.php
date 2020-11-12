@@ -31,7 +31,7 @@ class Request
         $header_cookies = [];
         try {
             $all_cookies = isset(getallheaders()["Authorization"]) ? explode("Bearer ", getallheaders()["Authorization"])[1] : false;
-            $all_cookies = $all_cookies ? $all_cookies : isset(getallheaders()["All-Cookies"]) ? getallheaders()["All-Cookies"] : "[]";
+            $all_cookies = $all_cookies ? $all_cookies : (isset(getallheaders()["All-Cookies"]) ? getallheaders()["All-Cookies"] : "[]");
             $header_cookies = json_decode($all_cookies, 1);
         } catch (\Exception $err) {
             $header_cookies = [];
