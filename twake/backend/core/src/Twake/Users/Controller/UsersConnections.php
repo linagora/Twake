@@ -51,6 +51,18 @@ class UsersConnections extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
+            $all_cookies = [];
+            foreach ($response->getCookies() as $cookie) {
+                $all_cookies[] = $cookie->asArray();
+            }
+            $data["access_token"] = [
+                "time" => date("U")+0,
+                "expiration" => date("U")+60*60*24*365,
+                "refresh_exiration" => date("U")+60*60*24*365,
+                "value" => json_encode($all_cookies),
+                "type" => "Bearer"
+            ];
+
             $data["data"]["status"] = "connected";
 
         } else {
