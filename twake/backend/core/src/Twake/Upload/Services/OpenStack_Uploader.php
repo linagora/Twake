@@ -66,10 +66,9 @@ class OpenStack_Uploader extends Uploader
     {
         $contexts = $this->getContexts();
 
-        $file_size = filesize($realfile["tmp_name"]);
+        $file_size = filesize($realfile);
 
         $upload_status = [];
-        $this->uploadService->verifyContext($upload_status, $realfile, $contexts[$context]);
 
         $error = "unknown";
         if ($upload_status["status"] != "error") {
@@ -78,7 +77,7 @@ class OpenStack_Uploader extends Uploader
                 // Upload data.
                 $options = [
                     'name' => "public/uploads/" . $file->getType() . "/" . $file->getName(),
-                    'stream' => new Stream(fopen($realfile["tmp_name"], "rb")),
+                    'stream' => new Stream(fopen($realfile, "rb")),
                 ];
                 $result = $this->openstack->objectStoreV1()
                     ->getContainer($this->openstack_public_bucket_name)

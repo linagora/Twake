@@ -53,10 +53,9 @@ class AWS_Uploader extends Uploader
     {
         $contexts = $this->getContexts();
 
-        $file_size = filesize($realfile["tmp_name"]);
+        $file_size = filesize($realfile);
 
         $upload_status = [];
-        $this->uploadService->verifyContext($upload_status, $realfile, $contexts[$context]);
 
         $error = "unknown";
         if ($upload_status["status"] != "error") {
@@ -66,7 +65,7 @@ class AWS_Uploader extends Uploader
                 $result = $this->aws_s3_client->putObject([
                     'Bucket' => $this->aws_bucket_name,
                     'Key' => "public/uploads/" . $file->getType() . "/" . $file->getName(),
-                    'Body' => fopen($realfile["tmp_name"], "rb"),
+                    'Body' => fopen($realfile, "rb"),
                     'ACL' => 'public-read'
                 ]);
 
