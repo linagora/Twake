@@ -68,7 +68,7 @@
 .ant-checkbox:hover .ant-checkbox-inner,
 .ant-checkbox-input:focus + .ant-checkbox-inner,
 .ant-checkbox-checked:hover {
-  border: 0;
+  border-color: transparent;
   box-shadow: @checkbox-shadow-unselected;
   border-radius: @border-radius-base;
   transition: box-shadow 0.2s;
@@ -89,7 +89,7 @@
 .ant-input,
 .ant-input:focus,
 .ant-input-focused  {
-  border: none;
+  border-color: transparent;
   box-shadow: none;
 }
 
@@ -118,7 +118,9 @@ textarea.ant-input,
 @select-background: @grey-background;
 @select-border-color: @grey-background;
 @select-dropdown-bg: @white;
-@select-item-active-bg: @primary;
+@select-item-active-bg: @grey-background;
+@select-item-selected-bg: @primary;
+@select-item-selected-color: @white;
 
 .ant-select {
   width: 172px;
@@ -128,12 +130,32 @@ textarea.ant-input,
 .ant-select-selector:focus,
 .ant-select-selector:active,
 .ant-select-open .ant-select-selector {
-  border: @grey-background !important;
+  border-color: @grey-background !important;
   box-shadow: none !important;
 }
 
 .ant-select-arrow {
   color: @grey-dark;
+}
+
+.ant-select-dropdown {
+  padding: 8px 0;
+
+  .ant-select-item {
+    height: 32px;
+    line-height: 32px;
+    margin: 0 8px;
+    padding: 0 8px;
+    border-radius: @border-radius-base;
+    transition: none;
+
+    &.ant-select-item-option-selected {
+      &,
+      .ant-typography {
+        color: @white;
+      }
+    }
+  }
 }
 
 // --- ant-notifications --- //

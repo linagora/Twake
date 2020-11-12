@@ -5,6 +5,7 @@ import { AutoComplete, Avatar, Col, Row, Typography } from 'antd';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import UserOrMail from 'components/ui/UserOrMail.js';
+import AutoCompleteExtended from 'components/AutoCompleteExtended/AutoCompleteExtended';
 import './UserListManager.scss';
 
 type Props = {
@@ -15,9 +16,7 @@ const { Option } = AutoComplete;
 const { Text } = Typography;
 
 const UserListManager: FC<Props> = props => {
-  const [UsersList, setUsersList] = useState<UserType[]>([]);
   const [SelectedUsersList, setSelectedUsersList] = useState<string[]>([]);
-  const [InputValue, setInputValue] = useState<string>('');
 
   useEffect(() => {
     onUpdate(SelectedUsersList);
@@ -41,8 +40,6 @@ const UserListManager: FC<Props> = props => {
   };
 
   const onUpdate = (array: string[]) => props.onUpdate(array);
-
-  const resetInputValue = () => setInputValue('');
 
   return (
     <>
@@ -71,50 +68,33 @@ const UserListManager: FC<Props> = props => {
           }
         })}
       {!SelectedUsersList.length && <div className="small-top-margin"></div>}
-      <AutoComplete
-        // Used for top alignment menu
-        dropdownAlign={{
-          points: ['bl', 'tl'], // align dropdown bottom-left to top-left of input element
-          offset: [0, -4], // align offset
-          overflow: {
-            adjustX: 0,
-            adjustY: 0, // do not auto flip in y-axis
-          },
-        }}
-        style={{ width: '100%' }}
-        placeholder="Search by user"
-        onSearch={(text: string) =>
-          onSearchUsers(text, (res: UserType[]) => {
-            return setUsersList(res);
-          })
-        }
-        value={InputValue}
+      <AutoCompleteExtended
+        align="top"
         onSelect={(id: string) => {
-          onSearchUsers(id, (res: UserType[]) => setUsersList(res));
-
-          resetInputValue();
-
           return SelectedUsersList.includes(id)
             ? false
             : setSelectedUsersList([...SelectedUsersList, id]);
         }}
-        onChange={e => setInputValue(e || '')}
-      >
-        {UsersList.map((user: UserType) => (
-          <Option key={UsersService.getFullName(user) || user.email} value={user.id || ''}>
-            <Row align="middle" gutter={[8, 0]}>
-              <Col>
-                <Avatar size={24} src={UsersService.getThumbnail(user)} />
-              </Col>
-              <Col>
-                <Text strong>
-                  {UsersService.getFullName(user)}, {user.email}
-                </Text>
-              </Col>
-            </Row>
-          </Option>
-        ))}
-      </AutoComplete>
+        style={{ width: '100%' }}
+        placeholder="Search by user"
+        onSearch={(text: string, callback: (results: UserType[]) => void) =>
+          onSearchUsers(text, (res: UserType[]) => {
+            callback(res);
+          })
+        }
+        render={(user: UserType) => (
+          <Row align="middle" gutter={[8, 0]}>
+            <Col>
+              <Avatar size={24} src={UsersService.getThumbnail(user)} />
+            </Col>
+            <Col>
+              <Text strong>
+                {UsersService.getFullName(user)}, {user.email}
+              </Text>
+            </Col>
+          </Row>
+        )}
+      />
     </>
   );
 };
