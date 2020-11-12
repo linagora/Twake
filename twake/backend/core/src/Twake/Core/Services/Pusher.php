@@ -5,7 +5,6 @@ namespace Twake\Core\Services;
 
 use App\App;
 use Twake\Core\Entity\ZMQQueue;
-use Twake\Core\Services\RememberMe;
 use WebSocket\Client;
 
 class Pusher

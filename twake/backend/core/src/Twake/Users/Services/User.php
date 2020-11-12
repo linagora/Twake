@@ -28,7 +28,6 @@ class User
     /** @var ManagerAdapter */
     private $em;
     private $pusher;
-    private $core_remember_me_manager;
     private $twake_mailer;
     private $string_cleaner;
     private $workspace_members_service;
@@ -46,7 +45,6 @@ class User
         $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->pusher = $app->getServices()->get("app.pusher");
-        $this->core_remember_me_manager = $app->getServices()->get("app.core_remember_me_manager");
         $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->workspace_members_service = $app->getServices()->get("app.workspace_members");

@@ -54,7 +54,7 @@ class SessionHandler
         if($authorization[0] === "Bearer"){
             $jwt = $authorization[1];
             try{
-                $key = $this->app->getContainer()->getParameter("env.jwt_secret");
+                $key = $this->app->getContainer()->getParameter("jwt.secret");
                 $jwt = JWT::decode($jwt, $key, array('HS256'));
 
                 if(!$jwt->sub || $jwt->refresh_exp < date("U")){
