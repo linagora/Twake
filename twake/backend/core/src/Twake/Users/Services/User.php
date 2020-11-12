@@ -259,10 +259,10 @@ class User
 
     public function generateJWT($user, $workspaces = []){
 
-        $key = $this->app->getContainer()->getParameter("env.jwt_secret");
+        $key = $this->app->getContainer()->getParameter("jwt.secret");
 
-        $expiration = date("U") + 60 * 60; //1 hour
-        $refreshExpiration = date("U") + 60 * 60 * 24 * 31; //1 month
+        $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
+        $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
 
         $orgs = [];
         if($workspaces){

@@ -30,7 +30,7 @@
     }
   },
   "database": {
-    "type": "cassandra",
+    "type": "mongodb",
     "mongodb": {
       "uri": "mongodb://localhost:27017",
       "database": "twake"

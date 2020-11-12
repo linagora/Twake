@@ -17,9 +17,12 @@ class Parameters extends \Common\Configuration
               "licence_key" => "",
               "standalone" => true,
               "server_name" => "http://localhost:8000/",
-              "internal_server_name" => "http://nginx/",
-              "secret" => "",
-              "jwt_secret" => "supersecret"
+              "internal_server_name" => "http://nginx/"
+            ],
+            "jwt" => [
+              "secret" => "supersecret",
+              "expiration" => 60*60, //1 hour
+              "refresh_expiration" => 60*60*24*31 //1 hour
             ],
             "websocket" => [
                 "host" => "websockets",
