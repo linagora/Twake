@@ -100,7 +100,7 @@ export default class AddUser extends Component<Props, State> {
     let mailToArray: string[] = [];
     const stringToArray = str.match(regex);
 
-    (stringToArray || []).map((item: any) => mailToArray.push(item[0].toLocaleLowerCase()));
+    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
 
     const members = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
 

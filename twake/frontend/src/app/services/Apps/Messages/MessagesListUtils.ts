@@ -40,7 +40,10 @@ export class MessagesListUtils extends Observable {
   highlighted: string = '';
   fixBottom: boolean = true;
   showScrollDown: boolean = false;
+<<<<<<< HEAD
   showGradient: boolean = false;
+=======
+>>>>>>> 594801ebea6d387981524a6f05d301ccc6793070
   currentScrollTop: number = 0;
   currentScrollHeight: number = 0;
   messagesContainerNodeScrollTop: number = 0;

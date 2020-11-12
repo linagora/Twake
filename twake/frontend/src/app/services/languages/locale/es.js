@@ -1,10 +1,10 @@
 export default {
   //General
   'general.external': 'Externo',
-  'general.close': 'Cerca',
+  'general.close': 'Cerrar',
   'general.closed': 'Cerrado',
-  'general.save': 'Salvar',
-  'general.copy': 'Dupdo',
+  'general.save': 'Guardar',
+  'general.copy': 'Copiar',
   'general.cancel': 'Cancelar',
   'general.yes': 'Sí',
   'general.no': 'No',
@@ -12,7 +12,7 @@ export default {
   'general.create': 'Crear',
   'general.edit': 'Editar',
   'general.continue': 'Continuar',
-  'general.back': 'Espalda',
+  'general.back': 'Atrás',
   'general.confirm': 'Confirmar',
   'general.delete': 'Borrar',
   //Components
@@ -28,7 +28,7 @@ export default {
     'Lo sentimos, ¡no apoyamos completamente esta aplicación en este momento!',
   'components.add_url.no_support_app_2':
     'Si crees que esta aplicación debe agregarse en Twake, avísanos aquí',
-  'components.add_url.feedback': 'Realimentación',
+  'components.add_url.feedback': 'Comentarios',
   'components.add_url.error':
     'Se produjo un error, verifica que tienes derecho a agregar la aplicación',
   //-AppActivity
@@ -38,7 +38,7 @@ export default {
   //-Application
   'components.application.messages': 'Mensajes',
   //-ButtonReally
-  'components.button_really.title': 'Realmente quieres hacer esto ?',
+  'components.button_really.title': '¿Realmente quieres hacer esto?',
   //-DriveDropzone
   'components.drive_dropzone.uploading': 'Subiendo ...',
   'components.drive_dropzone.title': 'Subir archivos',
@@ -46,14 +46,14 @@ export default {
   'components.drive_dropzone.detached_modal.detached_title': 'Rápido',
   'components.drive_dropzone.detached_modal.detached_text':
     'No cargue en Drive, no se podrá acceder al archivo desde Drive.',
-  'components.drive_dropzone.detached_modal.drive_title': 'Manejar',
+  'components.drive_dropzone.detached_modal.drive_title': 'Drive',
   'components.drive_dropzone.detached_modal.drive_text':
     'Cargue en la unidad del espacio de trabajo actual en un directorio elegido, otros miembros tendrán acceso a este archivo utilizando Drive.',
   //-Ending
   'components.ending.text': 'Gracias !',
   //-FilePicker
-  'components.filepicker.title_name_untitled': 'Intitulado',
-  'components.filepicker.create_directory': 'Crea una carpeta',
+  'components.filepicker.title_name_untitled': 'Sin Título',
+  'components.filepicker.create_directory': 'Crear una carpeta',
   'components.filepicker.directory_name': 'Nombre del directorio',
   'components.filepicker.select_directory': 'Seleccione una carpeta',
   'components.filepicker.select_file': 'Seleccione Archivo',
@@ -62,8 +62,8 @@ export default {
   'components.filepicker.filename': 'Nombre del archivo',
   'components.filepicker.accepted': 'Aceptado',
   'components.filepicker.new_directory': 'Nueva carpeta',
-  'components.filepicker.create_here': 'Crea aquí',
-  'components.filepicker.choose': 'Escoger',
+  'components.filepicker.create_here': 'Crear aquí',
+  'components.filepicker.choose': 'Seleccionar',
   //-Group
   'components.group.private_workspace_title': 'Espacio de trabajo privado',
   'components.group.members': '$1 miembros',
@@ -73,7 +73,7 @@ export default {
     'Elija las etiquetas que desea usar y guárdelas para regresar.',
   'components.labels.label_editor_no_label': 'Sin etiquetas',
   'components.labels.label_name': 'Nombre de etiqueta',
-  'components.labels.label_default': 'Defecto',
+  'components.labels.label_default': 'Predeterminado',
   //-LevelModal
   'components.level_modal.level_name': 'Nombre de nivel',
   'components.level_modal.edit_title': 'Editar nivel',
@@ -93,9 +93,9 @@ export default {
   'components.users_picker.modal_no_user_selected': 'Ningún usuario seleccionado',
   'components.users_picker.modal_select_user': 'Seleccionar usuario',
   'components.users_picker.modify': 'Agrega un participante',
-  'components.users_picker.remove_btn': 'retirar',
+  'components.users_picker.remove_btn': 'remover',
   //-ViewsSystem
-  'components.views_system.return_btn': 'Regreso',
+  'components.views_system.return_btn': 'Volver',
   //-WelcomeInNewWorkspace
   'components.welcome_in_new_workspace.text':
     'Bienvenido a tu nuevo espacio de trabajo! ¿Desea agregar nuevos miembros en este espacio de trabajo?',
@@ -106,7 +106,7 @@ export default {
   'components.welcome_user.skip_btn': 'Omitir',
   'components.welcome_user.create_new_workspace_btn': 'Crear un nuevo espacio de trabajo',
   //-Workspace
-  'components.workspace.group.guest': 'Huésped',
+  'components.workspace.group.guest': 'Invitado',
   'components.workspace.group_parameters.title': 'Parámetros de área de trabajo y grupo',
   'components.workspace.private_workspace': 'Espacio de trabajo privado',
   'components.workspace.private_workspace_text': 'Su espacio de trabajo personal',
