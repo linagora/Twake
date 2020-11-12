@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager';
-import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
 
 import { Typography, Button } from 'antd';
 

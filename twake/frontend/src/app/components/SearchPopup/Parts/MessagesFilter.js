@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {
   ObjectModalFormTitle,
   ObjectModalSectionTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';

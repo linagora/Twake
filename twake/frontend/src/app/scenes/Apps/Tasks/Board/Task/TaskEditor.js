@@ -13,7 +13,7 @@ import MediumPopupManager from 'app/services/Modal/ModalManager';
 import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Icon from 'components/Icon/Icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Tabs from 'components/Tabs/Tabs.js';
-import './ObjectModal.scss';
+import './DeprecatedObjectModal.scss';
 import { Divider } from 'antd';
 
 export class ObjectModalTitle extends Component {
