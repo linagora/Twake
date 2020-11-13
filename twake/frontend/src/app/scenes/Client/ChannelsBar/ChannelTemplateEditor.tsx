@@ -16,7 +16,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
-  const [visibility, setVisibility] = useState<string>(channel?.visibility || 'private');
+  const [visibility, setVisibility] = useState<string>(channel?.visibility || 'public');
   const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
 
   useEffect(() => {
@@ -83,14 +83,14 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
           </Option>
         </Select>
       </div>
-      {visibility === 'private' && <div style={{ height: '49px' }}></div>}
-      {visibility === 'public' && (
-        <div style={{ height: '49px' }} className="top-margin left-margin">
+
+      <div style={{ height: '32px' }} className="top-margin left-margin">
+        {visibility === 'public' && (
           <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>
             {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
           </Checkbox>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };
