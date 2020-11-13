@@ -44,8 +44,6 @@ class Upload
 
         $upload_status["file"] = $file;
 
-        $this->verifyContext($upload_status, $file, $context);
-
         $upload_status["filesize"] = filesize($file['tmp_name']);
 
         //Create directory if doesnt exists

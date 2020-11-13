@@ -40,6 +40,7 @@ export class MessagesListUtils extends Observable {
   highlighted: string = '';
   fixBottom: boolean = true;
   showScrollDown: boolean = false;
+  showGradient: boolean = false;
   currentScrollTop: number = 0;
   currentScrollHeight: number = 0;
   messagesContainerNodeScrollTop: number = 0;
@@ -465,19 +466,22 @@ export class MessagesListUtils extends Observable {
       }
     }
 
-    if (
-      evt.clientHeight + evt.scrollTop >= evt.scrollHeight - 100 &&
+    const gradient = !(
+      evt.clientHeight + evt.scrollTop >= evt.scrollHeight - 40 &&
       this.serverService.hasLastMessage()
-    ) {
-      if (this.showScrollDown) {
-        this.showScrollDown = false;
-        this.notify();
-      }
-    } else {
-      if (!this.showScrollDown) {
-        this.showScrollDown = true;
-        this.notify();
-      }
+    );
+    if (this.showGradient !== gradient) {
+      this.showGradient = gradient;
+      this.notify();
+    }
+
+    const scrollDown = !(
+      evt.clientHeight + evt.scrollTop >= evt.scrollHeight - 200 &&
+      this.serverService.hasLastMessage()
+    );
+    if (this.showScrollDown !== scrollDown) {
+      this.showScrollDown = gradient;
+      this.notify();
     }
   }
 }

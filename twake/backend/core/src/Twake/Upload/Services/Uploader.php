@@ -11,12 +11,14 @@ class Uploader
     var $doctrine;
     var $uploadService;
     var $modifiersService;
+    var $tempFolder;
 
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->uploadService = $app->getServices()->get("app.upload");
         $this->modifiersService = $app->getServices()->get("app.images_modifiers");
+        $this->tempFolder = $app->getContainer()->getParameter("storage.drive_tmp_folder");
     }
 
     /**
@@ -74,22 +76,35 @@ class Uploader
 
         $orm = $this->doctrine;
 
-        $file = new File();
 
-        $file->setType($context);
+        $this->uploadService->verifyContext($upload_status, $realfile, $contexts[$context]);
+        if ($upload_status["status"] != "error") {
 
+            $file = new File();
 
-        $newfilename = md5(date("U") . $realfile["tmp_name"] . $realfile["name"]) . "." . $this->getExtension($realfile["name"]);
-        $file->setName($newfilename);
-        $file->setRealName($realfile["name"]);
-        $file->setSizes($contexts[$context]['sizes']);
+            $file->setType($context);
 
 
-        $this->uploadService->setImageModifiers($this->modifiersService);
+            $newfilename = md5(date("U") . $realfile["tmp_name"] . $realfile["name"]) . "." . $this->getExtension($realfile["name"]);
+            $file->setName($newfilename);
+            $file->setRealName($realfile["name"]);
+            $file->setSizes($contexts[$context]['sizes']);
 
-        $upload_status = $this->upload($realfile, $file, $context); //Upload original
+            $this->uploadService->setImageModifiers($this->modifiersService);
 
-        $file->setWeight($upload_status['filesize']);
+            $tmpFile = $this->tempFolder . "thumb-" . date("U") . "-" . $currentUser->getId() . "-" . $realfile["name"];
+            move_uploaded_file($realfile["tmp_name"], $tmpFile);
+
+            $this->modifiersService->setMax_dimension(192);
+            $this->modifiersService->draw($tmpFile, $tmpFile);
+
+            $upload_status = $this->upload($tmpFile, $file, $context); //Upload thumbnail
+
+            @unlink($tmpFile);
+
+            $file->setWeight($upload_status['filesize']);
+
+        }
 
         if ($upload_status["status"] == "success") {
 
