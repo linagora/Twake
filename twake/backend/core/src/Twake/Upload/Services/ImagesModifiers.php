@@ -158,6 +158,10 @@ class ImagesModifiers
             $img->writeImage();
 
             $img = $f($image_path);
+            imagealphablending($img_new, true);
+            imagesavealpha($img_new, true);
+            $whiteBackground = imagecolorallocatealpha($img_new, 255, 255, 255, 0);
+            imagefill($img_new,0,0,$whiteBackground); // fill the background with white
             imagecopyresampled($img_new, $img, 0, 0, 0, 0, $img_new_w, $img_new_h, $img_w, $img_h);
             imagedestroy($img);
         } else {
@@ -197,25 +201,25 @@ class ImagesModifiers
                 $image->flopImage();
                 break;
             case \Imagick::ORIENTATION_BOTTOMRIGHT:
-                $image->rotateImage("#000", 180);
+                $image->rotateImage("#FFF", 180);
                 break;
             case \Imagick::ORIENTATION_BOTTOMLEFT:
                 $image->flopImage();
-                $image->rotateImage("#000", 180);
+                $image->rotateImage("#FFF", 180);
                 break;
             case \Imagick::ORIENTATION_LEFTTOP:
                 $image->flopImage();
-                $image->rotateImage("#000", -90);
+                $image->rotateImage("#FFF", -90);
                 break;
             case \Imagick::ORIENTATION_RIGHTTOP:
-                $image->rotateImage("#000", 90);
+                $image->rotateImage("#FFF", 90);
                 break;
             case \Imagick::ORIENTATION_RIGHTBOTTOM:
                 $image->flopImage();
-                $image->rotateImage("#000", 90);
+                $image->rotateImage("#FFF", 90);
                 break;
             case \Imagick::ORIENTATION_LEFTBOTTOM:
-                $image->rotateImage("#000", -90);
+                $image->rotateImage("#FFF", -90);
                 break;
             default: // Invalid orientation
                 break;

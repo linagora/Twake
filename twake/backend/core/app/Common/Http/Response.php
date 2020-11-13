@@ -30,6 +30,11 @@ class Response
         $this->headers->reset($headers);
     }
 
+    public function getCookies()
+    {
+        return $this->cookies;
+    }
+
     public function setCookie(Cookie $cookie)
     {
         $this->cookies[$cookie->getName()] = $cookie;

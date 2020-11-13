@@ -304,6 +304,10 @@ export class MessagesListServerUtils extends Observable {
 
     const wasAtEnd = this.hasLastMessage();
 
+    this.lastLoadedMessageId = Numbers.maxTimeuuid(
+      this.lastLoadedMessageId,
+      '00000000-0000-1000-0000-000000000000',
+    );
     messages.forEach(item => {
       this.lastLoadedMessageId = Numbers.maxTimeuuid(this.lastLoadedMessageId, item.id);
       this.firstLoadedMessageId = Numbers.minTimeuuid(this.firstLoadedMessageId, item.id);

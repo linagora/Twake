@@ -3,6 +3,8 @@ import api from 'services/api.js';
 import Observable from 'services/observable.js';
 import SocketCluster from 'services/socketcluster/socketcluster.js';
 import CryptoJS from 'crypto-js';
+import Collections from 'services/Collections/Collections';
+import LoginService from 'services/login/login';
 
 import Globals from 'services/Globals.js';
 
@@ -26,6 +28,7 @@ class Websocket extends Observable {
 
     this.firstTime = true;
     this.last_reconnect_call = new Date();
+    this.last_reconnect_call_if_needed = new Date();
 
     Globals.window.websocketsManager = this;
     this.autobahn = SocketCluster;
@@ -53,7 +56,7 @@ class Websocket extends Observable {
     Globals.window.addEventListener(
       'focus',
       (() => {
-        this.reconnectIfNeeded(600);
+        this.reconnectIfNeeded(60);
         clearTimeout(this.deconnectionBlurTimeout);
         this.didFocusedLastMinute = true;
         this.window_focus = true;
@@ -124,11 +127,24 @@ class Websocket extends Observable {
     }
   }
 
-  reconnectIfNeeded(seconds = 300) {
-    if (new Date().getTime() - this.last_reconnect_call.getTime() > seconds * 1000) {
-      //5 minutes
-      this.last_reconnect_call = new Date();
-      this.reconnect();
+  reconnectIfNeeded(seconds = 30) {
+    if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
+      //30 seconds
+      Collections.get('channels').reload();
+      LoginService.updateUser();
+
+      console.log(
+        'Refresh notifications',
+        new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
+      );
+
+      if (
+        new Date().getTime() - this.last_reconnect_call_if_needed.getTime() >
+        seconds * 1000 * 5
+      ) {
+        this.reconnect();
+      }
+      this.last_reconnect_call_if_needed = new Date();
     }
   }
 
