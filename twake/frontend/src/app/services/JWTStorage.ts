@@ -61,7 +61,7 @@ class JWTStorage {
   }
 
   authenticateCall(callback: () => void) {
-    if (this.isAccessExpired()) {
+    if (this.isAccessExpired() && LoginService.currentUserId) {
       LoginService.updateUser(callback);
     } else {
       callback();

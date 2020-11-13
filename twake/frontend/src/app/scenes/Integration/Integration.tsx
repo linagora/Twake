@@ -4,16 +4,16 @@ import Apps from './Components/Apps.js';
 import './Integration.scss';
 
 export default (props: { children: React.ReactNode }): JSX.Element => {
-  const [server_infos_loaded, server_infos] = InitService.useWatcher(async () => [
-    InitService.server_infos_loaded,
-    InitService.server_infos,
-  ]) || [false, {}];
+  const server_infos =
+    InitService.useWatcher(
+      async () => InitService.server_infos_loaded && InitService.server_infos,
+    ) || false;
 
-  if (!server_infos_loaded) {
-    return <>{props.children}</>;
+  if (!server_infos) {
+    return <></>;
   }
 
-  let branding = server_infos?.branding || {};
+  let branding = (server_infos && server_infos?.branding) || {};
 
   if (!(branding || {}).name) {
     return <>{props.children}</>;
