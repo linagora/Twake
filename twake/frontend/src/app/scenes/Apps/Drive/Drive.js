@@ -507,19 +507,6 @@ export default class Drive extends Component {
             ],
             onClick: () => {},
           },
-          /*            {type: "menu", text: "Labels...", submenu_replace: true, submenu: [
-              {type:"title", text: "Labels"},
-              {type:"react-element", reactElement: (level)=><div>
-                <TagPicker saveButton canCreate={true} value={this.state.element.tags || []} onChange={(values)=>{
-                  MenuManager.closeMenu();
-                  var selected = SelectionsManager.selected_per_type[this.state.app_drive_service.current_collection_key_channels[this.drive_channel]] || {};
-                  Object.keys(selected).forEach((obj_id)=>{
-                    selected[obj_id].tags = values;
-                    DriveService.save(selected[obj_id], this.state.app_drive_service.current_collection_key_channels[this.drive_channel]);
-                  });
-                }} />
-              </div>}
-            ], onClick: ()=>{} }*/
         ]);
 
         general_menu.push({

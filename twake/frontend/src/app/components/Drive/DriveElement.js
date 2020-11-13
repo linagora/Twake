@@ -378,6 +378,7 @@ export default class DriveElement extends React.Component {
                   ),
                 },
                 {
+                  //TODO menu react-element to refactor
                   type: 'react-element',
                   reactElement: () => (
                     <div>

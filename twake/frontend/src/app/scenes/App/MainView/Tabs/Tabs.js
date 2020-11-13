@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
@@ -16,6 +16,45 @@ import DroppableZone from 'components/Draggable/DroppableZone.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
+
+const TabEditor = props => {
+  const [tabName, setTabName] = useState(props.value || '');
+  return (
+    <>
+      <div>
+        <Input
+          className="medium full_width bottom-margin"
+          refInput={node => (node ? node.focus() : '')}
+          type="text"
+          defaultValue={tabName}
+          onChange={evt => setTabName(evt.target.value)}
+          placeholder={Languages.t(
+            'scenes.app.mainview.tabs.placeholder_name_tab',
+            [],
+            "Nom de l'onglet",
+          )}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              props.editTab(tabName);
+            }
+          }}
+        />
+      </div>
+      <div className="menu-buttons">
+        <Button
+          disabled={tabName.length <= 0}
+          type="button"
+          value={
+            props.edition
+              ? Languages.t('scenes.app.mainview.tabs.save_tab', [], 'Enregistrer')
+              : Languages.t('scenes.app.mainview.tabs.add_tab', [], 'Ajouter')
+          }
+          onClick={() => props.editTab(tabName)}
+        />
+      </div>
+    </>
+  );
+};
 
 export default class Tabs extends Component {
   constructor() {
@@ -54,41 +93,13 @@ export default class Tabs extends Component {
       { type: 'title', text: app.name },
       {
         type: 'react-element',
-        reactElement: () => [
-          <div>
-            <Input
-              className="medium full_width bottom-margin"
-              refInput={node => (node ? node.focus() : '')}
-              type="text"
-              defaultValue={id ? tab.name : ''}
-              onChange={evt => {
-                this.setState({ tab_name: evt.target.value });
-              }}
-              placeholder={Languages.t(
-                'scenes.app.mainview.tabs.placeholder_name_tab',
-                [],
-                "Nom de l'onglet",
-              )}
-              onKeyPress={e => {
-                if (e.key === 'Enter') {
-                  this.editTab(id, this.state.tab_name, app.id);
-                }
-              }}
-            />
-          </div>,
-          <div className="menu-buttons">
-            <Button
-              disabled={this.state.tab_name.length <= 0}
-              type="button"
-              value={
-                id
-                  ? Languages.t('scenes.app.mainview.tabs.save_tab', [], 'Enregistrer')
-                  : Languages.t('scenes.app.mainview.tabs.add_tab', [], 'Ajouter')
-              }
-              onClick={() => this.editTab(id, this.state.tab_name, app.id)}
-            />
-          </div>,
-        ],
+        reactElement: () => (
+          <TabEditor
+            edition={!!id}
+            value={id ? tab.name : ''}
+            editTab={tabName => this.editTab(id, tabName, app.id)}
+          />
+        ),
       },
     ];
     MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'center');
@@ -172,7 +183,6 @@ export default class Tabs extends Component {
           !this.props.channel.direct && (
             <Menu
               menu={[
-                //{type:"menu", text:"Rechercher"},
                 {
                   type: 'menu',
                   text: Languages.t(
