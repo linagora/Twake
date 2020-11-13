@@ -52,6 +52,68 @@ const RenameInput = props => {
   );
 };
 
+const PublicSharing = props => {
+  Collections.get('drive').useListener(useState);
+  const element = Collections.get('drive').find(props.id);
+  if (!element) {
+    return <div />;
+  }
+  return (
+    <div>
+      {(element.acces_info || {}).token && (
+        <div>
+          <InputWithClipBoard
+            className={'bottom-margin full_width'}
+            value={
+              Globals.window.api_root_url +
+              '?view=drive_public_access&workspace_id=' +
+              element.workspace_id +
+              '&element_id=' +
+              element.id +
+              '&public_access_token=' +
+              (element.acces_info || {}).token
+            }
+            disabled={false}
+          />
+          <br />
+          <br />
+          <Button
+            className="danger"
+            onClick={() => {
+              AlertManager.confirm(() => {
+                DriveService.updateAccess(
+                  element,
+                  { public_access: false },
+                  props.driveCollectionKey,
+                );
+              });
+            }}
+            value={Languages.t(
+              'components.drive.right_preview.suppress_link',
+              [],
+              'Supprimer le lien',
+            )}
+          />
+        </div>
+      )}
+      {!(element.acces_info || {}).token && (
+        <div>
+          <Button
+            onClick={() => {
+              DriveService.updateAccess(element, { public_access: true }, props.driveCollectionKey);
+            }}
+            value={Languages.t(
+              'components.drive.right_preview.create_link',
+              [],
+              "Créer un lien d'accès",
+            )}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default class DriveElement extends React.Component {
   constructor(props) {
     super();
@@ -381,60 +443,11 @@ export default class DriveElement extends React.Component {
                   //TODO menu react-element to refactor
                   type: 'react-element',
                   reactElement: () => (
-                    <div>
-                      {(this.state.element.acces_info || {}).token && (
-                        <div>
-                          <InputWithClipBoard
-                            className={'bottom-margin full_width'}
-                            value={
-                              Globals.window.api_root_url +
-                              '?view=drive_public_access&workspace_id=' +
-                              this.state.element.workspace_id +
-                              '&element_id=' +
-                              this.state.element.id +
-                              '&public_access_token=' +
-                              (this.state.element.acces_info || {}).token
-                            }
-                            disabled={false}
-                          />
-                          <Button
-                            className="danger"
-                            onClick={() => {
-                              AlertManager.confirm(() => {
-                                DriveService.updateAccess(
-                                  this.state.element,
-                                  { public_access: false },
-                                  this.props.driveCollectionKey || this.driveCollectionKey,
-                                );
-                              });
-                            }}
-                            value={Languages.t(
-                              'components.drive.right_preview.suppress_link',
-                              [],
-                              'Supprimer le lien',
-                            )}
-                          />
-                        </div>
-                      )}
-                      {!(this.state.element.acces_info || {}).token && (
-                        <div>
-                          <Button
-                            onClick={() => {
-                              DriveService.updateAccess(
-                                this.state.element,
-                                { public_access: true },
-                                this.props.driveCollectionKey || this.driveCollectionKey,
-                              );
-                            }}
-                            value={Languages.t(
-                              'components.drive.right_preview.create_link',
-                              [],
-                              "Créer un lien d'accès",
-                            )}
-                          />
-                        </div>
-                      )}
-                    </div>
+                    <PublicSharing
+                      id={this.state.element.id}
+                      element={this.state.element}
+                      driveCollectionKey={this.props.driveCollectionKey || this.driveCollectionKey}
+                    />
                   ),
                 },
               ],
