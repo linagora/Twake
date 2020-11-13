@@ -55,20 +55,31 @@ class GroupedQueryApi {
 const GroupedQueryApiInstance = new GroupedQueryApi();
 
 export default class Api {
-  static get(route: string, callback: any = false, raw: boolean = false) {
+  static get(
+    route: string,
+    callback: any = false,
+    raw: boolean = false,
+    options: { disableJWTAuthentication?: boolean } = {},
+  ) {
     return new Promise((resolve, reject) => {
       //@ts-ignore old code to fix
       route = Globals.window.api_root_url + '/ajax/' + route;
 
-      Requests.request('get', route, '', (resp: any) => {
-        if (raw) {
-          resolve(resp);
-          if (callback) callback(resp);
-          return;
-        }
-        resolve(JSON.parse(resp));
-        if (callback) callback(JSON.parse(resp));
-      });
+      Requests.request(
+        'get',
+        route,
+        '',
+        (resp: any) => {
+          if (raw) {
+            resolve(resp);
+            if (callback) callback(resp);
+            return;
+          }
+          resolve(JSON.parse(resp));
+          if (callback) callback(JSON.parse(resp));
+        },
+        options,
+      );
     });
   }
 

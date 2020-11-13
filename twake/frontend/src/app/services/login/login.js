@@ -1,5 +1,4 @@
 import Observable from 'app/services/Depreciated/observable.js';
-import Websocket from 'services/websocket.js';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
 import WindowState from 'services/utils/window.js';
@@ -217,12 +216,15 @@ class Login extends Observable {
             }
             that.login_loading = false;
             that.init();
+            return RouterServices.history.replace(RouterServices.pathnames.LOGIN);
           } else {
             that.login_error = true;
             that.login_loading = false;
             that.notify();
           }
         },
+        false,
+        { disableJWTAuthentication: true },
       );
     });
   }
@@ -272,6 +274,7 @@ class Login extends Observable {
               }
             }
           }
+          RouterServices.history.push(RouterServices.pathnames.LOGIN);
         },
       );
     });

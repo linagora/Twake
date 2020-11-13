@@ -24,7 +24,7 @@ class InitService extends Observable {
   public app_ready: boolean = false;
 
   async init() {
-    const res: any = await Api.get('core/version');
+    const res: any = await Api.get('core/version', null, false, { disableJWTAuthentication: true });
 
     if (!res.data) {
       res.data = {};

@@ -19,20 +19,16 @@ type Props = {
 const { Title } = Typography;
 
 const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
-  const { workspaceId } = RouterServices.useStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
   let newChannel: ChannelType = {
     name: '',
     icon: '',
-    visibility: 'private',
-    // TODO find a better way to get company id and workspace id
-    company_id: OldCollections.get('workspaces').find(workspaceId)?.group?.id,
+    visibility: 'public',
+    company_id: companyId,
     workspace_id: workspaceId,
   };
-
-  const collectionPath: string = `/channels/v1/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
-  const ChannelsCollections = Collections.get(collectionPath);
 
   const onChange = (channelEntries: ChannelType): ChannelType => {
     setDisabled(channelEntries.name?.length ? true : false);
@@ -40,6 +36,9 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
   };
 
   const upsertChannel = async (): Promise<any> => {
+    const collectionPath = `/channels/v1/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
+    const ChannelsCollections = Collections.get(collectionPath);
+
     await ChannelsCollections.upsert(new ChannelResource(newChannel));
     return ModalManager.closeAll();
   };
@@ -60,7 +59,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
           }}
           disabled={!disabled}
           onClick={() => {
-            //upsertChannel()
+            upsertChannel();
             return ModalManager.open(
               <ChannelMembersEditor
                 channelName={newChannel.name}
