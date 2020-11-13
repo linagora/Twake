@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
@@ -17,6 +17,40 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
+
+const RenameInput = props => {
+  const [value, setValue] = useState(props.value);
+  return (
+    <div>
+      <div className="menu-buttons">
+        <Input
+          onEnter={() => {
+            if ((value || '').trim().length > 0) {
+              props.rename(value);
+            }
+          }}
+          className="full_width bottom-margin"
+          onEchap={() => {
+            MenuManager.closeMenu();
+          }}
+          autoFocus
+          value={value}
+          onChange={evt => setValue(evt.target.value)}
+        />
+      </div>
+      <div className="menu-buttons">
+        <Button
+          disabled={(value || '').trim().length <= 0}
+          type="button"
+          value={Languages.t('general.save', [], 'Enregistrer')}
+          onClick={() => {
+            props.rename(value);
+          }}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default class DriveElement extends React.Component {
   constructor(props) {
@@ -187,12 +221,12 @@ export default class DriveElement extends React.Component {
     );
   }
 
-  rename() {
+  rename(new_name) {
     if (!this.state.element.is_directory) {
-      this.state.new_name = this.state.new_name + '.' + this.state.element.extension;
+      new_name = new_name + '.' + this.state.element.extension;
     }
-    this.state.element.name = this.state.new_name || this.state.element.name;
-    this.state.new_name = undefined;
+    this.state.element.name = new_name || this.state.element.name;
+    new_name = undefined;
     MenuManager.closeMenu();
     DriveService.save(this.state.element, this.props.driveCollectionKey || this.driveCollectionKey);
   }
@@ -311,38 +345,16 @@ export default class DriveElement extends React.Component {
                 {
                   type: 'react-element',
                   reactElement: () => (
-                    <div>
-                      <div className="menu-buttons">
-                        <Input
-                          onEnter={() => {
-                            this.rename();
-                          }}
-                          className="full_width bottom-margin"
-                          onEchap={() => {
-                            MenuManager.closeMenu();
-                          }}
-                          autoFocus
-                          value={
-                            this.state.new_name === undefined
-                              ? this.state.element.is_directory
-                                ? this.state.element.name
-                                : this.state.element.name.replace(/\.[^.]*$/, '')
-                              : this.state.new_name
-                          }
-                          onChange={evt => this.setState({ new_name: evt.target.value })}
-                        />
-                      </div>
-                      <div className="menu-buttons">
-                        <Button
-                          disabled={(this.state.new_name || '').length <= 0}
-                          type="button"
-                          value={Languages.t('general.save', [], 'Enregistrer')}
-                          onClick={() => {
-                            this.rename();
-                          }}
-                        />
-                      </div>
-                    </div>
+                    <RenameInput
+                      rename={name => {
+                        this.rename(name);
+                      }}
+                      value={
+                        this.state.element.is_directory
+                          ? this.state.element.name
+                          : this.state.element.name.replace(/\.[^.]*$/, '')
+                      }
+                    />
                   ),
                 },
               ],
