@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'services/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import Loader from 'components/Loader/Loader.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
-import Input from 'components/Inputs/Input.js';
 
 import Numbers from 'services/utils/Numbers.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
@@ -27,7 +26,6 @@ import AlertManager from 'services/AlertManager/AlertManager.js';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
 import Viewer from './Viewer/Viewer.js';
-import Button from 'components/Buttons/Button.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
 import Globals from 'services/Globals.js';
@@ -35,6 +33,8 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+
+import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
 
 export default class Drive extends Component {
   constructor() {
@@ -206,18 +206,17 @@ export default class Drive extends Component {
         return list;
       });
   }
-  createFolder() {
-    if (!(this.state.new_directory_name || '').trim()) {
+  createFolder(new_directory_name) {
+    if (!(new_directory_name || '').trim()) {
       return;
     }
     Menu.closeAll();
     DriveService.createDirectory(
       this.state.workspaces.currentWorkspaceId,
-      this.state.new_directory_name,
+      new_directory_name,
       this.state.app_drive_service.current_directory_channels[this.drive_channel],
       this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
     );
-    this.setState({ new_directory_name: '' });
   }
 
   changeCurrentDirectory(directory) {
@@ -227,11 +226,10 @@ export default class Drive extends Component {
     DriveService.changeCurrentDirectory(this.drive_channel, directory);
   }
 
-  createFile(info) {
+  createFile(info, new_file_name) {
     var url = info.url;
-    this.state.new_file_name = this.state.new_file_name + '.' + info.filename.replace(/^.*\./, '');
-    var name = this.state.new_file_name || info.filename;
-    this.state.new_file_name = undefined;
+    new_file_name = new_file_name + '.' + info.filename.replace(/^.*\./, '');
+    var name = new_file_name || info.filename;
     DriveService.createFile(
       this.state.workspaces.currentWorkspaceId,
       name,
@@ -242,14 +240,14 @@ export default class Drive extends Component {
     MenusManager.closeMenu();
   }
 
-  createLinkFile(info) {
-    var name = (this.state.new_file_name || 'Untitled') + '.url';
-    var url = this.state.new_file_link || '';
+  createLinkFile(new_file_name, new_file_link) {
+    var name = (new_file_name || 'Untitled') + '.url';
+    var url = new_file_link || '';
     if (!url) {
       return;
     }
-    this.state.new_file_name = undefined;
-    this.state.new_file_link = undefined;
+    new_file_name = undefined;
+    new_file_link = undefined;
     DriveService.createFile(
       this.state.workspaces.currentWorkspaceId,
       name,
@@ -394,36 +392,10 @@ export default class Drive extends Component {
                 type: 'react-element',
                 reactElement: () => {
                   return (
-                    <div>
-                      <div className="menu-buttons">
-                        <Input
-                          onEnter={() => {
-                            this.createFile(info);
-                          }}
-                          onEchap={() => {
-                            MenusManager.closeMenu();
-                          }}
-                          autoFocus
-                          value={
-                            this.state.new_file_name === undefined
-                              ? info.filename.replace(/\.[^.]*$/, '')
-                              : this.state.new_file_name
-                          }
-                          onChange={evt => this.setState({ new_file_name: evt.target.value })}
-                          className="full_width bottom-margin"
-                        />
-                      </div>
-                      <div className="menu-buttons">
-                        <Button
-                          disabled={(this.state.new_file_name || '').length <= 0}
-                          type="button"
-                          value={Languages.t('scenes.apps.drive.add_button', [], 'Ajouter')}
-                          onClick={() => {
-                            this.createFile(info);
-                          }}
-                        />
-                      </div>
-                    </div>
+                    <NewFileInput
+                      value={info.filename.replace(/\.[^.]*$/, '')}
+                      createFile={name => this.createFile(info, name)}
+                    />
                   );
                 },
               },
@@ -445,42 +417,7 @@ export default class Drive extends Component {
         {
           type: 'react-element',
           reactElement: () => {
-            return (
-              <div>
-                <div className="menu-buttons">
-                  <Input
-                    onEchap={() => {
-                      MenusManager.closeMenu();
-                    }}
-                    autoFocus
-                    value={
-                      this.state.new_file_name === undefined ? 'Untitled' : this.state.new_file_name
-                    }
-                    onChange={evt => this.setState({ new_file_name: evt.target.value })}
-                    className="full_width bottom-margin"
-                  />
-                  <Input
-                    onEchap={() => {
-                      MenusManager.closeMenu();
-                    }}
-                    placeholder="http://google.com"
-                    value={this.state.new_file_link === undefined ? '' : this.state.new_file_link}
-                    onChange={evt => this.setState({ new_file_link: evt.target.value })}
-                    className="full_width bottom-margin"
-                  />
-                </div>
-                <div className="menu-buttons">
-                  <Button
-                    disabled={(this.state.new_file_name || '').length <= 0}
-                    type="button"
-                    value={Languages.t('scenes.apps.drive.add_button', [], 'Ajouter')}
-                    onClick={() => {
-                      this.createLinkFile({});
-                    }}
-                  />
-                </div>
-              </div>
-            );
+            return <NewLinkInput createLinkFile={(a, b) => this.createLinkFile(a, b)} />;
           },
         },
       ],
@@ -693,37 +630,12 @@ export default class Drive extends Component {
             type: 'react-element',
             reactElement: () => {
               return (
-                <div className="">
-                  <div style={{ padding: '0px' }}>
-                    <Input
-                      type="text"
-                      autoFocus
-                      className="medium bottom-margin full_width"
-                      onEchap={() => Menu.closeAll()}
-                      onEnter={() => {
-                        this.createFolder();
-                      }}
-                      placeholder={Languages.t(
-                        'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
-                        [],
-                        'Name',
-                      )}
-                      value={this.state.new_directory_name}
-                      onChange={evt => this.setState({ new_directory_name: evt.target.value })}
-                    />
-                  </div>
-                  <div className="menu-buttons">
-                    <Button
-                      className="small"
-                      disabled=""
-                      type="button"
-                      value={Languages.t('scenes.apps.drive.create_folder_button', [], 'Créer')}
-                      onClick={() => {
-                        this.createFolder();
-                      }}
-                    />
-                  </div>
-                </div>
+                <NewFolderInput
+                  value={''}
+                  createFolder={name => {
+                    this.createFolder(name);
+                  }}
+                />
               );
             },
           },
