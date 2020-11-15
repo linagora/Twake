@@ -44,7 +44,7 @@ class Upload
 
         $upload_status["file"] = $file;
 
-        $upload_status["filesize"] = filesize($file['tmp_name']);
+        $upload_status["filesize"] = filesize($file);
 
         //Create directory if doesnt exists
         if (!file_exists(dirname($path))) {
@@ -55,7 +55,7 @@ class Upload
         $moved = false;
         if ($upload_status["status"] != "error") {
             set_time_limit(600);
-            $moved = move_uploaded_file($file["tmp_name"], $path);
+            $moved = rename($file, $path);
         }
 
         if ($moved) {
