@@ -1,11 +1,5 @@
 import { Type } from "class-transformer";
-
-export enum VisibilityEnum {
-  PRIVATE = "private",
-  PUBLIC = "public",
-  DIRECT = "direct",
-}
-
+import { ChannelVisibility, ChannelType } from "../types";
 export class Channel {
   // uuid-v4
   @Type(() => String)
@@ -13,7 +7,7 @@ export class Channel {
 
   // "uuid-v4" | "direct"
   @Type(() => String)
-  workspace_id: string;
+  workspace_id: string | ChannelType.DIRECT;
 
   @Type(() => String)
   id: string;
@@ -26,7 +20,7 @@ export class Channel {
 
   channel_group: string;
 
-  visibility: VisibilityEnum;
+  visibility: ChannelVisibility;
 
   is_default: boolean;
 
@@ -37,4 +31,8 @@ export class Channel {
   // uuid
   @Type(() => String)
   owner: string;
+
+  static isDirect(channel: Channel): boolean {
+    return channel.workspace_id === ChannelType.DIRECT;
+  }
 }

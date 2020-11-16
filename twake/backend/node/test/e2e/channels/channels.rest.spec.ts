@@ -6,11 +6,11 @@ import {
   ChannelListResponse,
   ChannelGetResponse,
   ChannelCreateResponse,
-  ChannelDeleteResponse,
   ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { Channel, VisibilityEnum } from "../../../src/services/channels/entities";
+import { Channel } from "../../../src/services/channels/entities";
+import { ChannelVisibility } from "../../../src/services/channels/types";
 import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { User } from "../../../src/services/types";
@@ -63,7 +63,7 @@ describe("The /internal/services/channels/v1 API", () => {
     channel.company_id = platform.workspace.company_id;
     channel.workspace_id = platform.workspace.workspace_id;
     channel.is_default = false;
-    channel.visibility = VisibilityEnum.PRIVATE;
+    channel.visibility = ChannelVisibility.PRIVATE;
     channel.archived = false;
     channel.owner = owner;
 
@@ -528,7 +528,7 @@ describe("The /internal/services/channels/v1 API", () => {
         );
 
         const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
         });
 
         expect(updatedChannel).toMatchObject({
@@ -537,7 +537,7 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           is_default: channel.is_default,
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           archived: channel.archived,
           owner: channel.owner,
         });
@@ -581,7 +581,7 @@ describe("The /internal/services/channels/v1 API", () => {
         );
 
         const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           is_default: true,
           archived: true,
         });
@@ -592,7 +592,7 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           is_default: true,
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           archived: true,
           owner: channel.owner,
         });
@@ -645,7 +645,7 @@ describe("The /internal/services/channels/v1 API", () => {
         );
 
         const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
         });
 
         expect(updatedChannel).toMatchObject({
@@ -654,7 +654,7 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           is_default: channel.is_default,
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           archived: channel.archived,
           owner: channel.owner,
         });
@@ -700,7 +700,7 @@ describe("The /internal/services/channels/v1 API", () => {
         );
 
         const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           is_default: true,
           archived: true,
         });
@@ -711,7 +711,7 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           is_default: true,
-          visibility: VisibilityEnum.PUBLIC,
+          visibility: ChannelVisibility.PUBLIC,
           archived: true,
           owner: channel.owner,
         });
@@ -761,7 +761,7 @@ describe("The /internal/services/channels/v1 API", () => {
           jwtToken,
           creationResult.entity.id,
           {
-            visibility: VisibilityEnum.PUBLIC,
+            visibility: ChannelVisibility.PUBLIC,
           },
           400,
         );
@@ -863,6 +863,25 @@ describe("The /internal/services/channels/v1 API", () => {
         platform.currentUser.isWorkspaceAdmin = true;
       });
 
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
+
       it("should be able to delete any channel of the workspace", async done => {
         const jwtToken = await platform.auth.getJWTToken();
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
@@ -885,6 +904,25 @@ describe("The /internal/services/channels/v1 API", () => {
     describe("When user is channel owner", () => {
       beforeEach(() => {
         platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel(platform.currentUser.id);
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
       });
 
       it("should be able to delete the channel", async done => {
@@ -912,6 +950,25 @@ describe("The /internal/services/channels/v1 API", () => {
       });
 
       it("should not be able to delete the channel", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
+
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
         const jwtToken = await platform.auth.getJWTToken();
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel();

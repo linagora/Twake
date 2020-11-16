@@ -21,7 +21,7 @@ import { getChannelPath, getRoomName } from "../realtime";
 import { WorkspaceExecutionContext } from "../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../utils/workspace";
 import { User } from "../../../services/types";
-import { pickBy } from "lodash";
+import { cloneDeep, pickBy } from "lodash";
 
 export function getService(databaseService: DatabaseServiceAPI): ChannelServiceAPI {
   return new Service(getServiceInstance(databaseService));
@@ -100,7 +100,7 @@ class Service implements ChannelServiceAPI {
         throw new CrudExeption("Current user can not update requested fields", 400);
       }
 
-      channelToSave = { ...channelToUpdate };
+      channelToSave = cloneDeep(channelToUpdate);
 
       updatableFields.forEach(field => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,6 +153,10 @@ class Service implements ChannelServiceAPI {
 
     if (!channelToDelete) {
       throw new CrudExeption("Channel not found", 404);
+    }
+
+    if (Channel.isDirect(channelToDelete)) {
+      throw new CrudExeption("Direct channel can not be deleted", 400);
     }
 
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
