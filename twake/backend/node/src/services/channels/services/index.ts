@@ -162,7 +162,11 @@ class Service implements ChannelServiceAPI {
       throw new CrudExeption("Channel can not be deleted", 400);
     }
 
-    return this.service.delete(pk, context);
+    const result = await this.service.delete(pk, context);
+
+    await this.onDeleted(result);
+
+    return result;
   }
 
   list(pagination: Pagination, context: WorkspaceExecutionContext): Promise<ListResult<Channel>> {
@@ -200,6 +204,11 @@ class Service implements ChannelServiceAPI {
       is_default: !!next.entity.is_default,
     };
     console.log("PUSH CREATE", pushUpdates);
+    return next;
+  }
+
+  async onDeleted(next: DeleteResult<Channel>): Promise<DeleteResult<ChannelPrimaryKey>> {
+    console.log("PUSH DELETE ASYNC");
     return next;
   }
 }
