@@ -108,8 +108,9 @@ export interface ExecutionContext {
 }
 
 export class CrudExeption extends Error {
-  constructor(readonly message: string, readonly status: number) {
+  constructor(readonly details: string, readonly status: number) {
     super();
+    this.message = details;
   }
 }
 

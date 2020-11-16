@@ -24,7 +24,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     // TODO: Get server config from options
     this.server = fastify({
       logger: {
-        level: this.configuration.get<string>("logger.level", "info"),
+        level: this.configuration.get<string>("logger.level", "debug"),
       },
     });
     serverErrorHandler(this.server);

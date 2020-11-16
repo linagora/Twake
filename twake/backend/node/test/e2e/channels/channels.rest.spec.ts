@@ -51,6 +51,25 @@ describe("The /internal/services/channels/v1 API", () => {
     };
   }
 
+  /**
+   * Get a new channel instance
+   *
+   * @param owner will be a random uuidv4 if not defined
+   */
+  function getChannel(owner: string = uuidv4()): Channel {
+    const channel = new Channel();
+
+    channel.name = "Test Channel";
+    channel.company_id = platform.workspace.company_id;
+    channel.workspace_id = platform.workspace.workspace_id;
+    channel.is_default = false;
+    channel.visibility = VisibilityEnum.PRIVATE;
+    channel.archived = false;
+    channel.owner = owner;
+
+    return channel;
+  }
+
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
     it("should 400 when companyId is not valid", async done => {
       testAccess(
@@ -408,9 +427,6 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      console.log("UPDATE RESULT", response.statusCode);
-      console.log("LSLSLLS", response.body);
-
       const channelUpdateResult = deserialize(ChannelUpdateResponse, response.body);
 
       expect(channelUpdateResult.resource).toBeDefined();
@@ -436,22 +452,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      console.log(response.body);
-
       expect(response.statusCode).toEqual(expectedCode);
-    }
-
-    function getChannel(owner: string = uuidv4()): Channel {
-      const channel = new Channel();
-      channel.name = "Test Channel";
-      channel.company_id = platform.workspace.company_id;
-      channel.workspace_id = platform.workspace.workspace_id;
-      channel.is_default = false;
-      channel.visibility = VisibilityEnum.PRIVATE;
-      channel.archived = false;
-      channel.owner = owner;
-
-      return channel;
     }
 
     it("should 400 when companyId is not valid", async done => {
@@ -825,6 +826,22 @@ describe("The /internal/services/channels/v1 API", () => {
   });
 
   describe("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+    async function expectDeleteResult(
+      jwtToken: string,
+      url: string,
+      status: number,
+    ): Promise<void> {
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      expect(response.statusCode).toEqual(status);
+    }
+
     it("should 400 when companyId is not valid", async done => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
@@ -841,33 +858,76 @@ describe("The /internal/services/channels/v1 API", () => {
       );
     });
 
-    it("should delete a channel", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
-      const channel = new Channel();
-      channel.name = "Test Channel";
-      channel.company_id = platform.workspace.company_id;
-      channel.workspace_id = platform.workspace.workspace_id;
-
-      const creationResult = await channelService.save(channel, getContext({ id: channel.owner }));
-
-      const response = await platform.app.inject({
-        method: "DELETE",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
+    describe("When user is workspace administrator", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = true;
       });
 
-      expect(response.statusCode).toEqual(204);
-      const channelDeleteResult = deserialize(ChannelDeleteResponse, response.body);
+      it("should be able to delete any channel of the workspace", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
 
-      expect(channelDeleteResult.status === "success");
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
 
-      const deleteChannel = await channelService.get({ id: creationResult.entity.id });
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          204,
+        );
+        done();
+      });
+    });
 
-      expect(deleteChannel).toBeNull();
-      done();
+    describe("When user is channel owner", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should be able to delete the channel", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel(platform.currentUser.id);
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          204,
+        );
+        done();
+      });
+    });
+
+    describe("When user is not creator nor workspace administrator", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should not be able to delete the channel", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
     });
   });
 });

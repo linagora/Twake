@@ -157,28 +157,32 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ChannelDeleteResponse> {
-    const deleteResult = await this.service.delete(
-      this.getPrimaryKey(request),
-      this.getExecutionContext(request),
-    );
+    try {
+      const deleteResult = await this.service.delete(
+        this.getPrimaryKey(request),
+        this.getExecutionContext(request),
+      );
 
-    if (deleteResult.deleted) {
-      reply.code(204);
+      if (deleteResult.deleted) {
+        reply.code(204);
+
+        return {
+          status: "success",
+        };
+      }
 
       return {
-        status: "success",
+        status: "error",
       };
+    } catch (err) {
+      this.handleError(reply, err);
     }
-
-    return {
-      status: "error",
-    };
   }
 
   handleError(reply: FastifyReply, err: Error): void {
     if (err instanceof CrudExeption) {
       const crudException: CrudExeption = err;
-      throw reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
+      reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
     } else {
       throw err;
     }
