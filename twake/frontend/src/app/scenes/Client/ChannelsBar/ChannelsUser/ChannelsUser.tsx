@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import Languages from 'services/languages/languages.js';
 import Emojione from 'components/Emojione/Emojione';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -13,16 +12,20 @@ import Channel from '../Channel.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import MediumPopupComponent from 'app/services/Modal/ModalManager';
-import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup';
-
-import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
-import ChannelUI from 'components/Leftbar/Channel/Channel';
 import { useParams } from 'react-router-dom';
-import RouterServices from 'services/RouterServices';
 import OldCollections from 'services/Depreciated/Collections/Collections';
+import { ChannelType } from 'app/models/Channel';
+import user from 'services/user/user.js';
+
+import Languages from 'services/languages/languages.js';
+import RouterServices from 'services/RouterServices';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
+import DirectChannel from 'app/components/Leftbar/Channel/directChannel';
+
+import MediumPopupComponent from 'app/services/Modal/ModalManager';
+import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup';
+import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
 
 export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
@@ -51,22 +54,8 @@ export function ChannelsUser() {
         )}
         onAdd={() => openConv()}
       />
-      {directChannels.map(({ data }) => {
-        return (
-          <ChannelUI
-            key={data.id}
-            name={data.name || ''}
-            icon={data.icon || ''}
-            selected={false}
-            muted={data.user_member?.notification_level === 'none'}
-            favorite={data.user_member?.favorite || false}
-            unreadMessages={false}
-            visibility="direct"
-            notifications={data.messages_count || 0}
-            directMembers={data.direct_channel_members}
-            options={{}}
-          />
-        );
+      {directChannels.map(channel => {
+        return <DirectChannel key={channel.id} channel={channel.data} />;
       })}
     </div>
   );

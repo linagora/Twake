@@ -27,6 +27,7 @@ const NewDirectMessagesPopup: FC = () => {
       company_id: company_id,
       workspace_id: workspaceId,
       visibility: 'direct',
+      direct_channel_members: newUserDiscussion,
     };
 
     await ChannelsCollections.upsert(new ChannelResource(newDirectMessage), {

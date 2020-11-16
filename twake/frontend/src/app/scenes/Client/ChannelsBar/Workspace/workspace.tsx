@@ -74,18 +74,18 @@ export function Workspace() {
         <WorkspaceChannels
           key={'favoriteChannels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
-          channelsApp={channelCategory.favorite}
+          channels={channelCategory.favorite}
         />
       )}
       {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
         <WorkspaceChannels
           key={'channels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
-          channelsApp={channelCategory.workspace}
+          channels={channelCategory.workspace}
         />
       )}
       {groups.map((group, index) => (
-        <WorkspaceChannels key={index} workspaceTitle={group.name} channelsApp={group.channels} />
+        <WorkspaceChannels key={index} workspaceTitle={group.name} channels={group.channels} />
       ))}
     </div>
   );

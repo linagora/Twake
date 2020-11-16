@@ -306,35 +306,7 @@ export default class Channel extends Component {
     }
 
     return (
-      <ChannelUI
-        refDiv={node => (this.node = node)}
-        text={name}
-        icon={icon}
-        emoji={emoji}
-        users={users}
-        draggable={this.mode == 'workspace'}
-        alinea={this.mode == 'workspace' && !this.props.pinned}
-        appIndicator={this.mode == 'direct_app'}
-        notMember={this.mode == 'direct' && this.props.outOfWorkspace}
-        private={channel.private}
-        muted={channel._user_muted >= 1}
-        favorite={this.props.pinned}
-        public={
-          (
-            (channel.ext_members || [])
-              .filter(userId => WorkspacesUser.isExterne(userId))
-              .filter(userId => channel.private || !WorkspacesUser.isAutoAddUser(userId)) || []
-          ).length
-        }
-        hasNewContent={new_content_count}
-        notifications={notifications_count}
-        selected={ChannelsService.currentChannelFrontId == this.props.channel.front_id}
-        dragData={this.props.channel}
-        onClick={evt => ChannelsService.select(this.props.channel)}
-        onClickMore={evt => {
-          this.openMore(evt);
-        }}
-      />
+      <ChannelUI refDiv={node => (this.node = node)} name={name} icon={icon} isAppchannel={true} />
     );
   }
 }

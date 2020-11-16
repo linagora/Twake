@@ -378,3 +378,9 @@
     }
   }
 }
+
+.direct-channel {
+  .ant-avatar-group .ant-avatar:not(:first-child) {
+    margin-left: -12px !important;
+  }
+}
