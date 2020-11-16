@@ -14,7 +14,7 @@ import 'antd/dist/antd.less';
 import './Client.scss';
 import MainView from './MainView/MainView.js';
 import PublicMainView from './MainView/PublicMainView.js';
-import ChannelsBar from './ChannelsBar/ChannelsBar.js';
+import ChannelsBar from './ChannelsBar/ChannelsBar';
 import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';

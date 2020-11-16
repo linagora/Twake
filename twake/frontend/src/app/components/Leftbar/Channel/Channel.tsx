@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
+import { Menu } from 'antd';
 
 import './Channel.scss';
 
