@@ -20,6 +20,19 @@ import { pick } from "../../../utils/pick";
 
 const UPDATE_KEYS = ["name", "company_id", "workspace_id", "id"] as const;
 const UPDATABLE_KEYS = ["name"] as const;
+const CREATE_KEYS = [
+  "company_id",
+  "workspace_id",
+  "id",
+  "owner",
+  "icon",
+  "name",
+  "description",
+  "channel_group",
+  "visibility",
+  "is_default",
+  "archived",
+] as const;
 
 export class CassandraChannelService implements ChannelServiceAPI {
   version = "1";
@@ -97,25 +110,15 @@ export class CassandraChannelService implements ChannelServiceAPI {
     channel.company_id = context.workspace.company_id;
     channel.owner = context.user.id;
 
-    const query = `INSERT INTO ${this.options.keyspace}.${this.table}
-      (
-      "company_id",
-      "workspace_id",
-      "id",
-      "owner",
-      "icon",
-      "name",
-      "description",
-      "channel_group",
-      "visibility",
-      "is_default",
-      "archived"
-      )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+    const saveChannel = pick(channel, ...CREATE_KEYS);
 
-    await this.client.execute(query, channel, { prepare: false });
+    const columnList = CREATE_KEYS.map(key => `"${key}"`).join(",");
+    const columnValues = "?".repeat(CREATE_KEYS.length).split("").join(",");
+    const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
-    return new CreateResult<Channel>("channel", channel);
+    await this.client.execute(query, saveChannel, { prepare: false });
+
+    return new CreateResult<Channel>("channel", saveChannel as Channel);
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
