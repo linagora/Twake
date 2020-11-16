@@ -145,10 +145,23 @@ class Service implements ChannelServiceAPI {
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  delete(
+  async delete(
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Channel>> {
+    const channelToDelete = await this.get(pk, context);
+
+    if (!channelToDelete) {
+      throw new CrudExeption("Channel not found", 404);
+    }
+
+    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
+    const isChannelOwner = this.isChannelOwner(channelToDelete, context.user);
+
+    if (!isWorkspaceAdmin && !isChannelOwner) {
+      throw new CrudExeption("Channel can not be deleted", 400);
+    }
+
     return this.service.delete(pk, context);
   }
 
