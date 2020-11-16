@@ -113,21 +113,13 @@ class Service implements ChannelServiceAPI {
     }
 
     const saveResult = await this.service.save(channelToSave, context);
-    const savedChannel = saveResult.entity;
-
-    // TODO: This must be done in some listeners, the core service does not have to manage this
 
     if (mode === OperationType.CREATE) {
-      const pushUpdates = {
-        is_default: !!savedChannel.is_default,
-      };
+      await this.onCreated(saveResult);
     }
 
     if (mode === OperationType.UPDATE) {
-      const pushUpdates = {
-        is_default: !!channel.is_default && channel.is_default !== channelToUpdate.is_default,
-        archived: !!channel.archived && channel.archived !== channelToUpdate.archived,
-      };
+      await this.onUpdated(channelToUpdate, saveResult);
     }
 
     return saveResult;
@@ -166,5 +158,35 @@ class Service implements ChannelServiceAPI {
 
   isChannelOwner(channel: Channel, user: User): boolean {
     return channel.owner && channel.owner === user.id;
+  }
+
+  /**
+   * Channel has been updated, process changes
+   * @param previous
+   * @param next
+   */
+  async onUpdated(previous: Channel, next: SaveResult<Channel>): Promise<SaveResult<Channel>> {
+    const channel = next.entity;
+
+    if (!channel) {
+      return next;
+    }
+
+    const pushUpdates = {
+      is_default: !!channel.is_default && channel.is_default !== previous.is_default,
+      archived: !!channel.archived && channel.archived !== previous.archived,
+    };
+
+    console.log("PUSH UPDATE", pushUpdates);
+
+    return next;
+  }
+
+  async onCreated(next: SaveResult<Channel>): Promise<SaveResult<Channel>> {
+    const pushUpdates = {
+      is_default: !!next.entity.is_default,
+    };
+    console.log("PUSH CREATE", pushUpdates);
+    return next;
   }
 }
