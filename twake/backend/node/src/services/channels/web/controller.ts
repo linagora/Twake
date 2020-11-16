@@ -113,16 +113,20 @@ export class ChannelCrudController
       },
     });
 
-    const result = await this.service.save(entity, this.getExecutionContext(request));
+    try {
+      const result = await this.service.save(entity, this.getExecutionContext(request));
 
-    if (result.entity) {
-      reply.code(201);
+      if (result.entity) {
+        reply.code(201);
+      }
+
+      return {
+        websocket: getWebsocketInformation(result.entity),
+        resource: result.entity,
+      };
+    } catch (err) {
+      this.handleError(reply, err);
     }
-
-    return {
-      websocket: getWebsocketInformation(result.entity),
-      resource: result.entity,
-    };
   }
 
   async list(
