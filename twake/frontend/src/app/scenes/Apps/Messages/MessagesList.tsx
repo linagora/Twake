@@ -96,12 +96,12 @@ export default class MessagesList extends Component<Props> {
     const headerMessage =
       this.props.threadId && Collections.get('messages').find(this.props.threadId);
 
-    if (headerMessage && messages.length === 0) {
+    if (headerMessage) {
       loadingMessagesTop = [];
       loadingMessagesBottom = [];
     }
 
-    if (messages.length === 0) {
+    if (messages.length === 0 && !this.messagesListServerService.hasLastMessage()) {
       return (
         <div className="loading-full">
           <div className="loading">

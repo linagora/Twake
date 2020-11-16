@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
 import MenusManager from 'services/Menus/MenusManager.js';
 import MenuComponent from './MenuComponent.js';
@@ -44,6 +45,13 @@ export default class MenusBodyLayer extends React.Component {
       }
     } else {
       this.will_close_on_up = false;
+    }
+  }
+  componentWillMount() {
+    if (!document.getElementById('context-menu-layer')) {
+      const div = document.createElement('div');
+      div.setAttribute('id', 'context-menu-layer');
+      document.body.appendChild(div);
     }
   }
   componentWillUnmount() {
@@ -157,7 +165,7 @@ export default class MenusBodyLayer extends React.Component {
     return false;
   }
   render() {
-    return (
+    return ReactDOM.createPortal(
       <OutsideClickHandler
         onOutsideClick={() => {
           MenusManager.closeMenu();
@@ -209,7 +217,8 @@ export default class MenusBodyLayer extends React.Component {
             return menu;
           })}
         </div>
-      </OutsideClickHandler>
+      </OutsideClickHandler>,
+      document.getElementById('context-menu-layer'),
     );
   }
 }

@@ -46,6 +46,10 @@ class Workspaces extends Observable {
   }
 
   async initSelection() {
+    if ((Globals.store_public_access_get_data || {}).public_access_token) {
+      return;
+    }
+
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 

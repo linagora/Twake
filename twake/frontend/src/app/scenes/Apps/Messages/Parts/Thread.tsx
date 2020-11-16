@@ -10,6 +10,7 @@ type Props = {
   collectionKey?: string;
   channelId?: string;
   threadId?: string;
+  threadMain?: boolean;
   message?: any;
   loading?: boolean;
   highlighted?: boolean;
@@ -72,7 +73,7 @@ export default (props: Props) => (
           MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').openEditor(
             props.threadId || '',
             '',
-            'main',
+            props.threadId ? '' : props.threadMain ? 'main' : '',
           )
         }
         multiple={true}
