@@ -130,13 +130,15 @@ class Websocket extends Observable {
   reconnectIfNeeded(seconds = 30) {
     if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
       //30 seconds
-      Collections.get('channels').reload();
-      LoginService.updateUser();
+      if (LoginService.currentUserId) {
+        Collections.get('channels').reload();
+        LoginService.updateUser();
 
-      console.log(
-        'Refresh notifications',
-        new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
-      );
+        console.log(
+          'Refresh notifications',
+          new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
+        );
+      }
 
       if (
         new Date().getTime() - this.last_reconnect_call_if_needed.getTime() >

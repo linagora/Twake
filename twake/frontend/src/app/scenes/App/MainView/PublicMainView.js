@@ -28,7 +28,6 @@ export default class MainView extends Component {
     Collections.get('users').removeListener(this);
   }
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('should update');
     return true;
   }
   componentDidMount() {
@@ -49,8 +48,6 @@ export default class MainView extends Component {
     );
   }
   render() {
-    console.log('render');
-
     var noapp = (
       <div>
         <div className="no_channel_text">
@@ -67,7 +64,6 @@ export default class MainView extends Component {
     var view = (Globals.store_public_access_get_data || {}).view;
 
     var group = this.state.group;
-    console.log(this.state.group);
 
     return [
       <div className="public_header">
