@@ -70,8 +70,7 @@ export default class App extends Component {
     this.page_state = nextState.login.state;
     return true;
   }
-  getDerivedStateFromError(error) {
-    this.state.hasError = true;
+  static getDerivedStateFromError(error) {
     return { hasError: true, error: [error] };
   }
   componentDidCatch(error, info) {
