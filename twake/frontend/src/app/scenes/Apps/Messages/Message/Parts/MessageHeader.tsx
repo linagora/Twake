@@ -122,7 +122,7 @@ export default class MessageHeader extends Component<Props, State> {
         <span
           className="sender-name"
           ref={node => (user_name_node = node)}
-          onClick={() => displayUserCard(senderData)}
+          onClick={() => senderData.type === 'user' && displayUserCard(senderData)}
         >
           {User.getFullName(senderData)}
         </span>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
@@ -32,6 +32,37 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import UnconfiguredTab from './UnconfiguredTab.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
+
+const ExportView = props => {
+  const [export_my_calendar, set_export_my_calendar] = useState(props.values.export_my_calendar);
+  const [export_workspace_calendar, set_export_workspace_calendar] = useState(
+    props.values.export_workspace_calendar,
+  );
+  return (
+    <div style={{ marginTop: -8 }}>
+      <Checkbox
+        label={Languages.t('scenes.apps.calendar.my_calendar_label', [], 'Mon calendrier')}
+        small
+        className=""
+        value={export_my_calendar}
+        onChange={value => {
+          set_export_my_calendar(value);
+          props.onChange(export_my_calendar, export_workspace_calendar);
+        }}
+      />
+      <Checkbox
+        label={Languages.t('scenes.apps.calendar.workspace_label', [], 'Cet espace de travail')}
+        small
+        className=""
+        value={export_workspace_calendar}
+        onChange={value => {
+          set_export_workspace_calendar(value);
+          props.onChange(export_my_calendar, export_workspace_calendar);
+        }}
+      />
+    </div>
+  );
+};
 
 export default class Calendar extends Component {
   constructor(props) {
@@ -512,30 +543,15 @@ export default class Calendar extends Component {
             type: 'react-element',
             reactElement: () => {
               return (
-                <div style={{ marginTop: -8 }}>
-                  <Checkbox
-                    label={Languages.t(
-                      'scenes.apps.calendar.my_calendar_label',
-                      [],
-                      'Mon calendrier',
-                    )}
-                    small
-                    className=""
-                    value={this.state.export_my_calendar}
-                    onChange={value => this.setState({ export_my_calendar: value })}
-                  />
-                  <Checkbox
-                    label={Languages.t(
-                      'scenes.apps.calendar.workspace_label',
-                      [],
-                      'Cet espace de travail',
-                    )}
-                    small
-                    className=""
-                    value={this.state.export_workspace_calendar}
-                    onChange={value => this.setState({ export_workspace_calendar: value })}
-                  />
-                </div>
+                <ExportView
+                  values={this.state}
+                  onChange={(my, ws) => {
+                    this.setState({
+                      export_my_calendar: my,
+                      export_workspace_calendar: ws,
+                    });
+                  }}
+                />
               );
             },
           },
@@ -652,6 +668,7 @@ export default class Calendar extends Component {
                           value={moment(CalendarService.date)}
                           onChange={value => {
                             this.calendar.setDate(value);
+                            Menu.closeAll();
                           }}
                         />
                       </div>
