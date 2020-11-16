@@ -45,6 +45,10 @@ class Workspaces extends Observable {
   }
 
   initSelection(group_id) {
+    if ((Globals.store_public_access_get_data || {}).public_access_token) {
+      return;
+    }
+
     if (!Object.keys(this.user_workspaces).length) {
       this.openWelcomePage(this.welcomePage);
       return;
