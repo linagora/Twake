@@ -240,14 +240,7 @@ class Login extends Observable {
 
     JWTStorage.clear();
 
-    if (Globals.isReactNative) {
-      Globals.clearCookies();
-      DepreciatedCollections.clearAll();
-      this.state = '';
-      this.notify();
-    } else {
-      document.body.classList.add('fade_out');
-    }
+    document.body.classList.add('fade_out');
 
     Globals.getDevice(device => {
       var that = this;
