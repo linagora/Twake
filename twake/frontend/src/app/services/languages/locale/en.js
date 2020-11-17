@@ -522,8 +522,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Remove',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     'This action is not reversible',
-  'scenes.apps.messages.left_bar.stream.star': 'Star channel',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Unstar channel',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Add to favorites',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Remove from favorites',
   'scenes.apps.messages.left_bar.stream.mute': 'Mute channel',
   'scenes.apps.messages.left_bar.stream.unmute': 'Unmute channel',
   'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
@@ -1206,6 +1206,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'You can edit the users who have access to this private channel.',
   'scenes.app.channelsbar.add_channel_button': 'Add',
+  'scenes.app.channelsbar.channel_leaving': 'Leave channel',
   'scenes.app.channelsbar.channel_removing': 'Delete channel',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'You can import these channels into your business to stay organized by clicking on this frame.',

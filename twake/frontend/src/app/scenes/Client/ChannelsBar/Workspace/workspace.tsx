@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import { useParams } from 'react-router-dom';
 import { ChannelType } from 'app/models/Channel';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterServices';
-import OldCollections from 'services/Depreciated/Collections/Collections';
 import WorkspaceChannels from 'components/Leftbar/Channel/workspaceChannels';
 
 type channelCategoryType = {

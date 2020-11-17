@@ -540,8 +540,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.private_btn': 'Private',
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Удалить',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting': 'Это действие не обратимо',
-  'scenes.apps.messages.left_bar.stream.star': 'Добавить канал в избранное',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Удалить из Избранного',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Добавить канал в избранное',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Удалить из Избранного',
   'scenes.apps.messages.left_bar.stream.mute': 'Отключить канал',
   'scenes.apps.messages.left_bar.stream.unmute': 'Включить канал',
   'scenes.apps.messages.left_bar.stream.notifications': 'Уведмления...',
@@ -1252,6 +1252,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'Вы можете редактировать пользователей, у которых есть доступ к этому личному каналу.',
   'scenes.app.channelsbar.add_channel_button': 'Добавить',
+  'scenes.app.channelsbar.channel_leaving': 'покинуть канал',
   'scenes.app.channelsbar.channel_removing': 'Удалить канал',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Вы можете импортировать эти каналы в свой бизнес, чтобы остаться организованным, нажав на этот кадр.',

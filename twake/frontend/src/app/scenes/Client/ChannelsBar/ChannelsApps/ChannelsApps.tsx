@@ -103,7 +103,6 @@ export default class ChannelsApps extends Component {
                   visibility={'public'}
                   unreadMessages={false}
                   notifications={0}
-                  options={{}}
                 />
               );
             }

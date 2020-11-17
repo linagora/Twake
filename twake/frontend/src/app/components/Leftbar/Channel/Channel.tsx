@@ -1,16 +1,10 @@
 import React from 'react';
-import { Tooltip, Avatar, Badge } from 'antd';
-import { Menu } from 'antd';
-import RouterService from 'services/RouterServices';
 
 import './Channel.scss';
 
+import RouterService from 'services/RouterServices';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
-// import User from 'components/User/User.js';
-// import Draggable from 'components/Draggable/Draggable.js';
-// import Tooltip from 'components/Tooltip/Tooltip.js';
-// import Languages from 'services/languages/languages.js';
 
 type Props = {
   name: string;
@@ -23,7 +17,7 @@ type Props = {
   isAppchannel?: boolean;
   directMembers?: string[];
   notifications: number;
-  options: object;
+  menu?: JSX.Element;
 };
 
 export default (props: Props) => {
@@ -60,9 +54,7 @@ export default (props: Props) => {
         {props.notifications > 0 && (
           <div className="notification_dot">{Math.max(1, props.notifications)}</div>
         )}
-        <div className="more-icon">
-          <Icon type="ellipsis-h more-icon grey-icon" />
-        </div>
+        {props.menu}
       </div>
     </div>
   );

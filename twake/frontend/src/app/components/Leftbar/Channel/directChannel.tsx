@@ -85,7 +85,6 @@ export default (props: Props) => {
         unreadMessages={false}
         visibility="direct"
         notifications={0}
-        options={{}}
         id={props.channel.id}
       />
     </>

@@ -1177,6 +1177,7 @@ export default {
     'Verwalten Sie den Zugriff auf den privaten Kanal',
   'scenes.app.channelsbar.access_private_channel_title': 'Zugang zum privaten Kanal',
   'scenes.app.channelsbar.add_channel_button': 'Hinzufügen',
+  'scenes.app.channelsbar.channel_leaving': 'Kanal verlassen',
   'scenes.app.channelsbar.channel_removing': 'Kanal löschen',
   'scenes.app.channelsbar.channel_removing_confirmation': 'Kanal löschen',
   'scenes.app.channelsbar.channelsapps.apps': 'ANWENDUNGEN',

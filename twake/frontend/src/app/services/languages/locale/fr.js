@@ -538,8 +538,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Supprimer',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     "Cette action n'est pas réversible",
-  'scenes.apps.messages.left_bar.stream.star': 'Mettre en favori',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Retirer des favoris',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Ajouter aux favoris',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Retirer des favoris',
   'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
   'scenes.apps.messages.left_bar.stream.notifications.title': 'Activer les notifications pour',
   'scenes.apps.messages.left_bar.stream.notifications.all': 'Tous les messages',
@@ -1264,6 +1264,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.',
   'scenes.app.channelsbar.add_channel_button': 'Ajouter',
+  'scenes.app.channelsbar.channel_leaving': 'Quitter la chaîne',
   'scenes.app.channelsbar.channel_removing': 'Supprimer la chaîne',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
