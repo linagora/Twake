@@ -115,11 +115,11 @@ class Service implements ChannelServiceAPI {
     const saveResult = await this.service.save(channelToSave, context);
 
     if (mode === OperationType.CREATE) {
-      await this.onCreated(saveResult);
+      await this.onCreated(channelToSave, saveResult);
     }
 
     if (mode === OperationType.UPDATE) {
-      await this.onUpdated(channelToUpdate, saveResult);
+      await this.onUpdated(channelToSave, saveResult);
     }
 
     return saveResult;
@@ -168,7 +168,7 @@ class Service implements ChannelServiceAPI {
 
     const result = await this.service.delete(pk, context);
 
-    await this.onDeleted(result);
+    await this.onDeleted(channelToDelete, result);
 
     return result;
   }
@@ -182,37 +182,54 @@ class Service implements ChannelServiceAPI {
   }
 
   /**
-   * Channel has been updated, process changes
-   * @param previous
-   * @param next
+   * Called when channel update has been successfully called
+   *
+   * @param channel The channel before update has been processed
+   * @param result The channel update result
    */
-  async onUpdated(previous: Channel, next: SaveResult<Channel>): Promise<SaveResult<Channel>> {
-    const channel = next.entity;
+  async onUpdated(channel: Channel, result: SaveResult<Channel>): Promise<SaveResult<Channel>> {
+    const saved = result.entity;
 
-    if (!channel) {
-      return next;
+    if (!saved) {
+      return result;
     }
 
     const pushUpdates = {
-      is_default: !!channel.is_default && channel.is_default !== previous.is_default,
-      archived: !!channel.archived && channel.archived !== previous.archived,
+      is_default: !!saved.is_default && saved.is_default !== channel.is_default,
+      archived: !!saved.archived && saved.archived !== channel.archived,
     };
 
     console.log("PUSH UPDATE", pushUpdates);
 
-    return next;
+    return result;
   }
 
-  async onCreated(next: SaveResult<Channel>): Promise<SaveResult<Channel>> {
+  /**
+   * Called when channel create has been successfully called
+   *
+   * @param channel The channel entity before save
+   * @param result The channel save result
+   */
+  async onCreated(channel: Channel, result: SaveResult<Channel>): Promise<SaveResult<Channel>> {
     const pushUpdates = {
-      is_default: !!next.entity.is_default,
+      is_default: !!result.entity.is_default,
     };
     console.log("PUSH CREATE", pushUpdates);
-    return next;
+    return result;
   }
 
-  async onDeleted(next: DeleteResult<Channel>): Promise<DeleteResult<ChannelPrimaryKey>> {
-    console.log("PUSH DELETE ASYNC");
-    return next;
+  /**
+   * Called when channel delete has been successfully called
+   *
+   * @param channel The channel to delete
+   * @param result The delete result
+   */
+  async onDeleted(
+    channel: Channel,
+    result: DeleteResult<Channel>,
+  ): Promise<DeleteResult<ChannelPrimaryKey>> {
+    console.log("PUSH DELETE ASYNC", channel, result);
+
+    return result;
   }
 }
