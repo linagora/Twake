@@ -8,7 +8,6 @@ import Globals from 'services/Globals.js';
 class PopupService extends Observable {
   constructor() {
     super();
-    console.log('PopupService constructor !');
     this.setObservableName('popupService');
     Globals.window.popupService = this;
     this.component = []; // element as {component,canClose}

@@ -195,8 +195,8 @@ class Websocket extends Observable {
     if (state != this.connected) {
       this.connected = state;
       this.notify();
+      console.log('CONNECTED_STATE = ', state);
     }
-    console.log('CONNECTED_STATE = ', state);
   }
 
   isConnected() {

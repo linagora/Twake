@@ -7,9 +7,7 @@ import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
-
 import RouterServices from 'services/RouterServices';
-import OldCollections from 'services/Depreciated/Collections/Collections';
 
 type Props = {
   title: string;

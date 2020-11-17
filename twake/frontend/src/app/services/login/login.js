@@ -107,7 +107,7 @@ class Login extends Observable {
       external_login_result = false;
     }
     if (external_login_result) {
-      if (external_login_result.token && external_login_result.message == 'success') {
+      if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
         try {
           const token = JSON.parse(external_login_result.token);
@@ -189,9 +189,9 @@ class Login extends Observable {
 
     var url = '';
 
-    if (service == 'openid') {
+    if (service === 'openid') {
       url = Api.route('users/openid');
-    } else if (service == 'cas') {
+    } else if (service === 'cas') {
       url = Api.route('users/cas');
     }
 
@@ -262,10 +262,10 @@ class Login extends Observable {
             that.state = 'logged_out';
             that.notify();
           } else {
-            if (identity_provider == 'openid') {
+            if (identity_provider === 'openid') {
               var location = Api.route('users/openid/logout');
               Globals.window.location = location;
-            } else if (identity_provider == 'cas') {
+            } else if (identity_provider === 'cas') {
               var location = Api.route('users/cas/logout');
               Globals.window.location = location;
             } else {
@@ -374,7 +374,7 @@ class Login extends Observable {
     this.login_loading = true;
     this.notify();
     Api.post('users/recover/verify', data, function (res) {
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         that.recover_code = code;
 
         that.login_loading = false;
@@ -393,7 +393,7 @@ class Login extends Observable {
     this.login_loading = true;
     this.notify();
 
-    if (password != password2 || password.length < 8) {
+    if (password !== password2 || password.length < 8) {
       this.error_recover_badpasswords = true;
       this.login_loading = false;
       this.notify();
@@ -410,7 +410,7 @@ class Login extends Observable {
     that.error_recover_unknown = false;
     this.notify();
     Api.post('users/recover/password', data, function (res) {
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         funct(th);
 
         that.login_loading = false;
@@ -480,7 +480,7 @@ class Login extends Observable {
           device: device,
         },
         function (res) {
-          if (res.data.status == 'success') {
+          if (res.data.status === 'success') {
             success();
           } else {
             fail();
@@ -503,14 +503,14 @@ class Login extends Observable {
     that.notify();
     Api.post('users/subscribe/availability', data, function (res) {
       that.login_loading = false;
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         callback(th, 0);
       } else {
         //console.log(res.errors);
-        if (res.errors == 'mailalreadytaken') {
+        if (res.errors === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;
-        } else if (res.errors == 'usernamealreadytaken') {
+        } else if (res.errors === 'usernamealreadytaken') {
           callback(th, 2);
           that.error_subscribe_username = true;
         } else {
