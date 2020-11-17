@@ -9,6 +9,7 @@ export enum WebsocketActions {
 
 export enum WebsocketEvents {
   Connected = 'connected',
+  Disconnected = 'disconnected',
   JoinSuccess = 'realtime:join:success',
   JoinError = 'realtime:join:error',
   Resource = 'realtime:resource',
@@ -35,9 +36,14 @@ export default class TransportSocket {
       reconnectionDelayMax: 10000,
     });
     const socket = this.socket;
-    this.socket.on('connect', () => {
-      console.log('reconnected');
+    this.socket.on('disconnect', () => {
+      Object.keys(this.listeners).forEach(key => {
+        this.listeners[key](WebsocketEvents.Disconnected, {});
+        this.join(key, this.listeners[key]);
+      });
+    });
 
+    this.socket.on('connect', () => {
       socket
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {

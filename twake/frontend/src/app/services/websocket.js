@@ -33,23 +33,6 @@ class Websocket extends Observable {
     window.websocketsManager = this;
     this.autobahn = SocketCluster;
 
-    var updateOnlineStatus = () => {
-      if (navigator.onLine) {
-        if (!this.connected) {
-          this.reconnect();
-        }
-      } else {
-        this.connectionError('offline', 'navigator is offline');
-      }
-    };
-    updateOnlineStatus = updateOnlineStatus.bind(this);
-
-    window.addEventListener('online', updateOnlineStatus);
-    Globals.window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
-
-    var that = this;
-
     this.window_focus = true;
     this.window_last_blur = new Date();
     this.deconnectionBlurTimeout = setTimeout(() => {}, 0);
@@ -77,28 +60,7 @@ class Websocket extends Observable {
 
     this.alive.bind(this);
     this.message.bind(this);
-  }
-
-  //DISABLED
-  hostReachable() {
-    // Handle IE and more capable browsers
-    var xhr = new (Globals.window.ActiveXObject || XMLHttpRequest)('Microsoft.XMLHTTP');
-    var status;
-
-    // Open new request as a HEAD to the root hostname with a random param to bust the cache
-    xhr.open(
-      'HEAD',
-      Globals.window.api_root_url + '/ajax/?rand=' + Math.floor((1 + Math.random()) * 0x10000),
-      false,
-    );
-
-    // Issue request and handle response
-    try {
-      xhr.send();
-      return xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304);
-    } catch (error) {
-      return false;
-    }
+    this.updateConnected.bind(this);
   }
 
   //Send I'm alive !
@@ -116,9 +78,6 @@ class Websocket extends Observable {
         () => {
           this.reconnectIfNeeded();
           clearTimeout(this.alive_timeout);
-          if (!this.alive_connected) {
-            this.reconnect();
-          }
           this.alive_connected = true;
         },
         false,
@@ -127,40 +86,12 @@ class Websocket extends Observable {
     }
   }
 
-  reconnectIfNeeded(seconds = 30) {
-    if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
-      //30 seconds
-      if (LoginService.currentUserId) {
-        DepreciatedCollections.get('channels').reload();
-        LoginService.updateUser();
-
-        console.log(
-          'Refresh notifications',
-          new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
-        );
-      }
-
-      if (
-        new Date().getTime() - this.last_reconnect_call_if_needed.getTime() >
-        seconds * 1000 * 5
-      ) {
-        this.reconnect();
-      }
-      this.last_reconnect_call_if_needed = new Date();
-    }
-  }
-
-  setPublicKey(pk) {
-    this.public_key = pk;
-  }
-
   //Receive server message
   message(unid, route, data) {
     route = (route || '').split('previous::').pop();
     if (unid != this.subscribedKey[route]) {
       return;
     }
-    this.alive();
     if (this.subscribed[route]) {
       this.subscribed[route].forEach(c => {
         try {
@@ -192,6 +123,12 @@ class Websocket extends Observable {
         .join('previous::' + route, (type, data) => {
           if (type === 'realtime:event') {
             this.message(unid, data.name, data.data);
+          }
+          if (type === 'connected') {
+            this.updateConnected(true);
+          }
+          if (type === 'disconnected') {
+            this.updateConnected(false);
           }
         });
     }
@@ -229,190 +166,21 @@ class Websocket extends Observable {
       .emit('previous::' + route, value);
   }
 
-  connect() {
-    this.reconnect();
-  }
+  reconnectIfNeeded(seconds = 30) {
+    if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
+      //30 seconds
+      if (LoginService.currentUserId) {
+        DepreciatedCollections.get('channels').reload();
+        LoginService.updateUser();
 
-  reconnect() {
-    if (this.is_reconnecting) {
-      return;
-    }
-    this.is_reconnecting = true;
-    this.notify();
-
-    api.post(
-      'users/alive',
-      { focus: this.didFocusedLastMinute },
-      res => {
-        if (res._request_failed) {
-          setTimeout(() => {
-            this.is_reconnecting = false;
-            this.notify();
-            this.reconnect();
-          }, 2000);
-        } else {
-          var that = this;
-          var onopen = function (session) {
-            that.is_reconnecting = false;
-
-            that.disconnect();
-
-            that.updateConnected(true);
-
-            that.testNetwork = false;
-
-            if (that.firstTime) {
-              that.firstTime = false;
-            } else {
-              if (new Date().getTime() - that.last_reconnect_call.getTime() > 10000) {
-                that.last_reconnect_call = new Date();
-
-                var key = Object.keys(that.disconnectListeners);
-                key.forEach(k => {
-                  try {
-                    that.disconnectListeners[k]();
-                  } catch (err) {}
-                });
-              }
-            }
-
-            that.ws = session;
-            that.startHeartBeat();
-
-            var routes = Object.keys(that.subscribed);
-            routes.forEach(route => {
-              if (that.subscribed[route] && that.subscribed[route].length > 0) {
-                try {
-                  this.ws.unsubscribe(route);
-                } catch (err) {}
-                var unid = Number.unid();
-                that.subscribedKey[route] = unid;
-                that.ws.subscribe(route, function (a, b) {
-                  that.message(unid, a, b);
-                });
-              }
-            });
-          };
-
-          try {
-            var connection = null;
-
-            var suffix = '';
-
-            var method = '?';
-            var route = Globals.window.websocket_url || '';
-
-            if (route.split('://').length > 1) {
-              method = route.split('://')[0];
-              route = route.split('://')[1];
-            }
-
-            if (
-              Globals.window.api_root_url.indexOf('https:') == 0 ||
-              Globals.window.standalone ||
-              Globals.window.reactNative ||
-              method == 'wss'
-            ) {
-              connection = that.autobahn.connect('wss://' + route + suffix);
-            } else {
-              connection = that.autobahn.connect('ws://' + route + suffix);
-            }
-
-            connection.on('socket/connect', function (session) {
-              that.is_reconnecting = false;
-              onopen(session);
-            });
-            connection.on('socket/disconnect', function (error) {
-              console.log(error);
-              that.connectionError(error.reason, error.code);
-              that.is_reconnecting = false;
-              that.notify();
-            });
-          } catch (err) {
-            that.connectionError('autobahn.connect', err);
-            that.is_reconnecting = false;
-          }
-        }
-      },
-      false,
-    );
-  }
-
-  disconnect() {
-    if (this.ws) {
-      try {
-        this.updateConnected(false);
-        this.ws.close();
-      } catch (err) {
-        console.log(err);
+        console.log(
+          'Refresh notifications',
+          new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
+        );
       }
-      this.ws = null;
+
+      this.last_reconnect_call_if_needed = new Date();
     }
-  }
-
-  connectionError(reason, details) {
-    if (details == 0) {
-      this.updateConnected(false);
-      console.log('Network : Connexion closed', reason, details);
-      return;
-    }
-
-    this.updateConnected(false);
-
-    if (this.connectionTest) {
-      clearTimeout(this.connectionTest);
-    }
-    this.connectionTest = setTimeout(() => {
-      this.reconnect();
-    }, 5000);
-  }
-
-  startHeartBeat() {
-    if (
-      !this.lastHeartBeat ||
-      !this.nextHeartBeatDelay ||
-      new Date().getTime() - this.lastHeartBeat.getTime() > this.nextHeartBeatDelay
-    ) {
-      this.lastHeartBeat = new Date();
-      this.nextHeartBeatDelay = Math.random() * 120 * 1000 + 5000; //navigator.offline not reliable
-
-      /*if(!navigator.onLine && this.lastData>0 && (new Date()).getTime() - this.lastData > 2000){
-				this.lastData = (new Date()).getTime();
-				that.connectionError("offline", "navigator is offline in heartbeat");
-			}else*/ if (
-        this.window_focus &&
-        !this.testNetwork &&
-        this.lastData > 0 &&
-        new Date().getTime() - this.lastData > 2000
-      ) {
-        this.lastData = new Date().getTime();
-        this.testNetwork = true;
-        //Proceed to test
-        try {
-          if (this.ws) {
-            this.ws.call('ping/ping', {}).then(
-              result => {
-                this.updateConnected(true);
-                this.testNetwork = false;
-              },
-              (error, desc) => {
-                this.connectionError('no ping', '');
-                this.testNetwork = false;
-              },
-            );
-          }
-        } catch (err) {
-          console.log('Unable to call on ws', err);
-        }
-      }
-    }
-
-    if (this.heartBeatInterval) {
-      clearTimeout(this.heartBeatInterval);
-    }
-    this.heartBeatInterval = setTimeout(() => {
-      this.startHeartBeat();
-    }, 5000);
   }
 
   onReconnect(id, callback) {
@@ -421,10 +189,6 @@ class Websocket extends Observable {
 
   offReconnect(id) {
     delete this.disconnectListeners[id];
-  }
-
-  getSubscribeCount(route) {
-    return this.subscribed[route] ? this.subscribed[route].length : 0;
   }
 
   updateConnected(state) {
