@@ -150,6 +150,13 @@ class Login extends Observable {
   }
 
   updateUser() {
+    if (Globals.store_public_access_get_data) {
+      this.firstInit = true;
+      this.state = 'logged_out';
+      this.notify();
+      return;
+    }
+
     var that = this;
     Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
       that.firstInit = true;
