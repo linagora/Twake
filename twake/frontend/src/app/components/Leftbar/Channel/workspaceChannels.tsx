@@ -7,6 +7,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelUI from './Channel';
 import { ChannelType } from 'app/models/Channel';
+import RouterService from 'services/RouterServices';
 
 type Props = {
   workspaceTitle: string;
@@ -39,13 +40,13 @@ export default (props: Props) => {
           key={data.id}
           name={data.name || ''}
           icon={data.icon || ''}
-          selected={false}
           muted={data.user_member?.notification_level === 'none'}
           favorite={data.user_member?.favorite || false}
           unreadMessages={false}
           visibility={data.visibility || 'public'}
           notifications={data.messages_count || 0}
           options={{}}
+          id={data.id}
         />
       );
     });

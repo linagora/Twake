@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
 import { User } from 'react-feather';
+import RouterService from 'services/RouterServices';
 
 import './Channel.scss';
 import UserService from 'services/user/user.js';
@@ -79,13 +80,13 @@ export default (props: Props) => {
       <ChannelUI
         name={userName}
         icon={avatar}
-        selected={false}
         muted={false}
         favorite={false}
         unreadMessages={false}
         visibility="direct"
         notifications={0}
         options={{}}
+        id={props.channel.id}
       />
     </>
   );
