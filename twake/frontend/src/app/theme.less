@@ -90,16 +90,26 @@
 @input-placeholder-color: @grey-dark; // placeholder input color
 
 .ant-input,
-.ant-input:focus,
-.ant-input-focused  {
+.ant-input-focused,
+.ant-input:hover,
+.ant-input:focus {
   border-color: transparent;
   box-shadow: none;
 }
 
-.ant-input:hover,
-.ant-input:focus,
-.ant-input-focused  {
-  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.03) inset;
+.ant-input-affix-wrapper {
+  height: 40px;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border: none;
+  box-shadow: none;
+  outline: none;
 }
 
 textarea.ant-input,
