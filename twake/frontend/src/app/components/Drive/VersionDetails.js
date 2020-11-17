@@ -11,7 +11,7 @@ import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UIFile from './UI/File.js';
 import 'moment-timezone';
 

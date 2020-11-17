@@ -9,7 +9,7 @@ import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import './Pages.scss';

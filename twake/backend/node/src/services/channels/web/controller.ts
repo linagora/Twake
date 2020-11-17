@@ -1,6 +1,7 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import { HttpErrorCodes } from "fastify-sensible/lib/httpError";
+import { CrudExeption, Pagination } from "../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import { Channel } from "../entities";
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
@@ -83,16 +84,20 @@ export class ChannelCrudController
       },
     });
 
-    const result = await this.service.save(entity, this.getExecutionContext(request));
+    try {
+      const result = await this.service.save(entity, this.getExecutionContext(request));
 
-    if (result.entity) {
-      reply.code(201);
+      if (result.entity) {
+        reply.code(201);
+      }
+
+      return {
+        websocket: getWebsocketInformation(result.entity),
+        resource: result.entity,
+      };
+    } catch (err) {
+      this.handleError(reply, err);
     }
-
-    return {
-      websocket: getWebsocketInformation(result.entity),
-      resource: result.entity,
-    };
   }
 
   async update(
@@ -108,16 +113,20 @@ export class ChannelCrudController
       },
     });
 
-    const result = await this.service.save(entity, this.getExecutionContext(request));
+    try {
+      const result = await this.service.save(entity, this.getExecutionContext(request));
 
-    if (result.entity) {
-      reply.code(201);
+      if (result.entity) {
+        reply.code(201);
+      }
+
+      return {
+        websocket: getWebsocketInformation(result.entity),
+        resource: result.entity,
+      };
+    } catch (err) {
+      this.handleError(reply, err);
     }
-
-    return {
-      websocket: getWebsocketInformation(result.entity),
-      resource: result.entity,
-    };
   }
 
   async list(
@@ -148,21 +157,34 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ChannelDeleteResponse> {
-    const deleteResult = await this.service.delete(
-      this.getPrimaryKey(request),
-      this.getExecutionContext(request),
-    );
+    try {
+      const deleteResult = await this.service.delete(
+        this.getPrimaryKey(request),
+        this.getExecutionContext(request),
+      );
 
-    if (deleteResult.deleted) {
-      reply.code(204);
+      if (deleteResult.deleted) {
+        reply.code(204);
+
+        return {
+          status: "success",
+        };
+      }
 
       return {
-        status: "success",
+        status: "error",
       };
+    } catch (err) {
+      this.handleError(reply, err);
     }
+  }
 
-    return {
-      status: "error",
-    };
+  handleError(reply: FastifyReply, err: Error): void {
+    if (err instanceof CrudExeption) {
+      const crudException: CrudExeption = err;
+      reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
+    } else {
+      throw err;
+    }
   }
 }

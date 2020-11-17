@@ -1,7 +1,10 @@
 import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager';
-import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
+import RouterServices from 'services/RouterServices';
+import { ChannelMemberResource } from 'app/models/Channel';
+import Collections from 'services/CollectionsReact/Collections';
 
 import { Typography, Button } from 'antd';
 
@@ -15,6 +18,24 @@ const { Title } = Typography;
 
 const ChannelMembersEditor: FC<Props> = props => {
   const [MemberList, setMemberList] = useState<string[]>([]);
+  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+
+  const getMembersList = async () => {
+    const collectionPath: string = `/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/`;
+    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+
+    MemberList.map(async id => {
+      await channelMembersCollection.insert(
+        new ChannelMemberResource({
+          user_id: id,
+          type: 'member', // "member" | "guest" | "bot",
+        }),
+      );
+    });
+    const members = await channelMembersCollection.find({});
+    return console.log('ChannelMembers', members);
+  };
+
   return (
     <ObjectModal
       title={
@@ -33,7 +54,11 @@ const ChannelMembersEditor: FC<Props> = props => {
             width: 'auto',
             float: 'right',
           }}
-          onClick={() => props.onClose()}
+          onClick={() => {
+            getMembersList();
+            return props.onClose();
+          }}
+          disabled={!MemberList.length}
         >
           {Languages.t('general.add', 'Add')}
         </Button>

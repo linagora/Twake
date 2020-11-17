@@ -13,7 +13,7 @@ import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
 import Twacode from 'components/Twacode/Twacode';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 import moment from 'moment';

@@ -1,3 +1,5 @@
+import User from "../../../../services/user/entity/user";
+
 export class ContextualizedTarget {
   context?: ExecutionContext;
   readonly operation: OperationType;
@@ -46,6 +48,12 @@ export class SaveResult<Entity> extends EntityTarget<Entity> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw?: any;
 
+  /**
+   *
+   * @param type Type of entity
+   * @param entity The entity itself
+   * @param operation Save can be for a create or an update
+   */
   constructor(
     readonly type: string,
     readonly entity: Entity,
@@ -93,10 +101,17 @@ export declare type EntityOperationResult<Entity> =
   | DeleteResult<Entity>;
 
 export interface ExecutionContext {
-  user: { id: string };
-  url: string;
-  method: string;
-  transport: "http" | "ws";
+  user: User;
+  url?: string;
+  method?: string;
+  transport?: "http" | "ws";
+}
+
+export class CrudExeption extends Error {
+  constructor(readonly details: string, readonly status: number) {
+    super();
+    this.message = details;
+  }
 }
 
 export interface Paginable {
@@ -108,14 +123,14 @@ export class Pagination implements Paginable {
   constructor(readonly page_token: string, readonly max_results = "100") {}
 }
 
-export interface CRUDService<Entity, PrimaryKey> {
+export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {
   /**
    * Creates a resource
    *
    * @param item
    * @param context
    */
-  create?(item: Entity, context?: ExecutionContext): Promise<CreateResult<Entity>>;
+  create?(item: Entity, context?: Context): Promise<CreateResult<Entity>>;
 
   /**
    * Get a resource
@@ -123,7 +138,7 @@ export interface CRUDService<Entity, PrimaryKey> {
    * @param pk
    * @param context
    */
-  get(pk: PrimaryKey, context?: ExecutionContext): Promise<Entity>;
+  get(pk: PrimaryKey, context?: Context): Promise<Entity>;
 
   /**
    * Update a resource
@@ -135,18 +150,17 @@ export interface CRUDService<Entity, PrimaryKey> {
   update?(
     pk: PrimaryKey,
     item: Entity,
-    context?: ExecutionContext /* TODO: Options */,
+    context?: Context /* TODO: Options */,
   ): Promise<UpdateResult<Entity>>;
 
   /**
    * Save a resource.
    * If the resource exists, it is updated, if it does not exists, it is created.
    *
-   * @param pk
    * @param item
    * @param context
    */
-  save?(item: Entity, context?: ExecutionContext): Promise<SaveResult<Entity>>;
+  save?(item: Entity, context: Context): Promise<SaveResult<Entity>>;
 
   /**
    * Delete a resource
@@ -154,15 +168,12 @@ export interface CRUDService<Entity, PrimaryKey> {
    * @param pk
    * @param context
    */
-  delete(pk: PrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Entity>>;
+  delete(pk: PrimaryKey, context?: Context): Promise<DeleteResult<Entity>>;
 
   /**
    * List a resource
    *
    * @param context
    */
-  list(
-    pagination: Paginable,
-    context?: ExecutionContext /* TODO: Options */,
-  ): Promise<ListResult<Entity>>;
+  list(pagination: Paginable, context?: Context /* TODO: Options */): Promise<ListResult<Entity>>;
 }

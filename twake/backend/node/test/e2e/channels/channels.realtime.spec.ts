@@ -7,17 +7,19 @@ import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { getChannelPath, getPublicRoomName } from "../../../src/services/channels/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { TestPlatform, init } from "../setup";
+import { ChannelUtils, get as getChannelUtils } from "./utils";
 
 describe("The Channels Realtime feature", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
+  let channelUtils: ChannelUtils;
 
   beforeEach(async () => {
     platform = await init({
       services: ["websocket", "webserver", "channels", "auth", "database", "realtime"],
     });
-    socket = io.connect("http://localhost:3000", { path: "/socket" });
+    channelUtils = getChannelUtils(platform);
   });
 
   afterEach(async () => {
@@ -27,13 +29,18 @@ describe("The Channels Realtime feature", () => {
     socket = null;
   });
 
+  function connect() {
+    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
+    socket.connect();
+  }
+
   describe("On channel creation", () => {
     it("should notify the client", async done => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
 
-      socket.connect();
+      connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token: jwtToken })
@@ -80,14 +87,15 @@ describe("The Channels Realtime feature", () => {
       const channelName = new ObjectId().toString();
 
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
-      const channel = new Channel();
+      const channel = channelUtils.getChannel(platform.currentUser.id);
       channel.name = channelName;
-      channel.company_id = platform.workspace.company_id;
-      channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.save(channel);
+      const creationResult = await channelService.save(
+        channel,
+        channelUtils.getContext({ id: channel.owner }),
+      );
 
-      socket.connect();
+      connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token: jwtToken })

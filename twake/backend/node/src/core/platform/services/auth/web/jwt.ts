@@ -9,7 +9,7 @@ type JwtType = {
   refresh_exp: number;
   updated_at: number;
   org: {
-    [wompanyId: string]: {
+    [companyId: string]: {
       role: string; //Not implemented
       wks: {
         [workspaceId: string]: {
@@ -28,7 +28,7 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
   fastify.decorate("authenticate", async (request: FastifyRequest) => {
     try {
       const jwt: JwtType = await request.jwtVerify();
-      request.currentUser = { id: jwt.sub };
+      request.currentUser = { ...{ org: jwt.org }, ...{ id: jwt.sub } };
       request.log.debug(`Authenticated as user ${request.currentUser.id}`);
     } catch (err) {
       throw fastify.httpErrors.unauthorized("Bad credentials");

@@ -1,16 +1,19 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { v4 as uuidv4 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import {
   ChannelListResponse,
   ChannelGetResponse,
   ChannelCreateResponse,
-  ChannelDeleteResponse,
   ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
+import { ChannelVisibility } from "../../../src/services/channels/types";
 import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
+import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
+import { User } from "../../../src/services/types";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
@@ -39,6 +42,32 @@ describe("The /internal/services/channels/v1 API", () => {
 
     expect(response.statusCode).toBe(400);
     done();
+  }
+
+  function getContext(user?: User): WorkspaceExecutionContext {
+    return {
+      workspace: platform.workspace,
+      user: user || platform.currentUser,
+    };
+  }
+
+  /**
+   * Get a new channel instance
+   *
+   * @param owner will be a random uuidv4 if not defined
+   */
+  function getChannel(owner: string = uuidv4()): Channel {
+    const channel = new Channel();
+
+    channel.name = "Test Channel";
+    channel.company_id = platform.workspace.company_id;
+    channel.workspace_id = platform.workspace.workspace_id;
+    channel.is_default = false;
+    channel.visibility = ChannelVisibility.PRIVATE;
+    channel.archived = false;
+    channel.owner = owner;
+
+    return channel;
   }
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
@@ -80,7 +109,7 @@ describe("The /internal/services/channels/v1 API", () => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      const creationResult = await channelService.save(channel);
+      const creationResult = await channelService.save(channel, getContext());
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -110,7 +139,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel);
+          return channelService.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -142,7 +171,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel);
+          return channelService.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -199,7 +228,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel);
+          return channelService.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -301,7 +330,7 @@ describe("The /internal/services/channels/v1 API", () => {
       channel.company_id = platform.workspace.company_id;
       channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.save(channel);
+      const creationResult = await channelService.save(channel, getContext());
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
@@ -384,41 +413,17 @@ describe("The /internal/services/channels/v1 API", () => {
   });
 
   describe("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
-    it("should 400 when companyId is not valid", async done => {
-      testAccess(
-        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
-        "POST",
-        done,
-      );
-    });
-
-    it("should 400 when workspaceId is not valid", async done => {
-      testAccess(
-        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
-        "POST",
-        done,
-      );
-    });
-
-    it("should update an existing channel", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function updateChannel(jwtToken: string, id: string, resource: any): Promise<Channel> {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
-      const channel = new Channel();
-      channel.name = "Test Channel";
-      channel.company_id = platform.workspace.company_id;
-      channel.workspace_id = platform.workspace.workspace_id;
-
-      const creationResult = await channelService.save(channel);
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
         payload: {
-          resource: {
-            name: "Update the channel name",
-          },
+          resource,
         },
       });
 
@@ -427,15 +432,416 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelUpdateResult.resource).toBeDefined();
       expect(channelUpdateResult.websocket).toBeDefined();
 
-      const channelId = channelUpdateResult.resource.id;
-      const updatedChannel = await channelService.get({ id: channelId });
+      return await channelService.get({ id });
+    }
 
-      expect(updatedChannel.name).toEqual("Update the channel name");
-      done();
+    async function updateChannelFail(
+      jwtToken: string,
+      id: string,
+      resource: unknown,
+      expectedCode: number,
+    ): Promise<void> {
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${id}`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource,
+        },
+      });
+
+      expect(response.statusCode).toEqual(expectedCode);
+    }
+
+    it("should 400 when companyId is not valid", async done => {
+      testAccess(
+        `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
+        "POST",
+        done,
+      );
+    });
+
+    it("should 400 when workspaceId is not valid", async done => {
+      testAccess(
+        `${url}/companies/${platform.workspace.company_id}/workspaces/123/channels/1`,
+        "POST",
+        done,
+      );
+    });
+
+    describe("When user is workspace admin and channel has been created by other user", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = true;
+      });
+
+      it("should fail when resource is not defined", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await updateChannelFail(jwtToken, creationResult.entity.id, {}, 400);
+        done();
+      });
+
+      it("should be able to update the is_default field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          is_default: true,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: true,
+          visibility: channel.visibility,
+          archived: channel.archived,
+          owner: channel.owner,
+        });
+        done();
+      });
+
+      it("should be able to update the visibility field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          visibility: ChannelVisibility.PUBLIC,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: channel.is_default,
+          visibility: ChannelVisibility.PUBLIC,
+          archived: channel.archived,
+          owner: channel.owner,
+        });
+        done();
+      });
+
+      it("should be able to update the archived field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          archived: true,
+        });
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: channel.is_default,
+          visibility: channel.visibility,
+          archived: true,
+          owner: channel.owner,
+        });
+        done();
+      });
+
+      it("should be able to update all the fields at the same time", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          visibility: ChannelVisibility.PUBLIC,
+          is_default: true,
+          archived: true,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: true,
+          visibility: ChannelVisibility.PUBLIC,
+          archived: true,
+          owner: channel.owner,
+        });
+
+        done();
+      });
+    });
+
+    describe("When user is channel owner", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should be able to update the is_default field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel(platform.currentUser.id);
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          is_default: true,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: true,
+          visibility: channel.visibility,
+          archived: channel.archived,
+          owner: channel.owner,
+        });
+
+        done();
+      });
+
+      it("should be able to update the visibility field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel(platform.currentUser.id);
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          visibility: ChannelVisibility.PUBLIC,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: channel.is_default,
+          visibility: ChannelVisibility.PUBLIC,
+          archived: channel.archived,
+          owner: channel.owner,
+        });
+
+        done();
+      });
+
+      it("should be able to update the archived field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel(platform.currentUser.id);
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          archived: true,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: channel.is_default,
+          visibility: channel.visibility,
+          archived: true,
+          owner: channel.owner,
+        });
+        done();
+      });
+
+      it("should be able to update all the fields at the same time", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel(platform.currentUser.id);
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          visibility: ChannelVisibility.PUBLIC,
+          is_default: true,
+          archived: true,
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "Test Channel",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: true,
+          visibility: ChannelVisibility.PUBLIC,
+          archived: true,
+          owner: channel.owner,
+        });
+
+        done();
+      });
+    });
+
+    describe("When user is 'standard' user and is not channel owner", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should not be able to update the is_default field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await updateChannelFail(
+          jwtToken,
+          creationResult.entity.id,
+          {
+            is_default: true,
+          },
+          400,
+        );
+
+        done();
+      });
+
+      it("should not be able to update the visibility field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await updateChannelFail(
+          jwtToken,
+          creationResult.entity.id,
+          {
+            visibility: ChannelVisibility.PUBLIC,
+          },
+          400,
+        );
+
+        done();
+      });
+
+      it("should not be able to update the archived field", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await updateChannelFail(
+          jwtToken,
+          creationResult.entity.id,
+          {
+            archived: true,
+          },
+          400,
+        );
+
+        done();
+      });
+
+      it("should be able to update the 'name', 'description', 'icon' fields", async done => {
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const jwtToken = await platform.auth.getJWTToken();
+
+        const channel = getChannel();
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        const updatedChannel = await updateChannel(jwtToken, creationResult.entity.id, {
+          name: "This is a new name",
+          description: "This is a new description",
+          icon: "This is a new icon",
+        });
+
+        expect(updatedChannel).toMatchObject({
+          id: channel.id,
+          name: "This is a new name",
+          description: "This is a new description",
+          icon: "This is a new icon",
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          is_default: channel.is_default,
+          visibility: channel.visibility,
+          archived: channel.archived,
+          owner: channel.owner,
+        });
+
+        done();
+      });
     });
   });
 
   describe("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+    async function expectDeleteResult(
+      jwtToken: string,
+      url: string,
+      status: number,
+    ): Promise<void> {
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      expect(response.statusCode).toEqual(status);
+    }
+
     it("should 400 when companyId is not valid", async done => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels/1`,
@@ -452,33 +858,133 @@ describe("The /internal/services/channels/v1 API", () => {
       );
     });
 
-    it("should delete a channel", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
-      const channel = new Channel();
-      channel.name = "Test Channel";
-      channel.company_id = platform.workspace.company_id;
-      channel.workspace_id = platform.workspace.workspace_id;
-
-      const creationResult = await channelService.save(channel);
-
-      const response = await platform.app.inject({
-        method: "DELETE",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
+    describe("When user is workspace administrator", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = true;
       });
 
-      expect(response.statusCode).toEqual(204);
-      const channelDeleteResult = deserialize(ChannelDeleteResponse, response.body);
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
 
-      expect(channelDeleteResult.status === "success");
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
 
-      const deleteChannel = await channelService.get({ id: creationResult.entity.id });
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
 
-      expect(deleteChannel).toBeNull();
-      done();
+      it("should be able to delete any channel of the workspace", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          204,
+        );
+        done();
+      });
+    });
+
+    describe("When user is channel owner", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel(platform.currentUser.id);
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
+
+      it("should be able to delete the channel", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel(platform.currentUser.id);
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          204,
+        );
+        done();
+      });
+    });
+
+    describe("When user is not creator nor workspace administrator", () => {
+      beforeEach(() => {
+        platform.currentUser.isWorkspaceAdmin = false;
+      });
+
+      it("should not be able to delete the channel", async done => {
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
+
+      it("should not be able to delete a direct channel", async done => {
+        platform.workspace.workspace_id = "direct";
+        const jwtToken = await platform.auth.getJWTToken();
+        const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+        const channel = getChannel();
+
+        const creationResult = await channelService.save(
+          channel,
+          getContext({ id: channel.owner }),
+        );
+
+        await expectDeleteResult(
+          jwtToken,
+          `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
+          400,
+        );
+        done();
+      });
     });
   });
 });
