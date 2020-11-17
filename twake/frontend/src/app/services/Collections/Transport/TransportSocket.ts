@@ -47,16 +47,14 @@ export default class TransportSocket {
       socket
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {
-          console.log('authenticated');
+          Object.keys(this.listeners).forEach(key => {
+            this.listeners[key](WebsocketEvents.Connected, {});
+            this.join(key, this.listeners[key]);
+          });
         })
         .on('unauthorized', (err: any) => {
-          console.log('Unauthorize', err);
+          console.log('Websocket unauthorized', err);
         });
-
-      Object.keys(this.listeners).forEach(key => {
-        this.listeners[key](WebsocketEvents.Connected, {});
-        this.join(key, this.listeners[key]);
-      });
 
       socket.on(WebsocketEvents.JoinSuccess, (event: any) => {
         if (event.name) this.notify(event.name, WebsocketEvents.JoinSuccess, event);
@@ -79,18 +77,19 @@ export default class TransportSocket {
 
   join(path: string, callback: (type: WebsocketEvents, event: any) => void) {
     path = path.replace(/\/$/, '');
+
     if (this.socket) {
       this.socket.emit(WebsocketActions.Join, { name: path, token: 'twake' });
-      this.listeners[path] = callback;
     }
+    this.listeners[path] = callback;
   }
 
   leave(path: string) {
     path = path.replace(/\/$/, '');
     if (this.socket) {
       this.socket.emit(WebsocketActions.Leave, { name: path });
-      delete this.listeners[path];
     }
+    delete this.listeners[path];
   }
 
   emit(path: string, data: any) {

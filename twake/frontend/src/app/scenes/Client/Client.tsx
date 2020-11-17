@@ -57,7 +57,23 @@ export default (): JSX.Element => {
           <Layout key="appPage" className={'appPage '} hasSider>
             <WorkspacesBar />
             <ChannelsBar />
-            <MainView />
+            {
+              // TO REMOVE
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <h1>MainView will be disabled for the moment</h1>
+                <br />
+                <small>Waiting for the router implementation</small>
+              </div>
+            }
+            {/* <MainView /> */}
           </Layout>
         );
       }

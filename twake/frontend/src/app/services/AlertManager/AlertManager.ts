@@ -6,7 +6,7 @@ const { confirm, info } = Modal;
 class AlertService {
   alert(onClose: () => void, options: any = undefined) {
     info({
-      title: options?.title || '',
+      title: options?.title || options?.text || '',
       content: options?.text || '',
       onCancel: onClose,
     });

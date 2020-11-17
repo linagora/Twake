@@ -19,6 +19,7 @@ import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage.js';
 import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
+import JWTStorage from 'services/JWTStorage';
 
 class Workspaces extends Observable {
   constructor() {
@@ -295,41 +296,39 @@ class Workspaces extends Observable {
     data.append('workspaceId', this.currentWorkspaceId);
     var that = this;
 
-    Globals.getAllCookies(cookies => {
-      $.ajax({
-        url: route,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
+    $.ajax({
+      url: route,
+      type: 'POST',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
 
-        headers: {
-          'All-Cookies': JSON.stringify(cookies),
-        },
-        xhrFields: {
-          withCredentials: true,
-        },
-        xhr: function () {
-          var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function () {
-            if (myXhr.readyState == XMLHttpRequest.DONE) {
-              that.loading = false;
-              var resp = JSON.parse(myXhr.responseText);
-              if (resp.errors.indexOf('badimage') > -1) {
-                that.error_identity_badimage = true;
-                that.notify();
-              } else {
-                var update = resp.data;
-                Collections.get('workspaces').updateObject(update);
-                ws.publish('workspace/' + update.id, { workspace: update });
-                that.notify();
-              }
+      headers: {
+        Authorization: JWTStorage.getAutorizationHeader(),
+      },
+      xhrFields: {
+        withCredentials: true,
+      },
+      xhr: function () {
+        var myXhr = $.ajaxSettings.xhr();
+        myXhr.onreadystatechange = function () {
+          if (myXhr.readyState == XMLHttpRequest.DONE) {
+            that.loading = false;
+            var resp = JSON.parse(myXhr.responseText);
+            if (resp.errors.indexOf('badimage') > -1) {
+              that.error_identity_badimage = true;
+              that.notify();
+            } else {
+              var update = resp.data;
+              Collections.get('workspaces').updateObject(update);
+              ws.publish('workspace/' + update.id, { workspace: update });
+              that.notify();
             }
-          };
-          return myXhr;
-        },
-      });
+          }
+        };
+        return myXhr;
+      },
     });
   }
   deleteWorkspace() {
