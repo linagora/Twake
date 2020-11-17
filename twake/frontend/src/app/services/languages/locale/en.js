@@ -1835,5 +1835,11 @@ export default {
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
     'Automatically invite all workspace members to this channel',
-  'scenes.client.channelbar.channelmemberseditor.title' : 'Add members in $1'
+  'scenes.client.channelbar.channelmemberseditor.title': 'Add members in $1',
+  'scenes.client.channelbar.channelmemberslist.title': '$1 members in $2',
+  'scenes.client.channelbar.channelmemberslist.loader': 'Load more',
+  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Search users',
+  'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',
+  'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Send a direct message',
+  'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
 };
