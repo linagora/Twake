@@ -1,5 +1,11 @@
 import { logger } from "../../../framework/logger";
-import { JoinLeaveRoomError, JoinLeaveRoomSuccess, JoinRoomEvent, LeaveRoomEvent } from "../types";
+import {
+  JoinLeaveRoomError,
+  JoinLeaveRoomSuccess,
+  JoinRoomEvent,
+  LeaveRoomEvent,
+  ClientEvent,
+} from "../types";
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
@@ -12,7 +18,9 @@ export default class RoomManager implements RealtimeRoomManager {
       logger.info(`User ${event.user.id} is connected`);
 
       event.socket.on("realtime:join", async (joinEvent: JoinRoomEvent) => {
-        const canJoin = await this.userCanJoinRoom(event.user, joinEvent);
+        const canJoin =
+          joinEvent.name.indexOf("previous::") === 0 || //Compatibility with old collections
+          (await this.userCanJoinRoom(event.user, joinEvent));
 
         if (canJoin) {
           this.join(event.socket, joinEvent.name, event.user);
@@ -26,6 +34,20 @@ export default class RoomManager implements RealtimeRoomManager {
 
       event.socket.on("realtime:leave", (leaveEvent: LeaveRoomEvent) => {
         this.leave(event.socket, leaveEvent.name, event.user);
+      });
+
+      event.socket.on("realtime:event", async (clientEvent: ClientEvent) => {
+        const canEmit =
+          clientEvent.name.indexOf("previous::") === 0 || //Compatibility with old collections
+          (await this.userCanEmitInRoom(event.user, clientEvent));
+        if (canEmit) {
+          this.sendEvent(clientEvent.name, clientEvent.data);
+        } else {
+          this.sendError("event", event.socket, {
+            name: clientEvent.name,
+            message: "User is not authorized to emit in this room",
+          });
+        }
       });
     });
 
@@ -56,6 +78,8 @@ export default class RoomManager implements RealtimeRoomManager {
     // FIXME: We will use JWT to validate the token
     return joinEvent.token && joinEvent.token === "twake";
   }
+
+  userCanEmitInRoom = this.userCanJoinRoom;
 
   join(websocket: WebSocket, room: string, user: WebSocketUser): void {
     logger.info(`User ${user.id} is joining room ${room}`);
@@ -104,5 +128,9 @@ export default class RoomManager implements RealtimeRoomManager {
 
   sendSuccess(event: string, websocket: WebSocket, success: JoinLeaveRoomSuccess): void {
     websocket.emit(`realtime:${event}:success`, success);
+  }
+
+  sendEvent(path: string, data: any): void {
+    this.ws.getIo().to(path).emit(`realtime:event`, { name: path, data: data });
   }
 }

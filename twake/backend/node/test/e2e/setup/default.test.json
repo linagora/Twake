@@ -7,7 +7,7 @@
     }
   },
   "websocket": {
-    "path": "/ws",
+    "path": "/socket",
     "adapters": {
       "types": ["redis"],
       "redis": {

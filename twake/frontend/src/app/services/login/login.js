@@ -307,7 +307,7 @@ class Login extends Observable {
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
-    //this.configurateCollections();
+    this.configurateCollections();
 
     this.state = 'app';
     this.notify();
@@ -318,7 +318,7 @@ class Login extends Observable {
     Collections.setOptions({
       transport: {
         socket: {
-          url: Globals.window.socketio_url,
+          url: Globals.window.websocket_url,
           authenticate: {
             token: JWTStorage.getJWT(),
           },
@@ -332,6 +332,7 @@ class Login extends Observable {
       },
     });
     Collections.connect();
+    window.Collections2 = Collections;
   }
 
   /**

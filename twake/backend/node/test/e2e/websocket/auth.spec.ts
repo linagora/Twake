@@ -19,7 +19,7 @@ describe("The Websocket authentication", () => {
       ],
     });
 
-    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
+    socket = io.connect("http://localhost:3000", { path: "/socket" });
   });
 
   afterEach(async () => {

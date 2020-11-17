@@ -17,7 +17,7 @@ describe("The Channels Realtime feature", () => {
     platform = await init({
       services: ["websocket", "webserver", "channels", "auth", "database", "realtime"],
     });
-    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
+    socket = io.connect("http://localhost:3000", { path: "/socket" });
   });
 
   afterEach(async () => {

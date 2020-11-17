@@ -30,6 +30,7 @@ export default class TransportSocket {
     }
 
     this.socket = io.connect(socketEndpoint || '', {
+      path: '/socket',
       reconnectionDelayMax: 10000,
     });
     const socket = this.socket;
@@ -75,6 +76,13 @@ export default class TransportSocket {
     path = path.replace(/\/$/, '');
     if (this.socket) {
       this.socket.emit(WebsocketActions.Leave, { name: path });
+    }
+  }
+
+  emit(path: string, data: any) {
+    path = path.replace(/\/$/, '');
+    if (this.socket) {
+      this.socket.emit('realtime:event', { name: path, data: data });
     }
   }
 }
