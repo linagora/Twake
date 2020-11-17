@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
 import ChannelsService from 'services/channels/channels.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
-import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';

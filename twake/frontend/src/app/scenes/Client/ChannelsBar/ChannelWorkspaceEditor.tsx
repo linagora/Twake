@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor';
 import ModalManager from 'services/Modal/ModalManager';
-import { ObjectModal } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
@@ -40,7 +40,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
     const ChannelsCollections = Collections.get(collectionPath);
 
     await ChannelsCollections.upsert(new ChannelResource(newChannel));
-    return ModalManager.closeAll();
   };
 
   return (
