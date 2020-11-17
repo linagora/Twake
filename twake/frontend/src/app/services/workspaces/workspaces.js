@@ -258,6 +258,7 @@ class Workspaces extends Observable {
           }
         }
       }
+      that.initSelection();
     });
   }
 
