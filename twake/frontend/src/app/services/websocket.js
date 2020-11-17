@@ -1,7 +1,6 @@
 import Number from 'services/utils/Numbers.js';
 import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
-import SocketCluster from 'services/socketcluster/socketcluster.js';
 import DepreciatedCollections from 'services/Depreciated/Collections/Collections';
 import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
@@ -31,7 +30,6 @@ class Websocket extends Observable {
     this.last_reconnect_call_if_needed = new Date();
 
     window.websocketsManager = this;
-    this.autobahn = SocketCluster;
 
     this.window_focus = true;
     this.window_last_blur = new Date();
