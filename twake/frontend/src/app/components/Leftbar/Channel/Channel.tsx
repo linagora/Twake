@@ -46,7 +46,7 @@ export default (props: Props) => {
           </div>
         )}
       {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
-        <div className="direct-channel"> {props.icon}</div>
+        <div className="direct-channel-avatars"> {props.icon}</div>
       )}
       {!!props.isAppchannel && (
         <div className="icon">
