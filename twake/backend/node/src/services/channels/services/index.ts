@@ -22,6 +22,7 @@ import { WorkspaceExecutionContext } from "../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../utils/workspace";
 import { User } from "../../../services/types";
 import { cloneDeep, pickBy } from "lodash";
+import { pick } from "../../../utils/pick";
 
 export function getService(databaseService: DatabaseServiceAPI): ChannelServiceAPI {
   return new Service(getServiceInstance(databaseService));
@@ -70,7 +71,7 @@ class Service implements ChannelServiceAPI {
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
 
     if (mode === OperationType.UPDATE) {
-      channelToUpdate = await this.get(channel, context);
+      channelToUpdate = await this.get(this.getPrimaryKey(channel), context);
 
       if (!channelToUpdate) {
         throw new CrudExeption("Channel not found", 404);
@@ -149,7 +150,7 @@ class Service implements ChannelServiceAPI {
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Channel>> {
-    const channelToDelete = await this.get(pk, context);
+    const channelToDelete = await this.get(this.getPrimaryKey(pk), context);
 
     if (!channelToDelete) {
       throw new CrudExeption("Channel not found", 404);
@@ -175,6 +176,10 @@ class Service implements ChannelServiceAPI {
 
   list(pagination: Pagination, context: WorkspaceExecutionContext): Promise<ListResult<Channel>> {
     return this.service.list(pagination, context);
+  }
+
+  getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
+    return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
 
   isChannelOwner(channel: Channel, user: User): boolean {

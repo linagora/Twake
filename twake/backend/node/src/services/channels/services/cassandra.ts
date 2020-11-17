@@ -18,9 +18,7 @@ import { WorkspaceExecutionContext } from "../types";
 import { plainToClass } from "class-transformer";
 import { pick } from "../../../utils/pick";
 
-const UPDATE_KEYS = ["name", "company_id", "workspace_id", "id"] as const;
-const UPDATABLE_KEYS = ["name"] as const;
-const CREATE_KEYS = [
+const ENTITY_KEYS = [
   "company_id",
   "workspace_id",
   "id",
@@ -32,6 +30,7 @@ const CREATE_KEYS = [
   "visibility",
   "is_default",
   "archived",
+  "archivation_date",
 ] as const;
 
 export class CassandraChannelService implements ChannelServiceAPI {
@@ -84,21 +83,15 @@ export class CassandraChannelService implements ChannelServiceAPI {
   }
 
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
-    const channelToUpdate = await this.get(pk);
-
-    if (!channelToUpdate) {
-      throw new Error("Can not find the channel to update");
-    }
-
-    const updatableChannel = pick(channel, ...UPDATABLE_KEYS);
-    const fullChannelUpdate = { ...channelToUpdate, ...updatableChannel };
-    const columnList = UPDATE_KEYS.map(key => `"${key}"`).join(",");
-    const columnValues = "?".repeat(UPDATE_KEYS.length).split("").join(",");
+    const mergeChannel = { ...channel, ...pk };
+    const updatableChannel = pick(mergeChannel, ...ENTITY_KEYS);
+    const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
+    const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
-    await this.client.execute(query, pick(fullChannelUpdate, ...UPDATE_KEYS));
+    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
 
-    return new UpdateResult<Channel>("channel", fullChannelUpdate);
+    return new UpdateResult<Channel>("channel", updatableChannel);
   }
 
   async create(
@@ -110,10 +103,9 @@ export class CassandraChannelService implements ChannelServiceAPI {
     channel.company_id = context.workspace.company_id;
     channel.owner = context.user.id;
 
-    const saveChannel = pick(channel, ...CREATE_KEYS);
-
-    const columnList = CREATE_KEYS.map(key => `"${key}"`).join(",");
-    const columnValues = "?".repeat(CREATE_KEYS.length).split("").join(",");
+    const saveChannel = pick(channel, ...ENTITY_KEYS);
+    const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
+    const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
     await this.client.execute(query, saveChannel, { prepare: false });
