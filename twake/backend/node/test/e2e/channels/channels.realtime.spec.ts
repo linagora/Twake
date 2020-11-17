@@ -90,7 +90,7 @@ describe("The Channels Realtime feature", () => {
       const channel = channelUtils.getChannel(platform.currentUser.id);
       channel.name = channelName;
 
-      const creationResult = await channelService.save(
+      const creationResult = await channelService.channels.save(
         channel,
         channelUtils.getContext({ id: channel.owner }),
       );

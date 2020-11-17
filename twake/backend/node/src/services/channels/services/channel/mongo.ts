@@ -1,8 +1,8 @@
 import * as mongo from "mongodb";
 import { v4 as uuidv4 } from "uuid";
-import { Channel } from "../entities";
-import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
-import { MongoPagination } from "../../../core/platform/services/database/services/connectors/mongodb";
+import { Channel } from "../../entities";
+import { ChannelService, ChannelPrimaryKey } from "../../provider";
+import { MongoPagination } from "../../../../core/platform/services/database/services/connectors/mongodb";
 import {
   CreateResult,
   DeleteResult,
@@ -11,10 +11,10 @@ import {
   OperationType,
   SaveResult,
   UpdateResult,
-} from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext } from "../types";
+} from "../../../../core/platform/framework/api/crud-service";
+import { WorkspaceExecutionContext } from "../../types";
 
-export class MongoChannelService implements ChannelServiceAPI {
+export class MongoChannelService implements ChannelService {
   version = "1";
   private collection: mongo.Collection<Channel>;
 

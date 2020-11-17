@@ -1,10 +1,11 @@
 import cassandra from "cassandra-driver";
-import { Channel } from "../entities";
-import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
+import { plainToClass } from "class-transformer";
+import { Channel } from "../../entities";
+import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import {
   CassandraConnectionOptions,
   CassandraPagination,
-} from "../../../core/platform/services/database/services/connectors/cassandra";
+} from "../../../../core/platform/services/database/services/connectors/cassandra";
 import {
   CreateResult,
   DeleteResult,
@@ -13,10 +14,9 @@ import {
   Pagination,
   SaveResult,
   UpdateResult,
-} from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext } from "../types";
-import { plainToClass } from "class-transformer";
-import { pick } from "../../../utils/pick";
+} from "../../../../core/platform/framework/api/crud-service";
+import { WorkspaceExecutionContext } from "../../types";
+import { pick } from "../../../../utils/pick";
 
 const ENTITY_KEYS = [
   "company_id",
@@ -33,7 +33,7 @@ const ENTITY_KEYS = [
   "archivation_date",
 ] as const;
 
-export class CassandraChannelService implements ChannelServiceAPI {
+export class CassandraChannelService implements ChannelService {
   version = "1";
   table = "channels";
 

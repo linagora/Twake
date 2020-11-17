@@ -12,35 +12,39 @@ export interface ChannelParameters extends BaseChannelsParameters {
   id: string;
 }
 
+export interface ChannelMemberParameters extends ChannelParameters {
+  member_id: string;
+}
+
 export interface PaginationQueryParameters {
   page_token?: string;
   limit?: string;
+  websockets?: boolean;
 }
 
 export interface ChannelListQueryParameters extends PaginationQueryParameters {
   search_query?: string;
   mine?: boolean;
-  websockets?: boolean;
 }
 
-export class ChannelListResponse {
-  resources: Channel[];
+export class ChannelListResponse<T> {
+  resources: T[];
   websockets?: ChannelWebsocket[];
   next_page_token?: string;
 }
 
-export class ChannelGetResponse {
+export class ChannelGetResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
-export class ChannelCreateResponse {
+export class ChannelCreateResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
 
-export class ChannelUpdateResponse {
+export class ChannelUpdateResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
 
 export class ChannelDeleteResponse {

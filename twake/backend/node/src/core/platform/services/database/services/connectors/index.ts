@@ -3,6 +3,9 @@ import { DatabaseType } from "..";
 import { CassandraConnectionOptions } from "./cassandra";
 import { MongoConnectionOptions } from "./mongodb";
 
+export * from "./mongodb";
+export * from "./cassandra";
+
 export interface Connector extends Initializable {
   /**
    * Connect to the database
