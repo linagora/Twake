@@ -15,12 +15,10 @@ jobs:
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
-        run: |
-          echo "::set-env name=DOCKERTAG::develop"
+        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV'
       - name: Set env to production
         if: endsWith(github.ref, '/main')
-        run: |
-          echo "::set-env name=DOCKERTAG::latest"
+        run: 'echo "DOCKERTAG=test" >> $GITHUB_ENV'
       - uses: actions/checkout@v2
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -59,12 +57,10 @@ jobs:
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
-        run: |
-          echo "::set-env name=DOCKERTAG::develop"
+        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV'
       - name: Set env to production
         if: endsWith(github.ref, '/main')
-        run: |
-          echo "::set-env name=DOCKERTAG::latest"
+        run: 'echo "DOCKERTAG=test" >> $GITHUB_ENV'
       - uses: actions/checkout@v2
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
