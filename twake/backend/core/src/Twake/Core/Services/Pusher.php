@@ -39,15 +39,11 @@ class Pusher
         }
         
         $pubData = [
-            'channel' => $data["topic"],
+            'room' => "previous::".$data["topic"],
             'data' => $sent_data,
         ];
-        $eventData = [
-            'event' => "#publish",
-            'data' => $pubData,
-        ];
 
-        $data = (string)@json_encode($eventData);
+        $data = (string)@json_encode($pubData);
         $this->rest->post($this->pusher, $data, [
             CURLOPT_HTTPHEADER => Array(
                 "Authorization: Token ".$this->secret,

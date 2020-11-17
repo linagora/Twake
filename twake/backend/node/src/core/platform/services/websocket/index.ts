@@ -33,6 +33,23 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
       io: this.service.getIo(),
     });
 
+    /**
+     * This implementation is for php old code to push on new socket.io server
+     */
+    fastify.post("/private/pusher", {}, (request, reply) => {
+      const token = (request.headers.authorization || "").trim().split("Token ").pop();
+      const secret = this.configuration.get<string>("php_pusher_secret", "");
+      if (secret && token === secret) {
+        const body = request.body as { room: string; data: any };
+        const room = body.room;
+        const data = body.data;
+        this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
+        reply.send({});
+      } else {
+        reply.code(401).send({});
+      }
+    });
+
     return this;
   }
 }

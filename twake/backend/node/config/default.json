@@ -22,7 +22,8 @@
       "jwt": {
         "secret": "supersecret"
       }
-    }
+    },
+    "php_pusher_secret": "pusher_secret"
   },
   "auth": {
     "jwt": {
