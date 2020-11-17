@@ -40,7 +40,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
     const ChannelsCollections = Collections.get(collectionPath);
 
     await ChannelsCollections.upsert(new ChannelResource(newChannel));
-    return ModalManager.closeAll();
   };
 
   return (

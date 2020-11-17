@@ -28,9 +28,6 @@ import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
 import LoginService from 'services/login/login';
 
-import ModalManager from 'services/Modal/ModalManager';
-import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
-
 export default (): JSX.Element => {
   alertService.useListener(useState);
   popupService.useListener(useState);
