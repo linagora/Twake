@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
 import { User } from 'react-feather';
+import RouterService from 'services/RouterServices';
 
 import './Channel.scss';
 import UserService from 'services/user/user.js';
@@ -15,7 +16,7 @@ type Props = {
 
 export default (props: Props) => {
   const channelMembers = props.channel.direct_channel_members;
-  let avatar: JSX.Element = <Avatar size={25} icon={<User />} />;
+  let avatar: JSX.Element = <Avatar size={20} icon={<User size={12} style={{ margin: 4 }} />} />;
   let usersName: string[] = [];
   let userName: string = '';
 
@@ -40,12 +41,12 @@ export default (props: Props) => {
 
   if (channelMembers?.length === 1) {
     avatar = (
-      <Badge size="default" dot offset={[-4, 21]}>
-        <Avatar size={25} src={UserService.getThumbnail(users[0])} />
+      <Badge size="default" dot offset={[-4, 16]}>
+        <Avatar size={20} src={UserService.getThumbnail(users[0])} />
       </Badge>
     );
     userName = UserService.getFullName(users[0]);
-  } else {
+  } else if (channelMembers?.length || 0 > 1) {
     const firstUser = users[0];
     usersName.push(`${UserService.getFullName(firstUser)}, `);
     users = users.filter(user => user !== firstUser);
@@ -55,18 +56,18 @@ export default (props: Props) => {
         maxStyle={{
           color: '#FFFFFF',
           backgroundColor: `var(--primary)`,
-          width: '25px',
-          height: '25px',
+          width: '20px',
+          height: '20px',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         {users.map(member => {
           usersName.push(`${UserService.getFullName(member)}, `);
-          return <Avatar key={member.id} size={25} src={UserService.getThumbnail(member)} />;
+          return <Avatar key={member.id} size={20} src={UserService.getThumbnail(member)} />;
         })}
         <Tooltip title="" placement="top">
-          <Avatar key={firstUser.id} size={25} src={UserService.getThumbnail(firstUser)} />
+          <Avatar key={firstUser.id} size={20} src={UserService.getThumbnail(firstUser)} />
         </Tooltip>
       </Avatar.Group>
     );
@@ -79,13 +80,13 @@ export default (props: Props) => {
       <ChannelUI
         name={userName}
         icon={avatar}
-        selected={false}
         muted={false}
         favorite={false}
         unreadMessages={false}
         visibility="direct"
         notifications={0}
         options={{}}
+        id={props.channel.id}
       />
     </>
   );

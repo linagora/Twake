@@ -2,7 +2,7 @@ import React from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 import CurrentUser from './CurrentUser/CurrentUser.js';
-import ChannelsApps from './ChannelsApps/ChannelsApps.js';
+import ChannelsApps from './ChannelsApps/ChannelsApps';
 import { Workspace } from './Workspace/workspace';
 import { ChannelsUser } from './ChannelsUser/ChannelsUser';
 import Tutorial from './Tutorial.js';

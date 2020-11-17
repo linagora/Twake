@@ -42,7 +42,6 @@ export default class MainView extends Component {
             logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),
           };
           this.setState({});
-          console.log('set state with ', this.state.group);
         }
       },
     );

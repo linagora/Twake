@@ -1,22 +1,5 @@
 import React from 'react';
 
-import Emojione from 'components/Emojione/Emojione';
-import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import User from 'services/user/user.js';
-import UserService from 'services/user/user.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import popupManager from 'services/popupManager/popupManager.js';
-import Channel from '../Channel.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import ChannelsService from 'services/channels/channels.js';
-import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import { useParams } from 'react-router-dom';
-import OldCollections from 'services/Depreciated/Collections/Collections';
-import { ChannelType } from 'app/models/Channel';
-import user from 'services/user/user.js';
-
 import Languages from 'services/languages/languages.js';
 import RouterServices from 'services/RouterServices';
 import { Collection } from 'services/CollectionsReact/Collections';

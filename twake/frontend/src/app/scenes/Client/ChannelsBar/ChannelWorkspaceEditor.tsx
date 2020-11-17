@@ -36,7 +36,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
   };
 
   const upsertChannel = async (): Promise<any> => {
-    const collectionPath = `/channels/v1/companies/${newChannel.company_id}/workspaces/${newChannel.workspace_id}/channels/`;
+    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
     const ChannelsCollections = Collections.get(collectionPath);
 
     await ChannelsCollections.upsert(new ChannelResource(newChannel));

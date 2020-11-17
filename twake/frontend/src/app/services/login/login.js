@@ -129,6 +129,13 @@ class Login extends Observable {
   }
 
   updateUser(callback) {
+    if (Globals.store_public_access_get_data) {
+      this.firstInit = true;
+      this.state = 'logged_out';
+      this.notify();
+      return;
+    }
+
     var that = this;
     Api.post(
       'users/current/get',
@@ -300,7 +307,7 @@ class Login extends Observable {
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
-    this.configurateCollections();
+    //this.configurateCollections();
 
     this.state = 'app';
     this.notify();

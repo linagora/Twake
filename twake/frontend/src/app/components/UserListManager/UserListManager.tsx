@@ -76,7 +76,7 @@ const UserListManager: FC<Props> = props => {
             : setSelectedUsersList([...SelectedUsersList, id]);
         }}
         style={{ width: '100%' }}
-        placeholder="Search by user"
+        placeholder="Search users"
         onSearch={(text: string, callback: (results: UserType[]) => void) =>
           onSearchUsers(text, (res: UserType[]) => {
             callback(res);
@@ -85,7 +85,7 @@ const UserListManager: FC<Props> = props => {
         render={(user: UserType) => (
           <Row align="middle" gutter={[8, 0]}>
             <Col>
-              <Avatar size={24} src={UsersService.getThumbnail(user)} />
+              <Avatar size={20} src={UsersService.getThumbnail(user)} />
             </Col>
             <Col>
               <Text strong>

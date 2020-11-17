@@ -51,15 +51,13 @@ jobs:
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
-        run: |
-          echo "::set-env name=DOCKERTAG::develop"
+        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV'
       - name: Set env to production
         if: endsWith(github.ref, '/main')
-        run: |
-          echo "::set-env name=DOCKERTAG::latest"
+        run: 'echo "DOCKERTAG=test" >> $GITHUB_ENV'
       - uses: actions/checkout@v2
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@2.18
+        uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: twaketech/twake-nginx
           username: ${{ secrets.DOCKER_USERNAME }}

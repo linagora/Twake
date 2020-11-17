@@ -51,8 +51,8 @@
 .channel {
   height: 28px;
   width: auto;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin: 0 8px;
+  padding: 0 4px;
   border-radius: var(--default-border-radius);
   max-width: 216px;
   box-sizing: border-box;
@@ -379,7 +379,8 @@
   }
 }
 
-.direct-channel {
+.direct-channel-avatars {
+  padding-top: 4px;
   .ant-avatar-group .ant-avatar:not(:first-child) {
     margin-left: -12px !important;
   }

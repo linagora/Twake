@@ -32,7 +32,7 @@
   "database": {
     "type": "mongodb",
     "mongodb": {
-      "uri": "mongodb://localhost:27017",
+      "uri": "mongodb://mongodb:27017",
       "database": "twake"
     },
     "cassandra": {

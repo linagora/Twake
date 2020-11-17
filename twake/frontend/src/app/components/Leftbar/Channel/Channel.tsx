@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
+import { Menu } from 'antd';
+import RouterService from 'services/RouterServices';
 
 import './Channel.scss';
 
@@ -13,7 +15,7 @@ import Icon from 'components/Icon/Icon.js';
 type Props = {
   name: string;
   icon: string | JSX.Element;
-  selected: boolean;
+  id?: string;
   muted: boolean;
   favorite: boolean;
   unreadMessages: boolean;
@@ -22,25 +24,31 @@ type Props = {
   directMembers?: string[];
   notifications: number;
   options: object;
-  onClick?: (evt: any) => void;
 };
 
 export default (props: Props) => {
+  const { channelId } = RouterService.useStateFromRoute();
+
+  const selected = channelId === props.id;
+
   return (
     <div
-      className={'channel fade_in ' + (props.selected ? 'selected ' : '')}
-      onClick={props.onClick}
+      className={'channel fade_in ' + (selected ? 'selected ' : '')}
+      onClick={() => {
+        RouterService.history.push(RouterService.generateRouteFromState({ channelId: props.id }));
+      }}
     >
-      {(props.visibility === 'public' || props.visibility === 'private') &&
+      {!props.isAppchannel &&
+        (props.visibility === 'public' || props.visibility === 'private') &&
         typeof props.icon === 'string' && (
           <div className="icon">
             <Emojione type={props.icon} />
           </div>
         )}
-      {props.visibility === 'direct' && typeof props.icon === 'object' && (
-        <div className="direct-channel"> {props.icon}</div>
+      {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
+        <div className="direct-channel-avatars"> {props.icon}</div>
       )}
-      {props.isAppchannel && (
+      {!!props.isAppchannel && (
         <div className="icon">
           <Icon type={props.icon} />
         </div>
