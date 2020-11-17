@@ -7,7 +7,7 @@ import Observable from 'app/services/Depreciated/observable.js';
 import SecuredConnection from 'app/services/Depreciated/Collections/SecuredConnection.js';
 import Number from 'services/utils/Numbers.js';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages.js';
 import $ from 'jquery';
 

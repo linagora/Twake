@@ -16,11 +16,7 @@ const { Option } = AutoComplete;
 const { Text } = Typography;
 
 const UserListManager: FC<Props> = props => {
-  const [SelectedUsersList, setSelectedUsersList] = useState<string[]>([]);
-
-  useEffect(() => {
-    onUpdate(SelectedUsersList);
-  });
+  const [SelectedUsersList, _setSelectedUsersList] = useState<string[]>([]);
 
   const onSearchUsers = (text: string, callback: any) => {
     return UsersService.search(
@@ -40,6 +36,11 @@ const UserListManager: FC<Props> = props => {
   };
 
   const onUpdate = (array: string[]) => props.onUpdate(array);
+
+  const setSelectedUsersList = (value: any) => {
+    setSelectedUsersList(value);
+    onUpdate(value);
+  };
 
   return (
     <>

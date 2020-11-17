@@ -206,7 +206,10 @@ export default class SecuredConnection {
     var key = this.keys_by_version[data.key_version];
 
     if (!key) {
-      if (this.getKeyTimestamp(key) > this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])) {
+      if (
+        this.getKeyTimestamp(key) >
+        this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])
+      ) {
         //We have a old key, we have to update and request the message again
         this.init(this.http_options);
         //TODO reask lost message after init

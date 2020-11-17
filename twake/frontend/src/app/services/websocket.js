@@ -2,7 +2,8 @@ import Number from 'services/utils/Numbers.js';
 import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import SocketCluster from 'services/socketcluster/socketcluster.js';
-import Collections from 'services/Depreciated/Collections/Collections';
+import DepreciatedCollections from 'services/Depreciated/Collections/Collections';
+import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
 
 import Globals from 'services/Globals.js';
@@ -75,6 +76,7 @@ class Websocket extends Observable {
     );
 
     this.alive.bind(this);
+    this.message.bind(this);
   }
 
   //DISABLED
@@ -129,7 +131,7 @@ class Websocket extends Observable {
     if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
       //30 seconds
       if (LoginService.currentUserId) {
-        Collections.get('channels').reload();
+        DepreciatedCollections.get('channels').reload();
         LoginService.updateUser();
 
         console.log(
@@ -154,10 +156,7 @@ class Websocket extends Observable {
 
   //Receive server message
   message(unid, route, data) {
-    if (this.public_key && !data.encrypted) {
-      //TODO verify signed messages incomming from server (push)
-      //Before that we have to remove non secure exchanged messages between users (non pushed)
-    }
+    route = (route || '').split('previous::').pop();
     if (unid != this.subscribedKey[route]) {
       return;
     }
@@ -177,6 +176,7 @@ class Websocket extends Observable {
 
   //Subscribe to channel
   subscribe(route, callback, key) {
+    route = (route || '').split('previous::').pop();
     if (!key) {
       key = callback.name;
     }
@@ -185,23 +185,21 @@ class Websocket extends Observable {
     }
     this.subscribed[route].push({ name: key, callback: callback });
     if (this.subscribed[route].length == 1) {
-      try {
-        this.ws.unsubscribe(route);
-      } catch (err) {}
-      try {
-        var unid = Number.unid();
-        this.subscribedKey[route] = unid;
-        this.ws.subscribe(route, (a, b) => {
-          this.message(unid, a, b);
+      const unid = Number.unid();
+      this.subscribedKey[route] = unid;
+      Collections.getTransport()
+        .getSocket()
+        .join('previous::' + route, (type, data) => {
+          if (type === 'realtime:event') {
+            this.message(unid, data.name, data.data);
+          }
         });
-      } catch (err) {
-        this.reconnect();
-      }
     }
   }
 
   //Unsubscribe from channel
   unsubscribe(route, callback, key) {
+    route = (route || '').split('previous::').pop();
     if (!key && callback) {
       key = callback.name;
     }
@@ -219,22 +217,16 @@ class Websocket extends Observable {
     });
     this.subscribed[route] = remaining;
     if (this.subscribed[route].length == 0) {
-      try {
-        this.subscribedKey[route] = null;
-        this.ws.unsubscribe(route);
-      } catch (err) {}
+      Collections.getTransport()
+        .getSocket()
+        .leave('previous::' + route);
     }
   }
 
   publish(route, value) {
-    this.startHeartBeat();
-    if (this.ws) {
-      try {
-        this.ws.publish(route, value);
-      } catch (err) {
-        this.reconnect();
-      }
-    }
+    Collections.getTransport()
+      .getSocket()
+      .emit('previous::' + route, value);
   }
 
   connect() {

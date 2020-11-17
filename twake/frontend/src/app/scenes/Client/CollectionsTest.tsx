@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
-import alertService from 'services/AlertManager/AlertManager.js';
+import alertService from 'services/AlertManager/AlertManager';
 import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import AlertLayout from 'components/Alert/Layout.js';

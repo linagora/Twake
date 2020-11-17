@@ -6,7 +6,7 @@ import workspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import Menu from 'components/Menus/Menu.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';

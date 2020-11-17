@@ -12,6 +12,7 @@ export enum WebsocketEvents {
   JoinSuccess = 'realtime:join:success',
   JoinError = 'realtime:join:error',
   Resource = 'realtime:resource',
+  Event = 'realtime:event',
 }
 export default class TransportSocket {
   private socket: SocketIOClient.Socket | null = null;
@@ -35,6 +36,8 @@ export default class TransportSocket {
     });
     const socket = this.socket;
     this.socket.on('connect', () => {
+      console.log('reconnected');
+
       socket
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {
@@ -44,8 +47,9 @@ export default class TransportSocket {
           console.log('Unauthorize', err);
         });
 
-      Object.values(this.listeners).forEach(element => {
-        element(WebsocketEvents.Connected, {});
+      Object.keys(this.listeners).forEach(key => {
+        this.listeners[key](WebsocketEvents.Connected, {});
+        this.join(key, this.listeners[key]);
       });
 
       socket.on(WebsocketEvents.JoinSuccess, (event: any) => {
@@ -56,6 +60,9 @@ export default class TransportSocket {
       });
       socket.on(WebsocketEvents.Resource, (event: any) => {
         if (event.room) this.notify(event.room, WebsocketEvents.Resource, event);
+      });
+      socket.on(WebsocketEvents.Event, (event: any) => {
+        if (event.name) this.notify(event.name, WebsocketEvents.Event, event);
       });
     });
   }
@@ -76,6 +83,7 @@ export default class TransportSocket {
     path = path.replace(/\/$/, '');
     if (this.socket) {
       this.socket.emit(WebsocketActions.Leave, { name: path });
+      delete this.listeners[path];
     }
   }
 

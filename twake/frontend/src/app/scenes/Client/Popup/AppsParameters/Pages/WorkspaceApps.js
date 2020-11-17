@@ -7,7 +7,7 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Menu from 'components/Menus/Menu.js';
 import Table from 'components/Table/Table';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';

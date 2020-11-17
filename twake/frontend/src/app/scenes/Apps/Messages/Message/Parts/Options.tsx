@@ -8,7 +8,7 @@ import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import User from 'services/user/user.js';
