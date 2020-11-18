@@ -3,7 +3,13 @@ import CollectionTransport from './CollectionTransport';
 import { WebsocketEvents } from './TransportSocket';
 
 type WebsocketResourceEvent = {
-  action: 'created' | 'updated' | 'deleted' | 'realtime:join:success' | 'realtime:join:error';
+  action:
+    | 'created'
+    | 'updated'
+    | 'saved'
+    | 'deleted'
+    | 'realtime:join:success'
+    | 'realtime:join:error';
   resource: any;
 };
 type WebsocketJoinEvent = {
@@ -79,7 +85,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
   }
 
   async onWebsocketResourceEvent(action: string, resource: any) {
-    if (action === 'created' || action === 'updated') {
+    if (action === 'created' || action === 'updated' || action === 'saved') {
       let localResource = await this.transport.collection.findOne(resource.id);
       if (!localResource) {
         localResource = new (this.transport.collection.getType())(resource);

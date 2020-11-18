@@ -10,7 +10,7 @@
     }
   },
   "websocket": {
-    "path": "/socket.io/",
+    "path": "/socket/",
     "adapters": {
       "types": [],
       "redis": {
@@ -22,7 +22,8 @@
       "jwt": {
         "secret": "supersecret"
       }
-    }
+    },
+    "php_pusher_secret": "pusher_secret"
   },
   "auth": {
     "jwt": {
@@ -32,7 +33,7 @@
   "database": {
     "type": "mongodb",
     "mongodb": {
-      "uri": "mongodb://mongodb:27017",
+      "uri": "mongodb://localhost:27017",
       "database": "twake"
     },
     "cassandra": {

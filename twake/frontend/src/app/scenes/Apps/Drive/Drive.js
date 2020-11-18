@@ -22,7 +22,7 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 
 import PathElement from './PathElement.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
 import Viewer from './Viewer/Viewer.js';

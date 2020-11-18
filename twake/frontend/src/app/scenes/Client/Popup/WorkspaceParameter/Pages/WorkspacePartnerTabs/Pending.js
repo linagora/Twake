@@ -10,7 +10,7 @@ import workspaceUserRightsService from 'services/workspaces/workspace_user_right
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import popupManager from 'services/popupManager/popupManager.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import CreateCompanyAccount from '../CreateCompanyAccount.js';
 import MediumPopupManager from 'app/services/Modal/ModalManager';
 

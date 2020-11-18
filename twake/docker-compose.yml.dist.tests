@@ -58,12 +58,7 @@ services:
       - rabbitmq
       - elasticsearch
     links:
-      - websockets
       - scylladb
-  websockets:
-    image: twaketech/twake-websockets
-    volumes:
-      - ./backend/websockets_server:/WebsocketsServer
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
@@ -84,7 +79,6 @@ services:
       - 8000:80
     links:
       - php
-      - websockets
     volumes_from:
       - php
     volumes:

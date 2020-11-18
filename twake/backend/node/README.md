@@ -6,17 +6,17 @@
 
 1. Clone and install dependencies (assumes that you have Node.js 12 and npm installed. If not, we suggest to use [nvm](https://github.com/nvm-sh/nvm/)):
 
-  ```sh
-  git clone git@github.com:TwakeApp/Twake.git
-  cd Twake/Twake/backend/node
-  npm install
-  ```
+```sh
+git clone git@github.com:TwakeApp/Twake.git
+cd Twake/Twake/backend/node
+npm install
+```
 
 2. Run in developer mode (will restart on each change)
 
-  ```sh
-  npm run dev
-  ```
+```sh
+npm run dev
+```
 
 3. Backend is now running and available on [http://localhost:3000](http://localhost:3000)
 
@@ -65,97 +65,98 @@ In order to illustrate how to create a component, let's create a fake Notificati
 1. Create the folder `src/services/notification`
 2. Create an `index.ts` file which exports a `NotificationService` class
 
-  ```js
-  // File src/services/notification/index.ts
-  import { TwakeService } from "../../core/platform/framework";
-  import NotificationServiceAPI from "./api.ts";
+```js
+// File src/services/notification/index.ts
+import { TwakeService } from "../../core/platform/framework";
+import NotificationServiceAPI from "./api.ts";
 
-  export default class NotificationService extends TwakeService<NotificationServiceAPI> {
-    version = "1";
-    name = "notification";
-    service: NotificationServiceAPI;
+export default class NotificationService extends TwakeService<NotificationServiceAPI> {
+  version = "1";
+  name = "notification";
+  service: NotificationServiceAPI;
 
-    api(): NotificationServiceAPI {
-      return this.service;
-    }
+  api(): NotificationServiceAPI {
+    return this.service;
   }
-  ```
+}
+```
 
 3. Our `NotificationService` class extends the generic `TwakeService` class and we defined the `NotificationServiceAPI` as its generic type parameter. It means that in the platform, the other components will be able to retrieve the component from its name and then consume the API defined in the `NotificationServiceAPI` interface and exposed by the `api` method.
-We need to create this `NotificationServiceAPI` interface which must extend the `TwakeServiceProvider` from the platform like:
+   We need to create this `NotificationServiceAPI` interface which must extend the `TwakeServiceProvider` from the platform like:
 
-  ```js
-  // File src/services/notification/api.ts
-  import { TwakeServiceProvider } from "../../core/platform/framework/api";
+```js
+// File src/services/notification/api.ts
+import { TwakeServiceProvider } from "../../core/platform/framework/api";
 
-  export default interface NotificationServiceAPI extends TwakeServiceProvider {
+export default interface NotificationServiceAPI extends TwakeServiceProvider {
 
-    /**
-     * Send a message to a list of recipients
-     */
-    send(message: string, recipients: string[]): Promise<string>;
-  }
-  ```
+  /**
+   * Send a message to a list of recipients
+   */
+  send(message: string, recipients: string[]): Promise<string>;
+}
+```
 
 4. Now that the interfaces are defined, we need to create the `NotificationServiceAPI` implementation (this is a dummy implementation which does nothing but illustrates the process):
 
-  ```js
-  // File src/services/notification/services/api.ts
-  import NotificationServiceAPI from "../api";
+```js
+// File src/services/notification/services/api.ts
+import NotificationServiceAPI from "../api";
 
-  export class NotificationServiceImpl implements NotificationServiceAPI {
-    version = "1";
+export class NotificationServiceImpl implements NotificationServiceAPI {
+  version = "1";
 
-    async send(message: string, recipients: string[]): Promise<string> {
-      return Promise.resolve(`${message} sent`);
-    }
+  async send(message: string, recipients: string[]): Promise<string> {
+    return Promise.resolve(`${message} sent`);
   }
-  ```
+}
+```
 
 5. `NotificationServiceImpl` now needs to be instanciated from the `NotificationService` class since this is where we choose to keep its reference and expose it. There are several places which can be used to instanciate it, in the constructor itself, or in one of the `TwakeService` lifecycle hooks. The `TwakeService` abstract class has several lifecycle hooks which can be extended by the service implementation for customization pusposes:
-  - `public async doInit(): Promise<this>;` Customize the `init` step of the component. This is generally the place where services are instanciated. From this step, you can retrieve services consumed by the current component which have been already initialized by the platform.
-  - `public async doStart(): Promise<this>;` Customize the `start` step of the component. You have access to all other services which are already started.
 
-  ```js
-  // File src/services/notification/index.ts
-  import { TwakeService } from "../../core/platform/framework";
-  import NotificationServiceAPI from "./api.ts";
-  import NotificationServiceImpl from "./services/api.ts";
+- `public async doInit(): Promise<this>;` Customize the `init` step of the component. This is generally the place where services are instanciated. From this step, you can retrieve services consumed by the current component which have been already initialized by the platform.
+- `public async doStart(): Promise<this>;` Customize the `start` step of the component. You have access to all other services which are already started.
 
-  export default class NotificationService extends TwakeService<NotificationServiceAPI> {
-    version = "1";
-    name = "notification";
-    service: NotificationServiceAPI;
+```js
+// File src/services/notification/index.ts
+import { TwakeService } from "../../core/platform/framework";
+import NotificationServiceAPI from "./api.ts";
+import NotificationServiceImpl from "./services/api.ts";
 
-    api(): NotificationServiceAPI {
-      return this.service;
-    }
+export default class NotificationService extends TwakeService<NotificationServiceAPI> {
+  version = "1";
+  name = "notification";
+  service: NotificationServiceAPI;
 
-    public async doInit(): Promise<this> {
-      this.service = new NotificationServiceImpl();
-
-      return this;
-    }
+  api(): NotificationServiceAPI {
+    return this.service;
   }
-  ```
+
+  public async doInit(): Promise<this> {
+    this.service = new NotificationServiceImpl();
+
+    return this;
+  }
+}
+```
 
 6. Now that the service is fully created, we can consume it from any other service in the platform. To do this, we rely on Typescript decorators to define the links between components. For example, let's say that the a `MessageService` needs to call the `NotificationServiceAPI`, we can create the link with the help of the `@Consumes` decorator and get a reference to the `NotificationServiceAPI` by calling the `getProvider` on the component context like:
 
-  ```js
-  import { TwakeService, Consumes } from "../../core/platform/framework";
-  import MessageServiceAPI from "./providapier";
-  import NotificationServiceAPI from "../notification/api";
+```js
+import { TwakeService, Consumes } from "../../core/platform/framework";
+import MessageServiceAPI from "./providapier";
+import NotificationServiceAPI from "../notification/api";
 
-  @Consumes(["notification"])
-  export default class MessageService extends TwakeService<MessageServiceAPI> {
+@Consumes(["notification"])
+export default class MessageService extends TwakeService<MessageServiceAPI> {
 
-    public async doInit(): Promise<this> {
-      const notificationService = this.context.getProvider<NotificationServiceAPI>("notification");
+  public async doInit(): Promise<this> {
+    const notificationService = this.context.getProvider<NotificationServiceAPI>("notification");
 
-      // You can not call anything defined in the NotificationServiceAPI interface from here or from inner services by passing down the reference to notificationService.
-    }
+    // You can not call anything defined in the NotificationServiceAPI interface from here or from inner services by passing down the reference to notificationService.
   }
-  ```
+}
+```
 
 #### Configuration
 
@@ -175,7 +176,7 @@ Then each service can have its own configuration block which is accessible from 
 {
   "services": ["auth", "user", "channels", "webserver", "websocket", "orm"],
   "websocket": {
-    "path": "/ws",
+    "path": "/socket",
     "adapters": {
       "types": [],
       "redis": {
@@ -192,17 +193,17 @@ On the component class side, the configuration object is directly accessible fro
 ```js
 export default class WebSocket extends TwakeService<WebSocketAPI> {
   async doInit(): Promise<this> {
-    // get the "path" value, defaults to "/ws" if not defined
-    const path = this.configuration.get<string>("path", "/ws");
+    // get the "path" value, defaults to "/socket" if not defined
+    const path = this.configuration.get < string > ("path", "/socket");
 
     // The "get" method is generic and can accept custom types like
-    const adapters = this.configuration.get<AdaptersConfiguration>("adapters");
+    const adapters = this.configuration.get < AdaptersConfiguration > "adapters";
   }
 }
 
 interface AdaptersConfiguration {
-  types: Array<string>,
-  redis: SocketIORedis.SocketIORedisOptions
+  types: Array<string>;
+  redis: SocketIORedis.SocketIORedisOptions;
 }
 ```
 
@@ -282,7 +283,13 @@ The framework provides simple way to create CRUD Services which will notify clie
 For example, let's say that we want to implement a CRUD Service for `messages`:
 
 ```js
-import { CRUDService, CreateResult, DeleteResult, UpdateResult, EntityId } from "@/core/platform/framework/api/crud-service";
+import {
+  CRUDService,
+  CreateResult,
+  DeleteResult,
+  UpdateResult,
+  EntityId,
+} from "@/core/platform/framework/api/crud-service";
 
 class Message {
   text: string;
@@ -338,10 +345,11 @@ class MessageService implements CRUDService<Message> {
 
 The `RealtimeCreated` decorator will intercept the `create` call and will publish an event in an internal event bus with the creation result, the input data and the `"/messages"` path. On the other side of the event bus, an event listener will be in charge of delivering the event to the right Websocket clients as described next.
 
-The Realtime* decorators to add on methods to intercept calls and publish data are all following the same API.
+The Realtime\* decorators to add on methods to intercept calls and publish data are all following the same API.
 A decorator takes two parameters as input:
-  - First one is the room name to publish the notification to (`/messages` in the example above)
-  - Second one is the full path of the resource linked to the action (`message => /messages/${message.id}` in the example above)
+
+- First one is the room name to publish the notification to (`/messages` in the example above)
+- Second one is the full path of the resource linked to the action (`message => /messages/${message.id}` in the example above)
 
 Both parameters can take a string or an arrow function as parameter. If arrow function is used, the input parameter will be the result element. By doing this, the paths can be generated dynamically at runtime.
 
@@ -361,8 +369,9 @@ Services annotated as described above automatically publish events to WebSockets
 const io = require("socket.io-client");
 
 // Get a JWT token from the Twake API first
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
-const socket = io.connect("http://localhost:3000", { path: "/ws" });
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
+const socket = io.connect("http://localhost:3000", { path: "/socket" });
 
 socket.on("connect", () => {
   socket
@@ -382,7 +391,6 @@ socket.on("disconnected", () => console.log("Disconnected"));
 
 CRUD operations on resources are pushing events in Socket.io rooms. In order to receive events, clients must subscribe to rooms by sending an `realtime:join` on an authenticated socket with the name of the room to join and with a valid JWT token like `{ name: "room name", token: "the jwt token for this room" }`: Users can not subscribe to arbitratry rooms, they have to be authorized to.
 
-
 As a result, the client will receive events:
 
 - `realtime:join:success` when join is succesful with data containing the name of the linked room like `{ name: "room" }`.
@@ -393,8 +401,9 @@ As a result, the client will receive events:
 ```js
 const io = require("socket.io-client");
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
-const socket = io.connect("http://localhost:3000", { path: "/ws" });
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEsImlhdCI6MTYwMzE5ODkzMn0.NvQoV9KeWuTNzRvzqbJ5uZCQ8Nmi2rCYQzcKk-WsJJ8";
+const socket = io.connect("http://localhost:3000", { path: "/socket" });
 
 socket.on("connect", () => {
   socket
@@ -402,7 +411,7 @@ socket.on("connect", () => {
     .on("authenticated", () => {
       // join the /channels room
       socket.emit("realtime:join", { name: "/channels", token: "twake" });
-      socket.on("realtime:join:error", (message) => {
+      socket.on("realtime:join:error", message => {
         // will fire when join does not provide a valid token
         console.log("Error on join", message);
       });
@@ -411,7 +420,7 @@ socket.on("connect", () => {
       // As event based, this event is not linked only to the join above
       // but to all joins. So you have to dig into the message to know which one
       // is successful.
-      socket.on("realtime:join:success", (message) => {
+      socket.on("realtime:join:success", message => {
         console.log("Successfully joined room", message.name);
       });
     })
@@ -438,25 +447,23 @@ Note: Asking to leave a room which has not been joined will not fire any error.
 
 ```js
 socket.on("connect", () => {
-  socket
-    .emit("authenticate", { token })
-    .on("authenticated", () => {
-      // leave the "/channels" room
-      socket.emit("realtime:leave", { name: "/channels" });
+  socket.emit("authenticate", { token }).on("authenticated", () => {
+    // leave the "/channels" room
+    socket.emit("realtime:leave", { name: "/channels" });
 
-      socket.on("realtime:leave:error", (message) => {
-        // will fire when join does not provide a valid token
-        console.log("Error on leave", message);
-      });
-
-      // will be fired on each successful leave.
-      // As event based, this event is not linked only to the leave above
-      // but to all leaves. So you have to dig into the message to know which one
-      // is successful.
-      socket.on("realtime:leave:success", (message) => {
-        console.log("Successfully left room", message.name);
-      });
+    socket.on("realtime:leave:error", message => {
+      // will fire when join does not provide a valid token
+      console.log("Error on leave", message);
     });
+
+    // will be fired on each successful leave.
+    // As event based, this event is not linked only to the leave above
+    // but to all leaves. So you have to dig into the message to know which one
+    // is successful.
+    socket.on("realtime:leave:success", message => {
+      console.log("Successfully left room", message.name);
+    });
+  });
 });
 ```
 

@@ -7,9 +7,10 @@ import Observable from 'app/services/Depreciated/observable.js';
 import SecuredConnection from 'app/services/Depreciated/Collections/SecuredConnection.js';
 import Number from 'services/utils/Numbers.js';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages.js';
 import $ from 'jquery';
+import JWTStorage from 'services/JWTStorage';
 
 import Globals from 'services/Globals.js';
 
@@ -166,47 +167,45 @@ class CurrentUser extends Observable {
 
     var that = this;
 
-    Globals.getAllCookies(cookies => {
-      $.ajax({
-        url: route,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        xhrFields: {
-          withCredentials: true,
-        },
-        headers: {
-          'All-Cookies': JSON.stringify(cookies),
-        },
-        xhr: function () {
-          var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function () {
-            if (myXhr.readyState == XMLHttpRequest.DONE) {
-              that.loading = false;
-              var resp = JSON.parse(myXhr.responseText);
-              if (resp.errors.indexOf('badimage') > -1) {
-                that.error_identity_badimage = true;
-                that.notify();
-              } else {
-                var update = {
-                  id: Login.currentUserId,
-                  firstname: f,
-                  lastname: l,
-                };
-                if (t !== false) {
-                  update.thumbnail = resp.data.thumbnail || '';
-                }
-                Collections.get('users').updateObject(update);
-                ws.publish('users/' + Login.currentUserId, { user: update });
-                that.notify();
+    $.ajax({
+      url: route,
+      type: 'POST',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      xhrFields: {
+        withCredentials: true,
+      },
+      headers: {
+        Authorization: JWTStorage.getAutorizationHeader(),
+      },
+      xhr: function () {
+        var myXhr = $.ajaxSettings.xhr();
+        myXhr.onreadystatechange = function () {
+          if (myXhr.readyState == XMLHttpRequest.DONE) {
+            that.loading = false;
+            var resp = JSON.parse(myXhr.responseText);
+            if (resp.errors.indexOf('badimage') > -1) {
+              that.error_identity_badimage = true;
+              that.notify();
+            } else {
+              var update = {
+                id: Login.currentUserId,
+                firstname: f,
+                lastname: l,
+              };
+              if (t !== false) {
+                update.thumbnail = resp.data.thumbnail || '';
               }
+              Collections.get('users').updateObject(update);
+              ws.publish('users/' + Login.currentUserId, { user: update });
+              that.notify();
             }
-          };
-          return myXhr;
-        },
-      });
+          }
+        };
+        return myXhr;
+      },
     });
   }
 

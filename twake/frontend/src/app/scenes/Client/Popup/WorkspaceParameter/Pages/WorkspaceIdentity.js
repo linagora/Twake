@@ -7,7 +7,7 @@ import uploadService from 'services/uploadManager/uploadManager.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
 import Input from 'components/Inputs/Input.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import './Pages.scss';
 
 export default class WorkspaceIdentity extends Component {

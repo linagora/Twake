@@ -11,7 +11,7 @@ import workspaceService from 'services/workspaces/workspaces.js';
 import Numbers from 'services/utils/Numbers.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import CurrentUser from 'services/user/current_user.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import LoginService from 'services/login/login';
 

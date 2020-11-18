@@ -6,7 +6,7 @@ import Emojione from 'components/Emojione/Emojione';
 import UserService from 'services/user/user.js';
 import CurrentUserService from 'services/user/current_user.js';
 import ElectronService from 'services/electron/electron.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';

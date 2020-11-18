@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const io = require("socket.io-client");
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjAzODk3MDI3fQ.SLgSEQtsKSgh3k4YEQPmQCVER-_sMkeqrqepMgLT3BE";
-const socket = io.connect("http://localhost:3000", { path: "/ws" });
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjAzODk3MDI3fQ.SLgSEQtsKSgh3k4YEQPmQCVER-_sMkeqrqepMgLT3BE";
+const socket = io.connect("http://localhost:3000", { path: "/socket" });
 
 socket.on("connect", () => {
   socket
@@ -13,7 +14,7 @@ socket.on("connect", () => {
       socket.emit("realtime:join", { name: "/channels" });
       // this one should be OK
       socket.emit("realtime:join", { name: "/channels", token: "twake" });
-      socket.on("realtime:join:error", (message) => {
+      socket.on("realtime:join:error", message => {
         // will fire when join does not provide a valid token
         console.log("Error on realtime", message);
       });
@@ -25,7 +26,6 @@ socket.on("connect", () => {
       socket.on("realtime:resource", event => {
         console.log(`Resource has been ${event.action}`, event);
       });
-
     })
     .on("unauthorized", err => {
       console.log("Unauthorize", err);
@@ -33,4 +33,3 @@ socket.on("connect", () => {
 });
 
 socket.on("disconnected", () => console.log("Disconnected"));
-

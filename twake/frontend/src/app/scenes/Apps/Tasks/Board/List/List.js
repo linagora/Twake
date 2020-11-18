@@ -7,7 +7,7 @@ import Icon from 'components/Icon/Icon.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 import ListEditor from './ListEditor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AddTask from './AddTask.js';

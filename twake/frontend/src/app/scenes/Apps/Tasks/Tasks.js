@@ -14,7 +14,7 @@ import Rounded from 'components/Inputs/Rounded.js';
 import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';

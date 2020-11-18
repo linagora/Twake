@@ -6,7 +6,7 @@ import UserService from 'services/user/user.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MenusManager from 'services/Menus/MenusManager.js';

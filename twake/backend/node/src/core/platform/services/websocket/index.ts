@@ -23,7 +23,7 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     this.service = new WebSocketService({
       server: fastify.server,
       options: {
-        path: this.configuration.get<string>("path", "/ws"),
+        path: this.configuration.get<string>("path", "/socket"),
       },
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
       auth: this.configuration.get<SocketIOJWTOptions>("auth.jwt"),
@@ -31,6 +31,23 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
 
     fastify.register(websocketPlugin, {
       io: this.service.getIo(),
+    });
+
+    /**
+     * This implementation is for php old code to push on new socket.io server
+     */
+    fastify.post("/private/pusher", {}, (request, reply) => {
+      const token = (request.headers.authorization || "").trim().split("Token ").pop();
+      const secret = this.configuration.get<string>("php_pusher_secret", "");
+      if (secret && token === secret) {
+        const body = request.body as { room: string; data: any };
+        const room = body.room;
+        const data = body.data;
+        this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
+        reply.send({});
+      } else {
+        reply.code(401).send({});
+      }
     });
 
     return this;

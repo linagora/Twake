@@ -39,7 +39,6 @@ services:
       - elasticsearch
       - redis
     links:
-      - websockets
       - scylladb
   php:
     image: twaketech/twake-php
@@ -53,10 +52,7 @@ services:
       - scylladb
       - elasticsearch
     links:
-      - websockets
       - scylladb
-  websockets:
-    image: twaketech/twake-websockets
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
@@ -77,7 +73,6 @@ services:
       - 8000:80
     links:
       - php
-      - websockets
     volumes_from:
       - php
     volumes:

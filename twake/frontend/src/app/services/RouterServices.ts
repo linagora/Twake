@@ -108,7 +108,7 @@ class RouterServices {
     let match: any = null;
     this.clientSubPathnames
       .sort((a, b) => b.length - a.length)
-      .map(route => {
+      .forEach(route => {
         if (!match) {
           match = this.match(route) as any;
         }
@@ -123,7 +123,7 @@ class RouterServices {
     };
 
     const state: any = {};
-    Object.keys(reducedState).map(key => {
+    Object.keys(reducedState).forEach(key => {
       try {
         state[key] = reducedState[key] ? this.translator.toUUID(reducedState[key]) : '';
       } catch (err) {
@@ -146,7 +146,7 @@ class RouterServices {
     const currentState = this.getStateFromRoute();
     const expandedState: any = replace ? params : Object.assign(currentState, params);
     const state: any = {};
-    Object.keys(expandedState).map(key => {
+    Object.keys(expandedState).forEach(key => {
       try {
         state[key] = expandedState[key] ? this.translator.fromUUID(expandedState[key]) : '';
       } catch (err) {

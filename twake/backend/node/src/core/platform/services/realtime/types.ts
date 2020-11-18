@@ -28,6 +28,11 @@ export class LeaveRoomEvent {
   name: string;
 }
 
+export class ClientEvent {
+  name: string;
+  data: any;
+}
+
 export interface JoinLeaveRoomError {
   name: string;
   message?: string;

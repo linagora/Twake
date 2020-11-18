@@ -8,7 +8,7 @@ import EventModification from './EventModification.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Participants from './Part/Participants.js';
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import DateTimeUtils from 'services/utils/datetime.js';
 import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';

@@ -4,10 +4,9 @@ import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
-import alertService from 'services/AlertManager/AlertManager.js';
+import alertService from 'services/AlertManager/AlertManager';
 import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
-import AlertLayout from 'components/Alert/Layout.js';
 
 import { Layout } from 'antd';
 import './Client.scss';
@@ -29,7 +28,6 @@ import Globals from 'services/Globals.js';
 import LoginService from 'services/login/login';
 
 export default (): JSX.Element => {
-  alertService.useListener(useState);
   popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
@@ -93,7 +91,6 @@ export default (): JSX.Element => {
       <ModalComponent />
       <SearchPopup />
       <ConnectionIndicator />
-      {alertService.isOpen() && <AlertLayout />}
     </>
   );
 };

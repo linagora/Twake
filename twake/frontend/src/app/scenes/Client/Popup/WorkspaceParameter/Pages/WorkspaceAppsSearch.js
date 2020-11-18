@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';

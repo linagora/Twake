@@ -9,7 +9,7 @@ type JWTDataType = {
   type: 'Bearer';
 };
 
-class JWTStorage {
+class JWTStorageClass {
   private timeDelta = 5 * 60;
   private jwtData: JWTDataType = {
     time: 0,
@@ -69,5 +69,5 @@ class JWTStorage {
   }
 }
 
-const _JWTStorage = new JWTStorage();
-export default _JWTStorage;
+const JWTStorage = new JWTStorageClass();
+export default JWTStorage;

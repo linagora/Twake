@@ -7,7 +7,7 @@ import Icon from 'components/Icon/Icon.js';
 import ColorPicker from 'components/ColorPicker/ColorPicker.js';
 import Strings from 'services/utils/strings.js';
 import InputWithColor from 'components/Inputs/InputWithColor.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages.js';
 import MenusManager from 'services/Menus/MenusManager.js';
 
