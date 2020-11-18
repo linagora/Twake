@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelCategory from './ChannelCategory.js';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
+import ChannelMenu from './ChannelMenu';
 import ChannelUI from './Channel';
 import { ChannelType } from 'app/models/Channel';
 import RouterService from 'services/RouterServices';
@@ -15,6 +16,10 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const menu = (channel: ChannelType) => {
+    return <ChannelMenu channel={channel} />;
+  };
+
   const addChannel = () => {
     return MediumPopupComponent.open(
       <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
@@ -45,7 +50,7 @@ export default (props: Props) => {
           unreadMessages={false}
           visibility={data.visibility || 'public'}
           notifications={data.messages_count || 0}
-          options={{}}
+          menu={menu(data)}
           id={data.id}
         />
       );
