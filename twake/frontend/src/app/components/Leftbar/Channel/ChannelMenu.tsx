@@ -4,7 +4,7 @@ import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
 import Languages from 'services/languages/languages.js';
 import { ChannelType } from 'app/models/Channel';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
 import ModalManager from 'app/services/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';

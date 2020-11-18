@@ -33,8 +33,10 @@ export default (props: Props) => {
   messageEditorService.useListener(useState);
   useEffect(() => {
     focus();
-    const val = messageEditorService.getContent(props.threadId, props.messageId || '');
-    if (val) change(val);
+    (async () => {
+      const val = await messageEditorService.getContent(props.threadId, props.messageId || '');
+      if (val) change(val);
+    })();
   }, []);
   let autocomplete: any = null;
   let disable_enter: boolean = false;
@@ -54,10 +56,10 @@ export default (props: Props) => {
     autocomplete.focus();
   };
 
-  const onKeyUp = (event: any) => {
+  const onKeyUp = async (event: any) => {
     if (
       event.key == 'ArrowUp' &&
-      !messageEditorService.getContent(props.threadId, props.messageId || '')
+      !(await messageEditorService.getContent(props.threadId, props.messageId || ''))
     ) {
       //Edit last message from ourselve
       props.onEditLastMessage && props.onEditLastMessage();

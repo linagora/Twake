@@ -30,8 +30,8 @@ export default (props: Props) => {
     ),
   );
 
-  const save = () => {
-    const content = messageEditorService.getContent(
+  const save = async () => {
+    const content = await messageEditorService.getContent(
       props.message?.parent_message_id || '',
       props.message?.id || '',
     );

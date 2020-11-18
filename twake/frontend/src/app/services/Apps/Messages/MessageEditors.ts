@@ -51,9 +51,9 @@ export class MessageEditors extends Observable {
     this.editorsContents[threadId + '_' + messageId] = content;
   }
 
-  getContent(threadId: string, messageId: string) {
+  async getContent(threadId: string, messageId: string) {
     if (!messageId) {
-      const all = this.cleanSavedInputContents(LocalStorage.getItem('m_input') || {});
+      const all = this.cleanSavedInputContents((await LocalStorage.getItem('m_input')) || {});
       const res = (all[this.channelId + (threadId ? '_thread=' + threadId : '')] || {})[0];
       if (res) {
         this.editorsContents[threadId + '_' + messageId] = res;
@@ -67,7 +67,7 @@ export class MessageEditors extends Observable {
       if (
         all[key] &&
         all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 &&
-        (all.indexOf('_thread=') ||
+        (key.indexOf('_thread=') ||
           all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 6)
       ) {
         delete all[key];
