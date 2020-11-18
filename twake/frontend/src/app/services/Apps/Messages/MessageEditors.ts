@@ -67,7 +67,7 @@ export class MessageEditors extends Observable {
       if (
         all[key] &&
         all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 &&
-        (all.indexOf('_thread=') ||
+        (key.indexOf('_thread=') ||
           all[key][1] < new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 6)
       ) {
         delete all[key];
