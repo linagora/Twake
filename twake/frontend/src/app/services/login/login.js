@@ -317,7 +317,9 @@ class Login extends Observable {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
     });
-    Workspaces.initSelection();
+    if(!Workspaces.currentWorkspaceId){
+      Workspaces.initSelection();
+    }
     Notifications.start();
     CurrentUser.start();
     Languages.setLanguage(user.language);
