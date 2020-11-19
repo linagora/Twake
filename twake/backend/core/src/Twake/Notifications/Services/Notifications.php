@@ -52,7 +52,7 @@ class Notifications
     // Collections part
     public function init($route, $data, $current_user = null)
     {
-        if ($current_user && explode("/", $route)[1] == $current_user->getId()) {
+        if (!is_string($current_user) && $current_user && explode("/", $route)[1] == $current_user->getId()) {
             return true;
         }
         return false;

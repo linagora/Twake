@@ -81,11 +81,10 @@ class DrivePreviewCommand extends ContainerAwareCommand
 
         }
 
-
         return true;
     }
 
-    public function checkLocalFileForPreview(DriveFile $file)
+    public function checkLocalFileForPreview($file)
     {
         $tmppath = null;
         $version = $this->doctrine->getRepository("Twake\Drive:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));

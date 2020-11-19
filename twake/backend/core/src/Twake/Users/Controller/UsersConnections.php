@@ -128,8 +128,8 @@ class UsersConnections extends BaseController
             $data["errors"][] = "disconnected";
         } else {
 
-            if( $this->get("app.session_handler")->getDidUseRememberMe() && $ok->getIdentityProvider()){
-              $data["errors"][] = "redirect_to_" . $ok->getIdentityProvider();
+            if( $this->get("app.session_handler")->getDidUseRememberMe() && $this->getUser()->getIdentityProvider()){
+              $data["errors"][] = "redirect_to_" . $this->getUser()->getIdentityProvider();
               return new Response($data);
             }
 
