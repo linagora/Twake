@@ -88,9 +88,9 @@ class DrivePreviewCommand extends ContainerAwareCommand
     public function checkLocalFileForPreview($file)
     {
         $tmppath = null;
-        $version = $this->doctrine->getRepository("Twake\Drive:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
-        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
+        $version = $this->em->getRepository("Twake\Drive:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
+        if ($version && isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
+            $uploadstate = $this->em->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
             if ($uploadstate && $uploadstate->getHasPreview()) {
                 $tmppath = $this->drive_previews_tmp_folder . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
             }
