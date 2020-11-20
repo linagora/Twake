@@ -16,10 +16,7 @@ export default class CollectionTransport<G extends Resource<any>> {
   private buffer: ServerAction[] = [];
   httpUsed: number = 0;
 
-  constructor(readonly collection: Collection<G>) {
-    //@ts-ignore
-    window.CollectionTransport = this;
-  }
+  constructor(readonly collection: Collection<G>) {}
 
   /**
    * This collection is visible, transport must start
@@ -79,12 +76,22 @@ export default class CollectionTransport<G extends Resource<any>> {
     if (this.httpUsed === 0) this.socketTransport.flushWebsocketBuffer();
   }
 
-  async get(options?: any) {
+  async get(filter: any, options?: any) {
     this.lockHttp();
     try {
+      const queryParameters = Object.keys(options || {}).map(
+        k => k + '=' + encodeURIComponent(options[k]),
+      );
+
+      const getOneSuffix = filter?.id ? '/' + filter?.id : '';
       const result = await Collections.getTransport()
         .getHttp()
-        .get(this.collection.getPath().replace(/\/$/, '') + '?websockets=1');
+        .get(
+          this.collection.getPath().replace(/\/$/, '') +
+            getOneSuffix +
+            '?websockets=1&' +
+            queryParameters.join('&'),
+        );
       this.unlockHttp();
 
       if (result?.websockets) {
@@ -97,6 +104,7 @@ export default class CollectionTransport<G extends Resource<any>> {
       //TODO retry system
       this.unlockHttp();
     }
+    return null;
   }
 
   async upsert(resource: G, options: any) {

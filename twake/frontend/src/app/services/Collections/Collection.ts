@@ -2,6 +2,8 @@ import Storage from './Storage';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 import CollectionTransport from './Transport/CollectionTransport';
+import FindCompletion from './Transport/CollectionFindCompletion';
+import { capitaliseFirstLetter } from '@fullcalendar/core';
 
 /**
  * This is a Collection.
@@ -9,12 +11,12 @@ import CollectionTransport from './Transport/CollectionTransport';
  * Each action done on this Collection will trigger calls to backend.
  */
 
-type GeneralOptions = {
+export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
 } & any;
 
-type ServerRequestOptions = {
+export type ServerRequestOptions = {
   httpOptions: any;
 };
 
@@ -22,6 +24,7 @@ export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
+  protected completion: FindCompletion<G> = new FindCompletion(this);
 
   constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
 
@@ -111,12 +114,12 @@ export default class Collection<G extends Resource<any>> {
    * This will call backend if we ask for more items than existing in frontend.
    */
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
-    const mongoItems = await Storage.find(this.path, filter, options);
+    let mongoItems = await Storage.find(this.path, filter, options);
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
 
-    this.transport.get(options?.httpOptions);
+    mongoItems = await this.completion.completeFind(mongoItems, filter, options);
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
@@ -129,11 +132,11 @@ export default class Collection<G extends Resource<any>> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
-    const mongoItem = await Storage.findOne(this.path, filter, options);
+    let mongoItem = await Storage.findOne(this.path, filter, options);
     this.updateLocalResource(mongoItem);
 
     if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
-      this.transport.get(options?.httpOptions);
+      mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
