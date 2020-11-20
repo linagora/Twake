@@ -24,6 +24,10 @@ class Collections {
   private options: Options = { transport: {} };
   protected transport: Transport = new Transport();
 
+  constructor() {
+    (window as any).Collections = this;
+  }
+
   public setOptions(options: Options) {
     this.options = _.merge(this.options, options);
   }

@@ -7,9 +7,9 @@ import RouterServices from 'services/RouterServices';
 import WorkspaceChannels from 'components/Leftbar/Channel/workspaceChannels';
 
 type channelCategoryType = {
-  favorite: { data: ChannelType }[];
-  workspace: { data: ChannelType }[];
-  inGroup: { data: ChannelType }[];
+  favorite: ChannelResource[];
+  workspace: ChannelResource[];
+  inGroup: ChannelResource[];
 };
 
 export function Workspace() {
@@ -41,7 +41,7 @@ export function Workspace() {
   });
 
   let groupsName: string[] = [];
-  let groups: { name: string; channels: { data: object }[] }[] = [];
+  let groups: { name: string; channels: ChannelResource[] }[] = [];
 
   channelCategory.inGroup.map(channel => {
     if (channel.data.channel_group && channel.data.channel_group.length > 1) {
