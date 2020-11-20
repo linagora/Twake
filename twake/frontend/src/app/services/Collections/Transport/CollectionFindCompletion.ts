@@ -23,8 +23,20 @@ export default class FindCompletion<G extends Resource<any>> {
 
     if (options.search_query) options.httpOptions.search_query = options.search_query;
 
+    if (mongoItems.length >= 1) {
+      return mongoItems;
+    }
+
     const items = await this.collection.getTransport().get(filter, options?.httpOptions);
-    console.log(items);
+
+    if (items?.resources && items?.resources?.length) {
+      const type = this.collection.getType();
+      (items?.resources as any[]).forEach(resource => {
+        const mongoItem = new type(resource);
+        this.collection.upsert(mongoItem, { withoutBackend: true });
+        mongoItems.push(mongoItem);
+      });
+    }
 
     return mongoItems;
   }
@@ -47,8 +59,14 @@ export default class FindCompletion<G extends Resource<any>> {
     filter = filter || {};
     filter.id = filter.id || 'no-id';
 
+    let mongoItem: G | null = null;
     const item = await this.collection.getTransport().get(filter, options?.httpOptions);
+    if (item?.resource) {
+      const type = this.collection.getType();
+      mongoItem = new type(item?.resource);
+      this.collection.upsert(mongoItem, { withoutBackend: true });
+    }
 
-    return null;
+    return mongoItem;
   }
 }

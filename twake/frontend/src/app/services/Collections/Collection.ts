@@ -3,7 +3,6 @@ import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 import CollectionTransport from './Transport/CollectionTransport';
 import FindCompletion from './Transport/CollectionFindCompletion';
-import { capitaliseFirstLetter } from '@fullcalendar/core';
 
 /**
  * This is a Collection.
@@ -115,12 +114,12 @@ export default class Collection<G extends Resource<any>> {
    */
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
     let mongoItems = await Storage.find(this.path, filter, options);
-    mongoItems.forEach(mongoItem => {
-      this.updateLocalResource(mongoItem);
-    });
 
     mongoItems = await this.completion.completeFind(mongoItems, filter, options);
 
+    mongoItems.forEach(mongoItem => {
+      this.updateLocalResource(mongoItem);
+    });
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 
@@ -133,12 +132,12 @@ export default class Collection<G extends Resource<any>> {
       filter = { id: filter };
     }
     let mongoItem = await Storage.findOne(this.path, filter, options);
-    this.updateLocalResource(mongoItem);
 
     if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
       mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 
+    this.updateLocalResource(mongoItem);
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 
