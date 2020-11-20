@@ -21,7 +21,7 @@ const ChannelMembersEditor: FC<Props> = props => {
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
   const getMembersList = async () => {
-    const collectionPath: string = `/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/`;
+    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/`;
     const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
 
     MemberList.map(async id => {
