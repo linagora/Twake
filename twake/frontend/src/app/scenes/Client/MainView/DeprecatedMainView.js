@@ -7,7 +7,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione';
 import User from 'services/user/user.js';
-import './MainView.scss';
+//import './DeprecatedMainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Tabs from './Tabs/Tabs.js';
