@@ -112,6 +112,14 @@ export class CrudExeption extends Error {
     super();
     this.message = details;
   }
+
+  static badRequest(details: string): CrudExeption {
+    return new CrudExeption(details, 400);
+  }
+
+  static notFound(details: string): CrudExeption {
+    return new CrudExeption(details, 404);
+  }
 }
 
 export interface Paginable {
