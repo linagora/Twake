@@ -131,11 +131,17 @@ export default class Collection<G extends Resource<any>> {
     }
     let mongoItem = await Storage.findOne(this.path, filter, options);
 
-    if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
+    if (
+      !mongoItem ||
+      !this.resources[mongoItem.id] ||
+      (!this.resources[mongoItem.id].state.upToDate && this.resources[mongoItem.id].state.persisted)
+    ) {
       mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 
-    this.updateLocalResource(mongoItem);
+    if (mongoItem) {
+      this.updateLocalResource(mongoItem);
+    }
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 
