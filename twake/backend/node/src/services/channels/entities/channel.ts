@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { ChannelVisibility, ChannelType } from "../types";
+
 export class Channel {
   // uuid-v4
   @Type(() => String)

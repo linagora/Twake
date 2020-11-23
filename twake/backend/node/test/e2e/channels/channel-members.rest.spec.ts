@@ -2,11 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { v4 as uuidv4 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
-import {
-  ChannelListResponse,
-  ChannelGetResponse,
-  ChannelUpdateResponse,
-} from "../../../src/services/channels/web/types";
+import { ChannelListResponse, ChannelGetResponse } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel, ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelExecutionContext, ChannelVisibility } from "../../../src/services/channels/types";

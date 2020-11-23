@@ -6,8 +6,9 @@ import {
   SaveResult,
   CrudExeption,
   OperationType,
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelPrimaryKey, MemberService } from "../../provider";
+import { MemberService } from "../../provider";
 
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext } from "../../types";
@@ -78,10 +79,10 @@ export class Service implements MemberService {
       });
 
       const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
-      await this.onUpdated(context.channel, memberToSave, updateResult);
+      this.onUpdated(context.channel, memberToSave, updateResult);
     } else {
       const saveResult = await this.service.save(member, context);
-      await this.onCreated(context.channel, member, saveResult);
+      this.onCreated(context.channel, member, saveResult);
     }
 
     return new SaveResult<ChannelMember>("channel_member", member, mode);
@@ -113,7 +114,7 @@ export class Service implements MemberService {
 
     const result = await this.service.delete(pk, context);
 
-    await this.onDeleted(channel, memberToDelete, result);
+    this.onDeleted(channel, memberToDelete);
 
     return result;
   }
@@ -125,28 +126,26 @@ export class Service implements MemberService {
     return this.service.list(pagination, context);
   }
 
-  async onUpdated(
+  onUpdated(
     channel: Channel,
     member: ChannelMember,
-    result: SaveResult<ChannelMember>,
-  ): Promise<SaveResult<ChannelMember>> {
-    return result;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    updateResult: UpdateResult<ChannelMember>,
+  ): void {
+    console.log("Member updated", member);
   }
 
-  async onCreated(
+  onCreated(
     channel: Channel,
     member: ChannelMember,
-    result: SaveResult<ChannelMember>,
-  ): Promise<SaveResult<ChannelMember>> {
-    return result;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    createResult: SaveResult<ChannelMember>,
+  ): void {
+    console.log("Member created", member);
   }
 
-  async onDeleted(
-    channel: Channel,
-    member: ChannelMember,
-    result: DeleteResult<ChannelMember>,
-  ): Promise<DeleteResult<ChannelPrimaryKey>> {
-    return result;
+  onDeleted(channel: Channel, member: ChannelMember): void {
+    console.log("Member deleted", member);
   }
 
   isCurrentUser(member: ChannelMember, user: User): boolean {
