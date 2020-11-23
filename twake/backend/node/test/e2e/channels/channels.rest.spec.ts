@@ -11,7 +11,10 @@ import {
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities";
 import { ChannelVisibility } from "../../../src/services/channels/types";
-import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
+import {
+  getPrivateRoomName,
+  getPublicRoomName,
+} from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { User } from "../../../src/services/types";
 
