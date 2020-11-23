@@ -1,10 +1,5 @@
+import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
 import {
-  RealtimeSaved,
-  RealtimeUpdated,
-  RealtimeDeleted,
-} from "../../../../core/platform/framework";
-import {
-  UpdateResult,
   DeleteResult,
   Pagination,
   ListResult,
@@ -20,6 +15,7 @@ import { Channel, User } from "../../../../services/types";
 import { cloneDeep, pickBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
+import { getMemberPath, getRoomName } from "./realtime";
 
 export class Service implements MemberService {
   version: "1";
@@ -36,7 +32,10 @@ export class Service implements MemberService {
     return this;
   }
 
-  @RealtimeSaved<ChannelMember>(() => "/todo", () => "/todo")
+  @RealtimeSaved<ChannelMember>(
+    (member, context) => getRoomName(context as ChannelExecutionContext),
+    (member, context) => getMemberPath(member, context as ChannelExecutionContext),
+  )
   async save(
     member: ChannelMember,
     context: ChannelExecutionContext,
@@ -90,13 +89,13 @@ export class Service implements MemberService {
 
   async get(pk: ChannelMemberPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember> {
     // FIXME: Who can fetch a single member?
-    const channel = await this.service.get(this.getPrimaryKey(pk), context);
-    console.log("___CHANNEL", channel);
-
-    return channel;
+    return await this.service.get(this.getPrimaryKey(pk), context);
   }
 
-  @RealtimeDeleted<ChannelMember>(() => "/todo", () => "/todo")
+  @RealtimeDeleted<ChannelMember>(
+    (member, context) => getRoomName(context as ChannelExecutionContext),
+    (member, context) => getMemberPath(member, context as ChannelExecutionContext),
+  )
   async delete(
     pk: ChannelMemberPrimaryKey,
     context: ChannelExecutionContext,

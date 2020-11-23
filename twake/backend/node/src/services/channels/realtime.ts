@@ -39,7 +39,10 @@ export function getRoomName(channel: Channel, context?: WorkspaceExecutionContex
   return getPublicRoomName(context.workspace);
 }
 
-export function getChannelPath(channel: Channel, context?: WorkspaceExecutionContext): string {
+export function getChannelPath(
+  channel: Pick<Channel, "id">,
+  context?: WorkspaceExecutionContext,
+): string {
   return `${getChannelsPath(context?.workspace)}/${channel.id}`;
 }
 

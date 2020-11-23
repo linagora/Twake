@@ -1,5 +1,4 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { getWorkspaceRooms } from "../../realtime";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
@@ -19,6 +18,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
 import { handleError } from ".";
+import { getChannelRooms } from "../../services/member/realtime";
 
 export class ChannelMemberCrudController
   implements
@@ -57,9 +57,6 @@ export class ChannelMemberCrudController
     }
 
     return {
-      websocket: {
-        room: "/TODO",
-      },
       resource,
     };
   }
@@ -85,9 +82,6 @@ export class ChannelMemberCrudController
       }
 
       return {
-        websocket: {
-          room: "/TODO",
-        },
         resource: result.entity,
       };
     } catch (err) {
@@ -166,7 +160,7 @@ export class ChannelMemberCrudController
         resources: list.entities || [],
       },
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser, true),
+        websockets: getChannelRooms(request.params, request.currentUser),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

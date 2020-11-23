@@ -69,7 +69,7 @@ Authorization: Bearer {{authToken}}
 
 ### Get all channel members
 
-GET {{channelsURL}}/channels/{{getId}}/members
+GET {{channelsURL}}/channels/{{getId}}/members?websockets=true
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

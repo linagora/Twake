@@ -52,8 +52,6 @@ export class MongoMemberService implements MemberService {
     pk: ChannelMemberPrimaryKey,
     member: ChannelMember,
   ): Promise<UpdateResult<ChannelMember>> {
-    console.log("PK", pk, "__MEMBER", member)
-    console.log("MEMEM", member);
     const updated = await this.collection.updateOne(pk, { $set: member });
 
     const result = new UpdateResult<ChannelMember>(TYPE, member);
