@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { ObjectId } from "mongodb";
 import io from "socket.io-client";
-import { Channel } from "../../../src/services/channels/entities/Channel";
+import { Channel } from "../../../src/services/channels/entities/channel";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import {
   getChannelPath,
