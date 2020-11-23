@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 
-export class ChannelMember {
+export class Member {
   @Type(() => String)
   id: string;
 }

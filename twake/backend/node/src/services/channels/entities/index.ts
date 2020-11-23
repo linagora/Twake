@@ -1,2 +1,3 @@
-export * from "./channel";
-export * from "./member";
+export * from "./Channel";
+export * from "./Member";
+export * from "./ChannelMember";
