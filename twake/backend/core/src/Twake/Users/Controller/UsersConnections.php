@@ -41,9 +41,12 @@ class UsersConnections extends BaseController
         $rememberMe = $request->request->get("_remember_me", true);
 
         $response = new Response();
-        $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        $logged = $this->getUser() && !is_string($this->getUser());
+        if(!$logged){
+            $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        }
 
-        if ($loginResult) {
+        if ($loginResult || $logged) {
 
             $device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {

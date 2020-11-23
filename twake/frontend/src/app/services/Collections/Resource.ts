@@ -66,6 +66,13 @@ export default class Resource<T> {
     };
   }
 
+  public getDataForStorage() {
+    return {
+      ...this.data,
+      _state: this.state,
+    };
+  }
+
   public setShared(state: boolean = true) {
     if (!this._state.shared && state) {
       this.setPersisted(); //If found from websocket, then it comes from the server

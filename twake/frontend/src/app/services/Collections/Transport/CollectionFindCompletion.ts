@@ -1,10 +1,13 @@
 import Collection, { GeneralOptions } from '../Collection';
 import Resource from '../Resource';
+import Storage, { MongoItemType } from '../Storage';
 
 /**
  * Autocomplete local collection repository with backend components
  */
 export default class FindCompletion<G extends Resource<any>> {
+  private didCompleteOnce = false;
+
   constructor(readonly collection: Collection<G>) {}
 
   /**
@@ -13,7 +16,11 @@ export default class FindCompletion<G extends Resource<any>> {
    * @param filter
    * @param options
    */
-  public async completeFind(mongoItems: G[], filter?: any, options?: GeneralOptions): Promise<G[]> {
+  public async completeFind(
+    mongoItems: MongoItemType[],
+    filter?: any,
+    options?: GeneralOptions,
+  ): Promise<MongoItemType[]> {
     options = options || {};
     options.httpOptions = {
       ...options.httpOptions,
@@ -23,20 +30,30 @@ export default class FindCompletion<G extends Resource<any>> {
 
     if (options.search_query) options.httpOptions.search_query = options.search_query;
 
-    if (mongoItems.length >= 1) {
+    if (this.didCompleteOnce) {
       return mongoItems;
     }
 
     const items = await this.collection.getTransport().get(filter, options?.httpOptions);
 
+    Storage.clear(this.collection.getPath());
+    mongoItems = [];
+
     if (items?.resources && items?.resources?.length) {
       const type = this.collection.getType();
-      (items?.resources as any[]).forEach(resource => {
-        const mongoItem = new type(resource);
-        this.collection.upsert(mongoItem, { withoutBackend: true });
+      const list = items?.resources as any[];
+      for (let i = 0; i < list.length; i++) {
+        const resource = new type(list[i]);
+        resource.setShared(true);
+        const mongoItem = await Storage.upsert(
+          this.collection.getPath(),
+          resource.getDataForStorage(),
+        );
         mongoItems.push(mongoItem);
-      });
+      }
     }
+
+    this.didCompleteOnce = true;
 
     return mongoItems;
   }
@@ -46,7 +63,10 @@ export default class FindCompletion<G extends Resource<any>> {
    * @param filter
    * @param options
    */
-  public async completeFindOne(filter?: any, options?: GeneralOptions): Promise<G | null> {
+  public async completeFindOne(
+    filter?: any,
+    options?: GeneralOptions,
+  ): Promise<MongoItemType | null> {
     options = options || {};
     options.httpOptions = {
       ...options.httpOptions,
@@ -59,12 +79,14 @@ export default class FindCompletion<G extends Resource<any>> {
     filter = filter || {};
     filter.id = filter.id || 'no-id';
 
-    let mongoItem: G | null = null;
+    let mongoItem: MongoItemType | null = null;
     const item = await this.collection.getTransport().get(filter, options?.httpOptions);
     if (item?.resource) {
       const type = this.collection.getType();
-      mongoItem = new type(item?.resource);
-      this.collection.upsert(mongoItem, { withoutBackend: true });
+      const data = item?.resource;
+      const resource = new type(data);
+      resource.setShared(true);
+      mongoItem = await Storage.upsert(this.collection.getPath(), resource.getDataForStorage());
     }
 
     return mongoItem;

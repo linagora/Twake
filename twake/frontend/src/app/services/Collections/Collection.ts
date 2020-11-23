@@ -67,10 +67,7 @@ export default class Collection<G extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: G, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
-    const mongoItem = await Storage.upsert(this.path, {
-      ...item.data,
-      _state: item.state,
-    });
+    const mongoItem = await Storage.upsert(this.path, item.getDataForStorage());
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
@@ -120,6 +117,7 @@ export default class Collection<G extends Resource<any>> {
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
+
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
 

@@ -6,6 +6,7 @@ type JWTDataType = {
   expiration: number;
   refresh_expiration: number;
   value: string;
+  refresh: string;
   type: 'Bearer';
 };
 
@@ -16,6 +17,7 @@ class JWTStorageClass {
     expiration: 0,
     refresh_expiration: 0,
     value: '',
+    refresh: '',
     type: 'Bearer',
   };
 
@@ -29,6 +31,7 @@ class JWTStorageClass {
       expiration: 0,
       refresh_expiration: 0,
       value: '',
+      refresh: '',
       type: 'Bearer',
     };
   }
@@ -49,7 +52,11 @@ class JWTStorageClass {
   }
 
   getAutorizationHeader() {
-    return this.jwtData.type + ' ' + this.jwtData.value;
+    let value = this.jwtData.value;
+    if (this.isAccessExpired()) {
+      value = this.jwtData.refresh;
+    }
+    return this.jwtData.type + ' ' + value;
   }
 
   isAccessExpired() {

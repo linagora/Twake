@@ -24,7 +24,9 @@ export function Workspace() {
   const channelsCollection = Collection.get(url, ChannelResource);
 
   const channels =
-    channelsCollection.useWatcher(async () => await channelsCollection.find({})) || [];
+    channelsCollection.useWatcher(async () => {
+      return await channelsCollection.find({});
+    }) || [];
 
   channels.map(channel => {
     switch (true) {

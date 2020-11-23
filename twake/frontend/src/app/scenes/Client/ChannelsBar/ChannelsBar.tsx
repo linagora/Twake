@@ -19,8 +19,8 @@ export default () => {
       {!!companyId && !!workspaceId && (
         <PerfectScrollbar component="div">
           <ChannelsApps key={workspaceId} />
-          <Workspace />
-          <ChannelsUser />
+          <Workspace key={'workspace_chans_' + workspaceId} />
+          <ChannelsUser key={companyId} />
         </PerfectScrollbar>
       )}
       <Tutorial />

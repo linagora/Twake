@@ -259,9 +259,6 @@ class User
 
         $key = $this->app->getContainer()->getParameter("jwt.secret");
 
-        $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
-        $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
-
         $orgs = [];
         if($workspaces){
             foreach($workspaces as $workspace){
@@ -278,21 +275,31 @@ class User
                 ];
             }
         }
-
+        $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
         $payload = [
             "exp" => $expiration,
-            "refresh_exp" => $refreshExpiration,
+            "type" => "access",
             "updated_at" => intval(date("U")),
             "sub" => $user->getId(),
             "org" => $orgs
         ];
         $jwt = JWT::encode($payload, $key);
 
+        $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
+        $payload = [
+            "exp" => $refreshExpiration,
+            "type" => "refresh",
+            "updated_at" => intval(date("U")),
+            "sub" => $user->getId()
+        ];
+        $jwt_refresh = JWT::encode($payload, $key);
+
         return [
             "time" => date("U"),
             "expiration" => $expiration,
-            "refresh_exiration" => $refreshExpiration,
+            "refresh_expiration" => $refreshExpiration,
             "value" => $jwt,
+            "refresh" => $jwt_refresh,
             "type" => "Bearer"
         ];
 

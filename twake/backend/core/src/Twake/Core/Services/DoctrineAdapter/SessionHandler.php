@@ -57,7 +57,7 @@ class SessionHandler
                 $key = $this->app->getContainer()->getParameter("jwt.secret");
                 $jwt = JWT::decode($jwt, $key, array('HS256'));
 
-                if(!$jwt->sub || $jwt->refresh_exp < date("U")){
+                if(!$jwt->sub || $jwt->exp < date("U")){
                     return false;
                 }
                 
