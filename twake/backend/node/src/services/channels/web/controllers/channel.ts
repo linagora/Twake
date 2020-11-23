@@ -4,7 +4,7 @@ import { Pagination } from "../../../../core/platform/framework/api/crud-service
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { Channel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey } from "../../provider";
-import { getWebsocketInformation, getWorkspaceRooms } from "../../realtime";
+import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
   ChannelCreateResponse,

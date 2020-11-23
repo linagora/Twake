@@ -1,6 +1,6 @@
 import { Channel, User, WebsocketMetadata } from "../../../../services/types";
 import { ChannelMember } from "../../entities";
-import { getChannelPath, getChannelsPath } from "../../realtime";
+import { getChannelPath, getChannelsPath } from "../channel/realtime";
 import { ChannelExecutionContext } from "../../types";
 
 export function getPrivateRoomName(channel: Channel, user: User): string {

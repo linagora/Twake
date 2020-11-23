@@ -1,6 +1,6 @@
-import { User, Workspace, WebsocketMetadata } from "../types";
-import { Channel } from "./entities";
-import { WorkspaceExecutionContext } from "./types";
+import { User, Workspace, WebsocketMetadata } from "../../../types";
+import { Channel } from "../../entities";
+import { WorkspaceExecutionContext } from "../../types";
 
 export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {

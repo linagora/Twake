@@ -17,7 +17,7 @@ import {
 import { ChannelPrimaryKey } from "../../provider";
 
 import { Channel } from "../../entities";
-import { getChannelPath, getRoomName } from "../../realtime";
+import { getChannelPath, getRoomName } from "./realtime";
 import { WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
