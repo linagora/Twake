@@ -33,9 +33,11 @@ const ENTITY_KEYS = [
   "archivation_date",
 ] as const;
 
+const TYPE = "channel";
+
 export class CassandraChannelService implements ChannelService {
   version = "1";
-  table = "channels";
+  private readonly table = `${TYPE}s`;
 
   constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
 
@@ -91,7 +93,7 @@ export class CassandraChannelService implements ChannelService {
 
     await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
 
-    return new UpdateResult<Channel>("channel", updatableChannel);
+    return new UpdateResult<Channel>(TYPE, updatableChannel);
   }
 
   async create(
@@ -110,7 +112,7 @@ export class CassandraChannelService implements ChannelService {
 
     await this.client.execute(query, saveChannel, { prepare: false });
 
-    return new CreateResult<Channel>("channel", saveChannel as Channel);
+    return new CreateResult<Channel>(TYPE, saveChannel as Channel);
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
@@ -128,7 +130,7 @@ export class CassandraChannelService implements ChannelService {
     const query = `DELETE FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
     await this.client.execute(query, key);
 
-    return new DeleteResult<Channel>("channel", key as Channel, true);
+    return new DeleteResult<Channel>(TYPE, key as Channel, true);
   }
 
   async list(
@@ -143,13 +145,13 @@ export class CassandraChannelService implements ChannelService {
     });
 
     if (!result.rowLength) {
-      return new ListResult<Channel>("channel", []);
+      return new ListResult<Channel>(TYPE, []);
     }
 
     result.nextPage;
 
     return new ListResult<Channel>(
-      "channel",
+      TYPE,
       result.rows.map(row => this.mapRowToChannel(row)),
       CassandraPagination.next(paginate, result.pageState),
     );
