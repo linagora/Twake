@@ -1,12 +1,10 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HttpErrorCodes } from "fastify-sensible/lib/httpError";
-import { CrudExeption, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { Channel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../realtime";
-import { getExecutionContext } from "./index";
 import {
   BaseChannelsParameters,
   ChannelCreateResponse,
@@ -19,6 +17,8 @@ import {
   CreateChannelBody,
   UpdateChannelBody,
 } from "../types";
+import { WorkspaceExecutionContext } from "../../types";
+import { handleError } from ".";
 
 export class ChannelCrudController
   implements
@@ -48,7 +48,9 @@ export class ChannelCrudController
     );
 
     if (!resource) {
-      throw reply.notFound(`Channel ${request.params.id} not found`);
+      reply.notFound(`Channel ${request.params.id} not found`);
+
+      return;
     }
 
     return {
@@ -81,7 +83,7 @@ export class ChannelCrudController
         resource: result.entity,
       };
     } catch (err) {
-      this.handleError(reply, err);
+      handleError(reply, err);
     }
   }
 
@@ -110,7 +112,7 @@ export class ChannelCrudController
         resource: result.entity,
       };
     } catch (err) {
-      this.handleError(reply, err);
+      handleError(reply, err);
     }
   }
 
@@ -160,16 +162,22 @@ export class ChannelCrudController
         status: "error",
       };
     } catch (err) {
-      this.handleError(reply, err);
+      handleError(reply, err);
     }
   }
+}
 
-  handleError(reply: FastifyReply, err: Error): void {
-    if (err instanceof CrudExeption) {
-      const crudException: CrudExeption = err;
-      reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
-    } else {
-      throw err;
-    }
-  }
+function getExecutionContext(
+  request: FastifyRequest<{ Params: BaseChannelsParameters }>,
+): WorkspaceExecutionContext {
+  return {
+    user: request.currentUser,
+    url: request.url,
+    method: request.routerMethod,
+    transport: "http",
+    workspace: {
+      company_id: request.params.company_id,
+      workspace_id: request.params.workspace_id,
+    },
+  };
 }

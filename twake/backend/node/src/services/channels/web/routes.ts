@@ -1,6 +1,13 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters } from "./types";
-import { createChannelSchema, getChannelSchema, updateChannelSchema } from "./schemas";
+import {
+  createChannelMemberSchema,
+  createChannelSchema,
+  getChannelMemberSchema,
+  getChannelSchema,
+  updateChannelMemberSchema,
+  updateChannelSchema,
+} from "./schemas";
 import { ChannelCrudController, ChannelMemberCrudController } from "./controllers";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
@@ -81,6 +88,41 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: membersController.list.bind(membersController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: membersUrl,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: createChannelMemberSchema,
+    handler: membersController.save.bind(membersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${membersUrl}/:member_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getChannelMemberSchema,
+    handler: membersController.get.bind(membersController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${membersUrl}/:member_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: updateChannelMemberSchema,
+    handler: membersController.update.bind(membersController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: `${membersUrl}/:member_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: membersController.delete.bind(membersController),
   });
 
   next();

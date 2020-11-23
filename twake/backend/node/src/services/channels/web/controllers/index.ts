@@ -1,21 +1,15 @@
-import { FastifyRequest } from "fastify";
-import { WorkspaceExecutionContext } from "../../types";
-import { BaseChannelsParameters } from "../types";
+import { FastifyReply } from "fastify";
+import { HttpErrorCodes } from "fastify-sensible/lib/httpError";
+import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 
 export * from "./channel";
 export * from "./member";
 
-export function getExecutionContext(
-  request: FastifyRequest<{ Params: BaseChannelsParameters }>,
-): WorkspaceExecutionContext {
-  return {
-    user: request.currentUser,
-    url: request.url,
-    method: request.routerMethod,
-    transport: "http",
-    workspace: {
-      company_id: request.params.company_id,
-      workspace_id: request.params.workspace_id,
-    },
-  };
+export function handleError(reply: FastifyReply, err: Error): void {
+  if (err instanceof CrudExeption) {
+    const crudException: CrudExeption = err;
+    reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
+  } else {
+    throw err;
+  }
 }

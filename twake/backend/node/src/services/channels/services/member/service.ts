@@ -10,13 +10,15 @@ import {
   ListResult,
   SaveResult,
   CrudExeption,
+  OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelPrimaryKey, MemberService } from "../../provider";
 
-import { ChannelMember } from "../../entities";
-import { WorkspaceExecutionContext } from "../../types";
-import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
-import { Channel } from "../../../../services/types";
+import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { ChannelExecutionContext } from "../../types";
+import { Channel, User } from "../../../../services/types";
+import { cloneDeep, pickBy } from "lodash";
+import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 
 export class Service implements MemberService {
@@ -37,40 +39,77 @@ export class Service implements MemberService {
   @RealtimeSaved<ChannelMember>(() => "/todo", () => "/todo")
   async save(
     member: ChannelMember,
-    context: WorkspaceExecutionContext,
+    context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
-    throw new Error("Not implemented");
+    let memberToSave: ChannelMember;
+    const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
+    const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
+
+    if (mode === OperationType.UPDATE) {
+      const isCurrentUser = this.isCurrentUser(memberToUpdate, context.user);
+
+      if (!isCurrentUser) {
+        throw CrudExeption.badRequest("Channel member can not be updated");
+      }
+
+      const updatableParameters: Partial<Record<keyof ChannelMember, boolean>> = {
+        notification_level: isCurrentUser,
+        favorite: isCurrentUser,
+      };
+
+      // Diff existing channel and input one, cleanup all the undefined fields for all objects
+      const memberDiff = pickBy(updatedDiff(memberToUpdate, member));
+      const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
+
+      if (!fields.length) {
+        throw CrudExeption.badRequest("Nothing to update");
+      }
+
+      const updatableFields = fields.filter(field => updatableParameters[field]);
+
+      if (!updatableFields.length) {
+        throw CrudExeption.badRequest("Current user can not update requested fields");
+      }
+
+      memberToSave = cloneDeep(memberToUpdate);
+
+      updatableFields.forEach(field => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (memberToSave as any)[field] = member[field];
+      });
+
+      const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
+      await this.onUpdated(context.channel, memberToSave, updateResult);
+    } else {
+      const saveResult = await this.service.save(member, context);
+      await this.onCreated(context.channel, member, saveResult);
+    }
+
+    return new SaveResult<ChannelMember>("channel_member", member, mode);
   }
 
-  get(pk: ChannelPrimaryKey, context: WorkspaceExecutionContext): Promise<ChannelMember> {
-    return this.service.get(pk, context);
-  }
+  async get(pk: ChannelMemberPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember> {
+    // FIXME: Who can fetch a single member?
+    const channel = await this.service.get(this.getPrimaryKey(pk), context);
+    console.log("___CHANNEL", channel);
 
-  @RealtimeUpdated<ChannelMember>(() => "/todo", () => "/todo")
-  update(
-    pk: ChannelPrimaryKey,
-    channel: ChannelMember,
-    context: WorkspaceExecutionContext,
-  ): Promise<UpdateResult<ChannelMember>> {
-    return this.service.update(pk, channel, context);
+    return channel;
   }
 
   @RealtimeDeleted<ChannelMember>(() => "/todo", () => "/todo")
   async delete(
-    pk: ChannelPrimaryKey,
-    context: WorkspaceExecutionContext,
+    pk: ChannelMemberPrimaryKey,
+    context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
-    let channel: Channel; // TODO;
-    const memberToDelete = await this.get(this.getPrimaryKey(pk), context);
+    let channel: Channel;
+    const memberToDelete = await this.service.get(pk, context);
 
     if (!memberToDelete) {
-      throw new CrudExeption("Channel member not found", 404);
+      throw CrudExeption.notFound("Channel member not found");
     }
 
-    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
-
-    if (!isWorkspaceAdmin) {
-      throw new CrudExeption("Channel member can not be deleted", 400);
+    if (!this.isCurrentUser(memberToDelete, context.user)) {
+      throw CrudExeption.badRequest("User does not have rights to remove member");
     }
 
     const result = await this.service.delete(pk, context);
@@ -82,19 +121,15 @@ export class Service implements MemberService {
 
   list(
     pagination: Pagination,
-    context: WorkspaceExecutionContext,
+    context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.service.list(pagination, context);
-  }
-
-  getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
-    return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
 
   async onUpdated(
     channel: Channel,
     member: ChannelMember,
-    result: SaveResult<Channel>,
+    result: SaveResult<ChannelMember>,
   ): Promise<SaveResult<ChannelMember>> {
     return result;
   }
@@ -102,7 +137,7 @@ export class Service implements MemberService {
   async onCreated(
     channel: Channel,
     member: ChannelMember,
-    result: SaveResult<Channel>,
+    result: SaveResult<ChannelMember>,
   ): Promise<SaveResult<ChannelMember>> {
     return result;
   }
@@ -113,5 +148,18 @@ export class Service implements MemberService {
     result: DeleteResult<ChannelMember>,
   ): Promise<DeleteResult<ChannelPrimaryKey>> {
     return result;
+  }
+
+  isCurrentUser(member: ChannelMember, user: User): boolean {
+    return member.user_id === user.id;
+  }
+
+  getPrimaryKey(
+    memberOrPrimaryKey: ChannelMember | ChannelMemberPrimaryKey,
+  ): ChannelMemberPrimaryKey {
+    return pick(
+      memberOrPrimaryKey,
+      ...(["company_id", "workspace_id", "channel_id", "user_id"] as const),
+    );
   }
 }

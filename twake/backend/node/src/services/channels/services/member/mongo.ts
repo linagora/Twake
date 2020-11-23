@@ -1,17 +1,17 @@
 import * as mongo from "mongodb";
-import { Channel, ChannelMember } from "../../entities";
-import { MemberService, ChannelPrimaryKey } from "../../provider";
+import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { MemberService } from "../../provider";
 import { MongoPagination } from "../../../../core/platform/services/database/services/connectors/mongodb";
 import {
   CreateResult,
   DeleteResult,
   Pagination,
   ListResult,
-  OperationType,
   SaveResult,
   UpdateResult,
+  OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext } from "../../types";
 
 const TYPE = "channel_member";
 
@@ -24,58 +24,55 @@ export class MongoMemberService implements MemberService {
   }
 
   async save(
-    channel: ChannelMember,
-    context: WorkspaceExecutionContext,
+    member: ChannelMember,
+    context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
-    const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
-    let result: SaveResult<ChannelMember>;
+    // TODO: Switch create or update
+    const createResult = await this.create(member, context);
 
-    if (mode === OperationType.CREATE) {
-      const created = await this.create(channel, context);
-
-      result = new SaveResult<ChannelMember>(TYPE, created.entity, mode);
-    } else if (mode === OperationType.UPDATE) {
-      const updated = await this.update({ id: String(channel.id) }, channel);
-
-      result = new SaveResult<ChannelMember>(TYPE, updated.entity, mode);
-    } else {
-      throw new Error("Can not define operation to apply to channel member");
-    }
-
-    return result;
+    return new SaveResult<ChannelMember>(TYPE, createResult.entity, OperationType.CREATE);
   }
 
   async create(
     member: ChannelMember,
-    context: WorkspaceExecutionContext,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    context: ChannelExecutionContext,
   ): Promise<CreateResult<ChannelMember>> {
-    // TODO
-
+    // TODO assert required and default fields are set
     const inserted = await this.collection.insertOne(member, { w: 1 });
 
     if (!inserted.insertedCount) {
       throw new Error("No channel member created");
     }
 
-    const created: ChannelMember = inserted.ops[0];
-
-    return new CreateResult<ChannelMember>(TYPE, created);
+    return new CreateResult<ChannelMember>(TYPE, inserted.ops[0]);
   }
 
-  update(pk: ChannelPrimaryKey, member: ChannelMember): Promise<UpdateResult<ChannelMember>> {
-    throw new Error("FU");
+  async update(
+    pk: ChannelMemberPrimaryKey,
+    member: ChannelMember,
+  ): Promise<UpdateResult<ChannelMember>> {
+    console.log("PK", pk, "__MEMBER", member)
+    console.log("MEMEM", member);
+    const updated = await this.collection.updateOne(pk, { $set: member });
+
+    const result = new UpdateResult<ChannelMember>(TYPE, member);
+    result.affected = updated.modifiedCount;
+
+    return result;
   }
 
-  async get(pk: ChannelPrimaryKey): Promise<ChannelMember> {
-    return await this.collection.findOne<ChannelMember>({ id: pk.id });
+  async get(pk: ChannelMemberPrimaryKey): Promise<ChannelMember> {
+    // TODO: Assert required fields are set
+    return await this.collection.findOne<ChannelMember>(pk);
   }
 
-  async delete(pk: ChannelPrimaryKey): Promise<DeleteResult<ChannelMember>> {
-    const deleteResult = await this.collection.deleteOne({ id: pk.id });
+  async delete(pk: ChannelMemberPrimaryKey): Promise<DeleteResult<ChannelMember>> {
+    const deleteResult = await this.collection.deleteOne(pk);
 
     return new DeleteResult<ChannelMember>(
-      "channel",
-      { id: pk.id } as Channel,
+      TYPE,
+      pk as ChannelMember,
       deleteResult.deletedCount === 1,
     );
   }

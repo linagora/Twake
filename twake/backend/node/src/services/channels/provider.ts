@@ -1,7 +1,7 @@
 import { CRUDService } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
-import { Channel, ChannelMember } from "./entities";
-import { WorkspaceExecutionContext } from "./types";
+import { Channel, ChannelMember, ChannelMemberPrimaryKey } from "./entities";
+import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -16,7 +16,7 @@ export interface ChannelService
 export interface MemberService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<ChannelMember, ChannelPrimaryKey, WorkspaceExecutionContext> {}
+    CRUDService<ChannelMember, ChannelMemberPrimaryKey, ChannelExecutionContext> {}
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
   channels: ChannelService;

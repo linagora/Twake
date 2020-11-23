@@ -1,11 +1,15 @@
 @company_id = bcfe2f79-8e81-42a3-b551-3a32d49b2b4c
 @workspace_id = 3328552c-5ccd-4172-b84a-d876d56aa71b
+@user_id = 3328552c-5ccd-4172-b84a-d876d56aa71c
 
 @baseURL = http://localhost:3000
 @channelsURL = {{baseURL}}/internal/services/channels/v1/companies/{{company_id}}/workspaces/{{workspace_id}}
 
 # @name login
 GET {{baseURL}}/api/auth/login
+
+@authToken = {{login.response.body.token}}
+@currentUserId = {{login.response.body.user.id}}
 
 ### List channels with all websockets
 
@@ -49,7 +53,9 @@ Authorization: Bearer {{authToken}}
 
 {
   "resource": {
-    "name": "My channel update"
+    "name": "My channel",
+    "description": "Hello world",
+    "is_default": false
   }
 }
 
@@ -58,6 +64,50 @@ Authorization: Bearer {{authToken}}
 @deleteId = {{createChannel.response.body.resource.id}}
 
 DELETE {{channelsURL}}/channels/{{deleteId}}
+Authorization: Bearer {{authToken}}
+
+
+### Get all channel members
+
+GET {{channelsURL}}/channels/{{getId}}/members
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+
+### Add current user as member to a channel (join channel)
+
+POST {{channelsURL}}/channels/{{getId}}/members
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "resource": {
+    "user_id": "{{currentUserId}}"
+  }
+}
+
+### Get a channel member
+
+GET {{channelsURL}}/channels/{{getId}}/members/{{currentUserId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### Update current channel member
+
+POST {{channelsURL}}/channels/{{getId}}/members/{{currentUserId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "resource": {
+    "favorite": true
+  }
+}
+
+### Current user quits the channel
+
+DELETE {{channelsURL}}/channels/{{getId}}/members/{{currentUserId}}
+Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 ### Errors Tests

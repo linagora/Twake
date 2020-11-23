@@ -1,4 +1,4 @@
-import { Channel } from "../entities";
+import { Channel, ChannelMember } from "../entities";
 
 export declare type DirectChannel = "direct";
 export declare type DeleteStatus = "success" | "error";
@@ -9,6 +9,7 @@ export interface BaseChannelsParameters {
 }
 
 export interface ChannelParameters extends BaseChannelsParameters {
+  /** the channel id */
   id: string;
 }
 
@@ -67,3 +68,13 @@ export class UpdateChannelBody {
 export type ChannelCreateResource = Pick<Channel, "name">;
 
 export type ChannelUpdateResource = Pick<Channel, "name">;
+
+// channel members
+
+export class CreateChannelMemberBody {
+  resource: Pick<ChannelMember, "user_id">;
+}
+
+export class UpdateChannelMemberBody {
+  resource: Pick<ChannelMember, "favorite" | "notification_level">;
+}
