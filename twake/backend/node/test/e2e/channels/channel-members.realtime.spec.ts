@@ -1,7 +1,8 @@
 import "reflect-metadata";
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import io from "socket.io-client";
-import { Channel, ChannelMember } from "../../../src/services/channels/entities";
+import { Channel } from "../../../src/services/channels/entities/Channel";
+import { ChannelMember } from "../../../src/services/channels/entities/ChannelMember";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { TestPlatform, init } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";

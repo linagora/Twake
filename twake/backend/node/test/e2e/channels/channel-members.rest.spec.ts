@@ -4,7 +4,8 @@ import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import { ChannelListResponse, ChannelGetResponse } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { Channel, ChannelMember } from "../../../src/services/channels/entities";
+import { Channel } from "../../../src/services/channels/entities/Channel";
+import { ChannelMember } from "../../../src/services/channels/entities/ChannelMember";
 import { ChannelExecutionContext, ChannelVisibility } from "../../../src/services/channels/types";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { User } from "../../../src/services/types";
@@ -257,7 +258,7 @@ describe("The ChannelMembers REST API", () => {
     });
   });
 
-  describe.only("The POST /:member_id - Update a member", () => {
+  describe("The POST /:member_id - Update a member", () => {
     let channel;
     let createdChannel;
 

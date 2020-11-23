@@ -9,7 +9,7 @@ import {
   ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { Channel } from "../../../src/services/channels/entities";
+import { Channel } from "../../../src/services/channels/entities/Channel";
 import { ChannelVisibility } from "../../../src/services/channels/types";
 import {
   getPrivateRoomName,
