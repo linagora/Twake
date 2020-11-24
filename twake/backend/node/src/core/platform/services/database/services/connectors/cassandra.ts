@@ -78,16 +78,16 @@ export class CassandraConnector extends AbstractConnector<
 export class CassandraPagination extends Pagination {
   limit = 100;
 
-  private constructor(readonly page_token: string, readonly max_results = "100") {
-    super(page_token, max_results);
-    this.limit = Number.parseInt(max_results, 10);
+  private constructor(readonly page_token: string, readonly limitStr = "100") {
+    super(page_token, limitStr);
+    this.limit = Number.parseInt(limitStr, 10);
   }
 
   static from(pagination: Paginable): CassandraPagination {
-    return new CassandraPagination(pagination.page_token, pagination.max_results);
+    return new CassandraPagination(pagination.page_token, pagination.limitStr);
   }
 
   static next(current: Pagination, pageState: string): Paginable {
-    return new Pagination(pageState, current.max_results);
+    return new Pagination(pageState, current.limitStr);
   }
 }

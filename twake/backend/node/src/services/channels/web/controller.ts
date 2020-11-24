@@ -136,7 +136,7 @@ export class ChannelCrudController
     }>,
   ): Promise<ChannelListResponse> {
     const list = await this.service.list(
-      new Pagination(request.query.page_token, request.query.max_results),
+      new Pagination(request.query.page_token, request.query.limit),
       this.getExecutionContext(request),
     );
 
