@@ -6,7 +6,10 @@ import Storage, { MongoItemType } from '../Storage';
  * Autocomplete local collection repository with backend components
  */
 export default class FindCompletion<G extends Resource<any>> {
-  private didCompleteOnce = false;
+  private didLoadOnce: boolean = false;
+  private nextPageToken: null | string = null;
+  private hasMore: boolean = true;
+  private perPage: number = 0;
 
   constructor(readonly collection: Collection<G>) {}
 
@@ -24,36 +27,46 @@ export default class FindCompletion<G extends Resource<any>> {
     options = options || {};
     options.httpOptions = {
       ...options.httpOptions,
-      max_results: options.max_results || 100,
     };
+    if (options.limit) options.httpOptions.limit = options.limit || 100;
     if (options.page_token) options.httpOptions.page_token = options.page_token;
-
     if (options.search_query) options.httpOptions.search_query = options.search_query;
 
-    if (this.didCompleteOnce) {
-      return mongoItems;
-    }
-
-    const items = await this.collection.getTransport().get(filter, options?.httpOptions);
-
-    Storage.clear(this.collection.getPath());
-    mongoItems = [];
-
-    if (items?.resources && items?.resources?.length) {
-      const type = this.collection.getType();
-      const list = items?.resources as any[];
-      for (let i = 0; i < list.length; i++) {
-        const resource = new type(list[i]);
-        resource.setShared(true);
-        const mongoItem = await Storage.upsert(
-          this.collection.getPath(),
-          resource.getDataForStorage(),
-        );
-        mongoItems.push(mongoItem);
+    //Not taking cache replacement into account if network
+    if (!this.didLoadOnce || (this.hasMore && options.limit > mongoItems.length)) {
+      this.perPage = this.perPage || options.limit;
+      options.httpOptions.limit = this.perPage;
+      if (this.nextPageToken) {
+        options.httpOptions.page_token = this.nextPageToken;
       }
-    }
 
-    this.didCompleteOnce = true;
+      const items = await this.collection.getTransport().get(filter, options?.httpOptions);
+
+      if (!this.nextPageToken) {
+        Storage.clear(this.collection.getPath());
+        mongoItems = [];
+      }
+
+      if (items?.resources && items?.resources?.length) {
+        const type = this.collection.getType();
+        const list = items?.resources as any[];
+        for (let i = 0; i < list.length; i++) {
+          const resource = new type(list[i]);
+          resource.setShared(true);
+          const mongoItem = await Storage.upsert(
+            this.collection.getPath(),
+            resource.getDataForStorage(),
+          );
+          mongoItems.push(mongoItem);
+        }
+      }
+
+      if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
+        this.hasMore = false;
+      }
+      this.nextPageToken = items?.next_page_token;
+      this.didLoadOnce = true;
+    }
 
     return mongoItems;
   }
@@ -70,10 +83,9 @@ export default class FindCompletion<G extends Resource<any>> {
     options = options || {};
     options.httpOptions = {
       ...options.httpOptions,
-      max_results: options.max_results || 100,
     };
+    if (options.limit) options.httpOptions.limit = options.limit || 100;
     if (options.page_token) options.httpOptions.page_token = options.page_token;
-
     if (options.search_query) options.httpOptions.search_query = options.search_query;
 
     filter = filter || {};

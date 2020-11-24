@@ -32,10 +32,11 @@ export default class Observable extends EventListener {
     const [state, setState] = useState<G>();
 
     useMemo(async () => {
+      this.removeWatcher(setState);
       const watcher = this.addWatcher(setState, observedScope, options);
       const changes = await this.getChanges<G>(watcher);
       setState(changes.changes);
-    }, []);
+    }, options?.memoizedFilters || []);
 
     useEffect(() => {
       //Called on component unmount

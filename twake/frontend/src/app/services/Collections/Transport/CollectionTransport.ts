@@ -79,6 +79,9 @@ export default class CollectionTransport<G extends Resource<any>> {
   async get(filter: any, options?: any) {
     this.lockHttp();
     try {
+      if (options) {
+        options.max_results = options.limit || 100;
+      }
       const queryParameters = Object.keys(options || {}).map(
         k => k + '=' + encodeURIComponent(options[k]),
       );
