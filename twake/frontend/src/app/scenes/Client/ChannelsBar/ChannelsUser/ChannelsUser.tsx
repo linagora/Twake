@@ -8,7 +8,7 @@ import DirectChannel from 'app/components/Leftbar/Channel/directChannel';
 
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup';
-import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
+import ChannelCategory from 'app/components/Leftbar/Channel/ChannelCategory';
 import { Button } from 'antd';
 
 export function ChannelsUser() {

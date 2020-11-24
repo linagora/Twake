@@ -1,14 +1,14 @@
 import React from 'react';
 
 import Languages from 'services/languages/languages.js';
-import ChannelCategory from './ChannelCategory.js';
+import ChannelCategory from './ChannelCategory';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MediumPopupComponent from 'app/services/Modal/ModalManager';
+import ModalManager from 'app/services/Modal/ModalManager';
 import ChannelMenu from './ChannelMenu';
 import ChannelUI from './Channel';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
-import RouterService from 'services/RouterServices';
+import Menu from 'components/Menus/Menu.js';
+import Icon from 'app/components/Icon/Icon';
 
 type Props = {
   workspaceTitle: string;
@@ -21,7 +21,7 @@ export default (props: Props) => {
   };
 
   const addChannel = () => {
-    return MediumPopupComponent.open(
+    return ModalManager.open(
       <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
       {
         position: 'center',
@@ -58,7 +58,26 @@ export default (props: Props) => {
   }
   return (
     <>
-      <ChannelCategory text={Languages.t(props.workspaceTitle)} onAdd={() => addChannel()} />
+      <ChannelCategory
+        text={Languages.t(props.workspaceTitle)}
+        suffix={
+          <Menu
+            menu={[
+              {
+                type: 'menu1',
+                text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
+                onClick: () => addChannel(),
+              },
+              {
+                type: 'menu2',
+                text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
+              },
+            ]}
+          >
+            <Icon type="plus-circle" className="m-icon-small" />
+          </Menu>
+        }
+      />
       {channels}
     </>
   );

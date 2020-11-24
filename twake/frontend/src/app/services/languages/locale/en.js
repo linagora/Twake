@@ -1843,4 +1843,6 @@ export default {
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',
   'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Send a direct message',
   'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
+  'components.leftbar.channel.workspaceschannels.menu.option_1': 'Create a channel',
+  'components.leftbar.channel.workspaceschannels.menu.option_2': 'Join a channel',
 };
