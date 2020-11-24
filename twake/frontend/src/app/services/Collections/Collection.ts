@@ -21,7 +21,8 @@ export type ServerRequestOptions = {
 };
 
 export type CollectionOptions = {
-  tag: string;
+  tag?: string;
+  cacheReplaceMode?: 'always' | 'never';
 };
 
 export default class Collection<G extends Resource<any>> {
@@ -29,6 +30,9 @@ export default class Collection<G extends Resource<any>> {
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
   protected completion: FindCompletion<G> = new FindCompletion(this);
+  private options: CollectionOptions = {
+    cacheReplaceMode: 'always',
+  };
 
   constructor(
     private readonly path: string = '',
@@ -36,10 +40,15 @@ export default class Collection<G extends Resource<any>> {
     options?: CollectionOptions,
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
+    this.options = _.merge(this.options, options);
   }
 
   public getPath() {
     return this.path;
+  }
+
+  public getOptions() {
+    return this.options;
   }
 
   public getTag() {

@@ -44,7 +44,7 @@ export default class FindCompletion<G extends Resource<any>> {
 
       const items = await this.collection.getTransport().get(filter, options?.query);
 
-      if (!this.nextPageToken) {
+      if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
         Storage.clear(this.collection.getPath());
         mongoItems = [];
       }
