@@ -33,17 +33,20 @@ export default class CollectionStorage {
               //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
               { namespace: 'twake' },
               () => {
-                CollectionStorage.mongoDb = db;
-                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+                const tmp = db;
+                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+                CollectionStorage.mongoDb = tmp;
               },
               () => {
-                CollectionStorage.mongoDb = new minimongo.MemoryDb();
-                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+                const tmp = new minimongo.MemoryDb();
+                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+                CollectionStorage.mongoDb = tmp;
               },
             );
           } else {
-            CollectionStorage.mongoDb = new minimongo.MemoryDb();
-            CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+            const tmp = new minimongo.MemoryDb();
+            CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+            CollectionStorage.mongoDb = tmp;
           }
         }
       });
