@@ -3,6 +3,7 @@ import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 import CollectionTransport from './Transport/CollectionTransport';
 import FindCompletion from './Transport/CollectionFindCompletion';
+import _ from 'lodash';
 
 /**
  * This is a Collection.
@@ -174,7 +175,7 @@ export default class Collection<G extends Resource<any>> {
           item.setUpToDate(false);
         }
       }
-      item.data = mongoItem;
+      item.data = _.merge(item.data, mongoItem);
       this.resources[mongoItem.id] = item;
     }
   }
