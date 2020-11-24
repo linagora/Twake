@@ -160,7 +160,6 @@ export default class Collection<G extends Resource<any>> {
       !this.resources[mongoItem.id] ||
       (!this.resources[mongoItem.id].state.upToDate && this.resources[mongoItem.id].state.persisted)
     ) {
-      console.log(mongoItem && this.resources[mongoItem.id] && this.resources[mongoItem.id].state);
       mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 
