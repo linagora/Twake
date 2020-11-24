@@ -131,11 +131,13 @@ export default class Collection<G extends Resource<any>> {
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
     let mongoItems = await Storage.find(this.getPath(), filter, options);
 
+    await this.completion.lock();
     mongoItems = await this.completion.completeFind(mongoItems, filter, options);
 
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
+    await this.completion.unlock();
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
@@ -148,6 +150,9 @@ export default class Collection<G extends Resource<any>> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
+
+    await this.completion.wait();
+
     let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
     if (
@@ -155,6 +160,7 @@ export default class Collection<G extends Resource<any>> {
       !this.resources[mongoItem.id] ||
       (!this.resources[mongoItem.id].state.upToDate && this.resources[mongoItem.id].state.persisted)
     ) {
+      console.log(mongoItem && this.resources[mongoItem.id] && this.resources[mongoItem.id].state);
       mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 

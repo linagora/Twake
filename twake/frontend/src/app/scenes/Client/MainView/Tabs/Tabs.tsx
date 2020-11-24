@@ -25,7 +25,7 @@ export default (props: PropsType): JSX.Element => {
 
   useEffect(() => {
     getTabsList();
-  });
+  }, []);
 
   const getTabsList = async () => {
     const tabs = await TabsCollection.find({});

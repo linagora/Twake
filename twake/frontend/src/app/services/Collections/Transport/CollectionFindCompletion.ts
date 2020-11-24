@@ -10,6 +10,8 @@ export default class FindCompletion<G extends Resource<any>> {
   private nextPageToken: null | string = null;
   private hasMore: boolean = true;
   private perPage: number = 0;
+  private isLocked: boolean = false;
+  private lockWaitCallbacks: Function[] = [];
 
   constructor(readonly collection: Collection<G>) {}
 
@@ -102,5 +104,21 @@ export default class FindCompletion<G extends Resource<any>> {
     }
 
     return mongoItem;
+  }
+
+  public async wait() {
+    if (this.isLocked) {
+      await new Promise(resolve => this.lockWaitCallbacks.push(resolve));
+    }
+  }
+
+  public async lock() {
+    this.isLocked = true;
+  }
+
+  public async unlock() {
+    this.isLocked = false;
+    this.lockWaitCallbacks.forEach(resolve => resolve());
+    this.lockWaitCallbacks = [];
   }
 }
