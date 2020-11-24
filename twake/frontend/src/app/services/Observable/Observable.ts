@@ -28,7 +28,7 @@ export default class Observable extends EventListener {
     this.getChanges = this.getChanges.bind(this);
   }
 
-  useWatcher<G>(observedScope: () => Promise<G>, options?: any): G | undefined {
+  useWatcher<G>(observedScope: () => Promise<G> | G, options?: any): G {
     const [state, setState] = useState<G>();
 
     useMemo(async () => {
@@ -45,7 +45,11 @@ export default class Observable extends EventListener {
       };
     }, []);
 
-    return state;
+    if (observedScope.constructor.name !== 'AsyncFunction') {
+      return observedScope() as G;
+    }
+
+    return state as G;
   }
 
   notify() {

@@ -4,10 +4,9 @@ import Apps from './Components/Apps.js';
 import './Integration.scss';
 
 export default (props: { children: React.ReactNode }): JSX.Element => {
-  const server_infos =
-    InitService.useWatcher(
-      async () => InitService.server_infos_loaded && InitService.server_infos,
-    ) || false;
+  const server_infos = InitService.useWatcher(
+    () => InitService.server_infos_loaded && InitService.server_infos,
+  );
 
   if (!server_infos) {
     return <></>;

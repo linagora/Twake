@@ -16,10 +16,10 @@ import ForgotPassword from './ForgotPassword/ForgotPassword.js';
 export default () => {
   LoginService.useListener(useState);
   Languages.useListener(useState);
-  const [server_infos_loaded, server_infos] = InitService.useWatcher(async () => [
+  const [server_infos_loaded, server_infos] = InitService.useWatcher(() => [
     InitService.server_infos_loaded,
     InitService.server_infos,
-  ]) || [false, {}];
+  ]);
 
   useEffect(() => {
     LoginService.init();

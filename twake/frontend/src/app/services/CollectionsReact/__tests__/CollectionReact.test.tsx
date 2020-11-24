@@ -17,7 +17,7 @@ const MessagesComponent = (props: { channelId: string }) => {
   const channelId = props.channelId;
   const messagesCollection = Collection.get(`/channels/${channelId}/messages/`, Message);
 
-  const messages = messagesCollection.useWatcher(async () => await messagesCollection.find()) || [];
+  const messages = messagesCollection.useWatcher({}) || [];
 
   return (
     <div>

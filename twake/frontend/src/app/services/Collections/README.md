@@ -28,7 +28,7 @@ class Message extends Resource<MessageType> {
   const channelId = 'some-id';
   const messagesCollection = Collections.get(channelId, Message);
 
-  const messages = messagesCollection.useWatcher(() => messagesCollection.find({}));
+  const messages = messagesCollection.useWatcher({}) || [];
 
   return (
     <div>

@@ -7,7 +7,7 @@ import './Setup.scss';
 export default function Setup() {
   let status: string = '(1/4) Starting backend...';
   let comment: string = '';
-  let ready = InitService.useWatcher(async () => InitService.server_infos.ready) || false;
+  let ready = InitService.useWatcher(() => InitService.server_infos.ready);
 
   useEffect(() => {
     InitService.init();

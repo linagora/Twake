@@ -25,22 +25,22 @@ export default class FindCompletion<G extends Resource<any>> {
     options?: GeneralOptions,
   ): Promise<MongoItemType[]> {
     options = options || {};
-    options.httpOptions = {
-      ...options.httpOptions,
+    options.query = {
+      ...options.query,
     };
-    if (options.limit) options.httpOptions.limit = options.limit || 100;
-    if (options.page_token) options.httpOptions.page_token = options.page_token;
-    if (options.search_query) options.httpOptions.search_query = options.search_query;
+    if (options.limit) options.query.limit = options.limit || 100;
+    if (options.page_token) options.query.page_token = options.page_token;
+    if (options.search_query) options.query.search_query = options.search_query;
 
     //Not taking cache replacement into account if network
     if (!this.didLoadOnce || (this.hasMore && options.limit > mongoItems.length)) {
       this.perPage = this.perPage || options.limit;
-      options.httpOptions.limit = this.perPage;
+      options.query.limit = this.perPage;
       if (this.nextPageToken) {
-        options.httpOptions.page_token = this.nextPageToken;
+        options.query.page_token = this.nextPageToken;
       }
 
-      const items = await this.collection.getTransport().get(filter, options?.httpOptions);
+      const items = await this.collection.getTransport().get(filter, options?.query);
 
       if (!this.nextPageToken) {
         Storage.clear(this.collection.getPath());
@@ -81,18 +81,18 @@ export default class FindCompletion<G extends Resource<any>> {
     options?: GeneralOptions,
   ): Promise<MongoItemType | null> {
     options = options || {};
-    options.httpOptions = {
-      ...options.httpOptions,
+    options.query = {
+      ...options.query,
     };
-    if (options.limit) options.httpOptions.limit = options.limit || 100;
-    if (options.page_token) options.httpOptions.page_token = options.page_token;
-    if (options.search_query) options.httpOptions.search_query = options.search_query;
+    if (options.limit) options.query.limit = options.limit || 100;
+    if (options.page_token) options.query.page_token = options.page_token;
+    if (options.search_query) options.query.search_query = options.search_query;
 
     filter = filter || {};
     filter.id = filter.id || 'no-id';
 
     let mongoItem: MongoItemType | null = null;
-    const item = await this.collection.getTransport().get(filter, options?.httpOptions);
+    const item = await this.collection.getTransport().get(filter, options?.query);
     if (item?.resource) {
       const type = this.collection.getType();
       const data = item?.resource;

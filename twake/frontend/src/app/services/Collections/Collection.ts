@@ -16,7 +16,7 @@ export type GeneralOptions = {
 } & any;
 
 export type ServerRequestOptions = {
-  httpOptions: any;
+  query: any;
 };
 
 export type CollectionOptions = {
@@ -90,7 +90,7 @@ export default class Collection<G extends Resource<any>> {
     this.eventEmitter.notify();
 
     if (!options?.withoutBackend) {
-      this.transport.upsert(this.resources[mongoItem.id], options?.httpOptions);
+      this.transport.upsert(this.resources[mongoItem.id], options?.query);
     }
 
     return item ? this.resources[mongoItem.id] : item;
@@ -113,7 +113,7 @@ export default class Collection<G extends Resource<any>> {
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
-          this.transport.remove(resource, options?.httpOptions);
+          this.transport.remove(resource, options?.query);
         }
       }
     }

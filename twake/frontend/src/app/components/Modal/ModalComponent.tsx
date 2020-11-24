@@ -5,7 +5,7 @@ import ModalManager from 'app/services/Modal/ModalManager';
 
 let component: any = null;
 export default () => {
-  const open = ModalManager.useWatcher(async () => await ModalManager.isOpen());
+  const open = ModalManager.useWatcher(() => ModalManager.isOpen());
 
   const eventClose = useMemo(
     () => (evt: any) => {

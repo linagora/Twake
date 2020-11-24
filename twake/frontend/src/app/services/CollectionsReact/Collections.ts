@@ -42,22 +42,22 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     return changes;
   };
 
-  public useWatcher = <G>(observedScope: () => Promise<G>, options?: any) =>
-    this.observable.useWatcher(observedScope, {
-      observedChanges: this.observedChangesReactOptionsAdapter,
-      ...options,
-    });
+  private getWatcherArgs = (filter?: any, options?: any): [() => Promise<G[]>, any] => {
+    return [
+      async () => await this.find(filter || {}, options || {}),
+      {
+        observedChanges: this.observedChangesReactOptionsAdapter,
+        memoizedFilters: [JSON.stringify(options)],
+      },
+    ];
+  };
+
+  public useWatcher = (filter?: any, options?: any) =>
+    this.observable.useWatcher(...this.getWatcherArgs(filter, options));
   public useEvent = this.observable.useWatcher.bind(this.observable);
 
-  public addWatcher = <G>(
-    callback: (transform: any) => void,
-    observedScope: () => Promise<G>,
-    options?: any,
-  ) =>
-    this.observable.addWatcher(callback, observedScope, {
-      observedChanges: this.observedChangesReactOptionsAdapter,
-      ...options,
-    });
+  public addWatcher = (callback: (transform: any) => void, filter?: any, options?: any) =>
+    this.observable.addWatcher(callback, ...this.getWatcherArgs(filter, options));
   public removeWatcher = this.observable.removeWatcher.bind(this.observable);
   public addEventListener = this.observable.addWatcher.bind(this.observable);
   public removeEventListener = this.observable.removeWatcher.bind(this.observable);

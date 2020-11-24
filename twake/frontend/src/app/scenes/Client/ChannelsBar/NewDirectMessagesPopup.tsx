@@ -31,7 +31,7 @@ const NewDirectMessagesPopup: FC = () => {
     };
 
     await ChannelsCollections.upsert(new ChannelResource(newDirectMessage), {
-      httpOptions: { members: newUserDiscussion },
+      query: { members: newUserDiscussion },
     });
     // Do not use this, this is cheating !
     // await ChannelsService.openDiscussion(newUserDiscussion);
