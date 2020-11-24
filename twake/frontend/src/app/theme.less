@@ -119,6 +119,9 @@ textarea.ant-input,
   padding: 9px 12px;
 }
 
+// --- antd-layout-header --- //
+@layout-header-background: @white;
+
 // --- ant-layout-sider ---//
 @layout-body-background: @white;
 @layout-sider-background: @secondary;
@@ -169,6 +172,32 @@ textarea.ant-input,
       }
     }
   }
+}
+
+// --- ant-tabs --- //
+@tabs-ink-bar-color: none;
+@tabs-card-height: 47px;
+@tabs-horizontal-margin: 0 11px 0 0;
+
+.ant-tabs-tab {
+  padding: 0;
+}
+
+.ant-tabs-tab-btn {
+  padding: 0 8px;
+  margin: 8px 0;
+  line-height: 31px;
+}
+
+.ant-tabs-tab-active > .ant-tabs-tab-btn {
+  border-radius: 4px;
+  background-color: @primary-background;
+}
+.ant-tabs-top > .ant-tabs-nav::before,
+.ant-tabs-bottom > .ant-tabs-nav::before,
+.ant-tabs-top > div > .ant-tabs-nav::before,
+.ant-tabs-bottom > div > .ant-tabs-nav::before {
+  border: none;
 }
 
 // --- ant-notifications --- //

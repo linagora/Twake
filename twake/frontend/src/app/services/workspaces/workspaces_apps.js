@@ -49,7 +49,7 @@ class WorkspacesApps extends Observable {
       if (res.data) {
         Collections.get('applications').updateObject(res.data);
         this.findingApp[id] = false;
-        if (callback) callback();
+        if (callback) callback(res.data);
       }
     });
   }

@@ -30,7 +30,7 @@ const ChannelMembersList: FC<Props> = props => {
   }, []);
 
   const getMembersList: () => Promise<void> = async () => {
-    const collectionPath: string = `/companies/${companyId}/workspaces/${workspaceId}/channels/${
+    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
       props.channelId || channelId
     }/members/`;
     const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
