@@ -10,7 +10,7 @@ import { ChannelType, ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';
 
 import { useParams } from 'react-router-dom';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 
 const NewDirectMessagesPopup: FC = () => {

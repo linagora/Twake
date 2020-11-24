@@ -4,7 +4,7 @@ import UsersService from 'services/user/user.js';
 import { UserType } from 'app/models/User';
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import { Avatar, Button, Col, Row, Typography, Input } from 'antd';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';

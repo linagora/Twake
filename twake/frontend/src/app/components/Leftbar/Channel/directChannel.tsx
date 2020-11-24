@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
 import { User } from 'react-feather';
-import RouterService from 'services/RouterServices';
+import RouterService from 'app/services/RouterService';
 
 import './Channel.scss';
 import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
 import OldCollections from 'services/Depreciated/Collections/Collections';
-import { ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import ChannelUI from 'components/Leftbar/Channel/Channel';
+import { Collection } from 'app/services/CollectionsReact/Collections';
 
 type Props = {
+  collection: Collection<ChannelResource>;
   channel: ChannelType;
 };
 
@@ -78,6 +80,7 @@ export default (props: Props) => {
   return (
     <>
       <ChannelUI
+        collection={props.collection}
         name={userName}
         icon={avatar}
         muted={false}

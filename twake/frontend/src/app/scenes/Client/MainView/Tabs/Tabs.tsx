@@ -8,7 +8,7 @@ import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'services/Modal/ModalManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Collections from 'services/CollectionsReact/Collections';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 const { TabPane } = Tabs;
 
 type PropsType = {

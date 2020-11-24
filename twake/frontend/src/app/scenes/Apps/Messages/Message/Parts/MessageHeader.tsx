@@ -19,7 +19,7 @@ import MessagesListServerServicesManager, {
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import RouterServices from 'app/services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   message: Message;

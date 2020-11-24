@@ -5,10 +5,12 @@ import Icon from 'app/components/Icon/Icon';
 import { capitalize } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
+import { ChannelResource } from 'app/models/Channel';
+import { Collection } from 'app/services/CollectionsReact/Collections';
+import RouterServices from 'app/services/RouterService';
+import ChannelsService from 'app/services/channels/ChannelsService';
 
 type PropsType = {
-  channelName: string;
-  channelIcon: any;
   channelId: string;
 };
 
@@ -20,6 +22,24 @@ type ButtonType = {
 };
 
 export default (props: PropsType): JSX.Element => {
+  const { channelId } = RouterServices.useStateFromRoute();
+
+  const channelCollection = ChannelsService.getCurrentChannelCollection();
+  if (!channelCollection) {
+    return <></>;
+  }
+
+  let channel: ChannelResource;
+  if (channelCollection.useWatcher) {
+    channel = channelCollection.useWatcher({ id: channelId })[0];
+  } else {
+    channel = new ChannelResource({});
+  }
+
+  if (!channel) {
+    return <></>;
+  }
+
   const buttonsList: ButtonType[] = [
     {
       style: { backgroundColor: 'var(--grey-light)' },
@@ -28,7 +48,7 @@ export default (props: PropsType): JSX.Element => {
         return ModalManager.open(
           <ChannelMembersList
             channelId={props.channelId}
-            channelName={props.channelName}
+            channelName={channel.data.name}
             closable
           />,
           {
@@ -59,9 +79,10 @@ export default (props: PropsType): JSX.Element => {
       <Col>
         <span className="left-margin" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="small-right-margin" style={{ lineHeight: 0 }}>
-            <Emojione type={props.channelIcon} />
+            <Emojione type={channel.data.icon || ''} />
           </div>
-          <Typography.Text>{capitalize(props.channelName)}</Typography.Text>
+          <Typography.Text strong>{capitalize(channel.data.name)}</Typography.Text>
+          <Typography.Text>{' ' + channel.data.description}</Typography.Text>
         </span>
       </Col>
 

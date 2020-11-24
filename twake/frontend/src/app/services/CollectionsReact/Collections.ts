@@ -47,7 +47,7 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
       async () => await this.find(filter || {}, options || {}),
       {
         observedChanges: this.observedChangesReactOptionsAdapter,
-        memoizedFilters: [JSON.stringify(options)],
+        memoizedFilters: [JSON.stringify(options), ...Object.values(filter)],
       },
     ];
   };

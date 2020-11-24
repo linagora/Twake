@@ -7,7 +7,7 @@ import { Workspace } from './Workspace/workspace';
 import { ChannelsUser } from './ChannelsUser/ChannelsUser';
 import Tutorial from './Tutorial.js';
 import Footer from './Footer.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';
 
 export default () => {

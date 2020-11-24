@@ -9,7 +9,7 @@ import ElectronService from 'services/electron/electron.js';
 import './WorkspacesBar.scss';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 
 export default () => {
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();

@@ -2,11 +2,15 @@ import React from 'react';
 
 import './Channel.scss';
 
-import RouterService from 'services/RouterServices';
+import RouterService from 'app/services/RouterService';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
+import ChannelsService from 'app/services/channels/ChannelsService';
+import { Collection } from 'app/services/CollectionsReact/Collections';
+import { ChannelResource } from 'app/models/Channel';
 
 type Props = {
+  collection: Collection<ChannelResource>;
   name: string;
   icon: string | JSX.Element;
   id?: string;
@@ -28,9 +32,7 @@ export default (props: Props) => {
   return (
     <div
       className={'channel fade_in ' + (selected ? 'selected ' : '')}
-      onClick={() => {
-        RouterService.history.push(RouterService.generateRouteFromState({ channelId: props.id }));
-      }}
+      onClick={() => props.id && ChannelsService.select(props.id, props.collection)}
     >
       {!props.isAppchannel &&
         (props.visibility === 'public' || props.visibility === 'private') &&

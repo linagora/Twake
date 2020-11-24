@@ -31,6 +31,7 @@ export type ClientStateType = {
   channelId?: string;
   messageId?: string;
   threadId?: string;
+  tabId?: string;
   directoryId?: string;
 };
 
@@ -50,6 +51,7 @@ class RouterServices {
     '/client/:workspaceId/c/:channelId',
     '/client/:workspaceId/c/:channelId/t/:threadId',
     '/client/:workspaceId/c/:channelId/m/:messageId',
+    '/client/:workspaceId/c/:channelId/tab/:tabId/',
     '/client/:workspaceId/c/:channelId/t/:threadId/m/:messageId',
   ];
 
@@ -119,6 +121,7 @@ class RouterServices {
       channelId: match?.params?.channelId || '',
       messageId: match?.params?.messageId || '',
       threadId: match?.params?.threadId || '',
+      tabId: match?.params?.tabId || '',
       directoryId: match?.params?.directoryId || '',
     };
 
@@ -153,6 +156,15 @@ class RouterServices {
         state[key] = expandedState[key];
       }
     });
+
+    if (state.tabId) {
+      return (
+        `${this.pathnames.CLIENT}/${state.workspaceId}` +
+        (state.channelId ? `/c/${state.channelId}` : '') +
+        (state.tabId ? `/tab/${state.tabId}` : '')
+      );
+    }
+
     return (
       `${this.pathnames.CLIENT}/${state.workspaceId}` +
       (state.channelId ? `/c/${state.channelId}` : '') +

@@ -3,14 +3,14 @@ import React from 'react';
 import Languages from 'services/languages/languages.js';
 import ChannelCategory from './ChannelCategory.js';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelMenu from './ChannelMenu';
 import ChannelUI from './Channel';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
-import RouterService from 'services/RouterServices';
+import { Collection } from 'app/services/CollectionsReact/Collections';
 
 type Props = {
+  collection: Collection<ChannelResource>;
   workspaceTitle: string;
   channels: ChannelResource[];
 };
@@ -43,6 +43,7 @@ export default (props: Props) => {
       return (
         <ChannelUI
           key={key}
+          collection={props.collection}
           name={data.name || ''}
           icon={data.icon || ''}
           muted={data.user_member?.notification_level === 'none'}

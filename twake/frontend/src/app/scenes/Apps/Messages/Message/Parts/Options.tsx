@@ -16,7 +16,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
-import RouterServices from 'app/services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   message: Message;

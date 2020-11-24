@@ -140,6 +140,10 @@ export default class Collection<G extends Resource<any>> {
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
     let mongoItems = await Storage.find(this.getPath(), filter, options);
 
+    if (typeof filter === 'string' || filter?.id) {
+      return [await this.findOne(filter, options)];
+    }
+
     await this.completion.lock();
     mongoItems = await this.completion.completeFind(mongoItems, filter, options);
 

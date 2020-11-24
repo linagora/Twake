@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 

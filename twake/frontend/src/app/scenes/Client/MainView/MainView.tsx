@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import Collections, { Collection, Resource } from 'services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 
@@ -29,13 +29,7 @@ const MainView: FC = () => {
     <Layout className="main-view-layout">
       {!!companyId && !!workspaceId && !!channelId && (
         <>
-          <MainHeader
-            classname="main-view-header"
-            channelId={channel?.id || ''}
-            channelIcon={channel?.data.icon}
-            channelName={channel?.data.name}
-            channelDescription={channel?.data.description}
-          />
+          <MainHeader classname="main-view-header" channelId={channel?.id || ''} />
           <MainContent classname="main-view-content" />
         </>
       )}

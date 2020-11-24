@@ -10,7 +10,7 @@ import Notifications from 'services/user/notifications.js';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
-import RouterServices from '../RouterServices';
+import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 
 class Login extends Observable {
