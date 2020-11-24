@@ -18,8 +18,7 @@ export function ChannelsUser() {
 
   const [limit, setLimit] = useState(100);
 
-  const directChannels =
-    channelsCollection.useWatcher({}, { limit: limit, query: { mine: true } }) || [];
+  const directChannels = channelsCollection.useWatcher({}, { limit: limit, query: { mine: true } });
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

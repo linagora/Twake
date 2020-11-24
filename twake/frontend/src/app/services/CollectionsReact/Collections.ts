@@ -52,8 +52,8 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     ];
   };
 
-  public useWatcher = (filter?: any, options?: any) =>
-    this.observable.useWatcher(...this.getWatcherArgs(filter, options));
+  public useWatcher = (filter?: any, options?: any): G[] =>
+    this.observable.useWatcher(...this.getWatcherArgs(filter, options)) || [];
   public useEvent = this.observable.useWatcher.bind(this.observable);
 
   public addWatcher = (callback: (transform: any) => void, filter?: any, options?: any) =>
