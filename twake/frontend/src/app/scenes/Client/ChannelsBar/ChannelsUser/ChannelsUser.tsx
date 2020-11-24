@@ -13,10 +13,12 @@ import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
 export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
   const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/`;
-  const channelsCollection = Collection.get(url, ChannelResource);
+  const channelsCollection = Collection.get(url, ChannelResource, { tag: 'mine' });
 
   const directChannels =
-    channelsCollection.useWatcher(async () => await channelsCollection.find({})) || [];
+    channelsCollection.useWatcher(
+      async () => await channelsCollection.find({}, { httpOptions: { mine: true } }),
+    ) || [];
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

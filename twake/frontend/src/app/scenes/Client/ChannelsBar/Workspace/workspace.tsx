@@ -21,11 +21,11 @@ export function Workspace() {
 
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-  const channelsCollection = Collection.get(url, ChannelResource);
+  const channelsCollection = Collection.get(url, ChannelResource, { tag: 'mine' });
 
   const channels =
     channelsCollection.useWatcher(async () => {
-      return await channelsCollection.find({});
+      return await channelsCollection.find({}, { httpOptions: { mine: true } });
     }) || [];
 
   channels.map(channel => {

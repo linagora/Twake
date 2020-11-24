@@ -1,4 +1,4 @@
-import Collection from './Collection';
+import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
 import _ from 'lodash';
@@ -49,6 +49,7 @@ class Collections {
     path: string,
     type?: new (data: any) => G,
     existingCollectionCreator?: () => C,
+    options?: CollectionOptions,
   ): Collection<G> {
     let formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
     if (formattedPath !== path) {
@@ -57,7 +58,7 @@ class Collections {
     if (!this.collections[formattedPath]) {
       this.collections[formattedPath] = existingCollectionCreator
         ? existingCollectionCreator()
-        : new Collection(formattedPath, type || Resource);
+        : new Collection(formattedPath, type || Resource, options);
     }
     return this.collections[formattedPath] as Collection<G>;
   }

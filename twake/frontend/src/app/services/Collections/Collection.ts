@@ -19,16 +19,34 @@ export type ServerRequestOptions = {
   httpOptions: any;
 };
 
+export type CollectionOptions = {
+  tag: string;
+};
+
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
   protected completion: FindCompletion<G> = new FindCompletion(this);
 
-  constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
+  constructor(
+    private readonly path: string = '',
+    private readonly type: new (data: any) => G,
+    options?: CollectionOptions,
+  ) {
+    if (options?.tag) this.path = path + '::' + options.tag;
+  }
 
   public getPath() {
     return this.path;
+  }
+
+  public getTag() {
+    return this.path.split('::')[1] || '';
+  }
+
+  public getRestPath() {
+    return this.path.split('::')[0] || '';
   }
 
   public getTransport() {
@@ -67,7 +85,7 @@ export default class Collection<G extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: G, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
-    const mongoItem = await Storage.upsert(this.path, item.getDataForStorage());
+    const mongoItem = await Storage.upsert(this.getPath(), item.getDataForStorage());
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
@@ -91,7 +109,7 @@ export default class Collection<G extends Resource<any>> {
     if (filter) {
       const resource = await this.findOne(filter);
       if (resource) {
-        await Storage.remove(this.path, filter);
+        await Storage.remove(this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
@@ -110,7 +128,7 @@ export default class Collection<G extends Resource<any>> {
    * This will call backend if we ask for more items than existing in frontend.
    */
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
-    let mongoItems = await Storage.find(this.path, filter, options);
+    let mongoItems = await Storage.find(this.getPath(), filter, options);
 
     mongoItems = await this.completion.completeFind(mongoItems, filter, options);
 
@@ -129,7 +147,7 @@ export default class Collection<G extends Resource<any>> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
-    let mongoItem = await Storage.findOne(this.path, filter, options);
+    let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
     if (
       !mongoItem ||

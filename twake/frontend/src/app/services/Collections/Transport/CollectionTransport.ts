@@ -87,7 +87,7 @@ export default class CollectionTransport<G extends Resource<any>> {
       const result = await Collections.getTransport()
         .getHttp()
         .get(
-          this.collection.getPath().replace(/\/$/, '') +
+          this.collection.getRestPath().replace(/\/$/, '') +
             getOneSuffix +
             '?websockets=1&' +
             queryParameters.join('&'),
@@ -138,7 +138,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     try {
       const result = await Collections.getTransport()
         .getHttp()
-        .post(this.collection.getPath().replace(/\/$/, resource.state.persisted ? '/' : ''), {
+        .post(this.collection.getRestPath().replace(/\/$/, resource.state.persisted ? '/' : ''), {
           resource: resource.getDataForRest(),
           options: options,
         });
@@ -168,7 +168,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     try {
       const result = await Collections.getTransport()
         .getHttp()
-        .delete(this.collection.getPath() + resourceId);
+        .delete(this.collection.getRestPath() + resourceId);
       this.unlockHttp();
 
       return result;

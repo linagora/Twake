@@ -1,3 +1,4 @@
+import { CollectionOptions } from '../Collections/Collection';
 import OriginalCollections, {
   Collection as OriginalCollection,
   Resource as OriginalResource,
@@ -24,10 +25,14 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   public static get<T extends OriginalResource<any>>(
     path: string,
     type: new (data: any) => T,
+    options?: CollectionOptions,
   ): Collection<T> {
-    return OriginalCollections.get(path, type, () => new Collection<T>(path, type)) as Collection<
-      T
-    >;
+    return OriginalCollections.get(
+      path,
+      type,
+      () => new Collection<T>(path, type),
+      options,
+    ) as Collection<T>;
   }
 
   private observedChangesReactOptionsAdapter = (changes: any) => {
