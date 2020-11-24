@@ -28,14 +28,15 @@ export default class Observable extends EventListener {
     this.getChanges = this.getChanges.bind(this);
   }
 
-  useWatcher<G>(observedScope: () => Promise<G>, options?: any): G | undefined {
+  useWatcher<G>(observedScope: () => Promise<G> | G, options?: any): G {
     const [state, setState] = useState<G>();
 
     useMemo(async () => {
+      this.removeWatcher(setState);
       const watcher = this.addWatcher(setState, observedScope, options);
       const changes = await this.getChanges<G>(watcher);
       setState(changes.changes);
-    }, []);
+    }, options?.memoizedFilters || []);
 
     useEffect(() => {
       //Called on component unmount
@@ -44,7 +45,11 @@ export default class Observable extends EventListener {
       };
     }, []);
 
-    return state;
+    if (observedScope.constructor.name !== 'AsyncFunction') {
+      return observedScope() as G;
+    }
+
+    return state as G;
   }
 
   notify() {

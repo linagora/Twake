@@ -41,9 +41,12 @@ class UsersConnections extends BaseController
         $rememberMe = $request->request->get("_remember_me", true);
 
         $response = new Response();
-        $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        $logged = $this->getUser() && !is_string($this->getUser());
+        if(!$logged){
+            $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        }
 
-        if ($loginResult) {
+        if ($loginResult || $logged) {
 
             $device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
@@ -128,8 +131,8 @@ class UsersConnections extends BaseController
             $data["errors"][] = "disconnected";
         } else {
 
-            if( $this->get("app.session_handler")->getDidUseRememberMe() && $ok->getIdentityProvider()){
-              $data["errors"][] = "redirect_to_" . $ok->getIdentityProvider();
+            if( $this->get("app.session_handler")->getDidUseRememberMe() && $this->getUser()->getIdentityProvider()){
+              $data["errors"][] = "redirect_to_" . $this->getUser()->getIdentityProvider();
               return new Response($data);
             }
 

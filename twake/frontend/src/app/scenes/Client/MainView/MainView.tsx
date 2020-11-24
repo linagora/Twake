@@ -27,14 +27,18 @@ const MainView: FC = () => {
   };
   return (
     <Layout className="main-view-layout">
-      <MainHeader
-        classname="main-view-header"
-        channelId={channel?.id || ''}
-        channelIcon={channel?.data.icon}
-        channelName={channel?.data.name}
-        channelDescription={channel?.data.description}
-      />
-      <MainContent classname="main-view-content" />
+      {!!companyId && !!workspaceId && !!channelId && (
+        <>
+          <MainHeader
+            classname="main-view-header"
+            channelId={channel?.id || ''}
+            channelIcon={channel?.data.icon}
+            channelName={channel?.data.name}
+            channelDescription={channel?.data.description}
+          />
+          <MainContent classname="main-view-content" />
+        </>
+      )}
     </Layout>
   );
 };

@@ -14,6 +14,7 @@ type ResourceState = {
 export default class Resource<T> {
   private _data: T & { id?: string };
   private _state: ResourceState;
+  private _key: string = 'key:' + uuidv4();
 
   constructor(data: T & { id?: string }) {
     this._data = { id: this.genId(), ...data };
@@ -34,6 +35,10 @@ export default class Resource<T> {
 
   public set id(id: string) {
     this._data.id = id;
+  }
+
+  public get key(): string {
+    return this._key || '';
   }
 
   public get data(): T & { id?: string } {
@@ -58,6 +63,13 @@ export default class Resource<T> {
       _id: undefined,
       _state: undefined,
       id: this.state.persisted ? this.id : undefined,
+    };
+  }
+
+  public getDataForStorage() {
+    return {
+      ...this.data,
+      _state: this.state,
     };
   }
 

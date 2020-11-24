@@ -116,11 +116,11 @@ export class CrudExeption extends Error {
 
 export interface Paginable {
   page_token?: string;
-  max_results?: string;
+  limitStr?: string;
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token: string, readonly max_results = "100") {}
+  constructor(readonly page_token: string, readonly limitStr = "100") {}
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {

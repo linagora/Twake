@@ -151,7 +151,7 @@ describe("The /internal/services/channels/v1 API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          max_results: "5",
+          limit: "5",
         },
       });
 
@@ -183,7 +183,7 @@ describe("The /internal/services/channels/v1 API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          max_results: "5",
+          limit: "5",
         },
       });
 
@@ -201,7 +201,7 @@ describe("The /internal/services/channels/v1 API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          max_results: "5",
+          limit: "5",
           page_token: nextPage,
         },
       });
@@ -240,7 +240,7 @@ describe("The /internal/services/channels/v1 API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          max_results: "11",
+          limit: "11",
         },
       });
 

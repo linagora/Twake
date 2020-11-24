@@ -7,12 +7,12 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelMenu from './ChannelMenu';
 import ChannelUI from './Channel';
-import { ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import RouterService from 'services/RouterServices';
 
 type Props = {
   workspaceTitle: string;
-  channels: { data: ChannelType }[];
+  channels: ChannelResource[];
 };
 
 export default (props: Props) => {
@@ -39,10 +39,10 @@ export default (props: Props) => {
       </div>
     );
   } else {
-    channels = props.channels.map(({ data }) => {
+    channels = props.channels.map(({ data, key }) => {
       return (
         <ChannelUI
-          key={data.id}
+          key={key}
           name={data.name || ''}
           icon={data.icon || ''}
           muted={data.user_member?.notification_level === 'none'}

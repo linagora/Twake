@@ -1,5 +1,10 @@
 import minimongo from 'minimongo';
 
+export type MongoItemType = {
+  _state: any;
+  [key: string]: any;
+};
+
 /**
  * This class is the link between minimongo and our Collections.
  * - It choose the right db to use
@@ -28,17 +33,20 @@ export default class CollectionStorage {
               //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
               { namespace: 'twake' },
               () => {
-                CollectionStorage.mongoDb = db;
-                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+                const tmp = db;
+                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+                CollectionStorage.mongoDb = tmp;
               },
               () => {
-                CollectionStorage.mongoDb = new minimongo.MemoryDb();
-                CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+                const tmp = new minimongo.MemoryDb();
+                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+                CollectionStorage.mongoDb = tmp;
               },
             );
           } else {
-            CollectionStorage.mongoDb = new minimongo.MemoryDb();
-            CollectionStorage.mongoDbPromises.forEach(c => c(CollectionStorage.mongoDb));
+            const tmp = new minimongo.MemoryDb();
+            CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
+            CollectionStorage.mongoDb = tmp;
           }
         }
       });
@@ -99,6 +107,11 @@ export default class CollectionStorage {
         })
         .catch(reject);
     });
+  }
+
+  static async clear(path: string) {
+    await (await CollectionStorage.getMongoDb()).removeCollection(path);
+    await CollectionStorage.addCollection(path);
   }
 
   static find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {

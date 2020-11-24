@@ -2,6 +2,8 @@ import Storage from './Storage';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 import CollectionTransport from './Transport/CollectionTransport';
+import FindCompletion from './Transport/CollectionFindCompletion';
+import _ from 'lodash';
 
 /**
  * This is a Collection.
@@ -9,24 +11,52 @@ import CollectionTransport from './Transport/CollectionTransport';
  * Each action done on this Collection will trigger calls to backend.
  */
 
-type GeneralOptions = {
+export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
 } & any;
 
-type ServerRequestOptions = {
-  httpOptions: any;
+export type ServerRequestOptions = {
+  query: any;
+};
+
+export type CollectionOptions = {
+  tag?: string;
+  cacheReplaceMode?: 'always' | 'never';
 };
 
 export default class Collection<G extends Resource<any>> {
   private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
+  protected completion: FindCompletion<G> = new FindCompletion(this);
+  private options: CollectionOptions = {
+    cacheReplaceMode: 'always',
+  };
 
-  constructor(private readonly path: string = '', private readonly type: new (data: any) => G) {}
+  constructor(
+    private readonly path: string = '',
+    private readonly type: new (data: any) => G,
+    options?: CollectionOptions,
+  ) {
+    if (options?.tag) this.path = path + '::' + options.tag;
+    this.options = _.merge(this.options, options);
+  }
 
   public getPath() {
     return this.path;
+  }
+
+  public getOptions() {
+    return this.options;
+  }
+
+  public getTag() {
+    return this.path.split('::')[1] || '';
+  }
+
+  public getRestPath() {
+    return this.path.split('::')[0] || '';
   }
 
   public getTransport() {
@@ -65,15 +95,12 @@ export default class Collection<G extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: G, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
-    const mongoItem = await Storage.upsert(this.path, {
-      ...item.data,
-      _state: item.state,
-    });
+    const mongoItem = await Storage.upsert(this.getPath(), item.getDataForStorage());
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
     if (!options?.withoutBackend) {
-      this.transport.upsert(this.resources[mongoItem.id], options?.httpOptions);
+      this.transport.upsert(this.resources[mongoItem.id], options?.query);
     }
 
     return item ? this.resources[mongoItem.id] : item;
@@ -92,11 +119,11 @@ export default class Collection<G extends Resource<any>> {
     if (filter) {
       const resource = await this.findOne(filter);
       if (resource) {
-        await Storage.remove(this.path, filter);
+        await Storage.remove(this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
-          this.transport.remove(resource, options?.httpOptions);
+          this.transport.remove(resource, options?.query);
         }
       }
     }
@@ -111,12 +138,15 @@ export default class Collection<G extends Resource<any>> {
    * This will call backend if we ask for more items than existing in frontend.
    */
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
-    const mongoItems = await Storage.find(this.path, filter, options);
+    let mongoItems = await Storage.find(this.getPath(), filter, options);
+
+    await this.completion.lock();
+    mongoItems = await this.completion.completeFind(mongoItems, filter, options);
+
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
-
-    this.transport.get(options?.httpOptions);
+    await this.completion.unlock();
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
@@ -129,13 +159,22 @@ export default class Collection<G extends Resource<any>> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
-    const mongoItem = await Storage.findOne(this.path, filter, options);
-    this.updateLocalResource(mongoItem);
 
-    if (!mongoItem || !this.resources[mongoItem.id].state.upToDate) {
-      this.transport.get(options?.httpOptions);
+    await this.completion.wait();
+
+    let mongoItem = await Storage.findOne(this.getPath(), filter, options);
+
+    if (
+      !mongoItem ||
+      !this.resources[mongoItem.id] ||
+      (!this.resources[mongoItem.id].state.upToDate && this.resources[mongoItem.id].state.persisted)
+    ) {
+      mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
     }
 
+    if (mongoItem) {
+      this.updateLocalResource(mongoItem);
+    }
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 
@@ -150,7 +189,7 @@ export default class Collection<G extends Resource<any>> {
           item.setUpToDate(false);
         }
       }
-      item.data = mongoItem;
+      item.data = _.merge(item.data, mongoItem);
       this.resources[mongoItem.id] = item;
     }
   }

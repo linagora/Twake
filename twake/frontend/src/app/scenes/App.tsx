@@ -6,7 +6,7 @@ import BadDevice from './BadDevice/BadDevice';
 import InitService from 'app/services/InitService';
 
 export default () => {
-  const isAppReady = InitService.useWatcher(async () => InitService.app_ready) || false;
+  const isAppReady = InitService.useWatcher(() => InitService.app_ready);
 
   if (!isAppReady) {
     return <div />;

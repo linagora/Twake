@@ -332,7 +332,6 @@ class Login extends Observable {
       },
     });
     Collections.connect();
-    window.Collections2 = Collections;
   }
 
   /**
