@@ -8,6 +8,7 @@ import {
   ListResult,
   SaveResult,
   OperationType,
+  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import {
   CassandraConnectionOptions,
@@ -17,9 +18,10 @@ import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
 import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
+import { logger } from "../../../../core/platform/framework";
 
 const TYPE = "channel_member";
-const ENTITY_KEYS = [
+const USER_CHANNEL_KEYS = [
   "company_id",
   "workspace_id",
   "user_id",
@@ -31,14 +33,23 @@ const ENTITY_KEYS = [
   "notification_level",
   "expiration",
 ] as const;
+const CHANNEL_MEMBERS_KEYS = [
+  "company_id",
+  "workspace_id",
+  "user_id",
+  "channel_id",
+  "type",
+] as const;
 
 // TODO: Generate it from primary key
-const WHERE_CHANNEL = "channel_id = ? AND company_id = ? AND workspace_id = ?";
+const WHERE_COMPANY_WORKSPACE = "company_id = ? AND workspace_id = ?";
+const WHERE_CHANNEL = `${WHERE_COMPANY_WORKSPACE} AND channel_id = ?`;
 const WHERE = `${WHERE_CHANNEL} AND user_id = ?`;
 
 export class CassandraMemberService implements MemberService {
   version: "1";
-  readonly channelMembersTable = `${TYPE}s`;
+  readonly userChannelsTableName = "user_channels";
+  readonly channelMembersTableName = "channel_members";
 
   constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
 
@@ -53,11 +64,61 @@ export class CassandraMemberService implements MemberService {
     let result = true;
 
     try {
-      await this.client.execute(
-        `CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.channelMembersTable}(company_id uuid, workspace_id uuid, user_id uuid, channel_id uuid, type text, last_access date, last_increment date, favorite boolean, notification_level text, expiration date, PRIMARY KEY (company_id, workspace_id, channel_id, user_id));`,
-      );
+      await Promise.all([this.createUserChannelsTable(), this.createChannelMembersTable()]);
     } catch (err) {
-      console.error("Table creation error for channel members", err);
+      result = false;
+    }
+
+    return result;
+  }
+
+  private async createUserChannelsTable(): Promise<boolean> {
+    const query = `
+      CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.userChannelsTableName}
+        (
+          company_id uuid,
+          workspace_id uuid,
+          user_id uuid,
+          channel_id uuid,
+          type text,
+          last_access date,
+          last_increment date,
+          favorite boolean,
+          notification_level text,
+          expiration date,
+          PRIMARY KEY ((company_id, workspace_id), channel_id, user_id)
+        );`;
+
+    return this.createTable(this.userChannelsTableName, query);
+  }
+
+  /**
+   * channel_members
+   */
+  private async createChannelMembersTable(): Promise<boolean> {
+    const query = `
+      CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.channelMembersTableName}
+        (
+          company_id uuid,
+          workspace_id uuid,
+          channel_id uuid,
+          user_id uuid,
+          type text,
+          PRIMARY KEY ((company_id, workspace_id), channel_id, user_id)
+        );`;
+
+    return this.createTable(this.channelMembersTableName, query);
+  }
+
+  private async createTable(tableName: string, query: string): Promise<boolean> {
+    let result = true;
+
+    try {
+      logger.info(`Creating table ${tableName} : ${query}`);
+      await this.client.execute(query);
+    } catch (err) {
+      logger.warn(`Table creation error for table ${tableName} : ${err.message}`);
+      console.log(err);
       result = false;
     }
 
@@ -79,35 +140,53 @@ export class CassandraMemberService implements MemberService {
   ): Promise<CreateResult<ChannelMember>> {
     const memberToSave = { ...member, ...context.channel };
 
-    // TODO: Generate ENTITY KEY from ChannelMember class decorators
-    const saveMember = pick(memberToSave, ...ENTITY_KEYS);
-    const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
-    const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
-    const query = `INSERT INTO ${this.options.keyspace}.${this.channelMembersTable} (${columnList}) VALUES (${columnValues})`;
+    const userChannel = pick(memberToSave, ...USER_CHANNEL_KEYS);
+    const userChannelQueryColumnList = USER_CHANNEL_KEYS.map(key => `"${key}"`).join(",");
+    const userChannelQueryColumnValues = "?".repeat(USER_CHANNEL_KEYS.length).split("").join(",");
+    const userChannelQuery = `INSERT INTO ${this.options.keyspace}.${this.userChannelsTableName} (${userChannelQueryColumnList}) VALUES (${userChannelQueryColumnValues})`;
 
-    await this.client.execute(query, saveMember, { prepare: false });
+    const channelMember = pick(memberToSave, ...CHANNEL_MEMBERS_KEYS);
+    const channelMemberColumnList = CHANNEL_MEMBERS_KEYS.map(key => `"${key}"`).join(",");
+    const channelMemberColumnValues = "?".repeat(CHANNEL_MEMBERS_KEYS.length).split("").join(",");
+    const channelMemberQuery = `INSERT INTO ${this.options.keyspace}.${this.channelMembersTableName} (${channelMemberColumnList}) VALUES (${channelMemberColumnValues})`;
 
-    return new CreateResult<ChannelMember>(TYPE, saveMember as ChannelMember);
+    await this.client.batch(
+      [
+        {
+          query: userChannelQuery,
+          params: userChannel,
+        },
+        {
+          query: channelMemberQuery,
+          params: channelMember,
+        },
+      ],
+      { prepare: true },
+    );
+
+    return new CreateResult<ChannelMember>(TYPE, userChannel as ChannelMember);
   }
 
+  /**
+   * Update the user settings in user_channels
+   */
   async update(
     pk: ChannelMemberPrimaryKey,
     member: ChannelMember,
   ): Promise<UpdateResult<ChannelMember>> {
     const mergeMember = { ...member, ...pk };
-    const updatableChannel = pick(mergeMember, ...ENTITY_KEYS);
-    const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
-    const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
-    const query = `INSERT INTO ${this.options.keyspace}.${this.channelMembersTable} (${columnList}) VALUES (${columnValues})`;
+    const updatableChannel = pick(mergeMember, ...USER_CHANNEL_KEYS);
+    const columnList = USER_CHANNEL_KEYS.map(key => `"${key}"`).join(",");
+    const columnValues = "?".repeat(USER_CHANNEL_KEYS.length).split("").join(",");
+    const query = `INSERT INTO ${this.options.keyspace}.${this.userChannelsTableName} (${columnList}) VALUES (${columnValues})`;
 
-    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
+    await this.client.execute(query, pick(updatableChannel, ...USER_CHANNEL_KEYS));
 
     return new UpdateResult<ChannelMember>(TYPE, updatableChannel);
   }
 
   async get(key: ChannelMemberPrimaryKey): Promise<ChannelMember> {
-    // TODO: Generate the WHERE clause from the key
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.channelMembersTable} WHERE ${WHERE}`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.userChannelsTableName} WHERE ${WHERE}`;
     const row = (await this.client.execute(query, key)).first();
 
     if (!row) {
@@ -118,31 +197,71 @@ export class CassandraMemberService implements MemberService {
   }
 
   async delete(pk: ChannelMemberPrimaryKey): Promise<DeleteResult<ChannelMember>> {
-    const query = `DELETE FROM ${this.options.keyspace}.${this.channelMembersTable} WHERE ${WHERE}`;
+    const userChannelQuery = `DELETE FROM ${this.options.keyspace}.${this.userChannelsTableName} WHERE ${WHERE}`;
+    const channelMemberQuery = `DELETE FROM ${this.options.keyspace}.${this.channelMembersTableName} WHERE ${WHERE}`;
 
-    await this.client.execute(query, pk);
+    await this.client.batch(
+      [
+        {
+          query: userChannelQuery,
+          params: pk,
+        },
+        {
+          query: channelMemberQuery,
+          params: pk,
+        },
+      ],
+      { prepare: true },
+    );
 
     return new DeleteResult<ChannelMember>(TYPE, pk as ChannelMember, true);
   }
 
-  async list(
+  list(
+    pagination: Paginable,
+    options?: ListOptions,
+    context?: ChannelExecutionContext,
+  ): Promise<ListResult<ChannelMember>> {
+    if (options?.mode === "userChannels") {
+      return this.listUserChannels(pagination, context);
+    }
+
+    return this.listChannelMembers(pagination, context);
+  }
+
+  listChannelMembers(
     pagination: Paginable,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
+    const params = {
+      channel_id: context.channel.id,
+      workspace_id: context.channel.workspace_id,
+      company_id: context.channel.company_id,
+    };
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.channelMembersTableName} WHERE ${WHERE_CHANNEL}`;
+
+    return this.listMembers(pagination, query, params);
+  }
+
+  listUserChannels(
+    pagination: Paginable,
+    context: ChannelExecutionContext,
+  ): Promise<ListResult<ChannelMember>> {
+    const params = {
+      workspace_id: context.channel.workspace_id,
+      company_id: context.channel.company_id,
+    };
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.userChannelsTableName} WHERE ${WHERE_COMPANY_WORKSPACE}`;
+
+    return this.listMembers(pagination, query, params);
+  }
+
+  private async listMembers(pagination: Paginable, query: string, params: cassandra.ArrayOrObject) {
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.channelMembersTable} WHERE ${WHERE_CHANNEL}`;
-    const result = await this.client.execute(
-      query,
-      {
-        channel_id: context.channel.id,
-        workspace_id: context.channel.workspace_id,
-        company_id: context.channel.company_id,
-      },
-      {
-        fetchSize: paginate.limit,
-        pageState: paginate.page_token,
-      },
-    );
+    const result = await this.client.execute(query, params, {
+      fetchSize: paginate.limit,
+      pageState: paginate.page_token,
+    });
 
     if (!result.rowLength) {
       return new ListResult<ChannelMember>(TYPE, []);

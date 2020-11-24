@@ -42,7 +42,7 @@ export class CassandraChannelService implements ChannelService {
   constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
 
   async init(): Promise<this> {
-    this.createTable();
+    await this.createTable();
 
     return this;
   }

@@ -7,6 +7,7 @@ import {
   CrudExeption,
   OperationType,
   UpdateResult,
+  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { MemberService } from "../../provider";
 
@@ -121,9 +122,10 @@ export class Service implements MemberService {
 
   list(
     pagination: Pagination,
+    options: ListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    return this.service.list(pagination, context);
+    return this.service.list(pagination, options, context);
   }
 
   onUpdated(

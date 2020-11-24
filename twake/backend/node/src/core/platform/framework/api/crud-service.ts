@@ -131,6 +131,9 @@ export class Pagination implements Paginable {
   constructor(readonly page_token: string, readonly limitStr = "100") {}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ListOptions = { [key: string]: any };
+
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {
   /**
    * Creates a resource
@@ -183,5 +186,9 @@ export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContex
    *
    * @param context
    */
-  list(pagination: Paginable, context?: Context /* TODO: Options */): Promise<ListResult<Entity>>;
+  list(
+    pagination: Paginable,
+    options?: ListOptions,
+    context?: Context /* TODO: Options */,
+  ): Promise<ListResult<Entity>>;
 }
