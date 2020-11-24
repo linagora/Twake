@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Layout, Divider, Row } from 'antd';
+import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelBar/ChannelBar';
 
 type PropsType = {

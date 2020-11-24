@@ -10,7 +10,7 @@ import User from 'services/user/user.js';
 //import './DeprecatedMainView.scss';
 import PlugIcon from '@material-ui/icons/PowerOutlined';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import Tabs from './Tabs/Tabs.js';
+import Tabs from './Tabs/DeprecatedTabs.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import Search from './Search.js';
 import AppView from './AppView/AppView.js';
