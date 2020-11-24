@@ -38,7 +38,7 @@ const UserListManager: FC<Props> = props => {
   const onUpdate = (array: string[]) => props.onUpdate(array);
 
   const setSelectedUsersList = (value: any) => {
-    setSelectedUsersList(value);
+    _setSelectedUsersList(value);
     onUpdate(value);
   };
 
