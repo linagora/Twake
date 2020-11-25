@@ -1,7 +1,12 @@
-import { CRUDService } from "../../core/platform/framework/api/crud-service";
+import {
+  CRUDService,
+  ListResult,
+  Pagination,
+} from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import { Channel, ChannelMember, ChannelMemberPrimaryKey } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
+import User from "../user/entity/user";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -16,7 +21,13 @@ export interface ChannelService
 export interface MemberService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<ChannelMember, ChannelMemberPrimaryKey, ChannelExecutionContext> {}
+    CRUDService<ChannelMember, ChannelMemberPrimaryKey, ChannelExecutionContext> {
+  listUserChannels(
+    user: User,
+    pagination: Pagination,
+    context: WorkspaceExecutionContext,
+  ): Promise<ListResult<ChannelMember>>;
+}
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
   channels: ChannelService;

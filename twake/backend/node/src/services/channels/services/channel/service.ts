@@ -13,8 +13,9 @@ import {
   SaveResult,
   OperationType,
   CrudExeption,
+  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelPrimaryKey } from "../../provider";
+import { ChannelPrimaryKey, MemberService } from "../../provider";
 
 import { Channel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
@@ -27,7 +28,7 @@ import { ChannelService } from "../../provider";
 export class Service implements ChannelService {
   version: "1";
 
-  constructor(private service: ChannelService) {}
+  constructor(private service: ChannelService, private members: MemberService) {}
 
   async init(): Promise<this> {
     try {
@@ -147,8 +148,18 @@ export class Service implements ChannelService {
     return result;
   }
 
-  list(pagination: Pagination, context: WorkspaceExecutionContext): Promise<ListResult<Channel>> {
-    return this.service.list(pagination, context);
+  async list(
+    pagination: Pagination,
+    options: ListOptions,
+    context: WorkspaceExecutionContext,
+  ): Promise<ListResult<Channel>> {
+    if (options?.mine) {
+      const userChannels = await this.members.listUserChannels(context.user, pagination, context);
+
+      options.channels = userChannels.entities.map(channelMember => channelMember.channel_id);
+    }
+
+    return this.service.list(pagination, options, context);
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {

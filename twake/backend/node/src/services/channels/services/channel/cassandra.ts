@@ -9,6 +9,7 @@ import {
 import {
   CreateResult,
   DeleteResult,
+  ListOptions,
   ListResult,
   OperationType,
   Pagination,
@@ -135,10 +136,12 @@ export class CassandraChannelService implements ChannelService {
 
   async list(
     pagination: Pagination,
+    options: ListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
+    const inChannels = options.channels ? ` AND id IN (${options.channels.join(",")})` : "";
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?${inChannels};`;
     const result = await this.client.execute(query, context.workspace, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,

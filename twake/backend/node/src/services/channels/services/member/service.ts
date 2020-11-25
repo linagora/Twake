@@ -12,7 +12,7 @@ import {
 import { MemberService } from "../../provider";
 
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
-import { ChannelExecutionContext } from "../../types";
+import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
 import { Channel, User } from "../../../../services/types";
 import { cloneDeep, pickBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
@@ -126,6 +126,14 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.service.list(pagination, options, context);
+  }
+
+  listUserChannels(
+    user: User,
+    pagination: Pagination,
+    context: WorkspaceExecutionContext,
+  ): Promise<ListResult<ChannelMember>> {
+    return this.service.listUserChannels(user, pagination, context);
   }
 
   onUpdated(

@@ -86,4 +86,8 @@ export class MongoMemberService implements MemberService {
 
     return new ListResult(TYPE, members, MongoPagination.next(paginate, members));
   }
+
+  listUserChannels(): Promise<ListResult<ChannelMember>> {
+    throw new Error("Not implemented");
+  }
 }

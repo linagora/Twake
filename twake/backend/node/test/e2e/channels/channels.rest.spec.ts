@@ -17,15 +17,19 @@ import {
 } from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { User } from "../../../src/services/types";
+import { ChannelMember } from "../../../src/services/channels/entities";
+import { ChannelUtils, get as getChannelUtils } from "./utils";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
+  let channelUtils: ChannelUtils;
 
   beforeEach(async () => {
     platform = await init({
       services: ["websocket", "webserver", "channels", "auth", "database"],
     });
+    channelUtils = getChannelUtils(platform);
   });
 
   afterEach(async () => {
@@ -108,7 +112,7 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it("should return list of channels the user has access to", async done => {
+    it("should return list of workspace channels", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
@@ -130,6 +134,55 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(result.resources[0]).toMatchObject({
         id: creationResult.entity.id,
         name: channel.name,
+      });
+
+      done();
+    });
+
+    it("should return list of channels the user is member of", async done => {
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+      const channel1 = getChannel();
+      const channel2 = getChannel();
+
+      channel1.name = "Test Channel1";
+      channel2.name = "Test Channel2";
+
+      const creationResults = await Promise.all([
+        channelService.channels.save(channel1, getContext()),
+        channelService.channels.save(channel2, getContext()),
+      ]);
+
+      const result2 = await channelService.members.save(
+        {
+          channel_id: channel1.id,
+          workspace_id: channel1.workspace_id,
+          company_id: channel1.company_id,
+          user_id: platform.currentUser.id,
+        } as ChannelMember,
+        channelUtils.getChannelContext(channel1, platform.currentUser),
+      );
+
+      console.log("RESULT", result2);
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          mine: "true",
+        },
+      });
+
+      console.log(response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toEqual(1);
+      expect(result.resources[0]).toMatchObject({
+        id: creationResults[0].entity.id,
       });
 
       done();

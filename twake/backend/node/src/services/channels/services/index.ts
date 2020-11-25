@@ -17,8 +17,8 @@ class Service implements ChannelServiceAPI {
   members: MemberService;
 
   constructor(databaseService: DatabaseServiceAPI) {
-    this.channels = getChannelService(databaseService);
     this.members = getMemberService(databaseService);
+    this.channels = getChannelService(databaseService, this.members);
   }
 
   async init(): Promise<this> {
