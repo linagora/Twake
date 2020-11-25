@@ -5,6 +5,7 @@ import ChannelCategory from './ChannelCategory';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
 import ModalManager from 'app/services/Modal/ModalManager';
 import ChannelMenu from './ChannelMenu';
+import WorkspaceChannelList from 'app/components/WorkspaceChannelList';
 import ChannelUI from './Channel';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import Menu from 'components/Menus/Menu.js';
@@ -28,6 +29,13 @@ export default (props: Props) => {
         size: { width: '600px' },
       },
     );
+  };
+
+  const joinChannel = () => {
+    return ModalManager.open(<WorkspaceChannelList />, {
+      position: 'center',
+      size: { width: '500px' },
+    });
   };
 
   let channels;
@@ -71,6 +79,7 @@ export default (props: Props) => {
               {
                 type: 'menu2',
                 text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
+                onClick: () => joinChannel(),
               },
             ]}
           >
