@@ -3,7 +3,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenWorkspaces from 'services/workspaces/listen_workspace.js';
 import Notifications from 'services/user/notifications.js';
-import WorkspaceUI from 'components/Leftbar/Workspace/Workspace.js';
+import WorkspaceUI from 'app/scenes/Client/WorkspacesBar/Components/Workspace/Workspace.js';
 
 export default class Workspace extends Component {
   constructor() {

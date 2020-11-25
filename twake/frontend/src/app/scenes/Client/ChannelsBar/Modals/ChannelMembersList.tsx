@@ -10,7 +10,7 @@ import { ChannelMemberResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import ModalManager from 'services/Modal/ModalManager';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
+import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import Menu from 'components/Menus/Menu.js';
 
 type Props = {

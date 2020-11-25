@@ -4,11 +4,11 @@ import Languages from 'services/languages/languages.js';
 import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
-import DirectChannel from 'app/components/Leftbar/Channel/directChannel';
+import DirectChannel from 'app/scenes/Client/ChannelsBar/Parts/Channel/directChannel';
 
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
-import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup';
-import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
+import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDirectMessagesPopup';
+import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory.js';
 import { Button } from 'antd';
 
 export function ChannelsUser() {

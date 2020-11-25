@@ -2,7 +2,7 @@ import React from 'react';
 
 import Languages from 'services/languages/languages.js';
 import ChannelCategory from './ChannelCategory.js';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import ChannelMenu from './ChannelMenu';
 import ChannelUI from './Channel';

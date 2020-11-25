@@ -7,7 +7,7 @@ import { ChannelType } from 'app/models/Channel';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
 import ModalManager from 'app/services/Modal/ModalManager';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications.js';
 
 type Props = {

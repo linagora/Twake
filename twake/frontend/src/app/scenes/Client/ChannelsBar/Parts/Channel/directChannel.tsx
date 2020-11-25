@@ -8,7 +8,7 @@ import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
-import ChannelUI from 'components/Leftbar/Channel/Channel';
+import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 
 type Props = {

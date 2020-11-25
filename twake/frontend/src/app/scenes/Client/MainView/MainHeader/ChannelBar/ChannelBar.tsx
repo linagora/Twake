@@ -4,9 +4,8 @@ import Emojione from 'app/components/Emojione/Emojione';
 import Icon from 'app/components/Icon/Icon';
 import { capitalize } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
-import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
+import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import { ChannelResource } from 'app/models/Channel';
-import { Collection } from 'app/services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import ChannelsService from 'app/services/channels/ChannelsService';
 

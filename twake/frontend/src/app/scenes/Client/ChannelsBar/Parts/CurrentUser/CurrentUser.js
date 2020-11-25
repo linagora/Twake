@@ -12,12 +12,11 @@ import ListenUsers from 'services/user/listen_users.js';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
-import CompanyHeaderUI from 'components/Leftbar/CompanyHeader/CompanyHeader.js';
+import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Button from 'components/Buttons/Button.js';
 

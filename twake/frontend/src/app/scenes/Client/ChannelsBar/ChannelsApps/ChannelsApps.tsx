@@ -6,8 +6,8 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import UserService from 'services/user/user.js';
 
-import ChannelCategory from 'components/Leftbar/Channel/ChannelCategory.js';
-import ChannelUI from 'components/Leftbar/Channel/Channel';
+import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory.js';
+import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 
 export default class ChannelsApps extends Component {
   constructor(props: any) {
