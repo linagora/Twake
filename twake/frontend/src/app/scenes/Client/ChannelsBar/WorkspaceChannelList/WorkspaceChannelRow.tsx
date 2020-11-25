@@ -8,6 +8,7 @@ import Collections, { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/user.js';
+import ModalManager from 'app/services/Modal/ModalManager';
 
 type PropsType = {
   channel?: any;
@@ -60,11 +61,12 @@ export default ({ channel }: PropsType) => {
     >
       <Col
         style={{ display: 'flex', alignItems: 'center' }}
-        onClick={() =>
-          isChannelMember
-            ? RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`)
-            : false
-        }
+        onClick={() => {
+          if (isChannelMember) {
+            ModalManager.closeAll();
+            return RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`);
+          }
+        }}
       >
         <div style={{ lineHeight: 0 }}>
           <Emojione type={channel.data.icon || ''} />
