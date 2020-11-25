@@ -1,13 +1,14 @@
 import React from 'react';
-import { Button, Col, Input, Row, Typography } from 'antd';
+import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import Icon from 'app/components/Icon/Icon';
 import { capitalize } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
-import { ChannelResource } from 'app/models/Channel';
 import RouterServices from 'app/services/RouterService';
 import ChannelsService from 'app/services/channels/ChannelsService';
+import { Lock } from 'react-feather';
+import Search from '../Search';
 
 type PropsType = {
   channelId: string;
@@ -23,20 +24,15 @@ type ButtonType = {
 export default (props: PropsType): JSX.Element => {
   const { channelId } = RouterServices.useStateFromRoute();
 
+  ChannelsService.useWatcher(() => !!ChannelsService.getCurrentChannelCollection());
   const channelCollection = ChannelsService.getCurrentChannelCollection();
-  if (!channelCollection) {
-    return <></>;
+  if (!channelCollection?.useWatcher) {
+    return <Col></Col>;
   }
-
-  let channel: ChannelResource;
-  if (channelCollection.useWatcher) {
-    channel = channelCollection.useWatcher({ id: channelId })[0];
-  } else {
-    channel = new ChannelResource({});
-  }
+  const channel = channelCollection.useWatcher({ id: channelId })[0];
 
   if (!channel) {
-    return <></>;
+    return <Col></Col>;
   }
 
   const buttonsList: ButtonType[] = [
@@ -47,7 +43,7 @@ export default (props: PropsType): JSX.Element => {
         return ModalManager.open(
           <ChannelMembersList
             channelId={props.channelId}
-            channelName={channel.data.name}
+            channelName={'' /*channel.data.name*/}
             closable
           />,
           {
@@ -77,18 +73,23 @@ export default (props: PropsType): JSX.Element => {
     >
       <Col>
         <span className="left-margin" style={{ display: 'flex', alignItems: 'center' }}>
-          <div className="small-right-margin" style={{ lineHeight: 0 }}>
+          <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
             <Emojione type={channel.data.icon || ''} />
           </div>
-          <Typography.Text strong>{capitalize(channel.data.name)}</Typography.Text>
-          <Typography.Text>{' ' + channel.data.description}</Typography.Text>
+          <Typography.Text className="small-right-margin" strong>
+            {capitalize(channel.data.name)}
+          </Typography.Text>
+          {channel.data.visibility === 'private' && (
+            <Lock size={16} className="small-right-margin" />
+          )}
+          <Typography.Text>{' ' + (channel.data.description || '')}</Typography.Text>
         </span>
       </Col>
 
-      {props.channelId && (
-        <Col>
-          <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
-            {buttonsList.map((button: ButtonType, index: number) => {
+      <Col>
+        <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
+          {props.channelId &&
+            buttonsList.map((button: ButtonType, index: number) => {
               return (
                 <Col key={`key_${index}`}>
                   <Button
@@ -103,21 +104,9 @@ export default (props: PropsType): JSX.Element => {
                 </Col>
               );
             })}
-            <Col>
-              <Input
-                prefix={
-                  <Icon
-                    type="search"
-                    className="m-icon-small"
-                    style={{ color: 'var(--grey-dark)' }}
-                  />
-                }
-                placeholder={'search'}
-              />
-            </Col>
-          </Row>
-        </Col>
-      )}
+          <Search />
+        </Row>
+      </Col>
     </Row>
   );
 };

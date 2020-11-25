@@ -70,6 +70,7 @@ const ChannelMembersList: FC<Props> = props => {
         <Row align="middle" gutter={[28, 0]} style={{ marginBottom: '24px' }}>
           <Col flex={14}>
             <Input
+              size={'large'}
               suffix={
                 <Icon
                   type="search"

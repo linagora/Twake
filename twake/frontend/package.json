@@ -133,7 +133,7 @@
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.20.6",
-    "eslint-plugin-react-hooks": "^1.6.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "events": "^3.2.0",
     "feather-icons": "^4.28.0",
     "fetch-polyfill": "^0.8.2",

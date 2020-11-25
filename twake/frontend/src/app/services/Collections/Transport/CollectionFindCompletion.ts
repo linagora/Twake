@@ -34,6 +34,8 @@ export default class FindCompletion<G extends Resource<any>> {
     if (options.page_token) options.query.page_token = options.page_token;
     if (options.search_query) options.query.search_query = options.search_query;
 
+    const newItems = [];
+
     //Not taking cache replacement into account if network
     if (!this.didLoadOnce || (this.hasMore && options.limit > mongoItems.length)) {
       this.perPage = this.perPage || options.limit;
@@ -46,7 +48,6 @@ export default class FindCompletion<G extends Resource<any>> {
 
       if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
         Storage.clear(this.collection.getPath());
-        mongoItems = [];
       }
 
       if (items?.resources && items?.resources?.length) {
@@ -59,7 +60,7 @@ export default class FindCompletion<G extends Resource<any>> {
             this.collection.getPath(),
             resource.getDataForStorage(),
           );
-          mongoItems.push(mongoItem);
+          newItems.push(mongoItem);
         }
       }
 
@@ -70,7 +71,7 @@ export default class FindCompletion<G extends Resource<any>> {
       this.didLoadOnce = true;
     }
 
-    return mongoItems;
+    return newItems;
   }
 
   /**

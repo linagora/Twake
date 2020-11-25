@@ -21,7 +21,6 @@ class Channels extends Observable {
     this.state = {
       channels_repository: Collections.get('channels'),
     };
-    Collections.get('channels').addListener(this);
 
     Globals.window.channel_service = this;
 

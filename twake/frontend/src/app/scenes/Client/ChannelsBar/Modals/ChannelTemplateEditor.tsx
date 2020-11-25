@@ -51,6 +51,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
           {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
         </Title>
         <TextArea
+          className="ant-input-lg"
           autoSize={{ minRows: 1, maxRows: 4 }}
           placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
           value={description}
@@ -69,6 +70,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
           )}
         </Title>
         <Select
+          size={'large'}
           value={visibility ? visibility : 'private'}
           onChange={(value: any) => {
             console.log(value);
@@ -84,13 +86,15 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange }) => {
         </Select>
       </div>
 
-      <div style={{ height: '32px' }} className="top-margin left-margin">
-        {visibility === 'public' && (
-          <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>
-            {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
-          </Checkbox>
-        )}
-      </div>
+      {false && (
+        <div style={{ height: '32px' }} className="top-margin left-margin">
+          {visibility === 'public' && (
+            <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>
+              {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
+            </Checkbox>
+          )}
+        </div>
+      )}
     </>
   );
 };

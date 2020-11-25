@@ -167,6 +167,7 @@ export default class InputWithIcon extends React.Component {
           </Col>
           <Col flex="auto">
             <Input
+              size={'large'}
               style={{ paddingLeft: 15 }}
               autoFocus
               refInput={obj => (this.input = obj)}

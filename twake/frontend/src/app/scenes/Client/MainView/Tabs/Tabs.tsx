@@ -24,7 +24,7 @@ export default (props: PropsType): JSX.Element => {
   const [tabsList, setTabsList] = useState<TabType[]>([]);
 
   useEffect(() => {
-    getTabsList();
+    //getTabsList();
   }, []);
 
   const getTabsList = async () => {

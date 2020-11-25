@@ -29,6 +29,10 @@ export default (props: Props) => {
 
   const selected = channelId === props.id;
 
+  if (selected) {
+    ChannelsService.setCurrentChannelCollection(props.collection);
+  }
+
   return (
     <div
       className={'channel fade_in ' + (selected ? 'selected ' : '')}

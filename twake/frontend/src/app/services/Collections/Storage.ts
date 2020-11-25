@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import minimongo from 'minimongo';
 
 export type MongoItemType = {
@@ -68,14 +69,17 @@ export default class CollectionStorage {
         return;
       }
       await CollectionStorage.addCollection(path);
-      CollectionStorage.find(path, { id: item.id })
-        .then(async mongoItems => {
-          if (mongoItems.length === 1) {
-            item._id = mongoItems[0]._id; //Make sure _id are not duplicated
-          }
-          (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
-        })
-        .catch(reject);
+
+      const mongoItems = await CollectionStorage.find(path, { id: item.id });
+      try {
+        if (mongoItems.length === 1) {
+          item._id = mongoItems[0]._id; //Make sure _id are not duplicated
+        }
+        item = _.merge(item, mongoItems);
+        (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 

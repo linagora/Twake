@@ -7,7 +7,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
 import Globals from 'services/Globals.js';
-
+import { Folder, Calendar, CheckSquare, Octagon } from 'react-feather';
 class WorkspacesApps extends Observable {
   constructor() {
     super();
@@ -291,17 +291,17 @@ class WorkspacesApps extends Observable {
     console.log('Open App Popup loader waiting for content');
   }
 
-  getAppIcon(app) {
+  getAppIcon(app, feather = false) {
     if (app.simple_name.toLocaleLowerCase() == 'twake_calendar') {
-      return 'calendar-alt';
+      return feather ? Calendar : 'calendar-alt';
     }
     if (app.simple_name.toLocaleLowerCase() == 'twake_drive') {
-      return 'folder';
+      return feather ? Folder : 'folder';
     }
     if (app.simple_name.toLocaleLowerCase() == 'twake_tasks') {
-      return 'check-square';
+      return feather ? CheckSquare : 'check-square';
     }
-    return app.icon_url || 'puzzle-piece';
+    return app.icon_url || (feather ? Octagon : 'puzzle-piece');
   }
 }
 

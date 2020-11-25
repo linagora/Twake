@@ -1,6 +1,8 @@
 import React, { FC } from 'react';
 import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelBar/ChannelBar';
+import ChannelsService from 'app/services/channels/ChannelsService';
+import ApplicationBar from './ApplicationBar /ApplicationBar';
 
 type PropsType = {
   classname?: string;
@@ -8,9 +10,16 @@ type PropsType = {
 };
 
 const MainHeader: FC<PropsType> = props => {
+  const channelType = ChannelsService.useWatcher(() => ChannelsService.getCurrentChannelType());
+  const channelCollection = ChannelsService.getCurrentChannelCollection();
+  if (!channelCollection) {
+    return <></>;
+  }
+
   return (
     <Layout.Header className={props.classname}>
-      <ChannelBar channelId={props.channelId} />
+      {channelType === 'channel' && <ChannelBar channelId={props.channelId} />}
+      {channelType === 'application' && <ApplicationBar channelId={props.channelId} />}
       <Divider />
     </Layout.Header>
   );

@@ -25,19 +25,21 @@ export function Workspace() {
 
   const channels = channelsCollection.useWatcher({}, { query: { mine: true } });
 
-  channels.map(channel => {
-    switch (true) {
-      case channel.data.user_member?.favorite:
-        channelCategory.workspace.push(channel);
-        channelCategory.favorite.push(channel);
-        break;
-      case channel.data.channel_group && channel.data.channel_group.length > 1:
-        channelCategory.inGroup.push(channel);
-        break;
-      default:
-        channelCategory.workspace.push(channel);
-    }
-  });
+  channels
+    .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
+    .map(channel => {
+      switch (true) {
+        case channel.data.user_member?.favorite:
+          channelCategory.workspace.push(channel);
+          channelCategory.favorite.push(channel);
+          break;
+        case channel.data.channel_group && channel.data.channel_group.length > 1:
+          channelCategory.inGroup.push(channel);
+          break;
+        default:
+          channelCategory.workspace.push(channel);
+      }
+    });
 
   let groupsName: string[] = [];
   let groups: { name: string; channels: ChannelResource[] }[] = [];
