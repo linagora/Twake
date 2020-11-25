@@ -56,7 +56,7 @@ class Websocket extends Observable {
     Globals.window.addEventListener(
       'focus',
       (() => {
-        this.reconnectIfNeeded(60);
+        this.reconnectIfNeeded(120);
         clearTimeout(this.deconnectionBlurTimeout);
         this.didFocusedLastMinute = true;
         this.window_focus = true;
@@ -127,7 +127,7 @@ class Websocket extends Observable {
     }
   }
 
-  reconnectIfNeeded(seconds = 30) {
+  reconnectIfNeeded(seconds = 60) {
     if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
       //30 seconds
       if (LoginService.currentUserId) {
@@ -142,7 +142,7 @@ class Websocket extends Observable {
 
       if (
         new Date().getTime() - this.last_reconnect_call_if_needed.getTime() >
-        seconds * 1000 * 5
+        seconds * 1000 * 30
       ) {
         this.reconnect();
       }
