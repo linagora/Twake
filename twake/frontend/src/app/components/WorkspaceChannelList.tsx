@@ -8,6 +8,7 @@ import RouterServices from 'app/services/RouterServices';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import WorkspaceChannelRow from 'scenes/Client/ChannelsBar/WorkspaceChannelList/WorkspaceChannelRow';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default () => {
   const [loadedChannels, setLoadedChannels] = useState<number>(3);
@@ -28,24 +29,29 @@ export default () => {
         />
       </Row>
 
-      {channels &&
-        channels.map((channel: ChannelResource, index: number) => {
-          return (
-            <div key={`${channel.data.id}_${index}`}>
-              <WorkspaceChannelRow channel={channel} />
-              <Divider style={{ margin: 0 }} />
-            </div>
-          );
-        })}
-
-      <Row align="middle" justify="center" className="y-margin">
-        <Typography.Link
-          style={{ color: 'var(--grey-dark)' }}
-          onClick={() => setLoadedChannels(loadedChannels + 3)}
-        >
-          {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-        </Typography.Link>
-      </Row>
+      <PerfectScrollbar
+        style={{ maxHeight: '250px' }}
+        component="div"
+        options={{ suppressScrollX: true, suppressScrollY: false }}
+      >
+        {channels &&
+          channels.map((channel: ChannelResource, index: number) => {
+            return (
+              <div key={`${channel.data.id}_${index}`}>
+                <WorkspaceChannelRow channel={channel} />
+                <Divider style={{ margin: 0 }} />
+              </div>
+            );
+          })}
+        <Row align="middle" justify="center" className="y-margin">
+          <Typography.Link
+            style={{ color: 'var(--grey-dark)' }}
+            onClick={() => setLoadedChannels(loadedChannels + 3)}
+          >
+            {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+          </Typography.Link>
+        </Row>
+      </PerfectScrollbar>
     </ObjectModal>
   );
 };
