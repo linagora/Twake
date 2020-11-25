@@ -1916,4 +1916,11 @@ export default {
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Ajouter',
   'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Envoyez un message privé',
   'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Supprimer de la chaîne',
+  'components.leftbar.channel.workspaceschannels.menu.option_1': 'Créer une chaîne',
+  'components.leftbar.channel.workspaceschannels.menu.option_2': 'Rejoindre une chaîne',
+  'components.channelworkspacelist.title': 'Chaînes',
+  'components.channelworkspacelist.button_join': 'Rejoindre',
+  'components.channelworkspacelist.button_joined': 'Rejoint',
+  'scenes.client.channelbar.workspacechannellist.autocomplete':
+    'Rechercher une chaîne de discussion',
 };

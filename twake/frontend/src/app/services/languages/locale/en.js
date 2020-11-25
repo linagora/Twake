@@ -1845,4 +1845,8 @@ export default {
   'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
   'components.leftbar.channel.workspaceschannels.menu.option_1': 'Create a channel',
   'components.leftbar.channel.workspaceschannels.menu.option_2': 'Join a channel',
+  'components.channelworkspacelist.title': 'Channels',
+  'components.channelworkspacelist.button_join': 'Join',
+  'components.channelworkspacelist.button_joined': 'Joined',
+  'scenes.client.channelbar.workspacechannellist.autocomplete': 'Search channel',
 };
