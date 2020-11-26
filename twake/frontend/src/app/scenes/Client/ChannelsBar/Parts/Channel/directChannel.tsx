@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip, Avatar, Badge } from 'antd';
 import { User } from 'react-feather';
-import RouterService from 'app/services/RouterService';
 
 import './Channel.scss';
 import UserService from 'services/user/user.js';
@@ -10,6 +9,7 @@ import OldCollections from 'services/Depreciated/Collections/Collections';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import { Collection } from 'app/services/CollectionsReact/Collections';
+import UsersService from 'services/user/user.js';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -17,7 +17,12 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const channelMembers = props.channel.direct_channel_members;
+  const channelMembers = props.channel.direct_channel_members?.filter(
+    e =>
+      (props?.channel?.direct_channel_members?.length || 0) === 1 ||
+      e !== UsersService.getCurrentUserId(),
+  );
+
   let avatar: JSX.Element = <Avatar size={20} icon={<User size={12} style={{ margin: 4 }} />} />;
   let usersName: string[] = [];
   let userName: string = '';

@@ -307,7 +307,7 @@ class Login extends Observable {
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
-    this.configurateCollections();
+    //this.configurateCollections();
 
     this.state = 'app';
     this.notify();

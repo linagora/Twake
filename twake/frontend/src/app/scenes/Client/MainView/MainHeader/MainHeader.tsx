@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Layout, Divider } from 'antd';
-import ChannelBar from './ChannelBar/ChannelBar';
+import ChannelBar from './ChannelHeader/ChannelHeader';
 import ChannelsService from 'app/services/channels/ChannelsService';
-import ApplicationBar from './ApplicationBar /ApplicationBar';
+import ApplicationBar from './ApplicationHeader/ApplicationHeader';
 
 type PropsType = {
   classname?: string;

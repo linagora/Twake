@@ -6,8 +6,9 @@ import RouterService from '../RouterService';
 class _ChannelsService extends Observable {
   private currentChannelCollection: Collection<ChannelResource> | null = null;
 
-  public getCurrentChannelType(): 'application' | 'channel' {
-    return this.currentChannelCollection?.useWatcher ? 'channel' : 'application';
+  public getCurrentChannelType(): 'application' | 'channel' | '' {
+    const col: any = this.currentChannelCollection;
+    return col ? (col.useWatcher ? 'channel' : 'application') : '';
   }
 
   public getCurrentChannelCollection() {
@@ -19,7 +20,7 @@ class _ChannelsService extends Observable {
     this.notify();
   }
 
-  public select(id: string, collection: Collection<ChannelResource>) {
+  public select(id: string) {
     RouterService.history.push(RouterService.generateRouteFromState({ channelId: id }));
   }
 }

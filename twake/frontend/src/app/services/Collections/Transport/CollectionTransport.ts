@@ -98,6 +98,10 @@ export default class CollectionTransport<G extends Resource<any>> {
         this.socketTransport.updateWebsocketInformation(result?.websockets);
       }
 
+      if (result.offline) {
+        return null;
+      }
+
       return result;
     } catch (err) {
       console.log(err);

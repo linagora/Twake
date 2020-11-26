@@ -38,6 +38,8 @@ export default class FindCompletion<G extends Resource<any>> {
 
     //Not taking cache replacement into account if network
     if (!this.didLoadOnce || (this.hasMore && options.limit > mongoItems.length)) {
+      this.lock();
+
       this.perPage = this.perPage || options.limit;
       options.query.limit = this.perPage;
       if (this.nextPageToken) {
@@ -46,29 +48,33 @@ export default class FindCompletion<G extends Resource<any>> {
 
       const items = await this.collection.getTransport().get(filter, options?.query);
 
-      if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
-        Storage.clear(this.collection.getPath());
-      }
-
-      if (items?.resources && items?.resources?.length) {
-        const type = this.collection.getType();
-        const list = items?.resources as any[];
-        for (let i = 0; i < list.length; i++) {
-          const resource = new type(list[i]);
-          resource.setShared(true);
-          const mongoItem = await Storage.upsert(
-            this.collection.getPath(),
-            resource.getDataForStorage(),
-          );
-          newItems.push(mongoItem);
+      if (items?.resources?.length > 0) {
+        if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
+          Storage.clear(this.collection.getPath());
         }
-      }
 
-      if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
-        this.hasMore = false;
+        if (items?.resources && items?.resources?.length) {
+          const type = this.collection.getType();
+          const list = items?.resources as any[];
+          for (let i = 0; i < list.length; i++) {
+            const resource = new type(list[i]);
+            resource.setShared(true);
+            const mongoItem = await Storage.upsert(
+              this.collection.getPath(),
+              resource.getDataForStorage(),
+            );
+            newItems.push(mongoItem);
+          }
+        }
+
+        if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
+          this.hasMore = false;
+        }
+        this.nextPageToken = items?.next_page_token;
+        this.didLoadOnce = true;
+      } else {
+        return [];
       }
-      this.nextPageToken = items?.next_page_token;
-      this.didLoadOnce = true;
     }
 
     return newItems;
@@ -92,7 +98,9 @@ export default class FindCompletion<G extends Resource<any>> {
     if (options.search_query) options.query.search_query = options.search_query;
 
     filter = filter || {};
-    filter.id = filter.id || 'no-id';
+    if (!filter.id) {
+      return null;
+    }
 
     let mongoItem: MongoItemType | null = null;
     const item = await this.collection.getTransport().get(filter, options?.query);

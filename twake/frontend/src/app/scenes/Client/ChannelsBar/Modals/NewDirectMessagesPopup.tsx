@@ -8,6 +8,7 @@ import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/Deprecated
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';
+import UsersService from 'services/user/user.js';
 
 import { useParams } from 'react-router-dom';
 import RouterServices from 'app/services/RouterService';
@@ -23,18 +24,21 @@ const NewDirectMessagesPopup: FC = () => {
   const ChannelsCollections = Collections.get(collectionPath);
 
   const upsertDirectMessage = async (): Promise<any> => {
+    let membersIds = newUserDiscussion;
+    membersIds.push(UsersService.getCurrentUserId());
+    membersIds = membersIds.filter((e, index) => newUserDiscussion.indexOf(e) === index);
+
     const newDirectMessage: ChannelType = {
       company_id: company_id,
       workspace_id: workspaceId,
       visibility: 'direct',
-      direct_channel_members: newUserDiscussion,
+      direct_channel_members: membersIds,
     };
 
     await ChannelsCollections.upsert(new ChannelResource(newDirectMessage), {
-      query: { members: newUserDiscussion },
+      query: { members: membersIds },
     });
-    // Do not use this, this is cheating !
-    // await ChannelsService.openDiscussion(newUserDiscussion);
+
     await MediumPopupComponent.closeAll();
   };
 

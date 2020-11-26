@@ -36,7 +36,7 @@ export default (props: Props) => {
   return (
     <div
       className={'channel fade_in ' + (selected ? 'selected ' : '')}
-      onClick={() => props.id && ChannelsService.select(props.id, props.collection)}
+      onClick={() => props.id && ChannelsService.select(props.id)}
     >
       {!props.isAppchannel &&
         (props.visibility === 'public' || props.visibility === 'private') &&
