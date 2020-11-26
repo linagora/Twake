@@ -43,14 +43,16 @@ export default () => {
               </div>
             );
           })}
-        <Row align="middle" justify="center" className="y-margin">
-          <Typography.Link
-            style={{ color: 'var(--grey-dark)' }}
-            onClick={() => setLoadedChannels(loadedChannels + 3)}
-          >
-            {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-          </Typography.Link>
-        </Row>
+        {channels.length === loadedChannels && (
+          <Row align="middle" justify="center" className="y-margin">
+            <Typography.Link
+              style={{ color: 'var(--grey-dark)' }}
+              onClick={() => setLoadedChannels(loadedChannels + 3)}
+            >
+              {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+            </Typography.Link>
+          </Row>
+        )}
       </PerfectScrollbar>
     </ObjectModal>
   );

@@ -22,6 +22,7 @@ export default ({ channel }: PropsType) => {
     collectionPath,
     ChannelMemberResource,
   );
+
   const member: ChannelMemberResource[] = channelMembersCollection.useWatcher({ user_id: userId });
   const [isChannelMember, setIsChannelMember] = useState<boolean>(
     member[0] !== undefined && member[0].data.id === userId ? true : false,

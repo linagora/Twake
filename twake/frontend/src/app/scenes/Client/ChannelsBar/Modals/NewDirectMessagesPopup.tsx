@@ -17,7 +17,7 @@ const NewDirectMessagesPopup: FC = () => {
   const company_id = companyId;
 
   const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/`;
-  const ChannelsCollections = Collections.get(collectionPath);
+  const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
   const upsertDirectMessage = async (): Promise<any> => {
     let membersIds = newUserDiscussion;

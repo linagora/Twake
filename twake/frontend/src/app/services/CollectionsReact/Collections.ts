@@ -7,7 +7,6 @@ import OriginalCollections, {
 import Observable from '../Observable/Observable';
 
 export { Resource } from '../Collections/Collections';
-export { default } from '../Collections/Collections';
 
 class ObservableAdapter extends Observable {}
 
@@ -27,12 +26,8 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     type: new (data: any) => T,
     options?: CollectionOptions,
   ): Collection<T> {
-    return OriginalCollections.get(
-      path,
-      type,
-      () => new Collection<T>(path, type),
-      options,
-    ) as Collection<T>;
+    const creator = () => new Collection<T>(path, type);
+    return OriginalCollections.get(path, type, creator, options) as Collection<T>;
   }
 
   private observedChangesReactOptionsAdapter = (changes: any) => {
@@ -61,4 +56,8 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   public removeWatcher = this.observable.removeWatcher.bind(this.observable);
   public addEventListener = this.observable.addWatcher.bind(this.observable);
   public removeEventListener = this.observable.removeWatcher.bind(this.observable);
+}
+
+export default class Collections {
+  public static get = Collection.get;
 }

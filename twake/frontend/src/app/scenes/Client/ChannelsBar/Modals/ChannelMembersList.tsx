@@ -145,15 +145,17 @@ const ChannelMembersList: FC<Props> = props => {
           })}
         </div>
       )}
-      <Row align="middle" justify="center" gutter={[0, 16]}>
-        <Link
-          className="small-y-margin"
-          style={{ color: 'var(--grey-dark)' }}
-          onClick={() => console.log('show list +5 members')}
-        >
-          {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-        </Link>
-      </Row>
+      {membersList.length >= 10 && (
+        <Row align="middle" justify="center" gutter={[0, 16]}>
+          <Link
+            className="small-y-margin"
+            style={{ color: 'var(--grey-dark)' }}
+            onClick={() => console.log('show list +5 members')}
+          >
+            {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+          </Link>
+        </Row>
+      )}
     </ObjectModal>
   );
 };
