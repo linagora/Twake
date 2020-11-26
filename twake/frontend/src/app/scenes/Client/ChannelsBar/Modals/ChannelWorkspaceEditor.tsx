@@ -37,7 +37,19 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
     const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
-    await ChannelsCollections.upsert(new ChannelResource(newChannel));
+    if (channel?.id) {
+      const insertedChannel = await ChannelsCollections.findOne(channel.id);
+      insertedChannel.data = {
+        ...insertedChannel.data,
+        name: newChannel.name || channel.name,
+        description: newChannel.description || channel.description,
+        icon: newChannel.icon || channel.icon,
+        visibility: newChannel.visibility || channel.visibility,
+      };
+      await ChannelsCollections.upsert(insertedChannel);
+    } else {
+      await ChannelsCollections.upsert(new ChannelResource(newChannel));
+    }
   };
 
   return (
@@ -57,19 +69,22 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
           disabled={!disabled}
           onClick={() => {
             upsertChannel();
-            return ModalManager.open(
-              <ChannelMembersEditor
-                channelName={newChannel.name}
-                onClose={() => ModalManager.closeAll()}
-              />,
-              {
-                position: 'center',
-                size: { width: '600px', minHeight: '329px' },
-              },
-            );
+
+            if (!channel?.id) {
+              return ModalManager.open(
+                <ChannelMembersEditor
+                  channelName={newChannel.name}
+                  onClose={() => ModalManager.closeAll()}
+                />,
+                {
+                  position: 'center',
+                  size: { width: '600px', minHeight: '329px' },
+                },
+              );
+            } else return ModalManager.close();
           }}
         >
-          {Languages.t('general.create', 'Create')}
+          {Languages.t(channel?.id ? 'general.edit' : 'general.create')}
         </Button>
       }
     >

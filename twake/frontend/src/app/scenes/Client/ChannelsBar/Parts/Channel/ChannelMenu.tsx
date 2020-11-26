@@ -185,6 +185,11 @@ export default (props: Props): JSX.Element => {
         },
       },
     );
+
+    // This remove the edit channel menu item when user isn't channel owner
+    if (props.channel.owner !== currentUser.id) {
+      menu.splice(4, 1);
+    }
   }
 
   //To do: Add the necessery admin rights
