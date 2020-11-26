@@ -5,6 +5,7 @@ import { ChannelResource, ChannelType } from 'app/models/Channel';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import ChannelMenu from 'app/scenes/Client/ChannelsBar//Parts/Channel/ChannelMenu';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -14,6 +15,9 @@ type Props = {
 export default (props: Props) => {
   useChannelListener(props.channel);
   const [avatar, name] = getChannelParts({ channel: props.channel });
+  const menu = (channel: ChannelType) => {
+    return <ChannelMenu channel={channel} />;
+  };
 
   return (
     <>
@@ -28,6 +32,7 @@ export default (props: Props) => {
         notifications={0}
         id={props.channel.id}
         showTooltip={(props.channel?.direct_channel_members?.length || 0) > 2}
+        menu={menu(props.channel)}
       />
     </>
   );
