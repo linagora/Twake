@@ -3,8 +3,8 @@ import React from 'react';
 import { ChannelType } from 'app/models/Channel';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
-import RouterServices from 'services/RouterServices';
-import WorkspaceChannels from 'components/Leftbar/Channel/workspaceChannels';
+import RouterServices from 'app/services/RouterService';
+import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannels';
 
 type channelCategoryType = {
   favorite: ChannelResource[];
@@ -25,19 +25,21 @@ export function Workspace() {
 
   const channels = channelsCollection.useWatcher({}, { query: { mine: true } });
 
-  channels.map(channel => {
-    switch (true) {
-      case channel.data.user_member?.favorite:
-        channelCategory.workspace.push(channel);
-        channelCategory.favorite.push(channel);
-        break;
-      case channel.data.channel_group && channel.data.channel_group.length > 1:
-        channelCategory.inGroup.push(channel);
-        break;
-      default:
-        channelCategory.workspace.push(channel);
-    }
-  });
+  channels
+    .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
+    .map(channel => {
+      switch (true) {
+        case channel.data.user_member?.favorite:
+          channelCategory.workspace.push(channel);
+          channelCategory.favorite.push(channel);
+          break;
+        case channel.data.channel_group && channel.data.channel_group.length > 1:
+          channelCategory.inGroup.push(channel);
+          break;
+        default:
+          channelCategory.workspace.push(channel);
+      }
+    });
 
   let groupsName: string[] = [];
   let groups: { name: string; channels: ChannelResource[] }[] = [];
@@ -69,6 +71,7 @@ export function Workspace() {
     <div className="workspace_channels">
       {channelCategory.favorite.length !== 0 && (
         <WorkspaceChannels
+          collection={channelsCollection}
           key={'favoriteChannels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
           channels={channelCategory.favorite}
@@ -76,13 +79,19 @@ export function Workspace() {
       )}
       {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
         <WorkspaceChannels
+          collection={channelsCollection}
           key={'channels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
           channels={channelCategory.workspace}
         />
       )}
       {groups.map((group, index) => (
-        <WorkspaceChannels key={index} workspaceTitle={group.name} channels={group.channels} />
+        <WorkspaceChannels
+          collection={channelsCollection}
+          key={index}
+          workspaceTitle={group.name}
+          channels={group.channels}
+        />
       ))}
     </div>
   );

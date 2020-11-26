@@ -5,7 +5,7 @@ import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
 
-import FooterUI from 'components/Leftbar/Footer/Footer.js';
+import FooterUI from 'app/scenes/Client/ChannelsBar/Parts/Footer/Footer.js';
 
 export default class Footer extends Component {
   constructor() {

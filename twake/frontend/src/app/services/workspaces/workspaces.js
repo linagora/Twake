@@ -14,7 +14,7 @@ import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage.js';
 import $ from 'jquery';
 

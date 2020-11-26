@@ -33,7 +33,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import RouterServices from 'app/services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
 

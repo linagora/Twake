@@ -43,6 +43,10 @@
 // --- sizing --- //
 @border-radius-base: 3px; // major border radius
 @font-size-base: 14px; // major text font size
+@font-size-lg: 14px;
+@height-base: 32px;
+@height-lg: 40px;
+@height-sm: 28px;
 
 // --- ant-btn --- //
 @btn-border-width: 0;
@@ -50,6 +54,10 @@
 
 // --- animations --- //
 @animation-duration-slow: 0.2s;
+[ant-click-animating-without-extra-node='true']::after,
+.ant-click-animating-node {
+  display: none;
+}
 
 // --- ant-divider --- //
 .ant-divider-horizontal {
@@ -85,7 +93,9 @@
 @input-color: @black; // input text color
 @input-border-color: @grey-background; // input border color
 @input-bg: @grey-background; // input background color
-@input-height-base: 40px; // input default size
+@input-height-base: @height-base;
+@input-height-lg: @height-lg;
+@input-height-sm: @height-sm;
 @input-hover-border-color: none; // input border color on hover
 @input-placeholder-color: @grey-dark; // placeholder input color
 
@@ -98,7 +108,6 @@
 }
 
 .ant-input-affix-wrapper {
-  height: 40px;
   border: none;
   display: flex;
   flex-direction: row;
@@ -115,8 +124,24 @@
 textarea.ant-input,
 .ant-input {
   resize: none;
-  min-height: 40px !important;
-  padding: 9px 12px;
+
+  &.ant-input-sm {
+    min-height: @height-sm;
+  }
+  &.ant-input-lg {
+    min-height: @height-lg;
+  }
+  :not(&.ant-input-sm):not(&.ant-input-lg) {
+    min-height: @height-base;
+  }
+}
+
+.ant-input-affix-wrapper-sm {
+  padding: 0px 7px;
+}
+
+.ant-input-affix-wrapper-lg {
+  padding: 0px 15px;
 }
 
 // --- antd-layout-header --- //

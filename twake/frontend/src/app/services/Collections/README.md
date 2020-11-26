@@ -11,7 +11,7 @@ We use minimongo and typescript now! 🔥🔥🔥
 ### How we'll use it ?
 
 ```typescript
-import Collections, { Resource, Collection } from 'services/Collections/Collections';
+import Collections, { Resource, Collection } from 'services/CollectionsReact/Collections';
 
 type MessageType = {
   id: string;

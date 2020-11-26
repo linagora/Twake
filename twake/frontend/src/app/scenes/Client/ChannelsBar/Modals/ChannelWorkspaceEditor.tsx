@@ -1,13 +1,13 @@
 import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
-import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/ChannelTemplateEditor';
+import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelTemplateEditor';
 import ModalManager from 'services/Modal/ModalManager';
 import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
-import RouterServices from 'services/RouterServices';
+import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   title: string;
@@ -35,7 +35,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
 
   const upsertChannel = async (): Promise<any> => {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-    const ChannelsCollections = Collections.get(collectionPath);
+    const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
     await ChannelsCollections.upsert(new ChannelResource(newChannel));
   };

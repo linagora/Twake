@@ -4,14 +4,15 @@ import UsersService from 'services/user/user.js';
 import { UserType } from 'app/models/User';
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import { Avatar, Button, Col, Row, Typography, Input } from 'antd';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import ModalManager from 'services/Modal/ModalManager';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/ChannelMembersEditor';
+import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import Menu from 'components/Menus/Menu.js';
+import { Search } from 'react-feather';
 
 type Props = {
   closable?: boolean;
@@ -70,13 +71,8 @@ const ChannelMembersList: FC<Props> = props => {
         <Row align="middle" gutter={[28, 0]} style={{ marginBottom: '24px' }}>
           <Col flex={14}>
             <Input
-              suffix={
-                <Icon
-                  type="search"
-                  className="m-icon-small"
-                  style={{ color: 'var(--grey-dark)' }}
-                />
-              }
+              size={'large'}
+              suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onSearchMembers(e.target.value, (array: UserType[]) =>
@@ -149,15 +145,17 @@ const ChannelMembersList: FC<Props> = props => {
           })}
         </div>
       )}
-      <Row align="middle" justify="center" gutter={[0, 16]}>
-        <Link
-          className="small-y-margin"
-          style={{ color: 'var(--grey-dark)' }}
-          onClick={() => console.log('show list +5 members')}
-        >
-          {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-        </Link>
-      </Row>
+      {membersList.length >= 10 && (
+        <Row align="middle" justify="center" gutter={[0, 16]}>
+          <Link
+            className="small-y-margin"
+            style={{ color: 'var(--grey-dark)' }}
+            onClick={() => console.log('show list +5 members')}
+          >
+            {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+          </Link>
+        </Row>
+      )}
     </ObjectModal>
   );
 };

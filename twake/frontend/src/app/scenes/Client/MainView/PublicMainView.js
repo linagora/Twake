@@ -6,7 +6,7 @@ import './DeprecatedMainView.scss';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Globals from 'services/Globals.js';
 import Api from 'services/Api';
-import GroupSwitch from 'components/Leftbar/GroupSwitch/GroupSwitch.js';
+import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch.js';
 
 export default class MainView extends Component {
   constructor() {

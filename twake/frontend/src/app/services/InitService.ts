@@ -1,7 +1,7 @@
 import Observable from 'services/Observable/Observable';
 import Api from 'services/Api';
 import Websocket from 'services/websocket.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 
 type ServerInfoType = {
   branding?: any;

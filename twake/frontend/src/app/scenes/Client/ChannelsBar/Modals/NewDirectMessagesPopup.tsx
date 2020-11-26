@@ -2,16 +2,13 @@ import React, { FC, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
-import ChannelsService from 'services/channels/channels.js';
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';
-
-import { useParams } from 'react-router-dom';
-import RouterServices from 'services/RouterServices';
-import OldCollections from 'services/Depreciated/Collections/Collections';
+import UsersService from 'services/user/user.js';
+import RouterServices from 'app/services/RouterService';
 
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
@@ -20,21 +17,24 @@ const NewDirectMessagesPopup: FC = () => {
   const company_id = companyId;
 
   const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/`;
-  const ChannelsCollections = Collections.get(collectionPath);
+  const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
   const upsertDirectMessage = async (): Promise<any> => {
+    let membersIds = newUserDiscussion;
+    membersIds.push(UsersService.getCurrentUserId());
+    membersIds = membersIds.filter((e, index) => newUserDiscussion.indexOf(e) === index);
+
     const newDirectMessage: ChannelType = {
       company_id: company_id,
       workspace_id: workspaceId,
       visibility: 'direct',
-      direct_channel_members: newUserDiscussion,
+      direct_channel_members: membersIds,
     };
 
     await ChannelsCollections.upsert(new ChannelResource(newDirectMessage), {
-      query: { members: newUserDiscussion },
+      query: { members: membersIds },
     });
-    // Do not use this, this is cheating !
-    // await ChannelsService.openDiscussion(newUserDiscussion);
+
     await MediumPopupComponent.closeAll();
   };
 

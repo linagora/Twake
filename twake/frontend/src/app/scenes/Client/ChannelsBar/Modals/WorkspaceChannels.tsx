@@ -1,17 +1,19 @@
 import React from 'react';
 
 import Languages from 'services/languages/languages.js';
-import ChannelCategory from './ChannelCategory';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+import ChannelCategory from '../Parts/Channel/ChannelCategory';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import ModalManager from 'app/services/Modal/ModalManager';
-import ChannelMenu from './ChannelMenu';
-import WorkspaceChannelList from 'app/components/WorkspaceChannelList';
-import ChannelUI from './Channel';
+import ChannelMenu from '../Parts/Channel/ChannelMenu';
+import WorkspaceChannelList from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList';
+import ChannelUI from '../Parts/Channel/Channel';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import Menu from 'components/Menus/Menu.js';
 import Icon from 'app/components/Icon/Icon';
+import { Collection } from 'app/services/CollectionsReact/Collections';
 
 type Props = {
+  collection: Collection<ChannelResource>;
   workspaceTitle: string;
   channels: ChannelResource[];
 };
@@ -51,6 +53,7 @@ export default (props: Props) => {
       return (
         <ChannelUI
           key={key}
+          collection={props.collection}
           name={data.name || ''}
           icon={data.icon || ''}
           muted={data.user_member?.notification_level === 'none'}
@@ -70,6 +73,7 @@ export default (props: Props) => {
         text={Languages.t(props.workspaceTitle)}
         suffix={
           <Menu
+            className="add"
             menu={[
               {
                 type: 'menu1',

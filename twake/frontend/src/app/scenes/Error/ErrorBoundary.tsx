@@ -1,5 +1,5 @@
 import React from 'react';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import 'app/ui.scss';
 
 export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {

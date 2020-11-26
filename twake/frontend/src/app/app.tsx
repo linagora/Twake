@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Integration from 'app/scenes/Integration/Integration';
-import RouterServices, { RouteType } from './services/RouterServices';
+import RouterServices, { RouteType } from './services/RouterService';
 import { Switch, Route } from 'react-router-dom';
 import { Router } from 'react-router';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';

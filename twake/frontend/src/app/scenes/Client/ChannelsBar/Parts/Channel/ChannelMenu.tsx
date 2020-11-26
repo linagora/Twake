@@ -7,8 +7,7 @@ import {
   ChannelMemberResource,
 } from 'app/models/Channel';
 
-import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
-import ChannelWorkspaceEditor from 'scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
@@ -18,9 +17,10 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'services/CollectionsReact/Collections';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/services/Modal/ModalManager';
+import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'services/RouterService';
 
 type Props = {
   channel: ChannelType;

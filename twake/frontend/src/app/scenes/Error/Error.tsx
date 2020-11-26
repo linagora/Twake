@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Emojione from 'components/Emojione/Emojione';
 import LoginService from 'services/login/login.js';
 import './Error.scss';
-import RouterServices from 'app/services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import InitService from 'services/InitService';
 import ErrorBoundary from './ErrorBoundary';
 

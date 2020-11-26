@@ -5,9 +5,8 @@ import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import UserService from 'services/user/user.js';
-
-import ChannelCategory from 'app/components/Leftbar/Channel/ChannelCategory';
-import ChannelUI from 'components/Leftbar/Channel/Channel';
+import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
+import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 
 export default class ChannelsApps extends Component {
   constructor(props: any) {
@@ -95,6 +94,7 @@ export default class ChannelsApps extends Component {
               return (
                 <ChannelUI
                   key={id}
+                  collection={Collections.get('channels')}
                   name={name}
                   icon={icon}
                   isAppchannel={true}

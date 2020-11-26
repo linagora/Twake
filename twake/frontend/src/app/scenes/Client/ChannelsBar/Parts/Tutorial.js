@@ -15,7 +15,7 @@ import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import popupManager from 'services/popupManager/popupManager.js';
 
-import TutorialUI from 'components/Leftbar/Tutorial/Tutorial.js';
+import TutorialUI from 'app/scenes/Client/ChannelsBar/Parts/Tutorial/Tutorial.js';
 
 import Globals from 'services/Globals.js';
 

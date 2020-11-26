@@ -55,11 +55,23 @@ class Collections {
     if (formattedPath !== path) {
       console.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
+
+    let creation = false;
+
     if (!this.collections[formattedPath]) {
+      creation = true;
       this.collections[formattedPath] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);
     }
+
+    if (!existingCollectionCreator) {
+      console.log('no creator');
+      console.trace();
+    } else {
+      console.log('ok');
+    }
+
     return this.collections[formattedPath] as Collection<G>;
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Emojione from 'components/Emojione/Emojione';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import InitService from 'services/InitService';
 import './Setup.scss';
 

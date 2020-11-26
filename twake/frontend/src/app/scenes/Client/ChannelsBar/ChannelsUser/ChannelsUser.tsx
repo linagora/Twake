@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import RouterServices from 'services/RouterServices';
+import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
-import DirectChannel from 'app/components/Leftbar/Channel/directChannel';
+import DirectChannel from 'app/scenes/Client/ChannelsBar/Parts/Channel/DirectChannel';
 
 import MediumPopupComponent from 'app/services/Modal/ModalManager';
-import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/NewDirectMessagesPopup';
-import ChannelCategory from 'app/components/Leftbar/Channel/ChannelCategory';
+import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDirectMessagesPopup';
+import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 
 export function ChannelsUser() {
@@ -40,7 +40,9 @@ export function ChannelsUser() {
         onAdd={() => openConv()}
       />
       {directChannels.map(channel => {
-        return <DirectChannel key={channel.id} channel={channel.data} />;
+        return (
+          <DirectChannel key={channel.id} collection={channelsCollection} channel={channel.data} />
+        );
       })}
 
       {directChannels.length == 0 && (

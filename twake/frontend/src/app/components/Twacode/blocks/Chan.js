@@ -3,7 +3,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import ChannelsService from 'services/channels/channels.js';
 
-export default class CHan extends React.Component {
+export default class Chan extends React.Component {
   render() {
     if (!this.props.id || !Collections.get('channels').find(this.props.id)) {
       return <span>#{this.props.name}</span>;

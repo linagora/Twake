@@ -71,6 +71,7 @@ const UserListManager: FC<Props> = props => {
       {!SelectedUsersList.length && <div className="small-top-margin"></div>}
       <AutoCompleteExtended
         align="top"
+        size={'large'}
         onSelect={(id: string) => {
           return SelectedUsersList.includes(id)
             ? false

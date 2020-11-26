@@ -140,13 +140,23 @@ export default class Collection<G extends Resource<any>> {
   public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
     let mongoItems = await Storage.find(this.getPath(), filter, options);
 
-    await this.completion.lock();
-    mongoItems = await this.completion.completeFind(mongoItems, filter, options);
+    if (typeof filter === 'string' || filter?.id) {
+      return [await this.findOne(filter, options)];
+    }
+
+    this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
+      if (mongoItems.length > 0) {
+        mongoItems.forEach(mongoItem => {
+          this.updateLocalResource(mongoItem);
+        });
+        this.eventEmitter.notify();
+      }
+      await this.completion.unlock();
+    });
 
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
     });
-    await this.completion.unlock();
 
     return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
   }
@@ -164,12 +174,12 @@ export default class Collection<G extends Resource<any>> {
 
     let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
-    if (
-      !mongoItem ||
-      !this.resources[mongoItem.id] ||
-      (!this.resources[mongoItem.id].state.upToDate && this.resources[mongoItem.id].state.persisted)
-    ) {
-      mongoItem = (await this.completion.completeFindOne(filter, options)) || mongoItem;
+    if (!mongoItem) {
+      this.completion.completeFindOne(filter, options).then(async mongoItem => {
+        if (mongoItem) {
+          this.eventEmitter.notify();
+        }
+      });
     }
 
     if (mongoItem) {

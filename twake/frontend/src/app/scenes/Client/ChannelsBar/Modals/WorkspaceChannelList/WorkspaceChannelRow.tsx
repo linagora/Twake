@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Button, Col, Row } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
-import RouterServices, { ClientStateType } from 'app/services/RouterServices';
-import Collections, { Collection } from 'services/CollectionsReact/Collections';
+import RouterServices, { ClientStateType } from 'app/services/RouterService';
+import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/user.js';
@@ -22,6 +22,7 @@ export default ({ channel }: PropsType) => {
     collectionPath,
     ChannelMemberResource,
   );
+
   const member: ChannelMemberResource[] = channelMembersCollection.useWatcher({ user_id: userId });
   const [isChannelMember, setIsChannelMember] = useState<boolean>(
     member[0] !== undefined && member[0].data.id === userId ? true : false,
