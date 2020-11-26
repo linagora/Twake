@@ -160,6 +160,12 @@ a.error {
 
 /* General */
 
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tag {
   background: $grey_dark;
   border-radius: var(--default-border-radius);

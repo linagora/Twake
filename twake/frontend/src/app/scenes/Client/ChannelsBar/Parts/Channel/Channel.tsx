@@ -56,7 +56,9 @@ export default (props: Props) => {
             <Icon type={props.icon} />
           </div>
         )}
-        <div className="text">{props.name}</div>
+        <div className="text" style={{ textTransform: 'capitalize' }}>
+          {props.name}
+        </div>
         <div className="more">
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}

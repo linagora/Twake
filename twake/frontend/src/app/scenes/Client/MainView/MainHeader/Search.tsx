@@ -4,8 +4,9 @@ import React from 'react';
 
 export default (props: {}): JSX.Element => {
   return (
-    <Col>
+    <Col flex="none" style={{ width: 200 }}>
       <Input
+        width={200}
         size={'small'}
         prefix={
           <Icon type="search" className="m-icon-small" style={{ color: 'var(--grey-dark)' }} />
