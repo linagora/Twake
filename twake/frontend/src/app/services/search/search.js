@@ -15,14 +15,15 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 
 import Globals from 'services/Globals.js';
 
-class search extends Observable {
+class SearchService extends Observable {
   constructor() {
     super();
     this.setObservableName('SearchService');
     Globals.window.searchPopupService = this;
     this.row = [];
     this.value = '';
-    this.type = '';
+    this.hasFilters = true;
+    this.type = 'message';
     this.options = {};
     this.scroll_id = false;
     this.results = [];
@@ -422,5 +423,5 @@ class search extends Observable {
   }
 }
 
-search = new search();
+const search = new SearchService();
 export default search;
