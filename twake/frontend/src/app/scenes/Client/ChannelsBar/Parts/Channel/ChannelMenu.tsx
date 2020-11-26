@@ -95,6 +95,40 @@ export default (props: Props): JSX.Element => {
   let menu: object[] = [
     {
       type: 'menu',
+      text: Languages.t(
+        hasNotification ? 'scenes.app.channelsbar.read_sign' : 'scenes.app.channelsbar.unread_sign',
+      ),
+      onClick: () => {
+        hasNotification ? Notifications.read(props.channel) : Notifications.unread(props.channel);
+      },
+    },
+    {
+      type: 'menu',
+      text: Languages.t(
+        props.channel.user_member?.favorite
+          ? 'scenes.apps.messages.left_bar.stream.remove_from_favorites'
+          : 'scenes.apps.messages.left_bar.stream.add_to_favorites',
+      ),
+      onClick: () => {
+        addOrCancelFavorite();
+      },
+    },
+    {
+      type: 'separator',
+    },
+    {
+      type: 'menu',
+      text: Languages.t('scenes.app.channelsbar.channel_leaving'),
+      className: 'danger',
+      onClick: () => {
+        AlertManager.confirm(() => leaveChannel());
+      },
+    },
+  ];
+
+  if (props.channel.visibility !== 'direct') {
+    menu.unshift({
+      type: 'menu',
       text: Languages.t('scenes.apps.messages.left_bar.stream.notifications'),
       submenu: [
         {
@@ -132,56 +166,29 @@ export default (props: Props): JSX.Element => {
           },
         },
       ],
-    },
-    {
-      type: 'menu',
-      text: Languages.t(
-        hasNotification ? 'scenes.app.channelsbar.read_sign' : 'scenes.app.channelsbar.unread_sign',
-      ),
-      onClick: () => {
-        hasNotification ? Notifications.read(props.channel) : Notifications.unread(props.channel);
+    });
+    menu.splice(
+      4,
+      0,
+      {
+        type: 'menu',
+        text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
+        onClick: () => {
+          editChannel();
+        },
       },
-    },
-    {
-      type: 'menu',
-      text: Languages.t(
-        props.channel.user_member?.favorite
-          ? 'scenes.apps.messages.left_bar.stream.remove_from_favorites'
-          : 'scenes.apps.messages.left_bar.stream.add_to_favorites',
-      ),
-      onClick: () => {
-        addOrCancelFavorite();
+      {
+        type: 'menu',
+        text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
+        onClick: () => {
+          displayMembers();
+        },
       },
-    },
-    {
-      type: 'separator',
-    },
-    {
-      type: 'menu',
-      text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
-      onClick: () => {
-        displayMembers();
-      },
-    },
-    {
-      type: 'menu',
-      text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
-      onClick: () => {
-        editChannel();
-      },
-    },
-    {
-      type: 'menu',
-      text: Languages.t('scenes.app.channelsbar.channel_leaving'),
-      className: 'danger',
-      onClick: () => {
-        AlertManager.confirm(() => leaveChannel());
-      },
-    },
-  ];
+    );
+  }
 
   //To do: Add the necessery admin rights
-  if (true) {
+  if (true && props.channel.visibility !== 'direct') {
     menu.push({
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.channel_removing'),

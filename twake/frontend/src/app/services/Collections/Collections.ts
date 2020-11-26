@@ -65,13 +65,6 @@ class Collections {
         : new Collection(formattedPath, type || Resource, options);
     }
 
-    if (!existingCollectionCreator) {
-      console.log('no creator');
-      console.trace();
-    } else {
-      console.log('ok');
-    }
-
     return this.collections[formattedPath] as Collection<G>;
   }
 }
