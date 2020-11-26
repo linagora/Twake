@@ -1,4 +1,17 @@
 {
+  "websocket": {
+    "auth": {
+      "jwt": {
+        "secret": "AUTH_JWT_SECRET"
+      }
+    },
+    "php_pusher_secret": "WS_PHP_PUSHER_SECRET"
+  },
+  "auth": {
+    "jwt": {
+      "secret": "AUTH_JWT_SECRET"
+    }
+  },
   "database": {
     "type": "DB_DRIVER",
     "mongodb": {
