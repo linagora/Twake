@@ -12,6 +12,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import Menu from 'components/Menus/Menu.js';
+import { Search } from 'react-feather';
 
 type Props = {
   closable?: boolean;
@@ -71,13 +72,7 @@ const ChannelMembersList: FC<Props> = props => {
           <Col flex={14}>
             <Input
               size={'large'}
-              suffix={
-                <Icon
-                  type="search"
-                  className="m-icon-small"
-                  style={{ color: 'var(--grey-dark)' }}
-                />
-              }
+              suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onSearchMembers(e.target.value, (array: UserType[]) =>

@@ -43,6 +43,7 @@
 // --- sizing --- //
 @border-radius-base: 3px; // major border radius
 @font-size-base: 14px; // major text font size
+@font-size-lg: 14px;
 @height-base: 32px;
 @height-lg: 40px;
 @height-sm: 28px;
@@ -133,6 +134,14 @@ textarea.ant-input,
   :not(&.ant-input-sm):not(&.ant-input-lg) {
     min-height: @height-base;
   }
+}
+
+.ant-input-affix-wrapper-sm {
+  padding: 0px 7px;
+}
+
+.ant-input-affix-wrapper-lg {
+  padding: 0px 15px;
 }
 
 // --- antd-layout-header --- //
