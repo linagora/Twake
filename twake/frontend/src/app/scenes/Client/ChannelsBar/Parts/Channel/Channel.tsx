@@ -8,6 +8,7 @@ import Icon from 'components/Icon/Icon.js';
 import ChannelsService from 'app/services/channels/ChannelsService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
+import { Tooltip } from 'antd';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -22,6 +23,7 @@ type Props = {
   directMembers?: string[];
   notifications: number;
   menu?: JSX.Element;
+  showTooltip?: boolean;
 };
 
 export default (props: Props) => {
@@ -34,34 +36,36 @@ export default (props: Props) => {
   }
 
   return (
-    <div
-      className={'channel fade_in ' + (selected ? 'selected ' : '')}
-      onClick={() => props.id && ChannelsService.select(props.id)}
-    >
-      {!props.isAppchannel &&
-        (props.visibility === 'public' || props.visibility === 'private') &&
-        typeof props.icon === 'string' && (
+    <Tooltip title={props.showTooltip ? props.name : false} placement="right">
+      <div
+        className={'channel fade_in ' + (selected ? 'selected ' : '')}
+        onClick={() => props.id && ChannelsService.select(props.id)}
+      >
+        {!props.isAppchannel &&
+          (props.visibility === 'public' || props.visibility === 'private') &&
+          typeof props.icon === 'string' && (
+            <div className="icon">
+              <Emojione type={props.icon} />
+            </div>
+          )}
+        {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
+          <div className="direct-channel-avatars"> {props.icon}</div>
+        )}
+        {!!props.isAppchannel && (
           <div className="icon">
-            <Emojione type={props.icon} />
+            <Icon type={props.icon} />
           </div>
         )}
-      {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
-        <div className="direct-channel-avatars"> {props.icon}</div>
-      )}
-      {!!props.isAppchannel && (
-        <div className="icon">
-          <Icon type={props.icon} />
+        <div className="text">{props.name}</div>
+        <div className="more">
+          {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
+          {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
+          {props.notifications > 0 && (
+            <div className="notification_dot">{Math.max(1, props.notifications)}</div>
+          )}
+          {props.menu}
         </div>
-      )}
-      <div className="text">{props.name}</div>
-      <div className="more">
-        {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
-        {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
-        {props.notifications > 0 && (
-          <div className="notification_dot">{Math.max(1, props.notifications)}</div>
-        )}
-        {props.menu}
       </div>
-    </div>
+    </Tooltip>
   );
 };

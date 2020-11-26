@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const channelMembers = props.channel.direct_channel_members?.filter(
+  const channelMembers = (props.channel.direct_channel_members || []).filter(
     e =>
       (props?.channel?.direct_channel_members?.length || 0) === 1 ||
       e !== UsersService.getCurrentUserId(),
@@ -73,9 +73,7 @@ export default (props: Props) => {
           usersName.push(`${UserService.getFullName(member)}, `);
           return <Avatar key={member.id} size={20} src={UserService.getThumbnail(member)} />;
         })}
-        <Tooltip title="" placement="top">
-          <Avatar key={firstUser.id} size={20} src={UserService.getThumbnail(firstUser)} />
-        </Tooltip>
+        <Avatar key={firstUser.id} size={20} src={UserService.getThumbnail(firstUser)} />
       </Avatar.Group>
     );
 
@@ -94,6 +92,7 @@ export default (props: Props) => {
         visibility="direct"
         notifications={0}
         id={props.channel.id}
+        showTooltip={channelMembers.length > 2}
       />
     </>
   );
