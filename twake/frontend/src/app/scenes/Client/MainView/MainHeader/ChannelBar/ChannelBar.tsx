@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button, Col, Input, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import Icon from 'app/components/Icon/Icon';
@@ -7,7 +7,6 @@ import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
 import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
 import WorkspaceChannelList from 'app/components/WorkspaceChannelList';
-import { Modal } from '@material-ui/core';
 
 type PropsType = {
   channelName: string;
