@@ -14,7 +14,7 @@ import { MemberService } from "../../provider";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
 import { Channel, User } from "../../../../services/types";
-import { cloneDeep, pickBy } from "lodash";
+import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
@@ -59,7 +59,7 @@ export class Service implements MemberService {
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
-      const memberDiff = pickBy(updatedDiff(memberToUpdate, member));
+      const memberDiff = omitBy(updatedDiff(memberToUpdate, member), isNil);
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {

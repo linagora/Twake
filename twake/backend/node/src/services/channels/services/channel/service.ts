@@ -1,4 +1,4 @@
-import { cloneDeep, pickBy } from "lodash";
+import { cloneDeep, find, pickBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import {
   RealtimeSaved,
@@ -17,7 +17,7 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelPrimaryKey, MemberService } from "../../provider";
 
-import { Channel } from "../../entities";
+import { Channel, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -152,11 +152,21 @@ export class Service implements ChannelService {
     pagination: Pagination,
     options: ListOptions,
     context: WorkspaceExecutionContext,
-  ): Promise<ListResult<Channel>> {
+  ): Promise<ListResult<Channel | UserChannel>> {
     if (options?.mine) {
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
 
-      options.channels = userChannels.entities.map(channelMember => channelMember.channel_id);
+      options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
+
+      const result = await this.service.list(pagination, options, context);
+
+      result.mapEntities(<UserChannel>(channel: Channel) => {
+        const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
+
+        return ({ ...channel, ...{ user_member: userChannel } } as unknown) as UserChannel;
+      });
+
+      return result;
     }
 
     return this.service.list(pagination, options, context);
