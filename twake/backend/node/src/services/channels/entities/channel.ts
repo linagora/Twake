@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { ChannelVisibility, ChannelType } from "../types";
+import { ChannelMember } from "./channel-member";
 
 export class Channel {
   // uuid-v4
@@ -36,4 +37,8 @@ export class Channel {
   static isDirect(channel: Channel): boolean {
     return channel.workspace_id === ChannelType.DIRECT;
   }
+}
+
+export class UserChannel extends Channel {
+  user_member: ChannelMember;
 }

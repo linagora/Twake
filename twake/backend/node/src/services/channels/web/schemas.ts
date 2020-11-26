@@ -14,6 +14,9 @@ const channelMemberSchema = {
     channel_id: { type: "string" },
     company_id: { type: "string" },
     workspace_id: { type: "string" },
+    type: { type: "string" },
+    favorite: { type: "boolean" },
+    notification_level: { type: "string" },
   },
 };
 

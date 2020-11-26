@@ -158,7 +158,7 @@ export class ChannelMemberCrudController
 
     return {
       ...{
-        resources: list.entities || [],
+        resources: list.getEntities(),
       },
       ...(request.query.websockets && {
         websockets: getChannelRooms(request.params, request.currentUser),
