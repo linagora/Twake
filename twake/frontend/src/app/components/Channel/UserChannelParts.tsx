@@ -8,10 +8,9 @@ import OldCollections from 'services/Depreciated/Collections/Collections';
 import { ChannelType } from 'app/models/Channel';
 import UsersService from 'services/user/user.js';
 
-export const useChannelListener = (channel: ChannelType) => {
-  const channelMembers = (channel.direct_channel_members || []).filter(
-    e =>
-      (channel?.direct_channel_members?.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
+export const useChannelListener = (usersIds: string[]) => {
+  const channelMembers = (usersIds || []).filter(
+    e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
   );
 
   useEffect(() => {
@@ -30,12 +29,18 @@ export const useChannelListener = (channel: ChannelType) => {
   OldCollections.get('users').useListener(useState, channelMembers);
 };
 
-export const getChannelParts = (props: { channel: ChannelType }): [JSX.Element, string] => {
-  const channelMembers = (props.channel.direct_channel_members || []).filter(
+export const getChannelParts = (props: {
+  usersIds: string[];
+  keepMyself?: boolean;
+  max?: number;
+}): [JSX.Element, string] => {
+  let channelMembers = (props.usersIds || []).filter(
     e =>
-      (props?.channel?.direct_channel_members?.length || 0) === 1 ||
+      props.keepMyself ||
+      (props.usersIds.length || 0) === 1 ||
       e !== UsersService.getCurrentUserId(),
   );
+  channelMembers = channelMembers.filter((e, i) => channelMembers.indexOf(e) === i);
 
   let avatar: JSX.Element = <Avatar size={20} icon={<User size={12} style={{ margin: 4 }} />} />;
   let channelName: string[] = [];
@@ -46,7 +51,7 @@ export const getChannelParts = (props: { channel: ChannelType }): [JSX.Element, 
 
   if (channelMembers?.length === 1) {
     avatar = (
-      <Badge size="default" dot offset={[-4, 16]}>
+      <Badge count={0} size="default" dot offset={[-4, 16]}>
         <Avatar size={20} src={UserService.getThumbnail(users[0])} />
       </Badge>
     );
@@ -54,10 +59,10 @@ export const getChannelParts = (props: { channel: ChannelType }): [JSX.Element, 
   } else if (channelMembers?.length || 0 > 1) {
     avatar = (
       <Avatar.Group
-        maxCount={3}
+        maxCount={props.max || 3}
         maxStyle={{
           color: '#FFFFFF',
-          backgroundColor: `var(--primary)`,
+          backgroundColor: `var(--grey-dark)`,
           width: '20px',
           height: '20px',
           display: 'flex',
