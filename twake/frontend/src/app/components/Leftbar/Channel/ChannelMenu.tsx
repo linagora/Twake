@@ -1,31 +1,82 @@
 import React, { useState } from 'react';
 
+import {
+  ChannelType,
+  ChannelMemberType,
+  ChannelResource,
+  ChannelMemberResource,
+} from 'app/models/Channel';
+
+import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
+import ChannelWorkspaceEditor from 'scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+
 import Icon from 'components/Icon/Icon.js';
 import Menu from 'components/Menus/Menu.js';
+
+import { Collection } from 'services/CollectionsReact/Collections';
 import Languages from 'services/languages/languages.js';
-import { ChannelType } from 'app/models/Channel';
+import Collections from 'services/CollectionsReact/Collections';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
-import ModalManager from 'app/services/Modal/ModalManager';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/ChannelWorkspaceEditor';
+import ModalManager from 'services/Modal/ModalManager';
 import Notifications from 'services/user/notifications.js';
+import RouterServices from 'services/RouterServices';
 
 type Props = {
   channel: ChannelType;
 };
 
 export default (props: Props): JSX.Element => {
-  const userName = UserService.getCurrentUser().username;
+  const currentUser = UserService.getCurrentUser();
+  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+
+  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+  const channelMembersPath = `${channelPath}${props.channel.id}/members/`;
+  const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
+  const channelsCollection = Collection.get(channelPath, ChannelResource, { tag: 'mine' });
+
   Languages.useListener(useState);
   Notifications.useListener(useState);
   //@ts-ignore
   const hasNotification = (Notifications.notification_by_channel[props.channel.id] || {}).count > 0;
 
-  const addOrCancelFavorite = () => {};
+  const changeNotificationPreference = async (
+    preference: 'all' | 'none' | 'group_mentions' | 'user_mentions',
+  ) => {
+    let channelMember: ChannelMemberType = {
+      user_id: currentUser.id,
+      notification_level: 'all',
+    };
 
-  const displayMembers = () => {};
+    channelMember.notification_level = preference;
 
-  const leaveChannel = () => {};
+    await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
+  };
+
+  const addOrCancelFavorite = async () => {
+    let channelMember: ChannelMemberType = {
+      user_id: currentUser.id,
+      favorite: false,
+    };
+
+    channelMember.favorite = !channelMember.favorite;
+
+    await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
+  };
+
+  const displayMembers = () => {
+    return ModalManager.open(
+      <ChannelMembersList channelId={props.channel.id} channelName={props.channel.name} closable />,
+      {
+        position: 'center',
+        size: { width: '500px', minHeight: '329px' },
+      },
+    );
+  };
+
+  const leaveChannel = () => {
+    return channelMembersCollection.remove({ id: currentUser.id });
+  };
 
   const editChannel = () => {
     ModalManager.open(
@@ -37,32 +88,49 @@ export default (props: Props): JSX.Element => {
     );
   };
 
-  const removeChannel = () => {};
+  const removeChannel = () => {
+    return channelsCollection.remove({ id: props.channel.id });
+  };
 
-  // Add translations
   let menu: object[] = [
     {
       type: 'menu',
       text: Languages.t('scenes.apps.messages.left_bar.stream.notifications'),
-      onClick: () => {},
       submenu: [
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.all'),
-          icon: 'check',
+          icon: props.channel.user_member?.notification_level === 'all' && 'check',
+          onClick: () => {
+            changeNotificationPreference('all');
+          },
         },
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.mentions', [
             '@all',
             '@here',
-            `@${userName}`,
+            `@${currentUser.username}`,
           ]),
+          icon: props.channel.user_member?.notification_level === 'group_mentions' && 'check',
+          onClick: () => {
+            changeNotificationPreference('group_mentions');
+          },
         },
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
-            `@${userName}`,
+            `@${currentUser.username}`,
           ]),
+          icon: props.channel.user_member?.notification_level === 'user_mentions' && 'check',
+          onClick: () => {
+            changeNotificationPreference('user_mentions');
+          },
         },
-        { text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.never') },
+        {
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.never'),
+          icon: props.channel.user_member?.notification_level === 'none' && 'check',
+          onClick: () => {
+            changeNotificationPreference('none');
+          },
+        },
       ],
     },
     {
@@ -78,8 +146,8 @@ export default (props: Props): JSX.Element => {
       type: 'menu',
       text: Languages.t(
         props.channel.user_member?.favorite
-          ? 'scenes.apps.messages.left_bar.stream.add_to_favorites'
-          : 'scenes.apps.messages.left_bar.stream.remove_from_favorites',
+          ? 'scenes.apps.messages.left_bar.stream.remove_from_favorites'
+          : 'scenes.apps.messages.left_bar.stream.add_to_favorites',
       ),
       onClick: () => {
         addOrCancelFavorite();
