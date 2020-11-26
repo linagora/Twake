@@ -30,7 +30,7 @@ export class ChannelMember {
   @Type(() => String)
   channel_id: string;
 
-  type: ChannelMemberType;
+  type: ChannelMemberType = ChannelMemberType.MEMBER;
 
   /**
    * Timestamp in secconds
@@ -45,13 +45,13 @@ export class ChannelMember {
   /**
    * Member marked this channel as favorite?
    */
-  favorite: boolean;
+  favorite = false;
 
   /**
    * Member defined the notification level for the channel
    * Defaults to all
    */
-  notification_level: ChannelMemberNotificationLevel | ChannelMemberNotificationLevel.ALL;
+  notification_level: ChannelMemberNotificationLevel = ChannelMemberNotificationLevel.ALL;
 
   /**
    * Member expiration in channel (only for guests)
