@@ -1,8 +1,8 @@
 import * as mongo from "mongodb";
 import { v4 as uuidv4 } from "uuid";
-import { Channel } from "../entities";
-import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
-import { MongoPagination } from "../../../core/platform/services/database/services/connectors/mongodb";
+import { Channel } from "../../entities";
+import { ChannelService, ChannelPrimaryKey } from "../../provider";
+import { MongoPagination } from "../../../../core/platform/services/database/services/connectors/mongodb";
 import {
   CreateResult,
   DeleteResult,
@@ -11,15 +11,17 @@ import {
   OperationType,
   SaveResult,
   UpdateResult,
-} from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext } from "../types";
+} from "../../../../core/platform/framework/api/crud-service";
+import { WorkspaceExecutionContext } from "../../types";
 
-export class MongoChannelService implements ChannelServiceAPI {
+const TYPE = "channel";
+
+export class MongoChannelService implements ChannelService {
   version = "1";
   private collection: mongo.Collection<Channel>;
 
   constructor(private db: mongo.Db) {
-    this.collection = this.db.collection<Channel>("channels");
+    this.collection = this.db.collection<Channel>(`${TYPE}s`);
   }
 
   async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
@@ -29,11 +31,11 @@ export class MongoChannelService implements ChannelServiceAPI {
     if (mode === OperationType.CREATE) {
       const created = await this.create(channel, context);
 
-      result = new SaveResult<Channel>("channel", created.entity, mode);
+      result = new SaveResult<Channel>(TYPE, created.entity, mode);
     } else if (mode === OperationType.UPDATE) {
       const updated = await this.update({ id: String(channel.id) }, channel);
 
-      result = new SaveResult<Channel>("channel", updated.entity, mode);
+      result = new SaveResult<Channel>(TYPE, updated.entity, mode);
     } else {
       throw new Error("Can not define operation to apply to channel");
     }
@@ -56,13 +58,13 @@ export class MongoChannelService implements ChannelServiceAPI {
 
     const createdChannel: Channel = inserted.ops[0];
 
-    return new CreateResult<Channel>("channel", createdChannel);
+    return new CreateResult<Channel>(TYPE, createdChannel);
   }
 
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
     const updated = await this.collection.updateOne({ id: pk.id }, { $set: channel });
 
-    const result = new UpdateResult<Channel>("channel", channel);
+    const result = new UpdateResult<Channel>(TYPE, channel);
     result.affected = updated.modifiedCount;
 
     return result;
@@ -76,7 +78,7 @@ export class MongoChannelService implements ChannelServiceAPI {
     const deleteResult = await this.collection.deleteOne({ id: pk.id });
 
     return new DeleteResult<Channel>(
-      "channel",
+      TYPE,
       { id: pk.id } as Channel,
       deleteResult.deletedCount === 1,
     );
@@ -91,6 +93,6 @@ export class MongoChannelService implements ChannelServiceAPI {
       .limit(paginate.limit)
       .toArray();
 
-    return new ListResult("channel", channels, MongoPagination.next(paginate, channels));
+    return new ListResult(TYPE, channels, MongoPagination.next(paginate, channels));
   }
 }

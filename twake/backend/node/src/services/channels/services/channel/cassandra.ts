@@ -1,22 +1,25 @@
 import cassandra from "cassandra-driver";
-import { Channel } from "../entities";
-import ChannelServiceAPI, { ChannelPrimaryKey } from "../provider";
+import { plainToClass } from "class-transformer";
+import { Channel } from "../../entities";
+import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import {
   CassandraConnectionOptions,
   CassandraPagination,
-} from "../../../core/platform/services/database/services/connectors/cassandra";
+  waitForTable,
+} from "../../../../core/platform/services/database/services/connectors/cassandra";
 import {
   CreateResult,
   DeleteResult,
+  ListOptions,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
   UpdateResult,
-} from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext } from "../types";
-import { plainToClass } from "class-transformer";
-import { pick } from "../../../utils/pick";
+} from "../../../../core/platform/framework/api/crud-service";
+import { WorkspaceExecutionContext } from "../../types";
+import { pick } from "../../../../utils/pick";
+import { logger } from "../../../../core/platform/framework";
 
 const ENTITY_KEYS = [
   "company_id",
@@ -33,14 +36,26 @@ const ENTITY_KEYS = [
   "archivation_date",
 ] as const;
 
-export class CassandraChannelService implements ChannelServiceAPI {
+const TYPE = "channel";
+
+export class CassandraChannelService implements ChannelService {
   version = "1";
-  table = "channels";
+  private readonly table = `${TYPE}s`;
 
   constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
 
   async init(): Promise<this> {
-    this.createTable();
+    await this.createTable();
+
+    if (this.options.wait) {
+      await waitForTable(
+        this.client,
+        this.options.keyspace,
+        this.table,
+        this.options.retries,
+        this.options.delay,
+      );
+    }
 
     return this;
   }
@@ -53,7 +68,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
         `CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.table}(company_id uuid, workspace_id uuid, id uuid, archivation_date date, archived boolean, channel_group text, description text, icon text, is_default boolean, name text, owner uuid, visibility text, PRIMARY KEY ((company_id, workspace_id), id));`,
       );
     } catch (err) {
-      console.error("Table creation error for channels", err);
+      logger.error({ err }, "Table creation error for channels");
       result = false;
     }
 
@@ -91,7 +106,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
 
     await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
 
-    return new UpdateResult<Channel>("channel", updatableChannel);
+    return new UpdateResult<Channel>(TYPE, updatableChannel);
   }
 
   async create(
@@ -110,7 +125,7 @@ export class CassandraChannelService implements ChannelServiceAPI {
 
     await this.client.execute(query, saveChannel, { prepare: false });
 
-    return new CreateResult<Channel>("channel", saveChannel as Channel);
+    return new CreateResult<Channel>(TYPE, saveChannel as Channel);
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
@@ -128,28 +143,30 @@ export class CassandraChannelService implements ChannelServiceAPI {
     const query = `DELETE FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
     await this.client.execute(query, key);
 
-    return new DeleteResult<Channel>("channel", key as Channel, true);
+    return new DeleteResult<Channel>(TYPE, key as Channel, true);
   }
 
   async list(
     pagination: Pagination,
+    options: ListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
+    const inChannels = options.channels ? ` AND id IN (${options.channels.join(",")})` : "";
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?${inChannels};`;
     const result = await this.client.execute(query, context.workspace, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,
     });
 
     if (!result.rowLength) {
-      return new ListResult<Channel>("channel", []);
+      return new ListResult<Channel>(TYPE, []);
     }
 
     result.nextPage;
 
     return new ListResult<Channel>(
-      "channel",
+      TYPE,
       result.rows.map(row => this.mapRowToChannel(row)),
       CassandraPagination.next(paginate, result.pageState),
     );

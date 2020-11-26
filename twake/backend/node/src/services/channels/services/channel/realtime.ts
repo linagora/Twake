@@ -1,6 +1,6 @@
-import { User, Workspace, WebsocketMetadata } from "../types";
-import { Channel } from "./entities";
-import { WorkspaceExecutionContext } from "./types";
+import { User, Workspace, WebsocketMetadata } from "../../../types";
+import { Channel } from "../../entities";
+import { WorkspaceExecutionContext } from "../../types";
 
 export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {
@@ -39,7 +39,10 @@ export function getRoomName(channel: Channel, context?: WorkspaceExecutionContex
   return getPublicRoomName(context.workspace);
 }
 
-export function getChannelPath(channel: Channel, context?: WorkspaceExecutionContext): string {
+export function getChannelPath(
+  channel: Pick<Channel, "id">,
+  context?: WorkspaceExecutionContext,
+): string {
   return `${getChannelsPath(context?.workspace)}/${channel.id}`;
 }
 

@@ -112,6 +112,14 @@ export class CrudExeption extends Error {
     super();
     this.message = details;
   }
+
+  static badRequest(details: string): CrudExeption {
+    return new CrudExeption(details, 400);
+  }
+
+  static notFound(details: string): CrudExeption {
+    return new CrudExeption(details, 404);
+  }
 }
 
 export interface Paginable {
@@ -122,6 +130,9 @@ export interface Paginable {
 export class Pagination implements Paginable {
   constructor(readonly page_token: string, readonly limitStr = "100") {}
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ListOptions = { [key: string]: any };
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {
   /**
@@ -175,5 +186,9 @@ export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContex
    *
    * @param context
    */
-  list(pagination: Paginable, context?: Context /* TODO: Options */): Promise<ListResult<Entity>>;
+  list(
+    pagination: Paginable,
+    options?: ListOptions,
+    context?: Context /* TODO: Options */,
+  ): Promise<ListResult<Entity>>;
 }

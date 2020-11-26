@@ -1,4 +1,4 @@
-import { Channel } from "../entities";
+import { Channel, ChannelMember } from "../entities";
 
 export declare type DirectChannel = "direct";
 export declare type DeleteStatus = "success" | "error";
@@ -9,38 +9,43 @@ export interface BaseChannelsParameters {
 }
 
 export interface ChannelParameters extends BaseChannelsParameters {
+  /** the channel id */
   id: string;
+}
+
+export interface ChannelMemberParameters extends ChannelParameters {
+  member_id: string;
 }
 
 export interface PaginationQueryParameters {
   page_token?: string;
   limit?: string;
+  websockets?: boolean;
 }
 
 export interface ChannelListQueryParameters extends PaginationQueryParameters {
   search_query?: string;
   mine?: boolean;
-  websockets?: boolean;
 }
 
-export class ChannelListResponse {
-  resources: Channel[];
+export class ChannelListResponse<T> {
+  resources: T[];
   websockets?: ChannelWebsocket[];
   next_page_token?: string;
 }
 
-export class ChannelGetResponse {
+export class ChannelGetResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
-export class ChannelCreateResponse {
+export class ChannelCreateResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
 
-export class ChannelUpdateResponse {
+export class ChannelUpdateResponse<T> {
   websocket?: ChannelWebsocket;
-  resource: Channel;
+  resource: T;
 }
 
 export class ChannelDeleteResponse {
@@ -63,3 +68,13 @@ export class UpdateChannelBody {
 export type ChannelCreateResource = Pick<Channel, "name">;
 
 export type ChannelUpdateResource = Pick<Channel, "name">;
+
+// channel members
+
+export class CreateChannelMemberBody {
+  resource: Pick<ChannelMember, "user_id">;
+}
+
+export class UpdateChannelMemberBody {
+  resource: Pick<ChannelMember, "favorite" | "notification_level">;
+}

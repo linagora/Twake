@@ -9,20 +9,27 @@ import {
   ChannelUpdateResponse,
 } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { Channel } from "../../../src/services/channels/entities";
+import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelVisibility } from "../../../src/services/channels/types";
-import { getPrivateRoomName, getPublicRoomName } from "../../../src/services/channels/realtime";
+import {
+  getPrivateRoomName,
+  getPublicRoomName,
+} from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { User } from "../../../src/services/types";
+import { ChannelMember } from "../../../src/services/channels/entities";
+import { ChannelUtils, get as getChannelUtils } from "./utils";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
+  let channelUtils: ChannelUtils;
 
   beforeEach(async () => {
     platform = await init({
       services: ["websocket", "webserver", "channels", "auth", "database"],
     });
+    channelUtils = getChannelUtils(platform);
   });
 
   afterEach(async () => {
@@ -97,7 +104,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
@@ -105,11 +112,11 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it("should return list of channels the user has access to", async done => {
+    it("should return list of workspace channels", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
-      const creationResult = await channelService.save(channel, getContext());
+      const creationResult = await channelService.channels.save(channel, getContext());
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -120,13 +127,62 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
       expect(result.resources[0]).toMatchObject({
         id: creationResult.entity.id,
         name: channel.name,
+      });
+
+      done();
+    });
+
+    it("should return list of channels the user is member of", async done => {
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+      const channel1 = getChannel();
+      const channel2 = getChannel();
+
+      channel1.name = "Test Channel1";
+      channel2.name = "Test Channel2";
+
+      const creationResults = await Promise.all([
+        channelService.channels.save(channel1, getContext()),
+        channelService.channels.save(channel2, getContext()),
+      ]);
+
+      const result2 = await channelService.members.save(
+        {
+          channel_id: channel1.id,
+          workspace_id: channel1.workspace_id,
+          company_id: channel1.company_id,
+          user_id: platform.currentUser.id,
+        } as ChannelMember,
+        channelUtils.getChannelContext(channel1, platform.currentUser),
+      );
+
+      console.log("RESULT", result2);
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          mine: "true",
+        },
+      });
+
+      console.log(response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toEqual(1);
+      expect(result.resources[0]).toMatchObject({
+        id: creationResults[0].entity.id,
       });
 
       done();
@@ -139,7 +195,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel, getContext());
+          return channelService.channels.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -155,7 +211,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(5);
@@ -171,7 +227,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel, getContext());
+          return channelService.channels.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -187,7 +243,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const firstPageChannels = deserialize(ChannelListResponse, firstPage.body);
+      const firstPageChannels: ChannelListResponse<Channel> = deserialize(
+        ChannelListResponse,
+        firstPage.body,
+      );
 
       expect(firstPage.statusCode).toBe(200);
       expect(firstPageChannels.resources.length).toEqual(5);
@@ -206,7 +265,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const secondPageChannels = deserialize(ChannelListResponse, secondPage.body);
+      const secondPageChannels: ChannelListResponse<Channel> = deserialize(
+        ChannelListResponse,
+        secondPage.body,
+      );
 
       expect(secondPage.statusCode).toBe(200);
       expect(secondPageChannels.resources.length).toEqual(5);
@@ -228,7 +290,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return channelService.save(channel, getContext());
+          return channelService.channels.save(channel, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -244,7 +306,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(10);
@@ -266,7 +328,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.websockets).toMatchObject([
@@ -292,7 +354,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result = deserialize(ChannelListResponse, response.body);
+      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
 
       expect(response.statusCode).toBe(200);
       expect(result.websockets.length).toEqual(3);
@@ -330,7 +392,7 @@ describe("The /internal/services/channels/v1 API", () => {
       channel.company_id = platform.workspace.company_id;
       channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await channelService.save(channel, getContext());
+      const creationResult = await channelService.channels.save(channel, getContext());
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
@@ -341,7 +403,10 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toEqual(200);
 
-      const channelGetResult = deserialize(ChannelGetResponse, response.body);
+      const channelGetResult: ChannelGetResponse<Channel> = deserialize(
+        ChannelGetResponse,
+        response.body,
+      );
 
       expect(channelGetResult.resource).toBeDefined();
       expect(channelGetResult.resource).toMatchObject({
@@ -395,13 +460,16 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toEqual(201);
 
-      const channelCreateResult = deserialize(ChannelCreateResponse, response.body);
+      const channelCreateResult: ChannelGetResponse<Channel> = deserialize(
+        ChannelCreateResponse,
+        response.body,
+      );
 
       expect(channelCreateResult.resource).toBeDefined();
       expect(channelCreateResult.websocket).toBeDefined();
 
       const channelId = channelCreateResult.resource.id;
-      const createdChannel = await channelService.get({ id: channelId });
+      const createdChannel = await channelService.channels.get({ id: channelId });
 
       expect(channelCreateResult.websocket).toMatchObject({
         room: `/channels/${createdChannel.id}`,
@@ -427,12 +495,15 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const channelUpdateResult = deserialize(ChannelUpdateResponse, response.body);
+      const channelUpdateResult: ChannelGetResponse<Channel> = deserialize(
+        ChannelUpdateResponse,
+        response.body,
+      );
 
       expect(channelUpdateResult.resource).toBeDefined();
       expect(channelUpdateResult.websocket).toBeDefined();
 
-      return await channelService.get({ id });
+      return await channelService.channels.get({ id });
     }
 
     async function updateChannelFail(
@@ -481,7 +552,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -495,7 +566,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -522,7 +593,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -549,7 +620,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -575,7 +646,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -611,7 +682,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -639,7 +710,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -667,7 +738,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -694,7 +765,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -730,7 +801,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -752,7 +823,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -774,7 +845,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -796,7 +867,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -869,7 +940,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel();
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -887,7 +958,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel();
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -912,7 +983,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel(platform.currentUser.id);
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -930,7 +1001,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel(platform.currentUser.id);
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -954,7 +1025,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel();
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
@@ -973,7 +1044,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
         const channel = getChannel();
 
-        const creationResult = await channelService.save(
+        const creationResult = await channelService.channels.save(
           channel,
           getContext({ id: channel.owner }),
         );
