@@ -130,7 +130,7 @@ export class ChannelCrudController
 
     return {
       ...{
-        resources: list.entities || [],
+        resources: list.getEntities(),
       },
       ...(request.query.websockets && {
         websockets: getWorkspaceRooms(request.params, request.currentUser, request.query.mine),
