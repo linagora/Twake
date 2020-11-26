@@ -13,6 +13,7 @@ import {
 import {
   CassandraConnectionOptions,
   CassandraPagination,
+  waitForTable,
 } from "../../../../core/platform/services/database/services/connectors";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
@@ -68,6 +69,23 @@ export class CassandraMemberService implements MemberService {
       await Promise.all([this.createUserChannelsTable(), this.createChannelMembersTable()]);
     } catch (err) {
       result = false;
+    }
+
+    if (this.options.wait) {
+      await waitForTable(
+        this.client,
+        this.options.keyspace,
+        this.channelMembersTableName,
+        this.options.retries,
+        this.options.delay,
+      );
+      await waitForTable(
+        this.client,
+        this.options.keyspace,
+        this.userChannelsTableName,
+        this.options.retries,
+        this.options.delay,
+      );
     }
 
     return result;

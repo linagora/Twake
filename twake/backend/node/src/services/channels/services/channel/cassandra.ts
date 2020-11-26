@@ -5,6 +5,7 @@ import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import {
   CassandraConnectionOptions,
   CassandraPagination,
+  waitForTable,
 } from "../../../../core/platform/services/database/services/connectors/cassandra";
 import {
   CreateResult,
@@ -18,6 +19,7 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext } from "../../types";
 import { pick } from "../../../../utils/pick";
+import { logger } from "../../../../core/platform/framework";
 
 const ENTITY_KEYS = [
   "company_id",
@@ -45,6 +47,16 @@ export class CassandraChannelService implements ChannelService {
   async init(): Promise<this> {
     await this.createTable();
 
+    if (this.options.wait) {
+      await waitForTable(
+        this.client,
+        this.options.keyspace,
+        this.table,
+        this.options.retries,
+        this.options.delay,
+      );
+    }
+
     return this;
   }
 
@@ -56,7 +68,7 @@ export class CassandraChannelService implements ChannelService {
         `CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.table}(company_id uuid, workspace_id uuid, id uuid, archivation_date date, archived boolean, channel_group text, description text, icon text, is_default boolean, name text, owner uuid, visibility text, PRIMARY KEY ((company_id, workspace_id), id));`,
       );
     } catch (err) {
-      console.error("Table creation error for channels", err);
+      logger.error({ err }, "Table creation error for channels");
       result = false;
     }
 
