@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Input, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import Icon from 'app/components/Icon/Icon';
 import { capitalize } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/ChannelMembersList';
+import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
+import WorkspaceChannelList from 'app/components/WorkspaceChannelList';
+import { Modal } from '@material-ui/core';
 
 type PropsType = {
   channelName: string;
@@ -20,6 +23,26 @@ type ButtonType = {
 };
 
 export default (props: PropsType): JSX.Element => {
+  const openWorkspaceChannelList: ShortcutType = {
+    shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
+    handler: (event: any) => {
+      event.preventDefault();
+      if (ModalManager.isOpen() === false) {
+        return ModalManager.open(<WorkspaceChannelList />, {
+          position: 'center',
+          size: { width: '500px' },
+        });
+      } else return ModalManager.close();
+    },
+  };
+
+  useEffect(() => {
+    Shortcuts.addShortcut(openWorkspaceChannelList);
+    return () => {
+      Shortcuts.removeShortcut(openWorkspaceChannelList);
+    };
+  }, []);
+
   const buttonsList: ButtonType[] = [
     {
       style: { backgroundColor: 'var(--grey-light)' },
