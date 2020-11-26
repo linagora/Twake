@@ -4,7 +4,7 @@ import { ChannelType } from 'app/models/Channel';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/Parts/Channel/WorkspaceChannels';
+import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannels';
 
 type channelCategoryType = {
   favorite: ChannelResource[];

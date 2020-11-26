@@ -11745,6 +11745,11 @@ short-uuid@^4.1.0:
     any-base "^1.1.0"
     uuid "^8.3.0"
 
+shortcuts@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/shortcuts/-/shortcuts-1.6.1.tgz#4ed1aa71fe560c14918b950b4eb51b99d10a38a5"
+  integrity sha512-q7IpQKaK7O8iF5zx+pN86fH+Rm2GyV8sr2JdiyPfsghvp7EXxpA4xXfe1IASVCShmMgydcav/46HcuEuGm11yQ==
+
 showdown@^1.9.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/showdown/-/showdown-1.9.1.tgz#134e148e75cd4623e09c21b0511977d79b5ad0ef"
