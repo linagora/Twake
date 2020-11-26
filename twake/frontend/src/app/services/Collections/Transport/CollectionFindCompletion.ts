@@ -48,7 +48,7 @@ export default class FindCompletion<G extends Resource<any>> {
 
       const items = await this.collection.getTransport().get(filter, options?.query);
 
-      if (items?.resources?.length > 0) {
+      if (items?.resources?.length !== undefined) {
         if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
           Storage.clear(this.collection.getPath());
         }

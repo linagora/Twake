@@ -12,6 +12,7 @@ import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
+import AccessRightsService from 'services/AccessRightsService';
 
 class Login extends Observable {
   constructor() {
@@ -299,7 +300,15 @@ class Login extends Observable {
 
     this.currentUserId = user.id;
     DepreciatedCollections.get('users').updateObject(user);
+
+    AccessRightsService.resetRights();
+
     user.workspaces.forEach(workspace => {
+      AccessRightsService.updateRight(
+        workspace.id,
+        workspace._user_is_admin ? 'administrator' : 'member',
+      );
+
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
     });
@@ -307,7 +316,7 @@ class Login extends Observable {
     CurrentUser.start();
     Languages.setLanguage(user.language);
 
-    //this.configurateCollections();
+    this.configurateCollections();
 
     this.state = 'app';
     this.notify();

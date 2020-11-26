@@ -200,10 +200,6 @@ export default class WorkspaceParameter extends Component {
       });
     }
 
-    /*if(WorkspaceUserRights.hasWorkspacePrivilege("MANAGE_PRICINGS")){
-        menu.push({type: "menu", emoji: ":moneybag:", text:"Paiements et abonnements", selected: (this.state.page==5?"selected":""), onClick: ()=>{this.setPage(5)}});
-      }*/
-
     menu.push({ type: 'text', text: subText });
 
     return (

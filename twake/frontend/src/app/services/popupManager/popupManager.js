@@ -31,9 +31,6 @@ class PopupService extends Observable {
       this.component.splice(-1, 1);
       this.notify();
     }
-    if (this.component.length == 0) {
-      ChannelsService.updateTitle();
-    }
   }
   closeAll() {
     if (this.isOpen()) {
