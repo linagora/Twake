@@ -24,6 +24,7 @@ export default () => {
           suffix={
             <Icon type="search" className="m-icon-small" style={{ color: 'var(--grey-dark)' }} />
           }
+          autoFocus
           placeholder={Languages.t('scenes.client.channelbar.workspacechannellist.autocomplete')}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => console.log(channels)}
         />

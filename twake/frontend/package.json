@@ -196,6 +196,7 @@
     "sass-loader": "8.0.2",
     "semver": "6.3.0",
     "short-uuid": "^4.1.0",
+    "shortcuts": "^1.6.1",
     "socket.io-client": "^2.3.1",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "2.3.4",
