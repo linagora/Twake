@@ -172,50 +172,52 @@ export default class MenusBodyLayer extends React.Component {
         }}
       >
         <div ref={node => (this.menus_dom = node)}>
-          {this.state.menus_manager.menus.map((item, i) => {
-            var menu = (
-              <OutsideClickHandler
-                key={item.id}
-                onOutsideClick={() => {
-                  if (i == this.state.menus_manager.menus.length - 1) {
-                    MenusManager.closeSubMenu(item.level - 1);
-                  }
-                }}
-              >
-                <div
-                  ref={node => this.fixMenuPosition(node, item, i)}
-                  style={{
-                    zIndex: 1050,
-                    position: 'absolute',
-                    transform: item.positionType == 'bottom' ? '' : 'translateY(-50%)',
-                    left: item.position.x,
-                    top: item.position.y,
-                    marginTop: item.position.marginTop,
-                    marginLeft: item.position.marginLeft,
+          {this.state.menus_manager.menus
+            .filter(item => !item.disabled)
+            .map((item, i) => {
+              var menu = (
+                <OutsideClickHandler
+                  key={item.id}
+                  onOutsideClick={() => {
+                    if (i == this.state.menus_manager.menus.length - 1) {
+                      MenusManager.closeSubMenu(item.level - 1);
+                    }
                   }}
                 >
-                  <MenuComponent
-                    withFrame
-                    menu={item.menu}
-                    level={item.level}
-                    animationClass={
-                      this.state.menus_manager.willClose || item.willClose
-                        ? 'fade_out'
-                        : item.level == 0 || item.positionType
-                        ? item.positionType == 'bottom'
-                          ? 'skew_in_bottom_nobounce'
-                          : item.left
-                          ? 'skew_in_left_nobounce'
-                          : 'skew_in_right_nobounce'
-                        : 'fade_in'
-                    }
-                  />
-                </div>
-              </OutsideClickHandler>
-            );
+                  <div
+                    ref={node => this.fixMenuPosition(node, item, i)}
+                    style={{
+                      zIndex: 1050,
+                      position: 'absolute',
+                      transform: item.positionType == 'bottom' ? '' : 'translateY(-50%)',
+                      left: item.position.x,
+                      top: item.position.y,
+                      marginTop: item.position.marginTop,
+                      marginLeft: item.position.marginLeft,
+                    }}
+                  >
+                    <MenuComponent
+                      withFrame
+                      menu={item.menu}
+                      level={item.level}
+                      animationClass={
+                        this.state.menus_manager.willClose || item.willClose
+                          ? 'fade_out'
+                          : item.level == 0 || item.positionType
+                          ? item.positionType == 'bottom'
+                            ? 'skew_in_bottom_nobounce'
+                            : item.left
+                            ? 'skew_in_left_nobounce'
+                            : 'skew_in_right_nobounce'
+                          : 'fade_in'
+                      }
+                    />
+                  </div>
+                </OutsideClickHandler>
+              );
 
-            return menu;
-          })}
+              return menu;
+            })}
         </div>
       </OutsideClickHandler>,
       document.getElementById('context-menu-layer'),

@@ -172,6 +172,7 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
+        disabled: props.channel.owner !== currentUser.id,
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => {
           editChannel();
@@ -185,11 +186,6 @@ export default (props: Props): JSX.Element => {
         },
       },
     );
-
-    // This remove the edit channel menu item when user isn't channel owner
-    if (props.channel.owner !== currentUser.id) {
-      menu.splice(4, 1);
-    }
   }
 
   //To do: Add the necessery admin rights
