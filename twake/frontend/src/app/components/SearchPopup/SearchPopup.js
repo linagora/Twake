@@ -9,7 +9,6 @@ import FilesFilter from './Parts/FilesFilter.js';
 import EventsFilter from './Parts/EventsFilter.js';
 import TasksFilter from './Parts/TasksFilter.js';
 import MessagesFilter from './Parts/MessagesFilter.js';
-import LoginService from 'services/login/login.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
@@ -74,12 +73,6 @@ export default class SearchPopup extends React.Component {
           Search.select(this.current_selection);
         }
       }
-    } else {
-      if ((evt.key == 'k' && evt.ctrlKey) || (evt.key == 'k' && evt.metaKey)) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        Search.open();
-      }
     }
   }
   componentDidUpdate() {
@@ -136,27 +129,15 @@ export default class SearchPopup extends React.Component {
 
     var tabs = [
       {
-        filterType: false,
-        searchPopupStyle: 'small',
-        title: Languages.t('components.searchpopup.all', [], 'All'),
-        render: '',
-      },
-      {
-        filterType: 'channel',
-        searchPopupStyle: 'small',
-        title: Languages.t('scenes.apps.messages.left_bar.channels', [], 'Channels'),
+        filterType: 'message',
+        hasFilters: true,
+        title: Languages.t('components.application.messages', [], 'Messages'),
         render: '',
       },
       {
         filterType: 'file',
         hasFilters: true,
         title: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Files'),
-        render: '',
-      },
-      {
-        filterType: 'message',
-        hasFilters: true,
-        title: Languages.t('components.application.messages', [], 'Messages'),
         render: '',
       },
       {
@@ -354,7 +335,8 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix += ' • ' + item.channel.name;
                       }
 
-                      workspace_suffix += ' - ' + moment(item.message.creation_date).format('L LT');
+                      workspace_suffix +=
+                        ' - ' + moment(item.message.creation_date * 1000).format('L LT');
                     }
                   } catch (e) {
                     console.log(e);

@@ -4,6 +4,7 @@ import WorkspacesUsers from './workspaces_users.js';
 import Workspaces from './workspaces.js';
 import CurrentUser from 'services/user/current_user.js';
 import WindowService from 'services/utils/window.js';
+import AccessRightsService from 'services/AccessRightsService';
 
 import Globals from 'services/Globals.js';
 
@@ -58,12 +59,8 @@ class WorkspaceUserRights extends Observable {
     return (rights.group || []).indexOf(privilege) >= 0;
   }
 
-  hasWorkspacePrivilege(privilege = 'all') {
-    var rights = this.getUserRights();
-    if ((rights.workspace || {}).admin) {
-      return true;
-    }
-    return ((rights.workspace || {}).rights || []).indexOf(privilege) >= 0;
+  hasWorkspacePrivilege(level = 'administrator') {
+    return AccessRightsService.hasRight(Workspaces.currentWorkspaceId, level);
   }
 }
 

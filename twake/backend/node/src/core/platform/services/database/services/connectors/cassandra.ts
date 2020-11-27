@@ -124,8 +124,14 @@ export class CassandraConnector extends AbstractConnector<
       return this;
     }
 
+    // Environment variable format is comma separated string
+    const contactPoints =
+      typeof this.options.contactPoints === "string"
+        ? (this.options.contactPoints as string).split(",")
+        : this.options.contactPoints;
+
     const cassandraOptions: cassandra.DseClientOptions = {
-      contactPoints: this.options.contactPoints,
+      contactPoints: contactPoints,
       localDataCenter: this.options.localDataCenter,
     };
 

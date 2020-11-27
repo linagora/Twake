@@ -345,7 +345,7 @@ class PseudoMarkdownCompiler {
     return str;
   }
 
-  compileToJSON(str, recursive) {
+  compileToJSON(str, recursive = false) {
     if (!recursive) {
       var result = [];
       var original_str = str;
@@ -499,7 +499,7 @@ class PseudoMarkdownCompiler {
     return ret;
   }
 
-  compileToHTML(json, is_app, event_container, text_transform = undefined) {
+  compileToHTML(json, is_app = false, event_container = undefined, text_transform = undefined) {
     if (!text_transform) {
       text_transform = {};
     }

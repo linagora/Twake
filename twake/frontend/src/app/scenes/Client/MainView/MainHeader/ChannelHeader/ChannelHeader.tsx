@@ -1,29 +1,38 @@
 import React from 'react';
-import { Button, Col, Row, Typography } from 'antd';
+import { Avatar, Button, Col, Row, Space, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
-import Icon from 'app/components/Icon/Icon';
 import { startCase } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import ChannelsService from 'app/services/channels/ChannelsService';
-import { Lock } from 'react-feather';
+import { Lock, Star } from 'react-feather';
 import Search from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
+import { StarFilled } from '@ant-design/icons';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import UsersService from 'services/user/user.js';
+import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import Collections from 'app/services/CollectionsReact/Collections';
+import { ChannelMemberResource } from 'app/models/Channel';
 
 type PropsType = {
   channelId: string;
 };
 
-type ButtonType = {
-  style?: object;
-  text?: string;
-  onClick?: () => any;
-  icon?: string;
-};
-
 export default (props: PropsType): JSX.Element => {
-  const { channelId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+
+  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
+    props.channelId || channelId
+  }/members/`;
+  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+
+  const members = channelMembersCollection
+    .useWatcher({}, { limit: 10 })
+    .map(i => i.data.user_id || '');
+  useChannelListener(members);
+  const [avatar] = getChannelParts({ usersIds: members, keepMyself: true, max: 10 });
 
   ChannelsService.useWatcher(() => !!ChannelsService.getCurrentChannelCollection());
   const channelCollection = ChannelsService.getCurrentChannelCollection();
@@ -35,36 +44,6 @@ export default (props: PropsType): JSX.Element => {
   if (!channel) {
     return <Col></Col>;
   }
-
-  const buttonsList: ButtonType[] = [
-    {
-      style: { backgroundColor: 'var(--grey-light)' },
-      text: 'members',
-      onClick: () => {
-        return ModalManager.open(
-          <ChannelMembersList
-            channelId={props.channelId}
-            channelName={'' /*channel.data.name*/}
-            closable
-          />,
-          {
-            position: 'center',
-            size: { width: '500px', minHeight: '329px' },
-          },
-        );
-      },
-    },
-    {
-      style: {},
-      text: 'activity',
-      onClick: () => console.log('activity'),
-    },
-    {
-      style: {},
-      icon: 'ellipsis-h',
-      onClick: () => console.log('members'),
-    },
-  ];
 
   return (
     <Row
@@ -88,29 +67,55 @@ export default (props: PropsType): JSX.Element => {
             {channel.data.visibility === 'private' && (
               <Lock size={16} className="small-right-margin" />
             )}
-            <Typography.Text>{' ' + (channel.data.description || '')}</Typography.Text>
+            <Typography.Text className="markdown" style={{ lineHeight: '16px' }}>
+              {PseudoMarkdownCompiler.compileToHTML(
+                PseudoMarkdownCompiler.compileToJSON(
+                  (channel.data.description || '').replace(/\n/g, ' '),
+                ),
+              )}
+            </Typography.Text>
           </span>
         </Col>
       )}
 
       <Col>
         <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
-          {props.channelId &&
-            buttonsList.map((button: ButtonType, index: number) => {
-              return (
-                <Col key={`key_${index}`}>
-                  <Button
-                    icon={
-                      button.icon ? <Icon type={button.icon} className="m-icon-small" /> : false
-                    }
-                    onClick={button.onClick}
-                    style={button.style ? button.style : {}}
-                  >
-                    {button.text && <Typography.Text>{startCase(button.text)}</Typography.Text>}
-                  </Button>
-                </Col>
-              );
-            })}
+          {channel.data.visibility !== 'direct' && (
+            <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
+              {avatar}
+            </div>
+          )}
+          <div className="small-right-margin">
+            {channel.data.visibility !== 'direct' && (
+              <Button
+                size="small"
+                type="text"
+                onClick={() => {
+                  ModalManager.open(
+                    <ChannelMembersList
+                      channelId={props.channelId}
+                      channelName={channel.data.name}
+                      closable
+                    />,
+                    {
+                      position: 'center',
+                      size: { width: '500px', minHeight: '329px' },
+                    },
+                  );
+                }}
+              >
+                <Typography.Text>Members</Typography.Text>
+              </Button>
+            )}
+            <Button size="small" type="text" onClick={() => {}}>
+              <Typography.Text>
+                {channel.data.user_member?.favorite && (
+                  <StarFilled size={12} style={{ color: 'var(--grey-dark)', marginRight: 4 }} />
+                )}
+                Favorite
+              </Typography.Text>
+            </Button>
+          </div>
           <Search />
         </Row>
       </Col>

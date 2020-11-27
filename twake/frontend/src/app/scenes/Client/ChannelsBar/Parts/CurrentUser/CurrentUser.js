@@ -64,14 +64,6 @@ export default class CurrentUser extends Component {
       current_user.status_icon[1] = '';
     }
     this.state.new_status = current_user.status_icon;
-
-    //TODO to remove
-    /*const inter = setInterval(() => {
-      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-        popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
-      }
-      clearInterval(inter);
-    }, 1000);*/
   }
   updateStatus(value) {
     value = value || this.state.new_status;
@@ -178,18 +170,20 @@ export default class CurrentUser extends Component {
       },
     ];
     if (!WorkspaceUserRights.isInvite()) {
-      usermenu.push({
-        type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.collaborateurs',
-          [],
-          'Collaborateurs',
-        ),
-        icon: 'users-alt',
-        onClick: () => {
-          popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
-        },
-      });
+      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
+        usermenu.push({
+          type: 'menu',
+          text: Languages.t(
+            'scenes.app.channelsbar.currentuser.workspace_parameters',
+            [],
+            "Paramètres de l'espace",
+          ),
+          icon: 'cog',
+          onClick: () => {
+            popupManager.open(<WorkspaceParameter />, true, 'workspace_parameters');
+          },
+        });
+      }
 
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {
         usermenu.push({
@@ -209,27 +203,19 @@ export default class CurrentUser extends Component {
           },
         });
       }
-      /*
-      if(WorkspaceUserRights.hasGroupPrivilege("MANAGE_PRICINGS")){
-        usermenu.push(
-          {type:"menu", text:"Changer d'abonnement", icon:"arrow-circle-up", onClick:()=>{ popupManager.open(<WorkspaceParameter initial_page={5} />, true, "workspace_parameters")}},
-        );
-      }
-      */
-      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-        usermenu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.workspace_parameters',
-            [],
-            "Paramètres de l'espace",
-          ),
-          icon: 'cog',
-          onClick: () => {
-            popupManager.open(<WorkspaceParameter />, true, 'workspace_parameters');
-          },
-        });
-      }
+
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.collaborateurs',
+          [],
+          'Collaborateurs',
+        ),
+        icon: 'users-alt',
+        onClick: () => {
+          popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
+        },
+      });
     } else {
       usermenu.push(
         {

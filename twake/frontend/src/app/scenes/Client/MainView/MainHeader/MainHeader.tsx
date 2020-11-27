@@ -18,7 +18,9 @@ const MainHeader: FC<PropsType> = props => {
 
   return (
     <Layout.Header className={props.classname}>
-      {channelType === 'channel' && <ChannelBar channelId={props.channelId} />}
+      {channelType === 'channel' && (
+        <ChannelBar key={props.channelId} channelId={props.channelId} />
+      )}
       {channelType === 'application' && <ApplicationBar channelId={props.channelId} />}
       <Divider />
     </Layout.Header>

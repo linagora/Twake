@@ -9,8 +9,8 @@ type Props = {
 };
 
 export default (props: Props) => {
-  useChannelListener(props.channel);
-  const [avatar, name] = getChannelParts({ channel: props.channel });
+  useChannelListener(props.channel.direct_channel_members || []);
+  const [avatar, name] = getChannelParts({ usersIds: props.channel.direct_channel_members || [] });
 
   return (
     <Col>
