@@ -4,15 +4,22 @@
   .main-view-header {
     padding: 0;
     height: 47px;
+    border-bottom: 1px solid var(--grey-background);
 
     .ant-divider {
       margin: 0;
       height: 2px;
     }
     .ant-row {
+      white-space: nowrap;
       padding: 0 16px;
       line-height: 47px;
     }
+  }
+
+  .main-view-thread {
+    background-color: var(--white);
+    border-left: 1px solid var(--grey-background);
   }
 
   .main-view-content {

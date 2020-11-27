@@ -20,10 +20,7 @@ export default () => {
   Workspaces.initSelection();
 
   return (
-    <Layout.Sider
-      className={'workspaces_view'}
-      width={ElectronService.isElectron() ? '70px' : '60px'}
-    >
+    <Layout.Sider className={'workspaces_view'} width={70}>
       <PerfectScrollbar component="div" className="list">
         {Workspaces.getOrderedWorkspacesInGroup(companyId).map((item: any) => (
           <Workspace key={item.id} workspace={item} isSelected={workspaceId === item.id} />

@@ -54,8 +54,18 @@ export default (): JSX.Element => {
       if (LoginService.currentUserId) {
         page = (
           <Layout key="appPage" className={'appPage '} hasSider>
-            <WorkspacesBar />
-            <ChannelsBar />
+            <Layout.Sider
+              breakpoint="md"
+              collapsedWidth="0"
+              theme="light"
+              width={290}
+              style={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <Layout style={{ height: '100%' }}>
+                <WorkspacesBar />
+                <ChannelsBar />
+              </Layout>
+            </Layout.Sider>
             <MainView />
           </Layout>
         );

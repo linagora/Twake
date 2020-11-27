@@ -60,13 +60,11 @@ export default (props: Props): JSX.Element => {
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
 
-  const addOrCancelFavorite = async () => {
+  const addOrCancelFavorite = async (state: boolean) => {
     let channelMember: ChannelMemberType = {
       user_id: currentUser.id,
-      favorite: false,
+      favorite: state,
     };
-
-    channelMember.favorite = !channelMember.favorite;
 
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
@@ -117,7 +115,7 @@ export default (props: Props): JSX.Element => {
           : 'scenes.apps.messages.left_bar.stream.add_to_favorites',
       ),
       onClick: () => {
-        addOrCancelFavorite();
+        addOrCancelFavorite(!props.channel.user_member?.favorite);
       },
     },
     {
