@@ -36,7 +36,7 @@ export default (props: Props) => {
   }
 
   return (
-    <Tooltip title={props.showTooltip ? props.name : false} placement="right">
+    <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
         className={'channel fade_in ' + (selected ? 'selected ' : '')}
         onClick={() => props.id && ChannelsService.select(props.id)}
