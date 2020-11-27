@@ -23,28 +23,14 @@ type Props = {
 const { Text, Link } = Typography;
 
 const ChannelMembersList: FC<Props> = props => {
-  const [membersList, setMembersList] = useState<string[]>([]);
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
-  useEffect(() => {
-    getMembersList();
-  }, []);
+  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
+    props.channelId || channelId
+  }/members/`;
+  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
 
-  const getMembersList: () => Promise<void> = async () => {
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
-      props.channelId || channelId
-    }/members/`;
-    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
-
-    const members: ChannelMemberResource[] = await channelMembersCollection.find({});
-
-    let list: string[] = [];
-    members.map((item: ChannelMemberResource) => {
-      return item.data.user_id ? list.push(item.data.user_id) : false;
-    });
-
-    return setMembersList(list);
-  };
+  const channelMembers = channelMembersCollection.useWatcher({});
 
   const onSearchMembers = (text: string, callback: any) => {
     return UsersService.search(
@@ -62,7 +48,7 @@ const ChannelMembersList: FC<Props> = props => {
   return (
     <ObjectModal
       title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [
-        membersList.length,
+        channelMembers.length,
         props.channelName,
       ])}
       closable={props.closable ? props.closable : false}
@@ -103,13 +89,13 @@ const ChannelMembersList: FC<Props> = props => {
           </Col>
         </Row>
       </div>
-      {membersList && (
+      {channelMembers && (
         <div className="x-margin">
-          {membersList.map((id: string) => {
-            const user: UserType = DepreciatedCollections.get('users').find(id);
+          {channelMembers.map((item: ChannelMemberResource) => {
+            const user: UserType = DepreciatedCollections.get('users').find(item.data.user_id);
 
             return (
-              <Row key={`key_${id}`} align="middle" justify="start" gutter={[8, 8]}>
+              <Row key={`key_${item.data.user_id}`} align="middle" justify="start" gutter={[8, 8]}>
                 <Col>
                   <Avatar size={24} src={UsersService.getThumbnail(user)} />
                 </Col>
@@ -145,7 +131,7 @@ const ChannelMembersList: FC<Props> = props => {
           })}
         </div>
       )}
-      {membersList.length >= 10 && (
+      {channelMembers.length >= 10 && (
         <Row align="middle" justify="center" gutter={[0, 16]}>
           <Link
             className="small-y-margin"

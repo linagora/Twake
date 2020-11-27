@@ -21,6 +21,7 @@ import ModalManager from 'app/services/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications.js';
 import RouterServices from 'services/RouterService';
+//import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
   channel: ChannelType;
@@ -34,6 +35,12 @@ export default (props: Props): JSX.Element => {
   const channelMembersPath = `${channelPath}${props.channel.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource, { tag: 'mine' });
+
+  /*
+  const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
+    AccessRightsService.hasRight(workspaceId || '', 'administrator'),
+  );
+  */
 
   Languages.useListener(useState);
   Notifications.useListener(useState);
@@ -172,7 +179,7 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
-        disabled: props.channel.owner !== currentUser.id,
+        //hide: !isCurrentUserAdmin || currentUser.id !== props.channel.owner ,
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => {
           editChannel();
@@ -192,6 +199,7 @@ export default (props: Props): JSX.Element => {
   if (true && props.channel.visibility !== 'direct') {
     menu.push({
       type: 'menu',
+      //hide: !isCurrentUserAdmin,
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {
