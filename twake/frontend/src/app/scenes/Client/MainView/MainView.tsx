@@ -10,27 +10,14 @@ import MainContent from './MainContent';
 import './MainView.scss';
 
 const MainView: FC = () => {
-  const [channel, setChannel] = useState<ChannelResource>();
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
-  const path: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-  const channelsCollection = Collections.get(path, ChannelResource);
 
-  useEffect(() => {
-    getChannel();
-  });
-
-  const getChannel = async () => {
-    const foundChannel = await channelsCollection.findOne({
-      id: channelId,
-    });
-    return setChannel(foundChannel);
-  };
   return (
     <Layout className="main-view-layout">
       {!!companyId && !!workspaceId && !!channelId && (
         <>
-          <MainHeader classname="main-view-header" channelId={channel?.id || ''} />
-          <MainContent classname="main-view-content" />
+          <MainHeader />
+          <MainContent />
         </>
       )}
     </Layout>

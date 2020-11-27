@@ -25,6 +25,10 @@
   .main-view-content {
     padding: 0px;
 
+    .main-view-tabs-header {
+      padding: 0 8px;
+    }
+
     .main-view-tabs {
       .ant-tabs-nav {
         padding: 0 8px;

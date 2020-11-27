@@ -2,21 +2,20 @@ import React, { FC } from 'react';
 
 import { Layout } from 'antd';
 import Tabs from './Tabs/Tabs';
+import AppView from './AppView';
 
-type PropsType = {
-  classname?: string;
-};
-
-const MainContent: FC<PropsType> = props => {
+const MainContent: FC<{}> = () => {
   return (
-    <Layout.Content className={props.classname}>
+    <Layout.Content className={'main-view-content'}>
       <Layout style={{ height: '100%' }}>
         <Layout.Content>
           <Layout>
-            <Layout.Header>
-              {' '}
+            <Layout.Header className="main-view-tabs-header">
               <Tabs />
             </Layout.Header>
+            <Layout.Content>
+              <AppView />
+            </Layout.Content>
           </Layout>
         </Layout.Content>
         <Layout.Sider
@@ -26,7 +25,7 @@ const MainContent: FC<PropsType> = props => {
           theme="light"
           width="40%"
         >
-          Thread or pinned
+          <AppView />
         </Layout.Sider>
       </Layout>
     </Layout.Content>

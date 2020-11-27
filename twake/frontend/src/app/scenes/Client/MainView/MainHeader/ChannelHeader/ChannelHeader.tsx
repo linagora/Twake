@@ -16,15 +16,11 @@ import { getChannelParts, useChannelListener } from 'app/components/Channel/User
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 
-type PropsType = {
-  channelId: string;
-};
-
-export default (props: PropsType): JSX.Element => {
+export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
-    props.channelId || channelId
+    channelId || channelId
   }/members/`;
   const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
 
@@ -93,7 +89,7 @@ export default (props: PropsType): JSX.Element => {
                 onClick={() => {
                   ModalManager.open(
                     <ChannelMembersList
-                      channelId={props.channelId}
+                      channelId={channelId}
                       channelName={channel.data.name}
                       closable
                     />,
