@@ -23,6 +23,15 @@ class Discussion extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "message_id" => $res["id"],
+            "thread_id" => $res["parent_message_id"]
+        );
+        $this->get("app.pusher")->push($event, "channels/" . $res["channel_id"] . "/messages/updates");
+
         return new Response(Array("data" => Array("object" => $res)));
     }
 
@@ -38,6 +47,15 @@ class Discussion extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_messages", 1);
             }
         }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "update",
+            "message_id" => $res["id"],
+            "thread_id" => $res["parent_message_id"]
+        );
+        $this->get("app.pusher")->push($event, "channels/" . $res["channel_id"] . "/messages/updates");
+
         return new Response(Array("data" => Array("object" => $res)));
     }
 
