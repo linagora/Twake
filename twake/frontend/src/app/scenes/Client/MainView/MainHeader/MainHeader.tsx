@@ -3,13 +3,10 @@ import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
 import ChannelsService from 'app/services/channels/ChannelsService';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
+import RouterService from 'app/services/RouterService';
 
-type PropsType = {
-  classname?: string;
-  channelId: string;
-};
-
-const MainHeader: FC<PropsType> = props => {
+const MainHeader: FC<{}> = () => {
+  const { channelId } = RouterService.useStateFromRoute();
   const channelType = ChannelsService.useWatcher(() => ChannelsService.getCurrentChannelType());
   const channelCollection = ChannelsService.getCurrentChannelCollection();
   if (!channelCollection) {
@@ -17,11 +14,9 @@ const MainHeader: FC<PropsType> = props => {
   }
 
   return (
-    <Layout.Header className={props.classname}>
-      {channelType === 'channel' && (
-        <ChannelBar key={props.channelId} channelId={props.channelId} />
-      )}
-      {channelType === 'application' && <ApplicationBar channelId={props.channelId} />}
+    <Layout.Header className={'main-view-header'}>
+      {channelType === 'channel' && <ChannelBar key={channelId} />}
+      {channelType === 'application' && <ApplicationBar key={channelId} />}
       <Divider />
     </Layout.Header>
   );

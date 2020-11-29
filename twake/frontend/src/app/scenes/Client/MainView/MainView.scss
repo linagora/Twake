@@ -4,19 +4,30 @@
   .main-view-header {
     padding: 0;
     height: 47px;
+    border-bottom: 1px solid var(--grey-background);
 
     .ant-divider {
       margin: 0;
       height: 2px;
     }
     .ant-row {
+      white-space: nowrap;
       padding: 0 16px;
       line-height: 47px;
     }
   }
 
+  .main-view-thread {
+    background-color: var(--white);
+    border-left: 1px solid var(--grey-background);
+  }
+
   .main-view-content {
     padding: 0px;
+
+    .main-view-tabs-header {
+      padding: 0 8px;
+    }
 
     .main-view-tabs {
       .ant-tabs-nav {

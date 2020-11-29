@@ -104,6 +104,14 @@ class Message extends BaseController
         );
         $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
+        $event = Array(
+            "client_id" => "system",
+            "action" => "update",
+            "message_id" => $object["id"],
+            "thread_id" => $object["parent_message_id"]
+        );
+        $this->get("app.pusher")->push($event, "channels/" . $object["channel_id"] . "/messages/updates");
+
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
         return new Response(Array("object" => $object));

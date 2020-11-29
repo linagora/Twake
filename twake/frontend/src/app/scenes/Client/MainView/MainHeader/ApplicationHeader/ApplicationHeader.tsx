@@ -9,18 +9,7 @@ import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Search from '../Search';
 
-type PropsType = {
-  channelId: string;
-};
-
-type ButtonType = {
-  style?: object;
-  text?: string;
-  onClick?: () => any;
-  icon?: string;
-};
-
-export default (props: PropsType): JSX.Element => {
+export default (): JSX.Element => {
   const { channelId } = RouterServices.useStateFromRoute();
 
   const appChannel = DepreciatedCollections.get('channels').find(channelId);
