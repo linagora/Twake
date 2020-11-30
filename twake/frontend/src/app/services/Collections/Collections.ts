@@ -51,6 +51,12 @@ class Collections {
     existingCollectionCreator?: () => C,
     options?: CollectionOptions,
   ): Collection<G> {
+    options = options || {};
+
+    const parts = path.split('::');
+    path = parts[0];
+    options.tag = parts[1] || options?.tag || '';
+
     let formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
     if (formattedPath !== path) {
       console.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);

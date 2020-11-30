@@ -31,10 +31,10 @@ export default (props: Props): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
 
-  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelMembersPath = `${channelPath}${props.channel.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
-  const channelsCollection = Collection.get(channelPath, ChannelResource, { tag: 'mine' });
+  const channelsCollection = Collection.get(channelPath, ChannelResource);
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
