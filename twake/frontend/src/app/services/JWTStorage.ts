@@ -23,6 +23,7 @@ class JWTStorageClass {
 
   async init() {
     this.updateJWT(await LocalStorage.getItem('jwt'));
+    (window as any).JWTStorage = this;
   }
 
   clear() {

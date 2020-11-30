@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import './DeprecatedMainView.scss';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Globals from 'services/Globals.js';
 import Api from 'services/Api';
@@ -49,7 +48,7 @@ export default class MainView extends Component {
   render() {
     var noapp = (
       <div>
-        <div className="no_channel_text">
+        <div className="no-channel-text">
           {Languages.t(
             'scenes.app.mainview.link_expired',
             [],
@@ -83,7 +82,7 @@ export default class MainView extends Component {
           </a>
         </div>
       </div>,
-      <div className="main_view public">
+      <div className="main-view public">
         {!this.state.loading && view == 'drive_public_access' && (found = true) && (
           <Drive key={'public_drive'} />
         )}

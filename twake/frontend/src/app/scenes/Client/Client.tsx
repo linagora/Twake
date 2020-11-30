@@ -8,7 +8,7 @@ import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 
 import { Layout } from 'antd';
 import './Client.scss';
-//import MainView from './MainView/DeprecatedMainView';
+
 import MainView from './MainView/MainView';
 import PublicMainView from './MainView/PublicMainView.js';
 import ChannelsBar from './ChannelsBar/ChannelsBar';

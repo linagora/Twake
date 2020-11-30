@@ -90,43 +90,45 @@ const ChannelMembersList: FC<Props> = props => {
         </Row>
       </div>
       {channelMembers && (
-        <div className="x-margin">
-          {channelMembers.map((item: ChannelMemberResource) => {
+        <div className="x-margin bottom-margin">
+          {channelMembers.map((item: ChannelMemberResource, index: number) => {
             const user: UserType = DepreciatedCollections.get('users').find(item.data.user_id);
 
             return (
-              <Row key={`key_${item.data.user_id}`} align="middle" justify="start" gutter={[8, 8]}>
-                <Col>
-                  <Avatar size={24} src={UsersService.getThumbnail(user)} />
-                </Col>
-                <Col flex={4}>
-                  <Text strong>{UsersService.getFullName(user)}</Text> @{user.username}
-                </Col>
-                <Col>
-                  <Menu
-                    menu={[
-                      {
-                        type: 'menu',
-                        text: Languages.t(
-                          'scenes.client.channelbar.channelmemberslist.menu.option_1',
-                        ),
-                      },
-                      {
-                        type: 'menu',
-                        text: (
-                          <div style={{ color: 'var(--red)' }}>
-                            {Languages.t(
-                              'scenes.client.channelbar.channelmemberslist.menu.option_2',
-                            )}
-                          </div>
-                        ),
-                      },
-                    ]}
-                  >
-                    <Icon type="ellipsis-h" className="m-icon-small" />
-                  </Menu>
-                </Col>
-              </Row>
+              user && (
+                <Row key={`key_${index}`} align="middle" justify="start" gutter={[8, 8]}>
+                  <Col>
+                    <Avatar size={24} src={UsersService.getThumbnail(user)} />
+                  </Col>
+                  <Col flex={4}>
+                    <Text strong>{UsersService.getFullName(user)}</Text> @{user.username}
+                  </Col>
+                  <Col>
+                    <Menu
+                      menu={[
+                        {
+                          type: 'menu',
+                          text: Languages.t(
+                            'scenes.client.channelbar.channelmemberslist.menu.option_1',
+                          ),
+                        },
+                        {
+                          type: 'menu',
+                          text: (
+                            <div style={{ color: 'var(--red)' }}>
+                              {Languages.t(
+                                'scenes.client.channelbar.channelmemberslist.menu.option_2',
+                              )}
+                            </div>
+                          ),
+                        },
+                      ]}
+                    >
+                      <Icon type="ellipsis-h" className="m-icon-small" />
+                    </Menu>
+                  </Col>
+                </Row>
+              )
             );
           })}
         </div>

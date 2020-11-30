@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { AppType } from 'app/models/App';
+import React from 'react';
+import Languages from 'services/languages/languages';
 import { TabType, TabResource } from 'app/models/Tab';
 import { Button, Row, Col, Tabs } from 'antd';
 
@@ -11,65 +11,68 @@ import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 const { TabPane } = Tabs;
 
-type PropsType = {
-  tabs?: TabType[];
-  defaultKey?: string;
-  onChangeTabs?: any;
-};
-
-export default (props: PropsType): JSX.Element => {
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+export default (): JSX.Element => {
+  const { companyId, workspaceId, channelId, tabId } = RouterServices.useStateFromRoute();
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
   const TabsCollection = Collections.get(collectionPath, TabResource);
-  const [tabsList, setTabsList] = useState<TabType[]>([]);
 
-  useEffect(() => {
-    //getTabsList();
-  }, []);
-
-  const getTabsList = async () => {
-    const tabs = await TabsCollection.find({});
-    let list: TabType[] = [];
-
-    tabs.map((tab: TabResource) => {
-      return list.push(tab.data);
-    });
-
-    return setTabsList(list);
-  };
+  const tabsList: TabResource[] = TabsCollection.useWatcher({});
 
   const insertTab = async (newTab: TabType) => {
     await TabsCollection.insert(new TabResource(newTab));
   };
 
-  // To do: fix apps icon function
   const getAppIcon = (tab: TabType) => {
-    WorkspacesApps.getApp(tab.application_id, (item: AppType) => {
-      return WorkspacesApps.getAppIcon(item) || item.icon_url;
+    WorkspacesApps.getApp(tab.application_id, (item: TabResource) => {
+      return WorkspacesApps.getAppIcon(item);
     });
   };
+
   return (
     <Row align="top">
-      <Col>
-        <Tabs className="main-view-tabs" defaultActiveKey={props.defaultKey || '0'}>
-          {tabsList.map((tab: TabType, index: number) => {
-            return (
-              <TabPane
-                tab={
-                  <span>
-                    <Icon type={getAppIcon(tab)} />
-                    {tab.name}
-                  </span>
-                }
-                key={index}
-              >
-                {/* This is the content of the tab */}
-              </TabPane>
-            );
-          })}
-        </Tabs>
-      </Col>
-      <Col className="small-top-margin">
+      {tabsList && (
+        <Col>
+          <Tabs className="main-view-tabs" activeKey={tabId ? tabId : 'default'}>
+            <TabPane
+              tab={
+                <span
+                  onClick={() => {
+                    const route: string = RouterServices.generateRouteFromState({
+                      tabId: '',
+                    });
+                    return RouterServices.history.push(route);
+                  }}
+                >
+                  <Icon type={'comment'} />
+                  {Languages.t('scenes.app.mainview.discussion')}
+                </span>
+              }
+              key="default"
+            />
+            {tabsList.map((tab: TabResource) => {
+              return (
+                <TabPane
+                  tab={
+                    <span
+                      onClick={() => {
+                        const route: string = RouterServices.generateRouteFromState({
+                          tabId: tab.id,
+                        });
+                        return RouterServices.history.push(route);
+                      }}
+                    >
+                      <Icon type={getAppIcon(tab)} />
+                      {tab.data.name}
+                    </span>
+                  }
+                  key={tab.id}
+                />
+              );
+            })}
+          </Tabs>
+        </Col>
+      )}
+      <Col style={{ lineHeight: '47px' }}>
         <Button
           type="text"
           icon={

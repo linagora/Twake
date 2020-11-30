@@ -29,7 +29,7 @@ export default class MainView extends Component<Props> {
 
     this.options = props.options || {};
     this.threadId = this.options.threadId || '';
-    this.collectionKey = 'messages_' + this.props.channel.id + '_' + this.threadId;
+    this.collectionKey = 'messages_' + this.props.channel.data.id + '_' + this.threadId;
   }
   componentWillUnmount() {
     Languages.removeListener(this);
@@ -38,12 +38,12 @@ export default class MainView extends Component<Props> {
   }
 
   render() {
-    const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.id];
+    const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.data.id];
     return (
       <div className="messages-view">
         <MessagesList
           threadId={this.threadId}
-          channel={this.props.channel}
+          channel={this.props.channel.data}
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
         />
@@ -53,9 +53,9 @@ export default class MainView extends Component<Props> {
           onDrop={(data: any) => MessagesService.dropMessage(data.data, null, this.collectionKey)}
         >
           <NewThread
-            useButton={!this.props.channel.direct && !this.threadId}
+            useButton={!this.props.channel.data.direct && !this.threadId}
             collectionKey={this.collectionKey}
-            channelId={this.props.channel.id}
+            channelId={this.props.channel.data.id}
             threadId={this.threadId}
           />
         </DroppableZone>
