@@ -95,6 +95,7 @@ describe("The Channels Realtime feature", () => {
 
       const creationResult = await channelService.channels.save(
         channel,
+        {},
         channelUtils.getContext({ id: channel.owner }),
       );
 
