@@ -63,15 +63,16 @@ class Collections {
     }
 
     let creation = false;
+    let key = formattedPath + '::' + options.tag;
 
-    if (!this.collections[formattedPath]) {
+    if (!this.collections[key]) {
       creation = true;
-      this.collections[formattedPath] = existingCollectionCreator
+      this.collections[key] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);
     }
 
-    return this.collections[formattedPath] as Collection<G>;
+    return this.collections[key] as Collection<G>;
   }
 }
 

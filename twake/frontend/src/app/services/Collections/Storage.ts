@@ -86,6 +86,7 @@ export default class CollectionStorage {
         return;
       }
       try {
+        item._id = mongoItems[0]?._id || item._id;
         item = _.assign(mongoItems[0] || {}, item);
         (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
       } catch (err) {

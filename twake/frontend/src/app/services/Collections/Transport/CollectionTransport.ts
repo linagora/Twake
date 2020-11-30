@@ -156,7 +156,7 @@ export default class CollectionTransport<G extends Resource<any>> {
           resource.setPersisted(true);
           resource.data = Object.assign(resource.data, result?.resource);
           await this.collection.upsert(resource, { withoutBackend: true });
-        } else {
+        } else if ([401].indexOf(result?.statusCode || 200) >= 0) {
           //This resource is invalid, remove it
           await this.collection.remove(resource, { withoutBackend: true });
         }

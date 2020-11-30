@@ -36,6 +36,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
           .getSocket()
           .join(
             definition.room,
+            this.transport.collection.getTag(),
             async (type: WebsocketEvents, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
               switch (type) {
                 case WebsocketEvents.Connected:
@@ -67,7 +68,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
    */
   stop() {
     this.joined.forEach(room => {
-      Collections.getTransport().getSocket().leave(room);
+      Collections.getTransport().getSocket().leave(room, this.transport.collection.getTag());
     });
   }
 
