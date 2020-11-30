@@ -66,7 +66,7 @@ export default (): JSX.Element => {
                 <ChannelsBar />
               </Layout>
             </Layout.Sider>
-            {false && <MainView />}
+            <MainView />
           </Layout>
         );
       }
