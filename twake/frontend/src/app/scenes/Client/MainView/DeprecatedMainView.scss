@@ -1,6 +1,6 @@
 @import '~components/constants.scss';
 
-.main_view {
+.main-view {
   flex: 1;
   background: $white;
   box-sizing: border-box;
@@ -8,7 +8,7 @@
   flex-direction: column;
   position: relative;
 
-  .no_channel_text {
+  .no-channel-text {
     color: #000;
     position: absolute;
     margin: auto;
@@ -354,7 +354,7 @@
   background-color: $primary;
   flex-direction: column;
 
-  .main_view {
+  .main-view {
     border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
@@ -398,8 +398,8 @@
 }
 
 .loading_render {
-  .main_view .no_channel_text,
-  .main_view .app {
+  .main-view .no-channel-text,
+  .main-view .app {
     opacity: 0;
   }
 }

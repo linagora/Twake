@@ -1,7 +1,11 @@
 import AppViewService from './AppViewService';
 
-class _SidesService extends AppViewService {
+class _SideViewService extends AppViewService {
   private side = '';
+
+  public getViewType(): 'channel_thread' | '' {
+    return '';
+  }
 
   public hasSide() {
     return this.side;
@@ -13,5 +17,5 @@ class _SidesService extends AppViewService {
   }
 }
 
-const SidesService = new _SidesService();
-export default SidesService;
+const SideViewService = new _SideViewService();
+export default SideViewService;

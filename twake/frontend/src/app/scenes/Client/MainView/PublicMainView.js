@@ -49,7 +49,7 @@ export default class MainView extends Component {
   render() {
     var noapp = (
       <div>
-        <div className="no_channel_text">
+        <div className="no-channel-text">
           {Languages.t(
             'scenes.app.mainview.link_expired',
             [],
@@ -83,7 +83,7 @@ export default class MainView extends Component {
           </a>
         </div>
       </div>,
-      <div className="main_view public">
+      <div className="main-view public">
         {!this.state.loading && view == 'drive_public_access' && (found = true) && (
           <Drive key={'public_drive'} />
         )}

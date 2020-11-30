@@ -14,7 +14,7 @@ const MainHeader: FC<{}> = () => {
   }
 
   return (
-    <Layout.Header className={'main-view-header'}>
+    <Layout.Header className={'global-view-header'}>
       {channelType === 'channel' && <ChannelBar key={channelId} />}
       {channelType === 'application' && <ApplicationBar key={channelId} />}
       <Divider />

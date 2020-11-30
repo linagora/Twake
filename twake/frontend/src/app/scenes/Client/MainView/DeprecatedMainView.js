@@ -135,7 +135,7 @@ export default class MainView extends Component {
 
     var noapp = (
       <div>
-        <div className="no_channel_text">
+        <div className="no-channel-text">
           {Languages.t(
             'scenes.app.mainview.instruction_current_tab',
             [],
@@ -152,14 +152,14 @@ export default class MainView extends Component {
           .concat(Object.values(current_channel.ext_members || []))
           .indexOf(User.getCurrentUserId()) < 0)
     ) {
-      return <div className="main_view">{noapp}</div>;
+      return <div className="main-view">{noapp}</div>;
     }
 
     if (current_channel.app_id) {
       current_channel.app = Collections.get('applications').find(current_channel.app_id) || {};
       if (!current_channel.app.id) {
         WorkspacesApps.getApp(current_channel.app_id);
-        return <div className="main_view">{noapp}</div>;
+        return <div className="main-view">{noapp}</div>;
       }
     }
 
@@ -193,7 +193,7 @@ export default class MainView extends Component {
     }
 
     return (
-      <Layout.Content className="main_view">
+      <Layout.Content className="main-view">
         <div className="header">
           <div className="inline_header">
             {!!current_channel.application && (

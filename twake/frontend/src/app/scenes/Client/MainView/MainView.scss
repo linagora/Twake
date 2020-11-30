@@ -1,7 +1,14 @@
 @import '~components/constants.scss';
 
 .ant-layout .main-view-layout {
-  .main-view-header {
+  height: 100%;
+  .main-view-content {
+    display: flex;
+  }
+}
+
+.ant-layout .global-view-layout {
+  .global-view-header {
     padding: 0;
     height: 47px;
     border-bottom: 1px solid var(--grey-background);
@@ -17,12 +24,12 @@
     }
   }
 
-  .main-view-thread {
+  .global-view-thread {
     background-color: var(--white);
     border-left: 1px solid var(--grey-background);
   }
 
-  .main-view-content {
+  .global-view-content {
     padding: 0px;
 
     .main-view-tabs-header {
