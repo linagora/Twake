@@ -9,6 +9,9 @@
       "origin": "*"
     }
   },
+  "php_node_api": {
+    "secret": "api_supersecret"
+  },
   "websocket": {
     "path": "/socket/",
     "adapters": {
@@ -22,8 +25,7 @@
       "jwt": {
         "secret": "supersecret"
       }
-    },
-    "php_pusher_secret": "pusher_secret"
+    }
   },
   "auth": {
     "jwt": {

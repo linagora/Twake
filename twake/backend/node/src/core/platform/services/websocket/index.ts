@@ -1,5 +1,5 @@
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
-import { Consumes, ServiceName, TwakeService } from "../../framework";
+import { Configuration, Consumes, ServiceName, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
 import websocketPlugin from "./plugin";
@@ -18,7 +18,8 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
   }
 
   async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+    const webServer = this.context.getProvider<WebServerAPI>("webserver");
+    const fastify = webServer.getServer();
 
     this.service = new WebSocketService({
       server: fastify.server,
@@ -36,9 +37,10 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     /**
      * This implementation is for php old code to push on new socket.io server
      */
+    const globalConfiguration = new Configuration("");
     fastify.post("/private/pusher", {}, (request, reply) => {
       const token = (request.headers.authorization || "").trim().split("Token ").pop();
-      const secret = this.configuration.get<string>("php_pusher_secret", "");
+      const secret = globalConfiguration.get<string>("php_node_api.secret", "");
       if (secret && token === secret) {
         const body = request.body as { room: string; data: any };
         const room = body.room;

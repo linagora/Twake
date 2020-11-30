@@ -37,13 +37,17 @@ class AccessManager
             //Use new node backend for this and cache result
             $userId = $current_user_id;
             $channelId = $id;
+            $companyId = ""; //TODO
+            $workspaceId = ""; //TODO
 
             $cacheKey = $userId."_".$channelId;
             $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("type" => "access_channel", "key"=>$cacheKey));
             if(!$data || !$data->getData()["has_access"]){
 
                 $secret = $this->app->getContainer()->getParameter("node.secret");
-                $uri = $this->app->getContainer()->getParameter("node.api") . "channels/".$channelId."/members/".$userId."/exists";
+                $uri = $this->app->getContainer()->getParameter("node.api") . 
+                    "/private/companies/".$companyId."/workspaces/".$workspaceId."/".
+                    "channels/".$channelId."/members/".$userId;
         
                 $result = $this->rest->get($uri, [
                     CURLOPT_HTTPHEADER => Array(
