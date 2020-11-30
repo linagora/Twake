@@ -25,7 +25,8 @@ const MainContent: FC<{}> = () => {
         <Layout.Content>
           <Layout className="main-view-layout">
             <Layout.Header className="main-view-tabs-header">
-              <Tabs />
+              {/* Todo: hide tabs when application or direct message*/}
+              <Tabs key={mainId} />
             </Layout.Header>
             <Layout.Content className="main-view-content">
               {mainType !== '' && (
