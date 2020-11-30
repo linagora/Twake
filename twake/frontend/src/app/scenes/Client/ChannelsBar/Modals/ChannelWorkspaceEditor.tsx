@@ -12,11 +12,18 @@ import RouterServices from 'app/services/RouterService';
 type Props = {
   title: string;
   channel?: ChannelType;
+  isCurrentUserAdmin?: boolean;
+  currentUserId?: string;
 };
 
 const { Title } = Typography;
 
-const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
+const ChannelWorkspaceEditor: FC<Props> = ({
+  title,
+  channel,
+  isCurrentUserAdmin,
+  currentUserId,
+}) => {
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -88,7 +95,12 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel }) => {
         </Button>
       }
     >
-      <ChannelTemplateEditor channel={channel} onChange={onChange} />
+      <ChannelTemplateEditor
+        channel={channel}
+        onChange={onChange}
+        isCurrentUserAdmin={isCurrentUserAdmin}
+        currentUserId={currentUserId}
+      />
     </ObjectModal>
   );
 };
