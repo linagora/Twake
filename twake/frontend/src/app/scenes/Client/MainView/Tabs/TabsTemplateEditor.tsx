@@ -19,7 +19,7 @@ type PropsType = {
 export default (props: PropsType): JSX.Element => {
   const [appId, setAppId] = useState<string>('');
   const [tabName, setTabName] = useState<string>('');
-  const [workspacesApps, setWorkspacesApps] = useState<any>([]);
+  const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
 
   useEffect(() => {
     generateWorkspacesApps();
@@ -63,7 +63,7 @@ export default (props: PropsType): JSX.Element => {
         <Row justify="start">
           <Select value={appId} onChange={(value: string) => setAppId(value)}>
             {workspacesApps
-              //.filter((app: AppType) => (app.display || {}).channel)
+              .filter((app: AppType) => (app.display || {}).channel)
               .map((app: AppType) => {
                 return (
                   // To do, find a way to use the jitsi image
