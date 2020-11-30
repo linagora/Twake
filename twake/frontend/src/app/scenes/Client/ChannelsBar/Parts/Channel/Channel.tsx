@@ -5,7 +5,7 @@ import './Channel.scss';
 import RouterService from 'app/services/RouterService';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
-import ChannelsService from 'app/services/channels/ChannelsService';
+import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import { Tooltip } from 'antd';
@@ -32,14 +32,14 @@ export default (props: Props) => {
   const selected = channelId === props.id;
 
   if (selected) {
-    ChannelsService.setCurrentChannelCollection(props.collection);
+    MainViewService.setCurrentChannelCollection(props.collection);
   }
 
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
         className={'channel fade_in ' + (selected ? 'selected ' : '')}
-        onClick={() => props.id && ChannelsService.select(props.id)}
+        onClick={() => props.id && MainViewService.select(props.id)}
       >
         {!props.isAppchannel &&
           (props.visibility === 'public' || props.visibility === 'private') &&

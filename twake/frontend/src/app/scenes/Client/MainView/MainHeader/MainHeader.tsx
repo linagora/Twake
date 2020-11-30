@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
-import ChannelsService from 'app/services/channels/ChannelsService';
+import MainViewService from 'app/services/AppView/MainViewService';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
 import RouterService from 'app/services/RouterService';
 
 const MainHeader: FC<{}> = () => {
   const { channelId } = RouterService.useStateFromRoute();
-  const channelType = ChannelsService.useWatcher(() => ChannelsService.getCurrentChannelType());
-  const channelCollection = ChannelsService.getCurrentChannelCollection();
+  const channelType = MainViewService.useWatcher(() => MainViewService.getViewType());
+  const channelCollection = MainViewService.getViewCollection();
   if (!channelCollection) {
     return <></>;
   }

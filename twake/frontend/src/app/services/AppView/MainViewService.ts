@@ -1,17 +1,17 @@
 import { ChannelResource } from 'app/models/Channel';
-import Observable from 'app/services/Observable/Observable';
 import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';
+import AppViewService from './AppViewService';
 
-class _ChannelsService extends Observable {
+class _MainViewService extends AppViewService {
   private currentChannelCollection: Collection<ChannelResource> | null = null;
 
-  public getCurrentChannelType(): 'application' | 'channel' | '' {
+  public getViewType(): 'application' | 'channel' | '' {
     const col: any = this.currentChannelCollection;
     return col ? (col.useWatcher ? 'channel' : 'application') : '';
   }
 
-  public getCurrentChannelCollection() {
+  public getViewCollection() {
     return this.currentChannelCollection;
   }
 
@@ -25,5 +25,5 @@ class _ChannelsService extends Observable {
   }
 }
 
-const ChannelsService = new _ChannelsService();
-export default ChannelsService;
+const MainViewService = new _MainViewService();
+export default MainViewService;

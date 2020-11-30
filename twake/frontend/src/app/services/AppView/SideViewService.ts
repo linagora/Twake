@@ -1,6 +1,6 @@
-import Observable from 'app/services/Observable/Observable';
+import AppViewService from './AppViewService';
 
-class _SidesService extends Observable {
+class _SidesService extends AppViewService {
   private side = '';
 
   public hasSide() {
