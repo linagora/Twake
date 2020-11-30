@@ -4,6 +4,7 @@
 
 @baseURL = http://localhost:3000
 @channelsURL = {{baseURL}}/internal/services/channels/v1/companies/{{company_id}}/workspaces/{{workspace_id}}
+@directChannelsURL = {{baseURL}}/internal/services/channels/v1/companies/{{company_id}}/workspaces/direct
 
 # @name login
 GET {{baseURL}}/api/auth/login
@@ -13,7 +14,7 @@ GET {{baseURL}}/api/auth/login
 
 ### List workspace channels with all websockets
 
-GET {{channelsURL}}/channels?websockets=true&max_results=5
+GET {{channelsURL}}/channels?websockets=true&limit=5
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -106,7 +107,8 @@ Authorization: Bearer {{authToken}}
 
 {
   "resource": {
-    "favorite": true
+    "favorite": false,
+    "hello": 1
   }
 }
 

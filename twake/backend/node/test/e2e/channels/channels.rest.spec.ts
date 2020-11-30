@@ -152,7 +152,7 @@ describe("The /internal/services/channels/v1 API", () => {
         channelService.channels.save(channel2, {}, getContext()),
       ]);
 
-      const result2 = await channelService.members.save(
+      await channelService.members.save(
         {
           channel_id: channel1.id,
           workspace_id: channel1.workspace_id,
@@ -162,8 +162,6 @@ describe("The /internal/services/channels/v1 API", () => {
         {},
         channelUtils.getChannelContext(channel1, platform.currentUser),
       );
-
-      console.log("RESULT", result2);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({

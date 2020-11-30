@@ -175,9 +175,6 @@ export class CassandraChannelService implements ChannelService {
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
     logger.info("service.channel.create - %s - %o", query, saveChannel);
-    console.log(typeof channel.company_id);
-    console.log(typeof channel.workspace_id);
-    console.log(typeof channel.id);
 
     await this.client.execute(query, saveChannel, { prepare: true });
 
@@ -257,7 +254,7 @@ export class CassandraChannelService implements ChannelService {
     const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ? AND channel_id = ? AND users = ?;`;
     const result = await this.client.execute(query, directChannel);
 
-    if (!result.rows) {
+    if (!result.rowLength) {
       return;
     }
 
@@ -273,7 +270,7 @@ export class CassandraChannelService implements ChannelService {
 
     const result = await this.client.execute(query, { company_id, users: id });
 
-    if (!result.rows) {
+    if (!result.rowLength) {
       return;
     }
 
@@ -286,6 +283,10 @@ export class CassandraChannelService implements ChannelService {
     } WHERE company_id = ? AND channel_id IN (${channelIds.join(",")}) ALLOW FILTERING`;
 
     const result = await this.client.execute(query, { company_id: companyId }, { prepare: true });
+
+    if (!result.rowLength) {
+      return;
+    }
 
     return (result.rows || []).map(row => this.mapRowToDirectChannel(row));
   }

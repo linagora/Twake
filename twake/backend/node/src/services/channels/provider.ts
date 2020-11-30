@@ -37,6 +37,14 @@ export interface ChannelService
    * Get a direct channel in company for given company id and set of users
    */
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel>;
+
+  /**
+   * List direct channels in company from a list of channel ids
+   *
+   * @param companyId
+   * @param channelIds
+   */
+  listDirectChannels(companyId: string, channelIds: string[]): Promise<DirectChannel[]>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

@@ -42,3 +42,9 @@ GET {{directChannelsURL}}/channels/{{directId}}/members?websockets=true
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
+### List direct channels for user in company
+
+@authToken = {{login.response.body.token}}
+GET {{directChannelsURL}}/channels?websockets=true&limit=5
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

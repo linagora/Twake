@@ -133,7 +133,7 @@ export class Service implements ChannelService {
     logger.info("Creating channel %o", channelToSave);
     const saveResult = await this.service.save(channelToSave, options, context);
 
-    this.onSaved(channelToSave, options, context, saveResult, mode);
+    await this.onSaved(channelToSave, options, context, saveResult, mode);
 
     return saveResult;
   }
