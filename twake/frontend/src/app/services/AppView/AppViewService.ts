@@ -37,7 +37,7 @@ export default class AppViewService extends Observable {
 
   public select(id: string, configuration?: ViewConfiguration) {
     this.id = id;
-    this.configuration = _.merge(defaultConfiguration, configuration);
+    this.configuration = _.assign(defaultConfiguration, configuration);
     this.notify();
   }
 }

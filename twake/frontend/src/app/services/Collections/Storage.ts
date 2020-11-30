@@ -15,6 +15,9 @@ export default class CollectionStorage {
   static mongoDb: minimongo.MinimongoDb;
   static mongoDbPromises: ((db: minimongo.MinimongoDb) => void)[] = [];
 
+  //Ensure unicity of objects in mongo and frontend
+  static idKeeper: { [path: string]: { [id: string]: string | true } } = {};
+
   static async getMongoDb(): Promise<minimongo.MinimongoDb> {
     if (!CollectionStorage.mongoDb) {
       return new Promise(resolve => {
@@ -57,12 +60,19 @@ export default class CollectionStorage {
   }
 
   static async addCollection(path: string) {
+    CollectionStorage.idKeeper[path] = CollectionStorage.idKeeper[path] || {};
     if (!(await CollectionStorage.getMongoDb()).collections[path]) {
       (await CollectionStorage.getMongoDb()).addCollection(path);
     }
   }
 
   static upsert(path: string, item: any): Promise<any> {
+    let exists = false;
+    if (item.id && CollectionStorage.idKeeper[path] && CollectionStorage.idKeeper[path][item.id]) {
+      exists = true;
+    }
+    CollectionStorage.idKeeper[path][item.id] = true;
+
     return new Promise(async (resolve, reject) => {
       if (!item.id) {
         reject('Every resources must contain an id');
@@ -71,11 +81,12 @@ export default class CollectionStorage {
       await CollectionStorage.addCollection(path);
 
       const mongoItems = await CollectionStorage.find(path, { id: item.id });
+      if (!mongoItems && exists) {
+        //Should have find it in mongo, so this is an error
+        return;
+      }
       try {
-        if (mongoItems.length === 1) {
-          item._id = mongoItems[0]._id; //Make sure _id are not duplicated
-        }
-        item = _.merge(item, mongoItems);
+        item = _.assign(mongoItems[0] || {}, item);
         (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
       } catch (err) {
         reject(err);
@@ -84,6 +95,8 @@ export default class CollectionStorage {
   }
 
   static remove(path: string, item: any): Promise<void> {
+    delete CollectionStorage.idKeeper[path][item.id];
+
     return new Promise(async (resolve, reject) => {
       await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, item)
@@ -123,7 +136,12 @@ export default class CollectionStorage {
       await CollectionStorage.addCollection(path);
       (await CollectionStorage.getMongoDb()).collections[path]
         .find(filters, options)
-        .fetch(resolve, reject);
+        .fetch(results => {
+          results.forEach(item => {
+            CollectionStorage.idKeeper[path][item.id] = true;
+          });
+          resolve(results);
+        }, reject);
     });
   }
 
@@ -132,9 +150,12 @@ export default class CollectionStorage {
       await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, filters, options)
         .then((items: any[]) => {
+          if (items[0]) CollectionStorage.idKeeper[path][items[0].id] = true;
           resolve(items[0]);
         })
         .catch(reject);
     });
   }
 }
+
+(window as any).CollectionStorage = CollectionStorage;

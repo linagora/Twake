@@ -29,7 +29,7 @@ class Collections {
   }
 
   public setOptions(options: Options) {
-    this.options = _.merge(this.options, options);
+    this.options = _.assign(this.options, options);
   }
 
   public getOptions(): Options {
