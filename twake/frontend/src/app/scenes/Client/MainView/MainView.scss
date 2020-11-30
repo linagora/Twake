@@ -43,3 +43,86 @@
     }
   }
 }
+
+.main-view,
+.main-view-content {
+  flex: 1;
+  background: $white;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .app_loader {
+    position: absolute;
+    margin: auto;
+    width: 50px;
+    height: 50px;
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+    left: 0px;
+  }
+
+  .no-channel-text {
+    color: #000;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 40px;
+    width: 300px;
+    text-align: center;
+    font-size: 16px;
+    opacity: 0.5;
+  }
+}
+
+.appPage.public {
+  background-color: $primary;
+  flex-direction: column;
+
+  .main-view {
+    border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .public_header {
+    width: 100vw;
+    height: 64px;
+    display: flex;
+    flex-direction: row;
+
+    .left {
+      padding: 16px;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: row;
+
+      & > .companyName {
+        margin-left: 16px;
+        line-height: 32px;
+        color: #fff;
+        font-weight: 600;
+      }
+    }
+
+    .right {
+      flex: 1;
+      text-align: right;
+      font-size: 12px;
+      padding: 16px;
+      padding-right: 24px;
+      line-height: 32px;
+
+      a {
+        color: #fff;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}

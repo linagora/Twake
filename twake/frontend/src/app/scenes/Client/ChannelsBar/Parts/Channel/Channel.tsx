@@ -12,6 +12,7 @@ import { Tooltip } from 'antd';
 
 type Props = {
   collection: Collection<ChannelResource>;
+  app?: any;
   name: string;
   icon: string | JSX.Element;
   id?: string;
@@ -19,7 +20,6 @@ type Props = {
   favorite: boolean;
   unreadMessages: boolean;
   visibility: string; //"private" | "public" | "direct"
-  isAppchannel?: boolean;
   directMembers?: string[];
   notifications: number;
   menu?: JSX.Element;
@@ -31,27 +31,36 @@ export default (props: Props) => {
 
   const selected = channelId === props.id;
 
-  if (selected) {
-    MainViewService.setCurrentChannelCollection(props.collection);
+  if (selected && props.id) {
+    MainViewService.select(props.id, {
+      collection: props.collection,
+      app: props.app || 'messages',
+    });
   }
 
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
         className={'channel fade_in ' + (selected ? 'selected ' : '')}
-        onClick={() => props.id && MainViewService.select(props.id)}
+        onClick={() =>
+          props.id &&
+          MainViewService.select(props.id, {
+            collection: props.collection,
+            app: props.app || 'messages',
+          })
+        }
       >
-        {!props.isAppchannel &&
+        {!props.app &&
           (props.visibility === 'public' || props.visibility === 'private') &&
           typeof props.icon === 'string' && (
             <div className="icon">
               <Emojione type={props.icon} />
             </div>
           )}
-        {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
+        {!props.app && props.visibility === 'direct' && typeof props.icon === 'object' && (
           <div className="direct-channel-avatars"> {props.icon}</div>
         )}
-        {!!props.isAppchannel && (
+        {!!props.app && (
           <div className="icon">
             <Icon type={props.icon} />
           </div>

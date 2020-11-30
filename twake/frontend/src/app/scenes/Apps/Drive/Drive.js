@@ -659,179 +659,169 @@ export default class Drive extends Component {
     }
 
     list.push(
-      <div className="app">
-        <div className={'drive_app drive_view list'}>
-          <UploadZone
-            disabled={in_trash || WorkspaceUserRights.isNotConnected()}
-            ref={node => (this.upload_zone = node)}
-            disableClick
-            parent={this.state.app_drive_service.current_directory_channels[this.drive_channel]}
-            driveCollectionKey={
-              this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-            }
-            uploadOptions={{ workspace_id: this.state.workspaces.currentWorkspaceId }}
-            allowPaste={true}
-          >
-            <div className="drive_top">
-              <div className="path app_title">
-                <PerfectScrollbar component="div" options={{ suppressScrollY: true }}>
-                  {this.buildPath()}
-                </PerfectScrollbar>
-              </div>
-
-              <div className="nomobile info">
-                {!in_trash && (
-                  <span>
-                    {Numbers.humanFileSize(
-                      Collections.get('drive').find(
-                        this.state.app_drive_service.current_directory_channels[this.drive_channel]
-                          .id,
-                      )
-                        ? Collections.get('drive').find(
-                            this.state.app_drive_service.current_directory_channels[
-                              this.drive_channel
-                            ].id,
-                          ).size
-                        : 0 || 0,
-                      true,
-                    )}{' '}
-                    {Languages.t('scenes.apps.drive.used', [], 'utilisé dans ce dossier')}
-                  </span>
-                )}
-                {!!in_trash && WorkspaceUserRights.hasWorkspacePrivilege() && (
-                  <a
-                    className="error right-margin"
-                    onClick={() => {
-                      AlertManager.confirm(() => {
-                        DriveService.emptyTrash(this.state.workspaces.currentWorkspaceId, () => {
-                          DriveService.toggleInTrash(this.drive_channel);
-                        });
-                        SelectionsManager.unselectAll(
-                          this.state.app_drive_service.current_collection_key_channels[
-                            this.drive_channel
-                          ],
-                        );
-                      });
-                    }}
-                  >
-                    <Icon type="trash" />
-                    {' ' +
-                      Languages.t('scenes.apps.drive.trash_empty_menu', [], 'Vider la corbeille')}
-                  </a>
-                )}
-              </div>
-
-              <div
-                className="nomobile options app_right_btn app_title"
-                onClick={evt => {
-                  MenusManager.openMenu(general_menu, { x: evt.clientX, y: evt.clientY }, 'bottom');
-                }}
-              >
-                {Object.keys(current_selection).length <= 1
-                  ? Languages.t('scenes.apps.drive.top_menu_more')
-                  : Languages.t('scenes.apps.drive.top_menu_no_items', [
-                      Object.keys(current_selection).length,
-                    ])}
-                <ChevronDownIcon className="m-icon-small" />
-              </div>
+      <div className={'drive_app drive_view list'}>
+        <UploadZone
+          disabled={in_trash || WorkspaceUserRights.isNotConnected()}
+          ref={node => (this.upload_zone = node)}
+          disableClick
+          parent={this.state.app_drive_service.current_directory_channels[this.drive_channel]}
+          driveCollectionKey={
+            this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+          }
+          uploadOptions={{ workspace_id: this.state.workspaces.currentWorkspaceId }}
+          allowPaste={true}
+        >
+          <div className="drive_top">
+            <div className="path app_title">
+              <PerfectScrollbar component="div" options={{ suppressScrollY: true }}>
+                {this.buildPath()}
+              </PerfectScrollbar>
             </div>
 
-            {in_trash && (
-              <div className="smalltext drive_trash_info">
+            <div className="nomobile info">
+              {!in_trash && (
+                <span>
+                  {Numbers.humanFileSize(
+                    Collections.get('drive').find(
+                      this.state.app_drive_service.current_directory_channels[this.drive_channel]
+                        .id,
+                    )
+                      ? Collections.get('drive').find(
+                          this.state.app_drive_service.current_directory_channels[
+                            this.drive_channel
+                          ].id,
+                        ).size
+                      : 0 || 0,
+                    true,
+                  )}{' '}
+                  {Languages.t('scenes.apps.drive.used', [], 'utilisé dans ce dossier')}
+                </span>
+              )}
+              {!!in_trash && WorkspaceUserRights.hasWorkspacePrivilege() && (
                 <a
+                  className="error right-margin"
                   onClick={() => {
-                    DriveService.toggleInTrash(this.drive_channel);
+                    AlertManager.confirm(() => {
+                      DriveService.emptyTrash(this.state.workspaces.currentWorkspaceId, () => {
+                        DriveService.toggleInTrash(this.drive_channel);
+                      });
+                      SelectionsManager.unselectAll(
+                        this.state.app_drive_service.current_collection_key_channels[
+                          this.drive_channel
+                        ],
+                      );
+                    });
                   }}
                 >
-                  {Languages.t('scenes.apps.drive.go_out_trash_menu', [], 'Sortir de la corbeille')}
+                  <Icon type="trash" />
+                  {' ' +
+                    Languages.t('scenes.apps.drive.trash_empty_menu', [], 'Vider la corbeille')}
                 </a>
-              </div>
-            )}
+              )}
+            </div>
 
-            <DriveMultiSelector
-              scroller={this.drive_scroller}
-              selectionType={
-                this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-              }
+            <div
+              className="nomobile options app_right_btn app_title"
+              onClick={evt => {
+                MenusManager.openMenu(general_menu, { x: evt.clientX, y: evt.clientY }, 'bottom');
+              }}
             >
-              {!this.state.drive_repository.did_load_first_time[
+              {Object.keys(current_selection).length <= 1
+                ? Languages.t('scenes.apps.drive.top_menu_more')
+                : Languages.t('scenes.apps.drive.top_menu_no_items', [
+                    Object.keys(current_selection).length,
+                  ])}
+              <ChevronDownIcon className="m-icon-small" />
+            </div>
+          </div>
+
+          {in_trash && (
+            <div className="smalltext drive_trash_info">
+              <a
+                onClick={() => {
+                  DriveService.toggleInTrash(this.drive_channel);
+                }}
+              >
+                {Languages.t('scenes.apps.drive.go_out_trash_menu', [], 'Sortir de la corbeille')}
+              </a>
+            </div>
+          )}
+
+          <DriveMultiSelector
+            scroller={this.drive_scroller}
+            selectionType={
+              this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+            }
+          >
+            {!this.state.drive_repository.did_load_first_time[
+              this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+            ] &&
+              files.length + directories.length == 0 && (
+                <div className="loading">
+                  <Loader color="#CCC" className="app_loader" />
+                </div>
+              )}
+
+            {(files.length + directories.length > 0 ||
+              (this.state.drive_repository.sources[
                 this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
               ] &&
-                files.length + directories.length == 0 && (
-                  <div className="loading">
-                    <Loader color="#CCC" className="app_loader" />
+                !this.state.drive_repository.sources[
+                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+                ].http_loading &&
+                this.state.drive_repository.did_load_first_time[
+                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+                ])) && (
+              <div>
+                {directories.length > 0 && (
+                  <div className="app_title">
+                    {Languages.t('scenes.apps.drive.folder_subtitle', [], 'Dossiers')}
                   </div>
                 )}
 
-              {(files.length + directories.length > 0 ||
-                (this.state.drive_repository.sources[
-                  this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-                ] &&
-                  !this.state.drive_repository.sources[
+                <DriveList
+                  key={'animted-directories-' + directory_id}
+                  directories
+                  driveCollectionKey={
                     this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-                  ].http_loading &&
-                  this.state.drive_repository.did_load_first_time[
+                  }
+                  selectionType={
                     this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
-                  ])) && (
-                <div>
-                  {directories.length > 0 && (
-                    <div className="app_title">
-                      {Languages.t('scenes.apps.drive.folder_subtitle', [], 'Dossiers')}
-                    </div>
-                  )}
-
-                  <DriveList
-                    key={'animted-directories-' + directory_id}
-                    directories
-                    driveCollectionKey={
-                      this.state.app_drive_service.current_collection_key_channels[
-                        this.drive_channel
-                      ]
+                  }
+                  data={directories}
+                  view_mode={DriveService.view_mode}
+                  onClick={element => {
+                    if (element.id) {
+                      this.changeCurrentDirectory(element);
                     }
-                    selectionType={
-                      this.state.app_drive_service.current_collection_key_channels[
-                        this.drive_channel
-                      ]
-                    }
-                    data={directories}
-                    view_mode={DriveService.view_mode}
-                    onClick={element => {
-                      if (element.id) {
-                        this.changeCurrentDirectory(element);
-                      }
-                    }}
-                  />
+                  }}
+                />
 
-                  {directories.length > 0 && [<br />, <br />]}
+                {directories.length > 0 && [<br />, <br />]}
 
-                  {files.length > 0 && (
-                    <div className="app_title">
-                      {Languages.t('scenes.apps.drive.files_subtitle', [], 'Fichiers')}
-                    </div>
-                  )}
+                {files.length > 0 && (
+                  <div className="app_title">
+                    {Languages.t('scenes.apps.drive.files_subtitle', [], 'Fichiers')}
+                  </div>
+                )}
 
-                  <DriveList
-                    key={'animted-files-' + directory_id}
-                    driveCollectionKey={
-                      this.state.app_drive_service.current_collection_key_channels[
-                        this.drive_channel
-                      ]
-                    }
-                    selectionType={
-                      this.state.app_drive_service.current_collection_key_channels[
-                        this.drive_channel
-                      ]
-                    }
-                    data={files}
-                    view_mode={DriveService.view_mode}
-                  />
-                </div>
-              )}
-            </DriveMultiSelector>
-          </UploadZone>
+                <DriveList
+                  key={'animted-files-' + directory_id}
+                  driveCollectionKey={
+                    this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+                  }
+                  selectionType={
+                    this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
+                  }
+                  data={files}
+                  view_mode={DriveService.view_mode}
+                />
+              </div>
+            )}
+          </DriveMultiSelector>
+        </UploadZone>
 
-          {!in_trash && !WorkspaceUserRights.isNotConnected() && <MainPlus menu={plus_menu} />}
-        </div>
+        {!in_trash && !WorkspaceUserRights.isNotConnected() && <MainPlus menu={plus_menu} />}
       </div>,
     );
 

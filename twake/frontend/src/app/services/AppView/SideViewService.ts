@@ -1,19 +1,12 @@
-import AppViewService from './AppViewService';
+import AppViewService, { ViewConfiguration } from './AppViewService';
 
 class _SideViewService extends AppViewService {
-  private side = '';
-
   public getViewType(): 'channel_thread' | '' {
     return '';
   }
 
-  public hasSide() {
-    return this.side;
-  }
-
-  public select(id: string) {
-    this.side = id;
-    this.notify();
+  public select(id: string, configuration?: ViewConfiguration) {
+    super.select(id, configuration);
   }
 }
 

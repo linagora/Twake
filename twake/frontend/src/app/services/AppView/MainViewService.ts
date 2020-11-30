@@ -1,27 +1,23 @@
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';
-import AppViewService from './AppViewService';
+import AppViewService, { ViewConfiguration } from './AppViewService';
 
 class _MainViewService extends AppViewService {
-  private currentChannelCollection: Collection<ChannelResource> | null = null;
-
   public getViewType(): 'application' | 'channel' | '' {
-    const col: any = this.currentChannelCollection;
+    const col: any = this.getViewCollection();
     return col ? (col.useWatcher ? 'channel' : 'application') : '';
   }
 
   public getViewCollection() {
-    return this.currentChannelCollection;
+    return this.getConfiguration().collection;
   }
 
-  public setCurrentChannelCollection(collection: Collection<ChannelResource>) {
-    this.currentChannelCollection = collection;
-    this.notify();
-  }
-
-  public select(id: string) {
-    RouterService.history.push(RouterService.generateRouteFromState({ channelId: id }));
+  public select(id: string, configuration?: ViewConfiguration) {
+    if (id != this.getId()) {
+      RouterService.history.push(RouterService.generateRouteFromState({ channelId: id }));
+    }
+    super.select(id, configuration);
   }
 }
 

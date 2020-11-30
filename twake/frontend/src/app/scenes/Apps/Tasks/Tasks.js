@@ -122,7 +122,7 @@ export default class Tasks extends Component {
     }
 
     return (
-      <div className="app">
+      <>
         {loading && (
           <div className="loading">
             <Loader color="#CCC" className="app_loader" />
@@ -358,7 +358,7 @@ export default class Tasks extends Component {
             />
           </div>
         )}
-      </div>
+      </>
     );
   }
 }

@@ -95,9 +95,9 @@ export default class ChannelsApps extends Component {
                 <ChannelUI
                   key={id}
                   collection={Collections.get('channels')}
+                  app={app}
                   name={name}
                   icon={icon}
-                  isAppchannel={true}
                   id={channel.id}
                   muted={false}
                   favorite={false}
