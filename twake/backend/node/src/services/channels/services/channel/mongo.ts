@@ -13,6 +13,8 @@ import {
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext } from "../../types";
+import { DirectChannel } from "../../entities/direct-channel";
+import { ChannelSaveOptions } from "../../web/types";
 
 const TYPE = "channel";
 
@@ -24,7 +26,11 @@ export class MongoChannelService implements ChannelService {
     this.collection = this.db.collection<Channel>(`${TYPE}s`);
   }
 
-  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
+  async save(
+    channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
+  ): Promise<SaveResult<Channel>> {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     let result: SaveResult<Channel>;
 
@@ -94,5 +100,20 @@ export class MongoChannelService implements ChannelService {
       .toArray();
 
     return new ListResult(TYPE, channels, MongoPagination.next(paginate, channels));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    throw new Error("Not implemented");
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    throw new Error("Not implemented");
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
+    throw new Error("Not implemented");
   }
 }

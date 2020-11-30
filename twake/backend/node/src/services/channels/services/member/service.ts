@@ -18,6 +18,7 @@ import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
+import { ChannelMemberSaveOptions } from "../../web/types";
 
 export class Service implements MemberService {
   version: "1";
@@ -40,6 +41,7 @@ export class Service implements MemberService {
   )
   async save(
     member: ChannelMember,
+    options: ChannelMemberSaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
@@ -82,7 +84,7 @@ export class Service implements MemberService {
       const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
       this.onUpdated(context.channel, memberToSave, updateResult);
     } else {
-      const saveResult = await this.service.save(member, context);
+      const saveResult = await this.service.save(member, options, context);
       this.onCreated(context.channel, member, saveResult);
     }
 

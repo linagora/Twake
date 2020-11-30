@@ -21,6 +21,7 @@ import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types"
 import { plainToClass } from "class-transformer";
 import { logger } from "../../../../core/platform/framework";
 import { User } from "../../../../services/types";
+import { ChannelMemberSaveOptions } from "../../web/types";
 
 const TYPE = "channel_member";
 const USER_CHANNEL_KEYS = [
@@ -100,7 +101,7 @@ export class CassandraMemberService implements MemberService {
       CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.userChannelsTableName}
         (
           company_id uuid,
-          workspace_id uuid,
+          workspace_id text,
           user_id uuid,
           channel_id uuid,
           type text,
@@ -124,7 +125,7 @@ export class CassandraMemberService implements MemberService {
       CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.channelMembersTableName}
         (
           company_id uuid,
-          workspace_id uuid,
+          workspace_id text,
           channel_id uuid,
           user_id uuid,
           type text,
@@ -151,6 +152,7 @@ export class CassandraMemberService implements MemberService {
 
   async save(
     member: ChannelMember,
+    options: ChannelMemberSaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     const resultMember = (await this.create(member, context)).entity;
@@ -299,6 +301,7 @@ export class CassandraMemberService implements MemberService {
     const result = await this.client.execute(query, params, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,
+      prepare: true,
     });
 
     if (!result.rowLength) {

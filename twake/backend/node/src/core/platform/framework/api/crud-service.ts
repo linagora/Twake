@@ -52,12 +52,12 @@ export class SaveResult<Entity> extends EntityTarget<Entity> {
    *
    * @param type Type of entity
    * @param entity The entity itself
-   * @param operation Save can be for a create or an update
+   * @param operation Save can be for a "create", an "update" or "exists" when resource already exists
    */
   constructor(
     readonly type: string,
     readonly entity: Entity,
-    readonly operation: OperationType.UPDATE | OperationType.CREATE,
+    readonly operation: OperationType.UPDATE | OperationType.CREATE | OperationType.EXISTS,
   ) {
     super(type, entity);
   }
@@ -100,6 +100,7 @@ export enum OperationType {
   UPDATE = "update",
   SAVE = "save",
   DELETE = "delete",
+  EXISTS = "exists",
 }
 
 export declare type EntityOperationResult<Entity> =
@@ -179,7 +180,11 @@ export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContex
    * @param item
    * @param context
    */
-  save?(item: Entity, context: Context): Promise<SaveResult<Entity>>;
+  save?<SaveOptions>(
+    item: Entity,
+    options: SaveOptions,
+    context: Context,
+  ): Promise<SaveResult<Entity>>;
 
   /**
    * Delete a resource

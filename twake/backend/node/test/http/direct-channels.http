@@ -1,0 +1,44 @@
+@company_id = bcfe2f79-8e81-42a3-b551-3a32d49b2b4c
+@workspace_id = 3328552c-5ccd-4172-b84a-d876d56aa71b
+@user_id = 3328552c-5ccd-4172-b84a-d876d56aa71c
+
+@baseURL = http://localhost:3000
+@channelsURL = {{baseURL}}/internal/services/channels/v1/companies/{{company_id}}/workspaces/{{workspace_id}}
+@directChannelsURL = {{baseURL}}/internal/services/channels/v1/companies/{{company_id}}/workspaces/direct
+
+# @name login
+GET {{baseURL}}/api/auth/login
+
+@authToken = {{login.response.body.token}}
+@currentUserId = {{login.response.body.user.id}}
+
+### Create a direct channel
+
+# @name createDirectChannel
+POST {{directChannelsURL}}/channels
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "options": {
+    "members": ["{{currentUserId}}", "bcfe2f79-8e81-42a3-b551-3a32d49b2b4c"]
+  },
+  "resource": {
+    "name": "A direct channel",
+    "icon": "hello",
+    "description": "A direct channel",
+    "channel_group": "twake",
+    "visibility": "direct",
+    "is_default": false,
+    "archived": false
+  }
+}
+
+### Direct channel members
+
+@directId = {{createDirectChannel.response.body.resource.id}}
+
+GET {{directChannelsURL}}/channels/{{directId}}/members?websockets=true
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+

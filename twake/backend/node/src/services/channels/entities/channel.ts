@@ -7,7 +7,6 @@ export class Channel {
   @Type(() => String)
   company_id: string;
 
-  // "uuid-v4" | "direct"
   @Type(() => String)
   workspace_id: string | ChannelType.DIRECT;
 

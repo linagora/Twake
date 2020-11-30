@@ -16,14 +16,17 @@ import {
   ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelPrimaryKey, MemberService } from "../../provider";
+import { logger } from "../../../../core/platform/framework";
 
-import { Channel, UserChannel } from "../../entities";
+import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
-import { WorkspaceExecutionContext } from "../../types";
+import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
+import { DirectChannel } from "../../entities/direct-channel";
+import { ChannelSaveOptions } from "../../web/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -44,17 +47,27 @@ export class Service implements ChannelService {
     (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
+  async save(
+    channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
+  ): Promise<SaveResult<Channel>> {
     let channelToUpdate: Channel;
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
+    const isDirectChannel =
+      options &&
+      options.members &&
+      options.members.length &&
+      channel.visibility === ChannelVisibility.DIRECT;
 
     if (mode === OperationType.UPDATE) {
+      logger.debug("Updating channel");
       channelToUpdate = await this.get(this.getPrimaryKey(channel), context);
 
       if (!channelToUpdate) {
-        throw new CrudExeption("Channel not found", 404);
+        throw CrudExeption.notFound("Channel not found");
       }
 
       const isChannelOwner = this.isChannelOwner(channelToUpdate, context.user);
@@ -72,13 +85,13 @@ export class Service implements ChannelService {
       const fields = Object.keys(channelDiff) as Array<Partial<keyof Channel>>;
 
       if (!fields.length) {
-        throw new CrudExeption("Nothing to update", 400);
+        throw CrudExeption.badRequest("Nothing to update");
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
 
       if (!updatableFields.length) {
-        throw new CrudExeption("Current user can not update requested fields", 400);
+        throw CrudExeption.badRequest("Current user can not update requested fields");
       }
 
       channelToSave = cloneDeep(channelToUpdate);
@@ -90,12 +103,38 @@ export class Service implements ChannelService {
     }
 
     if (mode === OperationType.CREATE) {
+      if (isDirectChannel) {
+        logger.info("Direct channel creation");
+        if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
+          throw CrudExeption.badRequest("Direct Channel creation error: bad workspace");
+        }
+
+        const directChannel = await this.getDirectChannelInCompany(
+          context.workspace.company_id,
+          options.members,
+        );
+
+        if (directChannel) {
+          logger.info("Direct channel already exists");
+          const existingChannel = await this.get(
+            {
+              company_id: context.workspace.company_id,
+              id: directChannel.channel_id,
+              workspace_id: ChannelType.DIRECT,
+            },
+            context,
+          );
+          return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
+        }
+      }
+
       channelToSave = channel;
     }
 
-    const saveResult = await this.service.save(channelToSave, context);
+    logger.info("Creating channel %o", channelToSave);
+    const saveResult = await this.service.save(channelToSave, options, context);
 
-    this.onSaved(channelToSave, saveResult, mode);
+    this.onSaved(channelToSave, options, context, saveResult, mode);
 
     return saveResult;
   }
@@ -172,6 +211,18 @@ export class Service implements ChannelService {
     return this.service.list(pagination, options, context);
   }
 
+  createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    return this.service.createDirectChannel(directChannel);
+  }
+
+  getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    return this.service.getDirectChannel(directChannel);
+  }
+
+  getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
+    return this.service.getDirectChannelInCompany(companyId, users);
+  }
+
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
     return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
@@ -186,20 +237,53 @@ export class Service implements ChannelService {
    * @param channel The channel before update has been processed
    * @param result The channel update result
    */
-  onSaved(
+  async onSaved(
     channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
     result: SaveResult<Channel>,
     mode: OperationType.CREATE | OperationType.UPDATE,
-  ): void {
-    const saved = result.entity;
+  ): Promise<void> {
+    const savedChannel = result.entity;
 
-    if (!saved) {
-      return;
+    if (mode === OperationType.CREATE) {
+      const isDirect =
+        options &&
+        options.members &&
+        options.members.length &&
+        channel.visibility === ChannelVisibility.DIRECT;
+
+      if (isDirect) {
+        const directChannel = {
+          channel_id: savedChannel.id,
+          company_id: savedChannel.company_id,
+          users: DirectChannel.getUsersAsString(options.members),
+        } as DirectChannel;
+        // add members
+        // invite members
+        // etc...
+        await this.createDirectChannel(directChannel);
+
+        const members = options.members.map(user_id => {
+          return {
+            user_id,
+            channel_id: savedChannel.id,
+            workspace_id: savedChannel.workspace_id,
+            company_id: savedChannel.company_id,
+          } as ChannelMember;
+        });
+
+        await Promise.all(
+          members.map(member =>
+            this.members.save(member, {}, { channel: savedChannel, user: context.user }),
+          ),
+        );
+      }
     }
 
     const pushUpdates = {
-      is_default: !!saved.is_default && saved.is_default !== channel.is_default,
-      archived: !!saved.archived && saved.archived !== channel.archived,
+      is_default: !!savedChannel.is_default && savedChannel.is_default !== channel.is_default,
+      archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
     console.log(`PUSH ${mode}`, pushUpdates);

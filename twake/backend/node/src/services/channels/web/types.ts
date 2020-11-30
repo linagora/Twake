@@ -58,9 +58,15 @@ export interface ChannelWebsocket {
 }
 
 export class CreateChannelBody {
+  options?: ChannelCreateOptions;
   resource: ChannelCreateResource;
 }
 
+export class ChannelCreateOptions {
+  members?: string[];
+}
+
+export type ChannelSaveOptions = ChannelCreateOptions;
 export class UpdateChannelBody {
   resource: ChannelUpdateResource;
 }
@@ -78,3 +84,5 @@ export class CreateChannelMemberBody {
 export class UpdateChannelMemberBody {
   resource: Pick<ChannelMember, "favorite" | "notification_level">;
 }
+
+export type ChannelMemberSaveOptions = null;
