@@ -9,6 +9,7 @@ class AccessManager
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->memberservice = $app->getServices()->get("app.workspace_members");
     }
@@ -27,43 +28,43 @@ class AccessManager
         //FONCTION POUR SAVOIR SI UN UTILISATEUR A ACCES A QUELQUE CHOSE
 
 
-//        $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
-//        $workspaces = Array(); //liste des workspace dont on a accces;
-//        foreach ($workspaces_acces as $workspace_obj){
-//            $value = $workspace_obj["workspace"]->getAsArray();
-//            $workspaces[$value["id"]] = $value["id"];
-//        }
-
-
         if ($type == "Workspace") {
             if (!$this->user_has_workspace_access($current_user_id, $id)) {
                 return false;
             }
         } else if ($type == "Channel") {
 
-            
-            $channel = $this->doctrine->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $id));
-            if (isset($channel)) {
-                $channel = $channel->getAsArray();
-                $workspace_id = $channel["original_workspace"];
-                $members = $channel["members"];
-                $ext_members = $channel["ext_members"];
-                if($edition && !$this->user_has_workspace_access($current_user_id, $channel["original_workspace"])){
-                    return false;
-                }
-                $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user_id . "", "channel_id" => $id));
-                if ($linkChannel) {
-                    return true;
-                }
-                if (in_array($current_user_id, $members) || in_array($current_user_id, $ext_members)) {
-                    return true;
-                } else
-                    if (!$this->user_has_workspace_access($current_user_id, $workspace_id) || ((!in_array($current_user_id, $members)) && (!in_array($current_user_id, $ext_members)))) {
-                        return false;
-                    }
-            } else {
-                return false;
+            //Use new node backend for this and cache result
+            $userId = $current_user_id;
+            $channelId = $id;
+
+            $cacheKey = $userId."_".$channelId;
+            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("type" => "access_channel", "key"=>$cacheKey));
+            if(!$data || !$data->getData()["has_access"]){
+
+                $secret = $this->app->getContainer()->getParameter("node.secret");
+                $uri = $this->app->getContainer()->getParameter("node.api") . "channels/".$channelId."/members/".$userId."/exists";
+        
+                $result = $this->rest->get($uri, [
+                    CURLOPT_HTTPHEADER => Array(
+                        "Authorization: Token ".$secret,
+                        "Content-Type: application/json"
+                    ),
+                    CURLOPT_CONNECTTIMEOUT => 1,
+                    CURLOPT_TIMEOUT => 1
+                ]);
+
+                $hasAccess = $result["has_access"] === true;
+
+                $cache = new CachedFromNode("access_channel", $cacheKey, ["has_access" => $hasAccess]);
+                $this->doctrine->useTTLOnFirstInsert(60*60*6); //6 hours
+                $this->doctrine->persist($cache);
+
+                return $hasAccess;
             }
+
+            return true;
+
         } else if ($type == "Message") {
             $message = $this->doctrine->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $id));
             if (isset($message)) {

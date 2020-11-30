@@ -14,8 +14,8 @@ class Pusher
 
     public function __construct(App $app)
     {
-        $this->secret = $app->getContainer()->getParameter("websocket.secret");
-        $this->pusher = $app->getContainer()->getParameter("websocket.pusher");
+        $this->secret = $app->getContainer()->getParameter("node.secret");
+        $this->pusher = $app->getContainer()->getParameter("node.api") . "pusher";
         $this->rest = $app->getServices()->get("app.restclient");
     }
 

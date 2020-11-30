@@ -24,8 +24,8 @@ class Parameters extends \Common\Configuration
               "expiration" => 60*60, //1 hour
               "refresh_expiration" => 60*60*24*31 //1 month
             ],
-            "websocket" => [
-                "pusher" => "http://node:3000/private/pusher",
+            "node" => [
+                "api" => "http://node:3000/private/",
                 "secret" => "pusher_secret"
             ],
             "db" => [
