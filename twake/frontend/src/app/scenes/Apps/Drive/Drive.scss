@@ -25,15 +25,15 @@
   }
 
   .drive_multiselector {
-    padding: 32px;
+    padding: 16px;
     padding-top: 0px;
     flex: 1;
     box-sizing: border-box;
-    padding-bottom: 35px;
+    padding-bottom: 32px;
   }
 
   .drive_trash_info {
-    padding: 0 32px;
+    padding: 0 16px;
     padding-bottom: 16px;
     color: $black;
   }
@@ -41,7 +41,7 @@
   .drive_top {
     display: flex;
     flex-direction: row;
-    padding: 32px;
+    padding: 16px;
     padding-bottom: 8px;
     margin-top: 0px;
     font-weight: 500;
