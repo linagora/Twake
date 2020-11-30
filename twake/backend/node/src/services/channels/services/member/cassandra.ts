@@ -8,7 +8,6 @@ import {
   ListResult,
   SaveResult,
   OperationType,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import {
   CassandraConnectionOptions,
@@ -21,7 +20,7 @@ import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types"
 import { plainToClass } from "class-transformer";
 import { logger } from "../../../../core/platform/framework";
 import { User } from "../../../../services/types";
-import { ChannelMemberSaveOptions } from "../../web/types";
+import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 
 const TYPE = "channel_member";
 const USER_CHANNEL_KEYS = [
@@ -260,7 +259,7 @@ export class CassandraMemberService implements MemberService {
 
   list(
     pagination: Paginable,
-    options?: ListOptions,
+    options?: ChannelListOptions,
     context?: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.listChannelMembers(pagination, context);

@@ -67,6 +67,12 @@ export class ChannelCreateOptions {
 }
 
 export type ChannelSaveOptions = ChannelCreateOptions;
+
+export class ChannelListOptions {
+  channels?: string[];
+  mine?: boolean;
+}
+
 export class UpdateChannelBody {
   resource: ChannelUpdateResource;
 }

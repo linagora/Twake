@@ -13,12 +13,11 @@ import {
   SaveResult,
   OperationType,
   CrudExeption,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelPrimaryKey, MemberService } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
-import { Channel, ChannelMember, UserChannel } from "../../entities";
+import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -26,7 +25,7 @@ import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
 import { DirectChannel } from "../../entities/direct-channel";
-import { ChannelSaveOptions } from "../../web/types";
+import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -189,9 +188,9 @@ export class Service implements ChannelService {
 
   async list(
     pagination: Pagination,
-    options: ListOptions,
+    options: ChannelListOptions,
     context: WorkspaceExecutionContext,
-  ): Promise<ListResult<Channel | UserChannel>> {
+  ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
     if (options?.mine) {
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
 
@@ -208,6 +207,7 @@ export class Service implements ChannelService {
       return result;
     }
 
+    // TODO: Do not return direct channels the current user is not part of...
     return this.service.list(pagination, options, context);
   }
 

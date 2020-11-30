@@ -41,3 +41,7 @@ export class Channel {
 export class UserChannel extends Channel {
   user_member: ChannelMember;
 }
+
+export class UserDirectChannel extends UserChannel {
+  members: string[];
+}

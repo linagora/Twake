@@ -7,7 +7,6 @@ import {
   CrudExeption,
   OperationType,
   UpdateResult,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { MemberService } from "../../provider";
 
@@ -18,7 +17,7 @@ import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
-import { ChannelMemberSaveOptions } from "../../web/types";
+import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 
 export class Service implements MemberService {
   version: "1";
@@ -124,7 +123,7 @@ export class Service implements MemberService {
 
   list(
     pagination: Pagination,
-    options: ListOptions,
+    options: ChannelListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.service.list(pagination, options, context);

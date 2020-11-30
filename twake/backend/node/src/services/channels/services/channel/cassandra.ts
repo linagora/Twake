@@ -10,7 +10,6 @@ import {
 import {
   CreateResult,
   DeleteResult,
-  ListOptions,
   ListResult,
   OperationType,
   Pagination,
@@ -21,7 +20,7 @@ import { WorkspaceExecutionContext } from "../../types";
 import { pick } from "../../../../utils/pick";
 import { logger } from "../../../../core/platform/framework";
 import { DirectChannel } from "../../entities/direct-channel";
-import { ChannelSaveOptions } from "../../web/types";
+import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 
 const ENTITY_KEYS = [
   "company_id",
@@ -205,7 +204,7 @@ export class CassandraChannelService implements ChannelService {
 
   async list(
     pagination: Pagination,
-    options: ListOptions,
+    options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
     const inChannels = options.channels ? ` AND id IN (${options.channels.join(",")})` : "";
