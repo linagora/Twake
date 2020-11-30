@@ -71,7 +71,9 @@ export const getChannelParts = (props: {
       >
         {users.map(member => {
           channelName.push(UserService.getFullName(member));
-          return <Avatar key={member.id} size={20} src={UserService.getThumbnail(member)} />;
+          return (
+            member && <Avatar key={member.id} size={20} src={UserService.getThumbnail(member)} />
+          );
         })}
       </Avatar.Group>
     );
