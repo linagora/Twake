@@ -21,7 +21,7 @@ import ModalManager from 'app/services/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications.js';
 import RouterServices from 'services/RouterService';
-//import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
   channel: ChannelType;
@@ -36,11 +36,9 @@ export default (props: Props): JSX.Element => {
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource, { tag: 'mine' });
 
-  /*
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
   );
-  */
 
   Languages.useListener(useState);
   Notifications.useListener(useState);
@@ -87,7 +85,12 @@ export default (props: Props): JSX.Element => {
 
   const editChannel = () => {
     ModalManager.open(
-      <ChannelWorkspaceEditor title={'Edit Channel'} channel={props.channel || {}} />,
+      <ChannelWorkspaceEditor
+        title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
+        channel={props.channel || {}}
+        isCurrentUserAdmin={isCurrentUserAdmin}
+        currentUserId={currentUser.id}
+      />,
       {
         position: 'center',
         size: { width: '600px' },
@@ -179,7 +182,6 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
-        //hide: !isCurrentUserAdmin || currentUser.id !== props.channel.owner ,
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => {
           editChannel();
@@ -199,7 +201,7 @@ export default (props: Props): JSX.Element => {
   if (true && props.channel.visibility !== 'direct') {
     menu.push({
       type: 'menu',
-      //hide: !isCurrentUserAdmin,
+      hide: currentUser.id !== props.channel.owner && isCurrentUserAdmin === false,
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {
