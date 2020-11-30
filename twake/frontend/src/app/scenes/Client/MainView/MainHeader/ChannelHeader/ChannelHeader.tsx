@@ -5,7 +5,7 @@ import { startCase } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
-import ChannelsService from 'app/services/channels/ChannelsService';
+import MainViewService from 'app/services/AppView/MainViewService';
 import { Lock, Star } from 'react-feather';
 import Search from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
@@ -30,8 +30,8 @@ export default (): JSX.Element => {
   useChannelListener(members);
   const [avatar] = getChannelParts({ usersIds: members, keepMyself: true, max: 10 });
 
-  ChannelsService.useWatcher(() => !!ChannelsService.getCurrentChannelCollection());
-  const channelCollection = ChannelsService.getCurrentChannelCollection();
+  MainViewService.useWatcher(() => !!MainViewService.getViewCollection());
+  const channelCollection = MainViewService.getViewCollection();
   if (!channelCollection?.useWatcher) {
     return <Col></Col>;
   }

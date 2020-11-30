@@ -142,16 +142,21 @@ export default class CollectionTransport<G extends Resource<any>> {
     try {
       const result = await Collections.getTransport()
         .getHttp()
-        .post(this.collection.getRestPath().replace(/\/$/, resource.state.persisted ? '/' : ''), {
-          resource: resource.getDataForRest(),
-          options: options,
-        });
+        .post(
+          this.collection
+            .getRestPath()
+            .replace(/\/$/, resource.state.persisted ? '/' + resource.id : ''),
+          {
+            resource: resource.getDataForRest(),
+            options: options,
+          },
+        );
       if (!result?.offline) {
         if (result?.resource) {
           resource.setPersisted(true);
           resource.data = Object.assign(resource.data, result?.resource);
           await this.collection.upsert(resource, { withoutBackend: true });
-        } else {
+        } else if ([401].indexOf(result?.statusCode || 200) >= 0) {
           //This resource is invalid, remove it
           await this.collection.remove(resource, { withoutBackend: true });
         }

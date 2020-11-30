@@ -90,7 +90,7 @@ const ChannelMembersList: FC<Props> = props => {
         </Row>
       </div>
       {channelMembers && (
-        <div className="x-margin">
+        <div className="x-margin bottom-margin">
           {channelMembers.map((item: ChannelMemberResource, index: number) => {
             const user: UserType = DepreciatedCollections.get('users').find(item.data.user_id);
 

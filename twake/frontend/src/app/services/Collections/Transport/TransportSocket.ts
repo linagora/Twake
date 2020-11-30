@@ -17,7 +17,9 @@ export enum WebsocketEvents {
 }
 export default class TransportSocket {
   private socket: SocketIOClient.Socket | null = null;
-  private listeners: { [path: string]: (type: WebsocketEvents, event: any) => void } = {};
+  private listeners: {
+    [path: string]: { [tag: string]: (type: WebsocketEvents, event: any) => void };
+  } = {};
   constructor(private readonly transport: Transport) {}
 
   connect() {
@@ -38,8 +40,12 @@ export default class TransportSocket {
     const socket = this.socket;
     this.socket.on('disconnect', () => {
       Object.keys(this.listeners).forEach(key => {
-        this.listeners[key](WebsocketEvents.Disconnected, {});
-        this.join(key, this.listeners[key]);
+        Object.keys(this.listeners[key]).forEach(tag => {
+          if (this.listeners[key][tag]) {
+            this.listeners[key][tag](WebsocketEvents.Disconnected, {});
+            this.join(key, tag, this.listeners[key][tag]);
+          }
+        });
       });
     });
 
@@ -48,8 +54,12 @@ export default class TransportSocket {
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {
           Object.keys(this.listeners).forEach(key => {
-            this.listeners[key](WebsocketEvents.Connected, {});
-            this.join(key, this.listeners[key]);
+            Object.keys(this.listeners[key]).forEach(tag => {
+              if (this.listeners[key][tag]) {
+                this.listeners[key][tag](WebsocketEvents.Connected, {});
+                this.join(key, tag, this.listeners[key][tag]);
+              }
+            });
           });
         })
         .on('unauthorized', (err: any) => {
@@ -72,24 +82,29 @@ export default class TransportSocket {
   }
 
   notify(path: string, type: WebsocketEvents, event: any) {
-    if (this.listeners[path]) this.listeners[path](type, event);
+    if (this.listeners[path]) Object.values(this.listeners[path]).forEach(c => c && c(type, event));
   }
 
-  join(path: string, callback: (type: WebsocketEvents, event: any) => void) {
+  join(path: string, tag: string, callback: (type: WebsocketEvents, event: any) => void) {
     path = path.replace(/\/$/, '');
 
     if (this.socket) {
       this.socket.emit(WebsocketActions.Join, { name: path, token: 'twake' });
     }
-    this.listeners[path] = callback;
+
+    this.listeners[path] = this.listeners[path] || {};
+    this.listeners[path][tag] = callback;
   }
 
-  leave(path: string) {
+  leave(path: string, tag: string) {
     path = path.replace(/\/$/, '');
     if (this.socket) {
       this.socket.emit(WebsocketActions.Leave, { name: path });
     }
-    delete this.listeners[path];
+
+    this.listeners[path] = this.listeners[path] || {};
+    delete this.listeners[path][tag];
+    if (Object.keys(this.listeners[path]).length === 0) delete this.listeners[path];
   }
 
   emit(path: string, data: any) {

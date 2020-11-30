@@ -267,14 +267,14 @@ export default class Tabs extends Component {
     var i_user = 0;
 
     if (!current_channel) {
-      return <div className="main_view" />;
+      return <div className="main-view" />;
     }
 
     if (current_channel.app_id) {
       current_channel.app = Collections.get('applications').find(current_channel.app_id) || {};
       if (!current_channel.app.id) {
         WorkspacesApps.getApp(current_channel.app_id);
-        return <div className="main_view" />;
+        return <div className="main-view" />;
       }
     }
 

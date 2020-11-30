@@ -40,7 +40,7 @@ export default class Collection<G extends Resource<any>> {
     options?: CollectionOptions,
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
-    this.options = _.merge(this.options, options);
+    this.options = _.assign(this.options, options);
   }
 
   public getPath() {
@@ -199,7 +199,7 @@ export default class Collection<G extends Resource<any>> {
           item.setUpToDate(false);
         }
       }
-      item.data = _.merge(item.data, mongoItem);
+      item.data = _.assign(mongoItem, item.data);
       this.resources[mongoItem.id] = item;
     }
   }

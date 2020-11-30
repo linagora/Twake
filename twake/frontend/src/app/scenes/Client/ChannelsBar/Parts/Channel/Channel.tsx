@@ -5,13 +5,14 @@ import './Channel.scss';
 import RouterService from 'app/services/RouterService';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
-import ChannelsService from 'app/services/channels/ChannelsService';
+import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import { Tooltip } from 'antd';
 
 type Props = {
   collection: Collection<ChannelResource>;
+  app?: any;
   name: string;
   icon: string | JSX.Element;
   id?: string;
@@ -19,7 +20,6 @@ type Props = {
   favorite: boolean;
   unreadMessages: boolean;
   visibility: string; //"private" | "public" | "direct"
-  isAppchannel?: boolean;
   directMembers?: string[];
   notifications: number;
   menu?: JSX.Element;
@@ -31,27 +31,36 @@ export default (props: Props) => {
 
   const selected = channelId === props.id;
 
-  if (selected) {
-    ChannelsService.setCurrentChannelCollection(props.collection);
+  if (selected && props.id) {
+    MainViewService.select(props.id, {
+      collection: props.collection,
+      app: props.app || 'messages',
+    });
   }
 
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
         className={'channel fade_in ' + (selected ? 'selected ' : '')}
-        onClick={() => props.id && ChannelsService.select(props.id)}
+        onClick={() =>
+          props.id &&
+          MainViewService.select(props.id, {
+            collection: props.collection,
+            app: props.app || 'messages',
+          })
+        }
       >
-        {!props.isAppchannel &&
+        {!props.app &&
           (props.visibility === 'public' || props.visibility === 'private') &&
           typeof props.icon === 'string' && (
             <div className="icon">
               <Emojione type={props.icon} />
             </div>
           )}
-        {!props.isAppchannel && props.visibility === 'direct' && typeof props.icon === 'object' && (
+        {!props.app && props.visibility === 'direct' && typeof props.icon === 'object' && (
           <div className="direct-channel-avatars"> {props.icon}</div>
         )}
-        {!!props.isAppchannel && (
+        {!!props.app && (
           <div className="icon">
             <Icon type={props.icon} />
           </div>

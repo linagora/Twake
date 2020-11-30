@@ -118,7 +118,7 @@ class Websocket extends Observable {
       this.subscribedKey[route] = unid;
       Collections.getTransport()
         .getSocket()
-        .join('previous::' + route, (type, data) => {
+        .join('previous::' + route, '', (type, data) => {
           if (type === 'realtime:event') {
             this.message(unid, data.name, data.data);
           }
@@ -154,7 +154,7 @@ class Websocket extends Observable {
     if (this.subscribed[route].length == 0) {
       Collections.getTransport()
         .getSocket()
-        .leave('previous::' + route);
+        .leave('previous::' + route, '');
     }
   }
 

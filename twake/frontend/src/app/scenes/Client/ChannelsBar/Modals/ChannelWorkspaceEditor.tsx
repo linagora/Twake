@@ -8,6 +8,7 @@ import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import RouterServices from 'app/services/RouterService';
+import _ from 'lodash';
 
 type Props = {
   title: string;
@@ -41,18 +42,17 @@ const ChannelWorkspaceEditor: FC<Props> = ({
   };
 
   const upsertChannel = async (): Promise<any> => {
-    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
     const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
     if (channel?.id) {
       const insertedChannel = await ChannelsCollections.findOne(channel.id);
-      insertedChannel.data = {
-        ...insertedChannel.data,
+      insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.name,
         description: newChannel.description || channel.description,
         icon: newChannel.icon || channel.icon,
         visibility: newChannel.visibility || channel.visibility,
-      };
+      });
       await ChannelsCollections.upsert(insertedChannel);
     } else {
       await ChannelsCollections.upsert(new ChannelResource(newChannel));

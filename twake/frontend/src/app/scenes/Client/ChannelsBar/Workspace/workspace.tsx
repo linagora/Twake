@@ -20,8 +20,8 @@ export function Workspace() {
   };
 
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
-  const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-  const channelsCollection = Collection.get(url, ChannelResource, { tag: 'mine' });
+  const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+  const channelsCollection = Collection.get(url, ChannelResource);
 
   const channels = channelsCollection.useWatcher({}, { query: { mine: true } });
 

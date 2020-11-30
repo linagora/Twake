@@ -2,33 +2,61 @@ import React, { FC } from 'react';
 
 import { Layout } from 'antd';
 import Tabs from './Tabs/Tabs';
-import AppView from './AppView';
-import RouterService from 'app/services/RouterService';
+import AppView from './AppView/AppView';
+import SideViewService from 'app/services/AppView/SideViewService';
+import MainViewService from 'app/services/AppView/MainViewService';
+import NoApp from './NoApp';
 
 const MainContent: FC<{}> = () => {
-  const { channelId } = RouterService.useStateFromRoute();
+  const [mainType, mainId] = MainViewService.useWatcher(() => [
+    MainViewService.getViewType(),
+    MainViewService.getId(),
+  ]);
+  const mainConfiguration = MainViewService.getConfiguration();
+  const [sideType, sideId] = SideViewService.useWatcher(() => [
+    SideViewService.getViewType(),
+    SideViewService.getId(),
+  ]);
+  const sideConfiguration = SideViewService.getConfiguration();
+
   return (
-    <Layout.Content className={'main-view-content'}>
+    <Layout.Content className={'global-view-content'}>
       <Layout style={{ height: '100%' }}>
         <Layout.Content>
-          <Layout>
+          <Layout className="main-view-layout">
             <Layout.Header className="main-view-tabs-header">
               {/* Todo: hide tabs when application or direct message*/}
-              <Tabs key={channelId} />
+              <Tabs key={mainId} />
             </Layout.Header>
-            <Layout.Content>
-              <AppView />
+            <Layout.Content className="main-view-content">
+              {mainType !== '' && (
+                <AppView
+                  key={mainId}
+                  id={mainId}
+                  app={mainConfiguration.app}
+                  configuration={mainConfiguration}
+                />
+              )}
+              {mainType == '' && <NoApp />}
             </Layout.Content>
           </Layout>
         </Layout.Content>
         <Layout.Sider
-          className="main-view-thread"
+          className="global-view-thread"
           breakpoint="lg"
           collapsedWidth="0"
           theme="light"
           width="40%"
+          collapsed={sideType === ''}
         >
-          <AppView />
+          {sideType !== '' && (
+            <AppView
+              key={sideId + '-side'}
+              id={sideId}
+              app={mainConfiguration.app}
+              configuration={sideConfiguration}
+            />
+          )}
         </Layout.Sider>
       </Layout>
     </Layout.Content>
