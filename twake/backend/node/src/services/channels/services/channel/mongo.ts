@@ -116,4 +116,8 @@ export class MongoChannelService implements ChannelService {
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
     throw new Error("Not implemented");
   }
+
+  listDirectChannels(): Promise<DirectChannel[]> {
+    throw new Error("Not implemented");
+  }
 }

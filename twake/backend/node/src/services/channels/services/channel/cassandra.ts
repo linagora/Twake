@@ -236,6 +236,15 @@ export class CassandraChannelService implements ChannelService {
     return plainToClass(Channel, channel);
   }
 
+  mapRowToDirectChannel(row: cassandra.types.Row): DirectChannel {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const channel: { [column: string]: any } = {};
+
+    (row.keys() || []).forEach(key => (channel[key] = row.get(key)));
+
+    return plainToClass(DirectChannel, channel);
+  }
+
   async createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
     const query = `INSERT INTO ${this.options.keyspace}.${this.directChannelsTableName} (company_id, channel_id, users) VALUES (?, ?, ?)`;
 
@@ -252,7 +261,7 @@ export class CassandraChannelService implements ChannelService {
       return;
     }
 
-    return plainToClass(DirectChannel, result.rows[0]);
+    return this.mapRowToDirectChannel(result.rows[0]);
   }
 
   async getDirectChannelInCompany(
@@ -268,6 +277,16 @@ export class CassandraChannelService implements ChannelService {
       return;
     }
 
-    return plainToClass(DirectChannel, result.rows[0]);
+    return this.mapRowToDirectChannel(result.rows[0]);
+  }
+
+  async listDirectChannels(companyId: string, channelIds: string[]): Promise<DirectChannel[]> {
+    const query = `SELECT * FROM ${this.options.keyspace}.${
+      this.directChannelsTableName
+    } WHERE company_id = ? AND channel_id IN (${channelIds.join(",")}) ALLOW FILTERING`;
+
+    const result = await this.client.execute(query, { company_id: companyId }, { prepare: true });
+
+    return (result.rows || []).map(row => this.mapRowToDirectChannel(row));
   }
 }

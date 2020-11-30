@@ -191,7 +191,10 @@ export class Service implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
-    if (options?.mine) {
+    const isDirectWorkspace = context.workspace.workspace_id === ChannelVisibility.DIRECT;
+
+    if (options?.mine || isDirectWorkspace) {
+      // TODO: When direct, get the direct channel members
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
 
       options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
@@ -203,6 +206,23 @@ export class Service implements ChannelService {
 
         return ({ ...channel, ...{ user_member: userChannel } } as unknown) as UserChannel;
       });
+
+      if (isDirectWorkspace) {
+        const channelIds = userChannels
+          .getEntities()
+          .map(channelMember => channelMember.channel_id);
+        const directChannels = await this.listDirectChannels(
+          context.workspace.company_id,
+          channelIds,
+        );
+        result.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
+          const directChannel = find(directChannels, { channel_id: channel.id });
+          return ({
+            ...channel,
+            ...{ members: DirectChannel.getUsersFromString(directChannel.users) },
+          } as unknown) as UserDirectChannel;
+        });
+      }
 
       return result;
     }
@@ -217,6 +237,10 @@ export class Service implements ChannelService {
 
   getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
     return this.service.getDirectChannel(directChannel);
+  }
+
+  listDirectChannels(companyId: string, channelIds: string[]): Promise<DirectChannel[]> {
+    return this.service.listDirectChannels(companyId, channelIds);
   }
 
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
