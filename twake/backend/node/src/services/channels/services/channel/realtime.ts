@@ -1,6 +1,7 @@
 import { User, Workspace, WebsocketMetadata } from "../../../types";
 import { Channel } from "../../entities";
 import { WorkspaceExecutionContext } from "../../types";
+import { isDirectChannel } from "../../utils";
 
 export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {
@@ -34,9 +35,10 @@ export function getPublicRoomName(workspace: Workspace): string {
   return `/companies/${workspace?.company_id}/workspaces/${workspace?.workspace_id}/channels?type=public`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getRoomName(channel: Channel, context?: WorkspaceExecutionContext): string {
-  return getPublicRoomName(context.workspace);
+  return isDirectChannel(channel)
+    ? getDirectChannelRoomName(context.workspace, context.user)
+    : getPublicRoomName(context.workspace);
 }
 
 export function getChannelPath(

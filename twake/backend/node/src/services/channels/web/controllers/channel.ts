@@ -20,6 +20,7 @@ import {
 } from "../types";
 import { WorkspaceExecutionContext } from "../../types";
 import { handleError } from ".";
+import { isDirectChannel } from "../../utils";
 
 export class ChannelCrudController
   implements
@@ -137,7 +138,11 @@ export class ChannelCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser, request.query.mine),
+        websockets: getWorkspaceRooms(
+          request.params,
+          request.currentUser,
+          request.query.mine || isDirectChannel(request.params),
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,
