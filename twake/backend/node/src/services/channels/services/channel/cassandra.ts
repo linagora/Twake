@@ -86,7 +86,7 @@ export class CassandraChannelService implements ChannelService {
           name text,
           owner uuid,
           visibility text,
-          members set<text>,
+          members frozen<set<text>>,
           PRIMARY KEY ((company_id, workspace_id), id)
         );`;
 
@@ -210,9 +210,10 @@ export class CassandraChannelService implements ChannelService {
       options.channels && options.channels.length
         ? ` AND id IN (${options.channels.join(",")})`
         : "";
-    console.log(inChannels);
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?${inChannels};`;
+    const query = `SELECT ${ENTITY_KEYS.join(", ")} FROM ${this.options.keyspace}.${
+      this.table
+    } WHERE company_id = ? AND workspace_id = ?${inChannels};`;
     const result = await this.client.execute(query, context.workspace, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,
