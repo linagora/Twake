@@ -35,6 +35,7 @@ const ENTITY_KEYS = [
   "is_default",
   "archived",
   "archivation_date",
+  "members",
 ] as const;
 
 const TYPE = "channel";
@@ -85,6 +86,7 @@ export class CassandraChannelService implements ChannelService {
           name text,
           owner uuid,
           visibility text,
+          members set<text>,
           PRIMARY KEY ((company_id, workspace_id), id)
         );`;
 
@@ -98,7 +100,7 @@ export class CassandraChannelService implements ChannelService {
           company_id uuid,
           channel_id uuid,
           users text,
-          PRIMARY KEY ((company_id, channel_id, users))
+          PRIMARY KEY ((company_id), users, channel_id)
         );`;
 
     return this.createTable(this.table, query);
@@ -155,7 +157,7 @@ export class CassandraChannelService implements ChannelService {
     const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
-    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
+    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS), { prepare: true });
 
     return new UpdateResult<Channel>(TYPE, updatableChannel);
   }
@@ -194,7 +196,7 @@ export class CassandraChannelService implements ChannelService {
 
   async delete(key: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {
     const query = `DELETE FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
-    await this.client.execute(query, key);
+    await this.client.execute(query, key, { prepare: true });
 
     return new DeleteResult<Channel>(TYPE, key as Channel, true);
   }
@@ -204,7 +206,11 @@ export class CassandraChannelService implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
-    const inChannels = options.channels ? ` AND id IN (${options.channels.join(",")})` : "";
+    const inChannels =
+      options.channels && options.channels.length
+        ? ` AND id IN (${options.channels.join(",")})`
+        : "";
+    console.log(inChannels);
     const paginate = CassandraPagination.from(pagination);
     const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?${inChannels};`;
     const result = await this.client.execute(query, context.workspace, {
@@ -265,29 +271,18 @@ export class CassandraChannelService implements ChannelService {
     company_id: string,
     users: string[] = [],
   ): Promise<DirectChannel> {
-    const id = users.sort().join(",");
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ? AND users = ? ALLOW FILTERING`;
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ? AND users = ?`;
 
-    const result = await this.client.execute(query, { company_id, users: id });
+    const result = await this.client.execute(
+      query,
+      { company_id, users: DirectChannel.getUsersAsString(users) },
+      { prepare: true },
+    );
 
     if (!result.rowLength) {
       return;
     }
 
     return this.mapRowToDirectChannel(result.rows[0]);
-  }
-
-  async listDirectChannels(companyId: string, channelIds: string[]): Promise<DirectChannel[]> {
-    const query = `SELECT * FROM ${this.options.keyspace}.${
-      this.directChannelsTableName
-    } WHERE company_id = ? AND channel_id IN (${channelIds.join(",")}) ALLOW FILTERING`;
-
-    const result = await this.client.execute(query, { company_id: companyId }, { prepare: true });
-
-    if (!result.rowLength) {
-      return;
-    }
-
-    return (result.rows || []).map(row => this.mapRowToDirectChannel(row));
   }
 }

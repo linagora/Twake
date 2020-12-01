@@ -32,6 +32,8 @@ export class Channel {
   // uuid
   @Type(() => String)
   owner: string;
+
+  members: string[] = [];
 }
 
 export class UserChannel extends Channel {
@@ -39,5 +41,5 @@ export class UserChannel extends Channel {
 }
 
 export class UserDirectChannel extends UserChannel {
-  members: string[];
+  direct_channel_members: string[];
 }

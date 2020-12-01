@@ -32,10 +32,6 @@ export const createChannelSchema = {
       },
       resource: {
         type: "object",
-        properties: {
-          name: { type: "string" },
-        },
-        required: ["name"],
       },
     },
     required: ["resource"],

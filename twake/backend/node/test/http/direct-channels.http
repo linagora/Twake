@@ -29,7 +29,6 @@ Authorization: Bearer {{authToken}}
     "icon": "hello",
     "description": "A direct channel",
     "channel_group": "twake",
-    "visibility": "direct",
     "is_default": false,
     "archived": false
   }
@@ -88,7 +87,7 @@ Authorization: Bearer {{authToken}}
 
 {
   "resource": {
-    "favorite": false,
+    "favorite": true,
     "notification_level": "all"
   }
 }
