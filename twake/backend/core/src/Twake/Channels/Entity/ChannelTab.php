@@ -23,7 +23,7 @@ class ChannelTab extends FrontObject
     private $id;
 
     /**
-     * @ORM\Column(name="channel_id", type="twake_timeuuid")
+     * @ORM\Column(name="channel_id", type="twake_uuid")
      * @ORM\Id
      */
     private $channel_id;

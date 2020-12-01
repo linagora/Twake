@@ -35,8 +35,12 @@ class MessageSystem
             return false;
         }
 
+        error_log(json_encode($data));
+
         return $this->hasAccess([
-            "channel_id" => $channel_id
+            "channel_id" => $channel_id,
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"],
         ], $current_user);
     }
 
@@ -61,6 +65,9 @@ class MessageSystem
             "type" => "Channel",
             "edition" => false,
             "object_id" => $channel_id
+        ], [
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"],
         ]);
     }
 

@@ -31,7 +31,7 @@ class Bloc extends SearchableObject
      */
     protected $workspace_id;
     /**
-     * @ORM\Column(name="channel_id", type="twake_timeuuid")
+     * @ORM\Column(name="channel_id", type="twake_uuid")
      * @ORM\Id
      */
     protected $channel_id;

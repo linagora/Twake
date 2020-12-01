@@ -48,14 +48,14 @@ class AccessManager
             }
 
             $cacheKey = $userId."_".$channelId;
-            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => $companyId, "type" => "access_channel", "key"=>$cacheKey));
+            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unknown", "type" => "access_channel", "key"=>$cacheKey));
             if(!$data || !$data->getData()["has_access"]){
 
                 try{
 
                     $secret = $this->app->getContainer()->getParameter("node.secret");
                     $uri = $this->app->getContainer()->getParameter("node.api") . 
-                        "/private/companies/".$companyId."/workspaces/".$workspaceId."/".
+                        "companies/".$companyId."/workspaces/".$workspaceId."/".
                         "channels/".$channelId."/members/".$userId;
             
                     $res = $this->rest->get($uri, [
@@ -71,9 +71,9 @@ class AccessManager
 
                     if(isset($res["has_access"])){
         
-                        $hasAccess = $res["has_access"] === true;
+                        $hasAccess = $res["has_access"] == true;
 
-                        $cache = new CachedFromNode($companyId, "access_channel", $cacheKey, ["has_access" => $hasAccess]);
+                        $cache = new CachedFromNode("unknown", "access_channel", $cacheKey, ["has_access" => $hasAccess]);
                         $this->doctrine->useTTLOnFirstInsert(60*60*6); //6 hours
                         $this->doctrine->persist($cache);
 

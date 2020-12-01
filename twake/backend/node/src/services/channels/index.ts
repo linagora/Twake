@@ -5,6 +5,9 @@ import { getService } from "./services";
 import web from "./web/index";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import PhpNodeAPI from "../../core/platform/services/phpnode/provider";
+import { ChannelMemberCrudController } from "./web/controllers";
+import { FastifyRequest } from "fastify";
+import { ChannelMemberParameters } from "./web/types";
 
 @Prefix("/internal/services/channels/v1")
 @Consumes(["webserver", "phpnode", "database"])
@@ -30,15 +33,18 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
       next();
     });
 
-    //TODO add routing to get channel appartenance
-    /*phpnode.register(internalServer => {
-      // Internal /private
+    phpnode.register((internalServer, _, next) => {
       internalServer.route({
         method: "GET",
-        url: `/private/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/members/:member_id`,
-        handler: () => {}, //membersController.get.bind(membersController),
+        url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id",
+        preValidation: [request => phpnode.accessControl(request, internalServer)],
+        handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
+          const membersController = new ChannelMemberCrudController(this.service.members);
+          membersController.exists(request, reply);
+        },
       });
-    });*/
+      next();
+    });
 
     return this;
   }

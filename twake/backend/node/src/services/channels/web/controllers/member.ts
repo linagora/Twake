@@ -168,6 +168,27 @@ export class ChannelMemberCrudController
       }),
     };
   }
+
+  /**
+   *
+   * @param request Private exists
+   * @param reply
+   */
+  async exists(
+    request: FastifyRequest<{ Params: ChannelMemberParameters }>,
+    reply: FastifyReply,
+  ): Promise<Response> {
+    const resource = await this.service.get(
+      this.getPrimaryKey(request),
+      getExecutionContext(request),
+    );
+
+    if (!resource) {
+      return reply.status(200).send({ has_access: true });
+    }
+
+    return reply.status(200).send({ has_access: true });
+  }
 }
 
 function getExecutionContext(

@@ -376,6 +376,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             "twake_no_salt_text" => "text",
             "twake_string" => "text",
             "twake_timeuuid" => "timeuuid",
+            "twake_uuid" => "timeuuid",
             "array" => "text",
             "twake_boolean" => "tinyint",
             "tinyint" => "tinyint",
