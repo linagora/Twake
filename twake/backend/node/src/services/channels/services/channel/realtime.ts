@@ -11,16 +11,10 @@ export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   };
 }
 
-export function getWorkspaceRooms(
-  workspace: Workspace,
-  user: User,
-  includeDirect: boolean,
-): WebsocketMetadata[] {
-  return [
-    { room: getPublicRoomName(workspace) },
-    { room: getPrivateRoomName(workspace, user) },
-    ...(includeDirect ? [{ room: getDirectChannelRoomName(workspace, user) }] : []),
-  ];
+export function getWorkspaceRooms(workspace: Workspace, user: User): WebsocketMetadata[] {
+  return isDirectChannel(workspace)
+    ? [{ room: getDirectChannelRoomName(workspace, user) }]
+    : [{ room: getPublicRoomName(workspace) }, { room: getPrivateRoomName(workspace, user) }];
 }
 
 export function getDirectChannelRoomName(workspace: Workspace, user: User): string {
