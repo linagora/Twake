@@ -30,7 +30,6 @@ export function Workspace() {
     .map(channel => {
       switch (true) {
         case channel.data.user_member?.favorite:
-          channelCategory.workspace.push(channel);
           channelCategory.favorite.push(channel);
           break;
         case channel.data.channel_group && channel.data.channel_group.length > 1:

@@ -1,16 +1,19 @@
 import React from 'react';
 
+import { ChannelResource } from 'app/models/Channel';
+
 import Languages from 'services/languages/languages.js';
+import ModalManager from 'services/Modal/ModalManager';
+import { Collection } from 'services/CollectionsReact/Collections';
+
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
-import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
-import ModalManager from 'app/services/Modal/ModalManager';
-import ChannelMenu from '../Parts/Channel/ChannelMenu';
-import WorkspaceChannelList from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList';
-import ChannelUI from '../Parts/Channel/Channel';
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
+
+import ChannelWorkspaceEditor from 'scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
+import WorkspaceChannelList from 'scenes/Client/ChannelsBar/Modals/WorkspaceChannelList';
+
 import Menu from 'components/Menus/Menu.js';
-import Icon from 'app/components/Icon/Icon';
-import { Collection } from 'app/services/CollectionsReact/Collections';
+import Icon from 'components/Icon/Icon';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -19,10 +22,6 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const menu = (channel: ChannelType) => {
-    return <ChannelMenu channel={channel} />;
-  };
-
   const addChannel = () => {
     return ModalManager.open(
       <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
@@ -51,19 +50,7 @@ export default (props: Props) => {
   } else {
     channels = props.channels.map(({ data, key }) => {
       return (
-        <ChannelUI
-          key={key}
-          collection={props.collection}
-          name={data.name || ''}
-          icon={data.icon || ''}
-          muted={data.user_member?.notification_level === 'none'}
-          favorite={data.user_member?.favorite || false}
-          unreadMessages={false}
-          visibility={data.visibility || 'public'}
-          notifications={data.messages_count || 0}
-          menu={menu(data)}
-          id={data.id}
-        />
+        <ChannelIntermediate key={key} collection={props.collection} channelId={data.id || ''} />
       );
     });
   }
