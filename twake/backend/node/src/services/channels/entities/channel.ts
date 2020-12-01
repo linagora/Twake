@@ -32,10 +32,6 @@ export class Channel {
   // uuid
   @Type(() => String)
   owner: string;
-
-  static isDirect(channel: Channel): boolean {
-    return channel.workspace_id === ChannelType.DIRECT;
-  }
 }
 
 export class UserChannel extends Channel {

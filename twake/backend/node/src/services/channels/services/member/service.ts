@@ -18,6 +18,7 @@ import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
+import { isDirectChannel } from "../../utils";
 
 export class Service implements MemberService {
   version: "1";
@@ -103,8 +104,10 @@ export class Service implements MemberService {
     pk: ChannelMemberPrimaryKey,
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
-    let channel: Channel;
     const memberToDelete = await this.service.get(pk, context);
+    if (isDirectChannel(context.channel)) {
+      throw CrudExeption.badRequest("Direct channel can not be left");
+    }
 
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");
@@ -116,7 +119,7 @@ export class Service implements MemberService {
 
     const result = await this.service.delete(pk, context);
 
-    this.onDeleted(channel, memberToDelete);
+    this.onDeleted(context.channel, memberToDelete);
 
     return result;
   }

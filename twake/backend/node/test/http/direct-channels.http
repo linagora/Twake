@@ -112,3 +112,15 @@ Authorization: Bearer {{authToken}}
 GET {{directChannelsURL}}/channels/{{directId}}/members/{{currentUserId}}
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+### Leave a direct channel should fail
+
+DELETE {{directChannelsURL}}/channels/{{directId}}/members/{{currentUserId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### Leave a direct channel of another user should fail
+
+DELETE {{directChannelsURL}}/channels/{{directId}}/members/{{member}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

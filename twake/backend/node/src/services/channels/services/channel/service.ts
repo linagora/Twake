@@ -26,6 +26,7 @@ import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
 import { DirectChannel } from "../../entities/direct-channel";
 import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
+import { isDirectChannel } from "../../utils";
 
 export class Service implements ChannelService {
   version: "1";
@@ -169,7 +170,7 @@ export class Service implements ChannelService {
       throw new CrudExeption("Channel not found", 404);
     }
 
-    if (Channel.isDirect(channelToDelete)) {
+    if (isDirectChannel(channelToDelete)) {
       throw new CrudExeption("Direct channel can not be deleted", 400);
     }
 
@@ -192,10 +193,9 @@ export class Service implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
-    const isDirectWorkspace = context.workspace.workspace_id === ChannelVisibility.DIRECT;
+    const isDirectWorkspace = isDirectChannel(context.workspace);
 
     if (options?.mine || isDirectWorkspace) {
-      // TODO: When direct, get the direct channel members
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
 
       options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
@@ -228,7 +228,6 @@ export class Service implements ChannelService {
       return result;
     }
 
-    // TODO: Do not return direct channels the current user is not part of...
     return this.service.list(pagination, options, context);
   }
 
