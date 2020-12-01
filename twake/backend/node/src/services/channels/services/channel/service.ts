@@ -55,11 +55,11 @@ export class Service implements ChannelService {
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
-    const isDirectChannel =
-      options &&
-      options.members &&
-      options.members.length &&
-      channel.visibility === ChannelVisibility.DIRECT;
+    const isDirectChannel = channel.workspace_id === ChannelVisibility.DIRECT;
+
+    if (isDirectChannel) {
+      channel.visibility = ChannelVisibility.DIRECT;
+    }
 
     if (mode === OperationType.UPDATE) {
       logger.debug("Updating channel");
@@ -71,11 +71,10 @@ export class Service implements ChannelService {
 
       const isChannelOwner = this.isChannelOwner(channelToUpdate, context.user);
       const updatableParameters: Partial<Record<keyof Channel, boolean>> = {
-        name: true,
+        name: !isDirectChannel,
         description: true,
         icon: true,
-        is_default: isWorkspaceAdmin || isChannelOwner,
-        visibility: isWorkspaceAdmin || isChannelOwner,
+        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
         archived: isWorkspaceAdmin || isChannelOwner,
       };
 
@@ -103,7 +102,9 @@ export class Service implements ChannelService {
 
     if (mode === OperationType.CREATE) {
       if (isDirectChannel) {
-        logger.info("Direct channel creation");
+        options.members = Array.from(new Set<string>(options?.members || []).add(context.user.id));
+
+        logger.info("Direct channel creation with members %o", options.members);
         if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
           throw CrudExeption.badRequest("Direct Channel creation error: bad workspace");
         }
