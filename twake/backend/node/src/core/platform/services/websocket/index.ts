@@ -5,8 +5,9 @@ import WebSocketAPI from "./provider";
 import websocketPlugin from "./plugin";
 import { WebSocketService } from "./services";
 import { AdaptersConfiguration } from "./types";
+import PhpNodeAPI from "../phpnode/provider";
 
-@Consumes(["webserver"])
+@Consumes(["webserver", "phpnode"])
 @ServiceName("websocket")
 export default class WebSocket extends TwakeService<WebSocketAPI> {
   private service: WebSocketService;
@@ -18,8 +19,8 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
   }
 
   async doInit(): Promise<this> {
-    const webServer = this.context.getProvider<WebServerAPI>("webserver");
-    const fastify = webServer.getServer();
+    const phpnode = this.context.getProvider<PhpNodeAPI>("phpnode");
+    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
 
     this.service = new WebSocketService({
       server: fastify.server,
@@ -34,22 +35,20 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
       io: this.service.getIo(),
     });
 
-    /**
-     * This implementation is for php old code to push on new socket.io server
-     */
-    const globalConfiguration = new Configuration("");
-    fastify.post("/private/pusher", {}, (request, reply) => {
-      const token = (request.headers.authorization || "").trim().split("Token ").pop();
-      const secret = globalConfiguration.get<string>("php_node_api.secret", "");
-      if (secret && token === secret) {
-        const body = request.body as { room: string; data: any };
-        const room = body.room;
-        const data = body.data;
-        this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
-        reply.send({});
-      } else {
-        reply.code(401).send({});
-      }
+    phpnode.register((internalServer, _, next) => {
+      internalServer.route({
+        method: "POST",
+        url: "/pusher",
+        preValidation: [request => phpnode.accessControl(request, internalServer)],
+        handler: (request, reply) => {
+          const body = request.body as { room: string; data: any };
+          const room = body.room;
+          const data = body.data;
+          this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
+          reply.send({});
+        },
+      });
+      next();
     });
 
     return this;

@@ -125,14 +125,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     handler: membersController.delete.bind(membersController),
   });
 
-  // Internal /private
-
-  fastify.route({
-    method: "GET",
-    url: `/private/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/members/:member_id`,
-    handler: membersController.get.bind(membersController),
-  });
-
   next();
 };
 

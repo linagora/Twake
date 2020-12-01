@@ -1,5 +1,5 @@
 {
-  "php_node_api": {
+  "phpnode": {
     "secret": "PHP_NODE_API_SECRET"
   },
   "websocket": {

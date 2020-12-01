@@ -5,7 +5,6 @@ import { User } from 'react-feather';
 import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
 import OldCollections from 'services/Depreciated/Collections/Collections';
-import { ChannelType } from 'app/models/Channel';
 import UsersService from 'services/user/user.js';
 
 export const useChannelListener = (usersIds: string[]) => {
