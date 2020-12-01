@@ -477,6 +477,25 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(createdChannel).toBeDefined();
       done();
     });
+
+    it("should fail when channel name is not defined", async done => {
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource: {
+            description: "The channel description",
+          },
+        },
+      });
+
+      expect(response.statusCode).toEqual(400);
+      done();
+    });
   });
 
   describe("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {

@@ -127,6 +127,10 @@ export class Service implements ChannelService {
           );
           return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
         }
+      } else {
+        if (!channel.name) {
+          throw CrudExeption.badRequest("'name' is required");
+        }
       }
 
       channelToSave = channel;
@@ -271,21 +275,13 @@ export class Service implements ChannelService {
     const savedChannel = result.entity;
 
     if (mode === OperationType.CREATE) {
-      const isDirect =
-        options &&
-        options.members &&
-        options.members.length &&
-        channel.visibility === ChannelVisibility.DIRECT;
-
-      if (isDirect) {
+      if (isDirectChannel(channel)) {
         const directChannel = {
           channel_id: savedChannel.id,
           company_id: savedChannel.company_id,
           users: DirectChannel.getUsersAsString(options.members),
         } as DirectChannel;
-        // add members
-        // invite members
-        // etc...
+
         await this.createDirectChannel(directChannel);
 
         const members = options.members.map(user_id => {

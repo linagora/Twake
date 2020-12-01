@@ -26,7 +26,6 @@ Authorization: Bearer {{authToken}}
     "members": ["{{member}}"]
   },
   "resource": {
-    "name": "A direct channel",
     "icon": "hello",
     "description": "A direct channel",
     "channel_group": "twake",
