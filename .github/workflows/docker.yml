@@ -3,8 +3,8 @@ name: docker-build
 on:
   pull_request:
     branches: [main, "feature/*"]
-    paths:
-      - "twake/docker/**"
+#    paths:
+#      - "twake/docker/**"
 
 jobs:
   build-nginx:
