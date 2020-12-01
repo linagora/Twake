@@ -28,14 +28,33 @@ export type Message = {
 class MessagesListServerUtilsManager {
   services: { [key: string]: MessagesListServerUtils } = {};
   constructor() {}
-  get(channelId: string, threadId: string, collectionKey: string) {
+  getByChannelId(channelId: string, threadId: string, collectionKey: string) {
+    const key = channelId + '_' + collectionKey;
+    if (this.services[key]) {
+      return this.services[key];
+    }
+  }
+
+  get(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    threadId: string,
+    collectionKey: string,
+  ) {
     const key = channelId + '_' + collectionKey;
     if (this.services[key]) {
       //@ts-ignore
       window.MessagesListServerUtils = this.services[key];
       return this.services[key];
     }
-    this.services[key] = new MessagesListServerUtils(channelId, threadId, collectionKey);
+    this.services[key] = new MessagesListServerUtils(
+      companyId,
+      workspaceId,
+      channelId,
+      threadId,
+      collectionKey,
+    );
     return this.services[key];
   }
 }
@@ -50,6 +69,8 @@ export class MessagesListServerUtils extends Observable {
   numberOfLoadedMessages: number = 20;
 
   //Contructor
+  companyId: string = '';
+  workspaceId: string = '';
   channelId: string = '';
   threadId: string = '';
   collectionKey: string = '';
@@ -65,9 +86,17 @@ export class MessagesListServerUtils extends Observable {
 
   httpLoading: boolean = false;
 
-  constructor(channelId: string, threadId: string, collectionKey: string) {
+  constructor(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    threadId: string,
+    collectionKey: string,
+  ) {
     super();
 
+    this.companyId = companyId;
+    this.workspaceId = workspaceId;
     this.channelId = channelId;
     this.threadId = threadId;
     this.collectionKey = collectionKey;
@@ -106,6 +135,8 @@ export class MessagesListServerUtils extends Observable {
             http_base_url: 'discussion',
             http_options: {
               channel_id: this.channelId,
+              company_id: this.companyId,
+              workspace_id: this.workspaceId,
               parent_message_id: this.threadId,
               limit: 20,
               offset: false,

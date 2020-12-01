@@ -127,7 +127,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
 
   // Internal /private
 
-  fastify.prefix = "";
   fastify.route({
     method: "GET",
     url: `/private/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/members/:member_id`,

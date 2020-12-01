@@ -3,6 +3,7 @@
 namespace Twake\Core\Services;
 
 use App\App;
+use Twake\Core\Entity\CachedFromNode;
 
 class AccessManager
 {
@@ -10,6 +11,7 @@ class AccessManager
     public function __construct(App $app)
     {
         $this->app = $app;
+        $this->rest = $app->getServices()->get("app.restclient");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->memberservice = $app->getServices()->get("app.workspace_members");
     }
@@ -37,34 +39,54 @@ class AccessManager
             //Use new node backend for this and cache result
             $userId = $current_user_id;
             $channelId = $id;
-            $companyId = ""; //TODO
-            $workspaceId = ""; //TODO
+            $companyId = $options["company_id"]; //TODO
+            $workspaceId = $options["workspace_id"]; //TODO
+
+            $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $userId . "", "channel_id" => $channelId));
+            if ($linkChannel) {
+                return true;
+            }
 
             $cacheKey = $userId."_".$channelId;
-            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("type" => "access_channel", "key"=>$cacheKey));
+            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => $companyId, "type" => "access_channel", "key"=>$cacheKey));
             if(!$data || !$data->getData()["has_access"]){
 
-                $secret = $this->app->getContainer()->getParameter("node.secret");
-                $uri = $this->app->getContainer()->getParameter("node.api") . 
-                    "/private/companies/".$companyId."/workspaces/".$workspaceId."/".
-                    "channels/".$channelId."/members/".$userId;
+                try{
+
+                    $secret = $this->app->getContainer()->getParameter("node.secret");
+                    $uri = $this->app->getContainer()->getParameter("node.api") . 
+                        "/private/companies/".$companyId."/workspaces/".$workspaceId."/".
+                        "channels/".$channelId."/members/".$userId;
+            
+                    $res = $this->rest->get($uri, [
+                        CURLOPT_HTTPHEADER => Array(
+                            "Authorization: Token ".$secret,
+                            "Content-Type: application/json"
+                        ),
+                        CURLOPT_CONNECTTIMEOUT => 1,
+                        CURLOPT_TIMEOUT => 1
+                    ]);
+                    $res = $res->getContent();
+                    $res = json_decode($res, 1);
+
+                    if(isset($res["has_access"])){
         
-                $result = $this->rest->get($uri, [
-                    CURLOPT_HTTPHEADER => Array(
-                        "Authorization: Token ".$secret,
-                        "Content-Type: application/json"
-                    ),
-                    CURLOPT_CONNECTTIMEOUT => 1,
-                    CURLOPT_TIMEOUT => 1
-                ]);
+                        $hasAccess = $res["has_access"] === true;
 
-                $hasAccess = $result["has_access"] === true;
+                        $cache = new CachedFromNode($companyId, "access_channel", $cacheKey, ["has_access" => $hasAccess]);
+                        $this->doctrine->useTTLOnFirstInsert(60*60*6); //6 hours
+                        $this->doctrine->persist($cache);
 
-                $cache = new CachedFromNode("access_channel", $cacheKey, ["has_access" => $hasAccess]);
-                $this->doctrine->useTTLOnFirstInsert(60*60*6); //6 hours
-                $this->doctrine->persist($cache);
+                        return $hasAccess;
 
-                return $hasAccess;
+                    }
+
+
+                }catch(\Exception $err){
+                    error_log($err);
+                }
+
+                return false;
             }
 
             return true;
