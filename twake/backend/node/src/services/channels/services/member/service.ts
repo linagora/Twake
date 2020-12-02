@@ -19,6 +19,7 @@ import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 import { isDirectChannel } from "../../utils";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 
 export class Service implements MemberService {
   version: "1";
@@ -36,7 +37,7 @@ export class Service implements MemberService {
   }
 
   @RealtimeSaved<ChannelMember>(
-    (member, context) => getRoomName(context as ChannelExecutionContext),
+    (member, context) => ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
     (member, context) => getMemberPath(member, context as ChannelExecutionContext),
   )
   async save(
@@ -97,7 +98,7 @@ export class Service implements MemberService {
   }
 
   @RealtimeDeleted<ChannelMember>(
-    (member, context) => getRoomName(context as ChannelExecutionContext),
+    (member, context) => ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
     (member, context) => getMemberPath(member, context as ChannelExecutionContext),
   )
   async delete(

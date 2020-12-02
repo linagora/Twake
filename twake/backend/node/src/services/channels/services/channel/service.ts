@@ -27,6 +27,7 @@ import { ChannelService } from "../../provider";
 import { DirectChannel } from "../../entities/direct-channel";
 import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 import { isDirectChannel } from "../../utils";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -44,7 +45,8 @@ export class Service implements ChannelService {
   }
 
   @RealtimeSaved<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   async save(
@@ -150,7 +152,8 @@ export class Service implements ChannelService {
   }
 
   @RealtimeUpdated<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   update(
@@ -162,7 +165,8 @@ export class Service implements ChannelService {
   }
 
   @RealtimeDeleted<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   async delete(
