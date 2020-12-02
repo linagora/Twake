@@ -13,17 +13,21 @@ import {
   SaveResult,
   OperationType,
   CrudExeption,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelPrimaryKey, MemberService } from "../../provider";
+import { logger } from "../../../../core/platform/framework";
 
-import { Channel, UserChannel } from "../../entities";
+import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
-import { WorkspaceExecutionContext } from "../../types";
+import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
+import { DirectChannel } from "../../entities/direct-channel";
+import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
+import { isDirectChannel } from "../../utils";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -41,29 +45,39 @@ export class Service implements ChannelService {
   }
 
   @RealtimeSaved<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
-  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
+  async save(
+    channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
+  ): Promise<SaveResult<Channel>> {
     let channelToUpdate: Channel;
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
+    const isDirectChannel = channel.workspace_id === ChannelVisibility.DIRECT;
+
+    if (isDirectChannel) {
+      channel.visibility = ChannelVisibility.DIRECT;
+    }
 
     if (mode === OperationType.UPDATE) {
+      logger.debug("Updating channel");
       channelToUpdate = await this.get(this.getPrimaryKey(channel), context);
 
       if (!channelToUpdate) {
-        throw new CrudExeption("Channel not found", 404);
+        throw CrudExeption.notFound("Channel not found");
       }
 
       const isChannelOwner = this.isChannelOwner(channelToUpdate, context.user);
       const updatableParameters: Partial<Record<keyof Channel, boolean>> = {
-        name: true,
+        name: !isDirectChannel,
         description: true,
         icon: true,
-        is_default: isWorkspaceAdmin || isChannelOwner,
-        visibility: isWorkspaceAdmin || isChannelOwner,
+        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
         archived: isWorkspaceAdmin || isChannelOwner,
       };
 
@@ -72,13 +86,13 @@ export class Service implements ChannelService {
       const fields = Object.keys(channelDiff) as Array<Partial<keyof Channel>>;
 
       if (!fields.length) {
-        throw new CrudExeption("Nothing to update", 400);
+        throw CrudExeption.badRequest("Nothing to update");
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
 
       if (!updatableFields.length) {
-        throw new CrudExeption("Current user can not update requested fields", 400);
+        throw CrudExeption.badRequest("Current user can not update requested fields");
       }
 
       channelToSave = cloneDeep(channelToUpdate);
@@ -90,12 +104,45 @@ export class Service implements ChannelService {
     }
 
     if (mode === OperationType.CREATE) {
+      if (isDirectChannel) {
+        options.members = Array.from(new Set<string>(options?.members || []).add(context.user.id));
+        channel.members = options.members;
+
+        logger.info("Direct channel creation with members %o", options.members);
+        if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
+          throw CrudExeption.badRequest("Direct Channel creation error: bad workspace");
+        }
+
+        const directChannel = await this.getDirectChannelInCompany(
+          context.workspace.company_id,
+          options.members,
+        );
+
+        if (directChannel) {
+          logger.info("Direct channel already exists");
+          const existingChannel = await this.get(
+            {
+              company_id: context.workspace.company_id,
+              id: directChannel.channel_id,
+              workspace_id: ChannelType.DIRECT,
+            },
+            context,
+          );
+          return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
+        }
+      } else {
+        if (!channel.name) {
+          throw CrudExeption.badRequest("'name' is required");
+        }
+      }
+
       channelToSave = channel;
     }
 
-    const saveResult = await this.service.save(channelToSave, context);
+    logger.info("Creating channel %o", channelToSave);
+    const saveResult = await this.service.save(channelToSave, options, context);
 
-    this.onSaved(channelToSave, saveResult, mode);
+    await this.onSaved(channelToSave, options, context, saveResult, mode);
 
     return saveResult;
   }
@@ -105,7 +152,8 @@ export class Service implements ChannelService {
   }
 
   @RealtimeUpdated<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   update(
@@ -117,7 +165,8 @@ export class Service implements ChannelService {
   }
 
   @RealtimeDeleted<Channel>(
-    (channel, context) => getRoomName(channel, context as WorkspaceExecutionContext),
+    (channel, context) =>
+      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
     (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
   )
   async delete(
@@ -130,7 +179,7 @@ export class Service implements ChannelService {
       throw new CrudExeption("Channel not found", 404);
     }
 
-    if (Channel.isDirect(channelToDelete)) {
+    if (isDirectChannel(channelToDelete)) {
       throw new CrudExeption("Direct channel can not be deleted", 400);
     }
 
@@ -150,10 +199,12 @@ export class Service implements ChannelService {
 
   async list(
     pagination: Pagination,
-    options: ListOptions,
+    options: ChannelListOptions,
     context: WorkspaceExecutionContext,
-  ): Promise<ListResult<Channel | UserChannel>> {
-    if (options?.mine) {
+  ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
+    const isDirectWorkspace = isDirectChannel(context.workspace);
+
+    if (options?.mine || isDirectWorkspace) {
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
 
       options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
@@ -166,10 +217,33 @@ export class Service implements ChannelService {
         return ({ ...channel, ...{ user_member: userChannel } } as unknown) as UserChannel;
       });
 
+      if (isDirectWorkspace) {
+        result.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
+          return ({
+            ...channel,
+            ...{
+              direct_channel_members: channel.members || [],
+            },
+          } as unknown) as UserDirectChannel;
+        });
+      }
+
       return result;
     }
 
     return this.service.list(pagination, options, context);
+  }
+
+  createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    return this.service.createDirectChannel(directChannel);
+  }
+
+  getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    return this.service.getDirectChannel(directChannel);
+  }
+
+  getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
+    return this.service.getDirectChannelInCompany(companyId, users);
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
@@ -186,20 +260,45 @@ export class Service implements ChannelService {
    * @param channel The channel before update has been processed
    * @param result The channel update result
    */
-  onSaved(
+  async onSaved(
     channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
     result: SaveResult<Channel>,
     mode: OperationType.CREATE | OperationType.UPDATE,
-  ): void {
-    const saved = result.entity;
+  ): Promise<void> {
+    const savedChannel = result.entity;
 
-    if (!saved) {
-      return;
+    if (mode === OperationType.CREATE) {
+      if (isDirectChannel(channel)) {
+        const directChannel = {
+          channel_id: savedChannel.id,
+          company_id: savedChannel.company_id,
+          users: DirectChannel.getUsersAsString(options.members),
+        } as DirectChannel;
+
+        await this.createDirectChannel(directChannel);
+
+        const members = options.members.map(user_id => {
+          return {
+            user_id,
+            channel_id: savedChannel.id,
+            workspace_id: savedChannel.workspace_id,
+            company_id: savedChannel.company_id,
+          } as ChannelMember;
+        });
+
+        await Promise.all(
+          members.map(member =>
+            this.members.save(member, {}, { channel: savedChannel, user: context.user }),
+          ),
+        );
+      }
     }
 
     const pushUpdates = {
-      is_default: !!saved.is_default && saved.is_default !== channel.is_default,
-      archived: !!saved.archived && saved.archived !== channel.archived,
+      is_default: !!savedChannel.is_default && savedChannel.is_default !== channel.is_default,
+      archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
     console.log(`PUSH ${mode}`, pushUpdates);

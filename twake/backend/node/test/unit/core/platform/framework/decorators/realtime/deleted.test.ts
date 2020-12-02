@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { DeleteResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeDeleted } from "../../../../../../../src/core/platform/framework/decorators";
 import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
+import { ResourcePath } from "../../../../../../../src/core/platform/services/realtime/types";
 
 describe("The RealtimeDeleted decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
@@ -46,7 +47,10 @@ describe("The RealtimeDeleted decorator", () => {
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
     expect(emitSpy).toHaveBeenCalledWith("deleted", {
-      path: "/foo/bar",
+      room: {
+        name: "default",
+        path: ["/foo/bar"],
+      } as ResourcePath,
       resourcePath: "/foo/bar/baz",
       entity: "oloy",
       type: "string",
@@ -67,7 +71,7 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted(result => `/foo/bar/${result}`, "/foo/bar/baz")
+      @RealtimeDeleted(result => ResourcePath.get(`/foo/bar/${result}`), "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
@@ -82,7 +86,10 @@ describe("The RealtimeDeleted decorator", () => {
     expect(originalSpy).toHaveBeenCalledWith("yolo");
     expect(emitSpy).toHaveBeenCalledTimes(1);
     expect(emitSpy).toHaveBeenCalledWith("deleted", {
-      path: "/foo/bar/oloy",
+      room: {
+        name: "default",
+        path: ["/foo/bar/oloy"],
+      } as ResourcePath,
       resourcePath: "/foo/bar/baz",
       entity: "oloy",
       type: "string",

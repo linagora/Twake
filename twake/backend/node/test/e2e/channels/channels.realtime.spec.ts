@@ -33,7 +33,7 @@ describe("The Channels Realtime feature", () => {
   });
 
   function connect() {
-    socket = io.connect("http://localhost:3000", { path: "/socket.io" });
+    socket = io.connect("http://localhost:3000", { path: "/socket" });
     socket.connect();
   }
 
@@ -95,6 +95,7 @@ describe("The Channels Realtime feature", () => {
 
       const creationResult = await channelService.channels.save(
         channel,
+        {},
         channelUtils.getContext({ id: channel.owner }),
       );
 

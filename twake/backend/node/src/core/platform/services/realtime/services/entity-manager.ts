@@ -3,6 +3,8 @@ import { RealtimeEntityActionType, RealtimeEntityEvent } from "../types";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { eventBus } from "../bus";
 
+const REALTIME_RESOURCE = "realtime:resource";
+
 export default class RealtimeEntityManager {
   constructor(private ws: WebSocketAPI) {}
 
@@ -28,15 +30,17 @@ export default class RealtimeEntityManager {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     event: RealtimeEntityEvent<any>,
     action: RealtimeEntityActionType,
-  ): boolean {
-    logger.info(`Pushing ${action} entity to room ${event.path}`);
+  ): void {
+    event.room.path.forEach(path => {
+      logger.info(`Pushing ${action} entity to room ${path}`);
 
-    return this.ws.getIo().to(event.path).emit("realtime:resource", {
-      action,
-      room: event.path,
-      type: event.type,
-      path: event.resourcePath,
-      resource: event.entity,
+      this.ws.getIo().to(path).emit(REALTIME_RESOURCE, {
+        action,
+        room: path,
+        type: event.type,
+        path: event.resourcePath,
+        resource: event.entity,
+      });
     });
   }
 }

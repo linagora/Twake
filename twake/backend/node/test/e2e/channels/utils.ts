@@ -11,6 +11,7 @@ import { TestPlatform } from "../setup";
 export interface ChannelUtils {
   getContext(user?: User): WorkspaceExecutionContext;
   getChannel(owner?: string): Channel;
+  getDirectChannel(owner?: string): Channel;
   getChannelContext(channel: Channel, user: User): ChannelExecutionContext;
 }
 
@@ -18,6 +19,7 @@ export function get(platform: TestPlatform): ChannelUtils {
   return {
     getContext,
     getChannel,
+    getDirectChannel,
     getChannelContext,
   };
 
@@ -50,6 +52,16 @@ export function get(platform: TestPlatform): ChannelUtils {
     channel.visibility = ChannelVisibility.PRIVATE;
     channel.archived = false;
     channel.owner = owner;
+
+    return channel;
+  }
+
+  function getDirectChannel(owner: string = uuidv4()): Channel {
+    const channel = getChannel(owner);
+
+    channel.visibility = ChannelVisibility.DIRECT;
+    channel.workspace_id = ChannelVisibility.DIRECT;
+    channel.name = "A direct channel";
 
     return channel;
   }

@@ -1,4 +1,4 @@
-import { PathResolver, getPath } from "..";
+import { getPath, getRoom, PathResolver, RealtimePath } from "..";
 import { DeleteResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
 import { eventBus } from "../../../services/realtime/bus";
@@ -9,7 +9,7 @@ import { eventBus } from "../../../services/realtime/bus";
  * @param resourcePath the path of the resource itself
  */
 export function RealtimeDeleted<T>(
-  path: string | PathResolver<T>,
+  room: RealtimePath<T>,
   resourcePath?: string | PathResolver<T>,
 ): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -28,7 +28,7 @@ export function RealtimeDeleted<T>(
       result.deleted &&
         eventBus.publish<T>(RealtimeEntityActionType.Deleted, {
           type: result.type,
-          path: getPath(path, result, context),
+          room: getRoom(room, result, context),
           resourcePath: getPath(resourcePath, result, context),
           entity: result.entity,
           result,

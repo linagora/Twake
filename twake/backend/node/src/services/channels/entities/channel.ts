@@ -7,7 +7,6 @@ export class Channel {
   @Type(() => String)
   company_id: string;
 
-  // "uuid-v4" | "direct"
   @Type(() => String)
   workspace_id: string | ChannelType.DIRECT;
 
@@ -34,11 +33,13 @@ export class Channel {
   @Type(() => String)
   owner: string;
 
-  static isDirect(channel: Channel): boolean {
-    return channel.workspace_id === ChannelType.DIRECT;
-  }
+  members: string[] = [];
 }
 
 export class UserChannel extends Channel {
   user_member: ChannelMember;
+}
+
+export class UserDirectChannel extends UserChannel {
+  direct_channel_members: string[];
 }

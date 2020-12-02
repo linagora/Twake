@@ -24,12 +24,14 @@ export const createChannelSchema = {
   body: {
     type: "object",
     properties: {
-      resource: {
+      options: {
         type: "object",
         properties: {
-          name: { type: "string" },
+          members: { type: "array" },
         },
-        required: ["name"],
+      },
+      resource: {
+        type: "object",
       },
     },
     required: ["resource"],

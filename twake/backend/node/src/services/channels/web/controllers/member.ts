@@ -75,7 +75,7 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await this.service.save(entity, getExecutionContext(request));
+      const result = await this.service.save(entity, {}, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(201);
@@ -99,7 +99,7 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await this.service.save(entity, getExecutionContext(request));
+      const result = await this.service.save(entity, {}, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(200);

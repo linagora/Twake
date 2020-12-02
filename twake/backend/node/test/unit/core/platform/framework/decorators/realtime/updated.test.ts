@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { UpdateResult } from "../../../../../../../src/core/platform/framework/api/crud-service";
 import { RealtimeUpdated } from "../../../../../../../src/core/platform/framework/decorators";
 import { eventBus } from "../../../../../../../src/core/platform/services/realtime/bus";
+import { ResourcePath } from "../../../../../../../src/core/platform/services/realtime/types";
 
 describe("The RealtimeUpdated decorator", () => {
   it("should call the original method send back original result but do not emit event if result type is wrong", async done => {
@@ -47,7 +48,10 @@ describe("The RealtimeUpdated decorator", () => {
     expect(emitSpy).toHaveBeenCalledTimes(1);
     expect(emitSpy).toHaveBeenCalledWith("updated", {
       entity: "oloy",
-      path: "/foo/bar",
+      room: {
+        name: "default",
+        path: ["/foo/bar"],
+      } as ResourcePath,
       resourcePath: "/foo/bar/baz",
       type: "string",
       result: {
@@ -68,7 +72,7 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated(result => `/foo/bar/${result}`, "/foo/bar/baz")
+      @RealtimeUpdated(result => ResourcePath.get(`/foo/bar/${result}`), "/foo/bar/baz")
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
         return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
@@ -84,7 +88,10 @@ describe("The RealtimeUpdated decorator", () => {
     expect(emitSpy).toHaveBeenCalledTimes(1);
     expect(emitSpy).toHaveBeenCalledWith("updated", {
       entity: "oloy",
-      path: "/foo/bar/oloy",
+      room: {
+        name: "default",
+        path: ["/foo/bar/oloy"],
+      } as ResourcePath,
       resourcePath: "/foo/bar/baz",
       type: "string",
       result: {

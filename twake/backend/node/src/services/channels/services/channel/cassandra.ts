@@ -10,7 +10,6 @@ import {
 import {
   CreateResult,
   DeleteResult,
-  ListOptions,
   ListResult,
   OperationType,
   Pagination,
@@ -20,6 +19,8 @@ import {
 import { WorkspaceExecutionContext } from "../../types";
 import { pick } from "../../../../utils/pick";
 import { logger } from "../../../../core/platform/framework";
+import { DirectChannel } from "../../entities/direct-channel";
+import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 
 const ENTITY_KEYS = [
   "company_id",
@@ -34,6 +35,7 @@ const ENTITY_KEYS = [
   "is_default",
   "archived",
   "archivation_date",
+  "members",
 ] as const;
 
 const TYPE = "channel";
@@ -41,11 +43,12 @@ const TYPE = "channel";
 export class CassandraChannelService implements ChannelService {
   version = "1";
   private readonly table = `${TYPE}s`;
+  private readonly directChannelsTableName = `direct_${this.table}`;
 
   constructor(private client: cassandra.Client, private options: CassandraConnectionOptions) {}
 
   async init(): Promise<this> {
-    await this.createTable();
+    await Promise.all([this.createChannelTable(), this.createDirectChannelTable()]);
 
     if (this.options.wait) {
       await waitForTable(
@@ -55,27 +58,77 @@ export class CassandraChannelService implements ChannelService {
         this.options.retries,
         this.options.delay,
       );
+      await waitForTable(
+        this.client,
+        this.options.keyspace,
+        this.directChannelsTableName,
+        this.options.retries,
+        this.options.delay,
+      );
     }
 
     return this;
   }
 
-  async createTable(): Promise<boolean> {
+  protected async createChannelTable(): Promise<boolean> {
+    const query = `
+      CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.table}
+        (
+          company_id uuid,
+          workspace_id text,
+          id uuid,
+          archivation_date date,
+          archived boolean,
+          channel_group text,
+          description text,
+          icon text,
+          is_default boolean,
+          name text,
+          owner uuid,
+          visibility text,
+          members frozen<set<text>>,
+          PRIMARY KEY ((company_id, workspace_id), id)
+        );`;
+
+    return this.createTable(this.table, query);
+  }
+
+  protected async createDirectChannelTable(): Promise<boolean> {
+    const query = `
+      CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.directChannelsTableName}
+        (
+          company_id uuid,
+          channel_id uuid,
+          users text,
+          PRIMARY KEY ((company_id), users, channel_id)
+        );`;
+
+    return this.createTable(this.table, query);
+  }
+
+  private async createTable(tableName: string, query: string): Promise<boolean> {
     let result = true;
 
     try {
-      await this.client.execute(
-        `CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.table}(company_id uuid, workspace_id uuid, id uuid, archivation_date date, archived boolean, channel_group text, description text, icon text, is_default boolean, name text, owner uuid, visibility text, PRIMARY KEY ((company_id, workspace_id), id));`,
-      );
+      logger.debug(`service.channel.createTable - Creating table ${tableName} : ${query}`);
+      await this.client.execute(query);
     } catch (err) {
-      logger.error({ err }, "Table creation error for channels");
+      logger.warn(
+        { err },
+        `service.channel.createTable creation error for table ${tableName} : ${err.message}`,
+      );
+      console.log(err);
       result = false;
     }
 
     return result;
   }
 
-  async save(channel: Channel, context: WorkspaceExecutionContext): Promise<SaveResult<Channel>> {
+  async save(
+    channel: Channel,
+    options: ChannelSaveOptions,
+    context: WorkspaceExecutionContext,
+  ): Promise<SaveResult<Channel>> {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     let resultChannel: Channel;
 
@@ -104,7 +157,7 @@ export class CassandraChannelService implements ChannelService {
     const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
-    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS));
+    await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS), { prepare: true });
 
     return new UpdateResult<Channel>(TYPE, updatableChannel);
   }
@@ -123,14 +176,16 @@ export class CassandraChannelService implements ChannelService {
     const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
 
-    await this.client.execute(query, saveChannel, { prepare: false });
+    logger.info("service.channel.create - %s - %o", query, saveChannel);
+
+    await this.client.execute(query, saveChannel, { prepare: true });
 
     return new CreateResult<Channel>(TYPE, saveChannel as Channel);
   }
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
     const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
-    const row = (await this.client.execute(query, key)).first();
+    const row = (await this.client.execute(query, key, { prepare: true })).first();
 
     if (!row) {
       return;
@@ -141,29 +196,33 @@ export class CassandraChannelService implements ChannelService {
 
   async delete(key: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {
     const query = `DELETE FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
-    await this.client.execute(query, key);
+    await this.client.execute(query, key, { prepare: true });
 
     return new DeleteResult<Channel>(TYPE, key as Channel, true);
   }
 
   async list(
     pagination: Pagination,
-    options: ListOptions,
+    options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
-    const inChannels = options.channels ? ` AND id IN (${options.channels.join(",")})` : "";
+    const inChannels =
+      options.channels && options.channels.length
+        ? ` AND id IN (${options.channels.join(",")})`
+        : "";
     const paginate = CassandraPagination.from(pagination);
-    const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE company_id = ? AND workspace_id = ?${inChannels};`;
+    const query = `SELECT ${ENTITY_KEYS.join(", ")} FROM ${this.options.keyspace}.${
+      this.table
+    } WHERE company_id = ? AND workspace_id = ?${inChannels};`;
     const result = await this.client.execute(query, context.workspace, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,
+      prepare: true,
     });
 
     if (!result.rowLength) {
       return new ListResult<Channel>(TYPE, []);
     }
-
-    result.nextPage;
 
     return new ListResult<Channel>(
       TYPE,
@@ -179,5 +238,52 @@ export class CassandraChannelService implements ChannelService {
     (row.keys() || []).forEach(key => (channel[key] = row.get(key)));
 
     return plainToClass(Channel, channel);
+  }
+
+  mapRowToDirectChannel(row: cassandra.types.Row): DirectChannel {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const channel: { [column: string]: any } = {};
+
+    (row.keys() || []).forEach(key => (channel[key] = row.get(key)));
+
+    return plainToClass(DirectChannel, channel);
+  }
+
+  async createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    const query = `INSERT INTO ${this.options.keyspace}.${this.directChannelsTableName} (company_id, channel_id, users) VALUES (?, ?, ?)`;
+
+    await this.client.execute(query, directChannel);
+
+    return directChannel;
+  }
+
+  async getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ? AND channel_id = ? AND users = ?;`;
+    const result = await this.client.execute(query, directChannel);
+
+    if (!result.rowLength) {
+      return;
+    }
+
+    return this.mapRowToDirectChannel(result.rows[0]);
+  }
+
+  async getDirectChannelInCompany(
+    company_id: string,
+    users: string[] = [],
+  ): Promise<DirectChannel> {
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ? AND users = ?`;
+
+    const result = await this.client.execute(
+      query,
+      { company_id, users: DirectChannel.getUsersAsString(users) },
+      { prepare: true },
+    );
+
+    if (!result.rowLength) {
+      return;
+    }
+
+    return this.mapRowToDirectChannel(result.rows[0]);
   }
 }
