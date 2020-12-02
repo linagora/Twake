@@ -1,15 +1,17 @@
-import { FastifyPluginCallback, FastifyReply, FastifyRequest, RouteHandlerMethod } from "fastify";
+import { FastifyRequest, RouteHandlerMethod } from "fastify";
 import { FastifyInstance } from "fastify/types/instance";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Consumes, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
+import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
 
-@Consumes(["webserver"])
+@Consumes(["webserver", "websocket"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
   name = "phpnode";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
+  private ws: WebSocketAPI;
 
   api(): PhpNodeAPI {
     return this;
@@ -55,6 +57,23 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
 
   async doInit(): Promise<this> {
     this.server = this.context.getProvider<WebServerAPI>("webserver").getServer();
+    this.ws = this.context.getProvider<WebSocketAPI>("websocket");
+
+    /**
+     * Register private calls from php for websockets
+     */
+    this.register({
+      method: "POST",
+      url: "/pusher",
+      handler: (request, reply) => {
+        const body = request.body as { room: string; data: any };
+        const room = body.room;
+        const data = body.data;
+        this.ws.getIo().to(room).emit("realtime:event", { name: room, data: data });
+        reply.send({});
+      },
+    });
+
     return this;
   }
 }

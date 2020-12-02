@@ -56,7 +56,7 @@ class AccessManager
                     $secret = $this->app->getContainer()->getParameter("node.secret");
                     $uri = $this->app->getContainer()->getParameter("node.api") . 
                         "companies/".$companyId."/workspaces/".$workspaceId."/".
-                        "channels/".$channelId."/members/".$userId;
+                        "channels/".$channelId."/members/".$userId."/exists";
             
                     $res = $this->rest->get($uri, [
                         CURLOPT_HTTPHEADER => Array(
