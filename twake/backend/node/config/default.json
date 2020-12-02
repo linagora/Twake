@@ -1,13 +1,13 @@
 {
   "services": [
     "auth",
-    "phpnode",
     "user",
     "channels",
     "webserver",
     "websocket",
     "database",
-    "realtime"
+    "realtime",
+    "phpnode"
   ],
   "webserver": {
     "port": 3000,

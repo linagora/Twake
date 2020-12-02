@@ -4,13 +4,9 @@ import ChannelServiceAPI from "./provider";
 import { getService } from "./services";
 import web from "./web/index";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import PhpNodeAPI from "../../core/platform/services/phpnode/provider";
-import { ChannelMemberCrudController } from "./web/controllers";
-import { FastifyRequest } from "fastify";
-import { ChannelMemberParameters } from "./web/types";
 
 @Prefix("/internal/services/channels/v1")
-@Consumes(["webserver", "phpnode", "database"])
+@Consumes(["webserver", "database"])
 export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   version = "1";
   name = "channels";
@@ -21,7 +17,6 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   }
 
   public async doInit(): Promise<this> {
-    const phpnode = this.context.getProvider<PhpNodeAPI>("phpnode");
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
 
@@ -31,18 +26,6 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
       next();
-    });
-
-    /**
-     * Register private calls from php
-     */
-    phpnode.register({
-      method: "GET",
-      url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id/exists",
-      handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
-        const membersController = new ChannelMemberCrudController(this.service.members);
-        membersController.exists(request, reply);
-      },
     });
 
     return this;

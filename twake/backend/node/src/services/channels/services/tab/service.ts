@@ -6,7 +6,6 @@ import {
   SaveResult,
   OperationType,
   UpdateResult,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import { TabService } from "../../provider";
 
@@ -30,7 +29,7 @@ export class Service implements TabService {
     return this;
   }
 
-  async save(tab: Tab, context: ChannelExecutionContext): Promise<SaveResult<Tab>> {
+  async save(tab: Tab, options: {}, context: ChannelExecutionContext): Promise<SaveResult<Tab>> {
     return new SaveResult("none", null, OperationType.CREATE);
   }
 
@@ -45,7 +44,7 @@ export class Service implements TabService {
 
   list(
     pagination: Pagination,
-    options: ListOptions,
+    options: {},
     context: ChannelExecutionContext,
   ): Promise<ListResult<Tab>> {
     return this.service.list(pagination, options, context);
