@@ -6,12 +6,12 @@
   "scripts": {
     "dev:start": "craco start",
     "dev:test": "craco test",
-    "dev:build": "CI=false craco build",
+    "dev:build": "CI=false craco --max_old_space_size=4096 build",
     "dev:prettier": "prettier --write src/",
     "dev:linter": "eslint src/",
     "start": "craco start",
     "test": "CI=true craco test",
-    "build": "scripts/build-version.sh patch && CI=false craco build",
+    "build": "scripts/build-version.sh patch && CI=false craco --max_old_space_size=4096 build",
     "change-version": "scripts/build-version.sh"
   },
   "eslintConfig": {
