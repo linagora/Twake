@@ -32,7 +32,7 @@ export default (props: Props): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
 
   const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelMembersPath = `${channelPath}${props.channel.id}/members/`;
+  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
@@ -59,7 +59,7 @@ export default (props: Props): JSX.Element => {
   };
 
   const addOrCancelFavorite = async (state: boolean) => {
-    let channelMember: ChannelMemberType = {
+    const channelMember: ChannelMemberType = {
       user_id: currentUser.id,
       favorite: state,
     };
