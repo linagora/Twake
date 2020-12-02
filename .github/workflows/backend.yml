@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
@@ -19,7 +19,7 @@ jobs:
         if: always()
         run: cd twake && docker-compose run -e DB_DRIVER=cassandra node npm run test
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
