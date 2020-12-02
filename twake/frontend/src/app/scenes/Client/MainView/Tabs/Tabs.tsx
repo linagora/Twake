@@ -21,7 +21,7 @@ export default (): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
 
   const upsertTab = async (tab: TabResource) => await TabsCollection.upsert(tab);
-  const deleteTab = (tab: TabResource) => TabsCollection.remove(tab);
+  const deleteTab = async (tab: TabResource) => await TabsCollection.remove(tab);
 
   return (
     <Row align="middle" className="main-view-tabs">
