@@ -7,6 +7,7 @@ import { TwakeServiceProvider, Initializable } from "../../core/platform/framewo
 import { Channel, ChannelMember, ChannelMemberPrimaryKey } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
+import { DirectChannel } from "./entities/direct-channel";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -17,7 +18,26 @@ export type ChannelPrimaryKey = {
 export interface ChannelService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<Channel, ChannelPrimaryKey, WorkspaceExecutionContext> {}
+    CRUDService<Channel, ChannelPrimaryKey, WorkspaceExecutionContext> {
+  /**
+   * Create direct channel
+   *
+   * @param directChannel
+   */
+  createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel>;
+
+  /**
+   * Get all the direct channels for a user
+   * TODO: Return a list of Channel with a list of users
+   * @param user
+   */
+  getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel>;
+
+  /**
+   * Get a direct channel in company for given company id and set of users
+   */
+  getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel>;
+}
 export interface MemberService
   extends TwakeServiceProvider,
     Initializable,

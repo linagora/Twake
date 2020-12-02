@@ -8,7 +8,6 @@ import {
   ListResult,
   SaveResult,
   OperationType,
-  ListOptions,
 } from "../../../../core/platform/framework/api/crud-service";
 import {
   CassandraConnectionOptions,
@@ -20,7 +19,8 @@ import { MemberService } from "../../provider";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
 import { logger } from "../../../../core/platform/framework";
-import { User } from "../../../../services/types";
+import { Channel, User } from "../../../../services/types";
+import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 
 const TYPE = "channel_member";
 const USER_CHANNEL_KEYS = [
@@ -100,7 +100,7 @@ export class CassandraMemberService implements MemberService {
       CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.userChannelsTableName}
         (
           company_id uuid,
-          workspace_id uuid,
+          workspace_id text,
           user_id uuid,
           channel_id uuid,
           type text,
@@ -109,7 +109,7 @@ export class CassandraMemberService implements MemberService {
           favorite boolean,
           notification_level text,
           expiration date,
-          PRIMARY KEY ((company_id, workspace_id, user_id), channel_id)
+          PRIMARY KEY ((company_id, workspace_id), user_id, channel_id)
         );`;
 
     return this.createTable(this.userChannelsTableName, query);
@@ -117,18 +117,18 @@ export class CassandraMemberService implements MemberService {
 
   /**
    * Store all the members of a channel.
-   * Partition key is (company_id, workspace_id, channel_id) to allow to get all users in a given channel.
+   * Partition key is (company_id, workspace_id) to allow to get all users in a given channel.
    */
   private async createChannelMembersTable(): Promise<boolean> {
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${this.channelMembersTableName}
         (
           company_id uuid,
-          workspace_id uuid,
+          workspace_id text,
           channel_id uuid,
           user_id uuid,
           type text,
-          PRIMARY KEY ((company_id, workspace_id, channel_id), user_id)
+          PRIMARY KEY ((company_id, workspace_id), channel_id, user_id)
         );`;
 
     return this.createTable(this.channelMembersTableName, query);
@@ -151,6 +151,7 @@ export class CassandraMemberService implements MemberService {
 
   async save(
     member: ChannelMember,
+    options: ChannelMemberSaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     const resultMember = (await this.create(member, context)).entity;
@@ -211,9 +212,11 @@ export class CassandraMemberService implements MemberService {
     const columnValues = "?".repeat(USER_CHANNEL_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.userChannelsTableName} (${columnList}) VALUES (${columnValues})`;
 
-    logger.debug(`service.channel.member.update : ${query} - ${columnValues}`);
+    logger.info(`service.channel.member.update : ${query} - ${columnValues}`);
 
-    await this.client.execute(query, pick(updatableChannel, ...USER_CHANNEL_KEYS));
+    await this.client.execute(query, pick(updatableChannel, ...USER_CHANNEL_KEYS), {
+      prepare: true,
+    });
 
     return new UpdateResult<ChannelMember>(TYPE, updatableChannel);
   }
@@ -221,9 +224,9 @@ export class CassandraMemberService implements MemberService {
   async get(key: ChannelMemberPrimaryKey): Promise<ChannelMember> {
     const query = `SELECT * FROM ${this.options.keyspace}.${this.userChannelsTableName} WHERE ${WHERE}`;
 
-    logger.debug(`service.channel.member.get : ${query}`);
+    logger.info(`service.channel.member.get : ${query}`);
 
-    const row = (await this.client.execute(query, key)).first();
+    const row = (await this.client.execute(query, key, { prepare: true })).first();
 
     if (!row) {
       return;
@@ -236,8 +239,8 @@ export class CassandraMemberService implements MemberService {
     const userChannelQuery = `DELETE FROM ${this.options.keyspace}.${this.userChannelsTableName} WHERE ${WHERE}`;
     const channelMemberQuery = `DELETE FROM ${this.options.keyspace}.${this.channelMembersTableName} WHERE ${WHERE}`;
 
-    logger.debug(`service.channel.member.delete - Batch(1/2) ${userChannelQuery}`);
-    logger.debug(`service.channel.member.delete - Batch(2/2) ${channelMemberQuery}`);
+    logger.info(`service.channel.member.delete - Batch(1/2) ${userChannelQuery}`);
+    logger.info(`service.channel.member.delete - Batch(2/2) ${channelMemberQuery}`);
 
     await this.client.batch(
       [
@@ -258,20 +261,17 @@ export class CassandraMemberService implements MemberService {
 
   list(
     pagination: Paginable,
-    options?: ListOptions,
+    options?: ChannelListOptions,
     context?: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    return this.listChannelMembers(pagination, context);
+    return this.listChannelMembers(context.channel, pagination);
   }
 
-  listChannelMembers(
-    pagination: Paginable,
-    context: ChannelExecutionContext,
-  ): Promise<ListResult<ChannelMember>> {
+  listChannelMembers(channel: Channel, pagination: Paginable): Promise<ListResult<ChannelMember>> {
     const params = {
-      channel_id: context.channel.id,
-      workspace_id: context.channel.workspace_id,
-      company_id: context.channel.company_id,
+      channel_id: channel.id,
+      workspace_id: channel.workspace_id,
+      company_id: channel.company_id,
     };
     const query = `SELECT * FROM ${this.options.keyspace}.${this.channelMembersTableName} WHERE ${WHERE_CHANNEL}`;
 
@@ -299,6 +299,7 @@ export class CassandraMemberService implements MemberService {
     const result = await this.client.execute(query, params, {
       fetchSize: paginate.limit,
       pageState: paginate.page_token,
+      prepare: true,
     });
 
     if (!result.rowLength) {

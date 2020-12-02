@@ -44,6 +44,7 @@ describe("The Channels Members Realtime feature", () => {
       channel = channelUtils.getChannel();
       createdChannel = await channelService.channels.save(
         channel,
+        {},
         channelUtils.getContext({ id: channel.owner }),
       );
     });
@@ -107,6 +108,7 @@ describe("The Channels Members Realtime feature", () => {
 
       const creationResult = await channelService.channels.save(
         channel,
+        {},
         channelUtils.getContext({ id: channel.owner }),
       );
       const member = {
@@ -116,10 +118,14 @@ describe("The Channels Members Realtime feature", () => {
         user_id: platform.currentUser.id,
       } as ChannelMember;
 
-      await channelService.members.save(member, {
-        channel: creationResult.entity,
-        user: platform.currentUser,
-      });
+      await channelService.members.save(
+        member,
+        {},
+        {
+          channel: creationResult.entity,
+          user: platform.currentUser,
+        },
+      );
 
       connect();
       socket.on("connect", () => {

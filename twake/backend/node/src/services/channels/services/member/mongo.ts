@@ -12,6 +12,7 @@ import {
   OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../types";
+import { ChannelMemberSaveOptions } from "../../web/types";
 
 const TYPE = "channel_member";
 
@@ -25,6 +26,7 @@ export class MongoMemberService implements MemberService {
 
   async save(
     member: ChannelMember,
+    options: ChannelMemberSaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     // TODO: Switch create or update

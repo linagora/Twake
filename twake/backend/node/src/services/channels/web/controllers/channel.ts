@@ -13,6 +13,7 @@ import {
   ChannelListQueryParameters,
   ChannelListResponse,
   ChannelParameters,
+  ChannelSaveOptions,
   ChannelUpdateResponse,
   CreateChannelBody,
   UpdateChannelBody,
@@ -72,7 +73,10 @@ export class ChannelCrudController
     });
 
     try {
-      const result = await this.service.save(entity, getExecutionContext(request));
+      const options = {
+        members: request.body.options ? request.body.options.members || [] : [],
+      } as ChannelSaveOptions;
+      const result = await this.service.save(entity, options, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(201);
@@ -101,7 +105,7 @@ export class ChannelCrudController
     });
 
     try {
-      const result = await this.service.save(entity, getExecutionContext(request));
+      const result = await this.service.save(entity, {}, getExecutionContext(request));
 
       if (result.entity) {
         reply.code(201);
@@ -133,7 +137,7 @@ export class ChannelCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser, request.query.mine),
+        websockets: getWorkspaceRooms(request.params, request.currentUser),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,
