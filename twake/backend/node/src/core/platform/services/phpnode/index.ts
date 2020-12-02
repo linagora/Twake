@@ -1,4 +1,4 @@
-import { FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyPluginCallback, FastifyReply, FastifyRequest, RouteHandlerMethod } from "fastify";
 import { FastifyInstance } from "fastify/types/instance";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Consumes, TwakeService } from "../../framework";
@@ -6,7 +6,7 @@ import WebServerAPI from "../webserver/provider";
 import PhpNodeAPI from "./provider";
 
 @Consumes(["webserver"])
-export default class WebServerService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
+export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
   name = "phpnode";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
@@ -31,9 +31,24 @@ export default class WebServerService extends TwakeService<PhpNodeAPI> implement
     }
   }
 
-  register(routes: FastifyPluginCallback) {
+  register(paremeters: {
+    method: "DELETE" | "GET" | "POST" | "PUT";
+    url: string;
+    handler: RouteHandlerMethod;
+  }) {
     this.server.register((instance, _opts, next) => {
-      instance.register(routes, { prefix: "/private" });
+      instance.register(
+        (internalServer, _, next) => {
+          internalServer.route({
+            method: paremeters.method,
+            url: paremeters.url,
+            preValidation: [request => this.accessControl(request, internalServer)],
+            handler: paremeters.handler,
+          });
+          next();
+        },
+        { prefix: "/private" },
+      );
       next();
     });
   }

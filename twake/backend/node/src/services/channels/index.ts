@@ -33,17 +33,13 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
       next();
     });
 
-    phpnode.register((internalServer, _, next) => {
-      internalServer.route({
-        method: "GET",
-        url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id",
-        preValidation: [request => phpnode.accessControl(request, internalServer)],
-        handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
-          const membersController = new ChannelMemberCrudController(this.service.members);
-          membersController.exists(request, reply);
-        },
-      });
-      next();
+    phpnode.register({
+      method: "GET",
+      url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id",
+      handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
+        const membersController = new ChannelMemberCrudController(this.service.members);
+        membersController.exists(request, reply);
+      },
     });
 
     return this;

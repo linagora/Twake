@@ -35,20 +35,16 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
       io: this.service.getIo(),
     });
 
-    phpnode.register((internalServer, _, next) => {
-      internalServer.route({
-        method: "POST",
-        url: "/pusher",
-        preValidation: [request => phpnode.accessControl(request, internalServer)],
-        handler: (request, reply) => {
-          const body = request.body as { room: string; data: any };
-          const room = body.room;
-          const data = body.data;
-          this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
-          reply.send({});
-        },
-      });
-      next();
+    phpnode.register({
+      method: "POST",
+      url: "/pusher",
+      handler: (request, reply) => {
+        const body = request.body as { room: string; data: any };
+        const room = body.room;
+        const data = body.data;
+        this.service.getIo().to(room).emit("realtime:event", { name: room, data: data });
+        reply.send({});
+      },
     });
 
     return this;
