@@ -1,0 +1,29 @@
+.align-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.main-view-tabs {
+  height: 47px;
+
+  .ant-tabs .ant-tabs-top {
+    line-height: 47px;
+  }
+  .add-tab-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 4px;
+    background-color: var(--grey-background);
+    color: var(--black-alpha-2);
+
+    &:hover {
+      transition: 0.5s;
+      opacity: 0.8;
+      color: var(--black);
+    }
+  }
+}
