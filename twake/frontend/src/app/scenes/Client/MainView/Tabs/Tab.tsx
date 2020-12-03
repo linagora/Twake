@@ -13,6 +13,7 @@ import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Collections from 'app/services/Collections/Collections';
 import { ChannelResource } from 'app/models/Channel';
+import { Typography } from 'antd';
 
 type PropsType = {
   tabResource: TabResource;
@@ -59,7 +60,16 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
       }}
     >
       {getAppIcon(tabResource)}
-      <span className="small-right-margin">{capitalize(tabResource.data.name)}</span>
+      <Typography.Paragraph
+        ellipsis={{
+          rows: 1,
+          expandable: false,
+        }}
+        style={{ maxWidth: '108px', marginBottom: 0 }}
+        className="tab-name small-right-margin"
+      >
+        {capitalize(tabResource.data.name)}
+      </Typography.Paragraph>
       {tabResource.data.id === tabId && (
         <Menu
           style={{ lineHeight: 0 }}
@@ -84,7 +94,7 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
               type: 'menu',
               hide:
                 currentUserId !== tabResource.data.owner &&
-                isCurrentUserAdmin === false /*&&
+                !isCurrentUserAdmin /*&&
                 isChannelOwner()*/,
               text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
               onClick: () => deleteTab(tabResource),

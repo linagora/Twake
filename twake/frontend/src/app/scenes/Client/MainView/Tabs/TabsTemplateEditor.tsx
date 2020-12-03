@@ -76,6 +76,8 @@ export default (props: PropsType): JSX.Element => {
       <div className="x-margin">
         <Row justify="center" className="bottom-margin">
           <Input
+            size={'large'}
+            maxLength={30}
             value={tabName}
             onChange={(e: { target: { value: string } }) => setTabName(e.target.value)}
             className="medium full_width bottom-margin"
@@ -84,7 +86,7 @@ export default (props: PropsType): JSX.Element => {
           />
         </Row>
         <Row justify="start">
-          <Select value={appId} onChange={(value: string) => setAppId(value)}>
+          <Select value={appId} size={'large'} onChange={(value: string) => setAppId(value)}>
             {workspacesApps
               .filter((app: AppType) => (app.display || {}).channel)
               .map((app: AppType) => {

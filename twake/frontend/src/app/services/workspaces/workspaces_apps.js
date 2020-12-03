@@ -292,17 +292,17 @@ class WorkspacesApps extends Observable {
   }
 
   getAppIcon(app, feather = false) {
-    if (app) {
-      if (app.simple_name.toLocaleLowerCase() == 'twake_calendar') {
-        return feather ? Calendar : 'calendar-alt';
+    if (app && app.simple_name) {
+      switch (app.simple_name.toLocaleLowerCase()) {
+        case 'twake_calendar':
+          return feather ? Calendar : 'calendar-alt';
+        case 'twake_drive':
+          return feather ? Folder : 'folder';
+        case 'twake_tasks':
+          return feather ? CheckSquare : 'check-square';
+        default:
+          return app.icon_url || (feather ? Hexagon : 'puzzle-piece');
       }
-      if (app.simple_name.toLocaleLowerCase() == 'twake_drive') {
-        return feather ? Folder : 'folder';
-      }
-      if (app.simple_name.toLocaleLowerCase() == 'twake_tasks') {
-        return feather ? CheckSquare : 'check-square';
-      }
-      return app.icon_url || (feather ? Hexagon : 'puzzle-piece');
     }
     return feather ? Hexagon : 'puzzle-piece';
   }
