@@ -39,8 +39,8 @@ class AccessManager
             //Use new node backend for this and cache result
             $userId = $current_user_id;
             $channelId = $id;
-            $companyId = $options["company_id"]; //TODO
-            $workspaceId = $options["workspace_id"]; //TODO
+            $companyId = $options["company_id"];
+            $workspaceId = $options["workspace_id"];
 
             $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $userId . "", "channel_id" => $channelId));
             if ($linkChannel) {
@@ -48,7 +48,7 @@ class AccessManager
             }
 
             $cacheKey = $userId."_".$channelId;
-            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unknown", "type" => "access_channel", "key"=>$cacheKey));
+            $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "access_channel", "key"=>$cacheKey));
             if(!$data || !$data->getData()["has_access"]){
 
                 try{
