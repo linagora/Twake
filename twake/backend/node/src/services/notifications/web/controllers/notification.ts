@@ -11,6 +11,7 @@ import {
 } from "../../../../services/types";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadge } from "../../entities";
+import { getWebsocketInformation } from "../../services/realtime";
 
 export class NotificationController
   implements
@@ -36,7 +37,7 @@ export class NotificationController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: [],
+        websockets: [getWebsocketInformation(request.currentUser)],
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

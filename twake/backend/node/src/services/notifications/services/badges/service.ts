@@ -1,3 +1,5 @@
+import { RealtimeCreated, RealtimeDeleted, RealtimeSaved, RealtimeUpdated } from "../../../../core/platform/framework";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
   CreateResult,
   UpdateResult,
@@ -9,12 +11,26 @@ import {
 import { UserNotificationBadgeServiceAPI } from "../../api";
 import { UserNotificationBadge } from "../../entities";
 import { NotificationExecutionContext } from "../../types";
+import { getNotificationRoomName } from "../realtime";
 
 export class Service implements UserNotificationBadgeServiceAPI {
   version: "1";
 
   constructor(private service: UserNotificationBadgeServiceAPI) {}
 
+  async init(): Promise<this> {
+    try {
+      this.service.init && (await this.service.init());
+    } catch (err) {
+      console.error("Can not initialize UserNotificationBadgeService");
+    }
+
+    return this;
+  }
+
+  @RealtimeCreated<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
   create?(
     item: UserNotificationBadge,
     context?: NotificationExecutionContext,
@@ -29,6 +45,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
+  @RealtimeUpdated<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
   update?(
     pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
     item: UserNotificationBadge,
@@ -37,6 +56,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
+  @RealtimeSaved<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
   save?<SaveOptions>(
     item: UserNotificationBadge,
     options: SaveOptions,
@@ -45,6 +67,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
+  @RealtimeDeleted<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
   delete(
     pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
     context?: NotificationExecutionContext,
@@ -58,15 +83,5 @@ export class Service implements UserNotificationBadgeServiceAPI {
     context?: NotificationExecutionContext,
   ): Promise<ListResult<UserNotificationBadge>> {
     return this.service.list(pagination, options, context);
-  }
-
-  async init(): Promise<this> {
-    try {
-      this.service.init && (await this.service.init());
-    } catch (err) {
-      console.error("Can not initialize UserNotificationBadgeService");
-    }
-
-    return this;
   }
 }
