@@ -1,4 +1,10 @@
 /**
+ * Common types for business services
+ */
+
+import { PaginationQueryParameters } from "../channels/web/types";
+
+/**
  * User in platform:
  *
  * {
@@ -46,5 +52,39 @@ export interface Channel extends Workspace {
 export interface WebsocketMetadata {
   room: string;
   name?: string;
+  encryption_key?: string;
+}
+
+export enum ChannelType {
+  DIRECT = "direct",
+}
+
+export class ResourceListResponse<T> {
+  resources: T[];
+  websockets?: ResourceWebsocket[];
+  next_page_token?: string;
+}
+
+export class ResourceGetResponse<T> {
+  websocket?: ResourceWebsocket;
+  resource: T;
+}
+export class ResourceCreateResponse<T> {
+  websocket?: ResourceWebsocket;
+  resource: T;
+}
+
+export class ResourceDeleteResponse {
+  status: DeleteStatus;
+}
+
+export interface ResourceListQueryParameters extends PaginationQueryParameters {
+  search_query?: string;
+  mine?: boolean;
+}
+
+export declare type DeleteStatus = "success" | "error";
+export interface ResourceWebsocket {
+  room: string;
   encryption_key?: string;
 }
