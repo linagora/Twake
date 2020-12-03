@@ -1850,5 +1850,5 @@ export default {
   'components.channelworkspacelist.button_joined': 'Joined',
   'scenes.client.channelbar.workspacechannellist.autocomplete': 'Search channel',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Create a new tab',
-  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Update $1',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Rename $1',
 };

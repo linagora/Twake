@@ -53,8 +53,6 @@ export default (props: PropsType): JSX.Element => {
               editedTab.data = {
                 ...editedTab.data,
                 name: tabName,
-                application_id: appId,
-                configuration: {},
               };
             } else {
               editedTab = new TabResource({
@@ -85,20 +83,22 @@ export default (props: PropsType): JSX.Element => {
             placeholder="Tab name"
           />
         </Row>
-        <Row justify="start">
-          <Select value={appId} size={'large'} onChange={(value: string) => setAppId(value)}>
-            {workspacesApps
-              .filter((app: AppType) => (app.display || {}).channel)
-              .map((app: AppType) => {
-                return (
-                  // To do, find a way to use the jitsi image
-                  <Option key={`key_${app.id}`} value={app.id || ''}>
-                    <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.name}
-                  </Option>
-                );
-              })}
-          </Select>
-        </Row>
+        {!props.tab?.data.id && (
+          <Row justify="start">
+            <Select value={appId} size={'large'} onChange={(value: string) => setAppId(value)}>
+              {workspacesApps
+                .filter((app: AppType) => (app.display || {}).channel)
+                .map((app: AppType) => {
+                  return (
+                    // To do, find a way to use the jitsi image
+                    <Option key={`key_${app.id}`} value={app.id || ''}>
+                      <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.name}
+                    </Option>
+                  );
+                })}
+            </Select>
+          </Row>
+        )}
       </div>
     </ObjectModal>
   );

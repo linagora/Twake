@@ -1924,5 +1924,5 @@ export default {
   'scenes.client.channelbar.workspacechannellist.autocomplete':
     'Rechercher une chaîne de discussion',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Créer un onglet',
-  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Mettre à jour $1',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Renommer $1',
 };
