@@ -206,10 +206,10 @@ export class CassandraChannelService implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel>> {
-    const inChannels =
-      options.channels && options.channels.length
-        ? ` AND id IN (${options.channels.join(",")})`
-        : "";
+    if (options.channels?.length === 0) {
+      return new ListResult<Channel>(TYPE, []);
+    }
+    const inChannels = options.channels?.length ? ` AND id IN (${options.channels.join(",")})` : "";
     const paginate = CassandraPagination.from(pagination);
     const query = `SELECT ${ENTITY_KEYS.join(", ")} FROM ${this.options.keyspace}.${
       this.table
