@@ -134,8 +134,19 @@ class MessageSystem
 
         }
 
-        $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
-        $this->message_notifications_center_service->read($channel, $current_user);
+        if(count($messages) === 0
+            && !$options["id"]
+            && !$options["id"]
+            && !$offset
+            && $limit > 0
+            && !$parent_message_id ){
+            $init_message = Array(
+                "channel_id" => $options["channel_id"],
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            return [$this->save($init_message, Array())];
+        }
 
         return $messages;
     }
