@@ -1,4 +1,10 @@
-import { RealtimeCreated, RealtimeDeleted, RealtimeSaved, RealtimeUpdated } from "../../../../core/platform/framework";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  RealtimeCreated,
+  RealtimeDeleted,
+  RealtimeSaved,
+  RealtimeUpdated,
+} from "../../../../core/platform/framework";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
   CreateResult,
@@ -9,7 +15,7 @@ import {
   ListResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
-import { UserNotificationBadge } from "../../entities";
+import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
 import { NotificationExecutionContext } from "../../types";
 import { getNotificationRoomName } from "../realtime";
 
@@ -39,7 +45,7 @@ export class Service implements UserNotificationBadgeServiceAPI {
   }
 
   get(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<UserNotificationBadge> {
     throw new Error("Method not implemented.");
@@ -49,7 +55,7 @@ export class Service implements UserNotificationBadgeServiceAPI {
     ResourcePath.get(getNotificationRoomName(context.user)),
   )
   update?(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     item: UserNotificationBadge,
     context?: NotificationExecutionContext,
   ): Promise<UpdateResult<UserNotificationBadge>> {
@@ -71,7 +77,7 @@ export class Service implements UserNotificationBadgeServiceAPI {
     ResourcePath.get(getNotificationRoomName(context.user)),
   )
   delete(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
     throw new Error("Method not implemented.");

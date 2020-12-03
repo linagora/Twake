@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import mongo from "mongodb";
 import {
   CreateResult,
@@ -8,7 +9,7 @@ import {
   ListResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
-import { UserNotificationBadge } from "../../entities";
+import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
 import { NotificationExecutionContext } from "../../types";
 
 const TYPE = "notification";
@@ -32,13 +33,13 @@ export class MongoUserNotificationBadgeService implements UserNotificationBadgeS
     throw new Error("Method not implemented.");
   }
   get(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<UserNotificationBadge> {
     throw new Error("Method not implemented.");
   }
   update?(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     item: UserNotificationBadge,
     context?: NotificationExecutionContext,
   ): Promise<UpdateResult<UserNotificationBadge>> {
@@ -52,7 +53,7 @@ export class MongoUserNotificationBadgeService implements UserNotificationBadgeS
     throw new Error("Method not implemented.");
   }
   delete(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
     throw new Error("Method not implemented.");

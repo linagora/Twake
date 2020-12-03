@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import cassandra from "cassandra-driver";
 import {
   CreateResult,
@@ -11,7 +12,7 @@ import { logger } from "../../../../core/platform/framework";
 import { CassandraConnectionOptions } from "../../../../core/platform/services/database/services/connectors/cassandra";
 
 import { UserNotificationBadgeServiceAPI } from "../../api";
-import { UserNotificationBadge } from "../../entities";
+import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
 import { NotificationExecutionContext } from "../../types";
 
 const TYPE = "user_notification_badge";
@@ -61,14 +62,14 @@ export class CassandraUserNotificationBadgeService implements UserNotificationBa
   }
 
   get(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<UserNotificationBadge> {
     throw new Error("Method not implemented.");
   }
 
   update?(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     item: UserNotificationBadge,
     context?: NotificationExecutionContext,
   ): Promise<UpdateResult<UserNotificationBadge>> {
@@ -84,7 +85,7 @@ export class CassandraUserNotificationBadgeService implements UserNotificationBa
   }
 
   delete(
-    pk: Pick<UserNotificationBadge, "user_id" | "company_id" | "workspace_id" | "channel_id">,
+    pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
     throw new Error("Method not implemented.");
