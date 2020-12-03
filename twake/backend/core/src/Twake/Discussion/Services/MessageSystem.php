@@ -188,12 +188,6 @@ class MessageSystem
             $this->em->persist($parent_message);
         }
 
-        $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
-        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
-        $channel->setMessagesCount($channel->getMessagesCount() - 1);
-
-        $this->em->persist($channel);
-
         $array_before_delete = $message->getAsArray();
 
         $this->em->remove($message);
