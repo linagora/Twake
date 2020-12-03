@@ -3,13 +3,8 @@ import { Pagination } from "../../../../core/platform/framework/api/crud-service
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
 import {
-  ChannelCreateResponse,
-  ChannelDeleteResponse,
-  ChannelGetResponse,
-  ChannelListResponse,
   ChannelMemberParameters,
   ChannelParameters,
-  ChannelUpdateResponse,
   CreateChannelMemberBody,
   PaginationQueryParameters,
   UpdateChannelMemberBody,
@@ -19,14 +14,21 @@ import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
 import { handleError } from ".";
 import { getChannelRooms } from "../../services/member/realtime";
+import {
+  ResourceCreateResponse,
+  ResourceDeleteResponse,
+  ResourceGetResponse,
+  ResourceListResponse,
+  ResourceUpdateResponse,
+} from "../../../../services/types";
 
 export class ChannelMemberCrudController
   implements
     CrudController<
-      ChannelGetResponse<ChannelMember>,
-      ChannelCreateResponse<ChannelMember>,
-      ChannelListResponse<ChannelMember>,
-      ChannelDeleteResponse
+      ResourceGetResponse<ChannelMember>,
+      ResourceCreateResponse<ChannelMember>,
+      ResourceListResponse<ChannelMember>,
+      ResourceDeleteResponse
     > {
   constructor(protected service: MemberService) {}
 
@@ -44,7 +46,7 @@ export class ChannelMemberCrudController
   async get(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelGetResponse<ChannelMember>> {
+  ): Promise<ResourceGetResponse<ChannelMember>> {
     const resource = await this.service.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
@@ -64,7 +66,7 @@ export class ChannelMemberCrudController
   async save(
     request: FastifyRequest<{ Body: CreateChannelMemberBody; Params: ChannelMemberParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelCreateResponse<ChannelMember>> {
+  ): Promise<ResourceCreateResponse<ChannelMember>> {
     const entity = plainToClass(ChannelMember, {
       ...request.body.resource,
       ...{
@@ -92,7 +94,7 @@ export class ChannelMemberCrudController
   async update(
     request: FastifyRequest<{ Body: UpdateChannelMemberBody; Params: ChannelMemberParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelUpdateResponse<ChannelMember>> {
+  ): Promise<ResourceUpdateResponse<ChannelMember>> {
     const entity = plainToClass(ChannelMember, {
       ...request.body.resource,
       ...this.getPrimaryKey(request),
@@ -116,7 +118,7 @@ export class ChannelMemberCrudController
   async delete(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelDeleteResponse> {
+  ): Promise<ResourceDeleteResponse> {
     try {
       const deleteResult = await this.service.delete(
         this.getPrimaryKey(request),
@@ -149,7 +151,7 @@ export class ChannelMemberCrudController
       Querystring: PaginationQueryParameters;
       Params: ChannelParameters;
     }>,
-  ): Promise<ChannelListResponse<ChannelMember>> {
+  ): Promise<ResourceListResponse<ChannelMember>> {
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
       {},

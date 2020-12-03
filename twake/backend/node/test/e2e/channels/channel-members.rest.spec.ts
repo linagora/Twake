@@ -2,13 +2,12 @@ import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { v4 as uuidv4 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
-import { ChannelListResponse, ChannelGetResponse } from "../../../src/services/channels/web/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelMember } from "../../../src/services/channels/entities/channel-member";
 import { ChannelExecutionContext, ChannelVisibility } from "../../../src/services/channels/types";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { User } from "../../../src/services/types";
+import { ResourceGetResponse, ResourceListResponse, User } from "../../../src/services/types";
 
 describe("The ChannelMembers REST API", () => {
   const url = "/internal/services/channels/v1";
@@ -94,8 +93,8 @@ describe("The ChannelMembers REST API", () => {
         },
       });
 
-      const result: ChannelListResponse<ChannelMember> = deserialize(
-        ChannelListResponse,
+      const result: ResourceListResponse<ChannelMember> = deserialize(
+        ResourceListResponse,
         response.body,
       );
 
@@ -122,8 +121,8 @@ describe("The ChannelMembers REST API", () => {
         },
       });
 
-      const result: ChannelListResponse<ChannelMember> = deserialize(
-        ChannelListResponse,
+      const result: ResourceListResponse<ChannelMember> = deserialize(
+        ResourceListResponse,
         response.body,
       );
 
@@ -249,8 +248,8 @@ describe("The ChannelMembers REST API", () => {
       });
 
       expect(response.statusCode).toEqual(200);
-      const result: ChannelGetResponse<ChannelMember> = deserialize(
-        ChannelGetResponse,
+      const result: ResourceGetResponse<ChannelMember> = deserialize(
+        ResourceGetResponse,
         response.body,
       );
 

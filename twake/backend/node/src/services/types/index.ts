@@ -69,6 +69,10 @@ export class ResourceGetResponse<T> {
   websocket?: ResourceWebsocket;
   resource: T;
 }
+export class ResourceUpdateResponse<T> {
+  websocket?: ResourceWebsocket;
+  resource: T;
+}
 export class ResourceCreateResponse<T> {
   websocket?: ResourceWebsocket;
   resource: T;

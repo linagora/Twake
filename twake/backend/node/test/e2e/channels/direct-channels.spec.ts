@@ -2,12 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { v4 as uuidv4 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
-import {
-  ChannelCreateResponse,
-  ChannelGetResponse,
-  ChannelListResponse,
-  ChannelSaveOptions,
-} from "../../../src/services/channels/web/types";
+import { ResourceCreateResponse, ResourceListResponse } from "../../../src/services/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelVisibility } from "../../../src/services/channels/types";
@@ -15,6 +10,7 @@ import { WorkspaceExecutionContext } from "../../../src/services/channels/types"
 import { User, Workspace } from "../../../src/services/types";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
+import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 
 describe.only("The direct channels API", () => {
   const url = "/internal/services/channels/v1";
@@ -51,7 +47,10 @@ describe.only("The direct channels API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
@@ -97,8 +96,8 @@ describe.only("The direct channels API", () => {
         },
       });
 
-      const directResult: ChannelListResponse<Channel> = deserialize(
-        ChannelListResponse,
+      const directResult: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
         directResponse.body,
       );
 
@@ -121,7 +120,10 @@ describe.only("The direct channels API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
@@ -170,7 +172,10 @@ describe.only("The direct channels API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
@@ -223,7 +228,10 @@ describe.only("The direct channels API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
@@ -257,8 +265,8 @@ describe.only("The direct channels API", () => {
 
       expect(response.statusCode).toEqual(201);
 
-      const channelCreateResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelCreateResponse,
+      const channelCreateResult: ResourceCreateResponse<Channel> = deserialize(
+        ResourceCreateResponse,
         response.body,
       );
 
@@ -313,15 +321,15 @@ describe.only("The direct channels API", () => {
 
       let response = await createChannel(members);
       expect(response.statusCode).toEqual(201);
-      let channelCreateResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelCreateResponse,
+      let channelCreateResult: ResourceCreateResponse<Channel> = deserialize(
+        ResourceCreateResponse,
         response.body,
       );
       ids.add(channelCreateResult.resource.id);
 
       response = await createChannel(members);
       expect(response.statusCode).toEqual(201);
-      channelCreateResult = deserialize(ChannelCreateResponse, response.body);
+      channelCreateResult = deserialize(ResourceCreateResponse, response.body);
       ids.add(channelCreateResult.resource.id);
 
       expect(ids.size).toEqual(1);
@@ -355,15 +363,15 @@ describe.only("The direct channels API", () => {
 
       let response = await createChannel(members);
       expect(response.statusCode).toEqual(201);
-      let channelCreateResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelCreateResponse,
+      let channelCreateResult: ResourceCreateResponse<Channel> = deserialize(
+        ResourceCreateResponse,
         response.body,
       );
       ids.add(channelCreateResult.resource.id);
 
       response = await createChannel(members.reverse());
       expect(response.statusCode).toEqual(201);
-      channelCreateResult = deserialize(ChannelCreateResponse, response.body);
+      channelCreateResult = deserialize(ResourceCreateResponse, response.body);
       ids.add(channelCreateResult.resource.id);
 
       expect(ids.size).toEqual(1);
