@@ -43,7 +43,29 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId) {
-    this.currentWorkspaceId = workspaceId;
+    if (this.currentWorkspaceId != workspaceId) {
+      this.currentWorkspaceId = workspaceId;
+      const workspace = Collections.get('workspaces').find(workspaceId);
+      if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
+
+      if (!this.getting_details[workspaceId]) {
+        this.getting_details[workspaceId] = true;
+
+        workspacesApps.unload(this.currentWorkspaceId);
+        Api.post('workspace/get', { workspaceId: workspaceId }, res => {
+          if (res && res.data) {
+            Collections.get('workspaces').updateObject(res.data);
+            Collections.get('groups').updateObject(res.data.group);
+            workspacesApps.load(workspaceId, false, { apps: res.data.apps });
+          } else {
+            this.removeFromUser(workspaceId);
+          }
+          setTimeout(() => {
+            this.getting_details[workspaceId] = false;
+          }, 10000);
+        });
+      }
+    }
   }
 
   async initSelection() {
@@ -126,33 +148,7 @@ class Workspaces extends Observable {
       return;
     }
 
-    workspacesUsers.unload(this.currentWorkspaceId);
-    workspacesApps.unload(this.currentWorkspaceId);
-    this.currentWorkspaceId = workspace.id;
-    this.currentWorkspaceIdByGroup[workspace.group.id] = workspace.id;
-
-    if (!this.getting_details[workspace.id]) {
-      this.getting_details[workspace.id] = true;
-
-      Api.post('workspace/get', { workspaceId: workspace.id }, res => {
-        if (res && res.data) {
-          Collections.get('workspaces').updateObject(res.data);
-          Collections.get('groups').updateObject(res.data.group);
-
-          WorkspaceUserRights.currentUserRightsByWorkspace[res.data.id] = res.data.user_level || {};
-          WorkspaceUserRights.currentUserRightsByGroup[res.data.group.id] =
-            res.data.group.level || [];
-          WorkspaceUserRights.notify();
-          workspacesUsers.load(workspace.id, false, { members: res.data.members || [] });
-          workspacesApps.load(workspace.id, false, { apps: res.data.apps });
-        } else {
-          this.removeFromUser(workspace);
-        }
-        setTimeout(() => {
-          this.getting_details[workspace.id] = false;
-        }, 10000);
-      });
-    }
+    this.updateCurrentWorkspaceId(workspace.id);
 
     const route = RouterServices.generateRouteFromState({ workspaceId: workspace.id });
     if (replace) {
@@ -183,7 +179,7 @@ class Workspaces extends Observable {
       return;
     }
 
-    var id = workspace.id;
+    var id = workspace.id || workspace;
     delete this.user_workspaces[id];
 
     if (id == this.currentWorkspaceId) {

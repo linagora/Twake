@@ -1,0 +1,36 @@
+.align-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.main-view-tabs {
+  height: 47px;
+
+  .ant-tabs .ant-tabs-top {
+    line-height: 47px;
+  }
+
+  .ant-tabs-tab-active > .ant-tabs-tab-btn > span > .tab-name,
+  .tab-name:hover {
+    opacity: 0.8;
+    color: var(--primary);
+  }
+
+  .add-tab-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 4px;
+    background-color: var(--grey-background);
+    color: var(--black-alpha-2);
+    margin-left: -8px;
+
+    &:hover {
+      background-color: var(--grey-light);
+      color: var(--grey-dark);
+    }
+  }
+}
