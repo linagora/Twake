@@ -16,6 +16,7 @@ import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import MessagesListServerUtilsManager from './MessagesListServerUtils';
 import Globals from 'services/Globals.js';
 import MessageEditors from './MessageEditors';
+import { ChannelResource } from 'app/models/Channel';
 
 class Messages extends Observable {
   constructor() {
@@ -501,7 +502,7 @@ class Messages extends Observable {
       workspaceId = context.workspaceId;
     }
     const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-    return await Collections.get(path).findOne({ id: channelId });
+    return await Collections.get(path, ChannelResource).findOne({ id: channelId });
   }
 }
 

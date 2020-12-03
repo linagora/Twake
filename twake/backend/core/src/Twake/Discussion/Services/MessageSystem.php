@@ -28,14 +28,17 @@ class MessageSystem
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
+
         $route = explode("/", $route);
         $channel_id = isset($route[1]) ? $route[1] : null;
 
         if (!$channel_id) {
             return false;
         }
-
-        error_log(json_encode($data));
+        
+        if($data["get_options"]){
+            $data = $data["get_options"];
+        }
 
         return $this->hasAccess([
             "channel_id" => $channel_id,
@@ -140,6 +143,7 @@ class MessageSystem
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
+                error_log($options["channel_id"]);
             $init_message = Array(
                 "channel_id" => $options["channel_id"],
                 "hidden_data" => Array("type" => "init_channel"),
@@ -510,43 +514,10 @@ class MessageSystem
                     }
                 }
 
-                $this->em->flush();
-
-                //Notify connectors (Disabled for 2021)
-                if ($channel->getOriginalWorkspaceId()) {
-                    if ($channel->getAppId()) {
-                        $apps_ids = [$channel->getAppId()];
-                    } else {
-                        $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
-                        $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
-                        $apps_ids = [];
-                        foreach ($resources as $resource) {
-                            if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                                continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
-                            }
-                            if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                                $apps_ids[] = $resource->getApplicationId();
-                            }
-                        }
-                    }
-                    if (count($apps_ids) > 0) {
-                        foreach ($apps_ids as $app_id) {
-                            if ($app_id) {
-                                $data = Array(
-                                    "message" => $message->getAsArray(),
-                                    "channel" => $channel->getAsArray()
-                                );
-                                if ($did_create) {
-                                    $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
-                                } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
-                                    $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
-                                }
-                            }
-                        }
-                    }
-                }
 
             }
+
+            $this->em->flush();
 
         }
 

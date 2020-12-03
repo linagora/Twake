@@ -20,7 +20,7 @@ class Channel extends SearchableObject
     protected $es_type = "channel";
 
     /**
-     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Column(name="id", type="twake_uuid")
      * @ORM\Id
      */
     private $id;
