@@ -35,9 +35,8 @@ export default (props: Props): JSX.Element => {
   })[0];
 
   if (!channel) return <></>;
-
   // Waiting for the bug fix: current user should be added automaticly to the created channel
-  if (channel.data.user_member?.favorite !== userMember.data.favorite) {
+  if (channel.data.user_member?.favorite !== userMember?.data?.favorite) {
     channel.data = {
       ...channel.data,
       user_member: userMember.data,

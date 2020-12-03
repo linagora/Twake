@@ -225,6 +225,25 @@ textarea.ant-input,
   border: none;
 }
 
+.ant-tabs-top > .ant-tabs-nav .ant-tabs-nav-wrap::before,
+.ant-tabs-bottom > .ant-tabs-nav .ant-tabs-nav-wrap::before,
+.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-nav-wrap::before,
+.ant-tabs-bottom > div > .ant-tabs-nav .ant-tabs-nav-wrap::before {
+  box-shadow: none;
+}
+
+.ant-tabs-ink-bar .ant-tabs-ink-bar-animated,
+.ant-tabs-content-holder {
+  display: none;
+}
+
+.ant-tabs-top > .ant-tabs-nav,
+.ant-tabs-bottom > .ant-tabs-nav,
+.ant-tabs-top > div > .ant-tabs-nav,
+.ant-tabs-bottom > div > .ant-tabs-nav {
+  margin: 0;
+}
+
 // --- ant-notifications --- //
 @notification-bg: @component-background;
 @notification-padding-vertical: 8px;

@@ -1,99 +1,86 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
-import { TabType, TabResource } from 'app/models/Tab';
-import { Button, Row, Col, Tabs } from 'antd';
+import { TabResource } from 'app/models/Tab';
+import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
-import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'services/Modal/ModalManager';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-const { TabPane } = Tabs;
+import { MessageCircle, Plus } from 'react-feather';
+import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
+import UserService from 'services/user/user.js';
+
+import './Tabs.scss';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId, tabId } = RouterServices.useStateFromRoute();
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
   const TabsCollection = Collections.get(collectionPath, TabResource);
-
   const tabsList: TabResource[] = TabsCollection.useWatcher({});
+  const currentUser = UserService.getCurrentUser();
 
-  const insertTab = async (newTab: TabType) => {
-    await TabsCollection.insert(new TabResource(newTab));
-  };
-
-  const getAppIcon = (tab: TabType) => {
-    WorkspacesApps.getApp(tab.application_id, (item: TabResource) => {
-      return WorkspacesApps.getAppIcon(item);
-    });
-  };
+  const upsertTab = async (tab: TabResource) => await TabsCollection.upsert(tab);
+  const deleteTab = async (tab: TabResource) => await TabsCollection.remove(tab);
 
   return (
-    <Row align="top">
-      {tabsList && (
-        <Col>
-          <Tabs className="main-view-tabs" activeKey={tabId ? tabId : 'default'}>
-            <TabPane
-              tab={
-                <span
-                  onClick={() => {
-                    const route: string = RouterServices.generateRouteFromState({
-                      tabId: '',
-                    });
-                    return RouterServices.history.push(route);
-                  }}
-                >
-                  <Icon type={'comment'} />
-                  {Languages.t('scenes.app.mainview.discussion')}
-                </span>
-              }
-              key="default"
-            />
-            {tabsList.map((tab: TabResource) => {
-              return (
-                <TabPane
+    <Row align="middle" className="main-view-tabs">
+      {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
+        <Tabs activeKey={tabId ? tabId : 'default'}>
+          <Tabs.TabPane
+            tab={
+              <span
+                className="align-items-center"
+                onClick={() => {
+                  const route: string = RouterServices.generateRouteFromState({
+                    tabId: '',
+                  });
+                  return RouterServices.history.push(route);
+                }}
+              >
+                <MessageCircle size={14} className="small-right-margin" />
+                {Languages.t('scenes.app.mainview.discussion')}
+              </span>
+            }
+            key="default"
+          />
+          {tabsList.map((tab: TabResource) => {
+            return (
+              tab.data.id && (
+                <Tabs.TabPane
                   tab={
-                    <span
-                      onClick={() => {
-                        const route: string = RouterServices.generateRouteFromState({
-                          tabId: tab.id,
-                        });
-                        return RouterServices.history.push(route);
-                      }}
-                    >
-                      <Icon type={getAppIcon(tab)} />
-                      {tab.data.name}
-                    </span>
+                    <Tab
+                      currentUserId={currentUser.id}
+                      key={tab.data.id}
+                      tabResource={tab}
+                      upsertTab={upsertTab}
+                      deleteTab={deleteTab}
+                    />
                   }
-                  key={tab.id}
+                  key={tab.data.id}
                 />
-              );
-            })}
-          </Tabs>
-        </Col>
+              )
+            );
+          })}
+        </Tabs>
       )}
-      <Col style={{ lineHeight: '47px' }}>
-        <Button
-          type="text"
-          icon={
-            <Icon
-              type={'plus-square'}
-              onClick={() => {
-                return ModalManager.open(
-                  <TabsTemplateEditor
-                    tabs={tabsList}
-                    onChangeTabs={(item: TabType) => insertTab(item)}
-                  />,
-                  {
-                    position: 'center',
-                    size: { width: '500px', minHeight: '329px' },
-                  },
-                );
-              }}
-            />
-          }
-        />
-      </Col>
+      <Button
+        className="add-tab-button"
+        type="text"
+        onClick={() => {
+          return ModalManager.open(
+            <TabsTemplateEditor
+              currentUserId={currentUser.id}
+              onChangeTabs={(item: TabResource) => upsertTab(item)}
+            />,
+            {
+              position: 'center',
+              size: { width: '500px', minHeight: '329px' },
+            },
+          );
+        }}
+        icon={<Plus size={14} />}
+      />
     </Row>
   );
 };
