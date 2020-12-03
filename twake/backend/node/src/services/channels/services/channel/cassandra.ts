@@ -252,7 +252,7 @@ export class CassandraChannelService implements ChannelService {
   async createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
     const query = `INSERT INTO ${this.options.keyspace}.${this.directChannelsTableName} (company_id, channel_id, users) VALUES (?, ?, ?)`;
 
-    await this.client.execute(query, directChannel);
+    await this.client.execute(query, directChannel, { prepare: true });
 
     return directChannel;
   }

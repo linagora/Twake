@@ -16,8 +16,8 @@ type Props = {
 
 export default (props: Props): JSX.Element => {
   const userId: string = UsersService.getCurrentUserId();
-  const { companyId, workspaceId }: ClientStateType = RouterServices.useStateFromRoute();
-  const menu = (channel: ChannelType) => {
+  const { companyId }: ClientStateType = RouterServices.useStateFromRoute();
+  const menu = (channel: ChannelResource) => {
     return <ChannelMenu channel={channel} />;
   };
 
@@ -25,7 +25,7 @@ export default (props: Props): JSX.Element => {
     { id: props.channelId },
     { query: { mine: true } },
   )[0];
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channelId}/members/`;
+  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${channel?.data?.workspace_id}/channels/${props.channelId}/members/`;
   const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(
     collectionPath,
     ChannelMemberResource,
@@ -36,7 +36,7 @@ export default (props: Props): JSX.Element => {
 
   if (!channel) return <></>;
 
-  if (channel.data.user_member?.favorite !== userMember?.data?.favorite) {
+  if (false && channel.data.user_member?.favorite !== userMember?.data?.favorite) {
     //We force update the channel listing if we detect user_member changes here
     channel.data = {
       ...channel.data,
@@ -55,7 +55,7 @@ export default (props: Props): JSX.Element => {
       unreadMessages={false}
       visibility={channel.data.visibility || 'public'}
       notifications={channel.data.messages_count || 0}
-      menu={menu(channel.data)}
+      menu={menu(channel)}
       id={channel.data.id}
     />
   );

@@ -12,20 +12,23 @@ type Props = {
   onEdit?: any;
   onClose?: any;
   channelName?: string;
+  companyId: string;
+  workspaceId: string;
+  channelId: string;
 };
 
 const { Title } = Typography;
 
 const ChannelMembersEditor: FC<Props> = props => {
-  const [MemberList, setMemberList] = useState<string[]>([]);
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+  const [memberList, setMemberList] = useState<string[]>([]);
 
-  const getMembersList = () => {
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/`;
+  const addAllUsers = async () => {
+    const collectionPath: string = `/channels/v1/companies/${props.companyId}/workspaces/${props.workspaceId}/channels/${props.channelId}/members/`;
     const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
 
-    MemberList.map(async (id: string) => {
-      await channelMembersCollection.insert(
+    memberList.map(async (id: string) => {
+      console.log(collectionPath);
+      await channelMembersCollection.upsert(
         new ChannelMemberResource({
           user_id: id,
           type: 'member', // "member" | "guest" | "bot",
@@ -53,10 +56,10 @@ const ChannelMembersEditor: FC<Props> = props => {
             float: 'right',
           }}
           onClick={() => {
-            getMembersList();
+            addAllUsers();
             return props.onClose();
           }}
-          disabled={!MemberList.length}
+          disabled={!memberList.length}
         >
           {Languages.t('general.add', 'Add')}
         </Button>

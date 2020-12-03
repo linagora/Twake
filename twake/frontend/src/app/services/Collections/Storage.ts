@@ -67,18 +67,22 @@ export default class CollectionStorage {
   }
 
   static upsert(path: string, item: any): Promise<any> {
-    let exists = false;
-    if (item.id && CollectionStorage.idKeeper[path] && CollectionStorage.idKeeper[path][item.id]) {
-      exists = true;
-    }
-    CollectionStorage.idKeeper[path][item.id] = true;
-
     return new Promise(async (resolve, reject) => {
       if (!item.id) {
         reject('Every resources must contain an id');
         return;
       }
       await CollectionStorage.addCollection(path);
+
+      let exists = false;
+      if (
+        item.id &&
+        CollectionStorage.idKeeper[path] &&
+        CollectionStorage.idKeeper[path][item.id]
+      ) {
+        exists = true;
+      }
+      CollectionStorage.idKeeper[path][item.id] = true;
 
       const mongoItems = await CollectionStorage.find(path, { id: item.id });
       if (!mongoItems && exists) {
@@ -96,10 +100,11 @@ export default class CollectionStorage {
   }
 
   static remove(path: string, item: any): Promise<void> {
-    delete CollectionStorage.idKeeper[path][item.id];
-
     return new Promise(async (resolve, reject) => {
       await CollectionStorage.addCollection(path);
+
+      delete CollectionStorage.idKeeper[path][item.id];
+
       CollectionStorage.find(path, item)
         .then(async mongoItems => {
           if (mongoItems.length === 1) {

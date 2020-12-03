@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Button, Col, Row, Space, Typography } from 'antd';
+import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import { startCase } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
@@ -11,31 +11,21 @@ import Search from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
 import { StarFilled } from '@ant-design/icons';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
-import UsersService from 'services/user/user.js';
-import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
-import Collections from 'app/services/CollectionsReact/Collections';
-import { ChannelMemberResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/models/Channel';
+import ChannelAvatars from './ChannelAvatars';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
-
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
-    channelId || channelId
-  }/members/`;
-  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
-
-  const members = channelMembersCollection
-    .useWatcher({}, { limit: 10 })
-    .map(i => i.data.user_id || '');
-  useChannelListener(members);
-  const [avatar] = getChannelParts({ usersIds: members, keepMyself: true, max: 10 });
+  const { channelId } = RouterServices.useStateFromRoute();
 
   MainViewService.useWatcher(() => !!MainViewService.getViewCollection());
   const channelCollection = MainViewService.getViewCollection();
   if (!channelCollection?.useWatcher) {
     return <Col></Col>;
   }
-  const channel = channelCollection.useWatcher({ id: channelId })[0];
+
+  const channel: ChannelResource = channelCollection.useWatcher({
+    id: channelId,
+  })[0];
 
   if (!channel) {
     return <Col></Col>;
@@ -76,9 +66,9 @@ export default (): JSX.Element => {
 
       <Col>
         <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
-          {channel.data.visibility !== 'direct' && (
+          {channel.data.visibility !== 'direct' && channel.data.workspace_id && (
             <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
-              {avatar}
+              <ChannelAvatars workspaceId={channel.data.workspace_id} />
             </div>
           )}
           <div className="small-right-margin">
@@ -87,17 +77,10 @@ export default (): JSX.Element => {
                 size="small"
                 type="text"
                 onClick={() => {
-                  ModalManager.open(
-                    <ChannelMembersList
-                      channelId={channelId}
-                      channelName={channel.data.name}
-                      closable
-                    />,
-                    {
-                      position: 'center',
-                      size: { width: '500px', minHeight: '329px' },
-                    },
-                  );
+                  ModalManager.open(<ChannelMembersList channel={channel} closable />, {
+                    position: 'center',
+                    size: { width: '500px', minHeight: '329px' },
+                  });
                 }}
               >
                 <Typography.Text>Members</Typography.Text>

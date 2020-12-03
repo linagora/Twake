@@ -1,12 +1,11 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC } from 'react';
 import Languages from 'services/languages/languages.js';
 import UsersService from 'services/user/user.js';
 import { UserType } from 'app/models/User';
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import RouterServices from 'app/services/RouterService';
 import { Avatar, Button, Col, Row, Typography, Input } from 'antd';
-import { ChannelMemberResource } from 'app/models/Channel';
+import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import ModalManager from 'services/Modal/ModalManager';
@@ -16,18 +15,15 @@ import { Search } from 'react-feather';
 
 type Props = {
   closable?: boolean;
-  channelId?: string;
-  channelName?: string;
+  channel: ChannelResource;
 };
 
 const { Text, Link } = Typography;
 
 const ChannelMembersList: FC<Props> = props => {
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+  const { company_id, workspace_id, id } = props.channel.data;
 
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
-    props.channelId || channelId
-  }/members/`;
+  const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/${workspace_id}/channels/${id}/members/`;
   const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
 
   const channelMembers = channelMembersCollection.useWatcher({});
@@ -37,7 +33,7 @@ const ChannelMembersList: FC<Props> = props => {
       text,
       {
         scope: 'workspace',
-        workspace_id: workspaceId,
+        workspace_id: workspace_id,
       },
       (res: any) => {
         callback(res);
@@ -49,7 +45,7 @@ const ChannelMembersList: FC<Props> = props => {
     <ObjectModal
       title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [
         channelMembers.length,
-        props.channelName,
+        props.channel.data.name,
       ])}
       closable={props.closable ? props.closable : false}
     >
@@ -74,7 +70,10 @@ const ChannelMembersList: FC<Props> = props => {
               onClick={() => {
                 return ModalManager.open(
                   <ChannelMembersEditor
-                    channelName={props.channelName}
+                    companyId={props.channel.data.company_id || ''}
+                    workspaceId={props.channel.data.workspace_id || ''}
+                    channelId={props.channel.data.id || ''}
+                    channelName={props.channel.data.name}
                     onClose={() => ModalManager.closeAll()}
                   />,
                   {

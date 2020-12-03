@@ -18,6 +18,7 @@ export type GeneralOptions = {
 
 export type ServerRequestOptions = {
   query: any;
+  waitServerReply: boolean;
 };
 
 export type CollectionOptions = {
@@ -100,7 +101,15 @@ export default class Collection<G extends Resource<any>> {
     this.eventEmitter.notify();
 
     if (!options?.withoutBackend) {
-      this.transport.upsert(this.resources[mongoItem.id], options?.query);
+      if (options?.waitServerReply) {
+        const resourceSaved = await this.transport.upsert(
+          this.resources[mongoItem.id],
+          options?.query,
+        );
+        return resourceSaved as G;
+      } else {
+        this.transport.upsert(this.resources[mongoItem.id], options?.query);
+      }
     }
 
     return item ? this.resources[mongoItem.id] : item;

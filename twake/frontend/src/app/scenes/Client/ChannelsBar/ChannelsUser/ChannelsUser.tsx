@@ -40,9 +40,7 @@ export function ChannelsUser() {
         onAdd={() => openConv()}
       />
       {directChannels.map(channel => {
-        return (
-          <DirectChannel key={channel.id} collection={channelsCollection} channel={channel.data} />
-        );
+        return <DirectChannel key={channel.id} collection={channelsCollection} channel={channel} />;
       })}
 
       {directChannels.length == 0 && (

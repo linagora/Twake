@@ -305,7 +305,7 @@ class MessageSystem
             }
 
             //Create a new message
-            $message = new Message($object["channel_id"], $object["parent_message_id"], $channel);
+            $message = new Message($object["channel_id"], $object["parent_message_id"]);
 
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {
@@ -468,7 +468,7 @@ class MessageSystem
             } catch (\Exception $e) {
                 error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
             }
-
+            
             $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
             if ($channel && $did_create && !$init_channel) {
                 $channel->setLastActivity(new \DateTime());
