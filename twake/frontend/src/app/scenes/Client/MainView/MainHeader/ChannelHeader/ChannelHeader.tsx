@@ -1,22 +1,24 @@
-import React from 'react';
-import { Avatar, Button, Col, Row, Space, Typography } from 'antd';
+import React, { useState } from 'react';
+import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import { startCase } from 'lodash';
 import ModalManager from 'services/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import MainViewService from 'app/services/AppView/MainViewService';
-import { Lock, Star } from 'react-feather';
-import Search from '../Search';
+import { Lock } from 'react-feather';
+import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
 import { StarFilled } from '@ant-design/icons';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
-import UsersService from 'services/user/user.js';
 import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
+import { Search } from 'react-feather';
 
+import SearchService from 'services/search/search.js';
 export default (): JSX.Element => {
+  const [hideSearchInput, setHideSearchInput] = useState<boolean>(true);
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
@@ -42,14 +44,14 @@ export default (): JSX.Element => {
   }
 
   return (
-    <Row
-      justify="space-between"
-      align="middle"
-      style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}
-    >
+    <Row align="middle" style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}>
+      {
+        // Temporary, it's for spacing when the hamburger menu is displayed
+        <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}></Col>
+      }
       {channel.data.visibility === 'direct' && <ChannelUsersHeader channel={channel.data} />}
       {channel.data.visibility !== 'direct' && (
-        <Col flex="auto">
+        <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
           <span
             className="left-margin text-overflow"
             style={{ display: 'flex', alignItems: 'center' }}
@@ -63,7 +65,7 @@ export default (): JSX.Element => {
             {channel.data.visibility === 'private' && (
               <Lock size={16} className="small-right-margin" />
             )}
-            <Typography.Text className="markdown" style={{ lineHeight: '16px' }}>
+            <Typography.Text ellipsis className="markdown" style={{ lineHeight: '16px' }}>
               {PseudoMarkdownCompiler.compileToHTML(
                 PseudoMarkdownCompiler.compileToJSON(
                   (channel.data.description || '').replace(/\n/g, ' '),
@@ -74,46 +76,65 @@ export default (): JSX.Element => {
         </Col>
       )}
 
-      <Col>
-        <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
+      <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
+        <Row
+          align="middle"
+          justify="space-around"
+          gutter={[8, 0]}
+          style={{ padding: 0, flexWrap: 'nowrap' }}
+        >
           {channel.data.visibility !== 'direct' && (
-            <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
-              {avatar}
-            </div>
+            <div style={{ display: 'inline', lineHeight: 0 }}>{avatar}</div>
           )}
-          <div className="small-right-margin">
-            {channel.data.visibility !== 'direct' && (
-              <Button
-                size="small"
-                type="text"
-                onClick={() => {
-                  ModalManager.open(
-                    <ChannelMembersList
-                      channelId={channelId}
-                      channelName={channel.data.name}
-                      closable
-                    />,
-                    {
-                      position: 'center',
-                      size: { width: '500px', minHeight: '329px' },
-                    },
-                  );
-                }}
-              >
-                <Typography.Text>Members</Typography.Text>
-              </Button>
-            )}
-            <Button size="small" type="text" onClick={() => {}}>
-              <Typography.Text>
-                {channel.data.user_member?.favorite && (
-                  <StarFilled size={12} style={{ color: 'var(--grey-dark)', marginRight: 4 }} />
-                )}
-                Favorite
-              </Typography.Text>
+          {channel.data.visibility !== 'direct' && (
+            <Button
+              size="small"
+              type="text"
+              onClick={() => {
+                ModalManager.open(
+                  <ChannelMembersList
+                    channelId={channelId}
+                    channelName={channel.data.name}
+                    closable
+                  />,
+                  {
+                    position: 'center',
+                    size: { width: '500px', minHeight: '329px' },
+                  },
+                );
+              }}
+            >
+              <Typography.Text>Members</Typography.Text>
             </Button>
-          </div>
-          <Search />
+          )}
+          <Button size="small" type="text" onClick={() => {}}>
+            <Typography.Text>
+              {channel.data.user_member?.favorite && (
+                <StarFilled size={12} style={{ color: 'var(--grey-dark)', marginRight: 4 }} />
+              )}
+              Favorite
+            </Typography.Text>
+          </Button>
         </Row>
+      </Col>
+
+      <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
+        <Row justify="center">
+          <SearchInput />
+        </Row>
+      </Col>
+
+      <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}>
+        <Button
+          type="default"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
+          icon={<Search size={16} />}
+          onClick={() => {
+            SearchService.open();
+
+            return console.log(SearchService.isOpen());
+          }}
+        />
       </Col>
     </Row>
   );
