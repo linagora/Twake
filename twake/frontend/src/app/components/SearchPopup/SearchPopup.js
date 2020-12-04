@@ -29,21 +29,11 @@ export default class SearchPopup extends React.Component {
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
     };
-
-    this.search_enabled = (InitService.server_infos || {}).elastic_search_available !== false;
   }
   componentDidMount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.addEventListener('keydown', this.eventKey);
   }
   componentWillUnmount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.removeEventListener('keydown', this.eventKey);
     Search.removeListener(this);
   }
@@ -113,10 +103,6 @@ export default class SearchPopup extends React.Component {
   }
 
   render() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     if (!Search.isOpen()) {
       this.state.selected = 0;
       this.state.total = 0;

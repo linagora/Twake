@@ -25,6 +25,7 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
 import LoginService from 'services/login/login';
+import { Menu } from 'react-feather';
 
 export default (): JSX.Element => {
   popupService.useListener(useState);
@@ -55,7 +56,8 @@ export default (): JSX.Element => {
         page = (
           <Layout key="appPage" className={'appPage '} hasSider>
             <Layout.Sider
-              breakpoint="md"
+              trigger={<Menu size={16} />}
+              breakpoint="lg"
               collapsedWidth="0"
               theme="light"
               width={290}

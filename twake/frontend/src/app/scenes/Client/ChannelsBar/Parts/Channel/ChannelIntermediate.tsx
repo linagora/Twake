@@ -40,7 +40,7 @@ export default (props: Props): JSX.Element => {
     //We force update the channel listing if we detect user_member changes here
     channel.data = {
       ...channel.data,
-      user_member: userMember.data,
+      user_member: userMember?.data,
     };
     props.collection.upsert(channel, { withoutBackend: true });
   }
