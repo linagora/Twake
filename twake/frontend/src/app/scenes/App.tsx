@@ -22,9 +22,5 @@ export default () => {
     (Globals as any).store_publicAccess_get_data = WindowService.allGetParameter();
   }
 
-  return (
-    <BadDevice force={publicAccess}>
-      <ClientPage />
-    </BadDevice>
-  );
+  return <ClientPage />;
 };

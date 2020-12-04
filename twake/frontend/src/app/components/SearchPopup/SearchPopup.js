@@ -30,7 +30,7 @@ export default class SearchPopup extends React.Component {
       filterType: Search.type || false,
     };
 
-    this.search_enabled = (InitService.server_infos || {}).elastic_search_available !== false;
+    this.search_enabled = true;
   }
   componentDidMount() {
     if (!this.search_enabled) {
@@ -113,10 +113,6 @@ export default class SearchPopup extends React.Component {
   }
 
   render() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     if (!Search.isOpen()) {
       this.state.selected = 0;
       this.state.total = 0;
