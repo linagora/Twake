@@ -3,6 +3,7 @@
     "auth",
     "user",
     "channels",
+    "notifications",
     "webserver",
     "websocket",
     "database",

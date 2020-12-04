@@ -7,27 +7,29 @@ import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
-  ChannelCreateResponse,
-  ChannelDeleteResponse,
-  ChannelGetResponse,
   ChannelListQueryParameters,
-  ChannelListResponse,
   ChannelParameters,
   ChannelSaveOptions,
-  ChannelUpdateResponse,
   CreateChannelBody,
   UpdateChannelBody,
 } from "../types";
 import { WorkspaceExecutionContext } from "../../types";
 import { handleError } from ".";
+import {
+  ResourceCreateResponse,
+  ResourceDeleteResponse,
+  ResourceGetResponse,
+  ResourceListResponse,
+  ResourceUpdateResponse,
+} from "../../../../services/types";
 
 export class ChannelCrudController
   implements
     CrudController<
-      ChannelGetResponse<Channel>,
-      ChannelCreateResponse<Channel>,
-      ChannelListResponse<Channel>,
-      ChannelDeleteResponse
+      ResourceGetResponse<Channel>,
+      ResourceCreateResponse<Channel>,
+      ResourceListResponse<Channel>,
+      ResourceDeleteResponse
     > {
   constructor(protected service: ChannelService) {}
 
@@ -42,7 +44,7 @@ export class ChannelCrudController
   async get(
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelGetResponse<Channel>> {
+  ): Promise<ResourceGetResponse<Channel>> {
     const resource = await this.service.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
@@ -63,7 +65,7 @@ export class ChannelCrudController
   async save(
     request: FastifyRequest<{ Body: CreateChannelBody; Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelCreateResponse<Channel>> {
+  ): Promise<ResourceCreateResponse<Channel>> {
     const entity = plainToClass(Channel, {
       ...request.body.resource,
       ...{
@@ -94,7 +96,7 @@ export class ChannelCrudController
   async update(
     request: FastifyRequest<{ Body: UpdateChannelBody; Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelUpdateResponse<Channel>> {
+  ): Promise<ResourceUpdateResponse<Channel>> {
     const entity = plainToClass(Channel, {
       ...request.body.resource,
       ...{
@@ -125,7 +127,7 @@ export class ChannelCrudController
       Querystring: ChannelListQueryParameters;
       Params: BaseChannelsParameters;
     }>,
-  ): Promise<ChannelListResponse<Channel>> {
+  ): Promise<ResourceListResponse<Channel>> {
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
       { ...request.query },
@@ -148,7 +150,7 @@ export class ChannelCrudController
   async delete(
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ChannelDeleteResponse> {
+  ): Promise<ResourceDeleteResponse> {
     try {
       const deleteResult = await this.service.delete(
         this.getPrimaryKey(request),
