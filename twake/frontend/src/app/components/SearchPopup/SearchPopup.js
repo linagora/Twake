@@ -29,21 +29,11 @@ export default class SearchPopup extends React.Component {
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
     };
-
-    this.search_enabled = true;
   }
   componentDidMount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.addEventListener('keydown', this.eventKey);
   }
   componentWillUnmount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.removeEventListener('keydown', this.eventKey);
     Search.removeListener(this);
   }

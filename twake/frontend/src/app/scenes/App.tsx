@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ClientPage from 'app/scenes/Client/Client';
 import Globals from 'services/Globals.js';
 import WindowService from 'services/utils/window.js';
@@ -22,5 +22,9 @@ export default () => {
     (Globals as any).store_publicAccess_get_data = WindowService.allGetParameter();
   }
 
-  return <ClientPage />;
+  return (
+    <BadDevice force={publicAccess}>
+      <ClientPage />;
+    </BadDevice>
+  );
 };
