@@ -147,7 +147,7 @@ class Messages extends Observable {
         }
         var data = {
           command: value.split(' ').slice(1).join(' '),
-          channel: channel,
+          channel: channel.data,
           parent_message: options.parent_message_id
             ? DepreciatedCollections.get('messages').find(options.parent_message_id) || null
             : null,
@@ -249,7 +249,7 @@ class Messages extends Observable {
     }
 
     var data = {
-      channel: await this.findChannel(channelId),
+      channel: (await this.findChannel(channelId)).data,
       parent_message:
         (threadId ? DepreciatedCollections.get('messages').find(threadId) : null) || null,
       from_icon: from_icon,
@@ -483,7 +483,7 @@ class Messages extends Observable {
   async showMessage(id) {
     const message = DepreciatedCollections.get('messages').find(id);
     const channel = await this.findChannel(message.channel_id);
-    ChannelsService.select(channel, true, { threadId: id });
+    ChannelsService.select(channel.data, true, { threadId: id });
   }
 
   scrollToMessage(channel, parent_id, id) {

@@ -39,13 +39,15 @@ class AccessManager
             //Use new node backend for this and cache result
             $userId = $current_user_id;
             $channelId = $id;
-            $companyId = $options["company_id"];
-            $workspaceId = $options["workspace_id"];
 
             $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $userId . "", "channel_id" => $channelId));
             if ($linkChannel) {
                 return true;
             }
+
+            $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
+            $companyId = $channelDetails->getData()["company_id"];
+            $workspaceId = $channelDetails->getData()["workspace_id"];
 
             $cacheKey = $userId."_".$channelId;
             $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "access_channel", "key"=>$cacheKey));

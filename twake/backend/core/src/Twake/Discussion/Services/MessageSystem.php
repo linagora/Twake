@@ -11,6 +11,7 @@ use Twake\Discussion\Entity\MessageLike;
 use Twake\Discussion\Entity\MessageReaction;
 use Twake\Discussion\Model\MessagesSystemInterface;
 use Twake\GlobalSearch\Entity\Bloc;
+use Twake\Core\Entity\CachedFromNode;
 
 class MessageSystem
 {
@@ -49,6 +50,7 @@ class MessageSystem
 
     public function hasAccess($data, $current_user = null, $message = null)
     {
+
         if ($current_user === null) {
             return true;
         }
@@ -64,13 +66,18 @@ class MessageSystem
         }
 
         $channel_id = $data["channel_id"];
+
+        if($data["company_id"] && $data["workspace_id"]){
+            $cacheChannel = new CachedFromNode("unused", "channel", $channel_id, ["company_id" => $data["company_id"], "workspace_id" => $data["workspace_id"], "channel_id" => $channel_id]);
+            $this->em->persist($cacheChannel);
+            $this->em->flush();
+        }
+
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
             "edition" => false,
             "object_id" => $channel_id
         ], [
-            "company_id" => $data["company_id"],
-            "workspace_id" => $data["workspace_id"],
         ]);
     }
 
@@ -297,6 +304,7 @@ class MessageSystem
 
             //Verify can create in channel
             if (!$this->hasAccess($object, $current_user)) {
+
                 return false;
             }
 
@@ -401,21 +409,6 @@ class MessageSystem
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
-            /*if($current_reactions && !(is_array($current_reactions[0]))){
-                $reacttochangeformat = Array();
-                $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
-                foreach ($allreactionppl as $ppl){
-                    $reacttochangeformat[$ppl->getReaction()]["users"][]= $ppl->getUserId() ;
-                    if($reacttochangeformat[$ppl->getReaction()]["count"]){
-                        $reacttochangeformat[$ppl->getReaction()]["count"]++;
-                    }
-                    else{
-                        $reacttochangeformat[$ppl->getReaction()]["count"] = 1 ;
-                    }
-                }
-                $current_reactions = $reacttochangeformat;
-            }*/
-
             if ($message_reaction) {
                 if ($user_reaction == $message_reaction->getReaction()) {
                     //Noop
@@ -511,7 +504,43 @@ class MessageSystem
 
             }
 
-            $this->em->flush();
+            $this->em->flush();$this->em->flush();
+
+            if($channel){
+                //Notify connectors (Disabled for 2021)
+                if ($channel->getOriginalWorkspaceId()) {
+                    if ($channel->getAppId()) {
+                        $apps_ids = [$channel->getAppId()];
+                    } else {
+                        $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
+                        $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
+                        $apps_ids = [];
+                        foreach ($resources as $resource) {
+                            if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
+                            }
+                            if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                $apps_ids[] = $resource->getApplicationId();
+                            }
+                        }
+                    }
+                    if (count($apps_ids) > 0) {
+                        foreach ($apps_ids as $app_id) {
+                            if ($app_id) {
+                                $data = Array(
+                                    "message" => $message->getAsArray(),
+                                    "channel" => $channel->getAsArray()
+                                );
+                                if ($did_create) {
+                                    $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
+                                } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
+                                    $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
         }
 
