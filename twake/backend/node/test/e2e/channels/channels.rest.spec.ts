@@ -3,11 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import {
-  ChannelListResponse,
-  ChannelGetResponse,
-  ChannelCreateResponse,
-  ChannelUpdateResponse,
-} from "../../../src/services/channels/web/types";
+  ResourceListResponse,
+  ResourceGetResponse,
+  ResourceUpdateResponse,
+} from "../../../src/services/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelVisibility } from "../../../src/services/channels/types";
@@ -104,7 +103,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(0);
@@ -127,7 +129,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
@@ -176,7 +181,10 @@ describe("The /internal/services/channels/v1 API", () => {
       });
 
       console.log(response.body);
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(1);
@@ -210,7 +218,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(5);
@@ -242,8 +253,8 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const firstPageChannels: ChannelListResponse<Channel> = deserialize(
-        ChannelListResponse,
+      const firstPageChannels: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
         firstPage.body,
       );
 
@@ -264,8 +275,8 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const secondPageChannels: ChannelListResponse<Channel> = deserialize(
-        ChannelListResponse,
+      const secondPageChannels: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
         secondPage.body,
       );
 
@@ -305,7 +316,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.resources.length).toEqual(10);
@@ -327,7 +341,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.websockets).toMatchObject([
@@ -353,7 +370,10 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ChannelListResponse<Channel> = deserialize(ChannelListResponse, response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
 
       expect(response.statusCode).toBe(200);
       expect(result.websockets.length).toEqual(3);
@@ -402,8 +422,8 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toEqual(200);
 
-      const channelGetResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelGetResponse,
+      const channelGetResult: ResourceGetResponse<Channel> = deserialize(
+        ResourceGetResponse,
         response.body,
       );
 
@@ -459,8 +479,8 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toEqual(201);
 
-      const channelCreateResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelCreateResponse,
+      const channelCreateResult: ResourceGetResponse<Channel> = deserialize(
+        ResourceGetResponse,
         response.body,
       );
 
@@ -513,8 +533,8 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const channelUpdateResult: ChannelGetResponse<Channel> = deserialize(
-        ChannelUpdateResponse,
+      const channelUpdateResult: ResourceUpdateResponse<Channel> = deserialize(
+        ResourceUpdateResponse,
         response.body,
       );
 
