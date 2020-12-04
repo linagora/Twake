@@ -28,6 +28,11 @@ services:
       - REDIS_REPLICATION_MODE=master
   node:
     image: twaketech/twake-node
+    environment:
+      - DEV=dev
+      - DB_DRIVER=cassandra
+      - DB_CASSANDRA_URI=scylladb:9042
+      - DB_CASSANDRA_KEYSPACE=twake
     volumes:
       - ./configuration/backend-node/:/configuration/
       - ./docker-data/drive/:/twake-core/drive/

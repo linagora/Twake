@@ -11,6 +11,7 @@ use Twake\Discussion\Entity\MessageLike;
 use Twake\Discussion\Entity\MessageReaction;
 use Twake\Discussion\Model\MessagesSystemInterface;
 use Twake\GlobalSearch\Entity\Bloc;
+use Twake\Core\Entity\CachedFromNode;
 
 class MessageSystem
 {
@@ -28,20 +29,28 @@ class MessageSystem
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
+
         $route = explode("/", $route);
         $channel_id = isset($route[1]) ? $route[1] : null;
 
         if (!$channel_id) {
             return false;
         }
+        
+        if($data["get_options"]){
+            $data = $data["get_options"];
+        }
 
         return $this->hasAccess([
-            "channel_id" => $channel_id
+            "channel_id" => $channel_id,
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"],
         ], $current_user);
     }
 
     public function hasAccess($data, $current_user = null, $message = null)
     {
+
         if ($current_user === null) {
             return true;
         }
@@ -57,10 +66,18 @@ class MessageSystem
         }
 
         $channel_id = $data["channel_id"];
+
+        if($data["company_id"] && $data["workspace_id"]){
+            $cacheChannel = new CachedFromNode("unused", "channel", $channel_id, ["company_id" => $data["company_id"], "workspace_id" => $data["workspace_id"], "channel_id" => $channel_id]);
+            $this->em->persist($cacheChannel);
+            $this->em->flush();
+        }
+
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
             "edition" => false,
             "object_id" => $channel_id
+        ], [
         ]);
     }
 
@@ -127,8 +144,20 @@ class MessageSystem
 
         }
 
-        $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
-        $this->message_notifications_center_service->read($channel, $current_user);
+        if(count($messages) === 0
+            && !$options["id"]
+            && !$options["id"]
+            && !$offset
+            && $limit > 0
+            && !$parent_message_id ){
+                error_log($options["channel_id"]);
+            $init_message = Array(
+                "channel_id" => $options["channel_id"],
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            return [$this->save($init_message, Array())];
+        }
 
         return $messages;
     }
@@ -165,12 +194,6 @@ class MessageSystem
             $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
             $this->em->persist($parent_message);
         }
-
-        $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
-        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
-        $channel->setMessagesCount($channel->getMessagesCount() - 1);
-
-        $this->em->persist($channel);
 
         $array_before_delete = $message->getAsArray();
 
@@ -281,6 +304,7 @@ class MessageSystem
 
             //Verify can create in channel
             if (!$this->hasAccess($object, $current_user)) {
+
                 return false;
             }
 
@@ -298,7 +322,7 @@ class MessageSystem
             }
 
             //Create a new message
-            $message = new Message($object["channel_id"], $object["parent_message_id"], $channel);
+            $message = new Message($object["channel_id"], $object["parent_message_id"]);
 
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {
@@ -385,21 +409,6 @@ class MessageSystem
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
-            /*if($current_reactions && !(is_array($current_reactions[0]))){
-                $reacttochangeformat = Array();
-                $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
-                foreach ($allreactionppl as $ppl){
-                    $reacttochangeformat[$ppl->getReaction()]["users"][]= $ppl->getUserId() ;
-                    if($reacttochangeformat[$ppl->getReaction()]["count"]){
-                        $reacttochangeformat[$ppl->getReaction()]["count"]++;
-                    }
-                    else{
-                        $reacttochangeformat[$ppl->getReaction()]["count"] = 1 ;
-                    }
-                }
-                $current_reactions = $reacttochangeformat;
-            }*/
-
             if ($message_reaction) {
                 if ($user_reaction == $message_reaction->getReaction()) {
                     //Noop
@@ -456,68 +465,77 @@ class MessageSystem
             $this->em->remove($message);
         } else {
 
-            try {
-                $this->indexMessage($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
-            } catch (\Exception $e) {
-                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
-            }
+            //TODO channel is now never defined so never pass here
+            if($channel){
 
-            $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
-            if ($channel && $did_create && !$init_channel) {
-                $channel->setLastActivity(new \DateTime());
-                $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
-                $this->em->persist($channel);
+                try {
+                    $this->indexMessage($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
+                } catch (\Exception $e) {
+                    error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
+                }
                 
-                //Sender autoread the channel
-                if($user){
-                    $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
-                    $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
-                    $member->setLastMessagesIncrement($channel->getMessagesIncrement());
-                    $this->em->persist($member);
-                }
+                //Replaced by new notifications in node
+                $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
+                if ($channel && $did_create && !$init_channel) {
+                    $channel->setLastActivity(new \DateTime());
+                    $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
+                    $this->em->persist($channel);
+                    
+                    //Sender autoread the channel
+                    if($user){
+                        $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
+                        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
+                        $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                        $this->em->persist($member);
+                    }
 
-                try{
-                    $this->queues->push("message_dispatch_queue", [
-                        "channel" => $channel->getId(),
-                        "message_id" => $message->getId(),
-                        "application_id" => $application ? $application->getId() : null,
-                        "user_id" => $user ? $user->getId() : null,
-                    ]);
-                }catch(\Exception $err){
-                    error_log($err->getMessage());
-                }
-            }
-
-            $this->em->flush();
-
-            //Notify connectors
-            if ($channel->getOriginalWorkspaceId()) {
-                if ($channel->getAppId()) {
-                    $apps_ids = [$channel->getAppId()];
-                } else {
-                    $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
-                    $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
-                    $apps_ids = [];
-                    foreach ($resources as $resource) {
-                        if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                            continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
-                        }
-                        if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                            $apps_ids[] = $resource->getApplicationId();
-                        }
+                    try{
+                        $this->queues->push("message_dispatch_queue", [
+                            "channel" => $channel->getId(),
+                            "message_id" => $message->getId(),
+                            "application_id" => $application ? $application->getId() : null,
+                            "user_id" => $user ? $user->getId() : null,
+                        ]);
+                    }catch(\Exception $err){
+                        error_log($err->getMessage());
                     }
                 }
-                if (count($apps_ids) > 0) {
-                    foreach ($apps_ids as $app_id) {
-                        if ($app_id) {
-                            $data = Array(
-                                "message" => $message->getAsArray(),
-                                "channel" => $channel->getAsArray()
-                            );
-                            if ($did_create) {
-                                $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
-                            } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
-                                $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+
+
+            }
+
+            $this->em->flush();$this->em->flush();
+
+            if($channel){
+                //Notify connectors (Disabled for 2021)
+                if ($channel->getOriginalWorkspaceId()) {
+                    if ($channel->getAppId()) {
+                        $apps_ids = [$channel->getAppId()];
+                    } else {
+                        $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
+                        $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
+                        $apps_ids = [];
+                        foreach ($resources as $resource) {
+                            if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
+                            }
+                            if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                $apps_ids[] = $resource->getApplicationId();
+                            }
+                        }
+                    }
+                    if (count($apps_ids) > 0) {
+                        foreach ($apps_ids as $app_id) {
+                            if ($app_id) {
+                                $data = Array(
+                                    "message" => $message->getAsArray(),
+                                    "channel" => $channel->getAsArray()
+                                );
+                                if ($did_create) {
+                                    $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
+                                } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
+                                    $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                                }
                             }
                         }
                     }

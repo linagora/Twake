@@ -35,6 +35,7 @@ export default (props: Props) => {
     MainViewService.select(props.id, {
       collection: props.collection,
       app: props.app || 'messages',
+      hasTabs: props.visibility != 'direct' && !props.app,
     });
   }
 
@@ -66,10 +67,10 @@ export default (props: Props) => {
           </div>
         )}
         <div className="text" style={{ textTransform: 'capitalize' }}>
-          {props.name}
+          {props.name + ' '}
+          {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
         </div>
         <div className="more">
-          {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (
             <div className="notification_dot">{Math.max(1, props.notifications)}</div>

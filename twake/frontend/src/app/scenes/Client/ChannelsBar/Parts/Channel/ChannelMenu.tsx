@@ -24,7 +24,7 @@ import RouterServices from 'services/RouterService';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
-  channel: ChannelType;
+  channel: ChannelResource;
 };
 
 export default (props: Props): JSX.Element => {
@@ -32,7 +32,7 @@ export default (props: Props): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
 
   const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.id}/members/`;
+  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.data.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
@@ -43,7 +43,8 @@ export default (props: Props): JSX.Element => {
   Languages.useListener(useState);
   Notifications.useListener(useState);
   //@ts-ignore
-  const hasNotification = (Notifications.notification_by_channel[props.channel.id] || {}).count > 0;
+  const hasNotification =
+    (Notifications.notification_by_channel[props.channel.data.id || ''] || {}).count > 0;
 
   const changeNotificationPreference = async (
     preference: 'all' | 'none' | 'group_mentions' | 'user_mentions',
@@ -68,13 +69,10 @@ export default (props: Props): JSX.Element => {
   };
 
   const displayMembers = () => {
-    return ModalManager.open(
-      <ChannelMembersList channelId={props.channel.id} channelName={props.channel.name} closable />,
-      {
-        position: 'center',
-        size: { width: '500px', minHeight: '329px' },
-      },
-    );
+    return ModalManager.open(<ChannelMembersList channel={props.channel} closable />, {
+      position: 'center',
+      size: { width: '500px', minHeight: '329px' },
+    });
   };
 
   const leaveChannel = () => {
@@ -97,7 +95,7 @@ export default (props: Props): JSX.Element => {
   };
 
   const removeChannel = () => {
-    return channelsCollection.remove({ id: props.channel.id });
+    return channelsCollection.remove({ id: props.channel.data.id });
   };
 
   let menu: object[] = [
@@ -113,12 +111,12 @@ export default (props: Props): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t(
-        props.channel.user_member?.favorite
+        props.channel.data.user_member?.favorite
           ? 'scenes.apps.messages.left_bar.stream.remove_from_favorites'
           : 'scenes.apps.messages.left_bar.stream.add_to_favorites',
       ),
       onClick: () => {
-        addOrCancelFavorite(!props.channel.user_member?.favorite);
+        addOrCancelFavorite(!props.channel.data.user_member?.favorite);
       },
     },
     {
@@ -134,14 +132,14 @@ export default (props: Props): JSX.Element => {
     },
   ];
 
-  if (props.channel.visibility !== 'direct') {
+  if (props.channel.data.visibility !== 'direct') {
     menu.unshift({
       type: 'menu',
       text: Languages.t('scenes.apps.messages.left_bar.stream.notifications'),
       submenu: [
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.all'),
-          icon: props.channel.user_member?.notification_level === 'all' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'all' && 'check',
           onClick: () => {
             changeNotificationPreference('all');
           },
@@ -152,7 +150,7 @@ export default (props: Props): JSX.Element => {
             '@here',
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.user_member?.notification_level === 'group_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'group_mentions' && 'check',
           onClick: () => {
             changeNotificationPreference('group_mentions');
           },
@@ -161,14 +159,14 @@ export default (props: Props): JSX.Element => {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.user_member?.notification_level === 'user_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'user_mentions' && 'check',
           onClick: () => {
             changeNotificationPreference('user_mentions');
           },
         },
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.never'),
-          icon: props.channel.user_member?.notification_level === 'none' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'none' && 'check',
           onClick: () => {
             changeNotificationPreference('none');
           },
@@ -196,10 +194,10 @@ export default (props: Props): JSX.Element => {
   }
 
   //To do: Add the necessery admin rights
-  if (true && props.channel.visibility !== 'direct') {
+  if (true && props.channel.data.visibility !== 'direct') {
     menu.push({
       type: 'menu',
-      hide: currentUser.id !== props.channel.owner && isCurrentUserAdmin === false,
+      hide: currentUser.id !== props.channel.data.owner && isCurrentUserAdmin === false,
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {

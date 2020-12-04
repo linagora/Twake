@@ -1,6 +1,6 @@
 import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
 import Observable from 'app/services/Depreciated/observable';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
@@ -250,7 +250,7 @@ export class MessagesListUtils extends Observable {
     });
 
     if (this.highlighted) {
-      const message = Collections.get('messages').find(this.highlighted);
+      const message = DepreciatedCollections.get('messages').find(this.highlighted);
       bestCenterNode = this.messagesPositions[message?.id]?.node?.getDomElement() || bestCenterNode;
     }
     if (bestCenterNode) this.setWitnessMessage(bestCenterNode);

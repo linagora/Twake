@@ -30,6 +30,8 @@ export default class MessagesList extends Component<Props> {
   constructor(props: Props) {
     super(props);
     this.messagesListServerService = MessagesListServerServicesManager.get(
+      this.props.channel.company_id,
+      this.props.channel.workspace_id,
       this.props.channel.id,
       this.props.threadId,
       this.props.collectionKey,

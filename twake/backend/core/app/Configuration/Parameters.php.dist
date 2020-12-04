@@ -24,9 +24,9 @@ class Parameters extends \Common\Configuration
               "expiration" => 60*60, //1 hour
               "refresh_expiration" => 60*60*24*31 //1 month
             ],
-            "websocket" => [
-                "pusher" => "http://node:3000/private/pusher",
-                "secret" => "pusher_secret"
+            "node" => [
+                "api" => "http://node:3000/private/",
+                "secret" => "api_supersecret"
             ],
             "db" => [
                 "driver" => "pdo_cassandra",

@@ -7,7 +7,8 @@
     "webserver",
     "websocket",
     "database",
-    "realtime"
+    "realtime",
+    "phpnode"
   ],
   "webserver": {
     "port": 3000,
@@ -17,6 +18,9 @@
     "cors": {
       "origin": "*"
     }
+  },
+  "phpnode": {
+    "secret": "api_supersecret"
   },
   "websocket": {
     "path": "/socket/",
@@ -31,8 +35,7 @@
       "jwt": {
         "secret": "supersecret"
       }
-    },
-    "php_pusher_secret": "pusher_secret"
+    }
   },
   "auth": {
     "jwt": {

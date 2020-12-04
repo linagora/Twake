@@ -23,7 +23,7 @@ class Message extends FrontObject
     private $id;
 
     /**
-     * @ORM\Column(name="channel_id", type="twake_timeuuid")
+     * @ORM\Column(name="channel_id", type="twake_uuid")
      * @ORM\Id
      */
     private $channel_id;
@@ -115,7 +115,7 @@ class Message extends FrontObject
      * Message constructor.
      */
 
-    public function __construct($channel_id, $parent_message_id, $increment_at_time)
+    public function __construct($channel_id, $parent_message_id, $increment_at_time = 0)
     {
         parent::__construct();
         $this->channel_id = $channel_id;

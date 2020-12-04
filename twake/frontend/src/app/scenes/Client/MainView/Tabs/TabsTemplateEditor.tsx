@@ -44,6 +44,7 @@ export default (props: PropsType): JSX.Element => {
       footer={
         <Button
           type="primary"
+          disabled={!appId}
           onClick={() => {
             let editedTab: TabResource | undefined = props.tab;
 
@@ -87,7 +88,7 @@ export default (props: PropsType): JSX.Element => {
           <Row justify="start">
             <Select value={appId} size={'large'} onChange={(value: string) => setAppId(value)}>
               {workspacesApps
-                .filter((app: AppType) => (app.display || {}).channel)
+                .filter((app: AppType) => (app.display || {}).channel_tab)
                 .map((app: AppType) => {
                   return (
                     // To do, find a way to use the jitsi image

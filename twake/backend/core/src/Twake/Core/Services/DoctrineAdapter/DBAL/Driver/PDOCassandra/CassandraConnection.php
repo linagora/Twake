@@ -185,7 +185,7 @@ class PDOStatementAdapter
                     }
                 } else if ($value == NULL && !is_string($value)) {
                     $value = "NULL";
-                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
+                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_uuid" || $this->types[$position + 1] == "twake_bigint") {
                     if ($value . "" != "" && preg_replace("/[0-9]/", "", $value) == "") {
                         $value = $value;
                     } else if (preg_match('/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/', $value)) {

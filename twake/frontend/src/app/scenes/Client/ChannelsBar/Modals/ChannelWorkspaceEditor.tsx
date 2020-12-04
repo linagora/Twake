@@ -12,7 +12,7 @@ import _ from 'lodash';
 
 type Props = {
   title: string;
-  channel?: ChannelType;
+  channel?: ChannelResource;
   isCurrentUserAdmin?: boolean;
   currentUserId?: string;
 };
@@ -48,14 +48,31 @@ const ChannelWorkspaceEditor: FC<Props> = ({
     if (channel?.id) {
       const insertedChannel = await ChannelsCollections.findOne(channel.id);
       insertedChannel.data = _.assign(insertedChannel.data, {
-        name: newChannel.name || channel.name,
-        description: newChannel.description || channel.description,
-        icon: newChannel.icon || channel.icon,
-        visibility: newChannel.visibility || channel.visibility,
+        name: newChannel.name || channel.data.name,
+        description: newChannel.description || channel.data.description,
+        icon: newChannel.icon || channel.data.icon,
+        visibility: newChannel.visibility || channel.data.visibility,
       });
       await ChannelsCollections.upsert(insertedChannel);
+      ModalManager.close();
     } else {
-      await ChannelsCollections.upsert(new ChannelResource(newChannel));
+      const resource = await ChannelsCollections.upsert(new ChannelResource(newChannel), {
+        waitServerReply: true,
+      });
+
+      ModalManager.open(
+        <ChannelMembersEditor
+          companyId={resource.data.company_id || ''}
+          workspaceId={resource.data.workspace_id || ''}
+          channelId={resource.data.id || ''}
+          channelName={resource.data.name}
+          onClose={() => ModalManager.closeAll()}
+        />,
+        {
+          position: 'center',
+          size: { width: '600px', minHeight: '329px' },
+        },
+      );
     }
   };
 
@@ -76,19 +93,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({
           disabled={!disabled}
           onClick={() => {
             upsertChannel();
-
-            if (!channel?.id) {
-              return ModalManager.open(
-                <ChannelMembersEditor
-                  channelName={newChannel.name}
-                  onClose={() => ModalManager.closeAll()}
-                />,
-                {
-                  position: 'center',
-                  size: { width: '600px', minHeight: '329px' },
-                },
-              );
-            } else return ModalManager.close();
           }}
         >
           {Languages.t(channel?.id ? 'general.edit' : 'general.create')}
@@ -96,7 +100,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       }
     >
       <ChannelTemplateEditor
-        channel={channel}
+        channel={channel?.data}
         onChange={onChange}
         isCurrentUserAdmin={isCurrentUserAdmin}
         currentUserId={currentUserId}

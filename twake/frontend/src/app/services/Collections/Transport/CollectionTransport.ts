@@ -1,14 +1,12 @@
 import Collections, { Collection, Resource } from '../Collections';
 import CollectionTransportSockets from './CollectionTransportSockets';
 
-type WebsocketEvent = { action: 'created' | 'updated' | 'deleted'; resource: any };
 type ServerAction = {
   action: 'create' | 'update' | 'delete';
   resourceId: string;
   options: any;
-};
-type WebsocketDefinition = {
-  room: string;
+  resolve: (resource: Resource<any> | string | null) => void;
+  reject: (err: any) => void;
 };
 
 export default class CollectionTransport<G extends Resource<any>> {
@@ -41,13 +39,21 @@ export default class CollectionTransport<G extends Resource<any>> {
         if (buffer[i].action === 'create' || buffer[i].action === 'update') {
           const resource = await this.collection.findOne({ id: buffer[i].resourceId });
           if (resource) {
-            await this.callUpsert(resource, buffer[i].options);
+            const [httpResult, resourceSaved] = await this.callUpsert(resource, buffer[i].options);
+            buffer[i].resolve(resourceSaved);
+          } else {
+            buffer[i].resolve(null);
           }
         }
         if (buffer[i].action === 'delete') {
-          await this.callRemove(buffer[i].resourceId, buffer[i].options);
+          const [httpResult, resourceId] = await this.callRemove(
+            buffer[i].resourceId,
+            buffer[i].options,
+          );
+          buffer[i].resolve(resourceId);
         }
       } catch (err) {
+        buffer[i].reject(err);
         console.log(err);
         failed.push(buffer[i]);
       }
@@ -111,35 +117,46 @@ export default class CollectionTransport<G extends Resource<any>> {
     return null;
   }
 
-  async upsert(resource: G, options: any) {
-    this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
+  async upsert(resource: G, options: any): Promise<Resource<any> | string | null> {
+    return new Promise((resolve, reject) => {
+      this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
-    this.buffer.push({
-      action: resource.state.persisted ? 'update' : 'create',
-      resourceId: resource.id,
-      options: options || {},
-    });
-
-    this.flushBuffer();
-  }
-
-  async remove(resource: G, options: any) {
-    this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
-
-    if (resource.state.persisted) {
       this.buffer.push({
-        action: 'delete',
+        action: resource.state.persisted ? 'update' : 'create',
         resourceId: resource.id,
         options: options || {},
+        resolve: resolve,
+        reject: reject,
       });
 
       this.flushBuffer();
-    }
+    });
+  }
+
+  async remove(resource: G, options: any): Promise<Resource<any> | string | null> {
+    return new Promise((resolve, reject) => {
+      this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
+
+      if (resource.state.persisted) {
+        this.buffer.push({
+          action: 'delete',
+          resourceId: resource.id,
+          options: options || {},
+          resolve: resolve,
+          reject: reject,
+        });
+
+        this.flushBuffer();
+      } else {
+        resolve();
+      }
+    });
   }
 
   async callUpsert(resource: G, options: any) {
     this.lockHttp();
     try {
+      let resourceCreated = null;
       const result = await Collections.getTransport()
         .getHttp()
         .post(
@@ -156,6 +173,7 @@ export default class CollectionTransport<G extends Resource<any>> {
           resource.setPersisted(true);
           resource.data = Object.assign(resource.data, result?.resource);
           await this.collection.upsert(resource, { withoutBackend: true });
+          resourceCreated = resource;
         } else if ([401].indexOf(result?.statusCode || 200) >= 0) {
           //This resource is invalid, remove it
           await this.collection.remove(resource, { withoutBackend: true });
@@ -164,7 +182,7 @@ export default class CollectionTransport<G extends Resource<any>> {
 
       this.unlockHttp();
 
-      return result;
+      return [result, resourceCreated];
     } catch (err) {
       console.log(err);
       this.unlockHttp();
@@ -180,7 +198,7 @@ export default class CollectionTransport<G extends Resource<any>> {
         .delete(this.collection.getRestPath() + resourceId);
       this.unlockHttp();
 
-      return result;
+      return [result, resourceId];
     } catch (err) {
       console.log(err);
       this.unlockHttp();

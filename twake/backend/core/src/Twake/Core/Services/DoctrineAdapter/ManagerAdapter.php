@@ -94,6 +94,7 @@ class ManagerAdapter
             'twake_types' => Array(
                 'twake_float' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'FloatType',
                 'twake_datetime' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
+                'twake_uuid' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'UUIDType',
                 'twake_timeuuid' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TimeUUIDType',
                 'twake_boolean' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType',
                 'tinyint' => 'Twake\Core\Services\DoctrineAdapter\DBAL\Types\\TinyintType',

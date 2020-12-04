@@ -40,8 +40,7 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
-            "help_link" => "https://community.twake.app",
-            "websocket_public_key" => $this->container->getParameter("websocket.pusher_public")
+            "help_link" => "https://community.twake.app"
         );
 
         if ($this->container->hasParameter("defaults.branding")) {

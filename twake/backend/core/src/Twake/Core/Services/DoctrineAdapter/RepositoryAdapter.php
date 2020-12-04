@@ -69,7 +69,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             }
             if (isset($this->getClassMetadata()->fieldMappings)) {
                 foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
-                    if ($data["type"] == "twake_timeuuid") {
+                    if ($data["type"] == "twake_timeuuid" || $data["type"] == "twake_uuid") {
                         $mapping[] = $field;
                     }
                 }
@@ -175,7 +175,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         if ($data["type"] == "twake_no_salt_text") {
                             $mapping_twake_text[] = $field;
                         }
-                        if ($data["type"] == "twake_timeuuid") {
+                        if ($data["type"] == "twake_timeuuid" || $data["type"] == "twake_uuid") {
                             $mapping_timeuuid[] = $field;
                         }
                     }
@@ -282,7 +282,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         }
         if (isset($this->getClassMetadata()->fieldMappings)) {
             foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
-                if ($data["type"] == "twake_timeuuid") {
+                if ($data["type"] == "twake_timeuuid" || $data["type"] == "twake_uuid") {
                     $mapping[] = $field;
                 }
             }

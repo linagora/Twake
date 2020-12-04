@@ -11,6 +11,8 @@ import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
 import { StarFilled } from '@ant-design/icons';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import { ChannelResource } from 'app/models/Channel';
+import ChannelAvatars from './ChannelAvatars';
 import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
@@ -37,7 +39,10 @@ export default (): JSX.Element => {
   if (!channelCollection?.useWatcher) {
     return <Col></Col>;
   }
-  const channel = channelCollection.useWatcher({ id: channelId })[0];
+
+  const channel: ChannelResource = channelCollection.useWatcher({
+    id: channelId,
+  })[0];
 
   if (!channel) {
     return <Col></Col>;
@@ -49,7 +54,11 @@ export default (): JSX.Element => {
         // Temporary, it's for spacing when the hamburger menu is displayed
         <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}></Col>
       }
-      {channel.data.visibility === 'direct' && <ChannelUsersHeader channel={channel.data} />}
+      {channel.data.visibility === 'direct' && (
+        <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
+          <ChannelUsersHeader channel={channel.data} />
+        </Col>
+      )}
       {channel.data.visibility !== 'direct' && (
         <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
           <span
@@ -79,29 +88,24 @@ export default (): JSX.Element => {
       <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
         <Row
           align="middle"
-          justify="space-around"
+          justify="end"
           gutter={[8, 0]}
           style={{ padding: 0, flexWrap: 'nowrap' }}
         >
-          {channel.data.visibility !== 'direct' && (
-            <div style={{ display: 'inline', lineHeight: 0 }}>{avatar}</div>
+          {channel.data.visibility !== 'direct' && channel.data.workspace_id && (
+            <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
+              <ChannelAvatars workspaceId={channel.data.workspace_id} />
+            </div>
           )}
           {channel.data.visibility !== 'direct' && (
             <Button
               size="small"
               type="text"
               onClick={() => {
-                ModalManager.open(
-                  <ChannelMembersList
-                    channelId={channelId}
-                    channelName={channel.data.name}
-                    closable
-                  />,
-                  {
-                    position: 'center',
-                    size: { width: '500px', minHeight: '329px' },
-                  },
-                );
+                ModalManager.open(<ChannelMembersList channel={channel} closable />, {
+                  position: 'center',
+                  size: { width: '500px', minHeight: '329px' },
+                });
               }}
             >
               <Typography.Text>Members</Typography.Text>

@@ -32,8 +32,8 @@ type State = {
 };
 
 export default class MessageHeader extends Component<Props, State> {
-  messagesListService: MessagesListService;
-  messagesListServerService: MessagesListServerUtils;
+  messagesListService: MessagesListService | null = null;
+  messagesListServerService: MessagesListServerUtils | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -41,15 +41,18 @@ export default class MessageHeader extends Component<Props, State> {
       messageLink: '',
     };
 
-    this.messagesListServerService = MessagesListServerServicesManager.get(
-      this.props.message?.channel_id || '',
-      '',
-      this.props.collectionKey,
-    );
-    this.messagesListService = MessagesListServiceManager.get(
-      this.props.collectionKey,
-      this.messagesListServerService,
-    );
+    this.messagesListServerService =
+      MessagesListServerServicesManager.getByChannelId(
+        this.props.message?.channel_id || '',
+        '',
+        this.props.collectionKey,
+      ) || null;
+    if (this.messagesListServerService) {
+      this.messagesListService = MessagesListServiceManager.get(
+        this.props.collectionKey,
+        this.messagesListServerService,
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -62,16 +65,20 @@ export default class MessageHeader extends Component<Props, State> {
   render() {
     let user_name_node: any = null;
 
+    if (this.messagesListService === null) {
+      return <></>;
+    }
+
     const scrollToMessage = () => {
       const messageId = this.props.message.parent_message_id || '';
-      const found = this.messagesListService.scrollToMessage({
+      const found = (this.messagesListService as MessagesListService).scrollToMessage({
         id: messageId,
       });
       if (!found) {
-        this.messagesListServerService.init(messageId).then(() => {
-          this.messagesListService.scrollToMessage({ id: messageId });
-          this.messagesListServerService.notify();
-          this.messagesListServerService.loadMore();
+        (this.messagesListServerService as MessagesListServerUtils).init(messageId).then(() => {
+          (this.messagesListService as MessagesListService).scrollToMessage({ id: messageId });
+          (this.messagesListServerService as MessagesListServerUtils).notify();
+          (this.messagesListServerService as MessagesListServerUtils).loadMore();
         });
       }
     };

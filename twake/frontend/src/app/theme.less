@@ -52,6 +52,11 @@
 @btn-border-width: 0;
 @btn-primary-color: @white;
 
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background: @primary-hover;
+}
+
 // --- animations --- //
 @animation-duration-slow: 0.2s;
 [ant-click-animating-without-extra-node='true']::after,
@@ -277,4 +282,9 @@ textarea.ant-input,
 .ant-badge-dot {
   width: 8px !important;
   height: 8px !important;
+}
+
+// --- ant-avatar --- //
+.ant-avatar-group .ant-avatar:not(:first-child) {
+  margin-left: -8px !important;
 }

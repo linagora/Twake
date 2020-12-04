@@ -9,13 +9,15 @@ import ChannelMenu from 'app/scenes/Client/ChannelsBar//Parts/Channel/ChannelMen
 
 type Props = {
   collection: Collection<ChannelResource>;
-  channel: ChannelType;
+  channel: ChannelResource;
 };
 
 export default (props: Props) => {
-  useChannelListener(props.channel.direct_channel_members || []);
-  const [avatar, name] = getChannelParts({ usersIds: props.channel.direct_channel_members || [] });
-  const menu = (channel: ChannelType) => {
+  useChannelListener(props.channel.data.direct_channel_members || []);
+  const [avatar, name] = getChannelParts({
+    usersIds: props.channel.data.direct_channel_members || [],
+  });
+  const menu = (channel: ChannelResource) => {
     return <ChannelMenu channel={channel} />;
   };
 
@@ -31,7 +33,7 @@ export default (props: Props) => {
         visibility="direct"
         notifications={0}
         id={props.channel.id}
-        showTooltip={(props.channel?.direct_channel_members?.length || 0) > 2}
+        showTooltip={(props.channel.data.direct_channel_members?.length || 0) > 2}
         menu={menu(props.channel)}
       />
     </>

@@ -26,11 +26,11 @@
     border-radius: 4px;
     background-color: var(--grey-background);
     color: var(--black-alpha-2);
+    margin-left: -8px;
 
     &:hover {
-      transition: 0.5s;
-      opacity: 0.8;
-      color: var(--black);
+      background-color: var(--grey-light);
+      color: var(--grey-dark);
     }
   }
 }

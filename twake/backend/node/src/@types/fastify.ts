@@ -9,6 +9,7 @@ export interface authenticateDecorator {
 
 declare module "fastify" {
   interface FastifyInstance {
+    phpnodeAuthenticate(): void;
     authenticate(): void;
     io: SocketIO.Server;
   }

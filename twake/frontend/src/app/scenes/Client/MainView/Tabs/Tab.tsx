@@ -23,15 +23,7 @@ type PropsType = {
 };
 
 export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType) => {
-  const { workspaceId, companyId, channelId, tabId } = RouterServices.useStateFromRoute();
-  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
-
-  // Not working at this moment, waiting to channel owner fix
-  const isChannelOwner = async () => {
-    const currentChannel = await ChannelsCollections.findOne(channelId);
-    return currentChannel && currentUserId === currentChannel.data.owner ? true : false;
-  };
+  const { workspaceId, tabId } = RouterServices.useStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
@@ -59,7 +51,7 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
         return RouterServices.history.push(route);
       }}
     >
-      {getAppIcon(tabResource)}
+      {getAppIcon(tabResource.data)}
       <Typography.Paragraph
         ellipsis={{
           rows: 1,
@@ -92,10 +84,7 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
             },
             {
               type: 'menu',
-              hide:
-                currentUserId !== tabResource.data.owner &&
-                !isCurrentUserAdmin /*&&
-                isChannelOwner()*/,
+              hide: currentUserId !== tabResource.data.owner && !isCurrentUserAdmin,
               text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
               onClick: () => deleteTab(tabResource),
             },

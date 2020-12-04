@@ -32,6 +32,14 @@ class Discussion extends BaseController
         );
         $this->get("app.pusher")->push($event, "channels/" . $res["channel_id"] . "/messages/updates");
 
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "object_type" => "",
+            "front_id" => $res["front_id"]
+        );
+        $this->get("app.websockets")->push("messages/" . $res["channel_id"], $event);
+
         return new Response(Array("data" => Array("object" => $res)));
     }
 
@@ -55,6 +63,15 @@ class Discussion extends BaseController
             "thread_id" => $res["parent_message_id"]
         );
         $this->get("app.pusher")->push($event, "channels/" . $res["channel_id"] . "/messages/updates");
+
+
+        $event = Array(
+            "client_id" => "bot",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $res
+        );
+        $this->get("app.websockets")->push("messages/" . $res["channel_id"], $event);
 
         return new Response(Array("data" => Array("object" => $res)));
     }
