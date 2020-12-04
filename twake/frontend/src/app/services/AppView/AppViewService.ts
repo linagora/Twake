@@ -12,11 +12,13 @@ export type ViewTypes =
 export type ViewConfiguration = {
   app?: any; //In depreciated app is used
   collection?: any;
+  hasTabs?: boolean;
 };
 
 const defaultConfiguration: ViewConfiguration = {
   app: 'messages',
   collection: null,
+  hasTabs: false,
 };
 
 export default class AppViewService extends Observable {

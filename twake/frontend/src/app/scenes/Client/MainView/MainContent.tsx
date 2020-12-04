@@ -24,10 +24,11 @@ const MainContent: FC<{}> = () => {
       <Layout style={{ height: '100%' }}>
         <Layout.Content>
           <Layout className="main-view-layout">
-            <Layout.Header className="main-view-tabs-header">
-              {/* Todo: hide tabs when application or direct message*/}
-              <Tabs key={mainId} />
-            </Layout.Header>
+            {mainConfiguration.hasTabs && (
+              <Layout.Header className="main-view-tabs-header">
+                <Tabs key={mainId} />
+              </Layout.Header>
+            )}
             <Layout.Content className="main-view-content">
               {mainType !== '' && (
                 <AppView
