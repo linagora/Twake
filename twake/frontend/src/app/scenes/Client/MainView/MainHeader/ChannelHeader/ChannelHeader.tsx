@@ -88,7 +88,7 @@ export default (): JSX.Element => {
       <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
         <Row
           align="middle"
-          justify="space-around"
+          justify="end"
           gutter={[8, 0]}
           style={{ padding: 0, flexWrap: 'nowrap' }}
         >
