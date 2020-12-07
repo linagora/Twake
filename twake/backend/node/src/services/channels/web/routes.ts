@@ -8,13 +8,18 @@ import {
   updateChannelMemberSchema,
   updateChannelSchema,
 } from "./schemas";
-import { ChannelCrudController, ChannelMemberCrudController } from "./controllers";
+import {
+  ChannelCrudController,
+  ChannelMemberCrudController,
+  ChannelTabCrudController,
+} from "./controllers";
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
 
 const channelsUrl = "/companies/:company_id/workspaces/:workspace_id/channels";
 const membersUrl = `${channelsUrl}/:id/members`;
+const tabsUrl = `${channelsUrl}/:id/tabs`;
 
 const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   fastify: FastifyInstance,
@@ -23,6 +28,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
 ) => {
   const channelsController = new ChannelCrudController(options.service.channels);
   const membersController = new ChannelMemberCrudController(options.service.members);
+  const tabsController = new ChannelTabCrudController(options.service.tabs);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
     const authorized = await checkCompanyAndWorkspaceForUser(
@@ -123,6 +129,51 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: membersController.delete.bind(membersController),
+  });
+
+  // tabs
+
+  fastify.route({
+    method: "GET",
+    url: tabsUrl,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: tabsController.list.bind(tabsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: tabsUrl,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: createChannelMemberSchema,
+    handler: tabsController.save.bind(tabsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${tabsUrl}/:tab_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getChannelMemberSchema,
+    handler: tabsController.get.bind(tabsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${tabsUrl}/:tab_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: updateChannelMemberSchema,
+    handler: tabsController.update.bind(tabsController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: `${tabsUrl}/:tab_id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: tabsController.delete.bind(tabsController),
   });
 
   next();

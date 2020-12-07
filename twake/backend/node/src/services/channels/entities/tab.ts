@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { ChannelType } from "../types";
 
-export class Tab {
+export class ChannelTab {
   // uuid-v4
   @Type(() => String)
   company_id: string;
@@ -29,4 +29,7 @@ export class Tab {
   order: string;
 }
 
-export type TabPrimaryKey = Pick<Tab, "company_id" | "workspace_id" | "channel_id" | "id">;
+export type ChannelTabPrimaryKey = Pick<
+  ChannelTab,
+  "company_id" | "workspace_id" | "channel_id" | "id"
+>;
