@@ -2,9 +2,22 @@
 import cassandra from "cassandra-driver";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
+import { DatabaseType } from "..";
 import { logger } from "../../../../../platform/framework";
 import { Paginable, Pagination } from "../../../../../platform/framework/api/crud-service";
+import { EntityDefinition, ColumnDefinition } from "../orm/types";
 import { AbstractConnector } from "./abstract-connector";
+
+const cassandraType = {
+  string: "TEXT",
+  encrypted: "TEXT",
+  number: "BIGINT",
+  timeuuid: "TIMEUUID",
+  uuid: "UUID",
+  counter: "COUNTER",
+  blob: "BLOB",
+  boolean: "BOOLEAN",
+};
 
 export interface CassandraConnectionOptions {
   contactPoints: string[];
@@ -146,6 +159,102 @@ export class CassandraConnector extends AbstractConnector<
     await this.client.connect();
 
     return this;
+  }
+
+  async getTableDefinition(name: string): Promise<string[]> {
+    let result: string[];
+
+    try {
+      const query = `SELECT column_name from system_schema.columns WHERE keyspace_name = '${this.options.keyspace}' AND table_name='${name}';`;
+      const dbResult = await this.client.execute(query);
+      result = dbResult.rows.map(row => row.values()[0]);
+    } catch (err) {
+      throw new Error("Table query error");
+    }
+
+    return result ? Promise.resolve(result || []) : Promise.resolve([]);
+  }
+
+  async createTable(
+    entity: EntityDefinition,
+    columns: { [name: string]: ColumnDefinition },
+  ): Promise<boolean> {
+    let result = true;
+
+    // --- Generate column and key definition --- //
+    const primaryKey = entity.options.primaryKey || [];
+
+    if (primaryKey.length === 0) {
+      logger.error("Primary key was not defined for tabe " + entity.name);
+      return false;
+    }
+
+    let partitionKeyPart = primaryKey.shift();
+    const partitionKey: string[] =
+      typeof partitionKeyPart === "string" ? [partitionKeyPart] : partitionKeyPart;
+    const clusteringKeys: string[] = primaryKey as string[];
+    if ([...partitionKey, ...clusteringKeys].some(key => columns[key] === undefined)) {
+      logger.error("One primary key item doesn't exists in entity columns for tabe " + entity.name);
+      return false;
+    }
+
+    const clusteringOrderBy = clusteringKeys.map(key => {
+      const direction: "ASC" | "DESC" = columns[key].options.order || "ASC";
+      return `${key} ${direction}`;
+    });
+    const clusteringOrderByString =
+      clusteringOrderBy.length > 0
+        ? "WITH CLUSTERING ORDER BY (" + clusteringOrderBy.join(", ") + ")"
+        : "";
+
+    const allKeys = ["(" + partitionKey.join(", ") + ")", ...clusteringKeys];
+    const primaryKeyString = `(${allKeys.join(", ")})`;
+
+    const columnsString = Object.keys(columns)
+      .map(colName => {
+        const definition = columns[colName];
+        return `${colName} ${cassandraType[definition.type]}`;
+      })
+      .join(",\n");
+
+    // --- Generate final create table query --- //
+    let query = `
+        CREATE TABLE IF NOT EXISTS ${this.options.keyspace}.${entity.name}
+          (
+            ${columnsString},
+            PRIMARY KEY ${primaryKeyString}
+          ) ${clusteringOrderByString};`;
+
+    // --- Alter table if not up to date --- //
+    const existingColumns = await this.getTableDefinition(entity.name);
+    if (existingColumns.length > 0) {
+      console.log(`Existing columns for table ${entity.name}, generating altertable queries`);
+      const alterQueryColumns = Object.keys(columns)
+        .filter(colName => existingColumns.indexOf(colName) < 0)
+        .map(colName => `${colName} ${cassandraType[columns[colName].type]}`);
+      query = `ALTER TABLE ${this.options.keyspace}.${entity.name} ADD (${alterQueryColumns.join(
+        ", ",
+      )})`;
+
+      if (alterQueryColumns.length === 0) {
+        return true;
+      }
+    }
+
+    // --- Write table --- //
+    try {
+      logger.debug(`service.channel.createTable - Creating table ${entity.name} : ${query}`);
+      await this.client.execute(query);
+    } catch (err) {
+      logger.warn(
+        { err },
+        `service.channel.createTable creation error for table ${entity.name} : ${err.message}`,
+      );
+      console.log(err);
+      result = false;
+    }
+
+    return result;
   }
 }
 

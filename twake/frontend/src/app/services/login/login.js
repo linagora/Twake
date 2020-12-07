@@ -96,7 +96,6 @@ class Login extends Observable {
       this.notify();
       return;
     }
-    console.log(WindowState.findGetParameter('forgotPassword'));
     var forgotPassword =
       WindowState.findGetParameter('forgotPassword') !== undefined
         ? WindowState.findGetParameter('forgotPassword') === true

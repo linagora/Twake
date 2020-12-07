@@ -4,7 +4,13 @@ import {
   Pagination,
 } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
-import { Tab, TabPrimaryKey, Channel, ChannelMember, ChannelMemberPrimaryKey } from "./entities";
+import {
+  ChannelTab,
+  ChannelTabPrimaryKey,
+  Channel,
+  ChannelMember,
+  ChannelMemberPrimaryKey,
+} from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
 import { DirectChannel } from "./entities/direct-channel";
@@ -52,7 +58,7 @@ export interface MemberService
 export interface TabService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<Tab, TabPrimaryKey, ChannelExecutionContext> {}
+    CRUDService<ChannelTab, ChannelTabPrimaryKey, ChannelExecutionContext> {}
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
   channels: ChannelService;

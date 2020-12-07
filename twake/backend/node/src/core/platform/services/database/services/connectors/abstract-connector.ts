@@ -1,5 +1,6 @@
 import { Connector } from ".";
 import { ConnectionOptions, DatabaseType } from "..";
+import { ColumnDefinition, EntityDefinition } from "../orm/types";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
   implements Connector {
@@ -10,6 +11,11 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
   abstract drop(): Promise<this>;
 
   abstract getClient(): DatabaseClient;
+
+  abstract async createTable(
+    entity: EntityDefinition,
+    columns: { [name: string]: ColumnDefinition },
+  ): Promise<boolean>;
 
   getOptions(): T {
     return this.options;

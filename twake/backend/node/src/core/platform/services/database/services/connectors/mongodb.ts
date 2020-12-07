@@ -1,5 +1,6 @@
 import * as mongo from "mongodb";
 import { Paginable, Pagination } from "../../../../../platform/framework/api/crud-service";
+import { ColumnDefinition, EntityDefinition } from "../orm/types";
 import { AbstractConnector } from "./abstract-connector";
 
 export interface MongoConnectionOptions {
@@ -38,6 +39,14 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     await this.getDatabase().dropDatabase();
 
     return this;
+  }
+
+  async createTable(
+    _entity: EntityDefinition,
+    _columns: { [name: string]: ColumnDefinition },
+  ): Promise<boolean> {
+    //No-op for mongo ;)
+    return true;
   }
 }
 

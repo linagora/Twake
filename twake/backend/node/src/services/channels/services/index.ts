@@ -26,7 +26,7 @@ class Service implements ChannelServiceAPI {
 
   async init(): Promise<this> {
     try {
-      await Promise.all([this.channels.init(), this.members.init()]);
+      await Promise.all([this.channels.init(), this.members.init(), this.tabs.init()]);
     } catch (err) {
       console.error("Error while initializing", err);
     }
