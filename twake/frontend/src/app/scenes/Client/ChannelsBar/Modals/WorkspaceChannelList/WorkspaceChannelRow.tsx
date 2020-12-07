@@ -5,19 +5,19 @@ import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
 import RouterServices, { ClientStateType } from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
-import { ChannelMemberResource } from 'app/models/Channel';
+import { ChannelType, ChannelMemberResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/user.js';
 import ModalManager from 'app/services/Modal/ModalManager';
 
 type PropsType = {
-  channel?: any;
+  channel: ChannelType;
 };
 
 export default ({ channel }: PropsType) => {
   const { companyId, workspaceId }: ClientStateType = RouterServices.useStateFromRoute();
   const userId: string = UsersService.getCurrentUserId();
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
+  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel?.id}/members/`;
   const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(
     collectionPath,
     ChannelMemberResource,
@@ -55,7 +55,7 @@ export default ({ channel }: PropsType) => {
   return (
     <Row
       style={{ lineHeight: '47px' }}
-      key={channel.data.id}
+      key={channel.id}
       justify="space-between"
       align="middle"
       className="x-margin"
@@ -65,15 +65,15 @@ export default ({ channel }: PropsType) => {
         onClick={() => {
           if (isChannelMember) {
             ModalManager.closeAll();
-            return RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`);
+            return RouterServices.history.push(`/client/${workspaceId}/c/${channel.id}`);
           }
         }}
       >
         <div style={{ lineHeight: 0 }}>
-          <Emojione type={channel.data.icon || ''} />
+          <Emojione type={channel.icon || ''} />
         </div>
-        <span className="small-x-margin">{channel.data.name}</span>
-        {channel.data.visibility === 'private' && <Icon type="lock" />}
+        <span className="small-x-margin">{channel.name}</span>
+        {channel.visibility === 'private' && <Icon type="lock" />}
       </Col>
       <Col>
         <Button

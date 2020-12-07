@@ -19,6 +19,7 @@ type Props = {
   collection: Collection<ChannelResource>;
   workspaceTitle: string;
   channels: ChannelResource[];
+  favorite?: boolean;
 };
 
 export default (props: Props) => {
@@ -59,23 +60,25 @@ export default (props: Props) => {
       <ChannelCategory
         text={Languages.t(props.workspaceTitle)}
         suffix={
-          <Menu
-            className="add"
-            menu={[
-              {
-                type: 'menu1',
-                text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
-                onClick: () => addChannel(),
-              },
-              {
-                type: 'menu2',
-                text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
-                onClick: () => joinChannel(),
-              },
-            ]}
-          >
-            <Icon type="plus-circle" className="m-icon-small" />
-          </Menu>
+          !props.favorite && (
+            <Menu
+              className="add"
+              menu={[
+                {
+                  type: 'menu1',
+                  text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
+                  onClick: () => addChannel(),
+                },
+                {
+                  type: 'menu2',
+                  text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
+                  onClick: () => joinChannel(),
+                },
+              ]}
+            >
+              <Icon type="plus-circle" className="m-icon-small" />
+            </Menu>
+          )
         }
       />
       {channels}
