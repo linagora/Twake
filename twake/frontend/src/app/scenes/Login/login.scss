@@ -166,7 +166,7 @@
   }
 }
 
-@media (max-width: 425px) {
+@media screen and (max-width: 425px) {
   .center_box_container {
     .center_box {
       min-height: 100%;
@@ -175,7 +175,7 @@
   }
 }
 
-@media (max-width: 823px) and (orientation: landscape) {
+@media screen and (max-width: 823px) and (orientation: landscape) {
   .center_box_container {
     .center_box {
       min-height: 100%;
