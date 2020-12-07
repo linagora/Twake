@@ -497,7 +497,7 @@ class User
 
         if(!$auto_validate_mail){
 
-          $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+          $magic_link = "/login?verifyMail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
           if (!defined("TESTENV")) {
               error_log("sign in code: " . $magic_link);

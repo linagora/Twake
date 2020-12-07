@@ -68,7 +68,7 @@ class Login extends Observable {
 
     var logout =
       WindowState.findGetParameter('logout') !== undefined
-        ? WindowState.findGetParameter('logout') === '1'
+        ? WindowState.findGetParameter('logout') === true
         : false;
     if (logout) {
       this.logout(true);
@@ -77,7 +77,7 @@ class Login extends Observable {
 
     var subscribe =
       WindowState.findGetParameter('subscribe') !== undefined
-        ? WindowState.findGetParameter('subscribe') === '1'
+        ? WindowState.findGetParameter('subscribe') === true
         : false;
     if (subscribe) {
       this.firstInit = true;
@@ -87,13 +87,33 @@ class Login extends Observable {
       return;
     }
     var verifymail =
-      WindowState.findGetParameter('verify_mail') !== undefined
-        ? WindowState.findGetParameter('verify_mail') === '1'
+      WindowState.findGetParameter('verifyMail') !== undefined
+        ? WindowState.findGetParameter('verifyMail') === true
         : false;
     if (verifymail) {
       this.firstInit = true;
       this.setPage('verify_mail');
       this.notify();
+      return;
+    }
+    console.log(WindowState.findGetParameter('forgotPassword'));
+    var forgotPassword =
+      WindowState.findGetParameter('forgotPassword') !== undefined
+        ? WindowState.findGetParameter('forgotPassword') === true
+        : false;
+    if (forgotPassword) {
+      this.firstInit = true;
+      this.setPage('forgot_password');
+      this.notify();
+      return;
+    }
+    var logoutNow =
+      WindowState.findGetParameter('logout') !== undefined
+        ? WindowState.findGetParameter('logout') === true
+        : false;
+    if (logoutNow) {
+      this.firstInit = true;
+      this.logout();
       return;
     }
 
