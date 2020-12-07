@@ -5,6 +5,6 @@ import Repository, { RepositoryOptions } from "./services/orm/repository";
 
 export interface DatabaseServiceAPI extends TwakeServiceProvider {
   getConnector(): Connector;
-  getManager(): Manager;
+  newManager(): Manager;
   getRepository<Table>(table: string, options?: RepositoryOptions): Repository<Table>;
 }

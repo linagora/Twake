@@ -1,4 +1,5 @@
 import { Connector } from "../connectors";
+import { getEntityDefinition } from "./decorators";
 
 export type RepositoryOptions = any;
 
@@ -21,9 +22,8 @@ export default class Repository<Table> {
     const instance = new (entityType as any)();
 
     if (this.checkEntityDefinition(entityType)) {
-      const entityConfituration = instance.constructor.prototype._entity;
-      const entityColumns = instance.constructor.prototype._columns;
-      await this.connector.createTable(entityConfituration, entityColumns);
+      const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+      await this.connector.createTable(entityDefinition, columnsDefinition);
     }
 
     return this;

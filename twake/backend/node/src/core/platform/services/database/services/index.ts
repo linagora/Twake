@@ -24,14 +24,8 @@ export default class DatabaseService implements DatabaseServiceAPI {
     return this.connector;
   }
 
-  getManager(): Manager {
-    if (this.manager) {
-      return this.manager;
-    }
-
-    this.manager = new Manager(this.connector);
-
-    return this.manager;
+  newManager(): Manager {
+    return new Manager(this.connector);
   }
 
   getRepository<Table>(table: string, options?: RepositoryOptions): Repository<Table> {

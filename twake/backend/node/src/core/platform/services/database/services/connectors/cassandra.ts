@@ -256,6 +256,13 @@ export class CassandraConnector extends AbstractConnector<
 
     return result;
   }
+
+  upsert(entities: any[]): Promise<boolean[]> {
+    throw new Error("Method not implemented.");
+  }
+  remove(entities: any[]): Promise<boolean[]> {
+    throw new Error("Method not implemented.");
+  }
 }
 
 export class CassandraPagination extends Pagination {

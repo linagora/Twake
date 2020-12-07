@@ -48,6 +48,13 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     //No-op for mongo ;)
     return true;
   }
+
+  upsert(entities: any[]): Promise<boolean[]> {
+    throw new Error("Method not implemented.");
+  }
+  remove(entities: any[]): Promise<boolean[]> {
+    throw new Error("Method not implemented.");
+  }
 }
 
 export class MongoPagination extends Pagination {

@@ -22,6 +22,11 @@ export class Service implements TabService {
 
   async init(): Promise<this> {
     this.database.getRepository("channel_tab").init(ChannelTab);
+    const manager = this.database.newManager();
+
+    const tab = new ChannelTab();
+    manager.persist(tab);
+    manager.flush();
 
     return this;
   }

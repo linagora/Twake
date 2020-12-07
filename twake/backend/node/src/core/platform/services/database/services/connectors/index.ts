@@ -30,6 +30,18 @@ export interface Connector extends Initializable {
     entity: EntityDefinition,
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean>;
+
+  /**
+   * Upsert
+   * returns true if the object was created/updated, false otherwise
+   */
+  upsert(entities: any[]): Promise<boolean[]>;
+
+  /**
+   * Remove
+   * returns true if the object was removed, false otherwise
+   */
+  remove(entities: any[]): Promise<boolean[]>;
 }
 
 export declare type ConnectionOptions = MongoConnectionOptions | CassandraConnectionOptions;

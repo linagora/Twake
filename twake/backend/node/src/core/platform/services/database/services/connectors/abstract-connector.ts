@@ -17,6 +17,10 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean>;
 
+  abstract upsert(entities: any[]): Promise<boolean[]>;
+
+  abstract remove(entities: any[]): Promise<boolean[]>;
+
   getOptions(): T {
     return this.options;
   }
