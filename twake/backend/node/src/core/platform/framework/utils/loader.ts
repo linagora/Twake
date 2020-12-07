@@ -5,6 +5,7 @@ export class Loader {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async load(componentName: string): Promise<any> {
+    logger.info(`Loading ${componentName}`);
     const modulesPaths = this.paths.map(path => `${path}/${componentName}`);
 
     logger.debug(`Loading ${componentName} from ${modulesPaths.join(" - ")}`);
@@ -14,7 +15,7 @@ export class Loader {
         try {
           return await import(modulePath);
         } catch (err) {
-          logger.debug(`${modulePath} not found`);
+          logger.debug({ err }, `${modulePath} can not be loaded`);
         }
       }),
     );
