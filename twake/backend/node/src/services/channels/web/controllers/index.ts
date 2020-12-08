@@ -4,6 +4,7 @@ import { CrudExeption } from "../../../../core/platform/framework/api/crud-servi
 
 export * from "./channel";
 export * from "./member";
+export * from "./tab";
 
 export function handleError(reply: FastifyReply, err: Error): void {
   if (err instanceof CrudExeption) {

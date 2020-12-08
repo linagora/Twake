@@ -71,7 +71,7 @@ class Login extends Observable {
 
     var logout =
       WindowState.findGetParameter('logout') !== undefined
-        ? WindowState.findGetParameter('logout') === '1'
+        ? WindowState.findGetParameter('logout') === true
         : false;
     if (logout) {
       this.logout(true);
@@ -80,7 +80,7 @@ class Login extends Observable {
 
     var subscribe =
       WindowState.findGetParameter('subscribe') !== undefined
-        ? WindowState.findGetParameter('subscribe') === '1'
+        ? WindowState.findGetParameter('subscribe') === true
         : false;
     if (subscribe) {
       this.firstInit = true;
@@ -90,8 +90,8 @@ class Login extends Observable {
       return;
     }
     var verifymail =
-      WindowState.findGetParameter('verify_mail') !== undefined
-        ? WindowState.findGetParameter('verify_mail') === '1'
+      WindowState.findGetParameter('verifyMail') !== undefined
+        ? WindowState.findGetParameter('verifyMail') === true
         : false;
     if (verifymail) {
       this.firstInit = true;
@@ -99,10 +99,28 @@ class Login extends Observable {
       this.notify();
       return;
     }
+    var forgotPassword =
+      WindowState.findGetParameter('forgotPassword') !== undefined
+        ? WindowState.findGetParameter('forgotPassword') === true
+        : false;
+    if (forgotPassword) {
+      this.firstInit = true;
+      this.setPage('forgot_password');
+      this.notify();
+      return;
+    }
+    var logoutNow =
+      WindowState.findGetParameter('logout') !== undefined
+        ? WindowState.findGetParameter('logout') === true
+        : false;
+    if (logoutNow) {
+      this.firstInit = true;
+      this.logout();
+    }
+
     if (cancelAutoLogin) {
       this.firstInit = true;
-
-      JWTStorage.clear();
+      this.clearLogin();
       this.setPage('logged_out');
       return;
     }
@@ -247,16 +265,18 @@ class Login extends Observable {
     });
   }
 
+  clearLogin() {
+    this.currentUserId = null;
+    Globals.localStorageClear();
+    JWTStorage.clear();
+  }
+
   logout(no_reload) {
     var identity_provider = CurrentUser.get()
       ? (CurrentUser.get() || {}).identity_provider
       : 'internal';
 
-    this.currentUserId = null;
-
-    Globals.localStorageClear();
-
-    JWTStorage.clear();
+    this.clearLogin();
 
     document.body.classList.add('fade_out');
 
@@ -268,21 +288,15 @@ class Login extends Observable {
           device: device,
         },
         function () {
-          if (Globals.isReactNative) {
-            that.reset();
-            that.state = 'logged_out';
-            that.notify();
+          if (identity_provider === 'openid') {
+            var location = Api.route('users/openid/logout');
+            Globals.window.location = location;
+          } else if (identity_provider === 'cas') {
+            var location = Api.route('users/cas/logout');
+            Globals.window.location = location;
           } else {
-            if (identity_provider === 'openid') {
-              var location = Api.route('users/openid/logout');
-              Globals.window.location = location;
-            } else if (identity_provider === 'cas') {
-              var location = Api.route('users/cas/logout');
-              Globals.window.location = location;
-            } else {
-              if (!no_reload) {
-                Globals.window.location.reload();
-              }
+            if (!no_reload) {
+              Globals.window.location.reload();
             }
           }
           RouterServices.history.push(RouterServices.pathnames.LOGIN);
@@ -525,10 +539,10 @@ class Login extends Observable {
         callback(th, 0);
       } else {
         //console.log(res.errors);
-        if (res.errors === 'mailalreadytaken') {
+        if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;
-        } else if (res.errors === 'usernamealreadytaken') {
+        } else if (res.errors.length === 1 && res.errors[0] === 'usernamealreadytaken') {
           callback(th, 2);
           that.error_subscribe_username = true;
         } else {

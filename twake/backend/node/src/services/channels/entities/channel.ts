@@ -34,6 +34,8 @@ export class Channel {
   owner: string;
 
   members: string[] = [];
+
+  connectors: string[] = []; //list of app-ids
 }
 
 export class UserChannel extends Channel {

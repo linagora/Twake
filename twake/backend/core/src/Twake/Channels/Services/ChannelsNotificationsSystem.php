@@ -105,7 +105,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $users_to_notify,
             "channel_" . $channel->getId(),
             $message_as_text,
-            $message ? $message->getId() : "",
+            $message,
             Array(),
             Array("push"),
             true
@@ -122,7 +122,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 $users,
                 "channel_" . $channel->getId(),
                 "@".ltrim($mention_text, "@").": ".$message_as_text,
-                $message ? $message->getId() : "",
+                $message,
                 Array(),
                 Array("push"),
                 true

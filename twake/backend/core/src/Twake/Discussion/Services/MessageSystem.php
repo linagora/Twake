@@ -109,7 +109,7 @@ class MessageSystem
 
         $messages = [];
         foreach ($messages_ent as $message) {
-            if ($parent_message_id == "" && $message->getResponsesCount() > 0) {
+            if ($parent_message_id == "" && $message->getResponsesCount() > 0 && !$options["id"]) {
                 $messages_responses_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $message->getId()), Array(), 10, null, "id", "DESC");
                 if (count($messages_responses_ent) == 0) {
                     $message->setResponsesCount(0);

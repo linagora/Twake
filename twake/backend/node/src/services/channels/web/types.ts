@@ -1,4 +1,4 @@
-import { Channel, ChannelMember } from "../entities";
+import { Channel, ChannelMember, ChannelTab } from "../entities";
 
 export declare type DirectChannel = "direct";
 
@@ -62,3 +62,21 @@ export class UpdateChannelMemberBody {
 }
 
 export type ChannelMemberSaveOptions = null;
+
+// channel tabs
+
+export interface ChannelTabParameters extends ChannelParameters {
+  tab_id: string;
+}
+
+export class CreateChannelTabBody {
+  resource: ChannelTab;
+}
+
+export class UpdateChannelTabBody {
+  resource: ChannelTab;
+}
+
+export type ChannelTabSaveOptions = {
+  resource: ChannelTab;
+};

@@ -59,8 +59,6 @@
     }
   },
   "pubsub": {
-    "urls": [
-      "amqp://guest:guest@localhost:5672"
-    ]
+    "urls": ["amqp://guest:guest@localhost:5672"]
   }
 }

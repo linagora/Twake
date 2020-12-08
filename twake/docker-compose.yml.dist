@@ -32,7 +32,8 @@ services:
       - DEV=dev
       - DB_DRIVER=cassandra
       - DB_CASSANDRA_URI=scylladb:9042
-      - DB_CASSANDRA_KEYSPACE=twake
+      - DB_CASSANDRA_KEYSPACE=twakenode
+      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
     volumes:
       - ./configuration/backend-node/:/configuration/
       - ./docker-data/drive/:/twake-core/drive/

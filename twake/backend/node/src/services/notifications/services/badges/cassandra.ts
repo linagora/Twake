@@ -9,7 +9,7 @@ import {
   ListResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { logger } from "../../../../core/platform/framework";
-import { CassandraConnectionOptions } from "../../../../core/platform/services/database/services/connectors/cassandra";
+import { CassandraConnectionOptions } from "../../../../core/platform/services/database/services/orm/connectors/cassandra/cassandra";
 
 import { UserNotificationBadgeServiceAPI } from "../../api";
 import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";

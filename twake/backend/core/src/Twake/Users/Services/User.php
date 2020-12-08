@@ -421,7 +421,7 @@ class User
         } else {
 
             if(in_array($pseudo, ["all", "here", "null", "undefined"]) || strlen($pseudo) <= 4){
-                $retour[] = -1;
+                $retour[] = -2;
             }
 
             //Check user doesn't exists
@@ -497,7 +497,7 @@ class User
 
         if(!$auto_validate_mail){
 
-          $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+          $magic_link = "/login?verifyMail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
           if (!defined("TESTENV")) {
               error_log("sign in code: " . $magic_link);

@@ -1,7 +1,7 @@
 import * as mongo from "mongodb";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
-import { MongoPagination } from "../../../../core/platform/services/database/services/connectors/mongodb";
+import { MongoPagination } from "../../../../core/platform/services/database/services/orm/connectors/mongodb/mongodb";
 import {
   CreateResult,
   DeleteResult,
