@@ -67,7 +67,7 @@ class Notifications
      * @param null $users List of users which receive the notification
      * @param null $code Identifier for the notification (mass deletion)
      * @param null $text Text for the notification
-     * @param null $shortcut String to find precisely notification origin
+     * @param null $message Message
      * @param null $additionnal_data
      * @param array $type Types of notification : "push" and "mail"
      * @param bool $save_notification Add notification to log or not (default true)
@@ -81,7 +81,7 @@ class Notifications
         $users = null,
         $code = null,
         $text = null,
-        $shortcut = null,
+        $message = null,
         $additionnal_data = Array(),
         $type = Array(),
         $save_notification = true
@@ -123,24 +123,32 @@ class Notifications
 
         $data = Array(
             "type" => "add",
+
+            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
+            "workspace_id" => ($workspace != null ? $workspace->getId() : null),
+            "channel_id" => ($channel != null ? $channel->getId() : null),
+            "message_id" => $message->getId(),
+            "thread_id" => $message->getParentMessageId(),
+
             "application_id" => ($application != null ? $application->getId() : null),
             "sender_application_id" => ($sender_application != null ? $sender_application->getId() : null),
             "sender_user_id" => ($sender_user != null ? $sender_user->getId() : null),
-            "workspace_id" => ($workspace != null ? $workspace->getId() : null),
-            "channel_id" => ($channel != null ? $channel->getId() : null),
+
             "title" => $title,
             "original_text" => $text,
             "text" => $text,
             "code" => $code,
             "type" => $type,
-            "shortcut" => $shortcut,
-            "additionnal_data" => $additionnal_data
+            "additionnal_data" => $additionnal_data,
         );
 
         $device_minimal_data = Array(
-            "shortcut" => $shortcut,
+            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
-            "channel_id" => ($channel != null ? $channel->getId() : null)
+            "channel_id" => ($channel != null ? $channel->getId() : null),
+            "message_id" => $message->getId(),
+            "thread_id" => $message->getParentMessageId(),
+            "click_action" => "FLUTTER_NOTIFICATION_CLICK"
         );
 
         $toPush = true;
@@ -230,9 +238,6 @@ class Notifications
             }
 
             $n = new Notification($application ? $application->getId() : "", $workspace ? $workspace->getId() : "", $channel ? $channel->getId() : "", $user);
-            if ($shortcut) {
-                $n->setShortcut($shortcut);
-            }
             if ($additionnal_data) {
                 $n->setData($additionnal_data);
             }
