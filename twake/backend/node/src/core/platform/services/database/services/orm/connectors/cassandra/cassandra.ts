@@ -261,80 +261,109 @@ export class CassandraConnector extends AbstractConnector<
   }
 
   async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
-    const results: boolean[] = [];
+    return new Promise(resolve => {
+      const promises: Promise<boolean>[] = [];
 
-    entities.forEach(entity => {
-      const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
-      const primaryKey = unwrapPrimarykey(entityDefinition);
+      entities.forEach(entity => {
+        const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+        const primaryKey = unwrapPrimarykey(entityDefinition);
 
-      //Set updated content
-      const set = Object.keys(columnsDefinition)
-        .filter(key => primaryKey.indexOf(key) === -1)
-        .map(
-          key =>
-            `${key} = ${transformValueToDbString(
+        //Set updated content
+        let set = Object.keys(columnsDefinition)
+          .filter(key => primaryKey.indexOf(key) === -1)
+          .filter(key => entity[key] !== undefined)
+          .map(key => [
+            `${key}`,
+            `${transformValueToDbString(
               entity[key],
               columnsDefinition[key].type,
               columnsDefinition[key].options,
             )}`,
-        )
-        .join(", ");
+          ]);
+        //Set primary key
+        const where = primaryKey.map(key => [
+          `${key}`,
+          `${transformValueToDbString(
+            entity[key],
+            columnsDefinition[key].type,
+            columnsDefinition[key].options,
+          )}`,
+        ]);
 
-      //Set primary key
-      const where = primaryKey
-        .map(
-          key =>
-            `${key} = ${transformValueToDbString(
-              entity[key],
-              columnsDefinition[key].type,
-              columnsDefinition[key].options,
-            )}`,
-        )
-        .join(" AND ");
+        // Add time-to-live options
+        let ttlOptions = "";
+        if (entityDefinition.options.ttl && entityDefinition.options.ttl > 0) {
+          ttlOptions = `USING TTL ${entityDefinition.options.ttl}`;
+        }
 
-      // Add time-to-live options
-      let ttlOptions = "";
-      if (options.ttl && options.ttl > 0) {
-        ttlOptions = `USING TTL ${options.ttl}`;
-      }
+        // Insert and update are equivalent for most of Cassandra
+        // Update is prefered because the only solution for counters
+        let query = `UPDATE ${this.options.keyspace}.${
+          entityDefinition.name
+        } ${ttlOptions} SET ${set.map(e => `${e[0]} = ${e[1]}`).join(", ")} WHERE ${where
+          .map(e => `${e[0]} = ${e[1]}`)
+          .join(" AND ")}`;
 
-      const query = `UPDATE ${this.options.keyspace}.${entityDefinition.name} ${ttlOptions} SET ${set} WHERE ${where}`;
+        // If no "set" part, we cannot do an update, so insert
+        if (set.length === 0) {
+          query = `INSERT INTO ${this.options.keyspace}.${
+            entityDefinition.name
+          } ${ttlOptions} (${where.map(e => e[0]).join(", ")}) VALUES (${where
+            .map(e => e[1])
+            .join(", ")})`;
+        }
 
-      console.log(query);
+        promises.push(
+          new Promise(resolve => {
+            try {
+              this.getClient().execute(query);
+              resolve(true);
+            } catch (err) {
+              resolve(false);
+            }
+          }),
+        );
+      });
 
-      results.push(false);
+      Promise.all(promises).then(resolve);
     });
-
-    return results;
   }
 
   async remove(entities: any[]): Promise<boolean[]> {
-    const results: boolean[] = [];
+    return new Promise(resolve => {
+      const promises: Promise<boolean>[] = [];
 
-    entities.forEach(entity => {
-      const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
-      const primaryKey = unwrapPrimarykey(entityDefinition);
+      entities.forEach(entity => {
+        const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+        const primaryKey = unwrapPrimarykey(entityDefinition);
 
-      //Set primary key
-      const where = primaryKey
-        .map(
+        //Set primary key
+        const where = primaryKey.map(
           key =>
             `${key} = ${transformValueToDbString(
               entity[key],
               columnsDefinition[key].type,
               columnsDefinition[key].options,
             )}`,
-        )
-        .join(" AND ");
+        );
 
-      const query = `DELETE FROM ${this.options.keyspace}.${entityDefinition.name} WHERE ${where}`;
+        const query = `DELETE FROM ${this.options.keyspace}.${
+          entityDefinition.name
+        } WHERE ${where.join(" AND ")}`;
+        promises.push(
+          new Promise(resolve => {
+            try {
+              this.getClient().execute(query);
+              resolve(true);
+            } catch (err) {
+              resolve(false);
+            }
+          }),
+        );
+      });
 
-      console.log(query);
-
-      results.push(false);
+      Promise.all(promises).then(resolve);
     });
-
-    return results;
   }
 }
 

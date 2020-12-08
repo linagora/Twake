@@ -1,7 +1,10 @@
 import * as mongo from "mongodb";
+import { UpsertOptions } from "..";
 import { Paginable, Pagination } from "../../../../../../framework/api/crud-service";
 import { ColumnDefinition, EntityDefinition } from "../../types";
+import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
+import { transformValueToDbString } from "./typeTransforms";
 
 export { MongoPagination } from "./pagination";
 
@@ -21,14 +24,6 @@ const mongoType = {
   counter: "COUNTER",
   blob: "BLOB",
   boolean: "BOOLEAN",
-};
-
-const transformValueToDbString = (v: any, type: string, options: any = {}) => {
-  return `'${v || ""}'`;
-};
-
-const transformValueFromDbString = (v: any, type: string, options: any = {}) => {
-  return v;
 };
 
 export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mongo.MongoClient> {
@@ -66,14 +61,91 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     _entity: EntityDefinition,
     _columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean> {
-    //No-op for mongo ;)
+    const db = this.getDatabase();
+    const collection = db.collection(`${_entity.name}`);
+
+    //Mongo only need to create an index if ttl defined for entity
+    if (_entity.options.ttl && _entity.options.ttl > 0) {
+      const primaryKey = unwrapPrimarykey(_entity);
+      const filter: any = {};
+      primaryKey.forEach(key => {
+        filter[key] = 1;
+      });
+      collection.createIndex(filter, { expireAfterSeconds: _entity.options.ttl });
+    }
+
     return true;
   }
+  async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
+    return new Promise(resolve => {
+      const promises: Promise<mongo.UpdateWriteOpResult>[] = [];
 
-  upsert(entities: any[]): Promise<boolean[]> {
-    throw new Error("Method not implemented.");
+      const db = this.getDatabase();
+
+      entities.forEach(entity => {
+        const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+        const primaryKey = unwrapPrimarykey(entityDefinition);
+
+        //Set updated content
+        const set: any = {};
+        Object.keys(columnsDefinition)
+          .filter(key => primaryKey.indexOf(key) === -1)
+          .filter(key => entity[key] !== undefined)
+          .forEach(key => {
+            set[key] = transformValueToDbString(
+              entity[key],
+              columnsDefinition[key].type,
+              columnsDefinition[key].options,
+            );
+          });
+
+        //Set primary key
+        const where: any = {};
+        primaryKey.forEach(key => {
+          where[key] = transformValueToDbString(
+            entity[key],
+            columnsDefinition[key].type,
+            columnsDefinition[key].options,
+          );
+        });
+
+        const collection = db.collection(`${entityDefinition.name}`);
+        promises.push(collection.updateOne(where, set, { upsert: true }));
+      });
+
+      Promise.all(promises).then(results => {
+        resolve(results.map(result => result.result.ok === 1));
+      });
+    });
   }
-  remove(entities: any[]): Promise<boolean[]> {
-    throw new Error("Method not implemented.");
+
+  async remove(entities: any[]): Promise<boolean[]> {
+    return new Promise(resolve => {
+      const promises: Promise<mongo.DeleteWriteOpResultObject>[] = [];
+
+      const db = this.getDatabase();
+
+      entities.forEach(entity => {
+        const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+        const primaryKey = unwrapPrimarykey(entityDefinition);
+
+        //Set primary key
+        const where: any = {};
+        primaryKey.forEach(key => {
+          where[key] = transformValueToDbString(
+            entity[key],
+            columnsDefinition[key].type,
+            columnsDefinition[key].options,
+          );
+        });
+
+        const collection = db.collection(`${entityDefinition.name}`);
+        promises.push(collection.deleteOne(where));
+      });
+
+      Promise.all(promises).then(results => {
+        resolve(results.map(result => result.result.ok === 1));
+      });
+    });
   }
 }

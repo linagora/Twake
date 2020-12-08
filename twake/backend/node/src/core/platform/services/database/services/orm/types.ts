@@ -2,6 +2,7 @@ export type EntityDefinition = {
   name: string;
   options: {
     primaryKey: (string | string[])[];
+    ttl?: number;
   };
 };
 

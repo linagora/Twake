@@ -7,9 +7,7 @@ import { ColumnDefinition, EntityDefinition } from "../types";
 export * from "./mongodb/mongodb";
 export * from "./cassandra/cassandra";
 
-export type UpsertOptions = {
-  ttl?: number;
-};
+export type UpsertOptions = {};
 
 export type RemoveOptions = {};
 
