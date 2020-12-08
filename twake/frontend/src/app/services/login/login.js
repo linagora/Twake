@@ -57,6 +57,9 @@ class Login extends Observable {
       });
       return;
     }
+    const cancelAutoLogin =
+      !this.firstInit &&
+      RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
     this.reset();
     await JWTStorage.init();
 
@@ -94,6 +97,13 @@ class Login extends Observable {
       this.firstInit = true;
       this.setPage('verify_mail');
       this.notify();
+      return;
+    }
+    if (cancelAutoLogin) {
+      this.firstInit = true;
+
+      JWTStorage.clear();
+      this.setPage('logged_out');
       return;
     }
 
