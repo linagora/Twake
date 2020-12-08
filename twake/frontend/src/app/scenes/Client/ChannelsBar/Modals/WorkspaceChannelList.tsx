@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
+import { Divider, Input, Row } from 'antd';
 
-import { Divider, Input, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
-import ObjectModal from 'components/ObjectModal/ObjectModal';
-import Icon from 'components/Icon/Icon';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
+
+import Icon from 'components/Icon/Icon';
+import ObjectModal from 'components/ObjectModal/ObjectModal';
 import { ChannelResource } from 'app/models/Channel';
 import WorkspaceChannelRow from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList/WorkspaceChannelRow';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default () => {
-  const [loadedChannels, setLoadedChannels] = useState<number>(3);
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+
+  const [search, setSearch] = useState('');
+  const [limit, setLimit] = useState(100);
+  const autoChannels: { id: string; name: string; type: string; channel: ChannelResource }[] = [];
+  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
-  const channels = channelsCollection.useWatcher({}, { limit: loadedChannels });
+  const channels = channelsCollection.useWatcher({}, { limit: limit });
+
+  channels.map((channel: ChannelResource) => {
+    autoChannels.push({
+      id: channel.data.id || '',
+      name: channel.data.name || '',
+      type: 'workspace',
+      channel: channel,
+    });
+  });
 
   return (
     <ObjectModal title={Languages.t('components.channelworkspacelist.title')} closable>
@@ -24,36 +37,31 @@ export default () => {
           suffix={
             <Icon type="search" className="m-icon-small" style={{ color: 'var(--grey-dark)' }} />
           }
-          autoFocus
           placeholder={Languages.t('scenes.client.channelbar.workspacechannellist.autocomplete')}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => console.log(channels)}
+          value={search}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value)}
+          autoFocus
         />
       </Row>
-
       <PerfectScrollbar
         style={{ maxHeight: '250px' }}
         component="div"
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
-        {channels &&
-          channels.map((channel: ChannelResource, index: number) => {
+        {autoChannels
+          .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
+          .map((channel, index) => {
             return (
-              <div key={`${channel.data.id}_${index}`}>
+              <div key={`${channel.id}_${index}`}>
                 <WorkspaceChannelRow channel={channel} />
                 <Divider style={{ margin: 0 }} />
               </div>
             );
           })}
-        {channels.length === loadedChannels && (
-          <Row align="middle" justify="center" className="y-margin">
-            <Typography.Link
-              style={{ color: 'var(--grey-dark)' }}
-              onClick={() => setLoadedChannels(loadedChannels + 3)}
-            >
-              {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-            </Typography.Link>
-          </Row>
-        )}
+        {!autoChannels.filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
+          .length &&
+          limit < autoChannels.length + 100 &&
+          setLimit(autoChannels.length + 100)}
       </PerfectScrollbar>
     </ObjectModal>
   );

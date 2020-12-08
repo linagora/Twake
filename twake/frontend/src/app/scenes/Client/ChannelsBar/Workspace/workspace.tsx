@@ -74,6 +74,7 @@ export function Workspace() {
           key={'favoriteChannels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
           channels={channelCategory.favorite}
+          favorite
         />
       )}
       {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
