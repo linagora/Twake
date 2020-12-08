@@ -4,6 +4,7 @@ import { ChannelType } from "../types";
 
 @Entity("channel_tab", {
   primaryKey: [["company_id", "workspace_id"], "channel_id", "id"],
+  type: "channel_tab",
 })
 export class ChannelTab {
   // uuid-v4

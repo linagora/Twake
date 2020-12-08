@@ -1,6 +1,6 @@
 import * as mongo from "mongodb";
 import { UpsertOptions } from "..";
-import { Paginable, Pagination } from "../../../../../../framework/api/crud-service";
+import { ListResult, Paginable, Pagination } from "../../../../../../framework/api/crud-service";
 import { FindOptions } from "../../repository";
 import { ColumnDefinition, EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
@@ -139,7 +139,11 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     });
   }
 
-  async find<Table>(entityType: Table, filters: any, options: FindOptions = {}): Promise<Table[]> {
+  async find<Table>(
+    entityType: Table,
+    filters: any,
+    options: FindOptions = {},
+  ): Promise<ListResult<Table>> {
     const instance = new (entityType as any)();
     const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
 
@@ -188,6 +192,10 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       entities.push(entity);
     });
 
-    return entities;
+    const nextToken =
+      entities.length === parseInt(options.pagination.limitStr) &&
+      (parseInt(options.pagination.page_token) + 1).toString(10);
+    const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
+    return new ListResult<Table>(entityDefinition.type, entities, nextPage);
   }
 }

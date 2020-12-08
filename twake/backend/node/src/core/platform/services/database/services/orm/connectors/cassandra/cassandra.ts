@@ -13,7 +13,8 @@ import {
   transformValueFromDbString,
 } from "./typeTransforms";
 import { FindOptions } from "../../repository";
-import { Entity } from "../../decorators";
+import { ListResult, Pagination } from "../../../../../../framework/api/crud-service";
+import { Paginable } from "../../../../../../framework/api/crud-service";
 
 export { CassandraPagination } from "./pagination";
 
@@ -360,7 +361,11 @@ export class CassandraConnector extends AbstractConnector<
     });
   }
 
-  async find<Table>(entityType: Table, filters: any, options: FindOptions = {}): Promise<Table[]> {
+  async find<Table>(
+    entityType: Table,
+    filters: any,
+    options: FindOptions = {},
+  ): Promise<ListResult<Table>> {
     const instance = new (entityType as any)();
     const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
 
@@ -410,7 +415,11 @@ export class CassandraConnector extends AbstractConnector<
       entities.push(entity);
     });
 
-    return entities;
+    const nextPage: Paginable = new Pagination(
+      results.pageState,
+      options.pagination.limitStr || "100",
+    );
+    return new ListResult<Table>(entityDefinition.type, entities, nextPage);
   }
 }
 

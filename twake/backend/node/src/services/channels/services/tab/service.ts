@@ -14,6 +14,7 @@ import { ChannelExecutionContext } from "../../types";
 import { Channel, User } from "../../../types";
 import { pick } from "../../../../utils/pick";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import _ from "lodash";
 
 export class Service implements TabService {
   version: "1";
@@ -22,23 +23,6 @@ export class Service implements TabService {
 
   async init(): Promise<this> {
     await this.database.getRepository("channel_tab").init(ChannelTab);
-    const manager = this.database.newManager();
-
-    const tab = new ChannelTab();
-    tab.order = "12";
-
-    console.log(tab);
-
-    manager.persist(tab);
-    await manager.flush();
-
-    const tabs = await this.database.getRepository("channel_tab").findOne({
-      company_id: tab.company_id,
-      workspace_id: tab.workspace_id,
-    });
-
-    console.log(tabs);
-
     return this;
   }
 
@@ -47,41 +31,68 @@ export class Service implements TabService {
     options: {},
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelTab>> {
-    /*    const existingTab: ChannelTab = this.database.getRepository("channel_tab").get<ChannelTab>();
+    const manager = this.database.newManager();
 
-    existingTab.name = "Some name";
+    const pk = {
+      company_id: context.channel.company_id,
+      workspace_id: context.channel.workspace_id,
+      channel_id: context.channel.id,
+      id: tab.id,
+    };
 
-    this.database.getManager().persist(existingTab);
-    this.database.getManager().flush();
-*/
-    return new SaveResult("none", null, OperationType.CREATE);
+    let tabEntity = await this.database.getRepository<ChannelTab>("channel_tab").findOne(pk);
+    if (!tabEntity) {
+      tabEntity = new ChannelTab();
+      tabEntity = _.merge(tabEntity, pk);
+      tabEntity.owner = context.user.id;
+    }
+
+    tabEntity = _.merge(
+      tabEntity,
+      _.pick(tab, ["name", "configuration", "application_id", "order"]),
+    );
+
+    manager.persist(tabEntity);
+    await manager.flush();
+
+    return new SaveResult("channel_tab", tabEntity, OperationType.CREATE);
   }
 
-  async get(pk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelTab> {
-    return null; //await this.database.getRepository("channel_tab").get(this.getPrimaryKey(pk), context);
+  async get(tabPk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelTab> {
+    const pk = {
+      company_id: context.channel.company_id,
+      workspace_id: context.channel.workspace_id,
+      channel_id: context.channel.id,
+      id: tabPk.id,
+    };
+    return await this.database.getRepository<ChannelTab>("channel_tab").findOne(pk);
   }
 
   async delete(
     pk: ChannelTabPrimaryKey,
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelTab>> {
-    return new DeleteResult("", null, true);
+    const manager = this.database.newManager();
+
+    manager.remove(pk);
+    await manager.flush();
+
+    return new DeleteResult("channel_tab", pk as ChannelTab, true);
   }
 
-  list(
+  async list(
     pagination: Pagination,
     options: {},
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelTab>> {
-    return null; //this.database.getRepository("channel_tab").list(pagination, options, context);
-  }
-
-  async listUserChannels(
-    user: User,
-    pagination: Pagination,
-    context: ChannelExecutionContext,
-  ): Promise<ListResult<ChannelTab>> {
-    return new ListResult("none", []);
+    const pk = {
+      company_id: context.channel.company_id,
+      workspace_id: context.channel.workspace_id,
+      channel_id: context.channel.id,
+    };
+    return await this.database.getRepository<ChannelTab>("channel_tab").find(pk, {
+      pagination: pagination,
+    });
   }
 
   onUpdated(
@@ -90,7 +101,7 @@ export class Service implements TabService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateResult: UpdateResult<ChannelTab>,
   ): void {
-    console.log("Member updated", tab);
+    console.log("Tab updated", tab);
   }
 
   onCreated(
@@ -99,14 +110,10 @@ export class Service implements TabService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelTab>,
   ): void {
-    console.log("Member created", tab);
+    console.log("Tab created", tab);
   }
 
   onDeleted(channel: Channel, tab: ChannelTab): void {
-    console.log("Member deleted", tab);
-  }
-
-  getPrimaryKey(tabOrPrimaryKey: ChannelTab | ChannelTabPrimaryKey): ChannelTabPrimaryKey {
-    return pick(tabOrPrimaryKey, ...(["company_id", "workspace_id", "channel_id", "id"] as const));
+    console.log("Tab deleted", tab);
   }
 }

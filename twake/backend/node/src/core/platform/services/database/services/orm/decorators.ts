@@ -3,7 +3,11 @@ import { ColumnDefinition, ColumnType, EntityDefinition } from "./types";
 
 export function Entity(name: string, options: any) {
   return function (constructor: Function) {
-    const entityDefinition: EntityDefinition = { name: name, options: options };
+    const entityDefinition: EntityDefinition = {
+      name: name,
+      type: options.type || name,
+      options: options,
+    };
     constructor.prototype._entity = entityDefinition;
   };
 }

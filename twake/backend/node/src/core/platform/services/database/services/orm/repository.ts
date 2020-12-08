@@ -1,4 +1,4 @@
-import { Pagination } from "../../../../../platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../../platform/framework/api/crud-service";
 import { Connector } from "./connectors";
 import { getEntityDefinition } from "./utils";
 
@@ -41,7 +41,7 @@ export default class Repository<EntityType> {
     return this;
   }
 
-  async find(filters: FindFilter, options: FindOptions = {}): Promise<EntityType[]> {
+  async find(filters: FindFilter, options: FindOptions = {}): Promise<ListResult<EntityType>> {
     if (!this.entityType) {
       throw Error(`Unable to find or findOne: EntityType ${this.table} not initialized`);
     }
@@ -58,6 +58,6 @@ export default class Repository<EntityType> {
       options.pagination = new Pagination("", "1");
     }
 
-    return (await this.find(filters, options))[0] || null;
+    return (await this.find(filters, options)).getEntities()[0] || null;
   }
 }

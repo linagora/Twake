@@ -4,6 +4,7 @@ import { CassandraConnectionOptions } from "./cassandra/cassandra";
 import { MongoConnectionOptions } from "./mongodb/mongodb";
 import { ColumnDefinition, EntityDefinition } from "../types";
 import { FindOptions } from "../repository";
+import { ListResult } from "../../../../../framework/api/crud-service";
 
 export * from "./mongodb/mongodb";
 export * from "./cassandra/cassandra";
@@ -52,7 +53,11 @@ export interface Connector extends Initializable {
    * Find items in database
    * returns true if the object was removed, false otherwise
    */
-  find<Table>(entityType: any, filters: any, options: FindOptions): Promise<Table[]>;
+  find<EntityType>(
+    entityType: any,
+    filters: any,
+    options: FindOptions,
+  ): Promise<ListResult<EntityType>>;
 }
 
 export declare type ConnectionOptions = MongoConnectionOptions | CassandraConnectionOptions;

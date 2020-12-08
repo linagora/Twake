@@ -2,6 +2,7 @@ import { Connector } from ".";
 import { ConnectionOptions, DatabaseType } from "../..";
 import { FindOptions } from "../repository";
 import { ColumnDefinition, EntityDefinition } from "../types";
+import { ListResult } from "../../../../../framework/api/crud-service";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
   implements Connector {
@@ -22,7 +23,11 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
 
   abstract remove(entities: any[]): Promise<boolean[]>;
 
-  abstract find<Table>(entityType: any, filters: any, options: FindOptions): Promise<Table[]>;
+  abstract find<EntityType>(
+    entityType: any,
+    filters: any,
+    options: FindOptions,
+  ): Promise<ListResult<EntityType>>;
 
   getOptions(): T {
     return this.options;
