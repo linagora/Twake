@@ -7,20 +7,9 @@ import { logger } from "../../../../../../framework";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { EntityDefinition, ColumnDefinition } from "../../types";
 import { AbstractConnector } from "../abstract-connector";
-import { transformValueToDbString } from "../mongodb/typeTransforms";
+import { transformValueToDbString, cassandraType } from "./typeTransforms";
 
 export { CassandraPagination } from "./pagination";
-
-const cassandraType = {
-  string: "TEXT",
-  encrypted: "TEXT",
-  number: "BIGINT",
-  timeuuid: "TIMEUUID",
-  uuid: "UUID",
-  counter: "COUNTER",
-  blob: "BLOB",
-  boolean: "BOOLEAN",
-};
 
 export interface CassandraConnectionOptions {
   contactPoints: string[];

@@ -15,17 +15,6 @@ export interface MongoConnectionOptions {
   database: string;
 }
 
-const mongoType = {
-  string: "TEXT",
-  encrypted: "TEXT",
-  number: "BIGINT",
-  timeuuid: "TIMEUUID",
-  uuid: "UUID",
-  counter: "COUNTER",
-  blob: "BLOB",
-  boolean: "BOOLEAN",
-};
-
 export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mongo.MongoClient> {
   private client: mongo.MongoClient;
 
