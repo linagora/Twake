@@ -1,5 +1,5 @@
-import { Connector } from "../connectors";
-import { getEntityDefinition } from "./decorators";
+import { Connector } from "./connectors";
+import { getEntityDefinition } from "./utils";
 
 export type RepositoryOptions = any;
 

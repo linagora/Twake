@@ -2,7 +2,7 @@ import { TwakeService, logger, ServiceName } from "../../framework";
 import { DatabaseServiceAPI } from "./api";
 import DatabaseService from "./services";
 import { DatabaseType } from "./services";
-import { ConnectionOptions } from "./services/connectors";
+import { ConnectionOptions } from "./services/orm/connectors";
 
 @ServiceName("database")
 export default class Database extends TwakeService<DatabaseServiceAPI> {

@@ -2,7 +2,7 @@ import * as mongo from "mongodb";
 import { v4 as uuidv4 } from "uuid";
 import { Channel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey } from "../../provider";
-import { MongoPagination } from "../../../../core/platform/services/database/services/connectors/mongodb";
+import { MongoPagination } from "../../../../core/platform/services/database/services/orm/connectors/mongodb/mongodb";
 import {
   CreateResult,
   DeleteResult,

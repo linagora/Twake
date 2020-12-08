@@ -1,4 +1,4 @@
-version: "2"
+version: "3.4"
 
 services:
   scylladb:
@@ -17,26 +17,25 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
-  mongo:
-    container_name: mongo
-    image: mongo
   node:
     image: twaketech/twake-node
     environment:
       - DEV=dev
+      - DB_DRIVER=cassandra
+      - DB_CASSANDRA_URI=scylladb:9042
+      - DB_CASSANDRA_KEYSPACE=twakenode
+      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
     build:
       context: ./backend/node
       dockerfile: ../../docker/twake-node/Dockerfile.dev
     volumes:
       - ./backend/node:/usr/src/app
-      - /usr/src/app/node_modules
+    #      - /usr/src/app/node_modules
     depends_on:
-      - mongo
       - scylladb
       - rabbitmq
       - elasticsearch
     links:
-      - mongo
       - scylladb
   php:
     image: twaketech/twake-php
@@ -80,7 +79,7 @@ services:
       dockerfile: docker/twake-nginx/Dockerfile
     ports:
       - 8000:80
-    links:
+    depends_on:
       - php
       - node
     volumes_from:

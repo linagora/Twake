@@ -13,7 +13,7 @@ import {
   CassandraConnectionOptions,
   CassandraPagination,
   waitForTable,
-} from "../../../../core/platform/services/database/services/connectors";
+} from "../../../../core/platform/services/database/services/orm/connectors";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";

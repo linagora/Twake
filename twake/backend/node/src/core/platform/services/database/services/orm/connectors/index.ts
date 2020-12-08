@@ -1,11 +1,17 @@
-import { Initializable } from "../../../../../../core/platform/framework";
-import { DatabaseType } from "..";
-import { CassandraConnectionOptions } from "./cassandra";
-import { MongoConnectionOptions } from "./mongodb";
-import { ColumnDefinition, EntityDefinition } from "../orm/types";
+import { Initializable } from "../../../../../framework";
+import { DatabaseType } from "../..";
+import { CassandraConnectionOptions } from "./cassandra/cassandra";
+import { MongoConnectionOptions } from "./mongodb/mongodb";
+import { ColumnDefinition, EntityDefinition } from "../types";
 
-export * from "./mongodb";
-export * from "./cassandra";
+export * from "./mongodb/mongodb";
+export * from "./cassandra/cassandra";
+
+export type UpsertOptions = {
+  ttl?: number;
+};
+
+export type RemoveOptions = {};
 
 export interface Connector extends Initializable {
   /**

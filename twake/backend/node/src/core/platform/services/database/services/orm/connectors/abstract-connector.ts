@@ -1,6 +1,6 @@
 import { Connector } from ".";
-import { ConnectionOptions, DatabaseType } from "..";
-import { ColumnDefinition, EntityDefinition } from "../orm/types";
+import { ConnectionOptions, DatabaseType } from "../..";
+import { ColumnDefinition, EntityDefinition } from "../types";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
   implements Connector {

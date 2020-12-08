@@ -6,7 +6,7 @@ import {
   CassandraConnectionOptions,
   CassandraPagination,
   waitForTable,
-} from "../../../../core/platform/services/database/services/connectors/cassandra";
+} from "../../../../core/platform/services/database/services/orm/connectors/cassandra/cassandra";
 import {
   CreateResult,
   DeleteResult,

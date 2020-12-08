@@ -1,7 +1,9 @@
 import * as mongo from "mongodb";
-import { Paginable, Pagination } from "../../../../../platform/framework/api/crud-service";
-import { ColumnDefinition, EntityDefinition } from "../orm/types";
-import { AbstractConnector } from "./abstract-connector";
+import { Paginable, Pagination } from "../../../../../../framework/api/crud-service";
+import { ColumnDefinition, EntityDefinition } from "../../types";
+import { AbstractConnector } from "../abstract-connector";
+
+export { MongoPagination } from "./pagination";
 
 export interface MongoConnectionOptions {
   // TODO: More options
@@ -9,6 +11,25 @@ export interface MongoConnectionOptions {
 
   database: string;
 }
+
+const mongoType = {
+  string: "TEXT",
+  encrypted: "TEXT",
+  number: "BIGINT",
+  timeuuid: "TIMEUUID",
+  uuid: "UUID",
+  counter: "COUNTER",
+  blob: "BLOB",
+  boolean: "BOOLEAN",
+};
+
+const transformValueToDbString = (v: any, type: string, options: any = {}) => {
+  return `'${v || ""}'`;
+};
+
+const transformValueFromDbString = (v: any, type: string, options: any = {}) => {
+  return v;
+};
 
 export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mongo.MongoClient> {
   private client: mongo.MongoClient;
@@ -54,28 +75,5 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
   remove(entities: any[]): Promise<boolean[]> {
     throw new Error("Method not implemented.");
-  }
-}
-
-export class MongoPagination extends Pagination {
-  limit = 100;
-  skip = 0;
-  page = 1;
-
-  private constructor(readonly page_token = "1", readonly limitStr = "100") {
-    super(page_token, limitStr);
-    this.limit = Number.parseInt(limitStr, 10);
-    this.page = Number.parseInt(page_token, 10);
-    this.skip = (this.page - 1) * this.limit;
-  }
-
-  static from(pagination: Paginable): MongoPagination {
-    return new MongoPagination(pagination.page_token, pagination.limitStr);
-  }
-
-  static next(current: MongoPagination, items: Array<unknown> = []): Paginable {
-    const nextToken = items.length === current.limit && (current.page + 1).toString(10);
-
-    return new Pagination(nextToken, current.limitStr);
   }
 }

@@ -1,7 +1,7 @@
 import {
   MongoConnector,
   CassandraConnector,
-} from "../../../../core/platform/services/database/services/connectors";
+} from "../../../../core/platform/services/database/services/orm/connectors";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelService, MemberService } from "../../provider";
 import { MongoChannelService } from "./mongo";

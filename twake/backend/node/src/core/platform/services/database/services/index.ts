@@ -1,10 +1,10 @@
 import { DatabaseServiceAPI } from "../api";
 import { ConnectorFactory } from "./connector-factory";
-import { Connector } from "./connectors";
+import { Connector } from "./orm/connectors";
 import Manager from "./orm/manager";
 import Repository, { RepositoryOptions } from "./orm/repository";
-import { CassandraConnectionOptions } from "./connectors/cassandra";
-import { MongoConnectionOptions } from "./connectors/mongodb";
+import { CassandraConnectionOptions } from "./orm/connectors/cassandra/cassandra";
+import { MongoConnectionOptions } from "./orm/connectors/mongodb/mongodb";
 
 export default class DatabaseService implements DatabaseServiceAPI {
   version = "1";

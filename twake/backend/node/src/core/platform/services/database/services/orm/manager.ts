@@ -1,6 +1,6 @@
 import _ from "lodash";
-import { Connector } from "../connectors";
-import { getEntityDefinition } from "./decorators";
+import { Connector } from "./connectors";
+import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 
 /**
@@ -19,11 +19,7 @@ export default class Manager {
 
     // --- Generate ids on primary keys elements (if not defined) ---
     const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
-    const partitionKey = entityDefinition.options.primaryKey.shift();
-    const primaryKey: string[] = [
-      ...(typeof partitionKey === "string" ? [partitionKey] : partitionKey),
-      ...(entityDefinition.options.primaryKey as string[]),
-    ];
+    const primaryKey = unwrapPrimarykey(entityDefinition);
     primaryKey.forEach(pk => {
       if (entity[pk] === undefined) {
         const definition = columnsDefinition[pk];
@@ -57,8 +53,6 @@ export default class Manager {
   }
 
   public flush() {
-    //TODO apply type transformations before sending to connectors
-
     this.connector.upsert(this.toPersist);
     this.connector.remove(this.toRemove);
   }

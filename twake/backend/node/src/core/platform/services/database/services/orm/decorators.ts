@@ -19,17 +19,3 @@ export function Column(
     target.constructor.prototype._columns[name] = colDefinition;
   };
 }
-
-export function getEntityDefinition(
-  instance: any,
-): {
-  entityDefinition: EntityDefinition;
-  columnsDefinition: { [name: string]: ColumnDefinition };
-} {
-  const entityConfituration = _.cloneDeep(instance.constructor.prototype._entity);
-  const entityColumns = _.cloneDeep(instance.constructor.prototype._columns);
-  return {
-    entityDefinition: entityConfituration,
-    columnsDefinition: entityColumns,
-  };
-}

@@ -1,7 +1,10 @@
 import { DatabaseType } from ".";
-import { ConnectionOptions, Connector } from "./connectors";
-import { CassandraConnectionOptions, CassandraConnector } from "./connectors/cassandra";
-import { MongoConnectionOptions, MongoConnector } from "./connectors/mongodb";
+import { ConnectionOptions, Connector } from "./orm/connectors";
+import {
+  CassandraConnectionOptions,
+  CassandraConnector,
+} from "./orm/connectors/cassandra/cassandra";
+import { MongoConnectionOptions, MongoConnector } from "./orm/connectors/mongodb/mongodb";
 
 export class ConnectorFactory {
   public create(type: DatabaseType, options: ConnectionOptions): Connector {

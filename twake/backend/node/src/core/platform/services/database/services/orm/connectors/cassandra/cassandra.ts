@@ -2,11 +2,14 @@
 import cassandra from "cassandra-driver";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
-import { DatabaseType } from "..";
-import { logger } from "../../../../../platform/framework";
-import { Paginable, Pagination } from "../../../../../platform/framework/api/crud-service";
-import { EntityDefinition, ColumnDefinition } from "../orm/types";
-import { AbstractConnector } from "./abstract-connector";
+import { UpsertOptions } from "..";
+import { logger } from "../../../../../../framework";
+import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
+import { EntityDefinition, ColumnDefinition } from "../../types";
+import { AbstractConnector } from "../abstract-connector";
+import { transformValueToDbString } from "../mongodb/typeTransforms";
+
+export { CassandraPagination } from "./pagination";
 
 const cassandraType = {
   string: "TEXT",
@@ -257,28 +260,81 @@ export class CassandraConnector extends AbstractConnector<
     return result;
   }
 
-  upsert(entities: any[]): Promise<boolean[]> {
-    throw new Error("Method not implemented.");
-  }
-  remove(entities: any[]): Promise<boolean[]> {
-    throw new Error("Method not implemented.");
-  }
-}
+  async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
+    const results: boolean[] = [];
 
-export class CassandraPagination extends Pagination {
-  limit = 100;
+    entities.forEach(entity => {
+      const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+      const primaryKey = unwrapPrimarykey(entityDefinition);
 
-  private constructor(readonly page_token: string, readonly limitStr = "100") {
-    super(page_token, limitStr);
-    this.limit = Number.parseInt(limitStr, 10);
+      //Set updated content
+      const set = Object.keys(columnsDefinition)
+        .filter(key => primaryKey.indexOf(key) === -1)
+        .map(
+          key =>
+            `${key} = ${transformValueToDbString(
+              entity[key],
+              columnsDefinition[key].type,
+              columnsDefinition[key].options,
+            )}`,
+        )
+        .join(", ");
+
+      //Set primary key
+      const where = primaryKey
+        .map(
+          key =>
+            `${key} = ${transformValueToDbString(
+              entity[key],
+              columnsDefinition[key].type,
+              columnsDefinition[key].options,
+            )}`,
+        )
+        .join(" AND ");
+
+      // Add time-to-live options
+      let ttlOptions = "";
+      if (options.ttl && options.ttl > 0) {
+        ttlOptions = `USING TTL ${options.ttl}`;
+      }
+
+      const query = `UPDATE ${this.options.keyspace}.${entityDefinition.name} ${ttlOptions} SET ${set} WHERE ${where}`;
+
+      console.log(query);
+
+      results.push(false);
+    });
+
+    return results;
   }
 
-  static from(pagination: Paginable): CassandraPagination {
-    return new CassandraPagination(pagination.page_token, pagination.limitStr);
-  }
+  async remove(entities: any[]): Promise<boolean[]> {
+    const results: boolean[] = [];
 
-  static next(current: Pagination, pageState: string): Paginable {
-    return new Pagination(pageState, current.limitStr);
+    entities.forEach(entity => {
+      const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
+      const primaryKey = unwrapPrimarykey(entityDefinition);
+
+      //Set primary key
+      const where = primaryKey
+        .map(
+          key =>
+            `${key} = ${transformValueToDbString(
+              entity[key],
+              columnsDefinition[key].type,
+              columnsDefinition[key].options,
+            )}`,
+        )
+        .join(" AND ");
+
+      const query = `DELETE FROM ${this.options.keyspace}.${entityDefinition.name} WHERE ${where}`;
+
+      console.log(query);
+
+      results.push(false);
+    });
+
+    return results;
   }
 }
 
