@@ -13,6 +13,7 @@ export type ColumnDefinition = {
 
 export type ColumnOptions = {
   order: "ASC" | "DESC";
+  generator: ColumnType;
 };
 
 export type ColumnType =

@@ -24,7 +24,7 @@ export default class Manager {
       if (entity[pk] === undefined) {
         const definition = columnsDefinition[pk];
         //Create default value
-        switch (definition.type) {
+        switch (definition.options.generator || definition.type) {
           case "uuid":
             entity[pk] = uuidv4();
             break;
@@ -53,8 +53,8 @@ export default class Manager {
   }
 
   public flush() {
-    this.connector.upsert(this.toPersist);
-    this.connector.remove(this.toRemove);
+    //this.connector.upsert(this.toPersist);
+    //this.connector.remove(this.toRemove);
   }
 
   public reset() {

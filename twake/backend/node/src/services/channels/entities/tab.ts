@@ -8,22 +8,22 @@ import { ChannelType } from "../types";
 export class ChannelTab {
   // uuid-v4
   @Type(() => String)
-  @Column("company_id", "string")
+  @Column("company_id", "string", { generator: "uuid" })
   company_id: string;
 
   // "uuid-v4" | "direct"
   @Type(() => String)
-  @Column("workspace_id", "string")
+  @Column("workspace_id", "string", { generator: "uuid" })
   workspace_id: string | ChannelType.DIRECT;
 
   // uuid-v4
   @Type(() => String)
-  @Column("channel_id", "string")
+  @Column("channel_id", "string", { generator: "uuid" })
   channel_id: string;
 
   // uuid-v4
   @Type(() => String)
-  @Column("id", "string")
+  @Column("id", "string", { generator: "uuid" })
   id: string;
 
   @Column("name", "encrypted")
