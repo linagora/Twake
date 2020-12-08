@@ -21,6 +21,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../types";
+import { getTabsRealtimePath } from "../../services/tab/service";
 
 export class ChannelTabCrudController
   implements
@@ -140,7 +141,7 @@ export class ChannelTabCrudController
   }
 
   /**
-   * List channel members
+   * List channel tabs
    *
    * @param request
    */
@@ -150,10 +151,11 @@ export class ChannelTabCrudController
       Params: ChannelParameters;
     }>,
   ): Promise<ResourceListResponse<ChannelTab>> {
+    const context = getExecutionContext(request);
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
       {},
-      getExecutionContext(request),
+      context,
     );
 
     return {
@@ -161,7 +163,7 @@ export class ChannelTabCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: getChannelRooms(request.params, request.currentUser),
+        websockets: [{ room: getTabsRealtimePath(context.channel) }],
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

@@ -44,7 +44,10 @@ export default class Manager {
     this.toPersist.push(_.cloneDeep(entity));
   }
 
-  public remove(entity: any) {
+  public remove(entity: any, entityType?: any) {
+    if (entityType) {
+      entity = _.merge(new (entityType as any)(), entity);
+    }
     if (!entity.constructor.prototype._entity || !entity.constructor.prototype._columns) {
       throw Error("Cannot remove this object: it is not an entity.");
     }

@@ -1,4 +1,5 @@
-import { RealtimeDeleted } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
+import { getChannelPath } from "../channel/realtime";
 import {
   DeleteResult,
   Pagination,
@@ -11,10 +12,10 @@ import { TabService } from "../../provider";
 
 import { ChannelTab, ChannelTabPrimaryKey } from "../../entities";
 import { ChannelExecutionContext } from "../../types";
-import { Channel, User } from "../../../types";
-import { pick } from "../../../../utils/pick";
+import { Channel } from "../../../types";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import _ from "lodash";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 
 export class Service implements TabService {
   version: "1";
@@ -26,6 +27,11 @@ export class Service implements TabService {
     return this;
   }
 
+  @RealtimeSaved<ChannelTab>(
+    (_tab, context) =>
+      ResourcePath.get(getTabsRealtimePath((context as ChannelExecutionContext).channel)),
+    (_tab, context) => getTabsRealtimePath((context as ChannelExecutionContext).channel),
+  )
   async save(
     tab: ChannelTab,
     options: {},
@@ -68,13 +74,18 @@ export class Service implements TabService {
     return await this.database.getRepository<ChannelTab>("channel_tab").findOne(pk);
   }
 
+  @RealtimeDeleted<ChannelTab>(
+    (_tab, context) =>
+      ResourcePath.get(getTabsRealtimePath((context as ChannelExecutionContext).channel)),
+    (_tab, context) => getTabsRealtimePath((context as ChannelExecutionContext).channel),
+  )
   async delete(
     pk: ChannelTabPrimaryKey,
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelTab>> {
     const manager = this.database.newManager();
 
-    manager.remove(pk);
+    manager.remove(pk, ChannelTab);
     await manager.flush();
 
     return new DeleteResult("channel_tab", pk as ChannelTab, true);
@@ -116,4 +127,8 @@ export class Service implements TabService {
   onDeleted(channel: Channel, tab: ChannelTab): void {
     console.log("Tab deleted", tab);
   }
+}
+
+export function getTabsRealtimePath(channel: ChannelExecutionContext["channel"]): string {
+  return `/companies/${channel.company_id}/workspaces/${channel.workspace_id}/channels/${channel.id}/tabs`;
 }

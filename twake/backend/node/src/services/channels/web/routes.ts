@@ -2,10 +2,13 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters } from "./types";
 import {
   createChannelMemberSchema,
+  createChannelTabSchema,
   createChannelSchema,
   getChannelMemberSchema,
+  getChannelTabSchema,
   getChannelSchema,
   updateChannelMemberSchema,
+  updateChannelTabSchema,
   updateChannelSchema,
 } from "./schemas";
 import {
@@ -146,7 +149,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: tabsUrl,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: createChannelMemberSchema,
+    schema: createChannelTabSchema,
     handler: tabsController.save.bind(tabsController),
   });
 
@@ -155,7 +158,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: `${tabsUrl}/:tab_id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: getChannelMemberSchema,
+    schema: getChannelTabSchema,
     handler: tabsController.get.bind(tabsController),
   });
 
@@ -164,7 +167,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: `${tabsUrl}/:tab_id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: updateChannelMemberSchema,
+    schema: updateChannelTabSchema,
     handler: tabsController.update.bind(tabsController),
   });
 
