@@ -21,7 +21,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../types";
-import { getTabsRealtimePath } from "../../services/tab/service";
+import { getTabsRealtimeRoom } from "../../services/tab/service";
 
 export class ChannelTabCrudController
   implements
@@ -163,7 +163,7 @@ export class ChannelTabCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: [{ room: getTabsRealtimePath(context.channel) }],
+        websockets: [{ room: getTabsRealtimeRoom(context.channel) }],
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

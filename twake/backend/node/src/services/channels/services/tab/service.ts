@@ -29,8 +29,9 @@ export class Service implements TabService {
 
   @RealtimeSaved<ChannelTab>(
     (_tab, context) =>
-      ResourcePath.get(getTabsRealtimePath((context as ChannelExecutionContext).channel)),
-    (_tab, context) => getTabsRealtimePath((context as ChannelExecutionContext).channel),
+      ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
+    (tab, context) =>
+      getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
   )
   async save(
     tab: ChannelTab,
@@ -76,8 +77,9 @@ export class Service implements TabService {
 
   @RealtimeDeleted<ChannelTab>(
     (_tab, context) =>
-      ResourcePath.get(getTabsRealtimePath((context as ChannelExecutionContext).channel)),
-    (_tab, context) => getTabsRealtimePath((context as ChannelExecutionContext).channel),
+      ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
+    (tab, context) =>
+      getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
   )
   async delete(
     pk: ChannelTabPrimaryKey,
@@ -129,6 +131,13 @@ export class Service implements TabService {
   }
 }
 
-export function getTabsRealtimePath(channel: ChannelExecutionContext["channel"]): string {
+export function getTabsRealtimeRoom(channel: ChannelExecutionContext["channel"]): string {
   return `/companies/${channel.company_id}/workspaces/${channel.workspace_id}/channels/${channel.id}/tabs`;
+}
+
+export function getTabsRealtimeResourcePath(
+  tab: ChannelTab,
+  channel: ChannelExecutionContext["channel"],
+): string {
+  return `/companies/${channel.company_id}/workspaces/${channel.workspace_id}/channels/${channel.id}/tabs/${tab.id}`;
 }
