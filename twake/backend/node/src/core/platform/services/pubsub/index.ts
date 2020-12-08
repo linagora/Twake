@@ -9,7 +9,14 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
   service: PubsubServiceAPI;
 
   async doInit(): Promise<this> {
-    const urls = this.configuration.get<string[]>("urls", ["amqp://guest:guest@localhost:5672"]);
+    let urls: string[] = this.configuration.get<string[]>("urls", [
+      "amqp://guest:guest@localhost:5672",
+    ]);
+
+    //For environment variables
+    if (typeof urls === "string") {
+      urls = (urls as string).split(",");
+    }
 
     this.service = await RabbitPubSub.get(urls);
     return this;
