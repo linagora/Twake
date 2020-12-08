@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { ColumnDefinition, ColumnType, EntityDefinition } from "./types";
 
 export function Entity(name: string, options: any) {

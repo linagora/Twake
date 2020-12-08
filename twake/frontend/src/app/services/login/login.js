@@ -57,6 +57,9 @@ class Login extends Observable {
       });
       return;
     }
+    const cancelAutoLogin =
+      !this.firstInit &&
+      RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
     this.reset();
     await JWTStorage.init();
 
@@ -113,6 +116,12 @@ class Login extends Observable {
     if (logoutNow) {
       this.firstInit = true;
       this.logout();
+    }
+
+    if (cancelAutoLogin) {
+      this.firstInit = true;
+      this.clearLogin();
+      this.setPage('logged_out');
       return;
     }
 
@@ -256,16 +265,18 @@ class Login extends Observable {
     });
   }
 
+  clearLogin() {
+    this.currentUserId = null;
+    Globals.localStorageClear();
+    JWTStorage.clear();
+  }
+
   logout(no_reload) {
     var identity_provider = CurrentUser.get()
       ? (CurrentUser.get() || {}).identity_provider
       : 'internal';
 
-    this.currentUserId = null;
-
-    Globals.localStorageClear();
-
-    JWTStorage.clear();
+    this.clearLogin();
 
     document.body.classList.add('fade_out');
 
@@ -277,21 +288,15 @@ class Login extends Observable {
           device: device,
         },
         function () {
-          if (Globals.isReactNative) {
-            that.reset();
-            that.state = 'logged_out';
-            that.notify();
+          if (identity_provider === 'openid') {
+            var location = Api.route('users/openid/logout');
+            Globals.window.location = location;
+          } else if (identity_provider === 'cas') {
+            var location = Api.route('users/cas/logout');
+            Globals.window.location = location;
           } else {
-            if (identity_provider === 'openid') {
-              var location = Api.route('users/openid/logout');
-              Globals.window.location = location;
-            } else if (identity_provider === 'cas') {
-              var location = Api.route('users/cas/logout');
-              Globals.window.location = location;
-            } else {
-              if (!no_reload) {
-                Globals.window.location.reload();
-              }
+            if (!no_reload) {
+              Globals.window.location.reload();
             }
           }
           RouterServices.history.push(RouterServices.pathnames.LOGIN);
@@ -534,10 +539,10 @@ class Login extends Observable {
         callback(th, 0);
       } else {
         //console.log(res.errors);
-        if (res.errors === 'mailalreadytaken') {
+        if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;
-        } else if (res.errors === 'usernamealreadytaken') {
+        } else if (res.errors.length === 1 && res.errors[0] === 'usernamealreadytaken') {
           callback(th, 2);
           that.error_subscribe_username = true;
         } else {

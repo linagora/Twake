@@ -421,7 +421,7 @@ class User
         } else {
 
             if(in_array($pseudo, ["all", "here", "null", "undefined"]) || strlen($pseudo) <= 4){
-                $retour[] = -1;
+                $retour[] = -2;
             }
 
             //Check user doesn't exists
