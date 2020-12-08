@@ -1,5 +1,6 @@
 import { Connector } from ".";
 import { ConnectionOptions, DatabaseType } from "../..";
+import { FindOptions } from "../repository";
 import { ColumnDefinition, EntityDefinition } from "../types";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
@@ -20,6 +21,8 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
   abstract upsert(entities: any[]): Promise<boolean[]>;
 
   abstract remove(entities: any[]): Promise<boolean[]>;
+
+  abstract find<Table>(entityType: any, filters: any, options: FindOptions): Promise<Table[]>;
 
   getOptions(): T {
     return this.options;

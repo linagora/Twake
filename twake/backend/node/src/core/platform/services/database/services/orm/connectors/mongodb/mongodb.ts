@@ -1,6 +1,7 @@
 import * as mongo from "mongodb";
 import { UpsertOptions } from "..";
 import { Paginable, Pagination } from "../../../../../../framework/api/crud-service";
+import { FindOptions } from "../../repository";
 import { ColumnDefinition, EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
@@ -79,10 +80,10 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const set: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
-          .filter(key => entity[key] !== undefined)
+          .filter(key => entity[columnsDefinition[key].nodename] !== undefined)
           .forEach(key => {
             set[key] = transformValueToDbString(
-              entity[key],
+              entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
               columnsDefinition[key].options,
             );
@@ -92,7 +93,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const where: any = {};
         primaryKey.forEach(key => {
           where[key] = transformValueToDbString(
-            entity[key],
+            entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
             columnsDefinition[key].options,
           );
@@ -122,7 +123,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const where: any = {};
         primaryKey.forEach(key => {
           where[key] = transformValueToDbString(
-            entity[key],
+            entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
             columnsDefinition[key].options,
           );
@@ -136,5 +137,57 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         resolve(results.map(result => result.result.ok === 1));
       });
     });
+  }
+
+  async find<Table>(entityType: Table, filters: any, options: FindOptions = {}): Promise<Table[]> {
+    const instance = new (entityType as any)();
+    const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+
+    const pk = unwrapPrimarykey(entityDefinition);
+    if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
+      //Filter not in primary key
+      throw Error(
+        "All filter parameters must be defined in entity primary key, got: " +
+          JSON.stringify(Object.keys(filters)) +
+          " on table " +
+          entityDefinition.name +
+          " but pk is " +
+          JSON.stringify(pk),
+      );
+    }
+
+    //Set primary key
+    const where: any = {};
+    Object.keys(filters).forEach(key => {
+      where[key] = transformValueToDbString(
+        filters[key],
+        columnsDefinition[key].type,
+        columnsDefinition[key].options,
+      );
+    });
+
+    const db = this.getDatabase();
+    const collection = db.collection(`${entityDefinition.name}`);
+
+    const results = await collection
+      .find(where)
+      .skip(parseInt(options.pagination.page_token))
+      .limit(parseInt(options.pagination.limitStr))
+      .toArray();
+
+    const entities: Table[] = [];
+    results.forEach(row => {
+      const entity = new (entityType as any)();
+      Object.keys(row).forEach(key => {
+        entity[columnsDefinition[key].nodename] = transformValueToDbString(
+          row[key],
+          columnsDefinition[key].type,
+          columnsDefinition[key].options,
+        );
+      });
+      entities.push(entity);
+    });
+
+    return entities;
   }
 }

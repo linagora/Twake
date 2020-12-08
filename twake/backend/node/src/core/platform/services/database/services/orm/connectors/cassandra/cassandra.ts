@@ -7,7 +7,13 @@ import { logger } from "../../../../../../framework";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { EntityDefinition, ColumnDefinition } from "../../types";
 import { AbstractConnector } from "../abstract-connector";
-import { transformValueToDbString, cassandraType } from "./typeTransforms";
+import {
+  transformValueToDbString,
+  cassandraType,
+  transformValueFromDbString,
+} from "./typeTransforms";
+import { FindOptions } from "../../repository";
+import { Entity } from "../../decorators";
 
 export { CassandraPagination } from "./pagination";
 
@@ -161,7 +167,7 @@ export class CassandraConnector extends AbstractConnector<
       const dbResult = await this.client.execute(query);
       result = dbResult.rows.map(row => row.values()[0]);
     } catch (err) {
-      throw new Error("Table query error");
+      throw "Table query error";
     }
 
     return result ? Promise.resolve(result || []) : Promise.resolve([]);
@@ -220,7 +226,7 @@ export class CassandraConnector extends AbstractConnector<
     // --- Alter table if not up to date --- //
     const existingColumns = await this.getTableDefinition(entity.name);
     if (existingColumns.length > 0) {
-      console.log(`Existing columns for table ${entity.name}, generating altertable queries`);
+      logger.debug(`Existing columns for table ${entity.name}, generating altertable queries`);
       const alterQueryColumns = Object.keys(columns)
         .filter(colName => existingColumns.indexOf(colName) < 0)
         .map(colName => `${colName} ${cassandraType[columns[colName].type]}`);
@@ -242,7 +248,6 @@ export class CassandraConnector extends AbstractConnector<
         { err },
         `service.channel.createTable creation error for table ${entity.name} : ${err.message}`,
       );
-      console.log(err);
       result = false;
     }
 
@@ -260,11 +265,11 @@ export class CassandraConnector extends AbstractConnector<
         //Set updated content
         let set = Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
-          .filter(key => entity[key] !== undefined)
+          .filter(key => entity[columnsDefinition[key].nodename] !== undefined)
           .map(key => [
             `${key}`,
             `${transformValueToDbString(
-              entity[key],
+              entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
               columnsDefinition[key].options,
             )}`,
@@ -273,7 +278,7 @@ export class CassandraConnector extends AbstractConnector<
         const where = primaryKey.map(key => [
           `${key}`,
           `${transformValueToDbString(
-            entity[key],
+            entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
             columnsDefinition[key].options,
           )}`,
@@ -330,7 +335,7 @@ export class CassandraConnector extends AbstractConnector<
         const where = primaryKey.map(
           key =>
             `${key} = ${transformValueToDbString(
-              entity[key],
+              entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
               columnsDefinition[key].options,
             )}`,
@@ -353,6 +358,59 @@ export class CassandraConnector extends AbstractConnector<
 
       Promise.all(promises).then(resolve);
     });
+  }
+
+  async find<Table>(entityType: Table, filters: any, options: FindOptions = {}): Promise<Table[]> {
+    const instance = new (entityType as any)();
+    const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+
+    const pk = unwrapPrimarykey(entityDefinition);
+    if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
+      //Filter not in primary key
+      throw Error(
+        "All filter parameters must be defined in entity primary key, got: " +
+          JSON.stringify(Object.keys(filters)) +
+          " on table " +
+          entityDefinition.name +
+          " but pk is " +
+          JSON.stringify(pk),
+      );
+    }
+
+    //Set primary key
+    const where = Object.keys(filters).map(
+      key =>
+        `${key} = ${transformValueToDbString(
+          filters[key],
+          columnsDefinition[key].type,
+          columnsDefinition[key].options,
+        )}`,
+    );
+
+    const query = `SELECT * FROM ${this.options.keyspace}.${
+      entityDefinition.name
+    } WHERE ${where.join(" AND ")}`;
+
+    const results = await this.getClient().execute(query, [], {
+      fetchSize: parseInt(options.pagination.limitStr),
+      pageState: options.pagination.page_token || undefined,
+      prepare: true,
+    });
+
+    const entities: Table[] = [];
+    results.rows.forEach(row => {
+      const entity = new (entityType as any)();
+      Object.keys(row).forEach(key => {
+        entity[columnsDefinition[key].nodename] = transformValueFromDbString(
+          row[key],
+          columnsDefinition[key].type,
+          columnsDefinition[key].options,
+        );
+      });
+      entities.push(entity);
+    });
+
+    return entities;
   }
 }
 

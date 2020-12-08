@@ -15,7 +15,7 @@ export function Column(
 ): (target: any, key: string) => void {
   return function (target: Object, key: string) {
     target.constructor.prototype._columns = target.constructor.prototype._columns || {};
-    const colDefinition: ColumnDefinition = { type: type, options: options };
+    const colDefinition: ColumnDefinition = { type: type, options: options, nodename: key };
     target.constructor.prototype._columns[name] = colDefinition;
   };
 }

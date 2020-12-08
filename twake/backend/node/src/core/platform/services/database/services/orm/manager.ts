@@ -52,9 +52,9 @@ export default class Manager {
     this.toRemove.push(_.cloneDeep(entity));
   }
 
-  public flush() {
-    //this.connector.upsert(this.toPersist);
-    //this.connector.remove(this.toRemove);
+  public async flush() {
+    await this.connector.upsert(this.toPersist);
+    await this.connector.remove(this.toRemove);
   }
 
   public reset() {

@@ -36,6 +36,7 @@ const ENTITY_KEYS = [
   "archived",
   "archivation_date",
   "members",
+  "connectors",
 ] as const;
 
 const TYPE = "channel";
@@ -87,6 +88,7 @@ export class CassandraChannelService implements ChannelService {
           owner uuid,
           visibility text,
           members frozen<set<text>>,
+          connectors frozen<set<text>>,
           PRIMARY KEY ((company_id, workspace_id), id)
         );`;
 

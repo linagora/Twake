@@ -3,6 +3,7 @@ import { ColumnType } from "../../types";
 export const cassandraType = {
   string: "TEXT",
   encrypted: "TEXT",
+  json: "TEXT",
   number: "BIGINT",
   timeuuid: "TIMEUUID",
   uuid: "UUID",
@@ -19,8 +20,11 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   if (type === "boolean") {
     return `${!!v}`;
   }
-  if (type === "encrypted") {
-    return `'${v || ""}'`; //Not implemented yet
+  if (type === "encrypted" || type === "json") {
+    if (type === "json") {
+      v = JSON.stringify(v);
+    }
+    return `'${v || ""}'`; //Encryption not implemented yet
   }
   if (type === "blob") {
     return "''"; //Not implemented yet

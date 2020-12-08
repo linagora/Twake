@@ -10,7 +10,7 @@ export default class DatabaseService implements DatabaseServiceAPI {
   version = "1";
   private connector: Connector;
   private manager: Manager;
-  private repository: Repository<any>;
+  private repositories: { [table: string]: Repository<any> } = {};
 
   constructor(readonly type: DatabaseType, private options: ConnectionOptions) {}
 
@@ -29,13 +29,13 @@ export default class DatabaseService implements DatabaseServiceAPI {
   }
 
   getRepository<Table>(table: string, options?: RepositoryOptions): Repository<Table> {
-    if (this.repository) {
-      return this.repository;
+    if (this.repositories[table]) {
+      return this.repositories[table];
     }
 
-    this.repository = new Repository<Table>(this.connector, table, options);
+    this.repositories[table] = new Repository<Table>(this.connector, table, options);
 
-    return this.repository;
+    return this.repositories[table];
   }
 }
 

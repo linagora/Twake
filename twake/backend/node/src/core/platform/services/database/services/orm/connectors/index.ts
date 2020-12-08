@@ -3,6 +3,7 @@ import { DatabaseType } from "../..";
 import { CassandraConnectionOptions } from "./cassandra/cassandra";
 import { MongoConnectionOptions } from "./mongodb/mongodb";
 import { ColumnDefinition, EntityDefinition } from "../types";
+import { FindOptions } from "../repository";
 
 export * from "./mongodb/mongodb";
 export * from "./cassandra/cassandra";
@@ -46,6 +47,12 @@ export interface Connector extends Initializable {
    * returns true if the object was removed, false otherwise
    */
   remove(entities: any[]): Promise<boolean[]>;
+
+  /**
+   * Find items in database
+   * returns true if the object was removed, false otherwise
+   */
+  find<Table>(entityType: any, filters: any, options: FindOptions): Promise<Table[]>;
 }
 
 export declare type ConnectionOptions = MongoConnectionOptions | CassandraConnectionOptions;

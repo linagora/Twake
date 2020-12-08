@@ -8,6 +8,7 @@ export type EntityDefinition = {
 
 export type ColumnDefinition = {
   type: ColumnType;
+  nodename: string;
   options: ColumnOptions;
 };
 
@@ -17,6 +18,7 @@ export type ColumnOptions = {
 };
 
 export type ColumnType =
+  | "json"
   | "string"
   | "encrypted"
   | "number"

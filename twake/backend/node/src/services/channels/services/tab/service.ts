@@ -21,12 +21,23 @@ export class Service implements TabService {
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
-    this.database.getRepository("channel_tab").init(ChannelTab);
+    await this.database.getRepository("channel_tab").init(ChannelTab);
     const manager = this.database.newManager();
 
     const tab = new ChannelTab();
+    tab.order = "12";
+
+    console.log(tab);
+
     manager.persist(tab);
-    manager.flush();
+    await manager.flush();
+
+    const tabs = await this.database.getRepository("channel_tab").findOne({
+      company_id: tab.company_id,
+      workspace_id: tab.workspace_id,
+    });
+
+    console.log(tabs);
 
     return this;
   }
