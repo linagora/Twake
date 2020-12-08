@@ -1925,4 +1925,5 @@ export default {
     'Rechercher une chaîne de discussion',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Créer un onglet',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Renommer $1',
+  'components.connectorslistmanager.add_connectors': 'Ajouter des connecteurs',
 };

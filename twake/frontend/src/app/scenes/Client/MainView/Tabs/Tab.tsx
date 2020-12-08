@@ -1,9 +1,7 @@
 import React from 'react';
-import { TabType, TabResource } from 'app/models/Tab';
+import { TabResource } from 'app/models/Tab';
 import RouterServices from 'app/services/RouterService';
 import TabsTemplateEditor from './TabsTemplateEditor';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
-import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'services/Modal/ModalManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
@@ -11,8 +9,6 @@ import { MoreHorizontal } from 'react-feather';
 import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import Collections from 'app/services/Collections/Collections';
-import { ChannelResource } from 'app/models/Channel';
 import { Typography } from 'antd';
 
 type PropsType = {
@@ -22,24 +18,12 @@ type PropsType = {
   currentUserId: string;
 };
 
-export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType) => {
+export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.useStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
   );
-  const getAppIcon = (tab: TabType) => {
-    const application = DepreciatedCollections.get('applications').find(tab.application_id);
-    const IconType = WorkspacesApps.getAppIcon(application, true);
-
-    if (typeof IconType === 'string') {
-      return (
-        <Icon type={IconType} style={{ width: 16, height: 16 }} className="small-right-margin" />
-      );
-    } else {
-      return <IconType size={16} className="small-right-margin" />;
-    }
-  };
 
   return (
     <span
@@ -51,7 +35,7 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
         return RouterServices.history.push(route);
       }}
     >
-      {getAppIcon(tabResource.data)}
+      {WorkspacesApps.getAppIconComponent(tabResource.data)}
       <Typography.Paragraph
         ellipsis={{
           rows: 1,
