@@ -41,22 +41,30 @@ export class TwakeComponent {
       component => component.instance.state,
     );
 
-    this.components.forEach(component => {
-      state === TwakeServiceState.Initialized && component.instance.init();
-      state === TwakeServiceState.Started && component.instance.start();
-      state === TwakeServiceState.Stopped && component.instance.stop();
-    });
+    if (!states.length) {
+      logger.info(`${this.name} does not have children`);
+      _switchServiceToState(this.instance);
+
+      return;
+    }
+
+    this.components.forEach(component => _switchServiceToState(component.instance));
 
     const subscription = combineLatest(states)
       .pipe(filter((value: Array<TwakeServiceState>) => value.every(v => v === state)))
       .subscribe(() => {
         logger.info(`Children of ${this.name} are all in ${state} state`);
         logger.info(this.getStateTree());
-        state === TwakeServiceState.Initialized && this.instance.init();
-        state === TwakeServiceState.Started && this.instance.start();
-        state === TwakeServiceState.Stopped && this.instance.stop();
 
+        _switchServiceToState(this.instance);
         subscription.unsubscribe();
       });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function _switchServiceToState(service: TwakeService<any>) {
+      state === TwakeServiceState.Initialized && service.init();
+      state === TwakeServiceState.Started && service.start();
+      state === TwakeServiceState.Stopped && service.stop();
+    }
   }
 }

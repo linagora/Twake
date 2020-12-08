@@ -41,6 +41,7 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
       this.state.next(TwakeServiceState.Initializing);
       await this.doInit();
       this.state.next(TwakeServiceState.Initialized);
+      logger.info("Service %s is initialized", this.name);
 
       return this;
     } catch (err) {

@@ -7,6 +7,7 @@
     "webserver",
     "websocket",
     "database",
+    "pubsub",
     "realtime",
     "phpnode"
   ],
@@ -56,5 +57,10 @@
       "retries": 10,
       "delay": 200
     }
+  },
+  "pubsub": {
+    "urls": [
+      "amqp://guest:guest@localhost:5672"
+    ]
   }
 }
