@@ -1,35 +1,39 @@
 import { Type } from "class-transformer";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel } from "../../../services/channels/types";
 
-/**
- * Table: channel_members_notification_preferences
- */
+@Entity("channel_members_notification_preferences", {
+  primaryKey: [["user_id"], "company_id", "channel_id"],
+  type: "channel_members_notification_preferences",
+})
 export class ChannelMemberNotificationPreference {
   /**
-   * UUIDv4
-   * Primary key / partition key
+   * Primary key / Partition key
    */
   @Type(() => String)
+  @Column("user_id", "uuid")
+  user_id: string;
+
+  /**
+   * Primary key
+   */
+  @Type(() => String)
+  @Column("company_id", "uuid")
   company_id: string;
 
   /**
-   * UUIDv4
    * Primary key
    */
   @Type(() => String)
+  @Column("channel_id", "uuid")
   channel_id: string;
 
-  /**
-   * UUIDv4
-   * Primary key
-   */
   @Type(() => String)
-  user_id: string;
-
-  @Type(() => String)
+  @Column("preferences", "string")
   preferences: ChannelMemberNotificationLevel = ChannelMemberNotificationLevel.ALL;
 
-  last_read: number;
+  @Column("last_read", "number")
+  last_read = 0;
 }
 
 export type ChannelMemberNotificationPreferencePrimaryKey = Pick<
