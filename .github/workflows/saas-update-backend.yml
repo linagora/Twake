@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy-php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
@@ -31,7 +31,7 @@ jobs:
           tags: "${{ env.DOCKERTAG }}"
 
   deploy-node:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
