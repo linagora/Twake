@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { Connector } from "./connectors";
 import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 
-/**
- * Entity manager
- */
-export default class Manager<Entity> {
-  private toPersist: Entity[] = [];
-  private toRemove: Entity[] = [];
+export default class EntityManager<EntityType extends Record<string, any>> {
+  private toPersist: EntityType[] = [];
+  private toRemove: EntityType[] = [];
 
   constructor(readonly connector: Connector) {}
 
@@ -19,10 +18,12 @@ export default class Manager<Entity> {
 
     // --- Generate ids on primary keys elements (if not defined) ---
     const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
-    const primaryKey = unwrapPrimarykey(entityDefinition);
+    const primaryKey: string[] = unwrapPrimarykey(entityDefinition);
+
     primaryKey.forEach(pk => {
       if (entity[pk] === undefined) {
         const definition = columnsDefinition[pk];
+
         //Create default value
         switch (definition.options.generator || definition.type) {
           case "uuid":
@@ -46,9 +47,10 @@ export default class Manager<Entity> {
     return this;
   }
 
-  public remove(entity: Entity, entityType?: Entity): this {
+  public remove(entity: EntityType, entityType?: EntityType): this {
     if (entityType) {
-      entity = _.merge(new (entityType as any)() as Entity, entity);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      entity = _.merge(new (entityType as any)(), entity);
     }
     if (!entity.constructor.prototype._entity || !entity.constructor.prototype._columns) {
       throw Error("Cannot remove this object: it is not an entity.");
@@ -59,9 +61,11 @@ export default class Manager<Entity> {
     return this;
   }
 
-  public async flush(): Promise<void> {
+  public async flush(): Promise<this> {
     await this.connector.upsert(this.toPersist);
     await this.connector.remove(this.toRemove);
+
+    return this;
   }
 
   public reset(): void {

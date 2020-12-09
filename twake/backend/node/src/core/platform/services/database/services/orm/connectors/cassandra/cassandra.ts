@@ -12,7 +12,7 @@ import {
   cassandraType,
   transformValueFromDbString,
 } from "./typeTransforms";
-import { FindOptions } from "../../repository";
+import { FindOptions } from "../../repository/repository";
 import { ListResult, Pagination } from "../../../../../../framework/api/crud-service";
 import { Paginable } from "../../../../../../framework/api/crud-service";
 

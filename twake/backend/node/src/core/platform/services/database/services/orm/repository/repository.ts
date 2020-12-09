@@ -1,8 +1,8 @@
-import { ListResult, Pagination } from "../../../../../platform/framework/api/crud-service";
-import { Connector } from "./connectors";
-import { getEntityDefinition } from "./utils";
-
-export type RepositoryOptions = {};
+import { ListResult, Pagination } from "../../../../../framework/api/crud-service";
+import { Connector } from "../connectors";
+import Manager from "../manager";
+import { EntityTarget } from "../types";
+import { getEntityDefinition } from "../utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FindFilter = { [key: string]: any };
@@ -12,32 +12,32 @@ export type FindOptions = {
 };
 
 /**
- * Repository manager
+ * Repository to work with entities. Each entity type has its own repository instance.
  */
 export default class Repository<EntityType> {
-  private entityType: EntityType;
+  manager: Manager<EntityType>;
 
   constructor(
     readonly connector: Connector,
     readonly table: string,
-    readonly options: RepositoryOptions = {},
-  ) {}
+    readonly entityType: EntityTarget<EntityType>,
+  ) {
+    this.manager = new Manager<EntityType>(this.connector);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  checkEntityDefinition(entityType: EntityType): boolean {
-    //TODO, check entity definition make sense
+  checkEntityDefinition(): boolean {
+    //TODO, check entity definition make sense from this.entityType
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  async init(entityType: any): Promise<this> {
-    const instance = new (entityType as any)() as EntityType;
+  async init(): Promise<this> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instance = new (this.entityType as any)() as EntityType;
 
-    if (this.checkEntityDefinition(entityType)) {
+    if (this.checkEntityDefinition()) {
       const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
       await this.connector.createTable(entityDefinition, columnsDefinition);
-
-      this.entityType = entityType;
     }
 
     return this;
@@ -61,5 +61,13 @@ export default class Repository<EntityType> {
     }
 
     return (await this.find(filters, options)).getEntities()[0] || null;
+  }
+
+  async save(entity: EntityType): Promise<void> {
+    await (await this.manager.persist(entity).flush()).reset();
+  }
+
+  async remove(entity: EntityType): Promise<void> {
+    await (await this.manager.remove(entity).flush()).reset();
   }
 }
