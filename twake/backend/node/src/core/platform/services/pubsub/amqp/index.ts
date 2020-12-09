@@ -3,7 +3,6 @@ import { AmqpConnectionManager, connect } from "amqp-connection-manager";
 import { logger } from "../../../framework/logger";
 import { AmqpPubsubClient } from "./pubsubclient";
 import { PubsubMessage, PubsubListener, PubsubServiceAPI } from "../api";
-import { AmqpCallbackType } from "./client";
 
 export class RabbitPubSub implements PubsubServiceAPI {
   version: "1";
