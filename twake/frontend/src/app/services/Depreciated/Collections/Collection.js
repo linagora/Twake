@@ -1026,6 +1026,10 @@ export default class Collection extends Observable {
   }
 
   completeObject(updated, front_id) {
+    if (!updated) {
+      return;
+    }
+
     if (!front_id) {
       front_id = updated.front_id;
     }

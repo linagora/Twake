@@ -57,7 +57,8 @@ class Parameters extends \Common\Configuration
                     "host" => "rabbitmq",
                     "port" => 5672,
                     "username" => "admin",
-                    "password" => "admin"
+                    "password" => "admin",
+                    "vhost" => false
                 ]
             ],
             "storage" => [

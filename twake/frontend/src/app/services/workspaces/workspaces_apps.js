@@ -80,6 +80,9 @@ class WorkspacesApps extends Observable {
   }
 
   load(workspace_id, reset_offset, options) {
+    if (!workspace_id) {
+      return;
+    }
     if (!options) {
       options = {};
     }
