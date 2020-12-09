@@ -31,3 +31,20 @@ export interface PubsubEventBus {
    */
   publish(message: PubsubEventMessage): boolean;
 }
+
+export abstract class PubsubServiceSubscription<Service> {
+  protected pubsub: PubsubServiceAPI;
+
+  constructor(protected service: Service) {}
+
+  async subscribe(pubsub: PubsubServiceAPI): Promise<void> {
+    if (!pubsub) {
+      throw new Error("pubsub service it not defined");
+    }
+    this.pubsub = pubsub;
+
+    return this.doSubscribe();
+  }
+
+  abstract doSubscribe(): Promise<void>;
+}
