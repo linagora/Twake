@@ -16,13 +16,13 @@ on:
 
 jobs:
   build-frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       FRONTEND_ENV: ${{secrets.FRONTEND_ENV}}
 
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [12.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
 
   deploy-nginx:
     needs: build-frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
       - name: Set env to develop
@@ -71,7 +71,7 @@ jobs:
 
   deploy-saas:
     needs: deploy-nginx
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/main'
 
     steps:
