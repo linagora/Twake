@@ -11,7 +11,7 @@ import {
 } from "../../entities";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import Repository from "../../../../core/platform/services/database/services/orm/repository";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
 
@@ -25,9 +25,10 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database
-      .getRepository<ChannelMemberNotificationPreference>(TYPE)
-      .init(ChannelMemberNotificationPreference);
+    this.repository = await this.database.getRepository<ChannelMemberNotificationPreference>(
+      TYPE,
+      ChannelMemberNotificationPreference,
+    );
     await this.subscribe(context);
 
     return this;
@@ -47,8 +48,6 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
   async save(
     entity: ChannelMemberNotificationPreference,
   ): Promise<SaveResult<ChannelMemberNotificationPreference>> {
-    const manager = this.database.newManager<ChannelMemberNotificationPreference>();
-
     const pk: ChannelMemberNotificationPreferencePrimaryKey = {
       user_id: entity.user_id,
       company_id: entity.company_id,
@@ -64,7 +63,7 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
 
     preference = _.merge(preference, entity);
 
-    await manager.persist(preference).flush();
+    await this.repository.save(preference);
 
     return new SaveResult(TYPE, preference, OperationType.CREATE);
   }
@@ -78,9 +77,7 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
   async delete(
     pk: ChannelMemberNotificationPreferencePrimaryKey,
   ): Promise<DeleteResult<ChannelMemberNotificationPreference>> {
-    const manager = this.database.newManager();
-
-    await manager.remove(pk, ChannelMemberNotificationPreference).flush();
+    await this.repository.remove(pk as ChannelMemberNotificationPreference);
 
     return new DeleteResult(TYPE, pk as ChannelMemberNotificationPreference, true);
   }

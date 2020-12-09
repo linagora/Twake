@@ -100,12 +100,14 @@ export class NotificationPubsubService extends PubsubServiceSubscription<
       return;
     }
 
+    const preference = merge(new ChannelMemberNotificationPreference(), {
+      channel_id: notification.member.channel_id,
+      company_id: notification.member.company_id,
+      user_id: notification.member.user_id,
+    });
+
     try {
-      await this.service.delete({
-        channel_id: notification.member.channel_id,
-        company_id: notification.member.company_id,
-        user_id: notification.member.user_id,
-      });
+      await this.service.delete(preference);
 
       logger.info("service.notifications.pubsub.event - Notification preference has been deleted");
     } catch (err) {
