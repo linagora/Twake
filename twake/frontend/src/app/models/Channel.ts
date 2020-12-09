@@ -19,6 +19,7 @@ export type ChannelType = {
   archived?: false | true;
   archivation_date?: number; //Timestamp
   user_member?: ChannelMemberType;
+  connectors?: string[];
 };
 
 export type ChannelMemberType = {

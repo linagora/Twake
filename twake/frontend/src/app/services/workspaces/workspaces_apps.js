@@ -7,7 +7,10 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
 import Globals from 'services/Globals.js';
+import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+
 class WorkspacesApps extends Observable {
   constructor() {
     super();
@@ -305,6 +308,30 @@ class WorkspacesApps extends Observable {
       }
     }
     return feather ? Hexagon : 'puzzle-piece';
+  }
+
+  getAppIconComponent(item) {
+    const application = DepreciatedCollections.get('applications').find(
+      item.application_id ? item.application_id : item.id,
+    );
+    const IconType = this.getAppIcon(application, true);
+
+    if (item.simple_name === 'jitsi') {
+      return (
+        <div
+          className="menu-app-icon"
+          style={item.icon_url ? { backgroundImage: 'url(' + item.icon_url + ')' } : {}}
+        />
+      );
+    } else {
+      if (typeof IconType === 'string') {
+        return (
+          <Icon type={IconType} style={{ width: 18, height: 18 }} className="small-right-margin" />
+        );
+      } else {
+        return <IconType size={18} className="small-right-margin" />;
+      }
+    }
   }
 }
 

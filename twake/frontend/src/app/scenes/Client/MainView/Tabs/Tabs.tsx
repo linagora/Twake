@@ -1,5 +1,4 @@
 import React from 'react';
-import Languages from 'services/languages/languages';
 import { TabResource } from 'app/models/Tab';
 import { Button, Row, Tabs } from 'antd';
 
@@ -7,7 +6,8 @@ import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'services/Modal/ModalManager';
 import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-import { MessageCircle, Plus } from 'react-feather';
+import { Plus } from 'react-feather';
+import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/user.js';
 
@@ -27,23 +27,7 @@ export default (): JSX.Element => {
     <Row align="middle" className="main-view-tabs">
       {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
-          <Tabs.TabPane
-            tab={
-              <span
-                className="align-items-center"
-                onClick={() => {
-                  const route: string = RouterServices.generateRouteFromState({
-                    tabId: '',
-                  });
-                  return RouterServices.history.push(route);
-                }}
-              >
-                <MessageCircle size={14} className="small-right-margin" />
-                {Languages.t('scenes.app.mainview.discussion')}
-              </span>
-            }
-            key="default"
-          />
+          <Tabs.TabPane tab={<DefaultChannelTab />} key="default" />
           {tabsList.map((tab: TabResource) => {
             return (
               tab.data.id && (
