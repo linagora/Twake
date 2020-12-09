@@ -188,7 +188,7 @@ export class CassandraConnector extends AbstractConnector<
       return false;
     }
 
-    let partitionKeyPart = primaryKey.shift();
+    const partitionKeyPart = primaryKey.shift();
     const partitionKey: string[] =
       typeof partitionKeyPart === "string" ? [partitionKeyPart] : partitionKeyPart;
     const clusteringKeys: string[] = primaryKey as string[];
@@ -264,7 +264,7 @@ export class CassandraConnector extends AbstractConnector<
         const primaryKey = unwrapPrimarykey(entityDefinition);
 
         //Set updated content
-        let set = Object.keys(columnsDefinition)
+        const set = Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
           .filter(key => entity[columnsDefinition[key].nodename] !== undefined)
           .map(key => [

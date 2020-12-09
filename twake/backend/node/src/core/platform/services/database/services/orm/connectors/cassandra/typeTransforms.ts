@@ -12,8 +12,11 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}) => {
-  if (type === "uuid" || type === "timeuuid" || type === "number") {
+export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+  if (type === "number") {
+    return `${v}`;
+  }
+  if (type === "uuid" || type === "timeuuid") {
     v = (v || "").replace(/[^a-zA-Z0-9-]/g, "");
     return `${v}`;
   }
@@ -32,6 +35,6 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   return `'${v || ""}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}) => {
+export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
   return v;
 };

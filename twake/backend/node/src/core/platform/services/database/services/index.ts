@@ -9,10 +9,13 @@ import { MongoConnectionOptions } from "./orm/connectors/mongodb/mongodb";
 export default class DatabaseService implements DatabaseServiceAPI {
   version = "1";
   private connector: Connector;
-  private manager: Manager;
-  private repositories: { [table: string]: Repository<any> } = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private repositories: Map<string, Repository<any>>;
 
-  constructor(readonly type: DatabaseType, private options: ConnectionOptions) {}
+  constructor(readonly type: DatabaseType, private options: ConnectionOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.repositories = new Map<string, Repository<any>>();
+  }
 
   getConnector(): Connector {
     if (this.connector) {
@@ -24,18 +27,16 @@ export default class DatabaseService implements DatabaseServiceAPI {
     return this.connector;
   }
 
-  newManager(): Manager {
-    return new Manager(this.connector);
+  newManager<T>(): Manager<T> {
+    return new Manager<T>(this.connector);
   }
 
   getRepository<Table>(table: string, options?: RepositoryOptions): Repository<Table> {
-    if (this.repositories[table]) {
-      return this.repositories[table];
+    if (!this.repositories.has(table)) {
+      this.repositories.set(table, new Repository<Table>(this.connector, table, options));
     }
 
-    this.repositories[table] = new Repository<Table>(this.connector, table, options);
-
-    return this.repositories[table];
+    return this.repositories.get(table);
   }
 }
 

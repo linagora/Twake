@@ -6,13 +6,13 @@ import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 /**
  * Entity manager
  */
-export default class Manager {
-  private toPersist: any[] = [];
-  private toRemove: any[] = [];
+export default class Manager<Entity> {
+  private toPersist: Entity[] = [];
+  private toRemove: Entity[] = [];
 
   constructor(readonly connector: Connector) {}
 
-  public persist(entity: any) {
+  public persist(entity: any): this {
     if (!entity.constructor.prototype._entity || !entity.constructor.prototype._columns) {
       throw Error("Cannot persist this object: it is not an entity.");
     }
@@ -42,25 +42,29 @@ export default class Manager {
 
     this.toPersist = this.toPersist.filter(e => e !== entity);
     this.toPersist.push(_.cloneDeep(entity));
+
+    return this;
   }
 
-  public remove(entity: any, entityType?: any) {
+  public remove(entity: Entity, entityType?: Entity): this {
     if (entityType) {
-      entity = _.merge(new (entityType as any)(), entity);
+      entity = _.merge(new (entityType as any)() as Entity, entity);
     }
     if (!entity.constructor.prototype._entity || !entity.constructor.prototype._columns) {
       throw Error("Cannot remove this object: it is not an entity.");
     }
     this.toRemove = this.toRemove.filter(e => e !== entity);
     this.toRemove.push(_.cloneDeep(entity));
+
+    return this;
   }
 
-  public async flush() {
+  public async flush(): Promise<void> {
     await this.connector.upsert(this.toPersist);
     await this.connector.remove(this.toRemove);
   }
 
-  public reset() {
+  public reset(): void {
     this.toPersist = [];
     this.toRemove = [];
   }

@@ -4,6 +4,7 @@ import { getEntityDefinition } from "./utils";
 
 export type RepositoryOptions = {};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FindFilter = { [key: string]: any };
 
 export type FindOptions = {
@@ -22,20 +23,21 @@ export default class Repository<EntityType> {
     readonly options: RepositoryOptions = {},
   ) {}
 
-  checkEntityDefinition(entityType: EntityType) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  checkEntityDefinition(entityType: EntityType): boolean {
     //TODO, check entity definition make sense
     return true;
   }
 
-  async init(entityType: EntityType): Promise<this> {
-    const instance = new (entityType as any)();
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  async init(entityType: any): Promise<this> {
+    const instance = new (entityType as any)() as EntityType;
 
     if (this.checkEntityDefinition(entityType)) {
       const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
       await this.connector.createTable(entityDefinition, columnsDefinition);
 
       this.entityType = entityType;
-      console.log("initialize ", this.table, entityType);
     }
 
     return this;
