@@ -1,35 +1,34 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import _ from "lodash";
 import {
-  CreateResult,
-  UpdateResult,
-  SaveResult,
   DeleteResult,
-  Paginable,
   ListResult,
+  SaveResult,
+  OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
-import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import { NotificationExecutionContext } from "../../types";
 import {
   ChannelMemberNotificationPreference,
   ChannelMemberNotificationPreferencePrimaryKey,
 } from "../../entities";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import { ChannelMemberPreferencesServiceAPI } from "../../api";
+import Repository from "../../../../core/platform/services/database/services/orm/repository";
+import { TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
-import { logger, TwakeContext } from "../../../../core/platform/framework";
 
-export class Service implements ChannelMemberPreferencesServiceAPI {
+const TYPE = "channel_members_notification_preferences";
+
+export class ChannelMemberPreferencesService implements ChannelMemberPreferencesServiceAPI {
   version: "1";
-  private pubsub: NotificationPubsubService;
+  repository: Repository<ChannelMemberNotificationPreference>;
+  pubsub: NotificationPubsubService;
 
-  constructor(private service: ChannelMemberPreferencesServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI) {}
 
   async init(context: TwakeContext): Promise<this> {
-    try {
-      this.service.init && (await this.service.init());
-      await this.subscribe(context);
-    } catch (err) {
-      logger.warn({ err }, "Error while initializing the UserNotificationBadgeService");
-    }
+    this.repository = await this.database
+      .getRepository<ChannelMemberNotificationPreference>(TYPE)
+      .init(ChannelMemberNotificationPreference);
+    await this.subscribe(context);
 
     return this;
   }
@@ -45,48 +44,48 @@ export class Service implements ChannelMemberPreferencesServiceAPI {
     return this;
   }
 
-  create(
-    item: ChannelMemberNotificationPreference,
-    context?: NotificationExecutionContext,
-  ): Promise<CreateResult<ChannelMemberNotificationPreference>> {
-    throw new Error("Method not implemented.");
-  }
-
-  get(
-    pk: ChannelMemberNotificationPreferencePrimaryKey,
-    context?: NotificationExecutionContext,
-  ): Promise<ChannelMemberNotificationPreference> {
-    throw new Error("Method not implemented.");
-  }
-
-  update(
-    pk: ChannelMemberNotificationPreferencePrimaryKey,
-    item: ChannelMemberNotificationPreference,
-    context?: NotificationExecutionContext,
-  ): Promise<UpdateResult<ChannelMemberNotificationPreference>> {
-    throw new Error("Method not implemented.");
-  }
-
-  save<SaveOptions>(
-    item: ChannelMemberNotificationPreference,
-    options: SaveOptions,
-    context: NotificationExecutionContext,
+  async save(
+    entity: ChannelMemberNotificationPreference,
   ): Promise<SaveResult<ChannelMemberNotificationPreference>> {
-    throw new Error("Method not implemented.");
+    const manager = this.database.newManager<ChannelMemberNotificationPreference>();
+
+    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
+      user_id: entity.user_id,
+      company_id: entity.company_id,
+      channel_id: entity.channel_id,
+    };
+
+    let preference = await this.repository.findOne(pk);
+
+    if (!preference) {
+      preference = new ChannelMemberNotificationPreference();
+      preference = _.merge(entity, pk);
+    }
+
+    preference = _.merge(preference, entity);
+
+    await manager.persist(preference).flush();
+
+    return new SaveResult(TYPE, preference, OperationType.CREATE);
   }
 
-  delete(
+  async get(
     pk: ChannelMemberNotificationPreferencePrimaryKey,
-    context?: NotificationExecutionContext,
-  ): Promise<DeleteResult<ChannelMemberNotificationPreference>> {
-    throw new Error("Method not implemented.");
+  ): Promise<ChannelMemberNotificationPreference> {
+    return await this.repository.findOne(pk);
   }
 
-  list<ListOptions>(
-    pagination: Paginable,
-    options?: ListOptions,
-    context?: NotificationExecutionContext,
-  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    return this.service.list(pagination, options, context);
+  async delete(
+    pk: ChannelMemberNotificationPreferencePrimaryKey,
+  ): Promise<DeleteResult<ChannelMemberNotificationPreference>> {
+    const manager = this.database.newManager();
+
+    await manager.remove(pk, ChannelMemberNotificationPreference).flush();
+
+    return new DeleteResult(TYPE, pk as ChannelMemberNotificationPreference, true);
+  }
+
+  list(): Promise<ListResult<ChannelMemberNotificationPreference>> {
+    throw new Error("Not implemented");
   }
 }
