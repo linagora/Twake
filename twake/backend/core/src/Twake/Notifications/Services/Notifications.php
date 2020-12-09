@@ -81,12 +81,13 @@ class Notifications
         $users = null,
         $code = null,
         $text = null,
-        $shortcut = null,
+        $message = null,
         $additionnal_data = Array(),
         $type = Array(),
         $save_notification = true
     )
     {
+        $message_id = $message ? $message->getId() : "";
 
         $text = trim($text);
         $text = preg_replace("/ +/", " ", $text);
@@ -126,21 +127,29 @@ class Notifications
             "application_id" => ($application != null ? $application->getId() : null),
             "sender_application_id" => ($sender_application != null ? $sender_application->getId() : null),
             "sender_user_id" => ($sender_user != null ? $sender_user->getId() : null),
+
+            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
+            "message_id" => $message_id,
+            "thread_id" => $message ? $message->getParentMessageId() : "",
+            
             "title" => $title,
             "original_text" => $text,
             "text" => $text,
             "code" => $code,
             "type" => $type,
-            "shortcut" => $shortcut,
+            "shortcut" => $message_id,
             "additionnal_data" => $additionnal_data
         );
 
         $device_minimal_data = Array(
-            "shortcut" => $shortcut,
+            "shortcut" => $message_id,
+            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
-            "channel_id" => ($channel != null ? $channel->getId() : null)
+            "channel_id" => ($channel != null ? $channel->getId() : null),
+            "message_id" => $message_id,
+            "thread_id" => $message ? $message->getParentMessageId() : "",
         );
 
         $toPush = true;
@@ -230,8 +239,8 @@ class Notifications
             }
 
             $n = new Notification($application ? $application->getId() : "", $workspace ? $workspace->getId() : "", $channel ? $channel->getId() : "", $user);
-            if ($shortcut) {
-                $n->setShortcut($shortcut);
+            if ($message_id) {
+                $n->setShortcut($message_id);
             }
             if ($additionnal_data) {
                 $n->setData($additionnal_data);
