@@ -69,15 +69,6 @@ class Login extends Observable {
       }
     });
 
-    var logout =
-      WindowState.findGetParameter('logout') !== undefined
-        ? WindowState.findGetParameter('logout') === true
-        : false;
-    if (logout) {
-      this.logout(true);
-      return RouterServices.history.push(RouterServices.pathnames.LOGIN);
-    }
-
     var subscribe =
       WindowState.findGetParameter('subscribe') !== undefined
         ? WindowState.findGetParameter('subscribe') === true
@@ -118,7 +109,11 @@ class Login extends Observable {
       this.logout();
     }
 
-    if (cancelAutoLogin) {
+    var autologin =
+      WindowState.findGetParameter('auto') !== undefined
+        ? WindowState.findGetParameter('auto') === true
+        : false;
+    if (cancelAutoLogin && !autologin) {
       this.firstInit = true;
       this.clearLogin();
       this.setPage('logged_out');
@@ -581,22 +576,24 @@ class Login extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-    Api.post('users/account/addmailverify', { code: code, token: this.addmail_token }, function (
-      res,
-    ) {
-      that.loading = false;
-      if (res.errors.length > 0) {
-        that.error_code = true;
-        that.notify();
-      } else {
-        var user = DepreciatedCollections.get('users').find(that.currentUserId);
-        user.mails.push({ email: mail, main: false, id: res.data.idMail });
-        DepreciatedCollections.get('users').updateObject(user);
-        that.error_code = false;
-        cb(thot);
-        that.notify();
-      }
-    });
+    Api.post(
+      'users/account/addmailverify',
+      { code: code, token: this.addmail_token },
+      function (res) {
+        that.loading = false;
+        if (res.errors.length > 0) {
+          that.error_code = true;
+          that.notify();
+        } else {
+          var user = DepreciatedCollections.get('users').find(that.currentUserId);
+          user.mails.push({ email: mail, main: false, id: res.data.idMail });
+          DepreciatedCollections.get('users').updateObject(user);
+          that.error_code = false;
+          cb(thot);
+          that.notify();
+        }
+      },
+    );
   }
 }
 
