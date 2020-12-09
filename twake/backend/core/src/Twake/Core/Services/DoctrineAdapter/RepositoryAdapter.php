@@ -201,7 +201,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         if (is_object($value)) {
                             $value = $value->getId();
                         }
-                        $uuidType->convertToDatabaseValue($value, $this->_em->getConnection()->getDatabasePlatform());
+                        $value = $uuidType->convertToDatabaseValue($value, $this->_em->getConnection()->getDatabasePlatform());
                         $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
                     } else if (in_array($filter, $mapping_twake_text)) {
                         /** \Doctrine\DBAL\Types\Type @var $encryptedStringType */

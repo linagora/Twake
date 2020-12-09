@@ -5,9 +5,9 @@ import config from "../../../../config";
 
 type JwtType = {
   sub: string;
-  exp: number;
-  refresh_exp: number;
-  updated_at: number;
+  nbf: number;
+  refresh_nbf: number;
+  iat: number;
   org: {
     [companyId: string]: {
       role: string; //Not implemented

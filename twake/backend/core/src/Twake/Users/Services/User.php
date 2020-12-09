@@ -277,19 +277,19 @@ class User
         }
         $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
         $payload = [
-            "exp" => $expiration,
+            "nbf" => $expiration,
             "type" => "access",
-            "updated_at" => intval(date("U")),
+            "iat" => intval(date("U")),
             "sub" => $user->getId(),
-            "org" => $orgs
+            "org" => $orgs,
         ];
         $jwt = JWT::encode($payload, $key);
 
         $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
         $payload = [
-            "exp" => $refreshExpiration,
+            "nbf" => $refreshExpiration,
             "type" => "refresh",
-            "updated_at" => intval(date("U")),
+            "iat" => intval(date("U")),
             "sub" => $user->getId()
         ];
         $jwt_refresh = JWT::encode($payload, $key);
