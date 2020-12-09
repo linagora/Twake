@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Col } from 'antd';
 
 import { ChannelType } from 'app/models/Channel';
-import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 
 type Props = {
   channel: ChannelType;
 };
 
 export default (props: Props) => {
-  useChannelListener(props.channel.direct_channel_members || []);
-  const [avatar, name] = getChannelParts({ usersIds: props.channel.direct_channel_members || [] });
+  useUsersListener(props.channel.direct_channel_members || []);
+  const { avatar, name } = getUserParts({
+    usersIds: props.channel.direct_channel_members || [],
+  });
 
   return (
     <Col>

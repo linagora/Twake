@@ -1,12 +1,20 @@
 import React, { FC, useState } from 'react';
-import Languages from 'services/languages/languages.js';
-import UserListManager from 'components/UserListManager/UserListManager';
-import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
-import RouterServices from 'app/services/RouterService';
-import { ChannelMemberResource } from 'app/models/Channel';
-import Collections from 'services/CollectionsReact/Collections';
+import { Typography, Input, Row } from 'antd';
+import { Search } from 'react-feather';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import { Typography, Button } from 'antd';
+import { ChannelMemberResource } from 'app/models/Channel';
+import { UserType } from 'app/models/User';
+
+import Languages from 'services/languages/languages.js';
+import Collections from 'services/CollectionsReact/Collections';
+import Strings from 'services/utils/strings.js';
+import UsersService from 'services/user/user.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+
+import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
+
+import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
 
 type Props = {
   onEdit?: any;
@@ -20,21 +28,26 @@ type Props = {
 const { Title } = Typography;
 
 const ChannelMembersEditor: FC<Props> = props => {
-  const [memberList, setMemberList] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
+  const [memberList, setMemberList] = useState<UserType[]>([]);
+  const collectionPath: string = `/channels/v1/companies/${props.companyId}/workspaces/${props.workspaceId}/channels/${props.channelId}/members/`;
+  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+  const members = channelMembersCollection.useWatcher({});
 
-  const addAllUsers = async () => {
-    const collectionPath: string = `/channels/v1/companies/${props.companyId}/workspaces/${props.workspaceId}/channels/${props.channelId}/members/`;
-    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+  const membersIds = members.map(member => member.data.user_id || '');
 
-    memberList.map(async (id: string) => {
-      console.log(collectionPath);
-      await channelMembersCollection.upsert(
-        new ChannelMemberResource({
-          user_id: id,
-          type: 'member', // "member" | "guest" | "bot",
-        }),
-      );
-    });
+  const onSearchMembers = (text: string): any => {
+    setSearch(text);
+    return UsersService.search(
+      Strings.removeAccents(text),
+      {
+        scope: 'group',
+        workspace_id: Workspaces.currentWorkspaceId,
+        group_id: Workspaces.currentGroupId,
+      },
+      (res: UserType[]) =>
+        setMemberList(res.filter(user => membersIds.indexOf(user.id || '') < 0, membersIds)),
+    );
   };
 
   return (
@@ -45,44 +58,42 @@ const ChannelMembersEditor: FC<Props> = props => {
         </Title>
       }
       onClose={() => props.onClose()}
-      noScrollBar={false}
-      footer={
-        <Button
-          className="small"
-          block={true}
-          type="primary"
-          style={{
-            width: 'auto',
-            float: 'right',
-          }}
-          onClick={() => {
-            addAllUsers();
-            return props.onClose();
-          }}
-          disabled={!memberList.length}
-        >
-          {Languages.t('general.add', 'Add')}
-        </Button>
-      }
     >
-      <div
-        className="x-margin"
-        style={{
-          minHeight: '32px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-        }}
-      >
-        <UserListManager
-          users={[]}
-          canRemoveMyself
-          noPlaceholder
-          scope="group"
-          autoFocus
-          onUpdate={(array: string[]) => setMemberList(array)}
+      <Row className="small-bottom-margin x-margin">
+        <Input
+          size={'large'}
+          value={search}
+          suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
+          placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchMembers(e.target.value)}
         />
-      </div>
+      </Row>
+      <PerfectScrollbar
+        style={{ height: '400px' }}
+        component="div"
+        options={{ suppressScrollX: true, suppressScrollY: false }}
+      >
+        <div className="x-margin bottom-margin">
+          {!search.length && (
+            <div className="smalltext" style={{ padding: '32px', textAlign: 'center' }}>
+              {Languages.t('components.searchpopup.enter_member_name')}
+            </div>
+          )}
+          {!!search.length && !memberList.length && (
+            <div className="smalltext" style={{ padding: '32px', textAlign: 'center' }}>
+              {Languages.t('components.workspace_picker.modal_no_result')}
+            </div>
+          )}
+          {memberList.map(member => (
+            <MemberChannelRow
+              key={member.id}
+              userId={member.id || ''}
+              collection={channelMembersCollection}
+              inAddition={true}
+            />
+          ))}
+        </div>
+      </PerfectScrollbar>
     </ObjectModal>
   );
 };

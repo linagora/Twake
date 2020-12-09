@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Avatar, Badge } from 'antd';
 import { User } from 'react-feather';
 
+import { UserType } from 'app/models/User';
 import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/user.js';
 
-export const useChannelListener = (usersIds: string[]) => {
+export const useUsersListener = (usersIds: string[]) => {
   const channelMembers = (usersIds || []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
   );
@@ -28,12 +29,12 @@ export const useChannelListener = (usersIds: string[]) => {
   OldCollections.get('users').useListener(useState, channelMembers);
 };
 
-export const getChannelParts = (props: {
+export const getUserParts = (props: {
   usersIds: string[];
   keepMyself?: boolean;
   max?: number;
   size?: number;
-}): [JSX.Element, string] => {
+}): { avatar: JSX.Element; name: string; users: UserType[] } => {
   let channelMembers = (props.usersIds || []).filter(
     e =>
       props.keepMyself ||
@@ -47,7 +48,7 @@ export const getChannelParts = (props: {
   );
   let channelName: string[] = [];
 
-  let users: { id: string; lastname: string; thumbnail: string }[] = [];
+  let users: UserType[] = [];
 
   channelMembers?.map(userId => users.push(OldCollections.get('users').find(userId)));
 
@@ -87,5 +88,5 @@ export const getChannelParts = (props: {
     );
   }
 
-  return [avatar, channelName.join(', ')];
+  return { avatar, name: channelName.join(', '), users };
 };

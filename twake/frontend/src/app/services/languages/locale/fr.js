@@ -1838,6 +1838,8 @@ export default {
   'components.searchpopup.all': 'Défaut',
   'components.workspace.calendar.invalid': 'Invalide',
   'components.searchpopup.enter_text': 'Entrez du texte à chercher dans Twake.',
+  'components.searchpopup.enter_member_name':
+    "Entrez le nom d'utilisateur que vous voulez ajouter.",
   'components.searchpopup.loading': 'Chargement de plus de résultats',
   'components.searchpopup.filter_ws': 'Filtrer les espaces de travail',
   'components.searchpopup.tags': 'Tags',
