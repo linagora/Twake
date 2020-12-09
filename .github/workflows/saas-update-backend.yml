@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy-php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
@@ -28,24 +28,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
           buildoptions: "-t twaketech/twake-php -f docker/twake-php/Dockerfile"
-          tags: "${{ env.DOCKERTAG }}"
-
-  deploy-websockets:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set env to develop
-        if: endsWith(github.ref, '/develop')
-        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV'
-      - name: Set env to production
-        if: endsWith(github.ref, '/main')
-        run: 'echo "DOCKERTAG=latest" >> $GITHUB_ENV'
-      - uses: actions/checkout@v2
-      - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: twaketech/twake-websockets
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          workdir: twake
-          buildoptions: "-t twaketech/twake-websockets -f docker/twake-websockets/Dockerfile"
           tags: "${{ env.DOCKERTAG }}"

@@ -8,19 +8,13 @@ on:
 
 jobs:
   build-nginx:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && docker build -t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile .
 
   build-php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && docker build -t twaketech/twake-php -f docker/twake-php/Dockerfile .
-
-  build-websockets:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: cd twake && docker build -t twaketech/twake-websockets -f docker/twake-websockets/Dockerfile .
