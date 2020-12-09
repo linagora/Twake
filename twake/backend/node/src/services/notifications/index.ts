@@ -4,8 +4,6 @@ import { NotificationServiceAPI } from "./api";
 import { getService } from "./services";
 import web from "./web/index";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
-import { NotificationPubsubService } from "./pubsub";
 
 @Prefix("/internal/services/notifications/v1")
 @Consumes(["webserver", "database"])
@@ -13,7 +11,6 @@ export default class NotificationService extends TwakeService<NotificationServic
   version = "1";
   name = "notifications";
   service: NotificationServiceAPI;
-  pubsub: NotificationPubsubService;
 
   api(): NotificationServiceAPI {
     return this.service;
@@ -24,22 +21,13 @@ export default class NotificationService extends TwakeService<NotificationServic
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
 
     this.service = getService(database);
-    this.service.init && (await this.service.init());
+    console.log(this.context);
+    await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
       next();
     });
-
-    return this;
-  }
-
-  public async doStart(): Promise<this> {
-    this.pubsub = new NotificationPubsubService(
-      this.service,
-      this.context.getProvider<PubsubServiceAPI>("pubsub"),
-    );
-    this.pubsub.subscribe();
 
     return this;
   }

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { ChannelNotificationPreferencesType } from "../types";
+import { ChannelMemberNotificationLevel } from "../../../services/channels/types";
 
 /**
  * Table: channel_members_notification_preferences
@@ -27,7 +27,7 @@ export class ChannelMemberNotificationPreference {
   user_id: string;
 
   @Type(() => String)
-  preferences: ChannelNotificationPreferencesType = ChannelNotificationPreferencesType.ALL;
+  preferences: ChannelMemberNotificationLevel = ChannelMemberNotificationLevel.ALL;
 
   last_read: number;
 }
