@@ -107,7 +107,8 @@ Authorization: Bearer {{authToken}}
 
 {
   "resource": {
-    "favorite": false,
+    "favorite": true,
+    "notification_level": "none",
     "hello": 1
   }
 }
