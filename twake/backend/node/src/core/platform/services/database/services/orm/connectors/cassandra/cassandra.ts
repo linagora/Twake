@@ -184,7 +184,7 @@ export class CassandraConnector extends AbstractConnector<
     const primaryKey = entity.options.primaryKey || [];
 
     if (primaryKey.length === 0) {
-      logger.error("Primary key was not defined for tabe " + entity.name);
+      logger.error("Primary key was not defined for table " + entity.name);
       return false;
     }
 
@@ -193,7 +193,9 @@ export class CassandraConnector extends AbstractConnector<
       typeof partitionKeyPart === "string" ? [partitionKeyPart] : partitionKeyPart;
     const clusteringKeys: string[] = primaryKey as string[];
     if ([...partitionKey, ...clusteringKeys].some(key => columns[key] === undefined)) {
-      logger.error("One primary key item doesn't exists in entity columns for tabe " + entity.name);
+      logger.error(
+        "One primary key item doesn't exists in entity columns for table " + entity.name,
+      );
       return false;
     }
 
@@ -242,12 +244,12 @@ export class CassandraConnector extends AbstractConnector<
 
     // --- Write table --- //
     try {
-      logger.debug(`service.channel.createTable - Creating table ${entity.name} : ${query}`);
+      logger.debug(`service.database.orm.createTable - Creating table ${entity.name} : ${query}`);
       await this.client.execute(query);
     } catch (err) {
       logger.warn(
         { err },
-        `service.channel.createTable creation error for table ${entity.name} : ${err.message}`,
+        `service.database.orm.createTable - creation error for table ${entity.name} : ${err.message}`,
       );
       result = false;
     }
