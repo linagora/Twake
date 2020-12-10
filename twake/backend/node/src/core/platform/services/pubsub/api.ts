@@ -1,35 +1,34 @@
 import { TwakeServiceProvider } from "../../framework";
 
-export interface PubsubMessage {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+export interface PubsubMessage<T> {
+  data: T;
 }
 
-export interface PubsubEventMessage extends PubsubMessage {
+export interface PubsubEventMessage<T> extends PubsubMessage<T> {
   topic: string;
 }
 
-export interface IncomingPubsubMessage extends PubsubMessage {
+export interface IncomingPubsubMessage<T> extends PubsubMessage<T> {
   ack: () => void;
 }
 
-export type PubsubListener = (message: IncomingPubsubMessage) => void;
+export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;
 
 export interface PubsubServiceAPI extends TwakeServiceProvider {
-  publish(topic: string, message: PubsubMessage): Promise<void>;
-  subscribe(topic: string, listener: PubsubListener): Promise<void>;
+  publish<T>(topic: string, message: PubsubMessage<T>): Promise<void>;
+  subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void>;
 }
 
 export interface PubsubEventBus {
   /**
    * Subscribes to events
    */
-  subscribe(listener: (message: PubsubEventMessage) => void): this;
+  subscribe<T>(listener: (message: PubsubEventMessage<T>) => void): this;
 
   /**
    * Publish message in event bus
    */
-  publish(message: PubsubEventMessage): boolean;
+  publish<T>(message: PubsubEventMessage<T>): boolean;
 }
 
 export abstract class PubsubServiceSubscription<Service> {

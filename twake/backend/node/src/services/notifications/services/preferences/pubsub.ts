@@ -8,6 +8,8 @@ import { ChannelMemberPreferencesServiceAPI } from "../../api";
 import { ChannelMemberNotificationPreference } from "../../entities";
 import { merge } from "lodash";
 
+type PreferencesNotification = { channel: Channel; member: ChannelMember };
+
 export class NotificationPubsubService extends PubsubServiceSubscription<
   ChannelMemberPreferencesServiceAPI
 > {
@@ -20,11 +22,11 @@ export class NotificationPubsubService extends PubsubServiceSubscription<
     this.pubsub.subscribe("channel:member:deleted", this.onDeleted.bind(this));
   }
 
-  async onCreated(message: IncomingPubsubMessage): Promise<void> {
+  async onCreated(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
     logger.debug(
       "service.notifications.pubsub.event - Member as been created, creating notification preference",
     );
-    const notification: { channel: Channel; member: ChannelMember } = message.data;
+    const notification = message.data;
 
     if (!notification.channel || !notification.member) {
       logger.warn(
@@ -56,7 +58,7 @@ export class NotificationPubsubService extends PubsubServiceSubscription<
     }
   }
 
-  async onUpdated(message: IncomingPubsubMessage): Promise<void> {
+  async onUpdated(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
     logger.info("service.notifications.pubsub.event - Notification preference has been updated");
     const notification: { channel: Channel; member: ChannelMember } = message.data;
 
@@ -88,7 +90,7 @@ export class NotificationPubsubService extends PubsubServiceSubscription<
     }
   }
 
-  async onDeleted(message: IncomingPubsubMessage): Promise<void> {
+  async onDeleted(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
     logger.info("service.notifications.pubsub.event - Notification preference has been deleted");
     const notification: { channel: Channel; member: ChannelMember } = message.data;
 

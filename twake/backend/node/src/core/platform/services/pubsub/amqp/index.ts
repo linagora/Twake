@@ -9,11 +9,13 @@ export class RabbitPubSub implements PubsubServiceAPI {
 
   constructor(private client: AmqpPubsubClient) {}
 
-  async publish(topic: string, message: PubsubMessage): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async publish(topic: string, message: PubsubMessage<any>): Promise<void> {
     await this.client.publish(topic, message.data);
   }
 
-  subscribe(topic: string, listener: PubsubListener): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscribe(topic: string, listener: PubsubListener<any>): Promise<void> {
     return this.client.subscribe(topic, (err, message, originalMessage) => {
       const data = err ? originalMessage : message;
 
