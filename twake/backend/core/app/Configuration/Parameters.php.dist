@@ -207,13 +207,16 @@ class Parameters extends \Common\Configuration
                       "firstname_key" => ''
                   ],
                   "console" => [
-                    "use" => false,
-                    "provider" => "https://console.twake.app/",
-                    "public_key" => "",
+                    "use" => false, //Set to true to enable console
+                    
+                    "provider" => "https://console.twake.app/", //Api endpoint
+                    "public_key" => "", //A public key to verify signature of hook events
                     "credentials" => [
-                      "key" => "twake",
-                      "secret" => "secret"
+                      "key" => "twake", //Twake product api key for requests to console
+                      "secret" => "secret" //Twake product api secret for requests to console
                     ],
+
+                    //All parameters related to the openid provider
                     "openid" => [
                       "provider_uri" => 'https://auth0.com',
                       "client_id" => '',
