@@ -209,6 +209,7 @@ class Parameters extends \Common\Configuration
                   "console" => [
                     "use" => false,
                     "provider" => "https://console.twake.app/",
+                    "public_key" => "",
                     "credentials" => [
                       "key" => "twake",
                       "secret" => "secret"
