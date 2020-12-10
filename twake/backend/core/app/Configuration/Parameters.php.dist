@@ -205,6 +205,27 @@ class Parameters extends \Common\Configuration
                       "email_key" => '',
                       "lastname_key" => '',
                       "firstname_key" => ''
+                  ],
+                  "console" => [
+                    "use" => false,
+                    "provider" => "https://console.twake.app/",
+                    "credentials" => [
+                      "key" => "twake",
+                      "secret" => "secret"
+                    ],
+                    "openid" => [
+                      "provider_uri" => 'https://auth0.com',
+                      "client_id" => '',
+                      "client_secret" => '',
+                      //"disable_logout_redirect" => false
+                      "provider_config" => [
+                        //token_endpoint
+                        //token_endpoint_auth_methods_supported
+                        //userinfo_endpoint
+                        //end_session_endpoint
+                        //authorization_endpoint
+                      ]
+                    ]
                   ]
               ]
             ],
