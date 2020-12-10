@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
 
 export const cassandraType = {
@@ -17,6 +18,9 @@ export const cassandraType = {
 
 export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
   if (type === "number") {
+    if (!isNumber(v)) {
+      throw new Error(`'${v}' is not a ${type}`);
+    }
     return `${v}`;
   }
   if (type === "uuid" || type === "timeuuid") {
@@ -24,6 +28,9 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
     return `${v}`;
   }
   if (type === "boolean") {
+    if (!isBoolean(v)) {
+      throw new Error(`'${v}' is not a ${type}`);
+    }
     return `${!!v}`;
   }
   if (type === "encrypted" || type === "json") {
