@@ -46,15 +46,25 @@ class Routing extends BaseRouting
         // Get and search
         "all/get" => ["handler" => "Users:getById", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "all/search" => ["handler" => "Users:search", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        
         // CAS
         "cas/login" => ["handler" => "Adapters/CAS:login", "methods" => ["GET"]],
         "cas/verify" => ["handler" => "Adapters/CAS:verify", "methods" => ["GET"]],
         "cas/logout" => ["handler" => "Adapters/CAS:logout", "methods" => ["GET"]],
         "cas/logout_success" => ["handler" => "Adapters/CAS:logoutSuccess", "methods" => ["GET"]],
+        
+        // OpenID
         "openid/logout" => ["handler" => "Adapters/OpenID:logout", "methods" => ["GET"]],
         "openid/logout_success" => ["handler" => "Adapters/OpenID:logoutSuccess", "methods" => ["GET"]],
         "openid/{method?}" => ["handler" => "Adapters/OpenID:index", "methods" => ["GET", "POST"]],
         "openid" => ["handler" => "Adapters/OpenID:index", "methods" => ["GET", "POST"]],
+
+        // Console
+        "console/hook" => ["handler" => "Adapters/Console:hook", "methods" => ["POST", "PUT", "DELETE"]],
+        "console/openid/logout" => ["handler" => "Adapters/Console:logout", "methods" => ["GET"]],
+        "console/openid/logout_success" => ["handler" => "Adapters/Console:logoutSuccess", "methods" => ["GET"]],
+        "console/openid/{method?}" => ["handler" => "Adapters/Console:index", "methods" => ["GET", "POST"]],
+        "console/openid" => ["handler" => "Adapters/Console:index", "methods" => ["GET", "POST"]],
     ];
 
 }
