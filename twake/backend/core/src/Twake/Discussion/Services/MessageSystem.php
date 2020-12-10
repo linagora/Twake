@@ -465,6 +465,8 @@ class MessageSystem
             $this->em->remove($message);
         } else {
 
+            $this->sendToNode($message);
+
             //TODO channel is now never defined so never pass here
             if($channel){
 
@@ -542,6 +544,8 @@ class MessageSystem
                 }
             }
 
+
+
         }
 
         $array = $message->getAsArray();
@@ -554,6 +558,39 @@ class MessageSystem
             }
         }
         return $array;
+    }
+
+    public function sendToNode($message){
+        $messageArray = $message->getAsArray();
+
+        $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$messageArray["channel_id"]));
+        if($channelDetails){
+
+            $md2text_options = Array("keep_mentions" => true);
+            $text_content = $this->mdToText($message->getContent(), $md2text_options);
+            preg_match_all("/@[^: ]+:([0-f-]{36})/m", $text_content, $users_output);
+            preg_match_all("/(^| )@(all|here|channel|everyone)[^a-z]/m", $text_content, $global_output);
+            $mentions = [
+                "users" => $users_output[1],
+                "special" => $global_output[1]
+            ];
+            $rabbitData = [
+                "message" => [
+                    "company_id" => $channelDetails->getData()["company_id"],
+                    "workspace_id" => $channelDetails->getData()["workspace_id"],
+                    "channel_id" => $messageArray["channel_id"],
+                    "thread_id" => $messageArray["parent_message_id"],
+                    "id" => $messageArray["id"],
+                    "sender" => $messageArray["sender"],
+                    "mentions" => $mentions,
+                ]
+            ];
+            if($did_create){
+                $this->queues->push("message:created", $rabbitData);
+            }else{
+                $this->queues->push("message:updated", $rabbitData);
+            }
+        }
     }
 
     public function dispatchMessage($channel_id, $application_id, $user_id, $message_id){

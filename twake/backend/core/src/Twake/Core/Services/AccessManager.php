@@ -40,10 +40,17 @@ class AccessManager
             $userId = $current_user_id;
             $channelId = $id;
 
+            //Old backend fallback (mobile api)
             $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $userId . "", "channel_id" => $channelId));
             if ($linkChannel) {
                 return true;
+            }else{
+                $linkChannel = $this->doctrine->getRepository("Twake\Channels:ChannelMember")->findOneBy(Array("direct" => true, "user_id" => $userId . "", "channel_id" => $channelId));
+                if($linkChannel){
+                    return true;
+                }
             }
+            
 
             $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
             $companyId = $channelDetails->getData()["company_id"];
