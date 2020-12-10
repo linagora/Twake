@@ -266,7 +266,7 @@ class User
                 $wid = $workspace["id"];
                 if(!isset($orgs[$gid])){
                     $orgs[$gid] = [
-                        "role" => "",
+                        "role" => $workspace["_user_is_organization_administrator"] ? "organization_administrator" : ($workspace["_user_is_guest"] ? "guest" : "member"),
                         "wks" => []
                     ];
                 }

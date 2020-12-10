@@ -4,6 +4,9 @@ namespace Twake\Users\Controller\Adapters\Console;
 
 use App\App;
 
+/**
+ * This class will do updates in Twake from Twake console
+ */
 class ApplyUpdates
 {
     /** @var App */
@@ -25,6 +28,12 @@ class ApplyUpdates
     }
     
     function updateUser($userId, $companyId = null){
+        /**
+         * new "company" is old $group
+         * new "guest" are mapped by the boolean $groupUser->getExterne()
+         * new "organization_administrator" are mapped by the condition $groupUser->getLevel() === 3
+         */
+
         error_log("not implemented");
         return [];
     }
