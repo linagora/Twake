@@ -28,3 +28,8 @@ export type ColumnType =
   | "counter"
   | "blob"
   | "boolean";
+
+export type EntityTarget<Entity> = ObjectType<Entity>;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ObjectType<T> = { new (): T } | Function;

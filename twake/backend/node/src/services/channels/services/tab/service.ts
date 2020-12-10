@@ -1,5 +1,5 @@
+import _ from "lodash";
 import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
-import { getChannelPath } from "../channel/realtime";
 import {
   DeleteResult,
   Pagination,
@@ -9,21 +9,21 @@ import {
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { TabService } from "../../provider";
-
 import { ChannelTab, ChannelTabPrimaryKey } from "../../entities";
 import { ChannelExecutionContext } from "../../types";
 import { Channel } from "../../../types";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import _ from "lodash";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 
 export class Service implements TabService {
   version: "1";
+  repository: Repository<ChannelTab>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
-    await this.database.getRepository("channel_tab").init(ChannelTab);
+    this.repository = await this.database.getRepository("channel_tab", ChannelTab);
     return this;
   }
 
@@ -33,13 +33,11 @@ export class Service implements TabService {
     (tab, context) =>
       getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
   )
-  async save(
+  async save<SaveOptions>(
     tab: ChannelTab,
-    options: {},
+    options: SaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelTab>> {
-    const manager = this.database.newManager();
-
     const pk = {
       company_id: context.channel.company_id,
       workspace_id: context.channel.workspace_id,
@@ -47,7 +45,7 @@ export class Service implements TabService {
       id: tab.id,
     };
 
-    let tabEntity = await this.database.getRepository<ChannelTab>("channel_tab").findOne(pk);
+    let tabEntity = await this.repository.findOne(pk);
     if (!tabEntity) {
       tabEntity = new ChannelTab();
       tabEntity = _.merge(tabEntity, pk);
@@ -59,8 +57,7 @@ export class Service implements TabService {
       _.pick(tab, ["name", "configuration", "application_id", "order"]),
     );
 
-    manager.persist(tabEntity);
-    await manager.flush();
+    await this.repository.save(tabEntity);
 
     return new SaveResult("channel_tab", tabEntity, OperationType.CREATE);
   }
@@ -72,7 +69,7 @@ export class Service implements TabService {
       channel_id: context.channel.id,
       id: tabPk.id,
     };
-    return await this.database.getRepository<ChannelTab>("channel_tab").findOne(pk);
+    return await this.repository.findOne(pk);
   }
 
   @RealtimeDeleted<ChannelTab>(
@@ -81,21 +78,15 @@ export class Service implements TabService {
     (tab, context) =>
       getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
   )
-  async delete(
-    pk: ChannelTabPrimaryKey,
-    context: ChannelExecutionContext,
-  ): Promise<DeleteResult<ChannelTab>> {
-    const manager = this.database.newManager();
-
-    manager.remove(pk, ChannelTab);
-    await manager.flush();
+  async delete(pk: ChannelTabPrimaryKey): Promise<DeleteResult<ChannelTab>> {
+    await this.repository.remove(pk as ChannelTab);
 
     return new DeleteResult("channel_tab", pk as ChannelTab, true);
   }
 
-  async list(
+  async list<ListOptions>(
     pagination: Pagination,
-    options: {},
+    options: ListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelTab>> {
     const pk = {
@@ -103,9 +94,7 @@ export class Service implements TabService {
       workspace_id: context.channel.workspace_id,
       channel_id: context.channel.id,
     };
-    return await this.database.getRepository<ChannelTab>("channel_tab").find(pk, {
-      pagination: pagination,
-    });
+    return await this.repository.find(pk, { pagination });
   }
 
   onUpdated(

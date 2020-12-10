@@ -179,8 +179,8 @@ export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContex
    */
   save?<SaveOptions>(
     item: Entity,
-    options: SaveOptions,
-    context: Context,
+    options?: SaveOptions,
+    context?: Context,
   ): Promise<SaveResult<Entity>>;
 
   /**

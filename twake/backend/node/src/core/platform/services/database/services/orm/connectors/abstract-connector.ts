@@ -1,6 +1,6 @@
 import { Connector } from ".";
 import { ConnectionOptions, DatabaseType } from "../..";
-import { FindOptions } from "../repository";
+import { FindOptions } from "../repository/repository";
 import { ColumnDefinition, EntityDefinition } from "../types";
 import { ListResult } from "../../../../../framework/api/crud-service";
 

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
 
 export const cassandraType = {
@@ -12,12 +16,21 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}) => {
-  if (type === "uuid" || type === "timeuuid" || type === "number") {
+export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+  if (type === "number") {
+    if (!isNumber(v)) {
+      throw new Error(`'${v}' is not a ${type}`);
+    }
+    return `${v}`;
+  }
+  if (type === "uuid" || type === "timeuuid") {
     v = (v || "").replace(/[^a-zA-Z0-9-]/g, "");
     return `${v}`;
   }
   if (type === "boolean") {
+    if (!isBoolean(v)) {
+      throw new Error(`'${v}' is not a ${type}`);
+    }
     return `${!!v}`;
   }
   if (type === "encrypted" || type === "json") {
@@ -32,6 +45,6 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   return `'${v || ""}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}) => {
+export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
   return v;
 };

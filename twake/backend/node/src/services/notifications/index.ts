@@ -21,7 +21,8 @@ export default class NotificationService extends TwakeService<NotificationServic
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
 
     this.service = getService(database);
-    this.service.init && (await this.service.init());
+    console.log(this.context);
+    await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
