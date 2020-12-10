@@ -7,10 +7,12 @@ import {
   UserNotificationBadgePrimaryKey,
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
+import { MessageNotification } from "../messages/types";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
   channelPreferences: ChannelMemberPreferencesServiceAPI;
+  engine: NotificationEngineAPI;
 }
 
 export interface UserNotificationBadgeServiceAPI
@@ -30,3 +32,15 @@ export interface ChannelMemberPreferencesServiceAPI
       ChannelMemberNotificationPreferencePrimaryKey,
       NotificationExecutionContext
     > {}
+
+/**
+ * The notificaiton engine processes messages and creates notifications.
+ * Notifications are then published in notification transport to the clients.
+ */
+export interface NotificationEngineAPI extends Initializable {
+  /**
+   * Process the message and potentially produces several notifications
+   * @param message
+   */
+  process(message: MessageNotification): void;
+}

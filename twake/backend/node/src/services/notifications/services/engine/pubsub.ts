@@ -1,3 +1,4 @@
+import { datastax } from "cassandra-driver";
 import { logger } from "../../../../core/platform/framework/logger";
 import {
   IncomingPubsubMessage,
@@ -12,13 +13,12 @@ export class PubsubEngineService extends PubsubServiceSubscription<NotificationE
   async doSubscribe(): Promise<void> {
     logger.info("service.notifications.engine - Subscribing to message notifications");
 
-    this.pubsub.subscribe(MESSAGE_CREATED_TOPIC, this.onCreated.bind(this));
+    await this.pubsub.subscribe(MESSAGE_CREATED_TOPIC, this.onCreated.bind(this));
   }
 
-  async onCreated(pubsubMessage: IncomingPubsubMessage<MessageNotification>): Promise<void> {
+  private onCreated(pubsubMessage: IncomingPubsubMessage<MessageNotification>): void {
     logger.info("service.notifications.pubsub.event - New message received");
-    // TODO: validate data
-    console.log(pubsubMessage);
+    // TODO: validate data with AJV or similar
 
     try {
       this.service.process(pubsubMessage.data);
