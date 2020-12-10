@@ -26,13 +26,13 @@ describe("The /internal/services/channels/v1 API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["websocket", "webserver", "channels", "auth", "database"],
+      services: ["websocket", "webserver", "channels", "auth", "database", "pubsub"],
     });
     channelUtils = getChannelUtils(platform);
   });
 
   afterEach(async () => {
-    await platform.tearDown();
+    await platform?.tearDown();
     platform = null;
   });
 

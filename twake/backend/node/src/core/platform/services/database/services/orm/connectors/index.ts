@@ -3,7 +3,7 @@ import { DatabaseType } from "../..";
 import { CassandraConnectionOptions } from "./cassandra/cassandra";
 import { MongoConnectionOptions } from "./mongodb/mongodb";
 import { ColumnDefinition, EntityDefinition } from "../types";
-import { FindOptions } from "../repository";
+import { FindOptions } from "../repository/repository";
 import { ListResult } from "../../../../../framework/api/crud-service";
 
 export * from "./mongodb/mongodb";

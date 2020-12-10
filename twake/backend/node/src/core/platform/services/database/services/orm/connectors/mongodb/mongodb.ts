@@ -1,7 +1,7 @@
 import * as mongo from "mongodb";
 import { UpsertOptions } from "..";
 import { ListResult, Paginable, Pagination } from "../../../../../../framework/api/crud-service";
-import { FindOptions } from "../../repository";
+import { FindOptions } from "../../repository/repository";
 import { ColumnDefinition, EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
