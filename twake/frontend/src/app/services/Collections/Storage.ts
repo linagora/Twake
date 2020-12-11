@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import minimongo from 'minimongo';
+import semaphore from 'semaphore';
 
 export type MongoItemType = {
   _state: any;
@@ -14,6 +15,7 @@ export type MongoItemType = {
 export default class CollectionStorage {
   static mongoDb: minimongo.MinimongoDb;
   static mongoDbPromises: ((db: minimongo.MinimongoDb) => void)[] = [];
+  static semaphores: { [path: string]: semaphore.Semaphore } = {};
 
   //Ensure unicity of objects in mongo and frontend
   static idKeeper: { [path: string]: { [id: string]: string | true } } = {};
@@ -67,68 +69,105 @@ export default class CollectionStorage {
   }
 
   static upsert(path: string, item: any): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      if (!item.id) {
-        reject('Every resources must contain an id');
-        return;
-      }
-      await CollectionStorage.addCollection(path);
+    this.semaphores[path] = this.semaphores[path] || semaphore(1);
+    return new Promise((resolve, reject) => {
+      this.semaphores[path].take(async () => {
+        new Promise(async (resolve, reject) => {
+          if (!item.id) {
+            reject('Every resources must contain an id');
+            return;
+          }
+          await CollectionStorage.addCollection(path);
 
-      let exists = false;
-      if (
-        item.id &&
-        CollectionStorage.idKeeper[path] &&
-        CollectionStorage.idKeeper[path][item.id]
-      ) {
-        exists = true;
-      }
-      CollectionStorage.idKeeper[path][item.id] = true;
+          let exists = false;
+          if (
+            item.id &&
+            CollectionStorage.idKeeper[path] &&
+            CollectionStorage.idKeeper[path][item.id]
+          ) {
+            exists = true;
+          }
+          CollectionStorage.idKeeper[path][item.id] = true;
 
-      const mongoItems = await CollectionStorage.find(path, { id: item.id });
-      if (!mongoItems && exists) {
-        //Should have find it in mongo, so this is an error
-        return;
-      }
-      try {
-        item._id = mongoItems[0]?._id || item._id;
-        item = _.assign(mongoItems[0] || {}, item);
-        (await CollectionStorage.getMongoDb()).collections[path].upsert(item, resolve, reject);
-      } catch (err) {
-        reject(err);
-      }
+          const mongoItems = await CollectionStorage.find(path, { id: item.id });
+          if (!mongoItems && exists) {
+            //Should have find it in mongo, so this is an error
+            resolve();
+            return;
+          }
+          try {
+            if (mongoItems && item._id && mongoItems[0]?._id != item._id) {
+              await new Promise(async resolve => {
+                (await CollectionStorage.getMongoDb()).collections[path].remove(
+                  item._id,
+                  resolve,
+                  resolve,
+                );
+              });
+              item._id = mongoItems[0]?._id;
+              item = _.assign(mongoItems[0] || {}, item);
+            }
+            (await CollectionStorage.getMongoDb()).collections[path].upsert(
+              item,
+              null,
+              item => {
+                resolve(item);
+              },
+              reject,
+            );
+          } catch (err) {
+            reject(err);
+          }
+        })
+          .then(resolve)
+          .catch(reject)
+          .finally(() => {
+            this.semaphores[path].leave();
+          });
+      });
     });
   }
 
-  static remove(path: string, item: any): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      await CollectionStorage.addCollection(path);
+  static remove(path: string, item: any): Promise<any> {
+    this.semaphores[path] = this.semaphores[path] || semaphore(1);
+    return new Promise((resolve, reject) => {
+      this.semaphores[path].take(async () => {
+        new Promise(async (resolve, reject) => {
+          await CollectionStorage.addCollection(path);
 
-      delete CollectionStorage.idKeeper[path][item.id];
+          delete CollectionStorage.idKeeper[path][item.id];
 
-      CollectionStorage.find(path, item)
-        .then(async mongoItems => {
-          if (mongoItems.length === 1) {
-            const mongoItem = mongoItems[0];
-            let mongoId = '';
-            if (mongoItem) {
-              mongoId = mongoItem._id;
-            }
-            (await CollectionStorage.getMongoDb()).collections[path].remove(
-              mongoId,
-              resolve,
-              reject,
-            );
-          } else if (mongoItems.length === 0) {
-            console.log('item not found', item);
-            resolve();
-          } else {
-            console.log('too many items', mongoItems);
-            reject(
-              'The remove filter was not precise enough, cannot remove multiple elements at once.',
-            );
-          }
+          CollectionStorage.find(path, item)
+            .then(async mongoItems => {
+              if (mongoItems.length === 1) {
+                const mongoItem = mongoItems[0];
+                let mongoId = '';
+                if (mongoItem) {
+                  mongoId = mongoItem._id;
+                }
+                (await CollectionStorage.getMongoDb()).collections[path].remove(
+                  mongoId,
+                  resolve,
+                  reject,
+                );
+              } else if (mongoItems.length === 0) {
+                console.log('item not found', item);
+                resolve();
+              } else {
+                console.log('too many items', mongoItems);
+                reject(
+                  'The remove filter was not precise enough, cannot remove multiple elements at once.',
+                );
+              }
+            })
+            .catch(reject);
         })
-        .catch(reject);
+          .then(resolve)
+          .catch(reject)
+          .finally(() => {
+            this.semaphores[path].leave();
+          });
+      });
     });
   }
 

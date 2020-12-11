@@ -2076,6 +2076,10 @@
   dependencies:
     redux "*"
 
+"@types/semaphore@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/semaphore/-/semaphore-1.1.0.tgz#a2f8db75e6429ae2703bbbe7d288f0edc67894b2"
+
 "@types/socket.io-client@^1.4.34":
   version "1.4.34"
   resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.34.tgz#8ca5f5732a9ad92b79aba71083cda5e5821e3ed9"
@@ -11520,6 +11524,10 @@ selfsigned@^1.10.7:
   resolved "https://registry.yarnpkg.com/selfsigned/-/selfsigned-1.10.8.tgz#0d17208b7d12c33f8eac85c41835f27fc3d81a30"
   dependencies:
     node-forge "^0.10.0"
+
+semaphore@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.1.0.tgz#aaad8b86b20fe8e9b32b16dc2ee682a8cd26a8aa"
 
 "semver@2 || 3 || 4 || 5", semver@^5.3.0, semver@^5.4.1, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.0, semver@^5.7.1:
   version "5.7.1"
