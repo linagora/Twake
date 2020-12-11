@@ -96,23 +96,23 @@ export default class CollectionStorage {
             return;
           }
           try {
-            if (mongoItems && item._id && mongoItems[0]?._id != item._id) {
-              await new Promise(async resolve => {
-                (await CollectionStorage.getMongoDb()).collections[path].remove(
-                  item._id,
-                  resolve,
-                  resolve,
-                );
-              });
+            if (mongoItems && mongoItems[0]?._id && mongoItems[0]?._id != item._id) {
+              if (item._id) {
+                await new Promise(async resolve => {
+                  (await CollectionStorage.getMongoDb()).collections[path].remove(
+                    item._id,
+                    resolve,
+                    resolve,
+                  );
+                });
+              }
               item._id = mongoItems[0]?._id;
               item = _.assign(mongoItems[0] || {}, item);
             }
             (await CollectionStorage.getMongoDb()).collections[path].upsert(
               item,
               null,
-              item => {
-                resolve(item);
-              },
+              resolve,
               reject,
             );
           } catch (err) {
