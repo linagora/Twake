@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import HiddenNotificationService from './HiddenNotificationService';
+import animateScrollTo from 'animated-scroll-to';
 
 import './Notifications.scss';
 
@@ -29,16 +30,21 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
     service.state.beaconBottom.length,
   ]);
 
+  const alignCenter = (node: any) =>
+    node.current.offsetTop - (service.scroller.node.clientHeight + node.current.clientHeight) / 2;
+
+  const optionsScroller = {
+    elementToScroll: service.scroller.node,
+  };
+
   const previousBeacon = () => {
-    return service.state.beaconTop
-      .sort((a: any, b: any) => b.top - a.top)[0]
-      .node.current.scrollIntoView({ block: 'center' });
+    const previousNode = service.state.beaconTop.sort((a: any, b: any) => b.top - a.top)[0].node;
+    return animateScrollTo(alignCenter(previousNode), optionsScroller);
   };
 
   const nextBeacon = () => {
-    return service.state.beaconBottom
-      .sort((a: any, b: any) => a.top - b.top)[0]
-      .node.current.scrollIntoView({ block: 'center' });
+    const nextNode = service.state.beaconBottom.sort((a: any, b: any) => a.top - b.top)[0].node;
+    return animateScrollTo(alignCenter(nextNode), optionsScroller);
   };
 
   return (
