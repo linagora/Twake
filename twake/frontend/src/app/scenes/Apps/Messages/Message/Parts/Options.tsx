@@ -5,7 +5,7 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import AlertManager from 'services/AlertManager/AlertManager';

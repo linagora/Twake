@@ -11,7 +11,7 @@ import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import './Drive.scss';
 import DriveMultiSelector from 'components/Drive/DriveMultiSelector.js';
 import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 

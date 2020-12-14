@@ -10,7 +10,7 @@ import Footer from './Parts/Footer.js';
 import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';
 import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 
 export default () => {

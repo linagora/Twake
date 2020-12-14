@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Icon from 'components/Icon/Icon.js';
 import './Select.scss';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Modal } from 'antd';
 import './ModalComponent.scss';
-import ModalManager from 'app/services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 let component: any = null;
 export default () => {

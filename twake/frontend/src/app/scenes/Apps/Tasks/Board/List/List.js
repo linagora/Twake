@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../Task/Task.js';
 import Icon from 'components/Icon/Icon.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import ListEditor from './ListEditor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import AlertManager from 'services/AlertManager/AlertManager';

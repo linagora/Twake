@@ -8,7 +8,7 @@ import { Avatar, Button, Col, Row, Typography, Input } from 'antd';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import Menu from 'components/Menus/Menu.js';
 import { Search } from 'react-feather';

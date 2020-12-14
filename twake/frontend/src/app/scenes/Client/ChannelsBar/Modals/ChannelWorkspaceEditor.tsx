@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelTemplateEditor';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import { ObjectModal } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';

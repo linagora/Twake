@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Divider, Layout, Typography, Col, Row } from 'antd';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
 import './ObjectModal.scss';
 

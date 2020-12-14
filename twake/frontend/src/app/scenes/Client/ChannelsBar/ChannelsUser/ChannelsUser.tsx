@@ -6,7 +6,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import DirectChannel from 'app/scenes/Client/ChannelsBar/Parts/Channel/DirectChannel';
 
-import MediumPopupComponent from 'app/services/Modal/ModalManager';
+import MediumPopupComponent from 'app/components/Modal/ModalManager';
 import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDirectMessagesPopup';
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';

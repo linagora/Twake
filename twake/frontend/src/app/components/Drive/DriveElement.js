@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import AlertManager from 'services/AlertManager/AlertManager';
-import MenuManager from 'services/Menus/MenusManager.js';
+import MenuManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
@@ -14,7 +14,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Globals from 'services/Globals.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

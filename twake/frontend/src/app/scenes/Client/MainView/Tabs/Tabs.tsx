@@ -3,7 +3,7 @@ import { TabResource } from 'app/models/Tab';
 import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import { Plus } from 'react-feather';

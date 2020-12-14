@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import moment from 'moment';
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import EventModification from './EventModification.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Participants from './Part/Participants.js';

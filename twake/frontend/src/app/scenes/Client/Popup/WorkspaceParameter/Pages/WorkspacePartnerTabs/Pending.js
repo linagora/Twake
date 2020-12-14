@@ -12,7 +12,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import CreateCompanyAccount from '../CreateCompanyAccount.js';
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 
 export default class Pending extends React.Component {
   render() {

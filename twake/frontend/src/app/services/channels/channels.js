@@ -9,7 +9,7 @@ import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import emojione from 'emojione';
 import Number from 'services/utils/Numbers.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
 import RouterServices from 'app/services/RouterService';
 

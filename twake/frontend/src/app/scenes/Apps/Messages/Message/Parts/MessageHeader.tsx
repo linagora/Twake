@@ -5,7 +5,7 @@ import 'moment-timezone';
 import Moment from 'react-moment';
 import moment from 'moment';
 import ChannelsService from 'services/channels/channels.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import UserService from 'services/user/user.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 export default class User extends React.Component {
   constructor() {
