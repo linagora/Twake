@@ -45,9 +45,11 @@ services:
     depends_on:
       - mongo
       - scylladb
+      - rabbitmq
     links:
       - mongo
       - scylladb
+      - rabbitmq
   php:
     image: twaketech/twake-php
     volumes:
