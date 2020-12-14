@@ -102,6 +102,7 @@
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "anchorme": "1.1.2",
+    "animated-scroll-to": "^2.0.12",
     "antd": "^4.7.2",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
