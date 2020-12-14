@@ -22,7 +22,7 @@ class HiddenNotificationService extends Observable {
     beaconBottom: [],
   };
 
-  addBeacon(node: NodeType) {
+  public addBeacon(node: NodeType) {
     this.removeBeacon(node);
 
     this.beacons.push({
@@ -36,21 +36,12 @@ class HiddenNotificationService extends Observable {
     this.detectHiddenBeacons();
   }
 
-  removeBeacon(node: NodeType) {
+  public removeBeacon(node: NodeType) {
     this.beacons = this.beacons.filter(element => node !== element.node);
     this.detectHiddenBeacons();
   }
 
-  setScroller(node: NodeType) {
-    this.scroller = { node, top: node.getBoundingClientRect().y };
-
-    node.addEventListener('scroll', this.detectHiddenBeacons.bind(this), { passive: true });
-
-    this.setBeaconsTop(this.scroller);
-    this.detectHiddenBeacons();
-  }
-
-  setBeaconsTop(scroller: ScrollerRef) {
+  private setBeaconsTop(scroller: ScrollerRef) {
     this.beacons.map((beacon: BeaconRef) => {
       return (beacon.top =
         beacon.node.current.getBoundingClientRect().y -
@@ -59,7 +50,16 @@ class HiddenNotificationService extends Observable {
     });
   }
 
-  detectHiddenBeacons() {
+  public setScroller(node: NodeType) {
+    this.scroller = { node, top: node.getBoundingClientRect().y };
+
+    node.addEventListener('scroll', this.detectHiddenBeacons.bind(this), { passive: true });
+
+    this.setBeaconsTop(this.scroller);
+    this.detectHiddenBeacons();
+  }
+
+  private detectHiddenBeacons() {
     if (!this.scroller.node) return;
 
     const hidden: any = {
@@ -84,7 +84,7 @@ class HiddenNotificationService extends Observable {
     this.state = hidden;
   }
 
-  removeScroller() {
+  public removeScroller() {
     this.scroller = { node: undefined, top: undefined };
     if (this.scroller.node) {
       this.scroller.node.removeEventListener('scroll', this.detectHiddenBeacons.bind(this));
@@ -95,7 +95,7 @@ class HiddenNotificationService extends Observable {
 export default class HiddenNotificationServiceManager {
   static instances: InstanceType = {};
 
-  static get(tag: string) {
+  public static get(tag: string) {
     if (!this.instances[tag]) {
       this.instances[tag] = new HiddenNotificationService();
     }

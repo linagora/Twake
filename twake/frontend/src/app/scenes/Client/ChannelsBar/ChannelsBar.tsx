@@ -37,17 +37,19 @@ export default () => {
   }, []);
 
   return (
-    <Layout.Sider theme="light" width={220} className="channels_view">
-      <CurrentUser />
-      {!!companyId && !!workspaceId && (
-        <PerfectScrollbar component="div">
-          <ChannelsApps key={workspaceId} />
-          <Workspace key={'workspace_chans_' + workspaceId} />
-          <ChannelsUser key={companyId} />
-        </PerfectScrollbar>
-      )}
-      <Tutorial />
-      <Footer />
+    <Layout.Sider theme="light" width={220} className="channels_view" style={{ height: '100%' }}>
+      <PerfectScrollbar component="div">
+        <CurrentUser />
+        {!!companyId && !!workspaceId && (
+          <>
+            <ChannelsApps key={workspaceId} />
+            <Workspace key={'workspace_chans_' + workspaceId} />
+            <ChannelsUser key={companyId} />
+          </>
+        )}
+        <Tutorial />
+        <Footer />
+      </PerfectScrollbar>
     </Layout.Sider>
   );
 };
