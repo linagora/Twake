@@ -739,7 +739,7 @@ class WorkspaceMembers
                     }
                 }
 
-                $groupUser = $groupUserRepository->findBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
+                $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
 
                 $workspaces[] = Array(
                     "last_access" => $workspaceMember->getLastAccess(),

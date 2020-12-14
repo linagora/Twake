@@ -106,6 +106,9 @@ export default class Collection<G extends Resource<any>> {
           this.resources[mongoItem.id],
           options?.query,
         );
+        if (!resourceSaved) {
+          this.remove(item, { withoutBackend: true });
+        }
         return resourceSaved as G;
       } else {
         this.transport.upsert(this.resources[mongoItem.id], options?.query);

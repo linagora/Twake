@@ -462,7 +462,7 @@ class MessageSystem
             $this->em->remove($message);
         } else {
 
-            $channel = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
+            $channel = $this->em->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
             $this->sendToNode($channel, $message);
 
             //Channel is now never defined except for old channels so never pass here

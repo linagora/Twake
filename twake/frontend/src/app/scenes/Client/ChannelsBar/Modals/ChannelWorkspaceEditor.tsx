@@ -60,19 +60,21 @@ const ChannelWorkspaceEditor: FC<Props> = ({
         waitServerReply: true,
       });
 
-      ModalManager.open(
-        <ChannelMembersEditor
-          companyId={resource.data.company_id || ''}
-          workspaceId={resource.data.workspace_id || ''}
-          channelId={resource.data.id || ''}
-          channelName={resource.data.name}
-          onClose={() => ModalManager.closeAll()}
-        />,
-        {
-          position: 'center',
-          size: { width: '600px', minHeight: '329px' },
-        },
-      );
+      if (resource) {
+        ModalManager.open(
+          <ChannelMembersEditor
+            companyId={resource.data.company_id || ''}
+            workspaceId={resource.data.workspace_id || ''}
+            channelId={resource.data.id || ''}
+            channelName={resource.data.name}
+            onClose={() => ModalManager.closeAll()}
+          />,
+          {
+            position: 'center',
+            size: { width: '600px', minHeight: '329px' },
+          },
+        );
+      }
     }
   };
 

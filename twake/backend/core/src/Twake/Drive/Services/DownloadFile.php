@@ -155,8 +155,17 @@ class DownloadFile
 
                         header('Content-Description: File Transfer');
                         if ($download) {
-                            header('Content-Type: application/octet-stream');
-                            header("Content-type: application/force-download");
+
+                            if (in_array($ext, ["gif", "svg", "jpeg", "jpg", "tiff", "png"])) {
+                                header('Content-Type: image; filename="' . $final_download_name . '"');
+                            }else
+                            if ($ext == "pdf") {
+                                header("Content-type: application/pdf");
+                            }else{
+                                header('Content-Type: application/octet-stream');
+                                header("Content-type: application/force-download");    
+                            }
+                            
                             header('Content-Disposition: attachment; filename="' . $final_download_name . '"');
                         } else {
                             header('Content-Disposition: inline; filename="' . $final_download_name . '"');
