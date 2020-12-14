@@ -26,8 +26,12 @@ export enum ChannelMemberType {
 }
 
 export enum ChannelMemberNotificationLevel {
+  // be notified on all messages
   ALL = "all",
+  // Only be notified on @user, @all, @here, @everyone mentions
+  MENTIONS = "mentions",
+  // Only be notified on @user mention
+  ME = "me",
+  // do not be notified at all even when someone mention user, not on direct channels
   NONE = "none",
-  GROUP_MENTIONS = "group_mentions",
-  USER_MENTIONS = "user_mentions",
 }
