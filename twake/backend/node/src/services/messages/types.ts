@@ -14,3 +14,5 @@ export type MessageNotification = {
     specials?: specialMention[];
   };
 };
+
+export type MessageNotificationResult = MessageNotification;

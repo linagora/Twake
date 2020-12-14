@@ -1,15 +1,14 @@
-import { datastax } from "cassandra-driver";
-import { logger } from "../../../../core/platform/framework/logger";
+import { logger } from "../../../../../../core/platform/framework/logger";
 import {
   IncomingPubsubMessage,
   PubsubServiceSubscription,
-} from "../../../../core/platform/services/pubsub/api";
-import { MessageNotification } from "../../../messages/types";
-import { NotificationEngine } from "../engine";
+} from "../../../../../../core/platform/services/pubsub/api";
+import { MessageNotification } from "../../../../../messages/types";
+import { NewChannelMessageProcessor } from ".";
 
 const MESSAGE_CREATED_TOPIC = "message:created";
 
-export class PubsubEngineService extends PubsubServiceSubscription<NotificationEngine> {
+export class PubsubEngineService extends PubsubServiceSubscription<NewChannelMessageProcessor> {
   async doSubscribe(): Promise<void> {
     logger.info("service.notifications.engine - Subscribing to message notifications");
 

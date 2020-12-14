@@ -2,13 +2,15 @@ import { TwakeContext } from "../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import {
   ChannelMemberPreferencesServiceAPI,
+  ChannelThreadUsersServiceAPI,
   NotificationEngineAPI,
   NotificationServiceAPI,
   UserNotificationBadgeServiceAPI,
 } from "../api";
 import { getService as getBadgeService } from "./badges";
-import { NotificationEngine } from "./engine";
 import { getService as getPreferencesService } from "./preferences";
+import { getService as getChannelThreadsService } from "./channel-thread-users";
+import { NotificationEngine } from "./engine";
 
 export function getService(databaseService: DatabaseServiceAPI): NotificationServiceAPI {
   return getServiceInstance(databaseService);
@@ -23,10 +25,12 @@ class Service implements NotificationServiceAPI {
   badges: UserNotificationBadgeServiceAPI;
   channelPreferences: ChannelMemberPreferencesServiceAPI;
   engine: NotificationEngineAPI;
+  channelThreads: ChannelThreadUsersServiceAPI;
 
   constructor(databaseService: DatabaseServiceAPI) {
     this.badges = getBadgeService(databaseService);
     this.channelPreferences = getPreferencesService(databaseService);
+    this.channelThreads = getChannelThreadsService(databaseService);
     this.engine = new NotificationEngine(this);
   }
 
