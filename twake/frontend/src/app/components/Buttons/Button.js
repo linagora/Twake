@@ -30,7 +30,7 @@ export default class Button extends React.Component {
         className={'button ' + className}
         onClick={evt => {
           evt.target.blur();
-          this.props.onClick(evt);
+          this.props.onClick && this.props.onClick(evt);
         }}
       >
         {this.props.value || this.props.children}

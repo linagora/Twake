@@ -17,7 +17,8 @@ const MainContent: FC<{}> = () => {
     SideViewService.getViewType(),
     SideViewService.getId(),
   ]);
-  const sideConfiguration = SideViewService.getConfiguration();
+
+  console.log(mainConfiguration);
 
   return (
     <Layout.Content className={'global-view-content'}>
@@ -31,12 +32,7 @@ const MainContent: FC<{}> = () => {
             )}
             <Layout.Content className="main-view-content">
               {mainType !== '' && (
-                <AppView
-                  key={mainId}
-                  id={mainId}
-                  app={mainConfiguration.app}
-                  configuration={mainConfiguration}
-                />
+                <AppView key={mainId} id={mainId} viewService={MainViewService} />
               )}
               {mainType == '' && <NoApp />}
             </Layout.Content>
@@ -51,12 +47,7 @@ const MainContent: FC<{}> = () => {
           collapsed={sideType === ''}
         >
           {sideType !== '' && (
-            <AppView
-              key={sideId + '-side'}
-              id={sideId}
-              app={mainConfiguration.app}
-              configuration={sideConfiguration}
-            />
+            <AppView key={sideId + '-side'} id={sideId} viewService={SideViewService} />
           )}
         </Layout.Sider>
       </Layout>

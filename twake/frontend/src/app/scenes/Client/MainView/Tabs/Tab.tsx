@@ -10,20 +10,38 @@ import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { Typography } from 'antd';
+import MainViewService from 'app/services/AppView/MainViewService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 
 type PropsType = {
   tabResource: TabResource;
   upsertTab: (tab: TabResource) => Promise<TabResource>;
   deleteTab: (tab: TabResource) => Promise<void>;
   currentUserId: string;
+  selected: boolean;
 };
 
-export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType): JSX.Element => {
+export default ({
+  selected,
+  tabResource,
+  upsertTab,
+  deleteTab,
+  currentUserId,
+}: PropsType): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.useStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
   );
+
+  if (selected && tabResource?.state?.persisted) {
+    MainViewService.select(MainViewService.getId(), {
+      collection: MainViewService.getConfiguration().collection,
+      context: tabResource.data,
+      app: DepreciatedCollections.get('applications').find(tabResource.data.application_id),
+      hasTabs: MainViewService.getConfiguration().hasTabs,
+    });
+  }
 
   return (
     <span

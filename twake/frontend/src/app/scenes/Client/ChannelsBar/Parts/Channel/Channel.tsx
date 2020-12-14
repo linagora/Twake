@@ -31,10 +31,11 @@ export default (props: Props) => {
 
   const selected = channelId === props.id;
 
-  if (selected && props.id) {
+  if (selected && props.id && MainViewService.getId() != props.id) {
     MainViewService.select(props.id, {
       collection: props.collection,
       app: props.app || 'messages',
+      context: null,
       hasTabs: props.visibility != 'direct' && !props.app,
     });
   }
@@ -48,6 +49,8 @@ export default (props: Props) => {
           MainViewService.select(props.id, {
             collection: props.collection,
             app: props.app || 'messages',
+            context: null,
+            hasTabs: props.visibility != 'direct' && !props.app,
           })
         }
       >

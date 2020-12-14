@@ -11,8 +11,9 @@ import { AppType } from 'app/models/App';
 import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
+import MainViewService from 'app/services/AppView/MainViewService';
 
-export default (): JSX.Element => {
+export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter(app => (app.display || {}).channel);
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
@@ -40,6 +41,15 @@ export default (): JSX.Element => {
 
   const configurable = (item: any) =>
     ((item.display || {}).configuration || {}).can_configure_in_channel;
+
+  if (selected) {
+    MainViewService.select(MainViewService.getId(), {
+      collection: MainViewService.getConfiguration().collection,
+      app: 'messages',
+      context: null,
+      hasTabs: MainViewService.getConfiguration().hasTabs,
+    });
+  }
 
   return (
     <span
