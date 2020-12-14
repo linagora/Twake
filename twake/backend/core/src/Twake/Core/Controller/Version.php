@@ -34,6 +34,11 @@ class Version extends BaseController
               "use" => true,
             ];
         }
+        if ($this->getParameter("defaults.auth.console.use")) {
+            $auth["console"] = [
+              "use" => true,
+            ];
+        }
 
         $data = Array(
             "ready" => $ready,

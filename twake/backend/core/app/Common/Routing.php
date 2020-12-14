@@ -38,6 +38,10 @@ class Routing
             $this->get($route, $callback);
         } else if ($method == "post") {
             $this->post($route, $callback);
+        } else if ($method == "put") {
+            $this->put($route, $callback);
+        } else if ($method == "delete") {
+            $this->delete($route, $callback);
         } else {
             error_log("Unable to register route " . $route . ": method " . $method . " is not implemented.");
         }
@@ -58,6 +62,30 @@ class Routing
     public function post($route, $callback)
     {
         SimpleRouter::post($route, function () use ($callback) {
+            try {
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
+            } catch (\Exception $e) {
+                error_log($e);
+            }
+        });
+    }
+
+    public function put($route, $callback)
+    {
+        SimpleRouter::put($route, function () use ($callback) {
+            try {
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
+            } catch (\Exception $e) {
+                error_log($e);
+            }
+        });
+    }
+
+    public function delete($route, $callback)
+    {
+        SimpleRouter::delete($route, function () use ($callback) {
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();

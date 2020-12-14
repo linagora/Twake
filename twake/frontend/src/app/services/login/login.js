@@ -175,6 +175,13 @@ class Login extends Observable {
             document.location = Api.route('users/openid');
             return;
           } else if (
+            (res.errors.indexOf('redirect_to_openid') >= 0 ||
+              ((that.server_infos.auth || {}).console || {}).use) &&
+            !that.external_login_error
+          ) {
+            document.location = Api.route('users/console/openid');
+            return;
+          } else if (
             (res.errors.indexOf('redirect_to_cas') >= 0 ||
               ((that.server_infos.auth || {}).cas || {}).use) &&
             !that.external_login_error
@@ -217,6 +224,8 @@ class Login extends Observable {
       url = Api.route('users/openid');
     } else if (service === 'cas') {
       url = Api.route('users/cas');
+    } else if (service === 'console') {
+      url = Api.route('users/console/openid');
     }
 
     Globals.window.location = url;
