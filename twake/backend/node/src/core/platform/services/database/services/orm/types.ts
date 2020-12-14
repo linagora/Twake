@@ -20,8 +20,8 @@ export type ColumnOptions = {
 
 export type ColumnType =
   | "json"
+  | "plainstring"
   | "string"
-  | "encrypted"
   | "number"
   | "timeuuid"
   | "uuid"

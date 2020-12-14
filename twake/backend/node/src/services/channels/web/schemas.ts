@@ -29,9 +29,15 @@ const channelTabSchema = {
     id: { type: "string" },
     owner: { type: "string" },
     order: { type: "string" },
+    configuration: {
+      type: "object",
+      properties: {
+        board_id: { type: "string" },
+        directory_id: { type: "string" },
+      },
+    },
     application_id: { type: "string" },
     name: { type: "string" },
-    description: { type: "string" },
   },
 };
 

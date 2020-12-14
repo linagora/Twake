@@ -151,7 +151,7 @@ export default class CollectionStorage {
                   reject,
                 );
               } else if (mongoItems.length === 0) {
-                console.log('item not found', item);
+                console.log('item not found', item, path);
                 resolve();
               } else {
                 console.log('too many items', mongoItems);
@@ -177,6 +177,12 @@ export default class CollectionStorage {
   }
 
   static find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {
+    //Fixme: we need to keep only string / number parameters
+    //This hack is when whe search using the resource itself as filter, some field make the find not work
+    if (filters.id) {
+      filters = { id: filters.id };
+    }
+
     return new Promise(async (resolve, reject) => {
       await CollectionStorage.addCollection(path);
       (await CollectionStorage.getMongoDb()).collections[path]
@@ -191,6 +197,12 @@ export default class CollectionStorage {
   }
 
   static findOne(path: string, filters: any = {}, options: any = {}): Promise<any> {
+    //Fixme: we need to keep only string / number parameters
+    //This hack is when whe search using the resource itself as filter, some field make the find not work
+    if (filters.id) {
+      filters = { id: filters.id };
+    }
+
     return new Promise(async (resolve, reject) => {
       await CollectionStorage.addCollection(path);
       CollectionStorage.find(path, filters, options)

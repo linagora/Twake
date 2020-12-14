@@ -265,7 +265,10 @@ export default class Drive extends Component {
         this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
       ] || {};
 
-    if (this.props.tab != null && this.props.tab.configuration.directory_id === undefined) {
+    if (
+      this.props.tab != null &&
+      (!this.props.tab.configuration || this.props.tab.configuration.directory_id === undefined)
+    ) {
       return (
         <UnconfiguredTab
           channel={this.props.channel}

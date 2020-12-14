@@ -79,9 +79,12 @@ export class Service implements TabService {
       getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
   )
   async delete(pk: ChannelTabPrimaryKey): Promise<DeleteResult<ChannelTab>> {
-    await this.repository.remove(pk as ChannelTab);
+    let tabEntity = await this.repository.findOne(pk);
+    if (tabEntity) {
+      await this.repository.remove(tabEntity);
+    }
 
-    return new DeleteResult("channel_tab", pk as ChannelTab, true);
+    return new DeleteResult("channel_tab", tabEntity, true);
   }
 
   async list<ListOptions>(

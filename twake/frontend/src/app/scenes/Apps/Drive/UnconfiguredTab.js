@@ -26,11 +26,13 @@ export default class UnconfiguredTab extends Component {
       return;
     }
     ChannelsService.saveTab(
-      this.props.channel.id,
-      this.props.tab.app_id,
-      undefined,
-      { directory_id: dir.id },
-      this.props.tab.id,
+      this.props.channel.data.company_id,
+      this.props.channel.data.workspace_id,
+      this.props.channel.data.id,
+      this.props.tab.tabId,
+      {
+        directory_id: dir.id,
+      },
     );
     this.props.onFinish();
     Menu.closeAll();
@@ -47,11 +49,11 @@ export default class UnconfiguredTab extends Component {
     }
 
     ChannelsService.saveTab(
-      this.props.channel.id,
-      this.props.tab.app_id,
-      undefined,
+      this.props.channel.data.company_id,
+      this.props.channel.data.workspace_id,
+      this.props.channel.data.id,
+      this.props.tab.tabId,
       { file_id: file.id, directory_id: file.id, icon: icon },
-      this.props.tab.id,
     );
     this.props.onFinish();
     Menu.closeAll();

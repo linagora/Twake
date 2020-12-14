@@ -26,11 +26,11 @@ export default class UnconfiguredTab extends Component {
       return;
     }
     ChannelsService.saveTab(
-      this.props.channel.id,
-      this.props.tab.app_id,
-      undefined,
+      this.props.channel.data.company_id,
+      this.props.channel.data.workspace_id,
+      this.props.channel.data.id,
+      this.props.tab.tabId,
       { board_id: board.id },
-      this.props.tab.id,
     );
     Menu.closeAll();
   }
@@ -40,9 +40,9 @@ export default class UnconfiguredTab extends Component {
     }
     this.creating = true;
     var board = Collections.get('boards').editCopy({});
-    board.workspace_id = this.props.channel.original_workspace;
-    board.title = this.props.channel.name;
-    board.emoji = this.props.channel.icon;
+    board.workspace_id = this.props.channel.data.workspace_id;
+    board.title = this.props.channel.data.name;
+    board.emoji = this.props.channel.data.icon;
     Collections.get('boards').save(board, this.props.collectionKey, board => {
       this.creating = false;
       this.initInBoard(board);

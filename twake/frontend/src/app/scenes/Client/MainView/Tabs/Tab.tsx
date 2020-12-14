@@ -37,7 +37,11 @@ export default ({
   if (selected && tabResource?.state?.persisted) {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
-      context: tabResource.data,
+      context: {
+        tabId: tabResource.data.id,
+        configuration: tabResource.data.configuration || {},
+        name: tabResource.data.name,
+      },
       app: DepreciatedCollections.get('applications').find(tabResource.data.application_id),
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });
@@ -53,7 +57,7 @@ export default ({
         return RouterServices.history.push(route);
       }}
     >
-      {WorkspacesApps.getAppIconComponent(tabResource.data)}
+      {WorkspacesApps.getAppIconComponent(tabResource.data, { size: 14 })}
       <Typography.Paragraph
         ellipsis={{
           rows: 1,

@@ -443,7 +443,10 @@ export default class Calendar extends Component {
     return rect;
   }
   render() {
-    if (this.props.tab != null && this.props.tab.configuration.calendars === undefined) {
+    if (
+      this.props.tab != null &&
+      (!this.props.tab.configuration || this.props.tab.configuration.calendars === undefined)
+    ) {
       return <UnconfiguredTab channel={this.props.channel} tab={this.props.tab} />;
     }
 

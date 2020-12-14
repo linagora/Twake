@@ -18,8 +18,6 @@ const MainContent: FC<{}> = () => {
     SideViewService.getId(),
   ]);
 
-  console.log(mainConfiguration);
-
   return (
     <Layout.Content className={'global-view-content'}>
       <Layout style={{ height: '100%' }}>

@@ -12,7 +12,13 @@ export type ViewTypes =
 export type ViewConfiguration = {
   app?: any; //In depreciated app is used
   collection?: any;
-  context: any;
+  context:
+    | {
+        tabId?: string;
+        configuration?: object;
+      }
+    | any
+    | null;
   hasTabs?: boolean;
 };
 

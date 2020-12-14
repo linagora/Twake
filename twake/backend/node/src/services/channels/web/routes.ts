@@ -149,7 +149,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: tabsUrl,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: createChannelTabSchema,
     handler: tabsController.save.bind(tabsController),
   });
 
@@ -158,7 +157,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: `${tabsUrl}/:tab_id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: getChannelTabSchema,
     handler: tabsController.get.bind(tabsController),
   });
 
@@ -167,7 +165,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: `${tabsUrl}/:tab_id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: updateChannelTabSchema,
     handler: tabsController.update.bind(tabsController),
   });
 
