@@ -1,0 +1,90 @@
+.scroll-top-component,
+.scroll-bottom-component {
+  background-color: transparent;
+  max-width: 100%;
+  position: absolute;
+  right: 0;
+  left: 25%;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-top-component {
+  top: 0;
+}
+.scroll-bottom-component {
+  bottom: 0;
+}
+
+.children-component {
+  height: 100%;
+  width: 100%;
+}
+
+.hidden-notifications-button {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 28px;
+  width: 170px;
+
+  &.ant-btn {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      color: var(--white);
+    }
+  }
+
+  &.ant-btn.top {
+    border-radius: 0px 0px 8px 8px;
+  }
+
+  &.ant-btn.bottom {
+    border-radius: 8px 8px 0px 0px;
+  }
+
+  &.ant-btn.hide {
+    display: none !important;
+  }
+
+  &.primary {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--primary);
+    }
+  }
+
+  &.secondary {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+
+  &.warning {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--warning);
+    }
+  }
+
+  &.important {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--red);
+    }
+  }
+}
