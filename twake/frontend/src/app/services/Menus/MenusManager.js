@@ -32,6 +32,9 @@ class MenusManager extends Observable {
         that.closeMenu();
       }
     });
+
+    this.closeMenu.bind(this);
+    this.openMenu.bind(this);
   }
   closeMenu() {
     if (this.menus.length == 0) {
@@ -44,16 +47,14 @@ class MenusManager extends Observable {
     }
     this.willClose = true;
 
-    if (Globals.isReactNative) {
+    if (this.closeMenuTimeout) {
+      clearTimeout(this.closeMenuTimeout);
+    }
+    this.closeMenuTimeout = setTimeout(() => {
       this.willClose = false;
       this.menus = [];
-    } else {
-      this.closeMenuTimeout = setTimeout(() => {
-        this.willClose = false;
-        this.menus = [];
-        this.notify();
-      }, 200);
-    }
+      this.notify();
+    }, 200);
 
     this.notify();
   }
