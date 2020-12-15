@@ -3,7 +3,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 import { ChannelMemberNotificationLevel } from "../../../services/channels/types";
 
 @Entity("channel_members_notification_preferences", {
-  primaryKey: [["user_id"], "company_id", "channel_id"],
+  primaryKey: [["company_id", "channel_id"], "user_id"],
   type: "channel_members_notification_preferences",
 })
 export class ChannelMemberNotificationPreference {

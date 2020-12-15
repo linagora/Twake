@@ -39,6 +39,7 @@ class Service implements NotificationServiceAPI {
       await Promise.all([
         this.badges.init(context),
         this.channelPreferences.init(context),
+        this.channelThreads.init(context),
         this.engine.init(context),
       ]);
     } catch (err) {
