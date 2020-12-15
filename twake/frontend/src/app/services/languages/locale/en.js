@@ -1765,6 +1765,7 @@ export default {
   'components.searchpopup.all': 'Default',
   'components.workspace.calendar.invalid': 'Invalid',
   'components.searchpopup.enter_text': 'Enter some text to search Twake.',
+  'components.searchpopup.enter_member_name': 'Enter the username of the contact you want to add.',
   'components.searchpopup.loading': 'Loading more results',
   'components.searchpopup.filter_ws': 'Filter workspaces',
   'components.searchpopup.tags': 'Tags',

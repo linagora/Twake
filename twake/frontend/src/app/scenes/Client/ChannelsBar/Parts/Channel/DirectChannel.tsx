@@ -4,7 +4,7 @@ import './Channel.scss';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 import ChannelMenu from 'app/scenes/Client/ChannelsBar//Parts/Channel/ChannelMenu';
 
 type Props = {
@@ -13,8 +13,8 @@ type Props = {
 };
 
 export default (props: Props) => {
-  useChannelListener(props.channel.data.direct_channel_members || []);
-  const [avatar, name] = getChannelParts({
+  useUsersListener(props.channel.data.direct_channel_members || []);
+  const { avatar, name } = getUserParts({
     usersIds: props.channel.data.direct_channel_members || [],
   });
   const menu = (channel: ChannelResource) => {

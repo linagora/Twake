@@ -1,42 +1,58 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
+import { Button, Col, Row, Typography, Input } from 'antd';
+import { Search } from 'react-feather';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
+import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import { UserType } from 'app/models/User';
+
+import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages.js';
 import UsersService from 'services/user/user.js';
-import { UserType } from 'app/models/User';
-import Icon from 'components/Icon/Icon';
-import ObjectModal from 'components/ObjectModal/ObjectModal';
-import { Avatar, Button, Col, Row, Typography, Input } from 'antd';
-import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import ModalManager from 'services/Modal/ModalManager';
+
+import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
-import Menu from 'components/Menus/Menu.js';
-import { Search } from 'react-feather';
+
+import ObjectModal from 'components/ObjectModal/ObjectModal';
+import { useUsersListener } from 'app/components/Member/UserParts';
 
 type Props = {
   closable?: boolean;
   channel: ChannelResource;
 };
 
-const { Text, Link } = Typography;
+const { Link } = Typography;
+const defaultLimit = 100;
 
 const ChannelMembersList: FC<Props> = props => {
   const { company_id, workspace_id, id } = props.channel.data;
 
+  const [search, setSearch] = useState('');
+  const [limit, setLimit] = useState(defaultLimit);
+  const [searchedUsers, setSearchedUsers] = useState<string[]>([]);
+
   const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/${workspace_id}/channels/${id}/members/`;
   const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+  const channelMembers = channelMembersCollection.useWatcher({}, { limit: limit });
 
-  const channelMembers = channelMembersCollection.useWatcher({});
+  const channelMembersUid = channelMembers.map(member => member.data.user_id || '');
 
-  const onSearchMembers = (text: string, callback: any) => {
+  useUsersListener(channelMembersUid || []);
+
+  const onSearchMembers = (text: string) => {
+    setSearch(text);
     return UsersService.search(
-      text,
+      Strings.removeAccents(text),
       {
         scope: 'workspace',
         workspace_id: workspace_id,
       },
-      (res: any) => {
-        callback(res);
+      (res: UserType[]) => {
+        setSearchedUsers(
+          res.filter(user => channelMembersUid.includes(user.id || '')).map(user => user.id || ''),
+        );
       },
     );
   };
@@ -44,7 +60,7 @@ const ChannelMembersList: FC<Props> = props => {
   return (
     <ObjectModal
       title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [
-        channelMembers.length,
+        channelMembers.length, // Not true with the limit
         props.channel.data.name,
       ])}
       closable={props.closable ? props.closable : false}
@@ -56,11 +72,8 @@ const ChannelMembersList: FC<Props> = props => {
               size={'large'}
               suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                onSearchMembers(e.target.value, (array: UserType[]) =>
-                  console.log('Search -->', array),
-                )
-              }
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchMembers(e.target.value)}
             />
           </Col>
           <Col>
@@ -88,61 +101,35 @@ const ChannelMembersList: FC<Props> = props => {
           </Col>
         </Row>
       </div>
-      {channelMembers && (
-        <div className="x-margin bottom-margin">
-          {channelMembers.map((item: ChannelMemberResource, index: number) => {
-            const user: UserType = DepreciatedCollections.get('users').find(item.data.user_id);
-
-            return (
-              user && (
-                <Row key={`key_${index}`} align="middle" justify="start" gutter={[8, 8]}>
-                  <Col>
-                    <Avatar size={24} src={UsersService.getThumbnail(user)} />
-                  </Col>
-                  <Col flex={4}>
-                    <Text strong>{UsersService.getFullName(user)}</Text> @{user.username}
-                  </Col>
-                  <Col>
-                    <Menu
-                      menu={[
-                        {
-                          type: 'menu',
-                          text: Languages.t(
-                            'scenes.client.channelbar.channelmemberslist.menu.option_1',
-                          ),
-                        },
-                        {
-                          type: 'menu',
-                          text: (
-                            <div style={{ color: 'var(--red)' }}>
-                              {Languages.t(
-                                'scenes.client.channelbar.channelmemberslist.menu.option_2',
-                              )}
-                            </div>
-                          ),
-                        },
-                      ]}
-                    >
-                      <Icon type="ellipsis-h" className="m-icon-small" />
-                    </Menu>
-                  </Col>
-                </Row>
-              )
-            );
-          })}
-        </div>
-      )}
-      {channelMembers.length >= 10 && (
+      <div className="x-margin bottom-margin">
+        <PerfectScrollbar
+          style={{ height: '400px' }}
+          component="div"
+          options={{ suppressScrollX: true, suppressScrollY: false }}
+        >
+          {!search.length &&
+            channelMembers.map(user => (
+              <MemberChannelRow key={user.id} userId={user.data.user_id || ''} />
+            ))}
+          {!!search.length &&
+            searchedUsers.map(userId => <MemberChannelRow key={userId} userId={userId} />)}
+          {!searchedUsers.length &&
+            limit < searchedUsers.length + defaultLimit &&
+            setLimit(searchedUsers.length + defaultLimit)}
+        </PerfectScrollbar>
+      </div>
+      {channelMembers.length >= limit && (
         <Row align="middle" justify="center" gutter={[0, 16]}>
           <Link
             className="small-y-margin"
             style={{ color: 'var(--grey-dark)' }}
-            onClick={() => console.log('show list +5 members')}
+            onClick={() => setLimit(channelMembers.length + defaultLimit)}
           >
             {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
           </Link>
         </Row>
       )}
+      {/* {text when there's no search and want more result} */}
     </ObjectModal>
   );
 };
