@@ -40,10 +40,12 @@ export class Service implements MemberService {
     return this;
   }
 
-  @RealtimeSaved<ChannelMember>(
-    (member, context) => ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
-    (member, context) => getMemberPath(member, context as ChannelExecutionContext),
-  )
+  @RealtimeSaved<ChannelMember>((member, context) => [
+    {
+      room: ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
+      path: getMemberPath(member, context as ChannelExecutionContext),
+    },
+  ])
   async save(
     member: ChannelMember,
     options: ChannelMemberSaveOptions,
@@ -101,10 +103,12 @@ export class Service implements MemberService {
     return await this.service.get(this.getPrimaryKey(pk), context);
   }
 
-  @RealtimeDeleted<ChannelMember>(
-    (member, context) => ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
-    (member, context) => getMemberPath(member, context as ChannelExecutionContext),
-  )
+  @RealtimeDeleted<ChannelMember>((member, context) => [
+    {
+      room: ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
+      path: getMemberPath(member, context as ChannelExecutionContext),
+    },
+  ])
   async delete(
     pk: ChannelMemberPrimaryKey,
     context: ChannelExecutionContext,

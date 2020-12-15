@@ -1,4 +1,4 @@
-import { getPath, getRoom, PathResolver, RealtimePath } from "..";
+import { getRealtimeRecipients, getRoom, RealtimeRecipients } from "..";
 import { DeleteResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
 import { eventBus } from "../../../services/realtime/bus";
@@ -8,10 +8,7 @@ import { eventBus } from "../../../services/realtime/bus";
  * @param path the path to push the notification to
  * @param resourcePath the path of the resource itself
  */
-export function RealtimeDeleted<T>(
-  room: RealtimePath<T>,
-  resourcePath?: string | PathResolver<T>,
-): MethodDecorator {
+export function RealtimeDeleted<T>(recipients: RealtimeRecipients<T>): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
   return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor): void {
     const originalMethod = descriptor.value;
@@ -25,14 +22,18 @@ export function RealtimeDeleted<T>(
         return result;
       }
 
-      result.deleted &&
-        eventBus.publish<T>(RealtimeEntityActionType.Deleted, {
-          type: result.type,
-          room: getRoom(room, result, context),
-          resourcePath: getPath(resourcePath, result, context),
-          entity: result.entity,
-          result,
-        } as RealtimeEntityEvent<T>);
+      if (result.deleted)
+        getRealtimeRecipients(recipients, result.entity, context).forEach(
+          ({ room, path, resource }) => {
+            eventBus.publish<T>(RealtimeEntityActionType.Deleted, {
+              type: result.type,
+              room: getRoom(room, result, context),
+              resourcePath: path,
+              entity: resource,
+              result,
+            } as RealtimeEntityEvent<T>);
+          },
+        );
 
       return result;
     };

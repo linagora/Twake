@@ -34,9 +34,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     return this;
   }
 
-  @RealtimeCreated<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeCreated<UserNotificationBadge>((badge, context) => [
+    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
+  ])
   create?(
     item: UserNotificationBadge,
     context?: NotificationExecutionContext,
@@ -51,9 +51,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  @RealtimeUpdated<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeUpdated<UserNotificationBadge>((badge, context) => [
+    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
+  ])
   update?(
     pk: UserNotificationBadgePrimaryKey,
     item: UserNotificationBadge,
@@ -62,9 +62,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  @RealtimeSaved<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeSaved<UserNotificationBadge>((badge, context) => [
+    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
+  ])
   save?<SaveOptions>(
     item: UserNotificationBadge,
     options: SaveOptions,
@@ -73,9 +73,9 @@ export class Service implements UserNotificationBadgeServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  @RealtimeDeleted<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeDeleted<UserNotificationBadge>((badge, context) => [
+    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
+  ])
   delete(
     pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,

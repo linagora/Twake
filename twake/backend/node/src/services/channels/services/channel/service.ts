@@ -44,11 +44,12 @@ export class Service implements ChannelService {
     return this;
   }
 
-  @RealtimeSaved<Channel>(
-    (channel, context) =>
-      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
-  )
+  @RealtimeSaved<Channel>((channel, context) => [
+    {
+      room: ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
+      path: getChannelPath(channel, context as WorkspaceExecutionContext),
+    },
+  ])
   async save(
     channel: Channel,
     options: ChannelSaveOptions,
@@ -151,11 +152,12 @@ export class Service implements ChannelService {
     return this.service.get(pk, context);
   }
 
-  @RealtimeUpdated<Channel>(
-    (channel, context) =>
-      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
-  )
+  @RealtimeUpdated<Channel>((channel, context) => [
+    {
+      room: ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
+      path: getChannelPath(channel, context as WorkspaceExecutionContext),
+    },
+  ])
   update(
     pk: ChannelPrimaryKey,
     channel: Channel,
@@ -164,11 +166,12 @@ export class Service implements ChannelService {
     return this.service.update(pk, channel, context);
   }
 
-  @RealtimeDeleted<Channel>(
-    (channel, context) =>
-      ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
-    (channel, context) => getChannelPath(channel, context as WorkspaceExecutionContext),
-  )
+  @RealtimeDeleted<Channel>((channel, context) => [
+    {
+      room: ResourcePath.get(getRoomName(channel, context as WorkspaceExecutionContext)),
+      path: getChannelPath(channel, context as WorkspaceExecutionContext),
+    },
+  ])
   async delete(
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,

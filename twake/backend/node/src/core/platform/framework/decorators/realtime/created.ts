@@ -1,18 +1,14 @@
-import { getPath, RealtimePath } from "..";
 import { CreateResult } from "../../api/crud-service";
 import { RealtimeEntityEvent, RealtimeEntityActionType } from "../../../services/realtime/types";
 import { eventBus } from "../../../services/realtime/bus";
-import { getRoom, PathResolver } from ".";
+import { getRealtimeRecipients, getRoom, RealtimeRecipients } from ".";
 
 /**
  *
  * @param path the path to push the notification to
  * @param resourcePath the path of the resource itself
  */
-export function RealtimeCreated<T>(
-  room: RealtimePath<T>,
-  resourcePath?: string | PathResolver<T>,
-): MethodDecorator {
+export function RealtimeCreated<T>(recipients: RealtimeRecipients<T>): MethodDecorator {
   // eslint-disable-next-line @typescript-eslint/ban-types
   return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor): void {
     const originalMethod = descriptor.value;
@@ -27,13 +23,17 @@ export function RealtimeCreated<T>(
         return result;
       }
 
-      eventBus.publish<T>(RealtimeEntityActionType.Created, {
-        type: result.type,
-        room: getRoom(room, result, context),
-        resourcePath: getPath(resourcePath, result, context),
-        entity: result.entity,
-        result,
-      } as RealtimeEntityEvent<T>);
+      getRealtimeRecipients(recipients, result.entity, context).forEach(
+        ({ room, path, resource }) => {
+          eventBus.publish<T>(RealtimeEntityActionType.Created, {
+            type: result.type,
+            room: getRoom(room, result, context),
+            resourcePath: path,
+            entity: resource,
+            result,
+          } as RealtimeEntityEvent<T>);
+        },
+      );
 
       return result;
     };

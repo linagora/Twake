@@ -9,7 +9,7 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated("/foo/bar")
+      @RealtimeUpdated({ room: "/foo/bar" })
       reverseMeBaby(input: string): Promise<string> {
         return Promise.resolve(input.split("").reverse().join(""));
       }
@@ -32,7 +32,7 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated("/foo/bar", "/foo/bar/baz")
+      @RealtimeUpdated({ room: "/foo/bar", path: "/foo/bar/baz" })
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
         return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
@@ -72,7 +72,9 @@ describe("The RealtimeUpdated decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeUpdated(result => ResourcePath.get(`/foo/bar/${result}`), "/foo/bar/baz")
+      @RealtimeUpdated(result => [
+        { room: ResourcePath.get(`/foo/bar/${result}`), path: "/foo/bar/baz" },
+      ])
       async reverseMeBaby(input: string): Promise<UpdateResult<string>> {
         return new UpdateResult<string>("string", input.split("").reverse().join(""));
       }
