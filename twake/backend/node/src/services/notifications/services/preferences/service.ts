@@ -85,4 +85,14 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
   list(): Promise<ListResult<ChannelMemberNotificationPreference>> {
     throw new Error("Not implemented");
   }
+
+  async getChannelPreferencesForUsers(
+    channelAndCompany: Pick<
+      ChannelMemberNotificationPreferencePrimaryKey,
+      "channel_id" | "company_id"
+    >,
+    users: string[] = [],
+  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
+    return this.repository.find({ ...channelAndCompany, ...{ user_id: users } });
+  }
 }

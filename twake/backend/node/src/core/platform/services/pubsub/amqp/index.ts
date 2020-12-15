@@ -4,21 +4,26 @@ import { logger } from "../../../framework/logger";
 import { AmqpPubsubClient } from "./pubsubclient";
 import { PubsubMessage, PubsubListener, PubsubServiceAPI } from "../api";
 
+const LOG_PREFIX = "service.pubsub.amqp -";
 export class RabbitPubSub implements PubsubServiceAPI {
   version: "1";
 
   constructor(private client: AmqpPubsubClient) {}
 
-  async publish(topic: string, message: PubsubMessage): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async publish(topic: string, message: PubsubMessage<any>): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Publishing message to topic ${topic}`);
     await this.client.publish(topic, message.data);
   }
 
-  subscribe(topic: string, listener: PubsubListener): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscribe(topic: string, listener: PubsubListener<any>): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic}`);
     return this.client.subscribe(topic, (err, message, originalMessage) => {
       const data = err ? originalMessage : message;
 
       if (err) {
-        logger.error(`Received a message which can not be parsed on topic ${topic}`);
+        logger.error(`${LOG_PREFIX} Received a message which can not be parsed on topic ${topic}`);
       }
 
       listener({
@@ -36,21 +41,21 @@ export class RabbitPubSub implements PubsubServiceAPI {
 }
 
 function createClient(urls: string[]): Promise<AmqpPubsubClient> {
-  logger.info(`Creating AMQP client ${urls}`);
+  logger.info(`${LOG_PREFIX} Creating AMQP client ${urls}`);
   const connection = connect(urls);
 
   connection.on("connect", () => {
-    logger.info("Connected to RabbitMQ");
+    logger.info(`${LOG_PREFIX} Connected to RabbitMQ`);
   });
 
   // disconnect is called when going from "connected" to "disconnected",
   // and also at every unsuccessfull connection attempt
   connection.on("disconnect", (err: Error) => {
-    logger.warn({ err }, "RabbitMQ connection lost");
+    logger.warn({ err }, `${LOG_PREFIX} RabbitMQ connection lost`);
   });
 
   return onConnection(connection).catch((err: Error) => {
-    logger.error({ err }, "Unable to create the AMQP connection");
+    logger.error({ err }, `${LOG_PREFIX} Unable to create the AMQP connection`);
     throw err;
   });
 }

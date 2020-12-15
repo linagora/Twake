@@ -17,7 +17,8 @@ class EventBus extends EventEmitter implements PubsubEventBus {
    *
    * @param listener
    */
-  subscribe(listener: (message: PubsubEventMessage) => void): this {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscribe(listener: (message: PubsubEventMessage<any>) => void): this {
     return this.on(EVENT, listener);
   }
 
@@ -26,7 +27,8 @@ class EventBus extends EventEmitter implements PubsubEventBus {
    *
    * @param message
    */
-  publish(message: PubsubEventMessage): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publish(message: PubsubEventMessage<any>): boolean {
     return this.emit(EVENT, message);
   }
 }

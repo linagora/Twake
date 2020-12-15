@@ -13,11 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && mv docker-compose.yml.dist.tests docker-compose.yml
-      - name: mongo-test
-        run: cd twake && docker-compose run -e DB_DRIVER=mongodb node npm run test
-      - name: cassandra-test
+      - name: unit-test
+        run: cd twake && docker-compose run node npm run test:unit
+      - name: e2e-mongo-test
         if: always()
-        run: cd twake && docker-compose run -e DB_DRIVER=cassandra node npm run test
+        run: cd twake && docker-compose run -e DB_DRIVER=mongodb node npm run test:e2e
+      - name: e2e-cassandra-test
+        if: always()
+        run: cd twake && docker-compose run -e DB_DRIVER=cassandra node npm run test:e2e
   build:
     runs-on: ubuntu-20.04
     steps:

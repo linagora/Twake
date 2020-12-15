@@ -174,7 +174,8 @@ export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContex
    * Save a resource.
    * If the resource exists, it is updated, if it does not exists, it is created.
    *
-   * @param item
+   * @param itemOrItems
+   * @param options
    * @param context
    */
   save?<SaveOptions>(
