@@ -2,7 +2,7 @@ import AppViewService, { ViewConfiguration } from './AppViewService';
 
 class _SideViewService extends AppViewService {
   public getViewType(): 'channel_thread' | '' {
-    return '';
+    return this.getConfiguration()?.context?.viewType || '';
   }
 
   public select(id: string, configuration?: ViewConfiguration) {

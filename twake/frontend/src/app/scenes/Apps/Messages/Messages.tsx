@@ -28,7 +28,8 @@ export default class MainView extends Component<Props> {
     MessagesService.addListener(this);
 
     this.options = props.options || {};
-    this.threadId = this.options.threadId || '';
+    this.options.context = props.options.context || {};
+    this.threadId = this.options.context.threadId || '';
     this.collectionKey = 'messages_' + this.props.channel.data.id + '_' + this.threadId;
   }
   componentWillUnmount() {

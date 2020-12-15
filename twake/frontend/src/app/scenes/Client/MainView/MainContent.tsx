@@ -6,6 +6,8 @@ import AppView from './AppView/AppView';
 import SideViewService from 'app/services/AppView/SideViewService';
 import MainViewService from 'app/services/AppView/MainViewService';
 import NoApp from './NoApp';
+import { X } from 'react-feather';
+import Languages from 'services/languages/languages.js';
 
 const MainContent: FC<{}> = () => {
   const [mainType, mainId] = MainViewService.useWatcher(() => [
@@ -37,13 +39,19 @@ const MainContent: FC<{}> = () => {
           </Layout>
         </Layout.Content>
         <Layout.Sider
-          className="global-view-thread"
+          className="global-side-view"
           breakpoint="lg"
           collapsedWidth="0"
           theme="light"
           width="40%"
           collapsed={sideType === ''}
         >
+          <div className="side-header">
+            <span>
+              {Languages.t('scenes.app.side_app.messages_thread_title', ['Software • FT - Twake'])}
+            </span>
+            <X onClick={() => SideViewService.select('', { context: {} })} />
+          </div>
           {sideType !== '' && (
             <AppView key={sideId + '-side'} id={sideId} viewService={SideViewService} />
           )}
