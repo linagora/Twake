@@ -29,7 +29,8 @@ type Props = {
 
 export default (props: Props): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const companyId = props.channel.data.company_id;
+  const workspaceId = props.channel.data.workspace_id;
 
   const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.data.id}/members/`;
@@ -75,11 +76,13 @@ export default (props: Props): JSX.Element => {
     });
   };
 
-  const leaveChannel = () => {
+  const leaveChannel = async () => {
     if (props.channel.data.user_member) {
+      //Fixme, this is not pretty, we should find a way to do this in one line
       const channelMember = new ChannelMemberResource(props.channel.data.user_member);
-      channelMembersCollection.upsert(channelMember, { withoutBackend: true });
-      return channelMembersCollection.remove(props.channel.data.user_member);
+      channelMember.setPersisted();
+      await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
+      return await channelMembersCollection.remove(channelMember);
     }
   };
 

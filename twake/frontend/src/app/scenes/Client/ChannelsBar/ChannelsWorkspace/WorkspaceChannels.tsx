@@ -50,9 +50,7 @@ export default (props: Props) => {
     );
   } else {
     channels = props.channels.map(({ data, key }) => {
-      return (
-        <ChannelIntermediate key={key} collection={props.collection} channelId={data.id || ''} />
-      );
+      return <ChannelIntermediate key={key} collection={props.collection} channel={data || ''} />;
     });
   }
   return (

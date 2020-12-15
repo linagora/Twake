@@ -18,6 +18,7 @@ export default (props: Props) => {
     usersIds: props.channel.data.direct_channel_members || [],
   });
   const menu = (channel: ChannelResource) => {
+    if (!channel) return <></>;
     return <ChannelMenu channel={channel} />;
   };
 

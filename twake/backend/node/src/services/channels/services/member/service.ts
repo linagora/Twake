@@ -119,8 +119,10 @@ export class Service implements MemberService {
 
   @RealtimeDeleted<ChannelMember>((member, context) => [
     {
-      room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=private&user=${member.user_id}`,
-      entity: {
+      room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=${
+        member.workspace_id === ChannelVisibility.DIRECT ? "direct" : "private"
+      }&user=${member.user_id}`,
+      resource: {
         company_id: member.company_id,
         workspace_id: member.workspace_id,
         id: member.channel_id,
