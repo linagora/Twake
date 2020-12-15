@@ -28,7 +28,7 @@ export function RealtimeCreated<T>(recipients: RealtimeRecipients<T>): MethodDec
           eventBus.publish<T>(RealtimeEntityActionType.Created, {
             type: result.type,
             room: getRoom(room, result, context),
-            resourcePath: path,
+            resourcePath: path || "/",
             entity: resource,
             result,
           } as RealtimeEntityEvent<T>);

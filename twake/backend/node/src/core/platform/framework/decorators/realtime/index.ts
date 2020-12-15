@@ -22,16 +22,18 @@ export function getRealtimeRecipients<T>(
   type: T,
   context?: ExecutionContext,
 ): RealtimeRecipient<T>[] {
-  if (typeof recipients === "function") {
-    recipients = recipients(type, context);
-  }
-  if (!recipients) {
-    return [];
-  }
-  if ((recipients as RealtimeRecipient<T>[]).length) {
-    return recipients as RealtimeRecipient<T>[];
-  }
-  return [recipients as RealtimeRecipient<T>];
+  if (typeof recipients === "function") recipients = recipients(type, context);
+  if (!recipients) return [];
+  if (!(recipients as RealtimeRecipient<T>[]).length)
+    recipients = [recipients as RealtimeRecipient<T>];
+
+  return (recipients as RealtimeRecipient<T>[]).map(recipient => {
+    return {
+      resource: recipient.resource || type,
+      path: recipient.path || "/",
+      room: recipient.room,
+    };
+  });
 }
 
 export type RealtimePath<T> = string | ResourcePath | ResourcePathResolver<T>;
