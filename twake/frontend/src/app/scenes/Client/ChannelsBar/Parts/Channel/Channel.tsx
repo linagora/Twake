@@ -9,6 +9,7 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import { Tooltip } from 'antd';
+import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -76,7 +77,10 @@ export default (props: Props) => {
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (
-            <div className="notification_dot">{Math.max(1, props.notifications)}</div>
+            <div className="notification_dot">
+              {Math.max(1, props.notifications)}
+              <Beacon tag="channel_bar_component" />
+            </div>
           )}
           {props.menu}
         </div>
