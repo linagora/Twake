@@ -64,11 +64,7 @@ export const createChannelSchema = {
         websocket: webSocketSchema,
         resource: {
           type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-          },
+          properties: {},
           required: ["id", "company_id", "workspace_id"],
         },
       },
@@ -94,11 +90,7 @@ export const updateChannelSchema = {
         websocket: webSocketSchema,
         resource: {
           type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-          },
+          properties: {},
           required: ["id", "company_id", "workspace_id"],
         },
       },
@@ -122,12 +114,7 @@ export const getChannelSchema = {
         websocket: webSocketSchema,
         resource: {
           type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-            name: { type: "string" },
-          },
+          properties: {},
           required: ["id", "company_id", "workspace_id", "name"],
         },
       },

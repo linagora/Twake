@@ -11,7 +11,7 @@ import {
 import { MemberService } from "../../provider";
 
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
-import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { Channel, User } from "../../../../services/types";
 import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
@@ -42,8 +42,11 @@ export class Service implements MemberService {
 
   @RealtimeSaved<ChannelMember>((member, context) => {
     return [
+      //Send member preferences update to channels collections
       {
-        room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=private&user=${member.user_id}`,
+        room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=${
+          member.workspace_id === ChannelVisibility.DIRECT ? "direct" : "private"
+        }&user=${member.user_id}`,
         resource: {
           company_id: member.company_id,
           workspace_id: member.workspace_id,
@@ -134,9 +137,6 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
     const memberToDelete = await this.service.get(pk, context);
-    if (isDirectChannel(context.channel)) {
-      throw CrudExeption.badRequest("Direct channel can not be left");
-    }
 
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");

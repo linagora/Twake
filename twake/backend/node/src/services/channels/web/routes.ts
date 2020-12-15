@@ -29,7 +29,10 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   options,
   next,
 ) => {
-  const channelsController = new ChannelCrudController(options.service.channels);
+  const channelsController = new ChannelCrudController(
+    options.service.channels,
+    options.service.members,
+  );
   const membersController = new ChannelMemberCrudController(options.service.members);
   const tabsController = new ChannelTabCrudController(options.service.tabs);
 
