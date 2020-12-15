@@ -51,20 +51,20 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
 
   return (
     <>
-      <div
-        className={`scroll-top-component ${hideScrollComponent(beacon[0])}`}
-        onClick={previousBeacon}
-      >
-        {scrollTopComponent}
-      </div>
       <div ref={ref} className="scroll-children-component">
         {children}
-      </div>
-      <div
-        className={`scroll-bottom-component ${hideScrollComponent(beacon[1])}`}
-        onClick={nextBeacon}
-      >
-        {scrollBottomComponent}
+        <div
+          className={`scroll-top-component ${hideScrollComponent(beacon[0])}`}
+          onClick={previousBeacon}
+        >
+          {scrollTopComponent}
+        </div>
+        <div
+          className={`scroll-bottom-component ${hideScrollComponent(beacon[1])}`}
+          onClick={nextBeacon}
+        >
+          {scrollBottomComponent}
+        </div>
       </div>
     </>
   );
