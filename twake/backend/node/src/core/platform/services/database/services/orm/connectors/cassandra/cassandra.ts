@@ -5,7 +5,7 @@ import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
 import { UpsertOptions } from "..";
 import { logger } from "../../../../../../framework";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
-import { EntityDefinition, ColumnDefinition } from "../../types";
+import { EntityDefinition, ColumnDefinition, ObjectType } from "../../types";
 import { AbstractConnector } from "../abstract-connector";
 import {
   transformValueToDbString,
@@ -15,6 +15,7 @@ import {
 import { FindOptions } from "../../repository/repository";
 import { ListResult, Pagination } from "../../../../../../framework/api/crud-service";
 import { Paginable } from "../../../../../../framework/api/crud-service";
+import { buildSelectQuery } from "./query-builder";
 
 export { CassandraPagination } from "./pagination";
 
@@ -384,19 +385,11 @@ export class CassandraConnector extends AbstractConnector<
       );
     }
 
-    //Set primary key
-    const where = Object.keys(filters).map(
-      key =>
-        `${key} = ${transformValueToDbString(
-          filters[key],
-          columnsDefinition[key].type,
-          columnsDefinition[key].options,
-        )}`,
-    );
+    const query = buildSelectQuery<Table>((entityType as unknown) as ObjectType<Table>, filters, {
+      keyspace: this.options.keyspace,
+    });
 
-    const query = `SELECT * FROM ${this.options.keyspace}.${
-      entityDefinition.name
-    } WHERE ${where.join(" AND ")}`;
+    logger.debug(`services.database.orm.cassandra - ${query}`);
 
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),
