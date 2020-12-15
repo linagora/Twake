@@ -34,8 +34,6 @@ const AppView: FC<PropsType> = props => {
   const app = props.viewService.getConfiguration().app;
   let channelTab = configuration.context;
 
-  console.log(channelTab);
-
   if (channel) {
     if ((app || {}).simple_name == 'twake_drive') {
       return <Drive channel={channel} tab={channelTab} options={configuration} />;

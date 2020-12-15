@@ -40,12 +40,23 @@ export class Service implements MemberService {
     return this;
   }
 
-  @RealtimeSaved<ChannelMember>((member, context) => [
-    {
-      room: ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
-      path: getMemberPath(member, context as ChannelExecutionContext),
-    },
-  ])
+  @RealtimeSaved<ChannelMember>((member, context) => {
+    return [
+      {
+        room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=private&user=${member.user_id}`,
+        resource: {
+          company_id: member.company_id,
+          workspace_id: member.workspace_id,
+          id: member.channel_id,
+          user_member: member,
+        },
+      },
+      {
+        room: ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
+        path: getMemberPath(member, context as ChannelExecutionContext),
+      },
+    ];
+  })
   async save(
     member: ChannelMember,
     options: ChannelMemberSaveOptions,
@@ -104,6 +115,15 @@ export class Service implements MemberService {
   }
 
   @RealtimeDeleted<ChannelMember>((member, context) => [
+    {
+      room: `/companies/${member.company_id}/workspaces/${member.workspace_id}/channels?type=private&user=${member.user_id}`,
+      entity: {
+        company_id: member.company_id,
+        workspace_id: member.workspace_id,
+        id: member.channel_id,
+        user_member: null,
+      },
+    },
     {
       room: ResourcePath.get(getRoomName(context as ChannelExecutionContext)),
       path: getMemberPath(member, context as ChannelExecutionContext),

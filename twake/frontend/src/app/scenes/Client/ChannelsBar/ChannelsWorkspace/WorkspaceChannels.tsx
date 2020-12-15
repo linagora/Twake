@@ -65,12 +65,12 @@ export default (props: Props) => {
               className="add"
               menu={[
                 {
-                  type: 'menu1',
+                  type: 'menu',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
                   onClick: () => addChannel(),
                 },
                 {
-                  type: 'menu2',
+                  type: 'menu',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
                   onClick: () => joinChannel(),
                 },
