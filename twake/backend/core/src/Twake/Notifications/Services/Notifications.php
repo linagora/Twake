@@ -150,6 +150,7 @@ class Notifications
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "message_id" => $message_id,
             "thread_id" => $message ? $message->getParentMessageId() : "",
+            "click_action" => "FLUTTER_NOTIFICATION_CLICK",
         );
 
         $toPush = true;
