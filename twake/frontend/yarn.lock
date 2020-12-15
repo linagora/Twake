@@ -1996,6 +1996,11 @@
   version "12.19.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.19.8.tgz#efd6d1a90525519fc608c9db16c8a78f7693a978"
 
+"@types/node@^14.11.10":
+  version "14.14.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.13.tgz#9e425079799322113ae8477297ae6ef51b8e0cdf"
+  integrity sha512-vbxr0VZ8exFMMAjCW8rJwaya0dMCDyYW2ZRdTyjtrCvJoENMpdUHOT/eTzvgyA5ZnqRZ/sI0NwqAxNHKYokLJQ==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -2446,6 +2451,13 @@ amdefine@>=0.0.4:
 anchorme@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/anchorme/-/anchorme-1.1.2.tgz#86112384219e530a531e5b380f16b2fe54ada08a"
+
+animated-scroll-to@^2.0.12:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/animated-scroll-to/-/animated-scroll-to-2.0.12.tgz#f2197b3cfc644b932678b7a0209aadf68dffe478"
+  integrity sha512-08TlNWa0Os38ShzScfrlV7c4w3QCZWUG+jhrx2ojMmI8apR8o3C1RwLxEaSKyu8RmcJvU89z3HcKObbAdHMHGQ==
+  dependencies:
+    "@types/node" "^14.11.10"
 
 ansi-colors@^3.0.0:
   version "3.2.4"
