@@ -104,7 +104,9 @@ export default class Tasks extends Component {
 
     if (
       this.props.tab != null &&
-      (this.props.tab.configuration.board_id === undefined || (!loading && !current_board))
+      (!this.props.tab.configuration || this.props.tab.configuration.board_id === undefined) &&
+      !loading &&
+      !current_board
     ) {
       return (
         <UnconfiguredTab

@@ -5,37 +5,49 @@ import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';
 import NoApp from '../NoApp';
 import { ViewConfiguration } from 'app/services/AppView/AppViewService';
+import AppViewService from 'app/services/AppView/AppViewService';
 
 type PropsType = {
-  app: any;
+  viewService: AppViewService;
   id: string;
-  current_channel_tab?: any;
+  current_channelTab?: any;
   current_channel?: any;
-  configuration: ViewConfiguration;
 };
 
 const AppView: FC<PropsType> = props => {
-  const channelCollection = props.configuration.collection;
+  //Listen context and app_id changes
+  props.viewService.useWatcher(() => [
+    props.viewService.getConfiguration().app?.id,
+    props.viewService.getConfiguration().context,
+  ]);
+
+  const configuration = props.viewService.getConfiguration();
+
+  const channelCollection = configuration.collection;
   let channel = null;
-  let channel_tab = null;
-  if (props.app === 'messages') {
+  if (channelCollection.useWatcher) {
     channel = channelCollection.useWatcher({ id: props.id })[0];
   } else {
     channel = channelCollection.find(props.id);
   }
 
+  const app = props.viewService.getConfiguration().app;
+  let channelTab = configuration.context;
+
+  console.log(channelTab);
+
   if (channel) {
-    if ((props.app || {}).simple_name == 'twake_drive') {
-      return <Drive channel={channel} tab={channel_tab} options={props.configuration} />;
+    if ((app || {}).simple_name == 'twake_drive') {
+      return <Drive channel={channel} tab={channelTab} options={configuration} />;
     }
-    if ((props.app || {}).simple_name == 'twake_calendar') {
-      return <Calendar channel={channel} tab={channel_tab} options={props.configuration} />;
+    if ((app || {}).simple_name == 'twake_calendar') {
+      return <Calendar channel={channel} tab={channelTab} options={configuration} />;
     }
-    if ((props.app || {}).simple_name == 'twake_tasks') {
-      return <Tasks channel={channel} tab={channel_tab} options={props.configuration} />;
+    if ((app || {}).simple_name == 'twake_tasks') {
+      return <Tasks channel={channel} tab={channelTab} options={configuration} />;
     }
-    if (props.app == 'messages') {
-      return <Messages channel={channel} options={props.configuration} />;
+    if (app == 'messages') {
+      return <Messages channel={channel} options={configuration} />;
     }
 
     return <NoApp />;

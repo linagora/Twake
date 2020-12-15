@@ -1,5 +1,5 @@
 import Observable from 'app/services/Observable/Observable';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 
 class ModalManager extends Observable {
   static service: ModalManager = new ModalManager();

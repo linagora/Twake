@@ -8,7 +8,7 @@ import './Task.scss';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import TaskDetails from './TaskDetails.js';
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import TagPicker from 'components/TagPicker/TagPicker.js';

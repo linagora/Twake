@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import { Input, Col, Row } from 'antd';
 import './Inputs.scss';

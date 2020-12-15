@@ -2,7 +2,7 @@ import React from 'react';
 import { TabResource } from 'app/models/Tab';
 import RouterServices from 'app/services/RouterService';
 import TabsTemplateEditor from './TabsTemplateEditor';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
 import { MoreHorizontal } from 'react-feather';
@@ -10,20 +10,42 @@ import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { Typography } from 'antd';
+import MainViewService from 'app/services/AppView/MainViewService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 
 type PropsType = {
   tabResource: TabResource;
   upsertTab: (tab: TabResource) => Promise<TabResource>;
   deleteTab: (tab: TabResource) => Promise<void>;
   currentUserId: string;
+  selected: boolean;
 };
 
-export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType): JSX.Element => {
+export default ({
+  selected,
+  tabResource,
+  upsertTab,
+  deleteTab,
+  currentUserId,
+}: PropsType): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.useStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasRight(workspaceId || '', 'administrator'),
   );
+
+  if (selected && tabResource?.state?.persisted) {
+    MainViewService.select(MainViewService.getId(), {
+      collection: MainViewService.getConfiguration().collection,
+      context: {
+        tabId: tabResource.data.id,
+        configuration: tabResource.data.configuration || {},
+        name: tabResource.data.name,
+      },
+      app: DepreciatedCollections.get('applications').find(tabResource.data.application_id),
+      hasTabs: MainViewService.getConfiguration().hasTabs,
+    });
+  }
 
   return (
     <span
@@ -35,7 +57,7 @@ export default ({ tabResource, upsertTab, deleteTab, currentUserId }: PropsType)
         return RouterServices.history.push(route);
       }}
     >
-      {WorkspacesApps.getAppIconComponent(tabResource.data)}
+      {WorkspacesApps.getAppIconComponent(tabResource.data, { size: 14 })}
       <Typography.Paragraph
         ellipsis={{
           rows: 1,

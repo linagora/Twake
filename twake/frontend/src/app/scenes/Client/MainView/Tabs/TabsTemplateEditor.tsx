@@ -4,7 +4,7 @@ import { TabResource } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
 
 import Icon from 'app/components/Icon/Icon';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';

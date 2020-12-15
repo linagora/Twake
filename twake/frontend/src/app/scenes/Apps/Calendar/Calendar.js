@@ -7,7 +7,7 @@ import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'services/localStorage.js';
 
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';
@@ -443,7 +443,10 @@ export default class Calendar extends Component {
     return rect;
   }
   render() {
-    if (this.props.tab != null && this.props.tab.configuration.calendars === undefined) {
+    if (
+      this.props.tab != null &&
+      (!this.props.tab.configuration || this.props.tab.configuration.calendars === undefined)
+    ) {
       return <UnconfiguredTab channel={this.props.channel} tab={this.props.tab} />;
     }
 

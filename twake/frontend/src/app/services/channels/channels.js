@@ -3,15 +3,17 @@ import CurrentUser from 'services/user/current_user.js';
 import UserService from 'services/user/user.js';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'services/localStorage.js';
 import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import emojione from 'emojione';
 import Number from 'services/utils/Numbers.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
 import RouterServices from 'app/services/RouterService';
+import { TabResource } from 'app/models/Tab';
 
 class Channels extends Observable {
   constructor() {
@@ -19,7 +21,7 @@ class Channels extends Observable {
     this.setObservableName('channels');
 
     this.state = {
-      channels_repository: Collections.get('channels'),
+      channels_repository: DepreciatedCollections.get('channels'),
     };
 
     Globals.window.channel_service = this;
@@ -43,7 +45,7 @@ class Channels extends Observable {
     var that = this;
     Globals.window.addEventListener('focus', function (e) {
       that.readChannelIfNeeded(
-        Collections.get('channels').findByFrontId(that.currentChannelFrontId),
+        DepreciatedCollections.get('channels').findByFrontId(that.currentChannelFrontId),
       );
     });
   }
@@ -71,7 +73,7 @@ class Channels extends Observable {
         this.openDiscussion(channel.members);
       }
 
-      channel = Collections.get('channels').findByFrontId(channel.front_id);
+      channel = DepreciatedCollections.get('channels').findByFrontId(channel.front_id);
 
       if (!channel) {
         return;
@@ -90,9 +92,9 @@ class Channels extends Observable {
       }
 
       (channel.tabs || []).forEach(tab => {
-        Collections.get('channel_tabs').completeObject(tab);
+        DepreciatedCollections.get('channel_tabs').completeObject(tab);
       });
-      Collections.get('channel_tabs').notify();
+      DepreciatedCollections.get('channel_tabs').notify();
 
       this.currentChannelFrontId = channel.front_id;
       this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
@@ -110,6 +112,15 @@ class Channels extends Observable {
     this.notify();
 
     MenusManager.closeMenu();
+  }
+
+  async saveTab(companyId, workspaceId, channelId, tabId, configuration) {
+    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
+    const TabsCollection = Collections.get(collectionPath, TabResource);
+    const tab = await TabsCollection.findOne(tabId);
+    console.log(tabId, tab, collectionPath);
+    tab.data.configuration = configuration;
+    await TabsCollection.upsert(tab);
   }
 
   updateBadge(channel) {
@@ -134,7 +145,7 @@ class Channels extends Observable {
     if (!channel) {
       return;
     }
-    var messages = Collections.get('messages').findBy({ channel_id: channel.id });
+    var messages = DepreciatedCollections.get('messages').findBy({ channel_id: channel.id });
     if (messages.length > 0) {
       Notifications.read(channel);
     }
@@ -146,11 +157,11 @@ class Channels extends Observable {
     channel.messages_increment++;
     channel.last_activity = new Date().getTime() / 1000;
     channel._user_last_access = new Date().getTime() / 1000;
-    Collections.get('channels').completeObject(channel);
+    DepreciatedCollections.get('channels').completeObject(channel);
   }
 
   getChannelForApp(app_id, workspace_id) {
-    return Collections.get('channels').findBy({
+    return DepreciatedCollections.get('channels').findBy({
       application: true,
       direct: false,
       app_id: app_id,

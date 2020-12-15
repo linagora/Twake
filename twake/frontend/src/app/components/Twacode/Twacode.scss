@@ -63,7 +63,7 @@
     line-break: anywhere;
   }
   .multiline-code {
-    color: #fff;
+    color: var(--white);
     padding: 5px;
     border-radius: var(--default-border-radius-large);
     .hljs {
@@ -104,6 +104,10 @@
     background: rgba(0, 0, 0, 0);
   }
   .user_twacode {
+    display: inline-flex;
+    line-height: 16px;
+    transform: translateY(-1px);
+
     &.highlighted,
     &.with_user.highlighted {
       background: #fff892;
@@ -237,7 +241,7 @@
 
     &.danger {
       background: #ff6c6c;
-      color: #fff;
+      color: var(--white);
 
       &:hover {
         background: #ee5c5c;

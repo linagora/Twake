@@ -1,5 +1,5 @@
 import Observable from 'app/services/Depreciated/observable.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 

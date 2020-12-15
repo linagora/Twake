@@ -51,6 +51,7 @@ class SessionHandler
 
         $authorization = $request->headers->get("Authorization");
         $authorization = explode(" ", $authorization);
+
         if($authorization[0] === "Bearer"){
             $jwt = $authorization[1];
             try{
@@ -78,6 +79,7 @@ class SessionHandler
                 return $user;
 
             }catch(\Exception $err){
+                error_log($err);
                 return false;
             }
         }

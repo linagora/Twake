@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import Globals from 'services/Globals.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import MediumPopupManager from 'app/services/Modal/ModalManager';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Api from 'services/Api';
 import UserService from 'services/user/user.js';

@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
-import MediumPopupComponent from 'app/services/Modal/ModalManager';
+import MediumPopupComponent from 'app/components/Modal/ModalManager';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ChannelType, ChannelResource } from 'app/models/Channel';

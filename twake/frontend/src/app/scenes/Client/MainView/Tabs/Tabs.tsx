@@ -3,7 +3,7 @@ import { TabResource } from 'app/models/Tab';
 import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import { Plus } from 'react-feather';
@@ -27,7 +27,7 @@ export default (): JSX.Element => {
     <Row align="middle" className="main-view-tabs">
       {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
-          <Tabs.TabPane tab={<DefaultChannelTab />} key="default" />
+          <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
           {tabsList.map((tab: TabResource) => {
             return (
               tab.data.id && (
@@ -35,6 +35,7 @@ export default (): JSX.Element => {
                   tab={
                     <Tab
                       currentUserId={currentUser.id}
+                      selected={tabId == tab.data.id}
                       key={tab.data.id}
                       tabResource={tab}
                       upsertTab={upsertTab}

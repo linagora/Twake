@@ -313,7 +313,7 @@ class WorkspacesApps extends Observable {
     return feather ? Hexagon : 'puzzle-piece';
   }
 
-  getAppIconComponent(item) {
+  getAppIconComponent(item, options = {}) {
     const application = DepreciatedCollections.get('applications').find(
       item.application_id ? item.application_id : item.id,
     );
@@ -329,10 +329,14 @@ class WorkspacesApps extends Observable {
     } else {
       if (typeof IconType === 'string') {
         return (
-          <Icon type={IconType} style={{ width: 18, height: 18 }} className="small-right-margin" />
+          <Icon
+            type={IconType}
+            style={{ width: options.size || 18, height: options.size || 18 }}
+            className="small-right-margin"
+          />
         );
       } else {
-        return <IconType size={18} className="small-right-margin" />;
+        return <IconType size={options.size || 18} className="small-right-margin" />;
       }
     }
   }

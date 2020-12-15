@@ -2,6 +2,7 @@ import { Resource } from 'services/CollectionsReact/Collections';
 
 export type TabType = {
   id?: string;
+  channel_id?: string;
   application_id?: string;
   order?: string;
   owner?: string;

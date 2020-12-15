@@ -19,12 +19,13 @@ export default class LoginView extends Component {
     Languages.addListener(this);
   }
   componentDidMount() {
+    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
     if (
-      ((InitService.server_infos || {}).auth || []).length > 0 &&
-      ((InitService.server_infos || {}).auth || []).indexOf('internal') < 0 &&
+      authModes.length > 0 &&
+      authModes.indexOf('internal') < 0 &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(((InitService.server_infos || {}).auth || [])[0]);
+      LoginService.loginWithExternalProvider(authModes[0]);
     }
   }
   componentWillUnmount() {

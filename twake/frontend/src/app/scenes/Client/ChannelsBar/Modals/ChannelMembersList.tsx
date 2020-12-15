@@ -10,10 +10,9 @@ import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages.js';
 import UsersService from 'services/user/user.js';
 import Collections from 'services/CollectionsReact/Collections';
-import ModalManager from 'services/Modal/ModalManager';
-
-import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
+import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
+import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
 
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import { useUsersListener } from 'app/components/Member/UserParts';

@@ -17,7 +17,7 @@ import Languages from 'services/languages/languages.js';
 import Collections from 'services/CollectionsReact/Collections';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
-import ModalManager from 'app/services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications.js';
 import RouterServices from 'services/RouterService';

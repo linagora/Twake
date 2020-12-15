@@ -11,8 +11,9 @@ import { AppType } from 'app/models/App';
 import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
+import MainViewService from 'app/services/AppView/MainViewService';
 
-export default (): JSX.Element => {
+export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter(app => (app.display || {}).channel);
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
 
@@ -41,6 +42,15 @@ export default (): JSX.Element => {
   const configurable = (item: any) =>
     ((item.display || {}).configuration || {}).can_configure_in_channel;
 
+  if (selected) {
+    MainViewService.select(MainViewService.getId(), {
+      collection: MainViewService.getConfiguration().collection,
+      app: 'messages',
+      context: null,
+      hasTabs: MainViewService.getConfiguration().hasTabs,
+    });
+  }
+
   return (
     <span
       className="align-items-center"
@@ -55,58 +65,60 @@ export default (): JSX.Element => {
 
       <span className="small-right-margin">{Languages.t('scenes.app.mainview.discussion')}</span>
 
-      <Menu
-        style={{ lineHeight: 0 }}
-        menu={[
-          {
-            type: 'menu',
-            text: Languages.t('scenes.apps.tasks.connectors_menu'),
-            submenu: [
-              {
-                type: 'react-element',
-                reactElement: () => {
-                  if (apps.length) {
+      {!!selected && (
+        <Menu
+          style={{ lineHeight: 0 }}
+          menu={[
+            {
+              type: 'menu',
+              text: Languages.t('scenes.apps.tasks.connectors_menu'),
+              submenu: [
+                {
+                  type: 'react-element',
+                  reactElement: () => {
+                    if (apps.length) {
+                      return (
+                        <ConnectorsListManager
+                          list={apps}
+                          current={current() || []}
+                          configurable={configurable}
+                          onChange={onChange}
+                          onConfig={configureChannelConnector}
+                        />
+                      );
+                    }
                     return (
-                      <ConnectorsListManager
-                        list={apps}
-                        current={current() || []}
-                        configurable={configurable}
-                        onChange={onChange}
-                        onConfig={configureChannelConnector}
-                      />
+                      <div className="menu-text">
+                        {Languages.t(
+                          'scenes.app.mainview.tabs.no_connected_connectors_for_channel',
+                          [],
+                          "Vous n'avez aucun connecteur capable de se connecter à une chaîne.",
+                        )}
+                      </div>
                     );
-                  }
-                  return (
-                    <div className="menu-text">
-                      {Languages.t(
-                        'scenes.app.mainview.tabs.no_connected_connectors_for_channel',
-                        [],
-                        "Vous n'avez aucun connecteur capable de se connecter à une chaîne.",
-                      )}
-                    </div>
-                  );
+                  },
                 },
-              },
-              { type: 'separator' },
-              {
-                type: 'menu',
-                text: Languages.t(
-                  'scenes.app.mainview.tabs.searching_connectors',
-                  [],
-                  'Chercher des connecteurs...',
-                ),
-                onClick: () =>
-                  popupManager.open(
-                    <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
-                    true,
+                { type: 'separator' },
+                {
+                  type: 'menu',
+                  text: Languages.t(
+                    'scenes.app.mainview.tabs.searching_connectors',
+                    [],
+                    'Chercher des connecteurs...',
                   ),
-              },
-            ],
-          },
-        ]}
-      >
-        <MoreHorizontal size={14} />
-      </Menu>
+                  onClick: () =>
+                    popupManager.open(
+                      <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
+                      true,
+                    ),
+                },
+              ],
+            },
+          ]}
+        >
+          <MoreHorizontal size={14} />
+        </Menu>
+      )}
     </span>
   );
 };

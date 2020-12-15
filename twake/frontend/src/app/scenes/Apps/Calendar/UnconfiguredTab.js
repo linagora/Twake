@@ -25,17 +25,17 @@ export default class UnconfiguredTab extends Component {
   }
   initInCalendars() {
     ChannelsService.saveTab(
-      this.props.channel.id,
-      this.props.tab.app_id,
-      undefined,
+      this.props.channel.data.company_id,
+      this.props.channel.data.workspace_id,
+      this.props.channel.data.id,
+      this.props.tab.tabId,
       { calendars: this.state.selected },
-      this.props.tab.id,
     );
     Menu.closeAll();
   }
   render() {
     var calendar_list = Collections.get('calendars').findBy({
-      workspace_id: this.props.channel.original_workspace,
+      workspace_id: this.props.channel.data.workspace_id,
     });
 
     return (

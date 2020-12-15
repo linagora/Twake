@@ -718,6 +718,7 @@ class WorkspaceMembers
 
     public function getWorkspaces($userId)
     {
+        $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
         $userRepository = $this->doctrine->getRepository("Twake\Users:User");
         $user = $userRepository->find($userId);
@@ -738,12 +739,16 @@ class WorkspaceMembers
                     }
                 }
 
+                $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
+
                 $workspaces[] = Array(
                     "last_access" => $workspaceMember->getLastAccess(),
                     "workspace" => $workspace,
                     "ishidden" => $workspaceMember->getisHidden(),
                     "isfavorite" => $workspaceMember->getisFavorite(),
-                    "isadmin" => $isAdmin,
+                    "_user_is_admin" => $isAdmin,
+                    "_user_is_guest" => $groupUser->getExterne(),
+                    "_user_is_organization_administrator" => $groupUser->getLevel() === 3,
                     "hasnotifications" => $workspaceMember->getHasNotifications(),
                     "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getisArchived()
                 );

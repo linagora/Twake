@@ -20,6 +20,9 @@ export default class TransportHTTP {
       },
       body: options?.body,
     });
+    if (response.status === 204) {
+      return {};
+    }
     return await response.json();
   }
 

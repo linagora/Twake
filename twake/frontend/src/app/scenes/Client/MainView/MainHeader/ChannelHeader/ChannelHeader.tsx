@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import { startCase } from 'lodash';
-import ModalManager from 'services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import MainViewService from 'app/services/AppView/MainViewService';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import MenuManager from 'services/Menus/MenusManager.js';
+import MenuManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';

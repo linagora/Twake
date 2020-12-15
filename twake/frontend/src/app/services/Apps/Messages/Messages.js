@@ -10,7 +10,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import MessagesListServerUtilsManager from './MessagesListServerUtils';

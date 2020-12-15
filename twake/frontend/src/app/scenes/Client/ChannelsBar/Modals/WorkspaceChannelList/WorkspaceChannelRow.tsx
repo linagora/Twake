@@ -8,7 +8,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelType, ChannelMemberResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/user.js';
-import ModalManager from 'app/services/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 type PropsType = {
   channel: ChannelType;

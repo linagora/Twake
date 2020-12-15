@@ -7,7 +7,7 @@ import Menu from 'components/Menus/Menu.js';
 import Icon from 'components/Icon/Icon.js';
 import Button from 'components/Buttons/Button.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Languages from 'services/languages/languages.js';
 import './AttachmentPicker.scss';

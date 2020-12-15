@@ -266,7 +266,7 @@ class User
                 $wid = $workspace["id"];
                 if(!isset($orgs[$gid])){
                     $orgs[$gid] = [
-                        "role" => "",
+                        "role" => $workspace["_user_is_organization_administrator"] ? "organization_administrator" : ($workspace["_user_is_guest"] ? "guest" : "member"),
                         "wks" => []
                     ];
                 }
@@ -279,9 +279,10 @@ class User
         $payload = [
             "exp" => $expiration,
             "type" => "access",
-            "updated_at" => intval(date("U")),
+            "iat" => intval(date("U")) - 60*10,
+            "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
-            "org" => $orgs
+            "org" => $orgs,
         ];
         $jwt = JWT::encode($payload, $key);
 
@@ -289,7 +290,8 @@ class User
         $payload = [
             "exp" => $refreshExpiration,
             "type" => "refresh",
-            "updated_at" => intval(date("U")),
+            "iat" => intval(date("U")) - 60*10,
+            "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId()
         ];
         $jwt_refresh = JWT::encode($payload, $key);

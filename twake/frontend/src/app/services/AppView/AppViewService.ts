@@ -12,12 +12,20 @@ export type ViewTypes =
 export type ViewConfiguration = {
   app?: any; //In depreciated app is used
   collection?: any;
+  context:
+    | {
+        tabId?: string;
+        configuration?: object;
+      }
+    | any
+    | null;
   hasTabs?: boolean;
 };
 
 const defaultConfiguration: ViewConfiguration = {
   app: 'messages',
   collection: null,
+  context: null,
   hasTabs: false,
 };
 

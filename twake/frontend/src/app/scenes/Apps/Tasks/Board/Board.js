@@ -16,7 +16,7 @@ import Tabs from 'components/Tabs/Tabs.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/User/User.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 
 export default class Board extends React.Component {
   constructor(props) {

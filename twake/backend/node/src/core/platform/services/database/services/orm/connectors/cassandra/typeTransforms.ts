@@ -5,8 +5,8 @@ import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
 
 export const cassandraType = {
+  plainstring: "TEXT",
   string: "TEXT",
-  encrypted: "TEXT",
   json: "TEXT",
   number: "BIGINT",
   timeuuid: "TIMEUUID",
@@ -33,9 +33,13 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
     }
     return `${!!v}`;
   }
-  if (type === "encrypted" || type === "json") {
+  if (type === "string" || type === "json") {
     if (type === "json") {
-      v = JSON.stringify(v);
+      try {
+        v = JSON.stringify(v);
+      } catch (err) {
+        v = null;
+      }
     }
     return `'${v || ""}'`; //Encryption not implemented yet
   }
@@ -46,5 +50,13 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
 };
 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
+  if (type === "json") {
+    try {
+      return JSON.parse(v);
+    } catch (err) {
+      return null;
+    }
+  }
+
   return v;
 };
