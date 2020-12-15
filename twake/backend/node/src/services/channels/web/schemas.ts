@@ -10,6 +10,7 @@ const webSocketSchema = {
 const channelMemberSchema = {
   type: "object",
   properties: {
+    id: { type: "string" },
     user_id: { type: "string" },
     channel_id: { type: "string" },
     company_id: { type: "string" },
@@ -148,13 +149,7 @@ export const createChannelMemberSchema = {
   body: {
     type: "object",
     properties: {
-      resource: {
-        type: "object",
-        properties: {
-          user_id: { type: "string" },
-        },
-        required: ["user_id"],
-      },
+      resource: channelMemberSchema,
     },
     required: ["resource"],
   },

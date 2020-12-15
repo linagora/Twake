@@ -57,6 +57,12 @@ export class ChannelMember {
    * Member expiration in channel (only for guests)
    */
   expiration: boolean | number;
+
+  /**
+   * Every collection entity must have an id, here it is the user_id
+   */
+  @Type(() => String)
+  id: string;
 }
 
 export type ChannelMemberPrimaryKey = Pick<

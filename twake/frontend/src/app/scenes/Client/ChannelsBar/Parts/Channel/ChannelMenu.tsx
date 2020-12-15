@@ -76,7 +76,11 @@ export default (props: Props): JSX.Element => {
   };
 
   const leaveChannel = () => {
-    return channelMembersCollection.remove({ id: currentUser.id });
+    if (props.channel.data.user_member) {
+      const channelMember = new ChannelMemberResource(props.channel.data.user_member);
+      channelMembersCollection.upsert(channelMember, { withoutBackend: true });
+      return channelMembersCollection.remove(props.channel.data.user_member);
+    }
   };
 
   const editChannel = () => {
