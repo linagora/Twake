@@ -14,7 +14,6 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
-import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 
 export default () => {
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
@@ -40,30 +39,21 @@ export default () => {
   }, []);
 
   return (
-    <ScrollWithHiddenComponents
-      tag="channel_bar_component"
-      scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
-      scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
-    >
-      <PerfectScrollbar options={{ suppressScrollX: true }} component="div">
-        <Layout.Sider
-          theme="light"
-          width={220}
-          className="channels_view"
-          style={{ height: '100%' }}
-        >
-          <CurrentUser />
-          {!!companyId && !!workspaceId && (
-            <>
-              <ChannelsApps key={workspaceId} />
-              <Workspace key={'workspace_chans_' + workspaceId} />
-              <ChannelsUser key={companyId} />
-            </>
-          )}
-          <Tutorial />
-          <Footer />
-        </Layout.Sider>
-      </PerfectScrollbar>
-    </ScrollWithHiddenComponents>
+    <Layout.Sider theme="light" width={220} className="channels_view" style={{ height: '100%' }}>
+      <CurrentUser />
+      <ScrollWithHiddenComponents
+        tag="channel_bar_component"
+        scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
+        scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
+      >
+        <PerfectScrollbar options={{ suppressScrollX: true }}>
+          <ChannelsApps key={workspaceId} />
+          <Workspace key={'workspace_chans_' + workspaceId} />
+          <ChannelsUser key={companyId} />
+        </PerfectScrollbar>
+      </ScrollWithHiddenComponents>
+      <Tutorial />
+      <Footer />
+    </Layout.Sider>
   );
 };

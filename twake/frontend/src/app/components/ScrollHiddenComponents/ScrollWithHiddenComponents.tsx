@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from 'react';
-import HiddenNotificationService from './HiddenNotificationService';
+import HiddenNotificationService from 'components/ScrollHiddenComponents/HiddenNotificationService';
 import animateScrollTo from 'animated-scroll-to';
 
 import './Notifications.scss';
@@ -25,7 +25,7 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
     return () => service.removeScroller();
   }, [tag, ref]);
 
-  const beacon = service.useWatcher(() => [
+  const beacon: number[] = service.useWatcher(() => [
     service.state.beaconTop.length,
     service.state.beaconBottom.length,
   ]);
@@ -47,19 +47,25 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
     return animateScrollTo(alignCenter(nextNode), optionsScroller);
   };
 
+  const hideScrollComponent = (beaconLength: number): string => (beaconLength > 0 ? '' : 'hide');
+
   return (
     <>
-      {beacon[0] > 0 && (
-        <div className="scroll-top-component" onClick={previousBeacon}>
-          {scrollTopComponent}
-        </div>
-      )}
-      <div ref={ref}>{children}</div>
-      {beacon[1] > 0 && (
-        <div className="scroll-bottom-component" onClick={nextBeacon}>
-          {scrollBottomComponent}
-        </div>
-      )}
+      <div
+        className={`scroll-top-component ${hideScrollComponent(beacon[0])}`}
+        onClick={previousBeacon}
+      >
+        {scrollTopComponent}
+      </div>
+      <div ref={ref} className="scroll-children-component">
+        {children}
+      </div>
+      <div
+        className={`scroll-bottom-component ${hideScrollComponent(beacon[1])}`}
+        onClick={nextBeacon}
+      >
+        {scrollBottomComponent}
+      </div>
     </>
   );
 };

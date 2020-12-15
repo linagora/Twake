@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import HiddenNotificationService from './HiddenNotificationService';
+import HiddenNotificationService from 'components/ScrollHiddenComponents/HiddenNotificationService';
 
 type PropsType = {
   tag: string;
