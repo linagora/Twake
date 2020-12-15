@@ -1,30 +1,20 @@
 import { isDirectChannel } from "../../../../../channels/utils";
-import { logger, TwakeContext } from "../../../../../../core/platform/framework";
+import { logger } from "../../../../../../core/platform/framework";
 import { MessageNotification, MessageNotificationResult } from "../../../../../messages/types";
-import { NotificationHandler, NotificationServiceAPI } from "../../../../api";
+import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
-import { PubsubEngineService } from "./pubsub";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 
 export class NewChannelMessageProcessor
-  implements NotificationHandler<MessageNotification, MessageNotificationResult> {
-  private pubsub: PubsubEngineService;
-  constructor(private service: NotificationServiceAPI) {}
+  implements NotificationPubsubHandler<MessageNotification, MessageNotificationResult> {
+  constructor(readonly service: NotificationServiceAPI) {}
 
-  getName(): string {
-    return "NewChannelMessageProcessor";
-  }
+  topics: {
+    in: "message:created";
+    out: "message:created:response";
+  };
 
-  async init(context: TwakeContext): Promise<this> {
-    this.pubsub = new PubsubEngineService(this);
-
-    try {
-      await this.pubsub.subscribe(context.getProvider("pubsub"));
-    } catch (err) {
-      logger.warn({ err }, "Not able to start the message notification engine subscriber");
-    }
-    return this;
-  }
+  name: "NewChannelMessageProcessor";
 
   async process(message: MessageNotification): Promise<MessageNotificationResult> {
     logger.info(

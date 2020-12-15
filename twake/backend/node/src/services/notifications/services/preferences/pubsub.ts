@@ -10,9 +10,11 @@ import { merge } from "lodash";
 
 type PreferencesNotification = { channel: Channel; member: ChannelMember };
 
-export class NotificationPubsubService extends PubsubServiceSubscription<
-  ChannelMemberPreferencesServiceAPI
-> {
+export class NotificationPubsubService extends PubsubServiceSubscription {
+  constructor(protected service: ChannelMemberPreferencesServiceAPI) {
+    super();
+  }
+
   async doSubscribe(): Promise<void> {
     logger.info("service.notifications - Subscribing to pubsub notifications");
     this.pubsub.subscribe("channel:member:created", this.onCreated.bind(this));

@@ -1,5 +1,9 @@
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { NotificationEngineAPI, NotificationServiceAPI, NotificationHandler } from "../../api";
+import {
+  NotificationEngineAPI,
+  NotificationServiceAPI,
+  NotificationPubsubHandler,
+} from "../../api";
 import { NewChannelMessageProcessor } from "./processors/new-channel-message";
 
 /**
@@ -7,16 +11,16 @@ import { NewChannelMessageProcessor } from "./processors/new-channel-message";
  */
 export class NotificationEngine implements NotificationEngineAPI {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handlers: Map<string, NotificationHandler<any, any>> = new Map();
+  handlers: Map<string, NotificationPubsubHandler<any, any>> = new Map();
 
   constructor(private service: NotificationServiceAPI) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register(handler: NotificationHandler<any, any>): void {
+  register(handler: NotificationPubsubHandler<any, any>): void {
     if (!handler) {
       return;
     }
-    this.handlers.set(handler.getName(), handler);
+    this.handlers.set(handler.name, handler);
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -24,7 +28,7 @@ export class NotificationEngine implements NotificationEngineAPI {
 
     await Promise.all(
       Array.from(this.handlers.values()).map(async handler => {
-        logger.info(`Initializing notification handler ${handler.getName()}`);
+        logger.info(`Initializing notification handler ${handler.name}`);
         await handler.init(context);
       }),
     );

@@ -13,6 +13,7 @@ import {
   UserNotificationBadgePrimaryKey,
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
+import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
@@ -75,20 +76,13 @@ export interface ChannelThreadUsersServiceAPI
  */
 export interface NotificationEngineAPI extends Initializable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register(handler: NotificationHandler<any, any>): void;
+  register(handler: NotificationPubsubHandler<any, any>): void;
 }
 
 /**
  * A notification hander is in charge of processing a notification from the pubsub layer and then produces something to be consumed by another handler somewhere in the platform.
  */
-export interface NotificationHandler<InputMessage, OutputMessage> extends Initializable {
-  /**
-   * Get the handler name
-   */
-  getName(): string;
-  /**
-   * Process the message and potentially produces several notifications
-   * @param message
-   */
-  process(message: InputMessage): Promise<OutputMessage>;
+export interface NotificationPubsubHandler<InputMessage, OutputMessage>
+  extends PubsubHandler<InputMessage, OutputMessage> {
+  readonly service: NotificationServiceAPI;
 }
