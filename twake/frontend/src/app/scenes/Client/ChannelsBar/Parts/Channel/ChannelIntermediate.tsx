@@ -46,7 +46,7 @@ export default (props: Props): JSX.Element => {
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={false}
       visibility={channel.data.visibility || 'public'}
-      notifications={channel.data.messages_count || 1}
+      notifications={channel.data.messages_count || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

@@ -63,10 +63,15 @@
   font-stretch: normal;
   line-height: 28px;
   background: transparent;
-  color: $black;
+  color: var(--grey-dark);
   display: flex;
   cursor: pointer;
   line-height: normal;
+
+  &.unread {
+    font-weight: bold;
+    color: var(--black);
+  }
 
   .user_list {
     margin-top: 2px;
