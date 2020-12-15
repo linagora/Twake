@@ -129,7 +129,12 @@ export class Service implements ChannelService {
             },
             context,
           );
-          return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
+          if (existingChannel) {
+            return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
+          } else {
+            //Fixme: remove directChannel instance
+            throw CrudExeption.badRequest("table inconsistency");
+          }
         }
       } else {
         if (!channel.name) {

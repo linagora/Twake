@@ -48,7 +48,6 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   };
 
   // channels
-
   fastify.route({
     method: "GET",
     url: channelsUrl,

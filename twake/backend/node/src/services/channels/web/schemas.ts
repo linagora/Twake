@@ -20,6 +20,27 @@ const channelMemberSchema = {
   },
 };
 
+const channelSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    company_id: { type: "string" },
+    workspace_id: { type: "string" },
+    name: { type: "string" },
+    description: { type: "string" },
+    archivation_date: { type: "number" },
+    archived: { type: "boolean" },
+    channel_group: { type: "string" },
+    connectors: { type: "array" },
+    icon: { type: "string" },
+    is_default: { type: "boolean" },
+    direct_channel_members: { type: "array" },
+    owner: { type: "string" },
+    visibility: { type: "string" },
+    user_member: channelMemberSchema,
+  },
+};
+
 const channelTabSchema = {
   type: "object",
   properties: {
@@ -62,11 +83,7 @@ export const createChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {},
-          required: ["id", "company_id", "workspace_id"],
-        },
+        resource: channelSchema,
       },
       required: ["resource"],
     },
@@ -88,11 +105,7 @@ export const updateChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {},
-          required: ["id", "company_id", "workspace_id"],
-        },
+        resource: channelSchema,
       },
       required: ["resource"],
     },
@@ -112,11 +125,7 @@ export const getChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {},
-          required: ["id", "company_id", "workspace_id", "name"],
-        },
+        resource: channelSchema,
       },
     },
   },

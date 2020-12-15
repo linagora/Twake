@@ -2,7 +2,7 @@ import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Channel, ChannelMember } from "../../entities";
+import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
@@ -93,7 +93,11 @@ export class ChannelCrudController
         getChannelExecutionContext(request, channelResult.entity),
       );
 
-      const result = { user_member: memberResult.entity, ...channelResult };
+      const result = channelResult;
+      const resultEntity = ({
+        ...channelResult.entity,
+        ...{ user_member: memberResult.entity },
+      } as unknown) as UserChannel;
 
       if (result.entity) {
         reply.code(201);
@@ -101,7 +105,7 @@ export class ChannelCrudController
 
       return {
         websocket: getWebsocketInformation(result.entity),
-        resource: result.entity,
+        resource: resultEntity,
       };
     } catch (err) {
       handleError(reply, err);

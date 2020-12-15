@@ -6,7 +6,6 @@ import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
-
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
   version = "1";
@@ -27,6 +26,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
         level: this.configuration.get<string>("logger.level", "debug"),
       },
     });
+
     serverErrorHandler(this.server);
     // DIRTY HACK: THis needs to be registered here to avoid circular dep between auth and user.
     // will have to create a core service for this, or another service which must be started first...
