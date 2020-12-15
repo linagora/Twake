@@ -1,5 +1,5 @@
 import RouterServices from 'app/services/RouterService';
-import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 
@@ -12,8 +12,8 @@ export default (props: { workspaceId: string }): JSX.Element => {
   const members = channelMembersCollection
     .useWatcher({}, { limit: 10 })
     .map(i => i.data.user_id || '');
-  useChannelListener(members);
-  const [avatar] = getChannelParts({ usersIds: members, keepMyself: true, max: 10 });
+  useUsersListener(members);
+  const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 10 });
 
   return avatar;
 };

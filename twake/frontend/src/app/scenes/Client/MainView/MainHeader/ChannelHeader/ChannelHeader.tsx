@@ -13,7 +13,7 @@ import { StarFilled } from '@ant-design/icons';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
-import { getChannelParts, useChannelListener } from 'app/components/Channel/UserChannelParts';
+import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import { Search } from 'react-feather';
@@ -31,8 +31,8 @@ export default (): JSX.Element => {
   const members = channelMembersCollection
     .useWatcher({}, { limit: 10 })
     .map(i => i.data.user_id || '');
-  useChannelListener(members);
-  const [avatar] = getChannelParts({ usersIds: members, keepMyself: true, max: 10 });
+  useUsersListener(members);
+  const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 10 });
 
   MainViewService.useWatcher(() => !!MainViewService.getViewCollection());
   const channelCollection = MainViewService.getViewCollection();
