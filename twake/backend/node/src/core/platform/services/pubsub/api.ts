@@ -119,8 +119,8 @@ export interface PubsubHandler<InputMessage, OutputMessage> extends Initializabl
   readonly topics: {
     // The topic to subscribe to
     in: string;
-    // The topic to push process result to
-    out: string;
+    // The topic to push process result to if defined
+    out?: string;
     // The topic to push error to. When topic is undefined, do not push the error
     error?: string;
   };

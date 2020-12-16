@@ -1,12 +1,13 @@
 import { isDirectChannel } from "../../../../../channels/utils";
 import { logger } from "../../../../../../core/platform/framework";
-import { MessageNotification, MessageNotificationResult } from "../../../../../messages/types";
+import { MessageNotification } from "../../../../../messages/types";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
+import { MentionNotification } from "../../../../types";
 
 export class NewChannelMessageProcessor
-  implements NotificationPubsubHandler<MessageNotification, MessageNotificationResult> {
+  implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {
@@ -16,7 +17,7 @@ export class NewChannelMessageProcessor
 
   readonly name = "NewChannelMessageProcessor";
 
-  async process(message: MessageNotification): Promise<MessageNotificationResult> {
+  async process(message: MessageNotification): Promise<MentionNotification> {
     logger.info(
       `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
@@ -45,14 +46,14 @@ export class NewChannelMessageProcessor
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
-        id: message.id,
-        sender: message.sender,
+        message_id: message.id,
         thread_id: message.thread_id,
         workspace_id: message.workspace_id,
+        creation_date: message.creation_date,
         mentions: {
           users: usersToNotify || [],
         },
-      } as MessageNotificationResult;
+      } as MentionNotification;
     } catch (err) {
       logger.error(
         { err },

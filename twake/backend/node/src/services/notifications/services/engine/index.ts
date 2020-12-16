@@ -12,7 +12,9 @@ export class NotificationEngine implements Initializable {
 
   async init(): Promise<this> {
     this.pubsub.processor.addHandler(new NewChannelMessageProcessor(this.service));
-    this.pubsub.processor.addHandler(new PushNotificationToUsersMessageProcessor(this.service));
+    this.pubsub.processor.addHandler(
+      new PushNotificationToUsersMessageProcessor(this.service, this.pubsub),
+    );
 
     return this;
   }
