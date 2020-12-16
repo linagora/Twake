@@ -39,7 +39,11 @@ export default () => {
           <Route
             path="/"
             component={() => {
-              RouterServices.history.replace(RouterServices.pathnames.LOGIN + '?auto');
+              RouterServices.history.replace(
+                RouterServices.pathnames.LOGIN +
+                  '?auto&' +
+                  RouterServices.history.location.search.substr(1),
+              );
               return <div />;
             }}
           />

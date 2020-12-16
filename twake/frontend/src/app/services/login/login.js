@@ -130,6 +130,7 @@ class Login extends Observable {
       console.error(err);
       external_login_result = false;
     }
+    console.log(external_login_result);
     if (external_login_result) {
       if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
@@ -195,7 +196,11 @@ class Login extends Observable {
 
           WindowState.setTitle();
           RouterServices.history.push(
-            RouterServices.addRedirection(RouterServices.pathnames.LOGIN),
+            RouterServices.addRedirection(
+              RouterServices.pathnames.LOGIN +
+                '?' +
+                RouterServices.history.location.search.substr(1),
+            ),
           );
         } else {
           that.startApp(res.data);
@@ -256,7 +261,11 @@ class Login extends Observable {
             }
             that.login_loading = false;
             that.init();
-            return RouterServices.history.replace(RouterServices.pathnames.LOGIN);
+            return RouterServices.history.replace(
+              RouterServices.pathnames.LOGIN +
+                '?' +
+                RouterServices.history.location.search.substr(1),
+            );
           } else {
             that.login_error = true;
             that.login_loading = false;
@@ -303,7 +312,9 @@ class Login extends Observable {
               Globals.window.location.reload();
             }
           }
-          RouterServices.history.push(RouterServices.pathnames.LOGIN);
+          RouterServices.history.push(
+            RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
+          );
         },
       );
     });

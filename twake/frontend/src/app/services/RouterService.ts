@@ -145,9 +145,12 @@ class RouterServices {
   }
 
   // Generate UUID to shortened and create url
-  generateRouteFromState(params: ClientStateType, replace: boolean = false) {
+  generateRouteFromState(
+    params: ClientStateType,
+    options: { replace?: boolean; keepSearch?: boolean } = {},
+  ) {
     const currentState = this.getStateFromRoute();
-    const expandedState: any = replace ? params : Object.assign(currentState, params);
+    const expandedState: any = options?.replace ? params : Object.assign(currentState, params);
     const state: any = {};
     Object.keys(expandedState).forEach(key => {
       try {
@@ -157,11 +160,14 @@ class RouterServices {
       }
     });
 
+    const search = options?.keepSearch ? '?' + this.history.location.search.substr(1) : '';
+
     if (state.tabId) {
       return (
         `${this.pathnames.CLIENT}/${state.workspaceId}` +
         (state.channelId ? `/c/${state.channelId}` : '') +
-        (state.tabId ? `/tab/${state.tabId}` : '')
+        (state.tabId ? `/tab/${state.tabId}` : '') +
+        search
       );
     }
 
@@ -169,7 +175,8 @@ class RouterServices {
       `${this.pathnames.CLIENT}/${state.workspaceId}` +
       (state.channelId ? `/c/${state.channelId}` : '') +
       (state.threadId ? `/t/${state.threadId}` : '') +
-      (state.messageId ? `/m/${state.messageId}` : '')
+      (state.messageId ? `/m/${state.messageId}` : '') +
+      search
     );
   }
 

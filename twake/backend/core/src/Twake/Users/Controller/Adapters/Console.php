@@ -80,6 +80,7 @@ class Console extends BaseController
                 $this->getParameter("defaults.auth.console.openid.client_secret")
             );
 
+            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", ""));
             $oidc->providerConfigParam($this->getParameter("defaults.auth.console.openid.provider_config", []));
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
@@ -154,7 +155,7 @@ class Console extends BaseController
 
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.server_name"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
+        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
     private function isServiceEnabled(){
