@@ -111,14 +111,6 @@ export default (): JSX.Element => {
               <Typography.Text>Members</Typography.Text>
             </Button>
           )}
-          <Button size="small" type="text" onClick={() => {}}>
-            <Typography.Text>
-              {channel.data.user_member?.favorite && (
-                <StarFilled size={12} style={{ color: 'var(--grey-dark)', marginRight: 4 }} />
-              )}
-              Favorite
-            </Typography.Text>
-          </Button>
         </Row>
       </Col>
 

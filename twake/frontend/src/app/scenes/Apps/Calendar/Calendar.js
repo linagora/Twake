@@ -82,7 +82,7 @@ export default class Calendar extends Component {
     this.props = props;
 
     this.loaded_date_range = {};
-    this.calendar_collection_key = 'calendar_' + this.props.channel.original_workspace;
+    this.calendar_collection_key = 'calendar_' + this.props.channel.data.workspace_id;
 
     this.setLoadedRange(
       'both',
@@ -97,11 +97,11 @@ export default class Calendar extends Component {
         http_base_url: 'calendar/calendar',
         http_options: {
           channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.original_workspace,
+          workspace_id: this.props.channel.data.workspace_id,
         },
         websockets: [
           {
-            uri: 'calendars/' + this.props.channel.original_workspace,
+            uri: 'calendars/' + this.props.channel.data.workspace_id,
             options: { type: 'calendar' },
           },
         ],
@@ -122,7 +122,7 @@ export default class Calendar extends Component {
   }
   onFirstLoad() {
     var calendar_list = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.original_workspace })
+      .findBy({ workspace_id: this.props.channel.data.workspace_id })
       .map(cal => {
         return {
           calendar_id: cal.id,
@@ -147,7 +147,7 @@ export default class Calendar extends Component {
         },
         websockets: [
           {
-            uri: 'calendar_events/' + this.props.channel.original_workspace,
+            uri: 'calendar_events/' + this.props.channel.data.workspace_id,
             options: { type: 'event' },
           },
           {
@@ -213,7 +213,7 @@ export default class Calendar extends Component {
       this.setLoadedRange('both', requested_min, requested_max);
 
       var calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.original_workspace })
+        .findBy({ workspace_id: this.props.channel.data.workspace_id })
         .map(cal => {
           return {
             calendar_id: cal.id,
@@ -251,7 +251,7 @@ export default class Calendar extends Component {
   }
   renderCalendarList() {
     var calendars = Collections.get('calendars').findBy({
-      workspace_id: this.props.channel.original_workspace,
+      workspace_id: this.props.channel.data.workspace_id,
     });
     if (this.props.tab != null) {
       calendars = calendars.filter(c => this.allowed_ids.indexOf(c.id) >= 0);
@@ -413,7 +413,7 @@ export default class Calendar extends Component {
 
     if (mode == 'both' || mode == 'workspace') {
       calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.original_workspace })
+        .findBy({ workspace_id: this.props.channel.data.workspace_id })
         .map(cal => {
           return {
             calendar_id: cal.id,
@@ -451,7 +451,7 @@ export default class Calendar extends Component {
     }
 
     var calendars = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.original_workspace })
+      .findBy({ workspace_id: this.props.channel.data.workspace_id })
       .map(cal => cal.id);
 
     if (this.props.tab != null) {
