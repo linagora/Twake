@@ -1,4 +1,5 @@
-import { Initializable, logger, TwakeContext, TwakeServiceProvider } from "../../framework";
+import { Initializable, logger, TwakeServiceProvider } from "../../framework";
+import { Processor } from "./processor";
 
 export interface PubsubMessage<T> {
   data: T;
@@ -17,7 +18,10 @@ export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;
 export interface PubsubServiceAPI extends TwakeServiceProvider {
   publish<T>(topic: string, message: PubsubMessage<T>): Promise<void>;
   subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void>;
+  processor: Processor;
 }
+
+export type PubsubLayer = Pick<PubsubServiceAPI, "publish" | "subscribe" | "version">;
 
 export interface PubsubEventBus {
   /**
@@ -46,16 +50,16 @@ export abstract class PubsubServiceSubscription {
   abstract doSubscribe(): Promise<void>;
 }
 
-export abstract class PubsubServiceProcessor<In, Out>
+export class PubsubServiceProcessor<In, Out>
   extends PubsubServiceSubscription
   implements Initializable {
-  constructor(protected handler: PubsubHandler<IncomingPubsubMessage<In>, PubsubMessage<Out>>) {
+  constructor(protected handler: PubsubHandler<In, Out>, protected pubsub: PubsubServiceAPI) {
     super();
   }
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     try {
-      await this.subscribe(context.getProvider("pubsub"));
+      await this.subscribe(this.pubsub);
     } catch (err) {
       logger.warn({ err }, "Not able to start the PubsubServiceProcessor");
     }
@@ -63,10 +67,15 @@ export abstract class PubsubServiceProcessor<In, Out>
     return this;
   }
 
-  async process(message: IncomingPubsubMessage<In>): Promise<Out> {
-    const result = await this.handler.process(message);
+  async stop(): Promise<this> {
+    // TODO
+    return this;
+  }
 
-    return result.data;
+  async process(message: IncomingPubsubMessage<In>): Promise<Out> {
+    const result = await this.handler.process(message.data);
+
+    return result;
   }
 
   async doSubscribe(): Promise<void> {

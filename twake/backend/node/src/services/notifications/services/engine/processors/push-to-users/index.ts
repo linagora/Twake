@@ -5,16 +5,19 @@ import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../a
 import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 
-export class NewChannelMessageProcessor
+/**
+ * Push new message notification to a set of users
+ */
+export class PushNotificationToUsersMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MessageNotificationResult> {
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {
-    in: "message:created",
-    out: "notification:mentions",
+    in: "notification:mentions",
+    out: "TODO",
   };
 
-  readonly name = "NewChannelMessageProcessor";
+  name = "PushNotificationToUsersMessageProcessor";
 
   async process(message: MessageNotification): Promise<MessageNotificationResult> {
     logger.info(
@@ -53,6 +56,8 @@ export class NewChannelMessageProcessor
           users: usersToNotify || [],
         },
       } as MessageNotificationResult;
+
+      // TODO: Publish into pubsub.
     } catch (err) {
       logger.error(
         { err },
