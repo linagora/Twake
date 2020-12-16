@@ -26,14 +26,6 @@ export default (props: Props): JSX.Element => {
     { id: props.channel.id },
     { query: { mine: true } },
   )[0];
-  const collectionPath: string = `/channels/v1/companies/${props.channel.company_id}/workspaces/${props.channel.workspace_id}/channels/${props.channel.id}/members/`;
-  const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(
-    collectionPath,
-    ChannelMemberResource,
-  );
-  const userMember: ChannelMemberResource = channelMembersCollection.useWatcher({
-    user_id: userId,
-  })[0];
 
   if (!channel || !channel.data.user_member?.id || !channel.state.persisted) return <></>;
 
