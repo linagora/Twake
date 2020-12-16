@@ -38,7 +38,7 @@ export default (props: Props): JSX.Element => {
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
-    AccessRightsService.hasRight(workspaceId || '', 'administrator'),
+    AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
   );
 
   Languages.useListener(useState);

@@ -3,30 +3,46 @@ import Observable from './Observable/Observable';
 type Rights = 'guest' | 'member' | 'administrator';
 
 class _AccessRightsService extends Observable {
-  workspaceRights: { [workspaceId: string]: Rights } = {};
+  workspaceLevels: { [workspaceId: string]: Rights } = {};
+  companyLevels: { [companyId: string]: Rights } = {};
 
   constructor() {
     super();
     (window as any).AccessRightsService = this;
   }
 
-  public hasRight(workspaceId: string, right: 'none' | Rights) {
-    return (this.workspaceRights[workspaceId] || 'none') === right;
+  public hasLevel(workspaceId: string, right: 'none' | Rights) {
+    return (this.workspaceLevels[workspaceId] || 'none') === right;
   }
 
-  public getRight(workspaceId: string): 'none' | Rights {
-    return this.workspaceRights[workspaceId] || 'none';
+  public getLevel(workspaceId: string): 'none' | Rights {
+    return this.workspaceLevels[workspaceId] || 'none';
   }
 
-  public updateRight(workspaceId: string, right: 'none' | Rights) {
-    delete this.workspaceRights[workspaceId];
-    if (right !== 'none') this.workspaceRights[workspaceId] = right;
+  public updateLevel(workspaceId: string, right: 'none' | Rights) {
+    delete this.workspaceLevels[workspaceId];
+    if (right !== 'none') this.workspaceLevels[workspaceId] = right;
     this.notify();
   }
 
-  public resetRights() {
-    this.workspaceRights = {};
+  public resetLevels() {
+    this.workspaceLevels = {};
+    this.companyLevels = {};
     this.notify();
+  }
+
+  public updateCompanyLevel(companyId: string, right: 'none' | Rights) {
+    delete this.companyLevels[companyId];
+    if (right !== 'none') this.companyLevels[companyId] = right;
+    this.notify();
+  }
+
+  public hasCompanyLevel(companyId: string, right: 'none' | Rights) {
+    return (this.companyLevels[companyId] || 'none') === right;
+  }
+
+  public getCompanyLevel(companyId: string): 'none' | Rights {
+    return this.companyLevels[companyId] || 'none';
   }
 }
 

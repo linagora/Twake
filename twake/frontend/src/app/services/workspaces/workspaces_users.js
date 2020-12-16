@@ -186,13 +186,10 @@ class WorkspacesUsers extends Observable {
   }
   canShowUserInWorkspaceList(member) {
     // if user is interne or wexterne => no restriction
-    if (!WorkspaceUserRights.isInvite() || !WorkspaceUserRights.isInviteChannelOnly()) {
+    if (!WorkspaceUserRights.isInvite()) {
       return true;
     } else {
-      if (
-        !WorkspaceUserRights.isInvite(member) ||
-        !WorkspaceUserRights.isInviteChannelOnly(member)
-      ) {
+      if (!WorkspaceUserRights.isInvite(member)) {
         // if other user is interne or wexterne
         return true;
       }
