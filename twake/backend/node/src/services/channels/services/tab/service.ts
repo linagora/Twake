@@ -27,12 +27,12 @@ export class Service implements TabService {
     return this;
   }
 
-  @RealtimeSaved<ChannelTab>(
-    (_tab, context) =>
-      ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
-    (tab, context) =>
-      getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
-  )
+  @RealtimeSaved<ChannelTab>((tab, context) => [
+    {
+      room: ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
+      path: getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
+    },
+  ])
   async save<SaveOptions>(
     tab: ChannelTab,
     options: SaveOptions,
@@ -72,12 +72,12 @@ export class Service implements TabService {
     return await this.repository.findOne(pk);
   }
 
-  @RealtimeDeleted<ChannelTab>(
-    (_tab, context) =>
-      ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
-    (tab, context) =>
-      getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
-  )
+  @RealtimeDeleted<ChannelTab>((tab, context) => [
+    {
+      room: ResourcePath.get(getTabsRealtimeRoom((context as ChannelExecutionContext).channel)),
+      path: getTabsRealtimeResourcePath(tab, (context as ChannelExecutionContext).channel),
+    },
+  ])
   async delete(pk: ChannelTabPrimaryKey): Promise<DeleteResult<ChannelTab>> {
     let tabEntity = await this.repository.findOne(pk);
     if (tabEntity) {

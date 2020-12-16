@@ -204,10 +204,8 @@ class SearchService extends Observable {
       }
     }
     if (item.type == 'message') {
-      if (!item.workspace && (item.channel || {}).original_workspace) {
-        item.workspace = Collections.get('workspaces').find(
-          (item.channel || {}).original_workspace,
-        );
+      if (!item.workspace && (item.channel || {}).workspace_id) {
+        item.workspace = Collections.get('workspaces').find((item.channel || {}).workspace_id);
       }
       if (item.workspace && item.channel) {
         Workspace.select(item.workspace);
@@ -360,7 +358,7 @@ class SearchService extends Observable {
             res.push({
               type: 'channel',
               channel: item,
-              workspace: Collections.get('workspaces').find(item.original_workspace),
+              workspace: Collections.get('workspaces').find(item.workspace_id),
             });
           }
         }

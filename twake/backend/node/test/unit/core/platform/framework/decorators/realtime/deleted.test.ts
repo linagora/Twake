@@ -9,7 +9,7 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted("/foo/bar")
+      @RealtimeDeleted({ room: "/foo/bar" })
       reverseMeBaby(input: string): Promise<string> {
         return Promise.resolve(input.split("").reverse().join(""));
       }
@@ -32,7 +32,7 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted("/foo/bar", "/foo/bar/baz")
+      @RealtimeDeleted({ room: "/foo/bar", path: "/foo/bar/baz" })
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
@@ -71,7 +71,9 @@ describe("The RealtimeDeleted decorator", () => {
     const emitSpy = jest.spyOn(eventBus, "emit");
 
     class TestMe {
-      @RealtimeDeleted(result => ResourcePath.get(`/foo/bar/${result}`), "/foo/bar/baz")
+      @RealtimeDeleted(result => [
+        { room: ResourcePath.get(`/foo/bar/${result}`), path: "/foo/bar/baz" },
+      ])
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }

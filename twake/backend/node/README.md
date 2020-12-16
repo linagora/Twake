@@ -329,10 +329,10 @@ import { RealtimeCreated } from "@/core/platform/framework/decorators";
 // top and bottom code removed for clarity
 class MessageService implements CRUDService<Message> {
 
-  @RealtimeCreated<Message>(
-    "/messages",
-    message => `/messages/${message.id}`
-  )
+  @RealtimeCreated<Message>({
+    room: "/messages",
+    path: message => `/messages/${message.id}`
+  })
   async create(item: Message): Promise<CreateResult<Message>> {
     // save the message then return a CreateResult instance
     const created: Message = new Message(/* */);

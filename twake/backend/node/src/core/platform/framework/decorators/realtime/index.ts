@@ -6,6 +6,36 @@ export * from "./deleted";
 export * from "./updated";
 export * from "./saved";
 
+export type RealtimeRecipients<T> =
+  | RealtimeRecipient<T>
+  | RealtimeRecipient<T>[]
+  | ((type: T, context?: ExecutionContext) => RealtimeRecipient<T>[] | RealtimeRecipient<T>);
+
+export type RealtimeRecipient<T> = {
+  room: RealtimePath<T>;
+  path?: string;
+  resource?: any | T;
+};
+
+export function getRealtimeRecipients<T>(
+  recipients: RealtimeRecipients<T>,
+  type: T,
+  context?: ExecutionContext,
+): RealtimeRecipient<T>[] {
+  if (typeof recipients === "function") recipients = recipients(type, context);
+  if (!recipients) return [];
+  if (!(recipients as RealtimeRecipient<T>[]).length)
+    recipients = [recipients as RealtimeRecipient<T>];
+
+  return (recipients as RealtimeRecipient<T>[]).map(recipient => {
+    return {
+      resource: recipient.resource || type,
+      path: recipient.path || "/",
+      room: recipient.room,
+    };
+  });
+}
+
 export type RealtimePath<T> = string | ResourcePath | ResourcePathResolver<T>;
 export interface ResourcePathResolver<T> {
   (type: T, context?: ExecutionContext): ResourcePath;
@@ -13,6 +43,8 @@ export interface ResourcePathResolver<T> {
 export interface PathResolver<T> {
   (type: T, context?: ExecutionContext): string;
 }
+
+export type RealtimeEntity<T> = null | ((type: T, context?: ExecutionContext) => T);
 
 export function getRoom<T>(
   path: RealtimePath<T> = ResourcePath.default(),

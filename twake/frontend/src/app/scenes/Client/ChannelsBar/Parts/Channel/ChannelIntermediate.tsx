@@ -10,7 +10,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import UsersService from 'services/user/user.js';
 
 type Props = {
-  channelId: string;
+  channel: ChannelType;
   collection: Collection<ChannelResource>;
 };
 
@@ -18,14 +18,15 @@ export default (props: Props): JSX.Element => {
   const userId: string = UsersService.getCurrentUserId();
   const { companyId }: ClientStateType = RouterServices.useStateFromRoute();
   const menu = (channel: ChannelResource) => {
+    if (!channel) return <></>;
     return <ChannelMenu channel={channel} />;
   };
 
   const channel = props.collection.useWatcher(
-    { id: props.channelId },
+    { id: props.channel.id },
     { query: { mine: true } },
   )[0];
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${channel?.data?.workspace_id}/channels/${props.channelId}/members/`;
+  const collectionPath: string = `/channels/v1/companies/${props.channel.company_id}/workspaces/${props.channel.workspace_id}/channels/${props.channel.id}/members/`;
   const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(
     collectionPath,
     ChannelMemberResource,
@@ -34,16 +35,7 @@ export default (props: Props): JSX.Element => {
     user_id: userId,
   })[0];
 
-  if (!channel) return <></>;
-
-  if (false && channel.data.user_member?.favorite !== userMember?.data?.favorite) {
-    //We force update the channel listing if we detect user_member changes here
-    channel.data = {
-      ...channel.data,
-      user_member: userMember?.data,
-    };
-    props.collection.upsert(channel, { withoutBackend: true });
-  }
+  if (!channel || !channel.data.user_member?.id || !channel.state.persisted) return <></>;
 
   return (
     <ChannelUI

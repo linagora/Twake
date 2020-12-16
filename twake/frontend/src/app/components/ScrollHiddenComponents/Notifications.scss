@@ -9,9 +9,15 @@
 
   display: flex;
   justify-content: center;
+  transition: transform 0.2s;
 
   &.hide {
-    display: none;
+    &.scroll-top-component {
+      transform: translateY(-100%);
+    }
+    &.scroll-bottom-component {
+      transform: translateY(100%);
+    }
   }
 }
 
@@ -26,15 +32,14 @@
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 .hidden-notifications-button {
   display: flex !important;
   justify-content: center;
   align-items: center;
-  opacity: 0.8;
-  height: 28px;
-  width: 170px;
+  cursor: pointer;
 
   &.ant-btn {
     &,
@@ -43,22 +48,15 @@
     &:hover {
       color: var(--white);
     }
+    display: flex;
+    margin: 4px;
+    width: 70%;
+    height: 24px;
+    border-radius: 12px;
 
-    &:hover {
-      opacity: 1;
+    span {
+      flex: 1;
     }
-  }
-
-  &.ant-btn.top {
-    border-radius: 0px 0px 8px 8px;
-  }
-
-  &.ant-btn.bottom {
-    border-radius: 8px 8px 0px 0px;
-  }
-
-  &.ant-btn.hide {
-    display: none !important;
   }
 
   &.primary {
@@ -91,7 +89,9 @@
   &.important {
     &,
     &:focus,
-    &:active,
+    &:active {
+      background-color: var(--red);
+    }
     &:hover {
       background-color: var(--red);
     }

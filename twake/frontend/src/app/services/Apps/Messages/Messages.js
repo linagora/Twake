@@ -17,6 +17,7 @@ import MessagesListServerUtilsManager from './MessagesListServerUtils';
 import Globals from 'services/Globals.js';
 import MessageEditors from './MessageEditors';
 import { ChannelResource } from 'app/models/Channel';
+import SideViewService from 'app/services/AppView/SideViewService';
 
 class Messages extends Observable {
   constructor() {
@@ -483,7 +484,15 @@ class Messages extends Observable {
   async showMessage(id) {
     const message = DepreciatedCollections.get('messages').find(id);
     const channel = await this.findChannel(message.channel_id);
-    ChannelsService.select(channel.data, true, { threadId: id });
+
+    SideViewService.select(channel.id, {
+      collection: this.getCollection(message.channel_id),
+      app: 'messages',
+      context: {
+        viewType: 'channel_thread',
+        threadId: id,
+      },
+    });
   }
 
   scrollToMessage(channel, parent_id, id) {
@@ -496,13 +505,17 @@ class Messages extends Observable {
   }
 
   async findChannel(channelId, companyId = null, workspaceId = null) {
+    return await this.getCollection(channelId, companyId, workspaceId).findOne({ id: channelId });
+  }
+
+  getCollection(channelId, companyId = null, workspaceId = null) {
     if (!companyId || !workspaceId) {
       const context = MessagesListServerUtilsManager.channelsContextById[channelId];
       companyId = context.companyId;
       workspaceId = context.workspaceId;
     }
     const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-    return await Collections.get(path, ChannelResource).findOne({ id: channelId });
+    return Collections.get(path, ChannelResource);
   }
 }
 

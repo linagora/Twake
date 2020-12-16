@@ -17,11 +17,21 @@ export default (): JSX.Element => {
   const { companyId, workspaceId, channelId, tabId } = RouterServices.useStateFromRoute();
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
   const TabsCollection = Collections.get(collectionPath, TabResource);
-  const tabsList: TabResource[] = TabsCollection.useWatcher({});
+  const tabsList: TabResource[] = TabsCollection.useWatcher(
+    {},
+    { observedFields: ['id', 'name', 'configuration'] },
+  );
   const currentUser = UserService.getCurrentUser();
 
   const upsertTab = async (tab: TabResource) => await TabsCollection.upsert(tab);
   const deleteTab = async (tab: TabResource) => await TabsCollection.remove(tab);
+
+  if (tabId && tabsList.map(e => e.id).indexOf(tabId || '') < 0) {
+    const route: string = RouterServices.generateRouteFromState({
+      tabId: '',
+    });
+    RouterServices.history.push(route);
+  }
 
   return (
     <Row align="middle" className="main-view-tabs">

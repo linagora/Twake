@@ -218,7 +218,10 @@ export class CassandraMemberService implements MemberService {
       prepare: true,
     });
 
-    return new UpdateResult<ChannelMember>(TYPE, updatableChannel);
+    return new UpdateResult<ChannelMember>(TYPE, {
+      id: updatableChannel.user_id,
+      ...updatableChannel,
+    });
   }
 
   async get(key: ChannelMemberPrimaryKey): Promise<ChannelMember> {
@@ -319,6 +322,6 @@ export class CassandraMemberService implements MemberService {
 
     (row.keys() || []).forEach(key => (member[key] = row.get(key)));
 
-    return plainToClass(ChannelMember, member);
+    return plainToClass(ChannelMember, { id: member.user_id, ...member });
   }
 }

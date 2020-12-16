@@ -27,40 +27,26 @@ class WorkspaceUserRights extends Observable {
   }
 
   isNotConnected() {
-    return (
-      !this.currentUserRightsByWorkspace[Workspaces.currentWorkspaceId] ||
-      ['drive_public_access'].indexOf(WindowService.findGetParameter('view')) >= 0
-    );
+    return AccessRightsService.getLevel(Workspaces.currentWorkspaceId) === 'none';
   }
 
   isInvite(userId = false) {
-    var user = userId || CurrentUser.get().id;
-    return ((WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})[user] || {})
-      .externe;
-  }
-
-  isInviteChannelOnly(userId = false) {
-    var user = userId || CurrentUser.get().id;
-    return (
-      this.isInvite() &&
-      !((WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})[user] || {})
-        .autoAddExterne
-    );
+    if (!userId) {
+      return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'guest');
+    }
+    return true;
   }
 
   isGroupInvite() {
-    return (
-      (WorkspacesUsers.users_by_group[Workspaces.currentGroupId] || {})[CurrentUser.get().id] || {}
-    ).externe;
+    return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'guest');
   }
 
   hasGroupPrivilege(privilege) {
-    var rights = this.getUserRights();
-    return (rights.group || []).indexOf(privilege) >= 0;
+    return AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'administrator');
   }
 
   hasWorkspacePrivilege(level = 'administrator') {
-    return AccessRightsService.hasRight(Workspaces.currentWorkspaceId, level);
+    return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, level);
   }
 }
 

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Collections, { Resource } from '../Collections';
 import CollectionTransport from './CollectionTransport';
 import { WebsocketEvents } from './TransportSocket';
@@ -91,6 +92,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
       if (!localResource) {
         localResource = new (this.transport.collection.getType())(resource);
       }
+      localResource.data = _.merge(localResource.data, resource);
       localResource.setShared();
       this.transport.collection.upsert(localResource, {
         withoutBackend: true,

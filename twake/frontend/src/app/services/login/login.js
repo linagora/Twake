@@ -329,12 +329,20 @@ class Login extends Observable {
     this.currentUserId = user.id;
     DepreciatedCollections.get('users').updateObject(user);
 
-    AccessRightsService.resetRights();
+    AccessRightsService.resetLevels();
 
     user.workspaces.forEach(workspace => {
-      AccessRightsService.updateRight(
+      AccessRightsService.updateLevel(
         workspace.id,
-        workspace._user_is_admin ? 'administrator' : 'member',
+        workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
+      );
+      AccessRightsService.updateCompanyLevel(
+        workspace.group.id,
+        workspace._user_is_organization_administrator
+          ? 'administrator'
+          : workspace._user_is_guest
+          ? 'guest'
+          : 'member',
       );
 
       Workspaces.addToUser(workspace);

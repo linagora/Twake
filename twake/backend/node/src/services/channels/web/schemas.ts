@@ -10,6 +10,7 @@ const webSocketSchema = {
 const channelMemberSchema = {
   type: "object",
   properties: {
+    id: { type: "string" },
     user_id: { type: "string" },
     channel_id: { type: "string" },
     company_id: { type: "string" },
@@ -17,6 +18,27 @@ const channelMemberSchema = {
     type: { type: "string" },
     favorite: { type: "boolean" },
     notification_level: { type: "string" },
+  },
+};
+
+const channelSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    company_id: { type: "string" },
+    workspace_id: { type: "string" },
+    name: { type: "string" },
+    description: { type: "string" },
+    archivation_date: { type: "number" },
+    archived: { type: "boolean" },
+    channel_group: { type: "string" },
+    connectors: { type: ["array", "null"] },
+    icon: { type: "string" },
+    is_default: { type: "boolean" },
+    direct_channel_members: { type: ["array", "null"] },
+    owner: { type: "string" },
+    visibility: { type: "string" },
+    user_member: channelMemberSchema,
   },
 };
 
@@ -62,15 +84,7 @@ export const createChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-          },
-          required: ["id", "company_id", "workspace_id"],
-        },
+        resource: channelSchema,
       },
       required: ["resource"],
     },
@@ -92,15 +106,7 @@ export const updateChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-          },
-          required: ["id", "company_id", "workspace_id"],
-        },
+        resource: channelSchema,
       },
       required: ["resource"],
     },
@@ -120,16 +126,7 @@ export const getChannelSchema = {
       type: "object",
       properties: {
         websocket: webSocketSchema,
-        resource: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            company_id: { type: "string" },
-            workspace_id: { type: "string" },
-            name: { type: "string" },
-          },
-          required: ["id", "company_id", "workspace_id", "name"],
-        },
+        resource: channelSchema,
       },
     },
   },
@@ -152,13 +149,7 @@ export const createChannelMemberSchema = {
   body: {
     type: "object",
     properties: {
-      resource: {
-        type: "object",
-        properties: {
-          user_id: { type: "string" },
-        },
-        required: ["user_id"],
-      },
+      resource: channelMemberSchema,
     },
     required: ["resource"],
   },

@@ -50,9 +50,7 @@ export default (props: Props) => {
     );
   } else {
     channels = props.channels.map(({ data, key }) => {
-      return (
-        <ChannelIntermediate key={key} collection={props.collection} channelId={data.id || ''} />
-      );
+      return <ChannelIntermediate key={key} collection={props.collection} channel={data || ''} />;
     });
   }
   return (
@@ -65,12 +63,12 @@ export default (props: Props) => {
               className="add"
               menu={[
                 {
-                  type: 'menu1',
+                  type: 'menu',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
                   onClick: () => addChannel(),
                 },
                 {
-                  type: 'menu2',
+                  type: 'menu',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
                   onClick: () => joinChannel(),
                 },

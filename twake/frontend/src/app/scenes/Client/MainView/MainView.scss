@@ -23,9 +23,41 @@
     }
   }
 
-  .global-view-thread {
+  .global-side-view {
     background-color: var(--white);
     border-left: 1px solid var(--grey-background);
+
+    .side-header {
+      height: 40px;
+      background: #f5f5f7;
+      background: var(--grey-background);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      color: var(--black-alpha-2);
+      padding: 8px 8px 8px 16px;
+      line-height: 24px;
+      box-sizing: border-box;
+      overflow: hidden;
+      display: flex;
+
+      span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1 1;
+      }
+
+      svg {
+        cursor: pointer;
+        right: 8px;
+        color: var(--black-alpha-1);
+        &:hover {
+          color: var(--black);
+        }
+      }
+    }
   }
 
   .global-view-content {

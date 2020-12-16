@@ -38,7 +38,9 @@ export default class Tasks extends Component {
     TasksService.addListener(this);
     WorkspacesUsers.addListener(this);
 
-    this.boards_collection_key = 'boards_' + this.props.channel.original_workspace;
+    console.log(this.props.channel);
+
+    this.boards_collection_key = 'boards_' + this.props.channel.data.workspace_id;
 
     Collections.get('boards').addListener(this);
     Collections.get('boards').addSource(
@@ -46,10 +48,10 @@ export default class Tasks extends Component {
         http_base_url: 'tasks/board',
         http_options: {
           channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.original_workspace,
+          workspace_id: this.props.channel.data.workspace_id,
         },
         websockets: [
-          { uri: 'boards/' + this.props.channel.original_workspace, options: { type: 'board' } },
+          { uri: 'boards/' + this.props.channel.data.workspace_id, options: { type: 'board' } },
         ],
       },
       this.boards_collection_key,

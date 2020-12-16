@@ -29,12 +29,17 @@ const AppView: FC<PropsType> = props => {
     channel = channelCollection.useWatcher({ id: props.id })[0];
   } else {
     channel = channelCollection.find(props.id);
+    channel = {
+      data: {
+        workspace_id: channel.original_workspace,
+        company_id: channel.original_group,
+        ...channel,
+      },
+    };
   }
 
   const app = props.viewService.getConfiguration().app;
   let channelTab = configuration.context;
-
-  console.log(channelTab);
 
   if (channel) {
     if ((app || {}).simple_name == 'twake_drive') {

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { CollectionOptions } from '../Collections/Collection';
 import OriginalCollections, {
   Collection as OriginalCollection,
@@ -30,18 +31,27 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     return OriginalCollections.get(path, type, creator, options) as Collection<T>;
   }
 
-  private observedChangesReactOptionsAdapter = (changes: any) => {
-    if (changes?.constructor?.name === 'Array' && changes.length > 1) {
-      return changes.map((e: any) => e?.id || e);
-    }
-    return changes;
+  private observedChangesReactOptionsAdapter = (observedFields: string[]) => {
+    return (changes: any) => {
+      if (changes?.constructor?.name === 'Array' && changes.length > 1) {
+        return changes.map((e: any) => {
+          const observed = observedFields
+            .map(k => _.get(e.data, k) || _.get(e, k))
+            .filter(exist => exist);
+          return observed.length > 0 ? observed : e;
+        });
+      }
+      return changes;
+    };
   };
 
   private getWatcherArgs = (filter?: any, options?: any): [() => Promise<G[]>, any] => {
     return [
       async () => await this.find(filter || {}, options || {}),
       {
-        observedChanges: this.observedChangesReactOptionsAdapter,
+        observedChanges:
+          options?.observedChanges ||
+          this.observedChangesReactOptionsAdapter(options?.observedFields || ['id']),
         memoizedFilters: [JSON.stringify(options), ...Object.values(filter)],
       },
     ];

@@ -23,7 +23,10 @@ export function Workspace() {
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource);
 
-  const channels = channelsCollection.useWatcher({}, { query: { mine: true } });
+  const channels = channelsCollection.useWatcher(
+    {},
+    { observedFields: ['id', 'user_member.favorite'], query: { mine: true } },
+  );
 
   channels
     .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
