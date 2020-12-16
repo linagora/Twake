@@ -10,6 +10,7 @@ type channelCategoryType = {
   favorite: ChannelResource[];
   workspace: ChannelResource[];
   inGroup: ChannelResource[];
+  direct: ChannelResource[];
 };
 
 export function Workspace() {
@@ -17,23 +18,36 @@ export function Workspace() {
     favorite: [],
     workspace: [],
     inGroup: [],
+    direct: [],
   };
 
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource);
+  const directUrl: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
+  const directChannelsCollection = Collection.get(directUrl, ChannelResource);
 
   const channels = channelsCollection.useWatcher(
     {},
     { observedFields: ['id', 'user_member.favorite'], query: { mine: true } },
   );
+  const directChannels = directChannelsCollection.useWatcher(
+    {},
+    { observedFields: ['id', 'user_member.favorite'] },
+  );
+
+  console.log(directChannels.map(e => e.data.user_member?.favorite));
 
   channels
+    .concat(directChannels)
     .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
     .map(channel => {
       switch (true) {
         case channel.data.user_member?.favorite:
           channelCategory.favorite.push(channel);
+          break;
+        case channel.data.visibility === 'direct':
+          channelCategory.direct.push(channel);
           break;
         case channel.data.channel_group && channel.data.channel_group.length > 1:
           channelCategory.inGroup.push(channel);
@@ -73,6 +87,7 @@ export function Workspace() {
     <div className="workspace_channels">
       {channelCategory.favorite.length !== 0 && (
         <WorkspaceChannels
+          directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'favoriteChannels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
@@ -82,6 +97,7 @@ export function Workspace() {
       )}
       {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
         <WorkspaceChannels
+          directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'channels'}
           workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
@@ -90,6 +106,7 @@ export function Workspace() {
       )}
       {groups.map((group, index) => (
         <WorkspaceChannels
+          directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={index}
           workspaceTitle={group.name}

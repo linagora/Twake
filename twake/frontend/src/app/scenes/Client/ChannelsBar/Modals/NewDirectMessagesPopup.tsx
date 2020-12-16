@@ -16,7 +16,7 @@ const NewDirectMessagesPopup: FC = () => {
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
   const company_id = companyId;
 
-  const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/`;
+  const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/::mine`;
   const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
   const upsertDirectMessage = async (): Promise<any> => {

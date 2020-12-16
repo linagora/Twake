@@ -8,6 +8,7 @@ import { ChannelResource, ChannelType, ChannelMemberResource } from 'app/models/
 import RouterServices, { ClientStateType } from 'services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import UsersService from 'services/user/user.js';
+import { getUserParts } from 'app/components/Member/UserParts';
 
 type Props = {
   channel: ChannelType;
@@ -17,6 +18,8 @@ type Props = {
 export default (props: Props): JSX.Element => {
   const userId: string = UsersService.getCurrentUserId();
   const { companyId }: ClientStateType = RouterServices.useStateFromRoute();
+  const isDirectChannel = props.channel.visibility === 'direct';
+
   const menu = (channel: ChannelResource) => {
     if (!channel) return <></>;
     return <ChannelMenu channel={channel} />;
@@ -27,13 +30,22 @@ export default (props: Props): JSX.Element => {
     { query: { mine: true } },
   )[0];
 
+  const { avatar, name } = isDirectChannel
+    ? getUserParts({
+        usersIds: props.channel.direct_channel_members || [],
+      })
+    : { avatar: '', name: '' };
+
   if (!channel || !channel.data.user_member?.id || !channel.state.persisted) return <></>;
+
+  const channelIcon = isDirectChannel ? avatar : channel.data.icon || '';
+  const channeName = isDirectChannel ? name : channel.data.name || '';
 
   return (
     <ChannelUI
       collection={props.collection}
-      name={channel.data.name || ''}
-      icon={channel.data.icon || ''}
+      name={channeName}
+      icon={channelIcon}
       muted={channel.data.user_member?.notification_level === 'none'}
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={false}

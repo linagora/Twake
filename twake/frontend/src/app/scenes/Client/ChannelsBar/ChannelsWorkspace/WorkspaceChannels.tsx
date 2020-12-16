@@ -17,6 +17,7 @@ import Icon from 'components/Icon/Icon';
 
 type Props = {
   collection: Collection<ChannelResource>;
+  directCollection: Collection<ChannelResource>;
   workspaceTitle: string;
   channels: ChannelResource[];
   favorite?: boolean;
@@ -50,7 +51,13 @@ export default (props: Props) => {
     );
   } else {
     channels = props.channels.map(({ data, key }) => {
-      return <ChannelIntermediate key={key} collection={props.collection} channel={data || ''} />;
+      return (
+        <ChannelIntermediate
+          key={key}
+          collection={data.visibility === 'direct' ? props.directCollection : props.collection}
+          channel={data || ''}
+        />
+      );
     });
   }
   return (
