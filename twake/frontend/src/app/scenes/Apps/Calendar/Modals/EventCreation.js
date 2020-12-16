@@ -61,7 +61,7 @@ export default class EventCreation extends Component {
     });
 
     return (
-      <div className="eventModal event_creation">
+      <div className="eventModal event_creation" style={{ padding: '16px' }}>
         <Input
           autoFocus
           value={event.title || ''}
@@ -152,11 +152,13 @@ export default class EventCreation extends Component {
 
         <div className="separator" />
 
-        <Participants
-          participants={event.participants}
-          owner={event.owner}
-          onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
-        />
+        <div className="x-margin small-bottom-margin">
+          <Participants
+            participants={event.participants}
+            owner={event.owner}
+            onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
+          />
+        </div>
 
         <div className="separator" />
 
