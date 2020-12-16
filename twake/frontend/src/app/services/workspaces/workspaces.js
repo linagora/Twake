@@ -43,7 +43,7 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId) {
-    if (this.currentWorkspaceId != workspaceId) {
+    if (this.currentWorkspaceId != workspaceId && workspaceId) {
       this.currentWorkspaceId = workspaceId;
       const workspace = Collections.get('workspaces').find(workspaceId);
       if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
