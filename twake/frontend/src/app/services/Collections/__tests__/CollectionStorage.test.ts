@@ -69,26 +69,32 @@ test('Mongo collection finds', async () => {
   await CollectionStorage.upsert('lists/' + listIdA + '/tasks', {
     id: '1',
     category: 'sport',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listIdA + '/tasks', {
     id: '2',
     category: 'work',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listIdA + '/tasks', {
     id: '3',
     category: 'sport',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listIdB + '/tasks', {
     id: '1',
     category: 'sport',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listIdB + '/tasks', {
     id: '2',
     category: 'work',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listIdB + '/tasks', {
     id: '3',
     category: 'other',
+    time: 10,
   });
 
   expect((await CollectionStorage.find('lists/' + listIdA + '/tasks', { id: '1' })).length).toBe(1);
@@ -104,9 +110,19 @@ test('Mongo collection finds', async () => {
       .length,
   ).toBe(1);
   expect(
-    (await CollectionStorage.find('lists/' + listIdB + '/tasks', { category: 'work', id: '1' }))
+    (await CollectionStorage.find('lists/' + listIdB + '/tasks', { category: 'work', time: 10 }))
+      .length,
+  ).toBe(1);
+  expect(
+    (await CollectionStorage.find('lists/' + listIdB + '/tasks', { category: 'work', time: 9 }))
       .length,
   ).toBe(0);
+
+  //Length will be 1 because we ignore all filters if id is provided
+  expect(
+    (await CollectionStorage.find('lists/' + listIdB + '/tasks', { category: 'work', id: '1' }))
+      .length,
+  ).toBe(1);
 });
 
 test('Mongo collection findOne', async () => {
@@ -114,21 +130,34 @@ test('Mongo collection findOne', async () => {
   await CollectionStorage.upsert('lists/' + listId + '/tasks', {
     id: '1',
     category: 'sport',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listId + '/tasks', {
     id: '2',
     category: 'work',
+    time: 10,
   });
   await CollectionStorage.upsert('lists/' + listId + '/tasks', {
     id: '3',
     category: 'other',
+    time: 10,
   });
 
   expect(
     (await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', id: '2' }))
       ?.category,
   ).toBe('work');
+  expect((await CollectionStorage.findOne('lists/' + listId + '/tasks', { id: 9 }))?.category).toBe(
+    undefined,
+  );
   expect(
-    await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', id: '1' }),
+    (await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', time: 9 }))
+      ?.category,
   ).toBe(undefined);
+
+  //We ignore all filters if id is provided
+  expect(
+    (await CollectionStorage.findOne('lists/' + listId + '/tasks', { category: 'work', id: '1' }))
+      ?.category,
+  ).toBe('sport');
 });
