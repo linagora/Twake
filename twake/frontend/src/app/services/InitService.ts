@@ -6,6 +6,13 @@ import RouterServices from 'app/services/RouterService';
 type ServerInfoType = {
   branding?: any;
   websocket_public_key?: string;
+  auth?: {
+    [type: string]:
+      | {
+          use: boolean;
+        }
+      | any;
+  };
   ready?:
     | true
     | {

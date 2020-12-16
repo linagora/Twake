@@ -125,8 +125,8 @@ export default class Collection<G extends Resource<any>> {
     filter: G | any,
     options?: GeneralOptions & ServerRequestOptions,
   ): Promise<void> {
-    if (filter?.constructor?.name) {
-      filter = filter.data;
+    if (filter?.constructor?.name && filter?.constructor?.name !== 'Object') {
+      filter = filter.data || filter;
     }
     if (filter) {
       const resource = await this.findOne(filter);

@@ -11,6 +11,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 
 import CreateCompanyView from '../CreateCompanyView/CreateCompanyView.js';
 import SecondMail from '../SecondMail/SecondMail.js';
+import InitService from 'services/InitService';
 
 import './WelcomePage.scss';
 
@@ -43,7 +44,7 @@ export default class WelcomePage extends Component {
     }
   }
   displayPage(page: number) {
-    const auth = LoginService.server_infos?.auth as any;
+    const auth = InitService.server_infos?.auth as any;
 
     if (page == 1) {
       return (
