@@ -16,6 +16,7 @@ class Parameters extends \Common\Configuration
               "admin_api_token" => "",
               "licence_key" => "",
               "standalone" => true,
+              //"frontend_server_name" => "http://localhost:8000/", // define only if needed
               "server_name" => "http://localhost:8000/",
               "internal_server_name" => "http://nginx/"
             ],
@@ -207,27 +208,28 @@ class Parameters extends \Common\Configuration
                       "firstname_key" => ''
                   ],
                   "console" => [
-                    "use" => false, //Set to true to enable console
-                    
-                    "provider" => "https://console.twake.app/", //Api endpoint
-                    "public_key" => "", //A public key to verify signature of hook events
+                    "use" => true,
+                    "provider" => "http://account-twakeconsole.linagora.vn/",
+                    "public_key" => "",
                     "credentials" => [
-                      "key" => "twake", //Twake product api key for requests to console
-                      "secret" => "secret" //Twake product api secret for requests to console
+                      "key" => "twake",
+                      "secret" => "secret"
                     ],
-
-                    //All parameters related to the openid provider
+                    //"None" signature is not supported
+                    //PKCE not tested but implemented in our lib
                     "openid" => [
-                      "provider_uri" => 'https://auth0.com',
-                      "client_id" => '',
-                      "client_secret" => '',
+                      "provider_uri" => 'http://auth-twakeconsole.linagora.vn',
+                      "client_id" => 'twake',
+                      "client_secret" => 'twakesecret',
+                      "ignore_mail_verified" => true,
+                      "ignore_id_token_verification" => true,
                       //"disable_logout_redirect" => false
                       "provider_config" => [
-                        //token_endpoint
-                        //token_endpoint_auth_methods_supported
-                        //userinfo_endpoint
-                        //end_session_endpoint
-                        //authorization_endpoint
+                        "code_challenge_methods_supported" => "",
+                        "token_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/token", //token_endpoint
+                        "userinfo_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/userinfo",//userinfo_endpoint
+                        "end_session_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/logout",//end_session_endpoint
+                        "authorization_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/authorize",//authorization_endpoint                  
                       ]
                     ]
                   ]
