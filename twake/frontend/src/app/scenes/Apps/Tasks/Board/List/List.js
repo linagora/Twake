@@ -12,6 +12,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AddTask from './AddTask.js';
 import UserListManager from 'components/UserListManager/UserListManager';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import './List.scss';
 
 import '../Task/Task.scss';
@@ -239,7 +240,7 @@ export default class List extends React.Component {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      <div className="scrollable_task_list">
+                      <PerfectScrollbar className="scrollable_task_list">
                         {(tasks || [])
                           .sort(
                             (a, b) =>
@@ -263,7 +264,7 @@ export default class List extends React.Component {
                         )}
 
                         {(tasks || []).length > 0 && provided.placeholder}
-                      </div>
+                      </PerfectScrollbar>
                     </div>
                   )}
                 </Droppable>
