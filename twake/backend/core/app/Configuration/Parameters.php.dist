@@ -209,7 +209,7 @@ class Parameters extends \Common\Configuration
                   ],
                   "console" => [
                     "use" => true,
-                    "provider" => "http://account-twakeconsole.linagora.vn/",
+                    "provider" => "http://account-twakeconsole.linagora.vn/api/",
                     "public_key" => "",
                     "credentials" => [
                       "key" => "twake",
