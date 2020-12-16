@@ -1091,7 +1091,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Were you invited using another email address?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'Oh, well... It looks like no one has invited you to a company yet.',
+    'Oh, well... It looks like no one has invited you to a workspace yet.',
   'scenes.app.workspaces.welcome_page.ready_to_work': "You're ready to work now.",
   'scenes.app.workspaces.welcome_page.see_you_soon': 'See you soon!',
   'scenes.app.workspaces.welcome_page.try_again': 'Try again',

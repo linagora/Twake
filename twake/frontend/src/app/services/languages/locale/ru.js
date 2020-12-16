@@ -1135,7 +1135,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Возможно, вас пригласили по другому электронному адресу?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'О,... Похоже, вас еще никто не приглашал в компанию.',
+    'О ... Похоже, вас еще не пригласили на рабочее место.',
   'scenes.app.workspaces.welcome_page.ready_to_work': 'Вы готовы работать сейчас.',
   'scenes.app.workspaces.welcome_page.see_you_soon': 'До скорого.!',
   'scenes.app.workspaces.welcome_page.try_again': 'Попробуйте еще раз',

@@ -29,6 +29,7 @@ class Login extends Observable {
     this.server_infos = {
       branding: {},
       ready: {},
+      auth: {},
       help_link: false,
     };
 
@@ -261,11 +262,7 @@ class Login extends Observable {
             }
             that.login_loading = false;
             that.init();
-            return RouterServices.history.replace(
-              RouterServices.pathnames.LOGIN +
-                '?' +
-                RouterServices.history.location.search.substr(1),
-            );
+            return RouterServices.history.replace(RouterServices.pathnames.LOGIN);
           } else {
             that.login_error = true;
             that.login_loading = false;
@@ -284,7 +281,7 @@ class Login extends Observable {
     JWTStorage.clear();
   }
 
-  logout(no_reload) {
+  logout(no_reload = false) {
     var identity_provider = CurrentUser.get()
       ? (CurrentUser.get() || {}).identity_provider
       : 'internal';
@@ -301,7 +298,10 @@ class Login extends Observable {
           device: device,
         },
         function () {
-          if (identity_provider === 'openid') {
+          if (identity_provider === 'console') {
+            var location = Api.route('users/console/openid/logout');
+            Globals.window.location = location;
+          } else if (identity_provider === 'openid') {
             var location = Api.route('users/openid/logout');
             Globals.window.location = location;
           } else if (identity_provider === 'cas') {

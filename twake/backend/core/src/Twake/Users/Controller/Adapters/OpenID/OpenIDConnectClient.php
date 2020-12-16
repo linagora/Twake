@@ -978,6 +978,7 @@ class OpenIDConnectClient
                 $verified = $this->verifyHMACJWTsignature($hashtype, $this->getClientSecret(), $payload, $signature);
                 break;
             case 'none':
+                error_log("This is dev code, must be removed in the end!!!");
                 $verified = true;
                 break;
             default:

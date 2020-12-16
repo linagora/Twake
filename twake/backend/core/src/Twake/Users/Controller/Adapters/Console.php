@@ -97,6 +97,9 @@ class Console extends BaseController
             }
             if ($authentificated) {
 
+
+                error_log(json_encode($oidc->requestUserInfo()));
+
                 $data = [];
                 $data["user_id"] = $oidc->requestUserInfo('sub'); //User unique id
                 $data["nickname"] = $oidc->requestUserInfo('nickname'); //Prefered first name / username
@@ -132,7 +135,7 @@ class Console extends BaseController
                 );
 
                 /** @var User $user */
-                $userTokens = $this->get("app.user")->loginFromServiceWithToken("openid", $external_id, $email, $username, $fullname, $picture);
+                $userTokens = $this->get("app.user")->loginFromServiceWithToken("console", $external_id, $email, $username, $fullname, $picture);
 
                 if ($userTokens) {
                     return $this->closeIframe("success", $userTokens);
