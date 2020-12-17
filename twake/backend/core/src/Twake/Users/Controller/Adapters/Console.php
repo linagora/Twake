@@ -8,7 +8,7 @@ use Common\Http\Response;
 use Twake\Users\Entity\User;
 use Twake\Users\Controller\Adapters\OpenID\OpenIDConnectClient;
 use Twake\Users\Controller\Adapters\Console\Hooks;
-
+use Twake\Users\Controller\Adapters\Console\ApplyUpdates;
 class Console extends BaseController
 {
 
@@ -85,7 +85,7 @@ class Console extends BaseController
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
 
-            $oidc->addScope(array('openid', 'email', 'profile'));
+            $oidc->addScope(array('openid'));
 
             try {
                 $authentificated = $oidc->authenticate([
@@ -97,45 +97,15 @@ class Console extends BaseController
             }
             if ($authentificated) {
 
-
-                error_log(json_encode($oidc->requestUserInfo()));
-
-                $data = [];
-                $data["user_id"] = $oidc->requestUserInfo('sub'); //User unique id
-                $data["nickname"] = $oidc->requestUserInfo('nickname'); //Prefered first name / username
-                $data["given_name"] = $oidc->requestUserInfo('given_name'); //First name
-                $data["family_name"] = $oidc->requestUserInfo('family_name'); //Second name
-                $data["name"] = $oidc->requestUserInfo('name'); //Full name
-                $data["email"] = $oidc->requestUserInfo('email');
-                $data["email_verified"] = $oidc->requestUserInfo('email_verified');
-                $data["picture"] = $oidc->requestUserInfo('picture'); //Thumbnail
-
-                if ((empty($data["email_verified"]) || !$data["email_verified"] || empty($data["email"])) && !$this->getParameter("defaults.auth.console.openid.ignore_mail_verified")) {
-                    return $this->logout($request, ["error" => "Your mail is not verified"]);
-                }
-
-                if (empty($data["user_id"])) {
-                    return $this->logout($request, ["error" => "An error occurred (no unique id found)"]);
-                }
-
-                //Generate username, fullname, email, picture from recovered data
-                $external_id = $data["user_id"];
-                $email = $data["email"];
-                $picture = $data["picture"];
-                $fullname = $data["name"] ?: (($data["given_name"] . " " . $data["family_name"]) ?: $data["nickname"]);
-                $fullname = explode("@", $fullname)[0];
-                $username = preg_replace("/ '/", "_",
-                    preg_replace("/[^a-zA-Z0-9]/", "",
-                        trim(
-                            strtolower(
-                                $data["nickname"] ?: ($fullname ?: explode("@", $data["email"])[0])
-                            )
-                        )
-                    )
-                );
-
+                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/idToken?idToken=" . $oidc->getIdToken();
+                $header = "Authorization: Bearer " . $oidc->getAccessToken();
+                $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
+                $response = $response->getContent();
+                
                 /** @var User $user */
-                $userTokens = $this->get("app.user")->loginFromServiceWithToken("console", $external_id, $email, $username, $fullname, $picture);
+                $user = (new ApplyUpdates($this->app))->updateUser($response);
+
+                $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
 
                 if ($userTokens) {
                     return $this->closeIframe("success", $userTokens);

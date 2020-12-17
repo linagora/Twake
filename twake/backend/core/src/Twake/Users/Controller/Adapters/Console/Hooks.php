@@ -50,32 +50,32 @@ class Hooks
     }
 
     function userAdded($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->addUser($data["user_id"], $data["company_id"] ?: null) ?: "");
     }
 
     function userRemoved($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->removeUser($data["user_id"], $data["company_id"] ?: null) ?: "");
     }
     
     function userUpdated($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->updateUser($data["user_id"], $data["company_id"] ?: null) ?: "");
     }
         
     function companyRemoved($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->removeCompany($data["company_id"]) ?: "");
     }
     
     function companyUpdated($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->updateCompany($data["company_id"]) ?: "");
     }
     
     function planUpdated($data){
-        $service = new ApplyUpdates($this->app);
+        $service = new PrepareUpdates($this->app);
         return new Response($service->updateCompany($data["company_id"]) ?: "");
     }
 

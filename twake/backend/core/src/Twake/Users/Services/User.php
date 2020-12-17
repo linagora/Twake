@@ -180,6 +180,36 @@ class User
         return $this->loginWithUsernameOnlyWithToken($user->getusernameCanonical());
     }
 
+    public function loginWithIdOnlyWithToken($userId, Response $response = null)
+    {
+
+        $userRepository = $this->em->getRepository("Twake\Users:User");
+        $user = $userRepository->findOneBy(Array("id" => $userId));
+
+        if ($user == null) {
+            return false;
+        }
+
+        if ($user->getBanned()) {
+            return false;
+        }
+
+        $token = bin2hex(random_bytes(64));
+
+        $user->setTokenLogin(
+          [
+            "expiration" => date("U") + 120,
+            "token" => $token
+          ]
+        );
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return ["token" => $token, "username" => $user->getUsername()];
+
+    }
+
     public function loginWithUsernameOnlyWithToken($usernameOrMail, Response $response = null)
     {
 
