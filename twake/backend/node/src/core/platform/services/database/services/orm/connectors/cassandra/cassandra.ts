@@ -385,9 +385,14 @@ export class CassandraConnector extends AbstractConnector<
       );
     }
 
-    const query = buildSelectQuery<Table>((entityType as unknown) as ObjectType<Table>, filters, {
-      keyspace: this.options.keyspace,
-    });
+    const query = buildSelectQuery<Table>(
+      (entityType as unknown) as ObjectType<Table>,
+      filters,
+      options,
+      {
+        keyspace: this.options.keyspace,
+      },
+    );
 
     logger.debug(`services.database.orm.cassandra - ${query}`);
 
