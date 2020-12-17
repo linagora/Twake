@@ -36,7 +36,8 @@ class Parameters extends \Common\Configuration
                 "dbname" => "twake_php",
                 "user" => "root",
                 "password" => "root",
-                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0"
+                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}"
             ],
             "es" => [
               "host" => "elasticsearch:9200"
