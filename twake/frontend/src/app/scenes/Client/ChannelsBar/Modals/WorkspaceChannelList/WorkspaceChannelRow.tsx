@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Button, Col, Row } from 'antd';
+import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
 import RouterServices, { ClientStateType } from 'app/services/RouterService';
@@ -29,16 +30,15 @@ export default ({ channel }: PropsType) => {
   );
 
   const joinChannel = (): void => {
-    /*
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
-    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.id}/members/`;
+    const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
     channelMembersCollection.insert(
       new ChannelMemberResource({
         user_id: userId,
         type: 'member',
       }),
     );
-    */
+
     return setIsChannelMember(true);
   };
 
@@ -72,7 +72,7 @@ export default ({ channel }: PropsType) => {
         <div style={{ lineHeight: 0 }}>
           <Emojione type={channel.icon || ''} />
         </div>
-        <span className="small-x-margin">{channel.name}</span>
+        <span className="small-x-margin">{capitalize(channel.name)}</span>
         {channel.visibility === 'private' && <Icon type="lock" />}
       </Col>
       <Col>
