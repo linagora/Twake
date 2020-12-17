@@ -36,6 +36,8 @@ export function Workspace() {
     { observedFields: ['id', 'user_member.favorite'] },
   );
 
+  console.log(channels);
+  console.log(directChannels);
   console.log(directChannels.map(e => e.data.user_member?.favorite));
 
   channels
