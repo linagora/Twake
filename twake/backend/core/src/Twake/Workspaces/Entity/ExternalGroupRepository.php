@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ExternalGroupRepository
  *
- * @ORM\Table(name="external_group_repository",options={"engine":"MyISAM", "scylladb_keys": {{"service_id":"ASC", "external_id":"ASC"}, {"service_id":"ASC", "company_id":"ASC"}} })
+ * @ORM\Table(name="external_group_repository",options={"engine":"MyISAM", "scylladb_keys": {{"service_id":"ASC", "external_id":"ASC", "company_id":"ASC"}, {"service_id":"ASC", "company_id":"ASC", "external_id":"ASC"}} })
  * @ORM\Entity()
  */
 class ExternalGroupRepository

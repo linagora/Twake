@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ExternalUserRepository
  *
- * @ORM\Table(name="external_user_repository",options={"engine":"MyISAM", "scylladb_keys": {{"service_id":"ASC", "external_id":"ASC"}, {"service_id":"ASC", "user_id":"ASC"}} })
+ * @ORM\Table(name="external_user_repository",options={"engine":"MyISAM", "scylladb_keys": {{"service_id":"ASC", "external_id":"ASC", "user_id": "ASC"}, {"service_id":"ASC", "user_id":"ASC", "external_id":"ASC"}} })
  * @ORM\Entity()
  */
 class ExternalUserRepository
