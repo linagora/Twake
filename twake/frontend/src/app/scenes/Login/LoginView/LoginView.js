@@ -35,6 +35,15 @@ export default class LoginView extends Component {
   render() {
     const login = this.state.login;
 
+    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
+    if (
+      authModes.length > 0 &&
+      authModes.indexOf('internal') < 0 &&
+      !(LoginService.external_login_error || false)
+    ) {
+      return <></>;
+    }
+
     return (
       <div className="center_box_container login_view skew_in_bottom_nobounce">
         <div className="center_box white_box_with_shadow">
@@ -56,7 +65,7 @@ export default class LoginView extends Component {
             />
           )}
 
-          {Object.keys((login.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
+          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -71,7 +80,7 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {Object.keys((login.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
+          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -92,8 +101,8 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {(Object.keys((login.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
-            ((login.server_infos || {}).auth || []).length == 0) && (
+          {(Object.keys((InitService.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
+            ((InitService.server_infos || {}).auth || []).length == 0) && (
             <div class="internal-login">
               <Input
                 id="username"

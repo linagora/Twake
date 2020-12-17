@@ -4,21 +4,24 @@ import Languages from 'services/languages/languages.js';
 import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
-import DirectChannel from 'app/scenes/Client/ChannelsBar/Parts/Channel/DirectChannel';
 
 import MediumPopupComponent from 'app/components/Modal/ModalManager';
 import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDirectMessagesPopup';
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
+import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 
 export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
-  const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/`;
+  const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource, { tag: 'mine' });
 
   const [limit, setLimit] = useState(100);
 
-  const directChannels = channelsCollection.useWatcher({}, { limit: limit, query: { mine: true } });
+  const directChannels = channelsCollection.useWatcher(
+    {},
+    { limit: limit, observedFields: ['id', 'user_member.favorite'] },
+  );
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
@@ -39,9 +42,17 @@ export function ChannelsUser() {
         )}
         onAdd={() => openConv()}
       />
-      {directChannels.map(channel => {
-        return <DirectChannel key={channel.id} collection={channelsCollection} channel={channel} />;
-      })}
+      {directChannels
+        .filter(channel => !channel.data.user_member?.favorite)
+        .map(channel => {
+          return (
+            <ChannelIntermediate
+              key={channel.id}
+              collection={channelsCollection}
+              channel={channel.data}
+            />
+          );
+        })}
 
       {directChannels.length == 0 && (
         <div className="channel_small_text">

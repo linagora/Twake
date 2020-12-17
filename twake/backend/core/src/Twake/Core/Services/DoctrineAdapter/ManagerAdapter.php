@@ -32,6 +32,7 @@ class ManagerAdapter
             "dbname" => $app->getContainer()->getParameter("db.dbname"),
             "ssl" => $app->getContainer()->getParameter("db.ssl"),
             "encryption_key" => $app->getContainer()->getParameter("db.encryption_key"),
+            "replication" => $app->getContainer()->getParameter("db.replication"),
         );
         $this->dev_mode = true; // If false no entity generation
         $this->manager = null;

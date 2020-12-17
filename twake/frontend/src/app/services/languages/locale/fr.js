@@ -1144,7 +1144,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Vous avez peut-être été invité à l’aide d’une autre adresse e-mail ?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'Ha, mince… Il semblerait que personne ne vous ait invité dans une entreprise pour le moment.',
+    'Ha, mince… Il semblerait que personne ne vous ait invité dans un espace de travail pour le moment.',
   'scenes.app.workspaces.welcome_page.ready_to_work': 'Vous êtes prêt à travailler maintenant.',
   'scenes.app.workspaces.welcome_page.see_you_soon': 'À très bientôt !',
   'scenes.app.workspaces.welcome_page.try_again': 'Réessayer',

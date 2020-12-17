@@ -50,22 +50,18 @@ export default (props: Props): JSX.Element => {
   const changeNotificationPreference = async (
     preference: 'all' | 'none' | 'group_mentions' | 'user_mentions',
   ) => {
-    let channelMember: ChannelMemberType = {
-      user_id: currentUser.id,
-      notification_level: 'all',
-    };
-
+    const channelMember: ChannelMemberType = props.channel.data.user_member || {};
+    channelMember.user_id = channelMember.user_id || currentUser.id;
+    channelMember.notification_level = 'all';
     channelMember.notification_level = preference;
 
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
 
   const addOrCancelFavorite = async (state: boolean) => {
-    const channelMember: ChannelMemberType = {
-      user_id: currentUser.id,
-      favorite: state,
-    };
-
+    const channelMember: ChannelMemberType = props.channel.data.user_member || {};
+    channelMember.user_id = channelMember.user_id || currentUser.id;
+    channelMember.favorite = state;
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
 

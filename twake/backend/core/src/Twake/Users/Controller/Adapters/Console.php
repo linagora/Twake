@@ -80,6 +80,7 @@ class Console extends BaseController
                 $this->getParameter("defaults.auth.console.openid.client_secret")
             );
 
+            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", ""));
             $oidc->providerConfigParam($this->getParameter("defaults.auth.console.openid.provider_config", []));
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
@@ -95,6 +96,9 @@ class Console extends BaseController
                 $authentificated = false;
             }
             if ($authentificated) {
+
+
+                error_log(json_encode($oidc->requestUserInfo()));
 
                 $data = [];
                 $data["user_id"] = $oidc->requestUserInfo('sub'); //User unique id
@@ -131,7 +135,7 @@ class Console extends BaseController
                 );
 
                 /** @var User $user */
-                $userTokens = $this->get("app.user")->loginFromServiceWithToken("openid", $external_id, $email, $username, $fullname, $picture);
+                $userTokens = $this->get("app.user")->loginFromServiceWithToken("console", $external_id, $email, $username, $fullname, $picture);
 
                 if ($userTokens) {
                     return $this->closeIframe("success", $userTokens);
@@ -154,7 +158,7 @@ class Console extends BaseController
 
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.server_name"), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"openid", "message" => $message, "token" => json_encode($userTokens)]))));
+        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
     private function isServiceEnabled(){

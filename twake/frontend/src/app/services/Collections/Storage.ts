@@ -188,6 +188,18 @@ export default class CollectionStorage {
       (await CollectionStorage.getMongoDb()).collections[path]
         .find(filters, options)
         .fetch(results => {
+          //Tofix right now we need this to avoid some duplications...
+          results
+            .filter((e, index) => index !== results.map(e => e.id).indexOf(e.id))
+            .forEach(async e => {
+              (await CollectionStorage.getMongoDb()).collections[path].remove(
+                e._id,
+                resolve,
+                reject,
+              );
+            });
+          results = results.filter((e, index) => index === results.map(e => e.id).indexOf(e.id));
+
           results.forEach(item => {
             CollectionStorage.idKeeper[path][item.id] = true;
           });

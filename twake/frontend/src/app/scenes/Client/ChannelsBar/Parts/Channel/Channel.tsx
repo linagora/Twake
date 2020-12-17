@@ -9,6 +9,7 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 import { Tooltip } from 'antd';
+import { Star } from 'react-feather';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 
 type Props = {
@@ -59,6 +60,11 @@ export default (props: Props) => {
           })
         }
       >
+        {!!props.favorite && (
+          <div className="icon small-right-margin">
+            <Star size={14} />
+          </div>
+        )}
         {!props.app &&
           (props.visibility === 'public' || props.visibility === 'private') &&
           typeof props.icon === 'string' && (

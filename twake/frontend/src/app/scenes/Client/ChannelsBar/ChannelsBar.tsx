@@ -38,6 +38,10 @@ export default () => {
     };
   }, []);
 
+  if (!companyId || !workspaceId) {
+    return <></>;
+  }
+
   return (
     <Layout.Sider theme="light" width={220} className="channels_view" style={{ height: '100%' }}>
       <CurrentUser />

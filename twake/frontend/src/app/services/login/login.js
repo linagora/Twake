@@ -29,6 +29,7 @@ class Login extends Observable {
     this.server_infos = {
       branding: {},
       ready: {},
+      auth: {},
       help_link: false,
     };
 
@@ -130,6 +131,7 @@ class Login extends Observable {
       console.error(err);
       external_login_result = false;
     }
+    console.log(external_login_result);
     if (external_login_result) {
       if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
@@ -195,7 +197,11 @@ class Login extends Observable {
 
           WindowState.setTitle();
           RouterServices.history.push(
-            RouterServices.addRedirection(RouterServices.pathnames.LOGIN),
+            RouterServices.addRedirection(
+              RouterServices.pathnames.LOGIN +
+                '?' +
+                RouterServices.history.location.search.substr(1),
+            ),
           );
         } else {
           that.startApp(res.data);
@@ -275,7 +281,7 @@ class Login extends Observable {
     JWTStorage.clear();
   }
 
-  logout(no_reload) {
+  logout(no_reload = false) {
     var identity_provider = CurrentUser.get()
       ? (CurrentUser.get() || {}).identity_provider
       : 'internal';
@@ -292,7 +298,10 @@ class Login extends Observable {
           device: device,
         },
         function () {
-          if (identity_provider === 'openid') {
+          if (identity_provider === 'console') {
+            var location = Api.route('users/console/openid/logout');
+            Globals.window.location = location;
+          } else if (identity_provider === 'openid') {
             var location = Api.route('users/openid/logout');
             Globals.window.location = location;
           } else if (identity_provider === 'cas') {
@@ -303,7 +312,9 @@ class Login extends Observable {
               Globals.window.location.reload();
             }
           }
-          RouterServices.history.push(RouterServices.pathnames.LOGIN);
+          RouterServices.history.push(
+            RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
+          );
         },
       );
     });

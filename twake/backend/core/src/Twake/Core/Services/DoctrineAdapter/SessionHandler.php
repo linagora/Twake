@@ -54,33 +54,35 @@ class SessionHandler
 
         if($authorization[0] === "Bearer"){
             $jwt = $authorization[1];
-            try{
-                $key = $this->app->getContainer()->getParameter("jwt.secret");
-                $jwt = JWT::decode($jwt, $key, array('HS256'));
+            if($jwt){
+                try{
+                    $key = $this->app->getContainer()->getParameter("jwt.secret");
+                    $jwt = JWT::decode($jwt, $key, array('HS256'));
 
-                if(!$jwt->sub){
+                    if(!$jwt->sub){
+                        return false;
+                    }
+
+                    if($jwt->exp < date("U") && $jwt->type !== "refresh"){
+                        return false;
+                    }
+
+                    if($jwt->exp < date("U") && $jwt->type === "refresh"){
+                        return false;
+                    }
+                    
+                    $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($jwt->sub);
+
+                    if(!$user){
+                        return false;
+                    }
+
+                    return $user;
+
+                }catch(\Exception $err){
+                    error_log($err);
                     return false;
                 }
-
-                if($jwt->exp < date("U") && $jwt->type !== "refresh"){
-                    return false;
-                }
-
-                if($jwt->exp < date("U") && $jwt->type === "refresh"){
-                    return false;
-                }
-                
-                $user = $this->doctrineAdapter->getRepository("Twake\Users:User")->find($jwt->sub);
-
-                if(!$user){
-                    return false;
-                }
-
-                return $user;
-
-            }catch(\Exception $err){
-                error_log($err);
-                return false;
             }
         }
 

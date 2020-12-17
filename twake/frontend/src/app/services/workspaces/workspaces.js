@@ -15,7 +15,7 @@ import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
-import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage.js';
+import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
 import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
@@ -43,7 +43,7 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId) {
-    if (this.currentWorkspaceId != workspaceId) {
+    if (this.currentWorkspaceId != workspaceId && workspaceId) {
       this.currentWorkspaceId = workspaceId;
       const workspace = Collections.get('workspaces').find(workspaceId);
       if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
@@ -263,20 +263,22 @@ class Workspaces extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
-    Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function (
-      res,
-    ) {
-      if (res.errors.length == 0) {
-        var update = {
-          id: that.currentWorkspaceId,
-          name: name,
-        };
-        Collections.get('workspaces').updateObject(update);
-        ws.publish('workspace/' + update.id, { workspace: update });
-      }
-      that.loading = false;
-      that.notify();
-    });
+    Api.post(
+      'workspace/data/name',
+      { workspaceId: this.currentWorkspaceId, name: name },
+      function (res) {
+        if (res.errors.length == 0) {
+          var update = {
+            id: that.currentWorkspaceId,
+            name: name,
+          };
+          Collections.get('workspaces').updateObject(update);
+          ws.publish('workspace/' + update.id, { workspace: update });
+        }
+        that.loading = false;
+        that.notify();
+      },
+    );
   }
   updateWorkspaceLogo(logo) {
     this.loading = true;
