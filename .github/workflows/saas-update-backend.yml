@@ -47,6 +47,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
-          context: twake/backend/node
+          context: backend/node
           buildoptions: "-t twaketech/twake-node -f docker/twake-node/Dockerfile"
           tags: "${{ env.DOCKERTAG }}"
