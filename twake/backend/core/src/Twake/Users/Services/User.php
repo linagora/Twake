@@ -447,7 +447,7 @@ class User
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
         $retour = Array();
-
+        
         if (!$this->string_cleaner->verifyMail($mail)) {
             $retour[] = -1;
         } else {

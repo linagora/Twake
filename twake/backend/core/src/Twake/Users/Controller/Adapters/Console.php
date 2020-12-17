@@ -100,12 +100,15 @@ class Console extends BaseController
                 $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/idToken?idToken=" . $oidc->getIdToken();
                 $header = "Authorization: Bearer " . $oidc->getAccessToken();
                 $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
-                $response = $response->getContent();
-                
+                $response = json_decode($response->getContent(), 1);
+
                 /** @var User $user */
                 $user = (new ApplyUpdates($this->app))->updateUser($response);
 
-                $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
+                $userTokens = null;
+                if($user){
+                    $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
+                }
 
                 if ($userTokens) {
                     return $this->closeIframe("success", $userTokens);
