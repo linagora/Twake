@@ -33,7 +33,6 @@ class User
     private $workspace_members_service;
     private $group_service;
     private $workspace_service;
-    private $pricing_plan;
     private $restClient;
     private $standalone;
     private $licenceKey;
@@ -50,7 +49,6 @@ class User
         $this->workspace_members_service = $app->getServices()->get("app.workspace_members");
         $this->group_service = $app->getServices()->get("app.groups");
         $this->workspace_service = $app->getServices()->get("app.workspaces");
-        $this->pricing_plan = $app->getServices()->get("app.pricing_plan");
         $this->restClient = $app->getServices()->get("app.restclient");
         $this->translate = $app->getServices()->get("app.translate");
         $this->standalone = $app->getContainer()->getParameter("env.standalone");

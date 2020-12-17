@@ -37,7 +37,6 @@ class Groups
         $planRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
 
         $user = $userRepository->find($userId);
-        $plan = $planRepository->find($planId);
 
         //Find a name
         $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquename));
@@ -54,7 +53,6 @@ class Groups
 
         $group = new Group($uniquenameIncremented);
         $group->setDisplayName($name);
-        $group->setPricingPlan($plan);
         $group->setOnCreationData($group_data_on_create);
 
         $this->doctrine->persist($group);
@@ -122,28 +120,6 @@ class Groups
             return true;
         } else {
             error_log("NOT ALLOWED");
-        }
-
-        return false;
-    }
-
-    public function changePlan($groupId, $planId, $currentUserId = null)
-    {
-        if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_PRICINGS")) {
-
-            $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-            $group = $groupRepository->find($groupId);
-
-            $pricingPlanRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
-            $pricingPlan = $pricingPlanRepository->find($planId);
-
-            $group->setPricingPlan($pricingPlan);
-            $group->setFreeOfferEnd(null);
-
-            $this->doctrine->persist($group);
-            $this->doctrine->flush();
-
-            return true;
         }
 
         return false;

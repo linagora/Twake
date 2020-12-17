@@ -129,9 +129,7 @@ class Workspace extends BaseController
 
             $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
 
-            $plan = $this->get("app.pricing_plan")->getMinimalPricing();
-            $planId = $plan->getId();
-            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
+            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, null, $group_creation_data);
             $groupId = $group->getId();
 
             $this->get("administration.counter")->incrementCounter("total_groups", 1);

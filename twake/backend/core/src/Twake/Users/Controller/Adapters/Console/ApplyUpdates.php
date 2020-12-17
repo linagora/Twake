@@ -21,7 +21,55 @@ class ApplyUpdates
         $this->user_service = $app->getServices()->get("app.user");
     }
     
-    function updateCompany($companyId){
+    function updateCompany($companyDTO){
+
+        $companyConsoleId = $companyDTO["company_id"];
+
+        $extRepository = $this->em->getRepository("Twake\Workspaces:ExternalGroupRepository");
+        $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleId));
+
+        $company = null;
+        if ($company_link) {
+            $twakeCompanyId = $company_link->getGroupId();
+            $companyRepository = $this->em->getRepository("Twake\Workspaces:Group");
+            $company = $companyRepository->find($twakeCompanyId);
+        }
+        if(!$company) {
+            //Create company
+            $company = new Group();
+
+            $this->em->persist($company);
+            $this->em->flush();
+
+            $company_link = new ExternalGroupRepository("console", $companyConsoleId, $company->getId());
+            $this->em->persist($company_link);
+        }
+
+        $company->setName($companyDTO["details"]["code"]);
+        $company->setDisplayName($companyDTO["details"]["name"]);
+
+        //TODO: pricing plan
+        $company->setPlan($manager->getRepository("Twake\Workspaces:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
+
+        $logo = $companyDTO["details"]["logo"];
+        if ($logo !== '') {
+            $logoEntity = $company->getLogo();
+            if(!$logoEntity){
+                $logoEntity = new File();
+            }
+            $logoEntity->setPublicLink($logo);
+            $this->em->persist($logoEntity);
+            $this->em->flush();
+            $company->setLogo($logoEntity);
+        }
+
+        $this->em->persist($company);
+        $this->em->flush();
+
+        //TODO: realtime update
+
+        return $company;
+
     }
     
     function removeCompany($companyId){

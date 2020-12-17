@@ -27,7 +27,6 @@ class Workspaces
     private $gas;
     private $gs;
     private $doctrine;
-    private $pricing;
     private $string_cleaner;
     private $pusher;
     private $translate;
@@ -40,7 +39,6 @@ class Workspaces
         $this->gms = $app->getServices()->get("app.group_managers");
         $this->gas = $app->getServices()->get("app.group_apps");
         $this->gs = $app->getServices()->get("app.groups");
-        $this->pricing = $app->getServices()->get("app.pricing_plan");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->pusher = $app->getServices()->get("app.pusher");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
@@ -88,19 +86,6 @@ class Workspaces
         $workspace->setUniqueName($uniquenameIncremented);
 
         if ($groupId != null) {
-            $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
-
-            $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
-            $nbWorkspace = [];
-            foreach ($_nbWorkspace as $ws) {
-                if (!$ws->getis_deleted()) {
-                    $nbWorkspace[] = $ws;
-                }
-            }
-
-            if (count($nbWorkspace) >= $limit) {
-                return false;
-            }
             $workspace->setGroup($group);
         }
 
