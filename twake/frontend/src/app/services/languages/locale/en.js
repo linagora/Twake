@@ -1857,4 +1857,5 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
     'There is no members in this channel, you can invite them by clicking on Add users.',
+  'scenes.app.channelsbar.hide_discussion_leaving': 'Hide discussion',
 };
