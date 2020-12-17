@@ -48,8 +48,8 @@ class ApplyUpdates
         $company->setName($companyDTO["details"]["code"]);
         $company->setDisplayName($companyDTO["details"]["name"]);
 
-        //TODO: pricing plan
-        $company->setPlan($manager->getRepository("Twake\Workspaces:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
+        // Format is {name: "string", limits: {}}
+        $company->setPlan($companyDTO["plan"]);
 
         $logo = $companyDTO["details"]["logo"];
         if ($logo !== '') {
@@ -73,8 +73,11 @@ class ApplyUpdates
     }
     
     function removeCompany($companyId){
+        //Not implemented
+        error_log("not implemented");
+        return false;
     }
-    
+
     /**
      * Take a user from api and save it into PHP
      */
@@ -82,7 +85,7 @@ class ApplyUpdates
 
         $roles = $userDTO["roles"];
 
-        $external_id = $userDTO["_id"];
+        $userConsoleId = $userDTO["_id"];
 
         $email = $userDTO["email"];
         $username = preg_replace("/ +/", "_",
@@ -96,7 +99,7 @@ class ApplyUpdates
         );
 
         // Create user if needed
-        $user = $this->user_service->getUserFromExternalRepository("console", $external_id);
+        $user = $this->user_service->getUserFromExternalRepository("console", $userConsoleId);
         if (!$user) {
             //Create user on our side
 
@@ -130,7 +133,7 @@ class ApplyUpdates
             $this->em->persist($user);
             $this->em->flush();
 
-            $this->user_service->setUserFromExternalRepository("console", $external_id, $user->getId());
+            $this->user_service->setUserFromExternalRepository("console", $userConsoleId, $user->getId());
         }
 
         // Update user names
@@ -162,17 +165,38 @@ class ApplyUpdates
         //TODO websocket update
 
         foreach($roles as $role){
-            error_log(json_encode($role));
+            $companyConsoleId = $role["company"]["_id"];
+            $level = $role["roleCode"];
+            //Double check we created this user in external users repo
+            if($companyConsoleId && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
+                (new PrepareUpdates())->addUser($userConsoleId, $companyConsoleId);
+            }
         }
 
         return $user;
 
     }
     
-    function addUser($userId, $companyId){
+    /**
+     * Add or update user in a company, the role has the following format:
+     * roleCode: "owner" | 'admin' | 'member' | 'guest',
+     * status: "active",
+     */
+    function addUser($userTwakeEntity, $companyTwakeEntity, $roleDTO){
+        if($roleDTO["status"] !== "active"){
+            return $this->removeUser($userTwakeEntity, $companyTwakeEntity);
+        }
+
+        //TODO add user into the company
+
+        //TODO check if company has any workspace, if not, create a workspace and invite user in it
+
     }
     
-    function removeUser($userId, $companyId){
+    function removeUser($userTwakeEntity, $companyTwakeEntity){
+        //Not implemented
+        error_log("not implemented");
+        return false;
     }
 
 }

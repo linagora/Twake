@@ -26,48 +26,78 @@ class PrepareUpdates
     }
     
     function updateCompany($companyId){
-
-        $details = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyId);
-
-        
-
-        error_log("not implemented");
-        return [];
+        $companyDTO = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyId);
+        $result = (new ApplyUpdates())->updateCompany($companyDTO);
+        return [
+            "success" => !!$result
+        ];
     }
     
     function removeCompany($companyId){
-        error_log("not implemented");
-        return [];
+        $result = (new ApplyUpdates())->removeCompany($companyId);
+        return [
+            "success" => !!$result
+        ];
     }
     
     function updateUser($userId, $companyId = null){
-
-        $details = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
-
-        /**
-         * new "company" is old $group
-         * new "guest" are mapped by the boolean $groupUser->getExterne()
-         * new "organization_administrator" are mapped by the condition $groupUser->getLevel() === 3
-         */
-
-        error_log("not implemented");
-        return [];
+        $userDTO = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+        $result = (new ApplyUpdates())->updateCompany($userDTO);
+        return [
+            "success" => !!$result
+        ];
     }
     
     function addUser($userId, $companyId){
-        $details = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
-        
-        //If company not found, we can call updateCompany
 
-        error_log("not implemented");
-        return [];
+        $user = (new Utils())->getUser($userId);
+        $company = (new Utils())->getCompany($companyId);
+
+        if(!$user){
+            $this->updateUser($userId);
+            $user = (new Utils())->getUser($userId);
+        }
+        if(!$company){
+            $this->updateCompany($companyId);
+            $company = (new Utils())->getCompany($companyId);
+        }
+
+        if(!$user || !$company){
+            return [
+                "success" => false
+            ]; 
+        }
+
+        //Fixme, in the future there should be a better endpoint to get user role in a given company
+        $userDTO = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+        $companyRole = null;
+        foreach($userDTO["roles"] as $role){
+            if($role["company"]["_id"] === $companyId){
+                $companyRole = $role;
+            }
+        }
+        
+        $result = (new ApplyUpdates())->addUser($user, $company, $companyRole);
+        return [
+            "success" => !!$result
+        ];
     }
     
     function removeUser($userId, $companyId){
-        $details = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
 
-        error_log("not implemented");
-        return [];
+        $user = (new Utils())->getUser($userId);
+        $company = (new Utils())->getCompany($companyId);
+
+        if(!$user || !$company){
+            return [
+                "success" => true
+            ]; 
+        }
+
+        $result = (new ApplyUpdates())->removeUser($user, $company);
+        return [
+            "success" => !!$result
+        ];
     }
 
 }
