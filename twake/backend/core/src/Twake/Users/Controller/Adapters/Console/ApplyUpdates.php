@@ -49,8 +49,6 @@ class ApplyUpdates
             $this->em->persist($company_link);
         }
 
-        error_log(json_encode($companyDTO));
-
         $company->setName($companyDTO["company"]["details"]["code"]);
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
 

@@ -581,6 +581,7 @@ class MessageSystem
                     "thread_id" => $messageArray["parent_message_id"],
                     "id" => $messageArray["id"],
                     "sender" => $messageArray["sender"],
+                    "creation_date" => $messageArray["creation_date"] * 1000,
                     "mentions" => $mentions,
                 ]
             ];
