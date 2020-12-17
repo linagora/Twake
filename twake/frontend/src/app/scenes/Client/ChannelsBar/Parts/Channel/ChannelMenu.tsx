@@ -68,7 +68,7 @@ export default (props: Props): JSX.Element => {
   const displayMembers = () => {
     return ModalManager.open(<ChannelMembersList channel={props.channel} closable />, {
       position: 'center',
-      size: { width: '500px', minHeight: '329px' },
+      size: { width: '600px', minHeight: '329px' },
     });
   };
 

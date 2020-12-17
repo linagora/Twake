@@ -116,7 +116,7 @@ export default class MenuComponent extends React.Component {
                 >
                   {item.icon && (
                     <div className="icon">
-                      <Icon type={item.icon} />
+                      {typeof item.icon === 'string' ? <Icon type={item.icon} /> : item.icon}
                     </div>
                   )}
                   {item.emoji && (

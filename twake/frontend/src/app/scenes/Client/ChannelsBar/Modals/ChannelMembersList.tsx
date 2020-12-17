@@ -35,7 +35,6 @@ const ChannelMembersList: FC<Props> = props => {
   const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/${workspace_id}/channels/${id}/members/`;
   const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
   const channelMembers = channelMembersCollection.useWatcher({}, { limit: limit });
-
   const channelMembersUid = channelMembers.map(member => member.data.user_id || '');
 
   useUsersListener(channelMembersUid || []);
@@ -64,7 +63,7 @@ const ChannelMembersList: FC<Props> = props => {
       ])}
       closable={props.closable ? props.closable : false}
     >
-      <div className="x-margin bottom-margin">
+      <div className="x-margin">
         <Row align="middle" gutter={[28, 0]} style={{ marginBottom: '24px' }}>
           <Col flex={14}>
             <Input
@@ -100,23 +99,54 @@ const ChannelMembersList: FC<Props> = props => {
           </Col>
         </Row>
       </div>
-      <div className="x-margin bottom-margin">
-        <PerfectScrollbar
-          style={{ height: '400px' }}
-          component="div"
-          options={{ suppressScrollX: true, suppressScrollY: false }}
-        >
-          {!search.length &&
-            channelMembers.map(user => (
-              <MemberChannelRow key={user.id} userId={user.data.user_id || ''} />
-            ))}
-          {!!search.length &&
-            searchedUsers.map(userId => <MemberChannelRow key={userId} userId={userId} />)}
-          {!searchedUsers.length &&
-            limit < searchedUsers.length + defaultLimit &&
-            setLimit(searchedUsers.length + defaultLimit)}
-        </PerfectScrollbar>
-      </div>
+      <PerfectScrollbar
+        style={{ maxHeight: '240px', height: '240px', width: '100%' }}
+        component="div"
+        options={{ suppressScrollX: true, suppressScrollY: false }}
+      >
+        {!search.length &&
+          channelMembers.length > 0 &&
+          channelMembers.map(user => (
+            <div key={user.id} className="x-margin">
+              <MemberChannelRow
+                key={user.id}
+                userId={user.data.user_id || ''}
+                collection={channelMembersCollection}
+                channelMemberResource={user}
+              />
+            </div>
+          ))}
+        {!search.length && !channelMembers.length && (
+          <Row
+            align="middle"
+            justify="center"
+            className="smalltext x-margin"
+            style={{ textAlign: 'center', height: '144px' }}
+          >
+            {Languages.t('scenes.client.channelbar.channelmemberslist.no_members')}
+          </Row>
+        )}
+        {!!search.length &&
+          searchedUsers.map(userId => (
+            <div key={userId} className="x-margin">
+              <MemberChannelRow key={userId} userId={userId} />
+            </div>
+          ))}
+
+        {!!search.length && searchedUsers.length === 0 && (
+          <Row
+            align="middle"
+            justify="center"
+            className="smalltext x-margin"
+            style={{ textAlign: 'center', height: '144px' }}
+          >
+            {Languages.t('components.user_picker.modal_no_result')}
+          </Row>
+        )}
+        {!searchedUsers.length &&
+          limit < searchedUsers.length + defaultLimit &&
+          setLimit(searchedUsers.length + defaultLimit)}
+      </PerfectScrollbar>
       {channelMembers.length >= limit && (
         <Row align="middle" justify="center" gutter={[0, 16]}>
           <Link
