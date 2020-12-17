@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}  , {"group_id":"ASC", "id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
@@ -35,7 +35,6 @@ class Workspace extends SearchableObject
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
      */
     private $uniquename;
-
 
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")

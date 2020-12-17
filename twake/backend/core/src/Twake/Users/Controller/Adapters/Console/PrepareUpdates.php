@@ -26,40 +26,42 @@ class PrepareUpdates
     }
     
     function updateCompany($companyId){
-        $companyDTO = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyId);
-        $result = (new ApplyUpdates())->updateCompany($companyDTO);
+        $response = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyId);
+        $companyDTO = json_decode($response->getContent(), 1);
+        $result = (new ApplyUpdates($this->app))->updateCompany($companyDTO);
         return [
             "success" => !!$result
         ];
     }
     
     function removeCompany($companyId){
-        $result = (new ApplyUpdates())->removeCompany($companyId);
+        $result = (new ApplyUpdates($this->app))->removeCompany($companyId);
         return [
             "success" => !!$result
         ];
     }
     
     function updateUser($userId, $companyId = null){
-        $userDTO = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
-        $result = (new ApplyUpdates())->updateCompany($userDTO);
+        $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+        $userDTO = json_decode($response->getContent(), 1);
+        $result = (new ApplyUpdates($this->app))->updateCompany($userDTO);
         return [
             "success" => !!$result
         ];
     }
     
-    function addUser($userId, $companyId){
+    function addUser($userId, $companyId, $userDTO = null){
 
-        $user = (new Utils())->getUser($userId);
-        $company = (new Utils())->getCompany($companyId);
+        $user = (new Utils($this->app))->getUser($userId);
+        $company = (new Utils($this->app))->getCompany($companyId);
 
         if(!$user){
             $this->updateUser($userId);
-            $user = (new Utils())->getUser($userId);
+            $user = (new Utils($this->app))->getUser($userId);
         }
         if(!$company){
             $this->updateCompany($companyId);
-            $company = (new Utils())->getCompany($companyId);
+            $company = (new Utils($this->app))->getCompany($companyId);
         }
 
         if(!$user || !$company){
@@ -69,15 +71,17 @@ class PrepareUpdates
         }
 
         //Fixme, in the future there should be a better endpoint to get user role in a given company
-        $userDTO = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+        if(!$userDTO){
+            $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+            $userDTO = json_decode($response->getContent(), 1);
+        }
         $companyRole = null;
         foreach($userDTO["roles"] as $role){
             if($role["company"]["_id"] === $companyId){
                 $companyRole = $role;
             }
         }
-        
-        $result = (new ApplyUpdates())->addUser($user, $company, $companyRole);
+        $result = (new ApplyUpdates($this->app))->addUser($user, $company, $companyRole);
         return [
             "success" => !!$result
         ];
@@ -85,8 +89,8 @@ class PrepareUpdates
     
     function removeUser($userId, $companyId){
 
-        $user = (new Utils())->getUser($userId);
-        $company = (new Utils())->getCompany($companyId);
+        $user = (new Utils($this->app))->getUser($userId);
+        $company = (new Utils($this->app))->getCompany($companyId);
 
         if(!$user || !$company){
             return [
@@ -94,7 +98,7 @@ class PrepareUpdates
             ]; 
         }
 
-        $result = (new ApplyUpdates())->removeUser($user, $company);
+        $result = (new ApplyUpdates($this->app))->removeUser($user, $company);
         return [
             "success" => !!$result
         ];

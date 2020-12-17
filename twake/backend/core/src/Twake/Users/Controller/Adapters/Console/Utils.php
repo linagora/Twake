@@ -39,9 +39,9 @@ class Utils
 
         $user = null;
         if ($user_link) {
-            $twakeUserId = $user_link->getGroupId();
-            $userRepository = $this->em->getRepository("Twake\Workspaces:Group");
-            $user = $companyRepository->find($twakeUserId);
+            $twakeUserId = $user_link->getUserId();
+            $userRepository = $this->em->getRepository("Twake\Users:User");
+            $user = $userRepository->find($twakeUserId);
         }
         return $user;
     }

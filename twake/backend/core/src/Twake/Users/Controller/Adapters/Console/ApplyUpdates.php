@@ -4,6 +4,10 @@ namespace Twake\Users\Controller\Adapters\Console;
 
 use App\App;
 use Twake\Users\Services\PasswordEncoder;
+use Twake\Workspaces\Entity\Group;
+use Twake\Workspaces\Entity\GroupUser;
+use Twake\Workspaces\Entity\ExternalGroupRepository;
+use Twake\Upload\Entity\File;
 
 /**
  * This class will do updates in Twake from Twake console
@@ -36,7 +40,7 @@ class ApplyUpdates
         }
         if(!$company) {
             //Create company
-            $company = new Group();
+            $company = new Group($companyDTO["company"]["details"]["code"]);
 
             $this->em->persist($company);
             $this->em->flush();
@@ -45,14 +49,16 @@ class ApplyUpdates
             $this->em->persist($company_link);
         }
 
-        $company->setName($companyDTO["details"]["code"]);
-        $company->setDisplayName($companyDTO["details"]["name"]);
+        error_log(json_encode($companyDTO));
+
+        $company->setName($companyDTO["company"]["details"]["code"]);
+        $company->setDisplayName($companyDTO["company"]["details"]["name"]);
 
         // Format is {name: "string", limits: {}}
         $company->setPlan($companyDTO["plan"]);
 
-        $logo = $companyDTO["details"]["logo"];
-        if ($logo !== '') {
+        $logo = $companyDTO["company"]["details"]["logo"];
+        if ($logo) {
             $logoEntity = $company->getLogo();
             if(!$logoEntity){
                 $logoEntity = new File();
@@ -65,6 +71,8 @@ class ApplyUpdates
 
         $this->em->persist($company);
         $this->em->flush();
+
+        $this->app->getServices()->get("app.groups")->init($company);
 
         //TODO: realtime update
 
@@ -169,7 +177,7 @@ class ApplyUpdates
             $level = $role["roleCode"];
             //Double check we created this user in external users repo
             if($companyConsoleId && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
-                (new PrepareUpdates())->addUser($userConsoleId, $companyConsoleId);
+                (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleId, $userDTO);
             }
         }
 
@@ -183,20 +191,50 @@ class ApplyUpdates
      * status: "active",
      */
     function addUser($userTwakeEntity, $companyTwakeEntity, $roleDTO){
+
         if($roleDTO["status"] !== "active"){
             return $this->removeUser($userTwakeEntity, $companyTwakeEntity);
         }
 
-        //TODO add user into the company
+        // Add user into the company
 
-        //TODO check if company has any workspace, if not, create a workspace and invite user in it
+        $companyUserRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
+        $companyUserEntity = $companyUserRepository->findOneBy(Array("group" => $companyTwakeEntity, "user" => $userTwakeEntity));
+
+        if(!$companyUserEntity){
+            $companyUserEntity = new GroupUser($companyTwakeEntity, $userTwakeEntity);
+        }
+
+        $companyUserEntity->setExterne($roleDTO["roleCode"] === "guest"); 
+        $companyUserEntity->setLevel(($roleDTO["roleCode"] === "admin" || $roleDTO["roleCode"] === "owner") ? 3 : 0); 
+
+        $this->em->persist($companyUserEntity);
+        $this->em->flush();
+
+        // Check if company has any workspace, if not, create a workspace and invite user in it
+
+        $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
+        $existingWorkspace = $workspacesRepository->findOneBy(Array("group" => $companyTwakeEntity));
+
+        if(!$existingWorkspace){
+            error_log(json_encode($companyTwakeEntity->getAsArray()));
+            $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId());
+        }
+
+        return true;
 
     }
     
     function removeUser($userTwakeEntity, $companyTwakeEntity){
-        //Not implemented
-        error_log("not implemented");
-        return false;
+        $companyUserRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
+        $companyUserEntity = $companyUserRepository->findOneBy(Array("group" => $companyTwakeEntity, "user" => $userTwakeEntity));
+        
+        if($companyUserEntity){
+            $this->em->remove($companyUserEntity);
+            $this->em->flush();
+        }
+
+        return true;
     }
 
 }

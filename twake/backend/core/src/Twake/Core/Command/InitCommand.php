@@ -48,9 +48,6 @@ class InitCommand extends ContainerAwareCommand
 
         $services = $this->getApp()->getServices();
 
-        $manager->flush();
-
-
         // Création des applications    de base
         error_log("> Creating basic apps");
 

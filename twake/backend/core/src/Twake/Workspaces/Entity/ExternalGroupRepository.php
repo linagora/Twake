@@ -39,9 +39,9 @@ class ExternalGroupRepository
      */
     public function __construct($service_id, $external_id, $company_id)
     {
-        $this->service_id = $service_id;
-        $this->external_id = $external_id;
-        $this->company_id = $company_id;
+        $this->service_id = $service_id . "";
+        $this->external_id = $external_id . "";
+        $this->company_id = $company_id . "";
     }
 
     /**
@@ -73,7 +73,7 @@ class ExternalGroupRepository
      */
     public function setGroupId($company_id)
     {
-        $this->company_id = $company_id;
+        $this->company_id = $company_id . "";
     }
 
 }

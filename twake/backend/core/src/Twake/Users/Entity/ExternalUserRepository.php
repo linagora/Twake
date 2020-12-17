@@ -43,9 +43,9 @@ class ExternalUserRepository
      */
     public function __construct($service_id, $external_id, $user_id)
     {
-        $this->service_id = $service_id;
-        $this->external_id = $external_id;
-        $this->user_id = $user_id;
+        $this->service_id = $service_id . "";
+        $this->external_id = $external_id . "";
+        $this->user_id = $user_id . "";
     }
 
     /**
@@ -77,7 +77,7 @@ class ExternalUserRepository
      */
     public function setUserId($user_id)
     {
-        $this->user_id = $user_id;
+        $this->user_id = $user_id . "";
     }
 
 }

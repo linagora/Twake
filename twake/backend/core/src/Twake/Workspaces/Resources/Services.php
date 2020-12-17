@@ -11,7 +11,6 @@ class Services extends BaseServices
         "app.group_managers" => "GroupManagers",
         "app.groups" => "Groups",
         "app.group_apps" => "GroupApps",
-        "app.group_period" => "GroupPeriods",
         "app.workspace_levels" => "WorkspaceLevels",
         "app.workspace_members" => "WorkspaceMembers",
         "app.workspaces" => "Workspaces",
