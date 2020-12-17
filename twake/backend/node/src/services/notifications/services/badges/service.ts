@@ -10,7 +10,11 @@ import {
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
-import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
+import {
+  UserNotificationBadge,
+  UserNotificationBadgePrimaryKey,
+  UserNotificationBadgeType,
+} from "../../entities";
 import { NotificationExecutionContext } from "../../types";
 import { getNotificationRoomName } from "../realtime";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
@@ -27,7 +31,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
 
   async init(context: TwakeContext): Promise<this> {
     this.repository = await this.database.getRepository<UserNotificationBadge>(
-      UserNotificationBadge.TYPE,
+      UserNotificationBadgeType,
       UserNotificationBadge,
     );
     await this.subscribe(context);
@@ -60,7 +64,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   ): Promise<SaveResult<UserNotificationBadge>> {
     await this.repository.save(badge);
 
-    return new SaveResult(UserNotificationBadge.TYPE, badge, OperationType.CREATE);
+    return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }
 
   @RealtimeDeleted<UserNotificationBadge>((badge, context) =>
@@ -72,7 +76,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   ): Promise<DeleteResult<UserNotificationBadge>> {
     await this.repository.remove(pk as UserNotificationBadge);
 
-    return new DeleteResult(UserNotificationBadge.TYPE, pk as UserNotificationBadge, true);
+    return new DeleteResult(UserNotificationBadgeType, pk as UserNotificationBadge, true);
   }
 
   list(): Promise<ListResult<UserNotificationBadge>> {

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
 import {
   ListResult,
@@ -6,15 +7,15 @@ import {
 } from "../../../../../../../../src/core/platform/framework/api/crud-service";
 import { PubsubServiceAPI } from "../../../../../../../../src/core/platform/services/pubsub/api";
 import { ChannelMemberNotificationLevel } from "../../../../../../../../src/services/channels/types";
-import { MessageNotification } from "../../../../../../../../src/services/messages/types";
 import { NotificationServiceAPI } from "../../../../../../../../src/services/notifications/api";
+import { ChannelMemberNotificationPreference } from "../../../../../../../../src/services/notifications/entities/channel-member-notification-preferences";
+import { ChannelThreadUsers } from "../../../../../../../../src/services/notifications/entities/channel-thread-users";
 import {
-  ChannelMemberNotificationPreference,
-  ChannelThreadUsers,
-} from "../../../../../../../../src/services/notifications/entities";
+  UserNotificationBadge,
+  TYPE as UserNotificationBadgeType,
+} from "../../../../../../../../src/services/notifications/entities/user-notification-badges";
 import { PushNotificationToUsersMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/push-to-users/index";
 import { MentionNotification } from "../../../../../../../../src/services/notifications/types";
-import { ChannelType } from "../../../../../../../../src/services/types";
 
 describe("The PushNotificationToUsersMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
@@ -23,21 +24,29 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
   let processor: PushNotificationToUsersMessageProcessor;
   let getUsersInThread;
   let getChannelPreferencesForUsers;
+  let saveBadge;
 
   beforeEach(() => {
     channel_id = "channel_id";
     company_id = "company_id";
     workspace_id = "workspace_id";
+    thread_id: "thread_id";
 
     getUsersInThread = jest.fn();
     getChannelPreferencesForUsers = jest.fn();
+    saveBadge = jest.fn();
 
     setPreferences();
     setUsersInThread();
 
-    pubsubService = {} as PubsubServiceAPI;
+    pubsubService = ({
+      publish: jest.fn(),
+    } as unknown) as PubsubServiceAPI;
 
     service = ({
+      badges: {
+        save: saveBadge,
+      },
       channelPreferences: {
         getChannelPreferencesForUsers,
       },
@@ -75,6 +84,14 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
   function setPreferences(preferences: ChannelMemberNotificationPreference[] = []): void {
     getChannelPreferencesForUsers.mockResolvedValue(
       new ListResult<ChannelMemberNotificationPreference>("preferences", preferences),
+    );
+  }
+
+  function setBadgeResults(badges: UserNotificationBadge[] = []): void {
+    badges.forEach(badge =>
+      saveBadge.mockResolvedValueOnce(
+        new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE),
+      ),
     );
   }
 
@@ -125,16 +142,85 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
       await expect(processor.process(message)).rejects.toThrowError("Missing required fields");
     });
 
-    it("will do nothing when mentions is not defined", () => {});
+    it("will do nothing when mentions is not defined", async done => {
+      const message = getMessage();
+      delete message.mentions;
 
-    it("will do nothing when mentions.users is not defined", () => {});
+      await processor.process(message);
 
-    it("will do nothing when mentions.users is empty", () => {});
+      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      done();
+    });
 
-    it("will keep users who did not read the channel yet", () => {});
+    it("will do nothing when mentions.users is not defined", async done => {
+      const message = getMessage();
+      message.mentions = { users: undefined };
 
-    it("will update the user notification badge for users who did not read the channel yet", () => {});
+      await processor.process(message);
 
-    it("will publish message in pubsub for users which need to be notified", () => {});
+      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      done();
+    });
+
+    it("will do nothing when mentions.users is empty", async done => {
+      const message = getMessage();
+      message.mentions = { users: [] };
+
+      await processor.process(message);
+
+      expect(service.channelPreferences.getChannelPreferencesForUsers).not.toBeCalled;
+      done();
+    });
+
+    it("will keep users who did not read the channel yet", async done => {
+      setPreferences([
+        {
+          channel_id,
+          company_id,
+          last_read: Date.now(),
+          user_id: "1",
+          preferences: ChannelMemberNotificationLevel.ALL,
+        },
+        {
+          channel_id,
+          company_id,
+          last_read: Date.now(),
+          user_id: "3",
+          preferences: ChannelMemberNotificationLevel.ALL,
+        },
+      ]);
+      setBadgeResults([
+        {
+          channel_id,
+          company_id,
+          thread_id,
+          user_id: "1",
+          workspace_id,
+        },
+        {
+          channel_id,
+          company_id,
+          thread_id,
+          user_id: "3",
+          workspace_id,
+        },
+      ]);
+      const lessThan = Date.now();
+      const users = ["1", "2", "3", "4"];
+      const message = getMessage();
+      const channel = {
+        channel_id,
+        company_id,
+      };
+      message.mentions = { users };
+
+      await processor.process(message);
+
+      expect(getChannelPreferencesForUsers).toBeCalledWith(channel, users, { lessThan });
+      expect(service.badges.save).toBeCalledTimes(2);
+      expect(pubsubService.publish).toBeCalledTimes(2);
+
+      done();
+    });
   });
 });

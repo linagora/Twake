@@ -2,16 +2,15 @@ import { Type } from "class-transformer";
 import { ChannelType } from "../../types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
+export const TYPE = "user_notification_badges";
 /**
  * Table user-notification-badges
  */
-@Entity(UserNotificationBadge.TYPE, {
+@Entity(TYPE, {
   primaryKey: [["company_id"], "user_id", "workspace_id", "channel_id", "thread_id"],
-  type: UserNotificationBadge.TYPE,
+  type: TYPE,
 })
 export class UserNotificationBadge {
-  static TYPE = "user_notification_badges";
-
   /**
    * UUIDv4
    * Primary key / partition key

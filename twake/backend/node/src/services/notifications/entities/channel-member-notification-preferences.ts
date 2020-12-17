@@ -2,9 +2,10 @@ import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel } from "../../../services/channels/types";
 
-@Entity("channel_members_notification_preferences", {
+export const TYPE = "channel_members_notification_preferences";
+@Entity(TYPE, {
   primaryKey: [["company_id", "channel_id"], "user_id"],
-  type: "channel_members_notification_preferences",
+  type: TYPE,
 })
 export class ChannelMemberNotificationPreference {
   /**

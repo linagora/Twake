@@ -3,15 +3,15 @@ import { logger } from "../../../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { MobilePushNotifier } from "../../../../../notifications/notifiers";
 import {
-  ChannelMemberNotificationPreference,
-  UserNotificationBadge,
-  UserNotificationBadgePrimaryKey,
-} from "../../../../entities";
-import {
   CounterUpdateMessage,
   MentionNotification,
   MentionNotificationResult,
 } from "../../../../types";
+import { ChannelMemberNotificationPreference } from "../../../../../../services/notifications/entities/channel-member-notification-preferences";
+import {
+  UserNotificationBadge,
+  UserNotificationBadgePrimaryKey,
+} from "../../../../../../services/notifications/entities/user-notification-badges";
 
 /**
  * Push new message notification to a set of users
@@ -102,19 +102,29 @@ export class PushNotificationToUsersMessageProcessor
   ): Promise<Array<UserNotificationBadge>> {
     logger.info(`${this.name} - Update badge for users ${users.join("/")}`);
 
-    const results = await Promise.all(
-      users.map(user =>
-        this.service.badges.save({
-          channel_id: badge.channel_id,
-          company_id: badge.company_id,
-          workspace_id: badge.workspace_id,
-          thread_id: badge.thread_id,
-          user_id: user,
-        }),
-      ),
-    );
+    return (
+      await Promise.all(
+        users.map(user =>
+          this.saveBadge({
+            channel_id: badge.channel_id,
+            company_id: badge.company_id,
+            workspace_id: badge.workspace_id,
+            thread_id: badge.thread_id,
+            user_id: user,
+          }),
+        ),
+      )
+    ).filter(Boolean);
+  }
 
-    return results.map(result => result.entity);
+  private saveBadge(badge: UserNotificationBadge): Promise<UserNotificationBadge> {
+    return this.service.badges
+      .save(badge)
+      .then(result => result.entity)
+      .catch(err => {
+        logger.warn({ err }, `${this.name} - A badge has not been saved for user ${badge.user_id}`);
+        return null;
+      });
   }
 
   sendPushNotification(user: string, counterUpdate: CounterUpdateMessage): void {
