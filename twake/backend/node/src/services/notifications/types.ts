@@ -1,4 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
+import { PaginationQueryParameters } from "../channels/web/types";
 import { specialMention } from "../messages/types";
 import { uuid } from "../types";
 
@@ -26,3 +27,10 @@ export type CounterUpdateMessage = {
   value: number;
   user: string;
 };
+
+export interface NotificationListQueryParameters extends PaginationQueryParameters {
+  company_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+  thread_id: uuid;
+}

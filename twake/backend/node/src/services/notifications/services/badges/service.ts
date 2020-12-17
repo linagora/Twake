@@ -1,93 +1,99 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  RealtimeCreated,
-  RealtimeDeleted,
-  RealtimeSaved,
-  RealtimeUpdated,
-} from "../../../../core/platform/framework";
+import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
-  CreateResult,
-  UpdateResult,
   SaveResult,
   DeleteResult,
-  Paginable,
   ListResult,
+  OperationType,
+  Paginable,
+  CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
 import { UserNotificationBadge, UserNotificationBadgePrimaryKey } from "../../entities";
 import { NotificationExecutionContext } from "../../types";
 import { getNotificationRoomName } from "../realtime";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import { BadgePubsubService } from "./pubsub";
+import { pick } from "lodash";
 
-export class Service implements UserNotificationBadgeServiceAPI {
+export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
+  repository: Repository<UserNotificationBadge>;
+  pubsub: BadgePubsubService;
 
-  constructor(private service: UserNotificationBadgeServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI) {}
 
-  async init(): Promise<this> {
-    try {
-      this.service.init && (await this.service.init());
-    } catch (err) {
-      console.error("Can not initialize UserNotificationBadgeService");
-    }
+  async init(context: TwakeContext): Promise<this> {
+    this.repository = await this.database.getRepository<UserNotificationBadge>(
+      UserNotificationBadge.TYPE,
+      UserNotificationBadge,
+    );
+    await this.subscribe(context);
 
     return this;
   }
 
-  @RealtimeCreated<UserNotificationBadge>((badge, context) => [
-    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
-  ])
-  create?(
-    item: UserNotificationBadge,
-    context?: NotificationExecutionContext,
-  ): Promise<CreateResult<UserNotificationBadge>> {
-    throw new Error("Method not implemented.");
+  async subscribe(context: TwakeContext): Promise<this> {
+    if (!context) {
+      return;
+    }
+
+    this.pubsub = new BadgePubsubService(this);
+    this.pubsub.subscribe(context.getProvider("pubsub"));
+
+    return this;
   }
 
-  get(
-    pk: UserNotificationBadgePrimaryKey,
-    context?: NotificationExecutionContext,
-  ): Promise<UserNotificationBadge> {
-    throw new Error("Method not implemented.");
+  async get(pk: UserNotificationBadgePrimaryKey): Promise<UserNotificationBadge> {
+    return await this.repository.findOne(pk);
   }
 
-  @RealtimeUpdated<UserNotificationBadge>((badge, context) => [
-    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
-  ])
-  update?(
-    pk: UserNotificationBadgePrimaryKey,
-    item: UserNotificationBadge,
-    context?: NotificationExecutionContext,
-  ): Promise<UpdateResult<UserNotificationBadge>> {
-    throw new Error("Method not implemented.");
-  }
-
-  @RealtimeSaved<UserNotificationBadge>((badge, context) => [
-    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
-  ])
-  save?<SaveOptions>(
-    item: UserNotificationBadge,
+  @RealtimeSaved<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
+  async save<SaveOptions>(
+    badge: UserNotificationBadge,
     options: SaveOptions,
     context: NotificationExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
-    throw new Error("Method not implemented.");
+    await this.repository.save(badge);
+
+    return new SaveResult(UserNotificationBadge.TYPE, badge, OperationType.CREATE);
   }
 
-  @RealtimeDeleted<UserNotificationBadge>((badge, context) => [
-    { room: ResourcePath.get(getNotificationRoomName(context.user)) },
-  ])
-  delete(
+  @RealtimeDeleted<UserNotificationBadge>((badge, context) =>
+    ResourcePath.get(getNotificationRoomName(context.user)),
+  )
+  async delete(
     pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
   ): Promise<DeleteResult<UserNotificationBadge>> {
-    throw new Error("Method not implemented.");
+    await this.repository.remove(pk as UserNotificationBadge);
+
+    return new DeleteResult(UserNotificationBadge.TYPE, pk as UserNotificationBadge, true);
   }
 
-  list<ListOptions>(
-    pagination: Paginable,
-    options?: ListOptions,
-    context?: NotificationExecutionContext,
+  list(): Promise<ListResult<UserNotificationBadge>> {
+    throw new Error("Not implemented");
+  }
+
+  listForUser(
+    company_id: string,
+    user_id: string,
+    filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
   ): Promise<ListResult<UserNotificationBadge>> {
-    return this.service.list(pagination, options, context);
+    if (!company_id || !user_id) {
+      throw CrudExeption.badRequest("company_id and user_id are required");
+    }
+
+    return this.repository.find({
+      ...{
+        company_id,
+        user_id,
+      },
+      ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
+    });
   }
 }
