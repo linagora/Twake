@@ -45,8 +45,9 @@ export default class Observable extends EventListener {
       };
     }, []);
 
-    if (observedScope.constructor.name !== 'AsyncFunction') {
-      return observedScope() as G;
+    const value: any = observedScope();
+    if (['Promise', 'AsyncFunction'].indexOf(value?.constructor?.name || '') < 0) {
+      return value as G;
     }
 
     return state as G;

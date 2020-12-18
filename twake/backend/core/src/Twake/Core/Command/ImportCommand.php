@@ -153,7 +153,6 @@ class ImportCommand extends ContainerAwareCommand
 
                 $group = new Group($contents["name"] . "_itw");
                 $group->setDisplayName($contents["display_name"]);
-                $group->setPricingPlan($manager->getRepository("Twake\Workspaces:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
 
                 $logo = $contents["logo"];
                 if ($logo !== '') {

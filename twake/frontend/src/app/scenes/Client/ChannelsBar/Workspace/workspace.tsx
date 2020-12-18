@@ -36,8 +36,6 @@ export function Workspace() {
     { observedFields: ['id', 'user_member.favorite'] },
   );
 
-  console.log(directChannels.map(e => e.data.user_member?.favorite));
-
   channels
     .concat(directChannels)
     .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))

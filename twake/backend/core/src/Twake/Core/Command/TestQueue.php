@@ -9,7 +9,6 @@ use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twake\Core\Services\Queues\Queues;
 use Twake\Market\Entity\Application;
 use Twake\Workspaces\Entity\Group;
-use Twake\Workspaces\Entity\GroupPeriod;
 
 
 class TestQueue extends ContainerAwareCommand

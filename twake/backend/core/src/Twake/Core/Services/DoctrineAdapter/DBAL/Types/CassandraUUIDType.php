@@ -20,14 +20,14 @@ class CassandraUUIDType extends CassandraTimeUUIDType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $value = parent::convertToPHPValue($value, $platform);
+        $value = parent::convertToPHPValue($value, $platform) . "";
         $value[14] = "4";
         return $value;
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        $value = parent::convertToDatabaseValue($value, $platform);
+        $value = parent::convertToDatabaseValue($value, $platform) . "";
         $value[14] = "1";
         return $value;
     }

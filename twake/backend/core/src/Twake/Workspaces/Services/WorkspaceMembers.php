@@ -21,7 +21,6 @@ class WorkspaceMembers
     private $twake_mailer;
     private $doctrine;
     private $pusher;
-    private $pricing;
     private $calendar;
 
     public function __construct(App $app)
@@ -32,7 +31,6 @@ class WorkspaceMembers
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->pusher = $app->getServices()->get("app.pusher");
-        $this->pricing = $app->getServices()->get("app.pricing_plan");
         $this->calendar = $app->getServices()->get("app.calendar.calendar");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
         $this->groupManager = $app->getServices()->get("app.group_managers");
@@ -121,11 +119,6 @@ class WorkspaceMembers
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup()));
-                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
-
-                if (count($nbuserGroup) >= $limit) { // Margin of 1 to be sure we do not count twakebot
-                    return false;
-                }
             }
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
