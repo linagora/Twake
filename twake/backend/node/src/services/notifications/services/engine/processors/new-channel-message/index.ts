@@ -2,7 +2,11 @@ import { isDirectChannel } from "../../../../../channels/utils";
 import { logger } from "../../../../../../core/platform/framework";
 import { MessageNotification } from "../../../../../messages/types";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
+import {
+  ChannelMemberNotificationPreference,
+  ChannelThreadUsers,
+  getChannelThreadUsersInstance,
+} from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
 
@@ -40,7 +44,7 @@ export class NewChannelMessageProcessor
       logger.info(
         `${this.name} - Users to notify for message ${message.thread_id}/${message.id} in channel ${
           message.channel_id
-        } : ${usersToNotify.join("/")}`,
+        } : ['${usersToNotify.join("', '")}']`,
       );
 
       return {
@@ -71,20 +75,22 @@ export class NewChannelMessageProcessor
 
     const users: ChannelThreadUsers[] = [
       ...[
-        {
+        getChannelThreadUsersInstance({
           company_id: message.company_id,
           channel_id: message.channel_id,
           thread_id: threadId,
           user_id: message.sender,
-        },
+        }),
       ],
       ...(message?.mentions?.users?.length
-        ? message.mentions.users.map(user_id => ({
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: threadId,
-            user_id,
-          }))
+        ? message.mentions.users.map(user_id =>
+            getChannelThreadUsersInstance({
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: threadId,
+              user_id,
+            }),
+          )
         : []),
     ];
 

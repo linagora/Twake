@@ -8,6 +8,7 @@ export {
   ChannelThreadUsers,
   ChannelThreadUsersPrimaryKey,
   TYPE as ChannelThreadUsersType,
+  getInstance as getChannelThreadUsersInstance,
 } from "./channel-thread-users";
 
 export {

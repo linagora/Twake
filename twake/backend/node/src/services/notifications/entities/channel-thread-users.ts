@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "channel_thread_users";
@@ -43,3 +44,7 @@ export type ChannelThreadUsersPrimaryKey = Pick<
   ChannelThreadUsers,
   "company_id" | "channel_id" | "thread_id"
 >;
+
+export function getInstance(element: ChannelThreadUsers): ChannelThreadUsers {
+  return merge(new ChannelThreadUsers(), element);
+}
