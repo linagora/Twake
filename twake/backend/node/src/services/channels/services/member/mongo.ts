@@ -1,7 +1,10 @@
 import * as mongo from "mongodb";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
-import { MongoPagination } from "../../../../core/platform/services/database/services/orm/connectors/mongodb/mongodb";
+import {
+  MongoConnector,
+  MongoPagination,
+} from "../../../../core/platform/services/database/services/orm/connectors/mongodb/mongodb";
 import {
   CreateResult,
   DeleteResult,
@@ -20,8 +23,13 @@ export class MongoMemberService implements MemberService {
   version = "1";
   private collection: mongo.Collection<ChannelMember>;
 
-  constructor(private db: mongo.Db) {
-    this.collection = this.db.collection<ChannelMember>(`${TYPE}s`);
+  constructor(private connector: MongoConnector) {}
+
+  async init(): Promise<this> {
+    const db = await this.connector.getDatabase();
+    this.collection = db.collection<ChannelMember>(`${TYPE}s`);
+
+    return this;
   }
 
   async save(

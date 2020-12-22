@@ -26,6 +26,7 @@ export default class Database extends TwakeService<DatabaseServiceAPI> {
       logger.info("Connecting to database");
       await dbConnector.connect();
       await dbConnector.init();
+      logger.info("Connected to database");
     } catch (err) {
       logger.error("Failed to connect to database", err);
       throw new Error("Failed to connect to db");

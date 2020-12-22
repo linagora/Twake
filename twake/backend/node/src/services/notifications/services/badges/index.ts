@@ -18,7 +18,7 @@ function getServiceInstance(databaseService: DatabaseServiceAPI): UserNotificati
   switch (type) {
     case "mongodb":
       return new MongoUserNotificationBadgeService(
-        (databaseService.getConnector() as MongoConnector).getDatabase(),
+        databaseService.getConnector() as MongoConnector,
       );
     case "cassandra":
       const connector = databaseService.getConnector() as CassandraConnector;

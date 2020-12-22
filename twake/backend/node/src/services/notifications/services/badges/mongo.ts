@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import mongo from "mongodb";
+import { MongoConnector } from "../../../../core/platform/services/database/services/orm/connectors";
 import {
   CreateResult,
   UpdateResult,
@@ -18,11 +19,12 @@ export class MongoUserNotificationBadgeService implements UserNotificationBadgeS
   version: "1";
   protected collection: mongo.Collection<Notification>;
 
-  constructor(private db: mongo.Db) {
-    this.collection = this.db.collection<Notification>(`${TYPE}s`);
-  }
+  constructor(private connector: MongoConnector) {}
 
   async init(): Promise<this> {
+    const db = await this.connector.getDatabase();
+    this.collection = db.collection<Notification>(`${TYPE}s`);
+
     return this;
   }
 

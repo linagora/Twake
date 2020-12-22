@@ -20,11 +20,14 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   private client: mongo.MongoClient;
 
   async init(): Promise<this> {
+    if (!this.client) {
+      await this.connect();
+    }
     return this;
   }
 
   async connect(): Promise<this> {
-    if (this.client && this.client.isConnected) {
+    if (this.client && this.client.isConnected()) {
       return this;
     }
 
@@ -37,12 +40,16 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     return this.client;
   }
 
-  getDatabase(): mongo.Db {
+  async getDatabase(): Promise<mongo.Db> {
+    await this.connect();
+
     return this.client.db(this.options.database);
   }
 
   async drop(): Promise<this> {
-    await this.getDatabase().dropDatabase();
+    const db = await this.getDatabase();
+
+    db.dropDatabase();
 
     return this;
   }
@@ -51,7 +58,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     _entity: EntityDefinition,
     _columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean> {
-    const db = this.getDatabase();
+    const db = await this.getDatabase();
     const collection = db.collection(`${_entity.name}`);
 
     //Mongo only need to create an index if ttl defined for entity
@@ -67,10 +74,10 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     return true;
   }
   async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
       const promises: Promise<mongo.UpdateWriteOpResult>[] = [];
 
-      const db = this.getDatabase();
+      const db = await this.getDatabase();
 
       entities.forEach(entity => {
         const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
@@ -110,10 +117,9 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
 
   async remove(entities: any[]): Promise<boolean[]> {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
       const promises: Promise<mongo.DeleteWriteOpResultObject>[] = [];
-
-      const db = this.getDatabase();
+      const db = await this.getDatabase();
 
       entities.forEach(entity => {
         const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
@@ -170,7 +176,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       );
     });
 
-    const db = this.getDatabase();
+    const db = await this.getDatabase();
     const collection = db.collection(`${entityDefinition.name}`);
 
     const results = await collection

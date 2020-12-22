@@ -14,7 +14,7 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
 
   abstract getClient(): DatabaseClient;
 
-  abstract async createTable(
+  abstract createTable(
     entity: EntityDefinition,
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean>;
