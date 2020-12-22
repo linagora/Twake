@@ -20,9 +20,7 @@ function getServiceInstance(databaseService: DatabaseServiceAPI): ChannelService
 
   switch (type) {
     case "mongodb":
-      return new MongoChannelService(
-        (databaseService.getConnector() as MongoConnector).getDatabase(),
-      );
+      return new MongoChannelService(databaseService.getConnector() as MongoConnector);
     case "cassandra":
       const connector = databaseService.getConnector() as CassandraConnector;
 

@@ -38,7 +38,7 @@ export class Service implements ChannelService {
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
-      console.error("Can not initialize database service");
+      console.error("Can not initialize database service", err);
     }
 
     return this;

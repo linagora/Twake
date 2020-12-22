@@ -17,9 +17,7 @@ function getServiceInstance(databaseService: DatabaseServiceAPI): MemberService 
 
   switch (type) {
     case "mongodb":
-      return new MongoMemberService(
-        (databaseService.getConnector() as MongoConnector).getDatabase(),
-      );
+      return new MongoMemberService(databaseService.getConnector() as MongoConnector);
     case "cassandra":
       const connector = databaseService.getConnector() as CassandraConnector;
 
