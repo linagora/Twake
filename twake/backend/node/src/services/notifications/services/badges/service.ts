@@ -54,9 +54,13 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     return await this.repository.findOne(pk);
   }
 
-  @RealtimeSaved<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeSaved<UserNotificationBadge>((badge, context) => {
+    return [
+      {
+        room: ResourcePath.get(getNotificationRoomName(context.user)),
+      },
+    ];
+  })
   async save<SaveOptions>(
     badge: UserNotificationBadge,
     options: SaveOptions,
@@ -67,9 +71,13 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }
 
-  @RealtimeDeleted<UserNotificationBadge>((badge, context) =>
-    ResourcePath.get(getNotificationRoomName(context.user)),
-  )
+  @RealtimeDeleted<UserNotificationBadge>((badge, context) => {
+    return [
+      {
+        room: ResourcePath.get(getNotificationRoomName(context.user)),
+      },
+    ];
+  })
   async delete(
     pk: UserNotificationBadgePrimaryKey,
     context?: NotificationExecutionContext,
