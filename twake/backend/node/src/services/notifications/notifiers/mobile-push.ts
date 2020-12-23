@@ -21,8 +21,12 @@ export class MobilePushNotifier implements Notifier {
     logger.info(`MobilePushNotifier - Push to mobile ${user}`);
     logger.debug(`MobilePushNotifier - Push to mobile ${user}, ${JSON.stringify(message)}`);
 
-    this.pubsub.publish<Message>(TOPIC, {
-      data: message,
-    });
+    try {
+      await this.pubsub.publish<Message>(TOPIC, {
+        data: message,
+      });
+    } catch (err) {
+      logger.warn({ err }, `MobilePushNotifier - Error while sending notification to user ${user}`);
+    }
   }
 }
