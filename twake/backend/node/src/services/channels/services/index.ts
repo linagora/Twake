@@ -1,4 +1,5 @@
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
+import { ChannelMember } from "../entities";
 import ChannelServiceAPI, { MemberService, ChannelService, TabService } from "../provider";
 import { getService as getChannelService } from "./channel";
 import { getService as getMemberService } from "./member";
@@ -17,11 +18,12 @@ class Service implements ChannelServiceAPI {
   channels: ChannelService;
   members: MemberService;
   tabs: TabService;
+  
 
   constructor(databaseService: DatabaseServiceAPI) {
     this.members = getMemberService(databaseService);
     this.channels = getChannelService(databaseService, this.members);
-    this.tabs = getTabService(databaseService);
+    this.tabs = getTabService(databaseService, this.members);
   }
 
   async init(): Promise<this> {
