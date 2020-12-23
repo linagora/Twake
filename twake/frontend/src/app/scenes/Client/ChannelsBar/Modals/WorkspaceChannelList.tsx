@@ -16,7 +16,12 @@ export default () => {
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(100);
-  const autoChannels: { id: string; name: string; type: string; channel: ChannelResource }[] = [];
+  const autoChannels: {
+    id: string;
+    name: string;
+    type: string;
+    channelResource: ChannelResource;
+  }[] = [];
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
   const channels = channelsCollection.useWatcher({}, { limit: limit });
@@ -26,7 +31,7 @@ export default () => {
       id: channel.data.id || '',
       name: channel.data.name || '',
       type: 'workspace',
-      channel: channel,
+      channelResource: channel,
     });
   });
 
@@ -44,24 +49,26 @@ export default () => {
         />
       </Row>
       <PerfectScrollbar
-        style={{ maxHeight: '250px' }}
+        style={{ height: '240px' }}
         component="div"
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
-        {autoChannels
-          .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
-          .map((channel, index) => {
-            return (
-              <div key={`${channel.id}_${index}`}>
-                <WorkspaceChannelRow channel={channel} />
-                <Divider style={{ margin: 0 }} />
-              </div>
-            );
-          })}
-        {!autoChannels.filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
-          .length &&
-          limit < autoChannels.length + 100 &&
-          setLimit(autoChannels.length + 100)}
+        <div style={{ height: '240px' }}>
+          {autoChannels
+            .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
+            .map(autoChannel => {
+              return (
+                <div key={`${autoChannel.channelResource.key}`}>
+                  <WorkspaceChannelRow channel={autoChannel.channelResource} />
+                  <Divider style={{ margin: 0 }} />
+                </div>
+              );
+            })}
+          {!autoChannels.filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
+            .length &&
+            limit < autoChannels.length + 100 &&
+            setLimit(autoChannels.length + 100)}
+        </div>
       </PerfectScrollbar>
     </ObjectModal>
   );

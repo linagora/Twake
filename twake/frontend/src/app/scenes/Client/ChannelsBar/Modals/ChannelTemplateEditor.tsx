@@ -66,7 +66,7 @@ const ChannelTemplateEditor: FC<Props> = ({
           {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
         </Title>
         <TextArea
-          className="ant-input-lg"
+          size={'large'}
           autoSize={{ minRows: 1, maxRows: 4 }}
           placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
           value={description}

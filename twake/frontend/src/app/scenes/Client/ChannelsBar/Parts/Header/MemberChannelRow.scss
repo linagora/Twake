@@ -1,0 +1,14 @@
+.add {
+  line-height: 30px;
+  cursor: pointer;
+  float: right;
+  text-align: center;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  margin-top: -2px;
+
+  &:hover {
+    color: var(--black);
+  }
+}

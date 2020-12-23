@@ -30,7 +30,7 @@ class Service implements ChannelServiceAPI {
     try {
       await Promise.all([this.channels.init(), this.members.init(), this.tabs.init()]);
     } catch (err) {
-      console.error("Error while initializing", err);
+      console.error("Error while initializing channel", err);
     }
     return this;
   }

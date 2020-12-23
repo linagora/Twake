@@ -17,8 +17,9 @@ import { getUserParts, useUsersListener } from 'app/components/Member/UserParts'
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import { Search } from 'react-feather';
-
+import Languages from 'services/languages/languages.js';
 import SearchService from 'services/search/search.js';
+
 export default (): JSX.Element => {
   const [hideSearchInput, setHideSearchInput] = useState<boolean>(true);
   const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
@@ -104,11 +105,13 @@ export default (): JSX.Element => {
               onClick={() => {
                 ModalManager.open(<ChannelMembersList channel={channel} closable />, {
                   position: 'center',
-                  size: { width: '500px', minHeight: '329px' },
+                  size: { width: '600px', minHeight: '329px' },
                 });
               }}
             >
-              <Typography.Text>Members</Typography.Text>
+              <Typography.Text>
+                {Languages.t('scenes.apps.parameters.workspace_sections.members')}
+              </Typography.Text>
             </Button>
           )}
         </Row>
