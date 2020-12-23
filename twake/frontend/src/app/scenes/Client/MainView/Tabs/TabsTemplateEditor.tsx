@@ -86,12 +86,18 @@ export default (props: PropsType): JSX.Element => {
         </Row>
         {!props.tab?.data.id && (
           <Row justify="start">
-            <Select value={appId} size={'large'} onChange={(value: string) => setAppId(value)}>
+            <Select
+              size={'large'}
+              onChange={(value: string) => setAppId(value)}
+              value={appId ? appId : undefined}
+              placeholder={Languages.t(
+                'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder',
+              )}
+            >
               {workspacesApps
                 .filter((app: AppType) => (app.display || {}).channel_tab)
                 .map((app: AppType) => {
                   return (
-                    // To do, find a way to use the jitsi image
                     <Option key={`key_${app.id}`} value={app.id || ''}>
                       <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.name}
                     </Option>

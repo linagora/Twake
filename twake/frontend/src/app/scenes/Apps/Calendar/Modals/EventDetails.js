@@ -92,7 +92,7 @@ export default class EventDetails extends Component {
     var readonly = CalendarService.getIsReadonly(this.props.event);
 
     return (
-      <div className="eventModal event_details">
+      <div className="eventModal event_details" style={{ padding: '16px' }}>
         <div className="title">
           {event.title || Languages.t('scenes.apps.calendar.modals.untitled', [], 'Sans titre')}
         </div>
@@ -198,7 +198,7 @@ export default class EventDetails extends Component {
                   'Participants',
                 ),
                 render: (
-                  <div>
+                  <div className="small-x-margin small-bottom-margin">
                     <Participants readOnly participants={event.participants} owner={event.owner} />
                   </div>
                 ),

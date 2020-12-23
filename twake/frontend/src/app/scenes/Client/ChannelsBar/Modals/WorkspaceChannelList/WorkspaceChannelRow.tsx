@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 
 import { Button, Col, Row } from 'antd';
+import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
 import RouterServices, { ClientStateType } from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
-import { ChannelType, ChannelMemberResource } from 'app/models/Channel';
+import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 
 type PropsType = {
-  channel: ChannelType;
+  channel: ChannelResource;
 };
 
 export default ({ channel }: PropsType) => {
@@ -29,16 +30,15 @@ export default ({ channel }: PropsType) => {
   );
 
   const joinChannel = (): void => {
-    /*
     const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
-    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+    const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
     channelMembersCollection.insert(
       new ChannelMemberResource({
         user_id: userId,
         type: 'member',
       }),
     );
-    */
+
     return setIsChannelMember(true);
   };
 
@@ -55,7 +55,7 @@ export default ({ channel }: PropsType) => {
   return (
     <Row
       style={{ lineHeight: '47px' }}
-      key={channel.id}
+      key={channel.key}
       justify="space-between"
       align="middle"
       className="x-margin"
@@ -65,15 +65,15 @@ export default ({ channel }: PropsType) => {
         onClick={() => {
           if (isChannelMember) {
             ModalManager.closeAll();
-            return RouterServices.history.push(`/client/${workspaceId}/c/${channel.id}`);
+            return RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`);
           }
         }}
       >
         <div style={{ lineHeight: 0 }}>
-          <Emojione type={channel.icon || ''} />
+          <Emojione type={channel.data.icon || ''} />
         </div>
-        <span className="small-x-margin">{channel.name}</span>
-        {channel.visibility === 'private' && <Icon type="lock" />}
+        <span className="small-x-margin">{capitalize(channel.data.name)}</span>
+        {channel.data.visibility === 'private' && <Icon type="lock" />}
       </Col>
       <Col>
         <Button

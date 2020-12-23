@@ -7,7 +7,7 @@ import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'services/localStorage.js';
 
-import MediumPopupManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';
@@ -506,9 +506,7 @@ export default class Calendar extends Component {
         setTimeout(() => {
           var htmlEl = this.calendar.getDomElement(CalendarService.edited);
           if (htmlEl) {
-            MediumPopupManager.updateHighlight(
-              this.completeRect(window.getBoundingClientRect(htmlEl)),
-            );
+            ModalManager.updateHighlight(this.completeRect(window.getBoundingClientRect(htmlEl)));
           }
         }, 200);
       }
@@ -741,7 +739,7 @@ export default class Calendar extends Component {
 
             setTimeout(() => {
               var htmlEl = this.calendar.getDomElement(CalendarService.edited);
-              MediumPopupManager.open(
+              ModalManager.open(
                 <EventCreation
                   event={CalendarService.edited}
                   collectionKey={this.calendar_collection_key}
@@ -772,9 +770,7 @@ export default class Calendar extends Component {
               setTimeout(() => {
                 var e = this.calendar.getDomElement(updated);
                 e &&
-                  MediumPopupManager.updateHighlight(
-                    this.completeRect(window.getBoundingClientRect(e)),
-                  );
+                  ModalManager.updateHighlight(this.completeRect(window.getBoundingClientRect(e)));
               }, 100);
             }
           }}
@@ -785,7 +781,7 @@ export default class Calendar extends Component {
             jsEvent.stopPropagation();
             jsEvent.preventDefault();
             if (
-              !MediumPopupManager.isOpen() ||
+              !ModalManager.isOpen() ||
               !CalendarService.preview ||
               CalendarService.preview.front_id != event.front_id
             ) {
@@ -793,7 +789,7 @@ export default class Calendar extends Component {
               CalendarService.startPreview(event);
               setTimeout(() => {
                 var htmlEl = this.calendar.getDomElement(CalendarService.preview);
-                MediumPopupManager.open(
+                ModalManager.open(
                   <EventDetails event={event} collectionKey={this.calendar_collection_key} />,
                   {
                     highlight: htmlEl
@@ -820,7 +816,7 @@ export default class Calendar extends Component {
               to: new Date().getTime() / 1000 + 60 * 60,
             });
             setTimeout(() => {
-              MediumPopupManager.open(
+              ModalManager.open(
                 <EventModification
                   event={CalendarService.edited}
                   collectionKey={this.calendar_collection_key}

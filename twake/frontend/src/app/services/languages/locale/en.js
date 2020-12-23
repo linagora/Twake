@@ -1854,4 +1854,8 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Rename $1',
   'components.connectorslistmanager.add_connectors': 'Add connectors',
   'components.notifications.hidden_notifications_button.children': 'New messages',
+  'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
+  'scenes.client.channelbar.channelmemberslist.no_members':
+    'There is no members in this channel, you can invite them by clicking on Add users.',
+  'scenes.app.channelsbar.hide_discussion_leaving': 'Hide discussion',
 };

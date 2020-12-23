@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import Button from 'components/Buttons/Button.js';
 import MediumPopupComponent from 'app/components/Modal/ModalManager';
-import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
+import ObjectModal from 'components/ObjectModal/ObjectModal';
 import UserListManager from 'components/UserListManager/UserListManager';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';
@@ -35,18 +35,13 @@ const NewDirectMessagesPopup: FC = () => {
       query: { members: membersIds },
     });
 
-    await MediumPopupComponent.closeAll();
+    return MediumPopupComponent.closeAll();
   };
 
   return (
     <ObjectModal
-      title={
-        <ObjectModalTitle>
-          {Languages.t('scenes.app.channelsbar.channelsuser.new_private_discussion')}
-        </ObjectModalTitle>
-      }
-      onClose={() => MediumPopupComponent.closeAll()}
-      noScrollBar={true}
+      title={Languages.t('scenes.app.channelsbar.channelsuser.new_private_discussion')}
+      closable
       footer={
         <Button
           className="small primary"

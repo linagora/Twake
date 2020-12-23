@@ -1929,4 +1929,8 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Renommer $1',
   'components.connectorslistmanager.add_connectors': 'Ajouter des connecteurs',
   'components.notifications.hidden_notifications_button.children': 'Nouveaux messages',
+  'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
+  'scenes.client.channelbar.channelmemberslist.no_members':
+    "Il n'y a pas de membres dans cette chaîne, vous pouvez les inviter en cliquant sur Ajouter des utilisateurs.",
+  'scenes.app.channelsbar.hide_discussion_leaving': 'Masquer la discussion',
 };

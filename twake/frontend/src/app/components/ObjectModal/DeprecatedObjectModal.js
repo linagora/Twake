@@ -109,7 +109,7 @@ export class ObjectModal extends Component {
         {this.props.footer && (
           <div className="footer bottom-margin">
             <Divider />
-            <div className="right-margin">{this.props.footer}</div>
+            <div className="x-margin">{this.props.footer}</div>
           </div>
         )}
       </div>
