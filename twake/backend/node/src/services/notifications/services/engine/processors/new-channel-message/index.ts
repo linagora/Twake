@@ -21,14 +21,14 @@ export class NewChannelMessageProcessor
 
   readonly name = "NewChannelMessageProcessor";
 
+  validate(message: MessageNotification): boolean {
+    return !!(message && message.channel_id && message.company_id && message.workspace_id);
+  }
+
   async process(message: MessageNotification): Promise<MentionNotification> {
     logger.info(
       `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
-
-    if (!message.channel_id || !message.company_id || !message.workspace_id) {
-      throw new Error(`${this.name} - Missing required fields`);
-    }
 
     try {
       const usersToNotify = await this.getUsersToNotify(message);

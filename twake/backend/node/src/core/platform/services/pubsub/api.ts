@@ -1,7 +1,16 @@
+import { v4 as uuidv4 } from "uuid";
 import { Initializable, logger, TwakeServiceProvider } from "../../framework";
 import { Processor } from "./processor";
 
 export interface PubsubMessage<T> {
+  /**
+   * Optional message id, mainly used for logs
+   */
+  id?: string;
+
+  /**
+   * The message payload to process
+   */
   data: T;
 }
 
@@ -61,7 +70,10 @@ export class PubsubServiceProcessor<In, Out>
     try {
       await this.subscribe(this.pubsub);
     } catch (err) {
-      logger.warn({ err }, "Not able to start the PubsubServiceProcessor");
+      logger.warn(
+        { err },
+        `PubsubServiceProcessor.handler.${this.handler.name} -  Not able to start handler`,
+      );
     }
 
     return this;
@@ -73,42 +85,82 @@ export class PubsubServiceProcessor<In, Out>
   }
 
   async process(message: IncomingPubsubMessage<In>): Promise<Out> {
-    const result = await this.handler.process(message.data);
-
-    return result;
+    logger.info(
+      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Processing message`,
+    );
+    return this.handler.process(message.data);
   }
 
   async doSubscribe(): Promise<void> {
-    await this.pubsub.subscribe(this.handler.topics.in, this.processMessage.bind(this));
+    if (this.handler.topics && this.handler.topics.in) {
+      logger.info(
+        `PubsubServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in}`,
+      );
+      await this.pubsub.subscribe(this.handler.topics.in, this.processMessage.bind(this));
+    }
   }
 
   private async processMessage(message: IncomingPubsubMessage<In>): Promise<void> {
+    if (!message.id) {
+      message.id = uuidv4();
+    }
+
+    if (this.handler.validate) {
+      const isValid = this.handler.validate(message.data);
+
+      if (!isValid) {
+        logger.error(
+          `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message is invalid`,
+        );
+
+        return;
+      }
+    }
+
     try {
       const result = await this.process(message);
 
       if (result) {
-        await this.doPublish(result);
+        await this.sendResult(message, result);
       }
     } catch (error) {
-      if (this.handler.topics.error) {
-        this.pubsub.publish(this.handler.topics.error, {
-          data: {
-            type: "error",
-            message: error instanceof Error ? (error as Error).message : String(error),
-          },
-        });
-      }
+      this.handleError(message, error);
     }
   }
 
-  private async doPublish(message: Out): Promise<void> {
+  private async sendResult(message: IncomingPubsubMessage<In>, result: Out): Promise<void> {
     if (!this.handler.topics.out) {
+      logger.info(
+        `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message processing result is skipped`,
+      );
       return;
     }
 
+    logger.info(
+      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Sending processing result to ${this.handler.topics.out}`,
+    );
+
     return this.pubsub.publish(this.handler.topics.out, {
-      data: message,
+      id: uuidv4(),
+      data: result,
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async handleError(message: IncomingPubsubMessage<In>, err: any) {
+    logger.error(
+      { err },
+      `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Error while processing message`,
+    );
+    if (this.handler.topics.error) {
+      this.pubsub.publish(this.handler.topics.error, {
+        data: {
+          type: "error",
+          id: message.id,
+          message: err instanceof Error ? (err as Error).message : String(err),
+        },
+      });
+    }
   }
 }
 
@@ -129,6 +181,13 @@ export interface PubsubHandler<InputMessage, OutputMessage> extends Initializabl
    * The handler name
    */
   readonly name: string;
+
+  /**
+   * Validate the input message
+   *
+   * @param message message to validate
+   */
+  validate?(message: InputMessage): boolean;
 
   /**
    * Process the message and potentially produces result which will be published elsewhere
