@@ -96,8 +96,9 @@ class Console extends BaseController
                 $authentificated = false;
             }
             if ($authentificated) {
+                
 
-                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/idToken?idToken=" . $oidc->getIdToken();
+                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/profile";
                 $header = "Authorization: Bearer " . $oidc->getAccessToken();
                 $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
                 $response = json_decode($response->getContent(), 1);

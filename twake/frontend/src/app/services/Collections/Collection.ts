@@ -156,6 +156,7 @@ export default class Collection<G extends Resource<any>> {
       return [await this.findOne(filter, options)];
     }
 
+    await this.completion.wait();
     this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
       if (mongoItems.length > 0) {
         mongoItems.forEach(mongoItem => {
@@ -187,10 +188,12 @@ export default class Collection<G extends Resource<any>> {
     let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
     if (!mongoItem) {
+      await this.completion.wait();
       this.completion.completeFindOne(filter, options).then(async mongoItem => {
         if (mongoItem) {
           this.eventEmitter.notify();
         }
+        await this.completion.unlock();
       });
     }
 

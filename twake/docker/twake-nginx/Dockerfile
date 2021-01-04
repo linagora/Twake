@@ -6,7 +6,7 @@ MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 RUN apt-get update && apt-get -y install cron
 
 RUN apt-get update && apt-get install -y \
-    nginx
+  nginx
 
 RUN apt-get update && apt-get install -y wget
 
@@ -46,7 +46,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
 RUN apt-get -y install yarn
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 RUN yarn global add webpack
 RUN yarn global add webpack-cli
@@ -58,6 +58,7 @@ WORKDIR /twake-react/
 COPY frontend /twake-react/
 RUN cp /twake-react/src/app/environment/environment.ts.dist /twake-react/src/app/environment/environment.ts
 RUN yarn install --network-timeout 1000000000
+ENV GENERATE_SOURCEMAP false
 RUN yarn build
 
 RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist

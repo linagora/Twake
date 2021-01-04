@@ -52,7 +52,6 @@ class Parameters extends \Common\Configuration
                         "key" => "",
                         "secret" => ""
                     ]
-
                 ],
                 "rabbitmq" => [
                     "use" => true,
