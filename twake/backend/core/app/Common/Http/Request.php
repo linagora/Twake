@@ -40,9 +40,13 @@ class Request
         }
         $this->cookies = new ParamBag($cookies);
 
-        if (0 === strpos($this->headers->get('Content-Type'), 'application/json')) {
-            $data = json_decode($this->getContent(), true);
-            $this->request = new ParamBag(is_array($data) ? $data : array());
+        if (count($this->request->all()) === 0 || 0 === strpos($this->headers->get('Content-Type'), 'application/json')) {
+            try{
+                $data = json_decode($this->getContent(), true);
+                $this->request = new ParamBag(is_array($data) ? $data : array());
+            }catch(\Exception $err){
+                //Nop
+            }
         }
 
     }

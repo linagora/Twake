@@ -4,6 +4,7 @@ namespace Twake\Users\Controller\Adapters\Console;
 
 use App\App;
 use Common\Http\Response;
+use Common\Http\Request;
 
 class Hooks
 {
@@ -15,10 +16,19 @@ class Hooks
         $this->app = $app;
     }
     
-    function handle(Request $request, App $app)
+    function handle(Request $request)
     {
         $sign = $request->request->get("signature");
-        $event = $request->request->get("event");
+        $event = [
+            "content" => $request->request->get("content"),
+            "type" => $request->request->get("type")
+        ];
+
+        // Check secret
+        $secret = $this->app->getContainer()->getParameter("defaults.auth.console.secret");
+        if ($secret && $secret != $request->query->get("secret_key")) {
+            return new Response(["error" => "unauthorized"], 401);
+        }
 
         // Check signature to ensure request origin
         $publicKey = $this->app->getContainer()->getParameter("defaults.auth.console.public_key");
@@ -32,16 +42,18 @@ class Hooks
         }
 
         switch($event["type"]){
-            case "user_added":
+            case "company_user_added":
+            case "company_user_activated":
                 return $this->userAdded($event["content"]);
-            case "user_removed":
+            case "company_user_deactivated":
                 return $this->userRemoved($event["content"]);
-            case "user_updated":
+            case "company_user_updated":
                 return $this->userUpdated($event["content"]);
             case "plan_updated":
                 return $this->planUpdated($event["content"]);
-            case "company_removed":
+            case "company_deleted":
                 return $this->companyRemoved($event["content"]);
+            case "company_created":
             case "company_updated":
                 return $this->companyUpdated($event["content"]);
             default:
@@ -51,32 +63,32 @@ class Hooks
 
     function userAdded($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->addUser($data["user_id"], $data["company_id"] ?: null) ?: "");
+        return new Response($service->addUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
     }
 
     function userRemoved($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->removeUser($data["user_id"], $data["company_id"] ?: null) ?: "");
+        return new Response($service->removeUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
     }
     
     function userUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateUser($data["user_id"], $data["company_id"] ?: null) ?: "");
+        return new Response($service->updateUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
     }
         
     function companyRemoved($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->removeCompany($data["company_id"]) ?: "");
+        return new Response($service->removeCompany($data["company"]["_id"]) ?: "");
     }
     
     function companyUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateCompany($data["company_id"]) ?: "");
+        return new Response($service->updateCompany($data["company"]["_id"]) ?: "");
     }
     
     function planUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateCompany($data["company_id"]) ?: "");
+        return new Response($service->updateCompany($data["company"]["_id"]) ?: "");
     }
 
 }
