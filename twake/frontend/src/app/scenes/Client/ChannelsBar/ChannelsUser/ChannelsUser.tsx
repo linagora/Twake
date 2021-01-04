@@ -18,10 +18,9 @@ export function ChannelsUser() {
 
   const [limit, setLimit] = useState(100);
 
-  const directChannels = channelsCollection.useWatcher(
-    {},
-    { limit: limit, observedFields: ['id', 'user_member.favorite'] },
-  );
+  const directChannels = channelsCollection
+    .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
+    .filter(c => c.data.visibility === 'direct');
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

@@ -5,9 +5,7 @@ import ChannelMenu from './ChannelMenu';
 
 import { ChannelResource, ChannelType, ChannelMemberResource } from 'app/models/Channel';
 
-import RouterServices, { ClientStateType } from 'services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
-import UsersService from 'services/user/user.js';
 import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 
 type Props = {
@@ -28,11 +26,13 @@ export default (props: Props): JSX.Element => {
     { query: { mine: true } },
   )[0];
 
-  useUsersListener(isDirectChannel ? props.channel.direct_channel_members || [] : []);
+  useUsersListener(
+    isDirectChannel ? props.channel.direct_channel_members || props.channel.members || [] : [],
+  );
 
   const { avatar, name } = isDirectChannel
     ? getUserParts({
-        usersIds: props.channel.direct_channel_members || [],
+        usersIds: props.channel.direct_channel_members || props.channel.members || [],
       })
     : { avatar: '', name: '' };
 
