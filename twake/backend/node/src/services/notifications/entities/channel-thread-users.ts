@@ -1,12 +1,13 @@
 import { Type } from "class-transformer";
+import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
-@Entity(ChannelThreadUsers.TYPE, {
+export const TYPE = "channel_thread_users";
+@Entity(TYPE, {
   primaryKey: [["company_id", "channel_id", "thread_id"]],
-  type: ChannelThreadUsers.TYPE,
+  type: TYPE,
 })
 export class ChannelThreadUsers {
-  static TYPE = "channel_thread_users";
   /**
    * UUIDv4
    * Primary key / partition key
@@ -43,3 +44,7 @@ export type ChannelThreadUsersPrimaryKey = Pick<
   ChannelThreadUsers,
   "company_id" | "channel_id" | "thread_id"
 >;
+
+export function getInstance(element: ChannelThreadUsers): ChannelThreadUsers {
+  return merge(new ChannelThreadUsers(), element);
+}

@@ -13,7 +13,7 @@ GET {{baseURL}}/api/auth/login
 
 ### List badges with all websockets
 
-GET {{badgesURL}}?websockets=true&limit=5
+GET {{badgesURL}}?websockets=true&limit=5&company_id={{company_id}}
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

@@ -1,64 +1,67 @@
 import { isDirectChannel } from "../../../../../channels/utils";
 import { logger } from "../../../../../../core/platform/framework";
-import { MessageNotification, MessageNotificationResult } from "../../../../../messages/types";
+import { MessageNotification } from "../../../../../messages/types";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
+import {
+  ChannelMemberNotificationPreference,
+  ChannelThreadUsers,
+  getChannelThreadUsersInstance,
+} from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
+import { MentionNotification } from "../../../../types";
 
 export class NewChannelMessageProcessor
-  implements NotificationPubsubHandler<MessageNotification, MessageNotificationResult> {
+  implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
   constructor(readonly service: NotificationServiceAPI) {}
 
-  topics: {
-    in: "message:created";
-    out: "message:created:response";
+  readonly topics = {
+    in: "message:created",
+    out: "notification:mentions",
   };
 
-  name: "NewChannelMessageProcessor";
+  readonly name = "NewChannelMessageProcessor";
 
-  async process(message: MessageNotification): Promise<MessageNotificationResult> {
+  validate(message: MessageNotification): boolean {
+    return !!(message && message.channel_id && message.company_id && message.workspace_id);
+  }
+
+  async process(message: MessageNotification): Promise<MentionNotification> {
     logger.info(
-      `Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+      `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
-
-    if (!message.channel_id || !message.company_id || !message.workspace_id) {
-      throw new Error("Missing required fields");
-    }
 
     try {
       const usersToNotify = await this.getUsersToNotify(message);
 
       if (!usersToNotify?.length) {
         logger.info(
-          `No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+          `${this.name} - No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
         );
 
         return;
       }
 
       logger.info(
-        `Users to notify for message ${message.thread_id}/${message.id} in channel ${
+        `${this.name} - Users to notify for message ${message.thread_id}/${message.id} in channel ${
           message.channel_id
-        } : ${usersToNotify.join("/")}`,
+        } : ['${usersToNotify.join("', '")}']`,
       );
 
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
-        id: message.id,
-        sender: message.sender,
+        message_id: message.id,
         thread_id: message.thread_id,
         workspace_id: message.workspace_id,
+        creation_date: message.creation_date,
         mentions: {
           users: usersToNotify || [],
         },
-      } as MessageNotificationResult;
-
-      // TODO: Publish into pubsub.
+      } as MentionNotification;
     } catch (err) {
       logger.error(
         { err },
-        `Error while gettings users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+        `${this.name} - Error while gettings users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
       );
     }
   }
@@ -72,20 +75,22 @@ export class NewChannelMessageProcessor
 
     const users: ChannelThreadUsers[] = [
       ...[
-        {
+        getChannelThreadUsersInstance({
           company_id: message.company_id,
           channel_id: message.channel_id,
           thread_id: threadId,
           user_id: message.sender,
-        },
+        }),
       ],
       ...(message?.mentions?.users?.length
-        ? message.mentions.users.map(user_id => ({
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: threadId,
-            user_id,
-          }))
+        ? message.mentions.users.map(user_id =>
+            getChannelThreadUsersInstance({
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: threadId,
+              user_id,
+            }),
+          )
         : []),
     ];
 

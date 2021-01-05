@@ -4,6 +4,8 @@
 
 import { PaginationQueryParameters } from "../channels/web/types";
 
+export type uuid = string;
+
 /**
  * User in platform:
  *

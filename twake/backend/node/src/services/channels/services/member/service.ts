@@ -18,7 +18,6 @@ import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
-import { isDirectChannel } from "../../utils";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
   PubsubParameter,

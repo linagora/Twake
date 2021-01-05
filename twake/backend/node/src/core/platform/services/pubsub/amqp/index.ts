@@ -2,10 +2,11 @@ import { ConfirmChannel } from "amqplib";
 import { AmqpConnectionManager, connect } from "amqp-connection-manager";
 import { logger } from "../../../framework/logger";
 import { AmqpPubsubClient } from "./pubsubclient";
-import { PubsubMessage, PubsubListener, PubsubServiceAPI } from "../api";
+import { PubsubMessage, PubsubListener, PubsubLayer } from "../api";
 
 const LOG_PREFIX = "service.pubsub.amqp -";
-export class RabbitPubSub implements PubsubServiceAPI {
+
+export class RabbitPubSub implements PubsubLayer {
   version: "1";
 
   constructor(private client: AmqpPubsubClient) {}
@@ -35,7 +36,7 @@ export class RabbitPubSub implements PubsubServiceAPI {
     });
   }
 
-  static get(urls: string[]): Promise<PubsubServiceAPI> {
+  static get(urls: string[]): Promise<PubsubLayer> {
     return createClient(urls).then(client => new RabbitPubSub(client));
   }
 }
