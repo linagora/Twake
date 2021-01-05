@@ -7,6 +7,7 @@ import { ChannelResource, ChannelType, ChannelMemberResource } from 'app/models/
 
 import { Collection } from 'services/CollectionsReact/Collections';
 import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { NotificationResource } from 'app/models/Notification';
 
 type Props = {
   channel: ChannelType;
@@ -30,6 +31,11 @@ export default (props: Props): JSX.Element => {
     isDirectChannel ? props.channel.direct_channel_members || props.channel.members || [] : [],
   );
 
+  const notificationsCollection = Collection.get('/notifications/v1/badges', NotificationResource, {
+    queryParameters: { company_id: props.channel.company_id },
+  });
+  const notification = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+
   const { avatar, name } = isDirectChannel
     ? getUserParts({
         usersIds: props.channel.direct_channel_members || props.channel.members || [],
@@ -50,7 +56,7 @@ export default (props: Props): JSX.Element => {
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={false}
       visibility={channel.data.visibility || 'public'}
-      notifications={channel.data.messages_count || 0}
+      notifications={notification.length || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

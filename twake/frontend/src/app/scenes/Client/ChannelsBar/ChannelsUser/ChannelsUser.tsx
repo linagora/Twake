@@ -23,12 +23,6 @@ export function ChannelsUser() {
     .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
     .filter(c => c.data.visibility === 'direct');
 
-  const notificationsCollection = Collection.get('/notifications/v1/badges', NotificationResource, {
-    queryParameters: { company_id: companyId },
-  });
-  const notifications = notificationsCollection.useWatcher({}, { limit: 1000 });
-  console.log(notifications);
-
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
       position: 'center',
