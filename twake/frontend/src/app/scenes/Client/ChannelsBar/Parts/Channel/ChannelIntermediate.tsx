@@ -54,7 +54,9 @@ export default (props: Props): JSX.Element => {
       icon={channelIcon}
       muted={channel.data.user_member?.notification_level === 'none'}
       favorite={channel.data.user_member?.favorite || false}
-      unreadMessages={false}
+      unreadMessages={
+        (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0)
+      }
       visibility={channel.data.visibility || 'public'}
       notifications={notification.length || 0}
       menu={menu(channel)}

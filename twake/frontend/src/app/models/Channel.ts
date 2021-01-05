@@ -21,6 +21,7 @@ export type ChannelType = {
   archivation_date?: number; //Timestamp
   user_member?: ChannelMemberType;
   connectors?: string[];
+  last_activity?: number;
 };
 
 export type ChannelMemberType = {
