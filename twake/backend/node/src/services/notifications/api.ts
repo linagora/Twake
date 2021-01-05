@@ -14,12 +14,13 @@ import {
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
+import { NotificationEngine } from "./services/engine";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
   channelPreferences: ChannelMemberPreferencesServiceAPI;
   channelThreads: ChannelThreadUsersServiceAPI;
-  engine: NotificationEngineAPI;
+  engine: NotificationEngine;
 }
 
 export interface UserNotificationBadgeServiceAPI
@@ -29,7 +30,19 @@ export interface UserNotificationBadgeServiceAPI
       UserNotificationBadge,
       UserNotificationBadgePrimaryKey,
       NotificationExecutionContext
-    > {}
+    > {
+  /**
+   * List badges for user in a company. The filter allows to get the badges per workspace/channel/thread when they are defined
+   * @param company
+   * @param user
+   * @param filter
+   */
+  listForUser(
+    company_id: string,
+    user_id: string,
+    filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
+  ): Promise<ListResult<UserNotificationBadge>>;
+}
 
 export interface ChannelMemberPreferencesServiceAPI
   extends TwakeServiceProvider,
@@ -48,6 +61,9 @@ export interface ChannelMemberPreferencesServiceAPI
   getChannelPreferencesForUsers(
     channel: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
     users?: string[],
+    lastRead?: {
+      lessThan: number;
+    },
   ): Promise<ListResult<ChannelMemberNotificationPreference>>;
 }
 
@@ -68,15 +84,6 @@ export interface ChannelThreadUsersServiceAPI
    * @param pk The thread to get users from
    */
   getUsersInThread(pk: ChannelThreadUsersPrimaryKey): Promise<ListResult<ChannelThreadUsers>>;
-}
-
-/**
- * The notification engine processes various types of messages in order to create user notifications.
- * Notifications are then published in notification transport to the clients.
- */
-export interface NotificationEngineAPI extends Initializable {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register(handler: NotificationPubsubHandler<any, any>): void;
 }
 
 /**

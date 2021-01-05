@@ -1,5 +1,6 @@
-type specialMention = "all" | "here" | "everyone" | "channel";
-type uuid = string;
+import { uuid } from "../types";
+
+export type specialMention = "all" | "here" | "everyone" | "channel";
 
 export type MessageNotification = {
   company_id: uuid;
@@ -8,11 +9,10 @@ export type MessageNotification = {
   thread_id: uuid;
   id: uuid;
   sender: uuid;
+  creation_date: number;
   mentions?: {
     users?: uuid[];
     teams?: uuid[];
     specials?: specialMention[];
   };
 };
-
-export type MessageNotificationResult = MessageNotification;

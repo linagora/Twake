@@ -1,9 +1,9 @@
 import pino from "pino";
+import { Configuration } from "./configuration";
 
-// TODO: Get from config
-const level = "info";
+const config = new Configuration("logger");
 
 export const logger = pino({
   name: "TwakeApp",
-  level,
+  level: config.get("level", "info"),
 });

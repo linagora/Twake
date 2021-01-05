@@ -3,16 +3,16 @@ import {
   ListResult,
   OperationType,
   SaveResult,
-} from "../../../../../../../src/core/platform/framework/api/crud-service";
-import { ChannelMemberNotificationLevel } from "../../../../../../../src/services/channels/types";
-import { MessageNotification } from "../../../../../../../src/services/messages/types";
-import { NotificationServiceAPI } from "../../../../../../../src/services/notifications/api";
+} from "../../../../../../../../src/core/platform/framework/api/crud-service";
+import { ChannelMemberNotificationLevel } from "../../../../../../../../src/services/channels/types";
+import { MessageNotification } from "../../../../../../../../src/services/messages/types";
+import { NotificationServiceAPI } from "../../../../../../../../src/services/notifications/api";
 import {
   ChannelMemberNotificationPreference,
   ChannelThreadUsers,
-} from "../../../../../../../src/services/notifications/entities";
-import { NewChannelMessageProcessor } from "../../../../../../../src/services/notifications/services/engine/processors/new-channel-message/index";
-import { ChannelType } from "../../../../../../../src/services/types";
+} from "../../../../../../../../src/services/notifications/entities";
+import { NewChannelMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/new-channel-message/index";
+import { ChannelType } from "../../../../../../../../src/services/types";
 
 describe("The NewChannelMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;

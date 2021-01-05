@@ -11,7 +11,9 @@ import {
 } from "../../entities";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository, {
+  FindOptions,
+} from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
 
@@ -92,7 +94,30 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
       "channel_id" | "company_id"
     >,
     users: string[] = [],
+    lastRead: {
+      lessThan: number;
+    },
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    return this.repository.find({ ...channelAndCompany, ...{ user_id: users } });
+    const findOptions: FindOptions = {};
+
+    if (lastRead && lastRead.lessThan) {
+      findOptions.$lt = [["last_read", lastRead.lessThan]];
+    }
+
+    return this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, findOptions);
+  }
+
+  async getChannelPreferencesForUsersFilteredByReadTime(
+    channelAndCompany: Pick<
+      ChannelMemberNotificationPreferencePrimaryKey,
+      "channel_id" | "company_id"
+    >,
+    users: string[] = [],
+    lastRead: number,
+  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
+    return this.repository.find(
+      { ...channelAndCompany, ...{ user_id: users } },
+      { $lt: [["last_read", lastRead]] },
+    );
   }
 }

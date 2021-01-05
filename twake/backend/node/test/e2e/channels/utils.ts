@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { ChannelMember } from "../../../src/services/channels/entities";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import {
   ChannelExecutionContext,
@@ -13,6 +14,27 @@ export interface ChannelUtils {
   getChannel(owner?: string): Channel;
   getDirectChannel(owner?: string): Channel;
   getChannelContext(channel: Channel, user: User): ChannelExecutionContext;
+}
+
+export interface ChannelMemberUtils {
+  getMember(channel: Channel, user: User): ChannelMember;
+}
+
+export function getMemberUtils(platform: TestPlatform): ChannelMemberUtils {
+  return {
+    getMember,
+  };
+
+  function getMember(channel: Channel, user: User): ChannelMember {
+    const member = new ChannelMember();
+
+    member.company_id = platform.workspace.company_id;
+    member.workspace_id = platform.workspace.workspace_id;
+    member.channel_id = channel?.id;
+    member.user_id = user?.id;
+
+    return member;
+  }
 }
 
 export function get(platform: TestPlatform): ChannelUtils {
