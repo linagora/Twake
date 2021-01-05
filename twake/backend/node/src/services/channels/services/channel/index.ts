@@ -12,7 +12,7 @@ export function getService(
   databaseService: DatabaseServiceAPI,
   memberService: MemberService,
 ): ChannelService {
-  return new Service(getServiceInstance(databaseService), memberService);
+  return new Service(getServiceInstance(databaseService), memberService, databaseService);
 }
 
 function getServiceInstance(databaseService: DatabaseServiceAPI): ChannelService {

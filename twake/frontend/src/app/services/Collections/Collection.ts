@@ -14,6 +14,7 @@ import _ from 'lodash';
 export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
+  query: any;
 } & any;
 
 export type ServerRequestOptions = {
@@ -23,6 +24,7 @@ export type ServerRequestOptions = {
 
 export type CollectionOptions = {
   tag?: string;
+  queryParameters?: any;
   cacheReplaceMode?: 'always' | 'never';
 };
 
@@ -33,6 +35,7 @@ export default class Collection<G extends Resource<any>> {
   protected completion: FindCompletion<G> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
+    queryParameters: {},
   };
 
   constructor(
@@ -41,7 +44,7 @@ export default class Collection<G extends Resource<any>> {
     options?: CollectionOptions,
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
-    this.options = _.assign(this.options, options);
+    this.setOptions(options || {});
   }
 
   public getPath() {
@@ -52,12 +55,16 @@ export default class Collection<G extends Resource<any>> {
     return this.options;
   }
 
+  public setOptions(options: CollectionOptions) {
+    this.options = _.assign(this.options, options);
+  }
+
   public getTag() {
     return this.path.split('::')[1] || '';
   }
 
   public getRestPath() {
-    return this.path.split('::')[0] || '';
+    return (this.path.split('::')[0] || '').split('?')[0];
   }
 
   public getTransport() {
@@ -149,7 +156,11 @@ export default class Collection<G extends Resource<any>> {
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
    */
-  public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
+  public async find(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<G[]> {
+    options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     let mongoItems = await Storage.find(this.getPath(), filter, options);
 
     if (typeof filter === 'string' || filter?.id) {
@@ -178,13 +189,17 @@ export default class Collection<G extends Resource<any>> {
    * Find a specific document
    * This will call backend if we don't find this document in frontend.
    */
-  public async findOne(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
+  public async findOne(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<G> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
 
     await this.completion.wait();
 
+    options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
     if (!mongoItem) {
