@@ -32,7 +32,6 @@ class Groups
     {
         $userRepository = $this->doctrine->getRepository("Twake\Users:User");
         $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-        $planRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
 
         $user = $userRepository->find($userId);
 

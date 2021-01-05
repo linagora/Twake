@@ -463,7 +463,7 @@ class MessageSystem
         } else {
 
             $channel = $this->em->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
-            $this->sendToNode($channel, $message);
+            $this->sendToNode($channel, $message, $did_create);
 
             //Channel is now never defined except for old channels so never pass here
             $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
@@ -560,7 +560,7 @@ class MessageSystem
         return $array;
     }
 
-    public function sendToNode($channel, $message){
+    public function sendToNode($channel, $message, $did_create){
         $messageArray = $message->getAsArray();
 
         if($channel){
