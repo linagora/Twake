@@ -574,21 +574,19 @@ class MessageSystem
                 "specials" => $global_output[1]
             ];
             $rabbitData = [
-                "message" => [
-                    "company_id" => $channel->getData()["company_id"],
-                    "workspace_id" => $channel->getData()["workspace_id"],
-                    "channel_id" => $messageArray["channel_id"],
-                    "thread_id" => $messageArray["parent_message_id"],
-                    "id" => $messageArray["id"],
-                    "sender" => $messageArray["sender"],
-                    "creation_date" => $messageArray["creation_date"] * 1000,
-                    "mentions" => $mentions,
-                ]
+                "company_id" => $channel->getData()["company_id"],
+                "workspace_id" => $channel->getData()["workspace_id"],
+                "channel_id" => $messageArray["channel_id"],
+                "thread_id" => $messageArray["parent_message_id"],
+                "id" => $messageArray["id"],
+                "sender" => $messageArray["sender"],
+                "creation_date" => $messageArray["creation_date"] * 1000,
+                "mentions" => $mentions,
             ];
             if($did_create){
-                $this->queues->push("message:created", $rabbitData);
+                $this->queues->push("message:created", $rabbitData, ["exchange_type" => "fanout"]);
             }else{
-                $this->queues->push("message:updated", $rabbitData);
+                $this->queues->push("message:updated", $rabbitData, ["exchange_type" => "fanout"]);
             }
         }
     }

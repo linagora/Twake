@@ -19,7 +19,7 @@ class RabbitMQ implements QueueManager
         $this->parameters = $parameters;
     }
 
-    public function getChannel()
+    public function getChannel($options = [])
     {
         if (!$this->connection) {
             $this->connection = new AMQPStreamConnection($this->parameters["host"], $this->parameters["port"] ?: 5672, $this->parameters["username"], $this->parameters["password"], $this->parameters["vhost"] ?: '/');
@@ -31,12 +31,7 @@ class RabbitMQ implements QueueManager
     }
 
     public function push($route, $message, $options = [])
-    {
-        $channel = $this->getChannel();
-        $channel->queue_declare($route, false, true, false, false, [
-            "x-message-ttl" => 24 * 60 * 60 * 1000
-        ]);
-
+    {   
         $amqp_options = [];
         if (isset($options["delay"])) {
             $amqp_options = [
@@ -49,7 +44,19 @@ class RabbitMQ implements QueueManager
         }
 
         $msg = new AMQPMessage(json_encode($message), $amqp_options);
-        $channel->basic_publish($msg, '', $route);
+
+
+        $channel = $this->getChannel();
+        if($options["exchange_type"]){
+            $channel->queue_declare($route, false, true, false, false);
+            $channel->exchange_declare($route, $options["exchange_type"], false, true, false);
+            $channel->basic_publish($msg, $route, $route);
+        }else{
+            $channel->queue_declare($route, false, true, false, false, [
+                "x-message-ttl" => 24 * 60 * 60 * 1000
+            ]);
+            $channel->basic_publish($msg, '', $route);
+        }
     }
 
     public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
