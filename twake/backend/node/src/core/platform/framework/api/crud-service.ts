@@ -90,6 +90,10 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
     this.entities = this.entities.map(entity => mapper(entity));
   }
 
+  filterEntities(filter: (entity: Entity) => boolean): void {
+    this.entities = this.entities.filter(entity => filter(entity));
+  }
+
   getEntities(): Entity[] {
     return this.entities || [];
   }

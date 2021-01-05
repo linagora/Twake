@@ -47,7 +47,7 @@ export class UserNotificationBadge {
    * Primary key
    */
   @Type(() => String)
-  @Column("thread_id", "uuid")
+  @Column("thread_id", "string") //It can be null
   thread_id: string;
 }
 

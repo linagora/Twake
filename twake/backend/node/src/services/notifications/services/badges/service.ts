@@ -21,6 +21,7 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { BadgePubsubService } from "./pubsub";
 import { pick } from "lodash";
+import _ from "lodash";
 
 export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
@@ -57,7 +58,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   @RealtimeSaved<UserNotificationBadge>((badge, context) => {
     return [
       {
-        room: ResourcePath.get(getNotificationRoomName(context.user)),
+        room: ResourcePath.get(getNotificationRoomName(badge.user_id)),
       },
     ];
   })
@@ -66,7 +67,9 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     options: SaveOptions,
     context: NotificationExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
-    await this.repository.save(badge);
+    const badgeEntity = new UserNotificationBadge();
+    _.assign(badgeEntity, badge);
+    await this.repository.save(badgeEntity);
 
     return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }
@@ -74,7 +77,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   @RealtimeDeleted<UserNotificationBadge>((badge, context) => {
     return [
       {
-        room: ResourcePath.get(getNotificationRoomName(context.user)),
+        room: ResourcePath.get(getNotificationRoomName(badge.user_id)),
       },
     ];
   })
