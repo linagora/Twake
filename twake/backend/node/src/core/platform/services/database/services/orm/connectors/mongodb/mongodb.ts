@@ -87,12 +87,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const set: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
-          .filter(key => entity[columnsDefinition[key].nodename] !== undefined)
+          .filter(key => columnsDefinition[key].nodename !== undefined)
           .forEach(key => {
             set[key] = transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              columnsDefinition[key].options,
+              columnsDefinition[key].options
             );
           });
 
@@ -105,9 +105,8 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
             columnsDefinition[key].options,
           );
         });
-
         const collection = db.collection(`${entityDefinition.name}`);
-        promises.push(collection.updateOne(where, set, { upsert: true }));
+        promises.push(collection.updateOne(where, {$set : {set}}, { upsert: true }));
       });
 
       Promise.all(promises).then(results => {
@@ -182,13 +181,15 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const results = await collection
       .find(where)
       .skip(parseInt(options.pagination.page_token))
-      .limit(parseInt(options.pagination.limitStr))
-      .toArray();
-
+      .limit(parseInt(options.pagination.limitStr));
+    
     const entities: Table[] = [];
-    results.forEach(row => {
+    await results.forEach(row => {
+      row = {...row.set, ...row};
       const entity = new (entityType as any)();
-      Object.keys(row).forEach(key => {
+      Object.keys(row)
+      .filter(key => columnsDefinition[key] !== undefined)
+      .forEach(key => {
         entity[columnsDefinition[key].nodename] = transformValueToDbString(
           row[key],
           columnsDefinition[key].type,

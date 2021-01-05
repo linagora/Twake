@@ -11,12 +11,12 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import {  MemberService, TabService } from "../../provider";
 import { ChannelMember, ChannelTab, ChannelTabPrimaryKey } from "../../entities";
-import { ChannelExecutionContext, ChannelVisibility } from "../../types";
+import { ChannelExecutionContext, ChannelMemberType, ChannelVisibility } from "../../types";
 import { Channel } from "../../../types";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-
+import {isDirectChannel} from "../../utils"
 
 export class Service implements TabService {
   version: "1";
@@ -47,20 +47,12 @@ export class Service implements TabService {
       id: tab.id,
     };
 
-    const isDirectChannel = context.channel.workspace_id === ChannelVisibility.DIRECT;
-    if (isDirectChannel){
-      throw CrudExeption.badRequest("Driect channel dont have tabs");
+    if (isDirectChannel(context.channel)){
+      throw CrudExeption.badRequest("Can not create tab in direct channel");
     }
-
-    const userMember = await this.members.get({
-      channel_id: pk.channel_id,
-      company_id: pk.company_id,
-      workspace_id: pk.workspace_id,
-      user_id: context.user.id,
-    });
-
-    if (!userMember) {
-      throw CrudExeption.badRequest("User is not channel member");
+    
+    if (!(await this.userIsChannelMember(pk, context))) {
+      throw CrudExeption.badRequest("User is now allowed to create tab");
     }
 
     let tabEntity = await this.repository.findOne(pk);
@@ -100,14 +92,8 @@ export class Service implements TabService {
   ])
   async delete(pk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<DeleteResult<ChannelTab>> {
     let tabEntity = await this.repository.findOne(pk);
-    const userMember = await this.members.get({
-      channel_id: pk.channel_id,
-      company_id: pk.company_id,
-      workspace_id: pk.workspace_id,
-      user_id: context.user.id,
-    });
     
-    if (!userMember) {
+    if (!(await this.userIsChannelMember(pk, context))) {
       throw CrudExeption.badRequest("User is not channel member");
     }
     if (tabEntity) {
@@ -152,16 +138,14 @@ export class Service implements TabService {
     console.log("Tab deleted", tab);
   }
 
-  async userMember(pk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember>{
-    const member = await this.members.get({
+  userIsChannelMember(pk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember>{
+    return (this.members.get({
       channel_id: pk.channel_id,
       company_id: pk.company_id,
       workspace_id: pk.workspace_id,
       user_id: context.user.id,
-    });
-    return member
+    }));
   }
-
 }
 
 export function getTabsRealtimeRoom(channel: ChannelExecutionContext["channel"]): string {
