@@ -10,15 +10,6 @@ export default class InputWithIcon extends React.Component {
   constructor(props) {
     super();
     this.allChanEmojies = [
-      ':fire_engine:',
-      ':scroll:',
-      ':newspaper:',
-      ':factory:',
-      ':package:',
-      ':mailbox:',
-      ':moneybag:',
-      ':smiley_cat:',
-      ':sunglasses:',
       ':8ball:',
       ':dart:',
       ':joystick:',
@@ -34,6 +25,15 @@ export default class InputWithIcon extends React.Component {
       ':penguin:',
       ':seedling:',
       ':sailboat:',
+      ':fire_engine:',
+      ':scroll:',
+      ':newspaper:',
+      ':factory:',
+      ':package:',
+      ':mailbox:',
+      ':moneybag:',
+      ':smiley_cat:',
+      ':sunglasses:',
     ];
   }
   componentWillMount() {

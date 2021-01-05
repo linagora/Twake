@@ -52,7 +52,6 @@ class Parameters extends \Common\Configuration
                         "key" => "",
                         "secret" => ""
                     ]
-
                 ],
                 "rabbitmq" => [
                     "use" => true,
@@ -212,6 +211,7 @@ class Parameters extends \Common\Configuration
                     "use" => true,
                     "provider" => "http://account-twakeconsole.linagora.vn/api/",
                     "public_key" => "",
+                    "secret" => "secret",
                     "credentials" => [
                       "key" => "twake",
                       "secret" => "secret"

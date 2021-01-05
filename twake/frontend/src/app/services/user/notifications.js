@@ -361,17 +361,7 @@ class Notifications extends Observable {
     }
   }
 
-  updateAppBadge() {
-    var notifications = 0;
-    Object.keys(this.notification_by_group).forEach(group_id => {
-      notifications += (this.notification_by_group[group_id] || {}).count || 0;
-    });
-    if (notifications == 0) {
-      Object.keys(this.notification_by_channel).forEach(chan_id => {
-        notifications += (this.notification_by_channel[chan_id] || {}).count || 0;
-      });
-    }
-
+  updateAppBadge(notifications = 0) {
     windowState.setNotificationsInTitle(notifications);
 
     if (Globals.PushNotification) {

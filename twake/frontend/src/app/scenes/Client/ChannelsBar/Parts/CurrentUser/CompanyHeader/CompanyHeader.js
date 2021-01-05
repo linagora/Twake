@@ -30,13 +30,13 @@ export default class CompanyHeader extends React.Component {
           </div>
 
           <div className="user-info">
-            <div
+            {/*<div
               className={
                 'status ' +
                 (!user.connected && !notifications_disabled ? 'grey ' : '') +
                 (notifications_disabled ? 'red ' : '')
               }
-            />
+            />*/}
 
             {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon[0]} />}
 

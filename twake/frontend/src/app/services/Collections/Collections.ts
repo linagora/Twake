@@ -70,6 +70,7 @@ class Collections {
       this.collections[key] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);
+      this.collections[key].setOptions(options);
     }
 
     return this.collections[key] as Collection<G>;

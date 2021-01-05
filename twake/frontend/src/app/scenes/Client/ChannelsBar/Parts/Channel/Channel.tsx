@@ -46,9 +46,7 @@ export default (props: Props) => {
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
         className={
-          'channel fade_in ' +
-          (selected ? 'selected ' : '') +
-          (props.unreadMessages ? 'unread ' : '')
+          'channel ' + (selected ? 'selected ' : '') + (props.unreadMessages ? 'unread ' : '')
         }
         onClick={() =>
           props.id &&

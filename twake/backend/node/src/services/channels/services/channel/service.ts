@@ -28,13 +28,26 @@ import { DirectChannel } from "../../entities/direct-channel";
 import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 import { isDirectChannel } from "../../utils";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import { ChannelActivity } from "../../entities/channel-activity";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 
 export class Service implements ChannelService {
   version: "1";
+  activityRepository: Repository<ChannelActivity>;
 
-  constructor(private service: ChannelService, private members: MemberService) {}
+  constructor(
+    private service: ChannelService,
+    private members: MemberService,
+    private database: DatabaseServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
+    this.activityRepository = await this.database.getRepository(
+      "channel_activity",
+      ChannelActivity,
+    );
+
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
@@ -219,10 +232,25 @@ export class Service implements ChannelService {
 
       const result = await this.service.list(pagination, options, context);
 
+      const activityPerChannel: { [channelId: string]: ChannelActivity } = {};
+      await Promise.all(
+        result.getEntities().map(async channel => {
+          activityPerChannel[channel.id] = await this.activityRepository.findOne({
+            channel_id: channel.id,
+            company_id: channel.company_id,
+            workspace_id: channel.workspace_id,
+          });
+        }),
+      );
+
       result.mapEntities(<UserChannel>(channel: Channel) => {
         const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
 
-        return ({ ...channel, ...{ user_member: userChannel } } as unknown) as UserChannel;
+        return ({
+          ...channel,
+          ...{ user_member: userChannel },
+          last_activity: activityPerChannel[channel.id] || 0,
+        } as unknown) as UserChannel;
       });
 
       if (isDirectWorkspace) {

@@ -90,14 +90,10 @@ export default class CollectionTransport<G extends Resource<any>> {
       );
 
       const getOneSuffix = filter?.id ? '/' + filter?.id : '';
+      const path = this.collection.getRestPath().replace(/\/$/, '');
       const result = await Collections.getTransport()
         .getHttp()
-        .get(
-          this.collection.getRestPath().replace(/\/$/, '') +
-            getOneSuffix +
-            '?websockets=1&' +
-            queryParameters.join('&'),
-        );
+        .get(path + getOneSuffix + '?websockets=1&' + queryParameters.join('&'));
       this.unlockHttp();
 
       if (result?.websockets) {

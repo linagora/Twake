@@ -9,9 +9,9 @@ type Props = {
 };
 
 export default (props: Props) => {
-  useUsersListener(props.channel.direct_channel_members || []);
+  useUsersListener(props.channel.direct_channel_members || props.channel.members || []);
   const { avatar, name } = getUserParts({
-    usersIds: props.channel.direct_channel_members || [],
+    usersIds: props.channel.direct_channel_members || props.channel.members || [],
     max: 6,
     size: 64,
   });

@@ -10,6 +10,7 @@ import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDire
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
+import { NotificationResource } from 'app/models/Notification';
 
 export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
@@ -18,10 +19,9 @@ export function ChannelsUser() {
 
   const [limit, setLimit] = useState(100);
 
-  const directChannels = channelsCollection.useWatcher(
-    {},
-    { limit: limit, observedFields: ['id', 'user_member.favorite'] },
-  );
+  const directChannels = channelsCollection
+    .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
+    .filter(c => c.data.visibility === 'direct');
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

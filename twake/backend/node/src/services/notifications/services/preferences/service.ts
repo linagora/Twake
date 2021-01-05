@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import {
   DeleteResult,
   ListResult,
@@ -98,13 +98,15 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
       lessThan: number;
     },
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    const findOptions: FindOptions = {};
+    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
 
-    if (lastRead && lastRead.lessThan) {
-      findOptions.$lt = [["last_read", lastRead.lessThan]];
+    if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
+      result.filterEntities(entity => {
+        return entity.last_read < lastRead.lessThan;
+      });
     }
 
-    return this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, findOptions);
+    return result;
   }
 
   async getChannelPreferencesForUsersFilteredByReadTime(
@@ -115,9 +117,14 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
     users: string[] = [],
     lastRead: number,
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    return this.repository.find(
-      { ...channelAndCompany, ...{ user_id: users } },
-      { $lt: [["last_read", lastRead]] },
-    );
+    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
+
+    if (result.getEntities().length > 0 && lastRead) {
+      result.filterEntities(entity => {
+        return entity.last_read < lastRead;
+      });
+    }
+
+    return result;
   }
 }
