@@ -575,7 +575,7 @@ class MessageSystem
             ];
             $rabbitData = [
                 "company_id" => $channel->getData()["company_id"],
-                "workspace_id" => $channel->getData()["workspace_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
                 "channel_id" => $messageArray["channel_id"],
                 "thread_id" => $messageArray["parent_message_id"],
                 "id" => $messageArray["id"],
@@ -585,7 +585,7 @@ class MessageSystem
             ];
             $rabbitChannelData = [
                 "company_id" => $channel->getData()["company_id"],
-                "workspace_id" => $channel->getData()["workspace_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
                 "channel_id" => $messageArray["channel_id"],
                 "date" => $messageArray["creation_date"] * 1000,
             ];

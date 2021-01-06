@@ -23,7 +23,7 @@ import {
   ChannelType,
   ChannelVisibility,
   WorkspaceExecutionContext,
-  WorkspaceSystemExecutionContext,
+  ChannelSystemExecutionContext,
 } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
@@ -36,6 +36,7 @@ import { ResourcePath } from "../../../../core/platform/services/realtime/types"
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { ChannelActivity } from "../../entities/channel-activity";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import _ from "lodash";
 
 export class Service implements ChannelService {
   version: "1";
@@ -244,13 +245,21 @@ export class Service implements ChannelService {
   })
   async updateLastActivity(
     options: ChannelPrimaryKey,
-    _context: WorkspaceSystemExecutionContext,
+    context: ChannelSystemExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>> {
+    const channel = await this.service.get(
+      options,
+      _.pick(context, "workspace") as WorkspaceExecutionContext,
+    );
+
     const entity = new ChannelActivity();
     entity.channel_id = options.id;
     entity.company_id = options.company_id;
     entity.workspace_id = options.workspace_id;
     entity.last_activity = new Date().getTime();
+
+    entity.channel = channel;
+
     await this.activityRepository.save(entity);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }

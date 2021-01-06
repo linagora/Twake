@@ -27,7 +27,14 @@ export class ChannelActivity {
   @Column("last_activity", "number")
   last_activity: number;
 
+  /* Not stored in database */
+
+  channel: Channel;
+
   public getChannelPrimaryKey(): Channel {
+    if (this.channel) {
+      return this.channel;
+    }
     const channel = new Channel();
     channel.id = this.channel_id;
     channel.workspace_id = this.workspace_id;

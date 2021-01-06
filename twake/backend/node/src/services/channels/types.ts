@@ -10,8 +10,9 @@ export interface ChannelExecutionContext extends ExecutionContext {
   channel: Channel;
 }
 
-export interface WorkspaceSystemExecutionContext {
+export interface ChannelSystemExecutionContext {
   workspace: Workspace;
+  channel?: Channel;
 }
 
 export enum ChannelType {

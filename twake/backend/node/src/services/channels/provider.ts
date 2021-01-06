@@ -12,11 +12,7 @@ import {
   ChannelMember,
   ChannelMemberPrimaryKey,
 } from "./entities";
-import {
-  ChannelExecutionContext,
-  WorkspaceExecutionContext,
-  WorkspaceSystemExecutionContext,
-} from "./types";
+import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";

@@ -2,7 +2,7 @@ import { logger } from "../../../../../core/platform/framework";
 import {
   ChannelActivityNotification,
   WorkspaceExecutionContext,
-  WorkspaceSystemExecutionContext,
+  ChannelSystemExecutionContext,
 } from "../../../types";
 import { ChannelPrimaryKey, ChannelService } from "../../../provider";
 import { Service } from "../service";
@@ -14,7 +14,7 @@ export class NewChannelActivityProcessor {
     in: "channel:activity",
   };
 
-  readonly name = "NewChannelMessageProcessor";
+  readonly name = "NewChannelActivityProcessor";
 
   validate(message: ChannelActivityNotification): boolean {
     return !!(message && message.channel_id && message.company_id && message.workspace_id);
@@ -29,7 +29,7 @@ export class NewChannelActivityProcessor {
         workspace_id: message.workspace_id,
         company_id: message.company_id,
       };
-      const context: WorkspaceSystemExecutionContext = {
+      const context: ChannelSystemExecutionContext = {
         workspace: {
           company_id: message.company_id,
           workspace_id: message.workspace_id,
