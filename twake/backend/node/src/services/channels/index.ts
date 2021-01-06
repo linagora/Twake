@@ -21,7 +21,6 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
-    console.log("PUBSUB FROM CHANNEL", pubsub);
 
     this.service = getService(database, pubsub);
     this.service.init && (await this.service.init());
