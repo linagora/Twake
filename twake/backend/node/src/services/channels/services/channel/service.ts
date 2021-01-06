@@ -19,7 +19,12 @@ import { logger } from "../../../../core/platform/framework";
 
 import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
-import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import {
+  ChannelType,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+  WorkspaceSystemExecutionContext,
+} from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
@@ -216,6 +221,38 @@ export class Service implements ChannelService {
     this.onDeleted(channelToDelete, result);
 
     return result;
+  }
+
+  @RealtimeUpdated<ChannelActivity>((channelActivity, context) => {
+    return [
+      {
+        room: ResourcePath.get(
+          getRoomName(channelActivity.getChannelPrimaryKey(), context as WorkspaceExecutionContext),
+        ),
+        path: getChannelPath(
+          channelActivity.getChannelPrimaryKey(),
+          context as WorkspaceExecutionContext,
+        ),
+        resource: {
+          company_id: channelActivity.company_id,
+          workspace_id: channelActivity.workspace_id,
+          id: channelActivity.channel_id,
+          last_activity: channelActivity.last_activity,
+        },
+      },
+    ];
+  })
+  async updateLastActivity(
+    options: ChannelPrimaryKey,
+    _context: WorkspaceSystemExecutionContext,
+  ): Promise<UpdateResult<ChannelActivity>> {
+    const entity = new ChannelActivity();
+    entity.channel_id = options.id;
+    entity.company_id = options.company_id;
+    entity.workspace_id = options.workspace_id;
+    entity.last_activity = new Date().getTime();
+    await this.activityRepository.save(entity);
+    return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
 
   async list(

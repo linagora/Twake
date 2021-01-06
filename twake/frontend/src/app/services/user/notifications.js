@@ -141,7 +141,7 @@ class Notifications extends Observable {
       ) {
         //We are in this channel so we read it
         this.read(channel, true);
-        this.updateAppBadge();
+        //this.updateAppBadge();
       } else {
         delay = 10;
       }
@@ -162,7 +162,7 @@ class Notifications extends Observable {
             circle: true,
           };
           this._last_modified['group_' + id] = new Date();
-          this.updateAppBadge();
+          //this.updateAppBadge();
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
@@ -183,7 +183,7 @@ class Notifications extends Observable {
             circle: true,
           };
           this._last_modified['workspace_' + id] = new Date();
-          this.updateAppBadge();
+          //this.updateAppBadge();
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
@@ -208,7 +208,7 @@ class Notifications extends Observable {
             circle: circle,
           };
           this._last_modified['channel_' + id] = new Date();
-          this.updateAppBadge();
+          //this.updateAppBadge();
           this.checkWorkspaceAndGroupBadge();
           if (shouldNotify) this.notify();
         },
@@ -216,7 +216,7 @@ class Notifications extends Observable {
       );
     }
 
-    this.updateAppBadge();
+    // this.updateAppBadge();
   }
 
   checkWorkspaceAndGroupBadge() {
@@ -282,7 +282,7 @@ class Notifications extends Observable {
       this.notification_by_channel = {};
       this.notification_by_group = {};
       this.notification_by_workspace = {};
-      this.updateAppBadge();
+      //this.updateAppBadge();
       this.notify();
     });
   }

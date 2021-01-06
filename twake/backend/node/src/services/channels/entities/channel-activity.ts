@@ -1,4 +1,6 @@
 import { Type } from "class-transformer";
+import c from "config";
+import { Channel } from ".";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
 
@@ -23,5 +25,13 @@ export class ChannelActivity {
   channel_id: string;
 
   @Column("last_activity", "number")
-  order: number;
+  last_activity: number;
+
+  public getChannelPrimaryKey(): Channel {
+    const channel = new Channel();
+    channel.id = this.channel_id;
+    channel.workspace_id = this.workspace_id;
+    channel.company_id = this.company_id;
+    return channel;
+  }
 }

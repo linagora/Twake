@@ -60,7 +60,7 @@ export class PushNotificationToUsersMessageProcessor
         channel_id: message.channel_id,
         company_id: message.company_id,
         workspace_id: message.workspace_id,
-        thread_id: message.thread_id,
+        thread_id: message.thread_id || message.message_id,
       },
       usersToUpdate,
     );

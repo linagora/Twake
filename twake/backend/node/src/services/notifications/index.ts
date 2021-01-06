@@ -22,6 +22,8 @@ export default class NotificationService extends TwakeService<NotificationServic
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
 
+    console.log("PUBSUB FROM NOTIF", pubsub);
+
     this.service = getService(database, pubsub);
     await this.service?.init(this.context);
 
