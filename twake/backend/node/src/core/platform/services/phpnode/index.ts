@@ -9,7 +9,7 @@ import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
 
-@Consumes(["webserver", "websocket", "channels"])
+@Consumes(["webserver", "websocket"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
   name = "phpnode";
   version = "1";
@@ -59,10 +59,14 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
     });
   }
 
+  async doStart(): Promise<this> {
+    this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
+    return this;
+  }
+
   async doInit(): Promise<this> {
     this.server = this.context.getProvider<WebServerAPI>("webserver").getServer();
     this.ws = this.context.getProvider<WebSocketAPI>("websocket");
-    this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
 
     /**
      * Register private calls from php for websockets
@@ -86,6 +90,10 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
       method: "GET",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id/exists",
       handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
+        if (!this.channels) {
+          reply.code(500).send(); //Server is not ready
+          return;
+        }
         const membersController = new ChannelMemberCrudController(this.channels.members);
         membersController.exists(request, reply);
       },

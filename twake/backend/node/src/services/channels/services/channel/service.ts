@@ -19,7 +19,12 @@ import { logger } from "../../../../core/platform/framework";
 
 import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
-import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import {
+  ChannelType,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+  ChannelSystemExecutionContext,
+} from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
@@ -31,6 +36,7 @@ import { ResourcePath } from "../../../../core/platform/services/realtime/types"
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { ChannelActivity } from "../../entities/channel-activity";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import _ from "lodash";
 
 export class Service implements ChannelService {
   version: "1";
@@ -216,6 +222,46 @@ export class Service implements ChannelService {
     this.onDeleted(channelToDelete, result);
 
     return result;
+  }
+
+  @RealtimeUpdated<ChannelActivity>((channelActivity, context) => {
+    return [
+      {
+        room: ResourcePath.get(
+          getRoomName(channelActivity.getChannelPrimaryKey(), context as WorkspaceExecutionContext),
+        ),
+        path: getChannelPath(
+          channelActivity.getChannelPrimaryKey(),
+          context as WorkspaceExecutionContext,
+        ),
+        resource: {
+          company_id: channelActivity.company_id,
+          workspace_id: channelActivity.workspace_id,
+          id: channelActivity.channel_id,
+          last_activity: channelActivity.last_activity,
+        },
+      },
+    ];
+  })
+  async updateLastActivity(
+    options: ChannelPrimaryKey,
+    context: ChannelSystemExecutionContext,
+  ): Promise<UpdateResult<ChannelActivity>> {
+    const channel = await this.service.get(
+      options,
+      _.pick(context, "workspace") as WorkspaceExecutionContext,
+    );
+
+    const entity = new ChannelActivity();
+    entity.channel_id = options.id;
+    entity.company_id = options.company_id;
+    entity.workspace_id = options.workspace_id;
+    entity.last_activity = new Date().getTime();
+
+    entity.channel = channel;
+
+    await this.activityRepository.save(entity);
+    return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
 
   async list(

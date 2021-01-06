@@ -575,7 +575,7 @@ class MessageSystem
             ];
             $rabbitData = [
                 "company_id" => $channel->getData()["company_id"],
-                "workspace_id" => $channel->getData()["workspace_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
                 "channel_id" => $messageArray["channel_id"],
                 "thread_id" => $messageArray["parent_message_id"],
                 "id" => $messageArray["id"],
@@ -583,8 +583,15 @@ class MessageSystem
                 "creation_date" => $messageArray["creation_date"] * 1000,
                 "mentions" => $mentions,
             ];
+            $rabbitChannelData = [
+                "company_id" => $channel->getData()["company_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
+                "channel_id" => $messageArray["channel_id"],
+                "date" => $messageArray["creation_date"] * 1000,
+            ];
             if($messageArray["message_type"] != 2){ //Ignore system messages
                 if($did_create){
+                    $this->queues->push("channel:activity", $rabbitChannelData, ["exchange_type" => "fanout"]);
                     $this->queues->push("message:created", $rabbitData, ["exchange_type" => "fanout"]);
                 }else{
                     $this->queues->push("message:updated", $rabbitData, ["exchange_type" => "fanout"]);

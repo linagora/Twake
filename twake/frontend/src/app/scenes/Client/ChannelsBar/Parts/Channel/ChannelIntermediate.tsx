@@ -34,7 +34,7 @@ export default (props: Props): JSX.Element => {
   const notificationsCollection = Collection.get('/notifications/v1/badges', NotificationResource, {
     queryParameters: { company_id: props.channel.company_id },
   });
-  const notification = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
 
   const { avatar, name } = isDirectChannel
     ? getUserParts({
@@ -47,6 +47,9 @@ export default (props: Props): JSX.Element => {
   const channelIcon = isDirectChannel ? avatar : channel.data.icon || '';
   const channeName = isDirectChannel ? name : channel.data.name || '';
 
+  const unreadMessages =
+    (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0);
+
   return (
     <ChannelUI
       collection={props.collection}
@@ -55,10 +58,11 @@ export default (props: Props): JSX.Element => {
       muted={channel.data.user_member?.notification_level === 'none'}
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={
-        (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0)
+        unreadMessages &&
+        (channel.data.user_member.notification_level == 'all' || notifications.length > 0)
       }
       visibility={channel.data.visibility || 'public'}
-      notifications={notification.length || 0}
+      notifications={notifications.length || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

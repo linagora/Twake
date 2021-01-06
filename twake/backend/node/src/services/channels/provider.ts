@@ -2,6 +2,7 @@ import {
   CRUDService,
   ListResult,
   Pagination,
+  UpdateResult,
 } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import {
@@ -14,6 +15,7 @@ import {
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
 import { DirectChannel } from "./entities/direct-channel";
+import { ChannelActivity } from "./entities/channel-activity";
 
 export type ChannelPrimaryKey = {
   id?: string;

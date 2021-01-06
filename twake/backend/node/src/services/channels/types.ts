@@ -1,5 +1,6 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { Workspace, Channel } from "../types";
+import { uuid } from "../types";
 
 export interface WorkspaceExecutionContext extends ExecutionContext {
   workspace: Workspace;
@@ -7,6 +8,11 @@ export interface WorkspaceExecutionContext extends ExecutionContext {
 
 export interface ChannelExecutionContext extends ExecutionContext {
   channel: Channel;
+}
+
+export interface ChannelSystemExecutionContext {
+  workspace: Workspace;
+  channel?: Channel;
 }
 
 export enum ChannelType {
@@ -35,3 +41,10 @@ export enum ChannelMemberNotificationLevel {
   // do not be notified at all even when someone mention user, not on direct channels
   NONE = "none",
 }
+
+export type ChannelActivityNotification = {
+  company_id: uuid;
+  workspace_id: uuid | "direct";
+  channel_id: uuid;
+  date: number;
+};
