@@ -55,6 +55,7 @@ const NewDirectMessagesPopup: FC = () => {
     >
       <div className="x-margin">
         <UserListManager
+          max={10}
           users={[]}
           canRemoveMyself
           noPlaceholder
