@@ -88,6 +88,7 @@ class ApplyUpdates
      * Take a user from api and save it into PHP
      */
     function updateUser($userDTO){
+        error_log("updateUser with params: ". json_encode([$userDTO]));
 
         $roles = $userDTO["roles"];
 
@@ -178,7 +179,7 @@ class ApplyUpdates
         //TODO websocket update
 
         foreach($roles as $role){
-            $companyConsoleCode = $role["company"]["code"];
+            $companyConsoleCode = $role["targetCode"];
             $level = $role["roleCode"];
             //Double check we created this user in external users repo
             if($companyConsoleCode && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
@@ -196,6 +197,7 @@ class ApplyUpdates
      * status: "active",
      */
     function addUser($userTwakeEntity, $companyTwakeEntity, $roleDTO){
+        error_log("addUser with params: ". json_encode([$userTwakeEntity, $companyTwakeEntity, $roleDTO]));
 
         if($roleDTO["status"] !== "active"){
             return $this->removeUser($userTwakeEntity, $companyTwakeEntity);
@@ -231,6 +233,7 @@ class ApplyUpdates
     }
     
     function removeUser($userTwakeEntity, $companyTwakeEntity){
+        error_log("removeUser with params: ". json_encode([$userTwakeEntity, $companyTwakeEntity]));
         $companyUserRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
         $companyUserEntity = $companyUserRepository->findOneBy(Array("group" => $companyTwakeEntity, "user" => $userTwakeEntity));
         

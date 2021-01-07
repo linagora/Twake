@@ -41,6 +41,8 @@ class Hooks
             error_log("WARNING: no public key set for console hook!");
         }
 
+        error_log(json_encode($event));
+
         switch($event["type"]){
             case "company_user_added":
             case "company_user_activated":

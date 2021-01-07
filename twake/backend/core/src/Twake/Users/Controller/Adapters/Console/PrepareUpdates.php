@@ -96,7 +96,7 @@ class PrepareUpdates
         }
         $companyRole = null;
         foreach($userDTO["roles"] as $role){
-            if($role["company"]["code"] === $companyCode){
+            if($role["targetCode"] === $companyCode){
                 $companyRole = $role;
             }
         }
