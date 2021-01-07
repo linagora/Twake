@@ -47,9 +47,7 @@ export default (props: Props): JSX.Element => {
   const hasNotification =
     (Notifications.notification_by_channel[props.channel.data.id || ''] || {}).count > 0;
 
-  const changeNotificationPreference = async (
-    preference: 'all' | 'none' | 'group_mentions' | 'user_mentions',
-  ) => {
+  const changeNotificationPreference = async (preference: 'all' | 'none' | 'mentions' | 'me') => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.notification_level = 'all';
@@ -157,18 +155,18 @@ export default (props: Props): JSX.Element => {
             '@here',
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.data.user_member?.notification_level === 'group_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'mentions' && 'check',
           onClick: () => {
-            changeNotificationPreference('group_mentions');
+            changeNotificationPreference('mentions');
           },
         },
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.data.user_member?.notification_level === 'user_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'me' && 'check',
           onClick: () => {
-            changeNotificationPreference('user_mentions');
+            changeNotificationPreference('me');
           },
         },
         {

@@ -12,6 +12,7 @@ import {
   UserNotificationBadge,
   UserNotificationBadgePrimaryKey,
 } from "../../../../../../services/notifications/entities/user-notification-badges";
+import _ from "lodash";
 
 /**
  * Push new message notification to a set of users
@@ -105,15 +106,18 @@ export class PushNotificationToUsersMessageProcessor
 
     return (
       await Promise.all(
-        users.map(user =>
-          this.saveBadge({
+        users.map(user => {
+          const badgeEntity = new UserNotificationBadge();
+          _.assign(badgeEntity, {
             channel_id: badge.channel_id,
             company_id: badge.company_id,
             workspace_id: badge.workspace_id,
             thread_id: badge.thread_id,
             user_id: user,
-          }),
-        ),
+          });
+          console.log(badgeEntity);
+          return this.saveBadge(badgeEntity);
+        }),
       )
     ).filter(Boolean);
   }

@@ -25,6 +25,7 @@ export type ServerRequestOptions = {
 export type CollectionOptions = {
   tag?: string;
   queryParameters?: any;
+  idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
 };
 

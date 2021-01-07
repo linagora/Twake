@@ -15,9 +15,13 @@ export default (props: {
 }) => {
   var group = props.group || {};
 
-  const notificationsCollection = Collection.get('/notifications/v1/badges', NotificationResource, {
-    queryParameters: { company_id: group.id },
-  });
+  const notificationsCollection = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+    {
+      queryParameters: { company_id: group.id },
+    },
+  );
   const notifications = notificationsCollection.useWatcher({ company_id: group.id });
 
   Notifications.updateAppBadge(notifications.length);

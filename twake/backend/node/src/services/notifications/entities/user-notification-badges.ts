@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import { ChannelType } from "../../types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { v4 as uuidv4 } from "uuid";
 
 export const TYPE = "user_notification_badges";
 /**
@@ -49,6 +50,14 @@ export class UserNotificationBadge {
   @Type(() => String)
   @Column("thread_id", "string") //It can be null
   thread_id: string;
+
+  /**
+   * UUIDv4
+   * Only used because crud entities must always have an id
+   */
+  @Type(() => String)
+  @Column("id", "uuid")
+  id: string = uuidv4();
 }
 
 export type UserNotificationBadgePrimaryKey = Pick<
