@@ -51,7 +51,7 @@ export interface Connector extends Initializable {
 
   /**
    * Find items in database
-   * returns true if the object was removed, false otherwise
+   * returns the list of entities matching the filters and options.
    */
   find<EntityType>(
     entityType: any,

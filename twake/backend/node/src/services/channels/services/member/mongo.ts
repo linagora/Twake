@@ -100,4 +100,8 @@ export class MongoMemberService implements MemberService {
   listUserChannels(): Promise<ListResult<ChannelMember>> {
     throw new Error("Not implemented");
   }
+
+  isChannelMember(): Promise<ChannelMember> {
+    throw new Error("Not implemented");
+  }
 }

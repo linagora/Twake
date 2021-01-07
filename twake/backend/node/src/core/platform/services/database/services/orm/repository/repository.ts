@@ -7,6 +7,8 @@ import { getEntityDefinition } from "../utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FindFilter = { [key: string]: any };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RemoveFilter = { [key: string]: any };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type comparisonType = [string, any];

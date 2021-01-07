@@ -42,6 +42,17 @@ export interface UserNotificationBadgeServiceAPI
     user_id: string,
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
   ): Promise<ListResult<UserNotificationBadge>>;
+
+  /**
+   * Remove all the badges in channel for user
+   * @param
+   */
+  removeUserChannelBadges(
+    filter: Pick<
+      UserNotificationBadgePrimaryKey,
+      "workspace_id" | "company_id" | "channel_id" | "user_id"
+    >,
+  ): Promise<number>;
 }
 
 export interface ChannelMemberPreferencesServiceAPI
@@ -65,6 +76,19 @@ export interface ChannelMemberPreferencesServiceAPI
       lessThan: number;
     },
   ): Promise<ListResult<ChannelMemberNotificationPreference>>;
+
+  /**
+   * Update the last read value for given user/channel. Will not create the preference if not exists
+   *
+   * @param channel
+   * @param user
+   * @param lastRead
+   */
+  updateLastRead(
+    channel: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+    user: string,
+    lastRead: number,
+  ): Promise<ChannelMemberNotificationPreference>;
 }
 
 export interface ChannelThreadUsersServiceAPI

@@ -11,6 +11,7 @@ import {
   ChannelParameters,
   ChannelSaveOptions,
   CreateChannelBody,
+  ReadChannelBody,
   UpdateChannelBody,
 } from "../types";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
@@ -187,6 +188,30 @@ export class ChannelCrudController
       return {
         status: "error",
       };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
+
+  async updateRead(
+    request: FastifyRequest<{ Body: ReadChannelBody; Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    const read = request.body.value;
+
+    try {
+      const result = read
+        ? await this.service.markAsRead(
+            this.getPrimaryKey(request),
+            request.currentUser,
+            getExecutionContext(request),
+          )
+        : await this.service.markAsUnread(
+            this.getPrimaryKey(request),
+            request.currentUser,
+            getExecutionContext(request),
+          );
+      return result;
     } catch (err) {
       handleError(reply, err);
     }
