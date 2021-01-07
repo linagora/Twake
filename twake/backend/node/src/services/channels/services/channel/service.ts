@@ -36,6 +36,10 @@ import { ResourcePath } from "../../../../core/platform/services/realtime/types"
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { ChannelActivity } from "../../entities/channel-activity";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import {
+  PubsubPublish,
+  PubsubParameter,
+} from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
 
 export class Service implements ChannelService {
@@ -328,6 +332,63 @@ export class Service implements ChannelService {
     return this.service.getDirectChannelInCompany(companyId, users);
   }
 
+  async markAsRead(
+    pk: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean> {
+    const now = Date.now();
+    const channel = await this.get(pk, context);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    const member = await this.members.isChannelMember(user, channel);
+
+    if (!member) {
+      throw CrudExeption.badRequest("User is not channel member");
+    }
+
+    // Updating the member will also publish a message in the pubsub channel
+    // This message will be handled in the notification service and will update the notification preferences for the member
+    // cf this.members.onUpdated
+    member.last_access = now;
+    const updatedMember = (
+      await this.members.save(member, null, {
+        channel,
+        user,
+      })
+    ).entity;
+
+    this.onRead(channel, updatedMember);
+
+    return true;
+  }
+
+  async markAsUnread(
+    pk: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean> {
+    const channel = await this.get(pk, context);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    const member = await this.members.isChannelMember(user, channel);
+
+    if (!member) {
+      throw CrudExeption.badRequest("User is not channel member");
+    }
+
+    // do nothing here but send a notification so that notification service is updated...
+    this.onUnread(channel, member);
+
+    return true;
+  }
+
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
     return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
@@ -394,5 +455,39 @@ export class Service implements ChannelService {
    */
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
     console.log("PUSH DELETE ASYNC", channel, result);
+  }
+
+  /**
+   * Called when a channel as been marked as read.
+   * Will publish `channel:read` notification in the pubsub service
+   *
+   * @param channel
+   * @param member
+   */
+  @PubsubPublish("channel:read")
+  onRead(
+    @PubsubParameter("channel")
+    channel: Channel,
+    @PubsubParameter("member")
+    member: ChannelMember,
+  ): void {
+    logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
+  }
+
+  /**
+   * Called when a channel as been marked as unread.
+   * Will publish `channel:unread` notification in the pubsub service
+   *
+   * @param channel
+   * @param member
+   */
+  @PubsubPublish("channel:unread")
+  onUnread(
+    @PubsubParameter("channel")
+    channel: Channel,
+    @PubsubParameter("member")
+    member: ChannelMember,
+  ): void {
+    logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
   }
 }

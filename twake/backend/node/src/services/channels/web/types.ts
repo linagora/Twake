@@ -47,6 +47,10 @@ export class UpdateChannelBody {
   resource: ChannelUpdateResource;
 }
 
+export class ReadChannelBody {
+  value: boolean;
+}
+
 export type ChannelCreateResource = Pick<Channel, "name">;
 
 export type ChannelUpdateResource = Pick<Channel, "name">;

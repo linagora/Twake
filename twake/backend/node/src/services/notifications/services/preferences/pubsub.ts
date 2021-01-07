@@ -44,7 +44,7 @@ export class NotificationPubsubService extends PubsubServiceSubscription {
       channel_id: notification.member.channel_id,
       company_id: notification.member.company_id,
       user_id: notification.member.user_id,
-      last_read: notification.member.last_increment || 0,
+      last_read: notification.member.last_access || 0,
       preferences: notification.member.notification_level,
     });
 
@@ -76,7 +76,7 @@ export class NotificationPubsubService extends PubsubServiceSubscription {
       channel_id: notification.member.channel_id,
       company_id: notification.member.company_id,
       user_id: notification.member.user_id,
-      last_read: notification.member.last_increment || 0,
+      last_read: notification.member.last_access || 0,
       preferences: notification.member.notification_level,
     });
 

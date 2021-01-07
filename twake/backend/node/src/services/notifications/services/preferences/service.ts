@@ -1,4 +1,4 @@
-import _, { result } from "lodash";
+import _ from "lodash";
 import {
   DeleteResult,
   ListResult,
@@ -11,9 +11,7 @@ import {
 } from "../../entities";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import Repository, {
-  FindOptions,
-} from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
 
@@ -126,5 +124,29 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
     }
 
     return result;
+  }
+
+  async updateLastRead(
+    channelAndCompany: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+    user_id: string,
+    lastRead: number,
+  ): Promise<ChannelMemberNotificationPreference> {
+    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
+      user_id,
+      company_id: channelAndCompany.company_id,
+      channel_id: channelAndCompany.channel_id,
+    };
+
+    const preference = await this.repository.findOne(pk);
+
+    if (!preference) {
+      return;
+    }
+
+    preference.last_read = lastRead;
+
+    await this.repository.save(preference);
+
+    return preference;
   }
 }
