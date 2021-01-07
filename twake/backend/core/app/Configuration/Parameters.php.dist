@@ -216,6 +216,11 @@ class Parameters extends \Common\Configuration
                       "key" => "twake",
                       "secret" => "secret"
                     ],
+                    "redirections" => [
+                      "account_management_url" => "http://web-twakeconsole.linagora.vn/profile",
+                      "company_management_url" => "http://web-twakeconsole.linagora.vn/company",
+                      "collaborators_management_url" => "http://web-twakeconsole.linagora.vn/company/users",
+                    ],
                     //"None" signature is not supported
                     //PKCE not tested but implemented in our lib
                     "openid" => [
