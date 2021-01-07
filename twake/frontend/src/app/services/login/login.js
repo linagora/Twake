@@ -6,7 +6,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
-import Notifications from 'services/user/notifications.js';
+import Notifications from 'services/user/notifications';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';

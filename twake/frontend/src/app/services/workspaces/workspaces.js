@@ -11,8 +11,6 @@ import { ChannelResource } from 'app/models/Channel';
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'services/localStorage.js';
 import workspacesUsers from './workspaces_users.js';
-import WorkspaceUserRights from './workspace_user_rights.js';
-import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -172,8 +170,6 @@ class Workspaces extends Observable {
     if (workspace._user_hasnotifications) {
       workspace.group._user_hasnotifications = true;
     }
-
-    Notifications.updateBadge('workspace', workspace.id, workspace._user_hasnotifications ? 1 : 0);
   }
 
   removeFromUser(workspace) {

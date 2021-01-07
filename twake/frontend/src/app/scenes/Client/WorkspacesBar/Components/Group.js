@@ -8,7 +8,6 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import Notifications from 'services/user/notifications.js';
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
 
@@ -23,14 +22,14 @@ export default class Group extends Component {
 
     Groups.addListener(this);
     Collections.get('groups').addListener(this);
-    Notifications.addListener(this);
   }
   componentWillUnmount() {
     Collections.get('groups').removeListener(this);
     Groups.removeListener(this);
-    Notifications.removeListener(this);
   }
   renderGroupInMenu(group) {
+    const notifications = 0; //TODO
+
     return {
       type: 'react-element',
       reactElement: [
@@ -51,11 +50,9 @@ export default class Group extends Component {
             )}
           </div>
           <div className="text">{group.name}</div>
-          {!!(Notifications.notification_by_group[group.id] || {}).count && (
+          {notifications > 0 && (
             <div className="group_notification">
-              <div className={'badge circle'}>
-                {(Notifications.notification_by_group[group.id] || {}).count || 0}
-              </div>
+              <div className={'badge circle'}>{notifications || 0}</div>
             </div>
           )}
         </div>,
@@ -115,19 +112,10 @@ export default class Group extends Component {
       return '';
     }
 
-    var notifications = 0;
-
-    Object.keys(Notifications.notification_by_group).forEach(group_id => {
-      if (group_id != this.group.id) {
-        notifications += (Notifications.notification_by_group[group_id] || {}).count || 0;
-      }
-    });
-
     return (
       <GroupSwitch
         refLogo={node => (this.node = node)}
         group={this.group}
-        notifications={notifications || 0}
         onClick={evt => {
           this.openMenu(evt);
         }}

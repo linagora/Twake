@@ -53,7 +53,7 @@ class ApplyUpdates
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
 
         // Format is {name: "string", limits: {}}
-        $company->setPlan($companyDTO["plan"]);
+        $company->setPlan($companyDTO["company"]["plan"]);
 
         $logo = $companyDTO["company"]["details"]["logo"];
         if ($logo) {

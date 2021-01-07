@@ -19,9 +19,9 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
-import Notifications from 'services/user/notifications.js';
-import RouterServices from 'services/RouterService';
+import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { NotificationResource } from 'app/models/Notification';
 
 type Props = {
   channel: ChannelResource;
@@ -42,10 +42,16 @@ export default (props: Props): JSX.Element => {
   );
 
   Languages.useListener(useState);
-  Notifications.useListener(useState);
-  //@ts-ignore
-  const hasNotification =
-    (Notifications.notification_by_channel[props.channel.data.id || ''] || {}).count > 0;
+
+  const notificationsCollection = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+    {
+      queryParameters: { company_id: props.channel.data.company_id },
+    },
+  );
+  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+  const hasNotification = notifications.length > 0;
 
   const changeNotificationPreference = async (preference: 'all' | 'none' | 'mentions' | 'me') => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};

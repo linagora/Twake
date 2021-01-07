@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import Collection from './Collection';
 
 /**
  * This represent a Resource.
@@ -15,6 +16,7 @@ export default class Resource<T> {
   private _data: T & { id?: string };
   private _state: ResourceState;
   private _key: string = 'key:' + uuidv4();
+  private _collection: any;
 
   constructor(data: T & { id?: string }) {
     this._data = { id: this.genId(), ...data };
@@ -89,5 +91,15 @@ export default class Resource<T> {
 
   public setUpToDate(state: boolean = true) {
     this._state.upToDate = state;
+  }
+
+  public setCollection(collection: Collection<Resource<T>>) {
+    this._collection = collection;
+  }
+
+  public async action(action: string, body: any) {
+    return await this._collection.action(action, body, {
+      onResourceId: this.id,
+    });
   }
 }

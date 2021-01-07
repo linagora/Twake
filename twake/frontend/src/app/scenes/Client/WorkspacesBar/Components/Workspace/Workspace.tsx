@@ -17,8 +17,6 @@ export default (props: { workspace: any; selected: boolean; onClick: () => {} })
   });
   const notifications = notificationsCollection.useWatcher({ workspace_id: props.workspace.id });
 
-  console.log(notifications);
-
   var workspace = props.workspace || {};
   return (
     <div

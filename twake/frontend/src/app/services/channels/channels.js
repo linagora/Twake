@@ -6,7 +6,6 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'services/localStorage.js';
-import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import emojione from 'emojione';
 import Number from 'services/utils/Numbers.js';
@@ -50,6 +49,10 @@ class Channels extends Observable {
     });
   }
 
+  readChannelIfNeeded(channel) {
+    console.log(channel);
+  }
+
   select(channel, side = false, sideOptions = {}) {
     if (side) {
       if (
@@ -58,7 +61,6 @@ class Channels extends Observable {
         !channel.application
       ) {
         this.readChannelIfNeeded(channel);
-        delete Notifications.marked_as_unread[channel.id];
       }
 
       this.currentSideChannelOptions = sideOptions;
@@ -83,7 +85,6 @@ class Channels extends Observable {
 
       if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
         this.readChannelIfNeeded(channel);
-        delete Notifications.marked_as_unread[channel.id];
       }
 
       if (this.currentChannelFrontId != channel.front_id) {
@@ -138,17 +139,6 @@ class Channels extends Observable {
       return;
     }
     this.old_channel_state[channel.id] = state;
-    Notifications.updateBadge('channel', channel.id, state);
-  }
-
-  readChannelIfNeeded(channel) {
-    if (!channel) {
-      return;
-    }
-    var messages = DepreciatedCollections.get('messages').findBy({ channel_id: channel.id });
-    if (messages.length > 0) {
-      Notifications.read(channel);
-    }
   }
 
   incrementChannel(channel) {
