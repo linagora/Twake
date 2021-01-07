@@ -152,7 +152,7 @@ export default class EventCreation extends Component {
 
         <div className="separator" />
 
-        <div className="x-margin small-bottom-margin">
+        <div className="small-bottom-margin">
           <Participants
             participants={event.participants}
             owner={event.owner}
