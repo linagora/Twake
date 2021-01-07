@@ -121,13 +121,15 @@ export class NewChannelMessageProcessor
     const isAllOrHere = this.isAllOrHereMention(message);
 
     // 1. Remove the ones which does not want any notification (preference === NONE)
-    const result = membersPreferences.filter(
-      preference => preference.preferences !== ChannelMemberNotificationLevel.NONE,
-    );
+    const result = membersPreferences
+      .filter(preference => preference.preferences !== ChannelMemberNotificationLevel.NONE)
+      //2. Remove the sender
+      .filter(preference => preference.user_id + "" !== message.sender + "");
 
-    // 2. Filter based on truth table based on user preferences and current message
+    // 3. Filter based on truth table based on user preferences and current message
     return result.filter(memberPreference => {
       const userIsMentionned = this.userIsMentionned(memberPreference.user_id, message);
+
       const truthTable = [
         // all
         memberPreference.preferences === ChannelMemberNotificationLevel.ALL,
@@ -166,11 +168,14 @@ export class NewChannelMessageProcessor
     return (
       message.mentions &&
       message.mentions.specials &&
-      (message.mentions.specials.includes("all") || message.mentions.specials.includes("here"))
+      (message.mentions.specials.includes("all") ||
+        message.mentions.specials.includes("here") ||
+        message.mentions.specials.includes("channel") ||
+        message.mentions.specials.includes("everyone"))
     );
   }
 
   private userIsMentionned(user: string, message: MessageNotification) {
-    return message?.mentions?.users?.includes(user);
+    return message?.mentions?.users?.includes(user + "");
   }
 }

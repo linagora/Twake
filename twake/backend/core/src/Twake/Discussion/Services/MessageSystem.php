@@ -571,7 +571,7 @@ class MessageSystem
             preg_match_all("/(^| )@(all|here|channel|everyone)[^a-z]/m", $text_content, $global_output);
             $mentions = [
                 "users" => $users_output[1],
-                "specials" => $global_output[1]
+                "specials" => $global_output[2]
             ];
             $rabbitData = [
                 "company_id" => $channel->getData()["company_id"],

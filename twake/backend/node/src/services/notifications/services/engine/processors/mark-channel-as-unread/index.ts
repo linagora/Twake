@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { UserNotificationBadge } from "../../../../entities";
 import { logger } from "../../../../../../core/platform/framework";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { ChannelUnreadMessage } from "../../../../types";
@@ -38,13 +40,14 @@ export class MarkChannelAsUnreadMessageProcessor
     );
 
     try {
-      this.service.badges.save({
-        channel_id: message.channel.id,
-        company_id: message.channel.company_id,
-        user_id: message.member.user_id,
+      const badgeEntity = new UserNotificationBadge();
+      _.assign(badgeEntity, {
         workspace_id: message.channel.workspace_id,
-        thread_id: null,
+        company_id: message.channel.company_id,
+        channel_id: message.channel.id,
+        user_id: message.member.user_id,
       });
+      this.service.badges.save(badgeEntity);
 
       logger.info(
         `${this.name} - Created new badge for user ${message.member.user_id} in channel ${message.channel.id}`,

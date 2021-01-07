@@ -1,6 +1,9 @@
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Numbers from 'services/utils/Numbers.js';
 import Observable from 'app/services/Depreciated/observable';
+import Notifications from 'services/user/notifications';
+import { ChannelResource } from 'app/models/Channel';
+import Collections from 'app/services/CollectionsReact/Collections';
 
 export type Message = {
   application_id?: string | null;
@@ -276,6 +279,10 @@ export class MessagesListServerUtils extends Observable {
       });
     }
 
+    if (this.hasLastMessage()) {
+      this.readChannelOrThread();
+    }
+
     return messages;
   }
 
@@ -363,5 +370,24 @@ export class MessagesListServerUtils extends Observable {
     this.httpLoading = false;
     DepreciatedCollections.get('messages').removeSource(this.collectionKey);
     DepreciatedCollections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
+  }
+
+  private readChannelTimeout: any;
+  private lastReadMessage: string = '';
+  readChannelOrThread() {
+    if (this.readChannelTimeout) {
+      clearTimeout(this.readChannelTimeout);
+    }
+    if (this.lastReadMessage === this.lastLoadedMessageId) {
+      return;
+    }
+    this.readChannelTimeout = setTimeout(() => {
+      const path = `/channels/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/channels/::mine`;
+      const collection = Collections.get(path, ChannelResource);
+      collection.findOne({ id: this.channelId }).then(channel => {
+        this.lastReadMessage = this.lastLoadedMessageId;
+        Notifications.read(channel);
+      });
+    }, 500);
   }
 }

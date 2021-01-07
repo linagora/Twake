@@ -5,8 +5,15 @@ import React, { Component } from 'react';
 import './Workspace.scss';
 
 export default (props: { workspace: any; selected: boolean; onClick: () => {} }) => {
-  const notificationsCollection = Collection.get('/notifications/v1/badges', NotificationResource, {
-    queryParameters: { company_id: props.workspace.group.id },
+  const notificationsCollection = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+    {
+      queryParameters: { company_id: props.workspace.group.id },
+    },
+  );
+  notificationsCollection.setOptions({
+    idGenerator: data => data.thread_id,
   });
   const notifications = notificationsCollection.useWatcher({ workspace_id: props.workspace.id });
 

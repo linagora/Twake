@@ -34,14 +34,16 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   private observedChangesReactOptionsAdapter = (observedFields: string[]) => {
     return (changes: any) => {
       if (changes?.constructor?.name === 'Array' && changes.length > 1) {
-        return changes.map((e: any) => {
-          const observed = observedFields
-            .map(k => _.get(e.data, k) || _.get(e, k))
-            .filter(exist => exist);
-          return observed.length > 0 ? observed : e;
-        });
+        return changes
+          .map((e: any) => {
+            const observed = observedFields
+              .map(k => _.get(e.data, k) || _.get(e, k))
+              .filter(exist => exist);
+            return observed.length > 0 ? observed : e;
+          })
+          .map((e: any) => e?.data || e);
       }
-      return changes;
+      return changes.map((e: any) => e?.data || e);
     };
   };
 

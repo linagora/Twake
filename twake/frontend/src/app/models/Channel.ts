@@ -31,7 +31,7 @@ export type ChannelMemberType = {
   last_access?: number; //Timestamp in seconds
   last_increment?: number; //Number
   favorite?: boolean; //Did the user add this channel to its favorites
-  notification_level?: 'all' | 'none' | 'group_mentions' | 'user_mentions';
+  notification_level?: 'all' | 'none' | 'mentions' | 'me';
 };
 
 export class ChannelResource extends Resource<ChannelType> {}

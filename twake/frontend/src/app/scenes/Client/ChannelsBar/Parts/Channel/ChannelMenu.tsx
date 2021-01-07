@@ -19,9 +19,9 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
-import Notifications from 'services/user/notifications.js';
-import RouterServices from 'services/RouterService';
+import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { NotificationResource } from 'app/models/Notification';
 
 type Props = {
   channel: ChannelResource;
@@ -42,14 +42,18 @@ export default (props: Props): JSX.Element => {
   );
 
   Languages.useListener(useState);
-  Notifications.useListener(useState);
-  //@ts-ignore
-  const hasNotification =
-    (Notifications.notification_by_channel[props.channel.data.id || ''] || {}).count > 0;
 
-  const changeNotificationPreference = async (
-    preference: 'all' | 'none' | 'group_mentions' | 'user_mentions',
-  ) => {
+  const notificationsCollection = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+    {
+      queryParameters: { company_id: props.channel.data.company_id },
+    },
+  );
+  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+  const hasNotification = notifications.length > 0;
+
+  const changeNotificationPreference = async (preference: 'all' | 'none' | 'mentions' | 'me') => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.notification_level = 'all';
@@ -157,18 +161,18 @@ export default (props: Props): JSX.Element => {
             '@here',
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.data.user_member?.notification_level === 'group_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'mentions' && 'check',
           onClick: () => {
-            changeNotificationPreference('group_mentions');
+            changeNotificationPreference('mentions');
           },
         },
         {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
             `@${currentUser.username}`,
           ]),
-          icon: props.channel.data.user_member?.notification_level === 'user_mentions' && 'check',
+          icon: props.channel.data.user_member?.notification_level === 'me' && 'check',
           onClick: () => {
-            changeNotificationPreference('user_mentions');
+            changeNotificationPreference('me');
           },
         },
         {

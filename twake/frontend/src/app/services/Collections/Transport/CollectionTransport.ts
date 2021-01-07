@@ -1,3 +1,4 @@
+import { ActionOptions } from '../Collection';
 import Collections, { Collection, Resource } from '../Collections';
 import CollectionTransportSockets from './CollectionTransportSockets';
 
@@ -198,6 +199,21 @@ export default class CollectionTransport<G extends Resource<any>> {
     } catch (err) {
       console.log(err);
       this.unlockHttp();
+      throw err;
+    }
+  }
+
+  async action(actionName: string, object: any, options?: ActionOptions) {
+    try {
+      let url = this.collection.getRestPath();
+      if (options.onResourceId) {
+        url = url + options.onResourceId + '/';
+      }
+      url = url + actionName;
+      const result = await Collections.getTransport().getHttp().post(url, object);
+      return result;
+    } catch (err) {
+      console.log(err);
       throw err;
     }
   }

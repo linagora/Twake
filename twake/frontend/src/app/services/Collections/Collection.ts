@@ -22,9 +22,14 @@ export type ServerRequestOptions = {
   waitServerReply: boolean;
 };
 
+export type ActionOptions = {
+  onResourceId: string;
+} & GeneralOptions;
+
 export type CollectionOptions = {
   tag?: string;
   queryParameters?: any;
+  idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
 };
 
@@ -85,8 +90,8 @@ export default class Collection<G extends Resource<any>> {
   /**
    * Run an action on the backend (POST on `${this.path}/actionName`)
    */
-  public async action(actionName: string, object: any, options?: GeneralOptions): Promise<any> {
-    return {};
+  public async action(actionName: string, object: any, options?: ActionOptions): Promise<any> {
+    return await this.transport.action(actionName, object, options);
   }
 
   /**
@@ -229,6 +234,7 @@ export default class Collection<G extends Resource<any>> {
           item.setUpToDate(false);
         }
       }
+      item.setCollection(this);
       item.data = _.assign(mongoItem, item.data);
       this.resources[mongoItem.id] = item;
     }

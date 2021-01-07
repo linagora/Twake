@@ -109,7 +109,11 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       "workspace_id" | "company_id" | "channel_id" | "user_id"
     >,
   ): Promise<number> {
-    const badges = (await this.repository.find(filter)).getEntities();
+    const badges = (
+      await this.repository.find(
+        _.pick(filter, ["workspace_id", "company_id", "channel_id", "user_id"]),
+      )
+    ).getEntities();
 
     return (
       await Promise.all(

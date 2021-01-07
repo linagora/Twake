@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { UserNotificationBadge } from "../../../../entities";
 import { logger } from "../../../../../../core/platform/framework";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { ChannelReadMessage } from "../../../../types";
@@ -38,12 +40,14 @@ export class MarkChannelAsReadMessageProcessor
     );
 
     try {
-      const removedBadges = await this.service.badges.removeUserChannelBadges({
+      const badgeEntity = new UserNotificationBadge();
+      _.assign(badgeEntity, {
         workspace_id: message.channel.workspace_id,
         company_id: message.channel.company_id,
         channel_id: message.channel.id,
         user_id: message.member.user_id,
       });
+      const removedBadges = await this.service.badges.removeUserChannelBadges(badgeEntity);
 
       logger.info(
         `${this.name} - Removed ${removedBadges} badges for user ${message.member.user_id} in channel ${message.channel.id}`,
