@@ -127,3 +127,32 @@
   flex-direction: row-reverse;
   justify-content: space-between;
 }
+
+.add-user-from-twake-console {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .user-list-container,
+  .current-user-state,
+  .add-user-button-container {
+    width: 328px;
+  }
+
+  .user-list-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .current-user-state {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .add-user-button-container {
+    display: flex;
+    justify-content: start;
+  }
+}
