@@ -64,7 +64,7 @@ class Hooks
 
     function userAdded($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->addUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "", $data["user"]);
+        return new Response($service->addUser($data["user"]["_id"], $data["company"]["code"] ?: null, $data["user"]) ?: "");
     }
 
     function userRemoved($data){
@@ -74,7 +74,7 @@ class Hooks
     
     function userUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "", $data["user"]);
+        return new Response($service->updateUser($data["user"]["_id"], $data["company"]["code"] ?: null, $data["user"]) ?: "");
     }
         
     function companyRemoved($data){

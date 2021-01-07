@@ -86,7 +86,6 @@ class Console extends BaseController
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
 
             $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone'));
-            
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true
@@ -96,7 +95,6 @@ class Console extends BaseController
                 $authentificated = false;
             }
             if ($authentificated) {
-                
 
                 $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/profile";
                 $header = "Authorization: Bearer " . $oidc->getAccessToken();
