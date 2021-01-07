@@ -27,7 +27,7 @@ class ApplyUpdates
     
     function updateCompany($companyDTO){
 
-        $companyConsoleCode = $companyDTO["company"]["code"];
+        $companyConsoleCode = $companyDTO["company"]["details"]["code"];
 
         $extRepository = $this->em->getRepository("Twake\Workspaces:ExternalGroupRepository");
         $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleCode));
@@ -171,7 +171,7 @@ class ApplyUpdates
         //TODO websocket update
 
         foreach($roles as $role){
-            $companyConsoleCode = $role["company"]["_id"];
+            $companyConsoleCode = $role["company"]["code"];
             $level = $role["roleCode"];
             //Double check we created this user in external users repo
             if($companyConsoleCode && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
