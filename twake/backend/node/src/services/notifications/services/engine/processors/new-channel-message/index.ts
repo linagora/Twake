@@ -140,8 +140,6 @@ export class NewChannelMessageProcessor
         memberPreference.preferences === ChannelMemberNotificationLevel.ME && userIsMentionned,
       ];
 
-      console.log("mentioned: ", truthTable, memberPreference.preferences);
-
       return truthTable.includes(true);
     });
   }
@@ -170,7 +168,10 @@ export class NewChannelMessageProcessor
     return (
       message.mentions &&
       message.mentions.specials &&
-      (message.mentions.specials.includes("all") || message.mentions.specials.includes("here"))
+      (message.mentions.specials.includes("all") ||
+        message.mentions.specials.includes("here") ||
+        message.mentions.specials.includes("channel") ||
+        message.mentions.specials.includes("everyone"))
     );
   }
 
