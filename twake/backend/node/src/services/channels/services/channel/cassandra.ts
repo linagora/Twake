@@ -292,4 +292,8 @@ export class CassandraChannelService implements ChannelService {
   markAsRead(): Promise<boolean> {
     throw new Error("Not implemented");
   }
+
+  markAsUnread(): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
 }

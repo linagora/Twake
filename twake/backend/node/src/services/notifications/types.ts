@@ -22,6 +22,7 @@ export type MentionNotification = {
 export type MentionNotificationResult = MentionNotification;
 
 export type ChannelReadMessage = { member: ChannelMember; channel: Channel };
+export type ChannelUnreadMessage = ChannelReadMessage;
 
 export type CounterUpdateMessage = {
   company_id: uuid;

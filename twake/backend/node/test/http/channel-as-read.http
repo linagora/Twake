@@ -50,8 +50,12 @@ Authorization: Bearer {{authToken}}
   }
 }
 
-### Mark the channel as read
+### Mark the channel as read/unread
 
 POST {{channelsURL}}/channels/{{getId}}/read
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+{
+  "value": true
+}

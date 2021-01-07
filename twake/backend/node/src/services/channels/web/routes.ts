@@ -93,7 +93,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     url: `${channelsUrl}/:id/read`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    handler: channelsController.markAsRead.bind(channelsController),
+    handler: channelsController.updateRead.bind(channelsController),
   });
 
   // members

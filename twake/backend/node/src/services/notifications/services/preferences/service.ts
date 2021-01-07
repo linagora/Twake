@@ -1,4 +1,4 @@
-import _, { result } from "lodash";
+import _ from "lodash";
 import {
   DeleteResult,
   ListResult,
@@ -11,9 +11,7 @@ import {
 } from "../../entities";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import Repository, {
-  FindOptions,
-} from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
 

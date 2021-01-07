@@ -115,6 +115,10 @@ export class MongoChannelService implements ChannelService {
     throw new Error("Not implemented");
   }
 
+  markAsUnread(): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
     throw new Error("Not implemented");

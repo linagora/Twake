@@ -366,6 +366,29 @@ export class Service implements ChannelService {
     return true;
   }
 
+  async markAsUnread(
+    pk: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean> {
+    const channel = await this.get(pk, context);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    const member = await this.members.isChannelMember(user, channel);
+
+    if (!member) {
+      throw CrudExeption.badRequest("User is not channel member");
+    }
+
+    // do nothing here but send a notification so that notification service is updated...
+    this.onUnread(channel, member);
+
+    return true;
+  }
+
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
     return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
@@ -449,5 +472,22 @@ export class Service implements ChannelService {
     member: ChannelMember,
   ): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
+  }
+
+  /**
+   * Called when a channel as been marked as unread.
+   * Will publish `channel:unread` notification in the pubsub service
+   *
+   * @param channel
+   * @param member
+   */
+  @PubsubPublish("channel:unread")
+  onUnread(
+    @PubsubParameter("channel")
+    channel: Channel,
+    @PubsubParameter("member")
+    member: ChannelMember,
+  ): void {
+    logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
   }
 }

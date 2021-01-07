@@ -104,11 +104,11 @@ export class CassandraMemberService implements MemberService {
           user_id uuid,
           channel_id uuid,
           type text,
-          last_access date,
-          last_increment date,
+          last_access bigint,
+          last_increment bigint,
           favorite boolean,
           notification_level text,
-          expiration date,
+          expiration bigint,
           PRIMARY KEY ((company_id, workspace_id), user_id, channel_id)
         );`;
 
