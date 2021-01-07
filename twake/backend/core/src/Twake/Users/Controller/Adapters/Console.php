@@ -20,7 +20,9 @@ class Console extends BaseController
         }
 
         $handler = new Hooks($this->app);
-        return $handler->handle($request);
+        $res = $handler->handle($request);
+        error_log(json_encode($res->getContent()));
+        return $res;
     }
 
     

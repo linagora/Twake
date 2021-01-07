@@ -33,6 +33,7 @@ class PrepareUpdates
     }
     
     function updateCompany($companyCode){
+        error_log("updateCompany with params: " . json_encode([$companyCode]));
         $header = "Authorization: Basic " . $this->authB64;
         $response = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyCode, array(CURLOPT_HTTPHEADER => [$header]));
         $companyDTO = json_decode($response->getContent(), 1);
@@ -43,6 +44,7 @@ class PrepareUpdates
     }
     
     function removeCompany($companyCode){
+        error_log("removeCompany with params: " . json_encode([$companyCode]));
         $result = (new ApplyUpdates($this->app))->removeCompany($companyCode);
         return [
             "success" => !!$result
@@ -50,6 +52,7 @@ class PrepareUpdates
     }
     
     function updateUser($userId, $companyCode = null, $userDTO = null){
+        error_log("updateUser with params: " . json_encode([$userId, $companyCode, $userDTO]));
         //$header = "Authorization: Basic " . $this->authB64;
         //$response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId, array(CURLOPT_HTTPHEADER => [$header]));
         //$userDTO = json_decode($response->getContent(), 1);
@@ -65,6 +68,7 @@ class PrepareUpdates
     }
     
     function addUser($userId, $companyCode, $userDTO = null){
+        error_log("addUser with params: " . json_encode([$userId, $companyCode, $userDTO]));
 
         $user = (new Utils($this->app))->getUser($userId);
         $company = (new Utils($this->app))->getCompany($companyCode);
@@ -103,6 +107,7 @@ class PrepareUpdates
     }
     
     function removeUser($userId, $companyCode){
+        error_log("removeUser with params: " . json_encode([$userId, $companyCode]));
 
         $user = (new Utils($this->app))->getUser($userId);
         $company = (new Utils($this->app))->getCompany($companyCode);

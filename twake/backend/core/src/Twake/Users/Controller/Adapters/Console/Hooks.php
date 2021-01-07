@@ -44,11 +44,11 @@ class Hooks
         switch($event["type"]){
             case "company_user_added":
             case "company_user_activated":
-                return $this->userAdded($event["content"]);
+            case "company_user_updated":
+                    return $this->userAdded($event["content"]);
             case "company_user_deactivated":
                 return $this->userRemoved($event["content"]);
             case "user_updated":
-            case "company_user_updated":
                 return $this->userUpdated($event["content"]);
             case "plan_updated":
                 return $this->planUpdated($event["content"]);
