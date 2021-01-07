@@ -27,10 +27,10 @@ class ApplyUpdates
     
     function updateCompany($companyDTO){
 
-        $companyConsoleId = $companyDTO["company_id"];
+        $companyConsoleCode = $companyDTO["company"]["code"];
 
         $extRepository = $this->em->getRepository("Twake\Workspaces:ExternalGroupRepository");
-        $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleId));
+        $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleCode));
 
         $company = null;
         if ($company_link) {
@@ -45,7 +45,7 @@ class ApplyUpdates
             $this->em->persist($company);
             $this->em->flush();
 
-            $company_link = new ExternalGroupRepository("console", $companyConsoleId, $company->getId());
+            $company_link = new ExternalGroupRepository("console", $companyConsoleCode, $company->getId());
             $this->em->persist($company_link);
         }
 
@@ -78,7 +78,7 @@ class ApplyUpdates
 
     }
     
-    function removeCompany($companyId){
+    function removeCompany($companyConsoleCode){
         //Not implemented
         error_log("not implemented");
         return false;
@@ -171,11 +171,11 @@ class ApplyUpdates
         //TODO websocket update
 
         foreach($roles as $role){
-            $companyConsoleId = $role["company"]["_id"];
+            $companyConsoleCode = $role["company"]["_id"];
             $level = $role["roleCode"];
             //Double check we created this user in external users repo
-            if($companyConsoleId && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
-                (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleId, $userDTO);
+            if($companyConsoleCode && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
+                (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleCode, $userDTO);
             }
         }
 

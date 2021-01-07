@@ -47,6 +47,7 @@ class Hooks
                 return $this->userAdded($event["content"]);
             case "company_user_deactivated":
                 return $this->userRemoved($event["content"]);
+            case "user_updated":
             case "company_user_updated":
                 return $this->userUpdated($event["content"]);
             case "plan_updated":
@@ -63,32 +64,32 @@ class Hooks
 
     function userAdded($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->addUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
+        return new Response($service->addUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "", $data["user"]);
     }
 
     function userRemoved($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->removeUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
+        return new Response($service->removeUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "");
     }
     
     function userUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateUser($data["user"]["_id"], $data["company"]["_id"] ?: null) ?: "");
+        return new Response($service->updateUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "", $data["user"]);
     }
         
     function companyRemoved($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->removeCompany($data["company"]["_id"]) ?: "");
+        return new Response($service->removeCompany($data["company"]["code"]) ?: "");
     }
     
     function companyUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateCompany($data["company"]["_id"]) ?: "");
+        return new Response($service->updateCompany($data["company"]["code"]) ?: "");
     }
     
     function planUpdated($data){
         $service = new PrepareUpdates($this->app);
-        return new Response($service->updateCompany($data["company"]["_id"]) ?: "");
+        return new Response($service->updateCompany($data["company"]["code"]) ?: "");
     }
 
 }

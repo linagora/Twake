@@ -18,15 +18,23 @@ class PrepareUpdates
     /** @var String */
     protected $endpoint = null;
 
+    /** @var String */
+    private $authB64 = "";
+
     public function __construct(App $app)
     {
         $this->app = $app;
         $this->api = $app->getServices()->get("app.restclient");
         $this->endpoint = $this->app->getContainer()->getParameter("defaults.auth.console.provider");
+        $this->authB64 = base64_encode(
+            $this->app->getContainer()->getParameter("defaults.auth.console.credentials.key")
+            .  ":"
+            . $this->app->getContainer()->getParameter("defaults.auth.console.credentials.secret"));
     }
     
-    function updateCompany($companyId){
-        $response = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyId);
+    function updateCompany($companyCode){
+        $header = "Authorization: Basic " . $this->authB64;
+        $response = $this->api->get(rtrim($this->endpoint, "/") . "/companies/" . $companyCode, array(CURLOPT_HTTPHEADER => [$header]));
         $companyDTO = json_decode($response->getContent(), 1);
         $result = (new ApplyUpdates($this->app))->updateCompany($companyDTO);
         return [
@@ -34,34 +42,40 @@ class PrepareUpdates
         ];
     }
     
-    function removeCompany($companyId){
-        $result = (new ApplyUpdates($this->app))->removeCompany($companyId);
+    function removeCompany($companyCode){
+        $result = (new ApplyUpdates($this->app))->removeCompany($companyCode);
         return [
             "success" => !!$result
         ];
     }
     
-    function updateUser($userId, $companyId = null){
-        $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
-        $userDTO = json_decode($response->getContent(), 1);
-        $result = (new ApplyUpdates($this->app))->updateCompany($userDTO);
+    function updateUser($userId, $companyCode = null, $userDTO = null){
+        //$header = "Authorization: Basic " . $this->authB64;
+        //$response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId, array(CURLOPT_HTTPHEADER => [$header]));
+        //$userDTO = json_decode($response->getContent(), 1);
+        if(!$userDTO){
+            return [
+                "success" => false
+            ];
+        }
+        $result = (new ApplyUpdates($this->app))->updateUser($userDTO);
         return [
             "success" => !!$result
         ];
     }
     
-    function addUser($userId, $companyId, $userDTO = null){
+    function addUser($userId, $companyCode, $userDTO = null){
 
         $user = (new Utils($this->app))->getUser($userId);
-        $company = (new Utils($this->app))->getCompany($companyId);
+        $company = (new Utils($this->app))->getCompany($companyCode);
 
         if(!$user){
-            $this->updateUser($userId);
+            $this->updateUser($userId, $companyCode, $userDTO);
             $user = (new Utils($this->app))->getUser($userId);
         }
         if(!$company){
-            $this->updateCompany($companyId);
-            $company = (new Utils($this->app))->getCompany($companyId);
+            $this->updateCompany($companyCode);
+            $company = (new Utils($this->app))->getCompany($companyCode);
         }
 
         if(!$user || !$company){
@@ -72,12 +86,13 @@ class PrepareUpdates
 
         //Fixme, in the future there should be a better endpoint to get user role in a given company
         if(!$userDTO){
-            $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId);
+            $header = "Authorization: Basic " . $this->authB64;
+            $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId, array(CURLOPT_HTTPHEADER => [$header]));
             $userDTO = json_decode($response->getContent(), 1);
         }
         $companyRole = null;
         foreach($userDTO["roles"] as $role){
-            if($role["company"]["_id"] === $companyId){
+            if($role["company"]["_id"] === $companyCode){
                 $companyRole = $role;
             }
         }
@@ -87,10 +102,10 @@ class PrepareUpdates
         ];
     }
     
-    function removeUser($userId, $companyId){
+    function removeUser($userId, $companyCode){
 
         $user = (new Utils($this->app))->getUser($userId);
-        $company = (new Utils($this->app))->getCompany($companyId);
+        $company = (new Utils($this->app))->getCompany($companyCode);
 
         if(!$user || !$company){
             return [
