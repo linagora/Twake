@@ -19,14 +19,12 @@ import { NotificationExecutionContext } from "../../types";
 import { getNotificationRoomName } from "../realtime";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { BadgePubsubService } from "./pubsub";
 import { pick } from "lodash";
 import _ from "lodash";
 
 export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
   repository: Repository<UserNotificationBadge>;
-  pubsub: BadgePubsubService;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -35,18 +33,6 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       UserNotificationBadgeType,
       UserNotificationBadge,
     );
-    await this.subscribe(context);
-
-    return this;
-  }
-
-  async subscribe(context: TwakeContext): Promise<this> {
-    if (!context) {
-      return;
-    }
-
-    this.pubsub = new BadgePubsubService(this);
-    this.pubsub.subscribe(context.getProvider("pubsub"));
 
     return this;
   }
@@ -110,5 +96,29 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       },
       ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
     });
+  }
+
+  /**
+   * FIXME: This is a temporary implementation which is sending as many websocket notifications as there are badges to remove
+   * A better implementation will be to do a bulk delete and have a single websocket notification event
+   * @param filter
+   */
+  async removeUserChannelBadges(
+    filter: Pick<
+      UserNotificationBadgePrimaryKey,
+      "workspace_id" | "company_id" | "channel_id" | "user_id"
+    >,
+  ): Promise<number> {
+    const badges = (await this.repository.find(filter)).getEntities();
+
+    return (
+      await Promise.all(
+        badges.map(async badge => {
+          try {
+            return (await this.delete(badge)).deleted;
+          } catch (err) {}
+        }),
+      )
+    ).filter(Boolean).length;
   }
 }

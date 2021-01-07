@@ -127,4 +127,28 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
 
     return result;
   }
+
+  async updateLastRead(
+    channelAndCompany: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+    user_id: string,
+    lastRead: number,
+  ): Promise<ChannelMemberNotificationPreference> {
+    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
+      user_id,
+      company_id: channelAndCompany.company_id,
+      channel_id: channelAndCompany.channel_id,
+    };
+
+    const preference = await this.repository.findOne(pk);
+
+    if (!preference) {
+      return;
+    }
+
+    preference.last_read = lastRead;
+
+    await this.repository.save(preference);
+
+    return preference;
+  }
 }

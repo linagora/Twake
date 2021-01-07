@@ -2,13 +2,10 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { BaseChannelsParameters, ChannelParameters } from "./types";
 import {
   createChannelMemberSchema,
-  createChannelTabSchema,
   createChannelSchema,
   getChannelMemberSchema,
-  getChannelTabSchema,
   getChannelSchema,
   updateChannelMemberSchema,
-  updateChannelTabSchema,
   updateChannelSchema,
 } from "./schemas";
 import {
@@ -89,6 +86,14 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: channelsController.delete.bind(channelsController),
+  });
+
+  fastify.route<{ Params: ChannelParameters }>({
+    method: "POST",
+    url: `${channelsUrl}/:id/read`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: channelsController.markAsRead.bind(channelsController),
   });
 
   // members

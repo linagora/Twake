@@ -191,6 +191,23 @@ export class ChannelCrudController
       handleError(reply, err);
     }
   }
+
+  async markAsRead(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    try {
+      const result = await this.service.markAsRead(
+        this.getPrimaryKey(request),
+        request.currentUser,
+        getExecutionContext(request),
+      );
+
+      return result;
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
 }
 
 function getExecutionContext(

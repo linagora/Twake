@@ -78,6 +78,7 @@ export class Service implements MemberService {
       const updatableParameters: Partial<Record<keyof ChannelMember, boolean>> = {
         notification_level: isCurrentUser,
         favorite: isCurrentUser,
+        last_access: isCurrentUser,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
@@ -111,7 +112,10 @@ export class Service implements MemberService {
     return new SaveResult<ChannelMember>("channel_member", member, mode);
   }
 
-  async get(pk: ChannelMemberPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember> {
+  async get(
+    pk: ChannelMemberPrimaryKey,
+    context?: ChannelExecutionContext,
+  ): Promise<ChannelMember> {
     // FIXME: Who can fetch a single member?
     return await this.service.get(this.getPrimaryKey(pk), context);
   }
@@ -206,6 +210,15 @@ export class Service implements MemberService {
 
   isCurrentUser(member: ChannelMember, user: User): boolean {
     return member.user_id === user.id;
+  }
+
+  isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {
+    return this.get({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      workspace_id: channel.workspace_id,
+      user_id: user.id,
+    });
   }
 
   getPrimaryKey(

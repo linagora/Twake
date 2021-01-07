@@ -111,6 +111,10 @@ export class MongoChannelService implements ChannelService {
     return new ListResult(TYPE, channels, MongoPagination.next(paginate, channels));
   }
 
+  markAsRead(): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
     throw new Error("Not implemented");

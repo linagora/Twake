@@ -1,4 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
+import { Channel, ChannelMember } from "../channels/entities";
 import { PaginationQueryParameters } from "../channels/web/types";
 import { specialMention } from "../messages/types";
 import { uuid } from "../types";
@@ -19,6 +20,8 @@ export type MentionNotification = {
 };
 
 export type MentionNotificationResult = MentionNotification;
+
+export type ChannelReadMessage = { member: ChannelMember; channel: Channel };
 
 export type CounterUpdateMessage = {
   company_id: uuid;

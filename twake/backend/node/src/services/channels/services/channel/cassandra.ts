@@ -288,4 +288,8 @@ export class CassandraChannelService implements ChannelService {
 
     return this.mapRowToDirectChannel(result.rows[0]);
   }
+
+  markAsRead(): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
 }
