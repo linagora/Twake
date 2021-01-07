@@ -12,6 +12,7 @@ import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
 import CurrentUser from 'services/user/current_user.js';
 import InitService from 'services/InitService';
+import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 
 export default class CreateCompanyView extends Component {
   constructor() {
@@ -322,15 +323,27 @@ export default class CreateCompanyView extends Component {
       );
     }
     if (this.state.page == 3) {
-      return (
-        <AddUser
-          inline
-          onChange={members => this.setState({ members: members })}
-          previous={() => this.previous()}
-          finish={() => this.next()}
-          loading={this.state.workspaces.loading}
-        />
-      );
+      if (InitService.server_infos?.auth?.console?.use) {
+        return (
+          <AddUserFromTwakeConsole
+            inline
+            onChange={members => this.setState({ members: members })}
+            previous={() => this.previous()}
+            finish={() => this.next()}
+            loading={this.state.workspaces.loading}
+          />
+        );
+      } else {
+        return (
+          <AddUser
+            inline
+            onChange={members => this.setState({ members: members })}
+            previous={() => this.previous()}
+            finish={() => this.next()}
+            loading={this.state.workspaces.loading}
+          />
+        );
+      }
     }
     if (this.state.page == 4) {
       return (

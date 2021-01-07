@@ -17,6 +17,7 @@ import './Pages.scss';
 import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending.js';
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
 import Tabs from 'components/Tabs/Tabs.js';
+import InitService from 'app/services/InitService';
 
 export default class WorkspacePartner extends Component {
   constructor() {
@@ -342,7 +343,7 @@ export default class WorkspacePartner extends Component {
               ),
               render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
-            {
+            !InitService.server_infos?.auth?.console?.use && {
               title: Languages.t(
                 'scenes.apps.parameters.workspace_sections.members.pending',
                 [],

@@ -1933,4 +1933,9 @@ export default {
   'scenes.client.channelbar.channelmemberslist.no_members':
     "Il n'y a pas de membres dans cette chaîne, vous pouvez les inviter en cliquant sur Ajouter des utilisateurs.",
   'scenes.app.channelsbar.hide_discussion_leaving': 'Masquer la discussion',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
+    '$1 utilisateur(s) seront ajoutés',
+  'scenes.app.popup.adduserfromtwakeconsole.description':
+    'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
+  'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
 };

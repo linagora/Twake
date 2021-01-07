@@ -14,6 +14,7 @@ import WorkspaceApps from './Pages/WorkspaceApps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
+import InitService from 'app/services/InitService';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -195,7 +196,14 @@ export default class WorkspaceParameter extends Component {
         ),
         selected: this.state.page == 4 ? 'selected' : '',
         onClick: () => {
-          this.setPage(4);
+          if (InitService.server_infos?.auth?.console?.use) {
+            return window.open(
+              InitService.server_infos?.auth?.console?.company_management_url,
+              '_blank',
+            );
+          } else {
+            this.setPage(4);
+          }
         },
       });
     }
