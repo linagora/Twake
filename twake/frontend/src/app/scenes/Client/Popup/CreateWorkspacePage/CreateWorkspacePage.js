@@ -8,6 +8,8 @@ import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import Input from 'components/Inputs/Input.js';
+import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
+import InitService from 'app/services/InitService';
 import './CreateWorkspacePage.scss';
 
 export default class CreateWorkspacePage extends Component {
@@ -82,17 +84,31 @@ export default class CreateWorkspacePage extends Component {
       );
     }
     if (this.state.page == 2) {
-      return (
-        <AddUser
-          inline
-          onChange={members => {
-            this.setState({ members: members });
-          }}
-          previous={() => this.previous()}
-          finish={() => this.next()}
-          loading={this.state.workspaces.loading}
-        />
-      );
+      if (InitService.server_infos?.auth?.console?.use) {
+        return (
+          <AddUserFromTwakeConsole
+            inline
+            onChange={members => {
+              this.setState({ members: members });
+            }}
+            previous={() => this.previous()}
+            finish={() => this.next()}
+            loading={this.state.workspaces.loading}
+          />
+        );
+      } else {
+        return (
+          <AddUser
+            inline
+            onChange={members => {
+              this.setState({ members: members });
+            }}
+            previous={() => this.previous()}
+            finish={() => this.next()}
+            loading={this.state.workspaces.loading}
+          />
+        );
+      }
     }
   }
   previous() {

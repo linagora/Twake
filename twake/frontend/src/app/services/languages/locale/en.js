@@ -1858,4 +1858,8 @@ export default {
   'scenes.client.channelbar.channelmemberslist.no_members':
     'There is no members in this channel, you can invite them by clicking on Add users.',
   'scenes.app.channelsbar.hide_discussion_leaving': 'Hide discussion',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 user(s) will be added',
+  'scenes.app.popup.adduserfromtwakeconsole.description':
+    'Add users to your company before inviting them to this workspace.',
+  'general.app.popup.adduserfromtwakeconsole.description_link': 'Go to Twake Console',
 };
