@@ -8,9 +8,9 @@ import {
   OperationType,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { MemberService } from "../../provider";
+import ChannelServiceAPI, { MemberService } from "../../provider";
 
-import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { Channel as ChannelEntity, ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { Channel, User } from "../../../../services/types";
 import { cloneDeep, isNil, omitBy } from "lodash";
@@ -27,7 +27,7 @@ import {
 export class Service implements MemberService {
   version: "1";
 
-  constructor(private service: MemberService) {}
+  constructor(private service: MemberService, private channelService: ChannelServiceAPI) {}
 
   async init(): Promise<this> {
     try {
@@ -65,6 +65,12 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
+    const channel = await this.channelService.channels.get(context.channel);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel does not exists");
+    }
+
     const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
     const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
 
@@ -105,8 +111,20 @@ export class Service implements MemberService {
       const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
       this.onUpdated(context.channel, memberToSave, updateResult);
     } else {
-      const saveResult = await this.service.save(member, options, context);
-      this.onCreated(context.channel, member, saveResult);
+      const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
+      const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
+      const isPublicChannel = ChannelEntity.isPublicChannel(channel);
+      const isChannelCreator = channel.owner === context.user.id;
+
+      // user can not join private channel by themself when it is private
+      // only member can add other users in channel
+      // The channel creator check is only here on channel creation
+      if (isChannelCreator || (isPrivateChannel && currentUserIsMember) || isPublicChannel) {
+        const saveResult = await this.service.save(member, options, context);
+        this.onCreated(context.channel, member, saveResult);
+      } else {
+        throw CrudExeption.badRequest("User is not allowed to join this channel");
+      }
     }
 
     return new SaveResult<ChannelMember>("channel_member", member, mode);

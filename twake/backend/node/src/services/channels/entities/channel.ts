@@ -36,6 +36,14 @@ export class Channel {
   members: string[] = [];
 
   connectors: string[] = []; //list of app-ids
+
+  static isPrivateChannel(channel: Channel): boolean {
+    return channel.visibility === ChannelVisibility.PRIVATE;
+  }
+
+  static isPublicChannel(channel: Channel): boolean {
+    return channel.visibility === ChannelVisibility.PUBLIC;
+  }
 }
 
 export class UserChannel extends Channel {

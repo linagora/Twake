@@ -14,7 +14,7 @@ import {
   OperationType,
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelPrimaryKey, MemberService } from "../../provider";
+import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
 import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
@@ -48,7 +48,7 @@ export class Service implements ChannelService {
 
   constructor(
     private service: ChannelService,
-    private members: MemberService,
+    private channelService: ChannelServiceAPI,
     private database: DatabaseServiceAPI,
   ) {}
 
@@ -277,7 +277,11 @@ export class Service implements ChannelService {
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
 
     if (options?.mine || isDirectWorkspace) {
-      const userChannels = await this.members.listUserChannels(context.user, pagination, context);
+      const userChannels = await this.channelService.members.listUserChannels(
+        context.user,
+        pagination,
+        context,
+      );
 
       options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
 
@@ -359,7 +363,7 @@ export class Service implements ChannelService {
       throw CrudExeption.notFound("Channel not found");
     }
 
-    const member = await this.members.isChannelMember(user, channel);
+    const member = await this.channelService.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudExeption.badRequest("User is not channel member");
@@ -370,7 +374,7 @@ export class Service implements ChannelService {
     // cf this.members.onUpdated
     member.last_access = now;
     const updatedMember = (
-      await this.members.save(member, null, {
+      await this.channelService.members.save(member, null, {
         channel,
         user,
       })
@@ -392,7 +396,7 @@ export class Service implements ChannelService {
       throw CrudExeption.notFound("Channel not found");
     }
 
-    const member = await this.members.isChannelMember(user, channel);
+    const member = await this.channelService.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudExeption.badRequest("User is not channel member");
@@ -448,7 +452,11 @@ export class Service implements ChannelService {
 
         await Promise.all(
           members.map(member =>
-            this.members.save(member, {}, { channel: savedChannel, user: context.user }),
+            this.channelService.members.save(
+              member,
+              {},
+              { channel: savedChannel, user: context.user },
+            ),
           ),
         );
       }
