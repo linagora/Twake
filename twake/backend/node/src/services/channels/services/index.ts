@@ -29,8 +29,8 @@ class Service implements ChannelServiceAPI {
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
     this.pubsub = pubsub;
-    this.members = getMemberService(databaseService);
-    this.channels = getChannelService(databaseService, this.members);
+    this.members = getMemberService(databaseService, this);
+    this.channels = getChannelService(databaseService, this);
     this.tabs = getTabService(databaseService);
   }
 
