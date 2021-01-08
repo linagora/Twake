@@ -320,11 +320,15 @@ export class Service implements ChannelService {
 
     const result = await this.service.list(pagination, options, context);
 
+    result.filterEntities(
+      channel =>
+        channel.visibility !== ChannelVisibility.DIRECT,
+    );
+                        
     if (!isWorkspaceAdmin) {
       result.filterEntities(
         channel =>
-          channel.visibility === ChannelVisibility.PUBLIC ||
-          channel.visibility === ChannelVisibility.DIRECT,
+          channel.visibility === ChannelVisibility.PUBLIC
       );
     }
 
