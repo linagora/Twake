@@ -116,7 +116,7 @@ class ApplyUpdates
             $ok = false;
             $mailUsedError = false;
             do {
-                $res = $this->getAvaibleMailPseudo($email, $username);
+                $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
