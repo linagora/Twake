@@ -274,6 +274,7 @@ export class Service implements ChannelService {
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
     const isDirectWorkspace = isDirectChannel(context.workspace);
+    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
 
     if (options?.mine || isDirectWorkspace) {
       const userChannels = await this.members.listUserChannels(context.user, pagination, context);
@@ -317,7 +318,21 @@ export class Service implements ChannelService {
       return result;
     }
 
-    return this.service.list(pagination, options, context);
+    const result = await this.service.list(pagination, options, context);
+
+    result.filterEntities(
+      channel =>
+        channel.visibility !== ChannelVisibility.DIRECT,
+    );
+                        
+    if (!isWorkspaceAdmin) {
+      result.filterEntities(
+        channel =>
+          channel.visibility === ChannelVisibility.PUBLIC
+      );
+    }
+
+    return result;
   }
 
   createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {

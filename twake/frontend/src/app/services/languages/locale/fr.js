@@ -1490,7 +1490,8 @@ export default {
     "Préférences d'affichage",
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
     "Un administrateur peut configurer l'espace de travail (identité de l'espace, applications, membres de l'espace).",
-  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text':
+    "Un utilisateur gérant d'entreprise peut accéder à l'administration complète de l'entreprise (paiements, membres de l'entreprise, identité de l'entreprise).",
   'scenes.app.popup.workspaceparameter.pages.extern': 'Externe',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Utilisateur invité',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': "Forcer dans toute l'entreprise",
