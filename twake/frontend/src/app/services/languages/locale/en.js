@@ -1425,7 +1425,8 @@ export default {
     'Display preferences',
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
     'An admin can configure the workspace (name, apps, members of the workspace).',
-  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text':
+    'A company manager user can access the full administration of the company (payments, company members, company identity).',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Extern',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Guest user',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': 'Force throughout the company',
