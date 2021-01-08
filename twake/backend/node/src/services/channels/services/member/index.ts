@@ -3,13 +3,16 @@ import {
   CassandraConnector,
 } from "../../../../core/platform/services/database/services/orm/connectors";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import { MemberService } from "../../provider";
+import ChannelServiceAPI, { MemberService } from "../../provider";
 import { MongoMemberService } from "./mongo";
 import { CassandraMemberService } from "./cassandra";
 import { Service } from "./service";
 
-export function getService(databaseService: DatabaseServiceAPI): MemberService {
-  return new Service(getServiceInstance(databaseService));
+export function getService(
+  databaseService: DatabaseServiceAPI,
+  channelService: ChannelServiceAPI,
+): MemberService {
+  return new Service(getServiceInstance(databaseService), channelService);
 }
 
 function getServiceInstance(databaseService: DatabaseServiceAPI): MemberService {
