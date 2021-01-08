@@ -11,6 +11,7 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import Notifications from 'services/user/notifications.js';
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
+import InitService from 'app/services/InitService';
 
 export default class Group extends Component {
   constructor() {
@@ -77,18 +78,16 @@ export default class Group extends Component {
     Groups.getOrderedGroups().map(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
-    this.change_group_menu.push({
-      type: 'menu',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.create_company_menu',
-        [],
-        'Créer une entreprise',
-      ),
-      icon: 'plus',
-      onClick: () => {
-        popupManager.open(<CreateCompanyView />);
-      },
-    });
+    if (!InitService.server_infos?.auth?.console?.use) {
+      this.change_group_menu.push({
+        type: 'menu',
+        text: Languages.t('scenes.app.workspacesbar.components.create_company_menu'),
+        icon: 'plus',
+        onClick: () => {
+          popupManager.open(<CreateCompanyView />);
+        },
+      });
+    }
     this.change_group_menu.push({ type: 'separator' });
     this.change_group_menu.push({
       type: 'menu',
