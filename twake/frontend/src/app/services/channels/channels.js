@@ -49,9 +49,7 @@ class Channels extends Observable {
     });
   }
 
-  readChannelIfNeeded(channel) {
-    console.log(channel);
-  }
+  readChannelIfNeeded(channel) {}
 
   select(channel, side = false, sideOptions = {}) {
     if (side) {
@@ -119,7 +117,6 @@ class Channels extends Observable {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
     const TabsCollection = Collections.get(collectionPath, TabResource);
     const tab = await TabsCollection.findOne(tabId);
-    console.log(tabId, tab, collectionPath);
     tab.data.configuration = configuration;
     await TabsCollection.upsert(tab);
   }

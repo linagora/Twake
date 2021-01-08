@@ -19,15 +19,11 @@ export default (props: {
     '/notifications/v1/badges/',
     NotificationResource,
     {
+      tag: group.id,
       queryParameters: { company_id: group.id },
     },
   );
-  const notifications = notificationsCollection.useWatcher(
-    { company_id: group.id },
-    { limit: 1000 },
-  );
-
-  Notifications.updateAppBadge(notifications.length);
+  const notifications = notificationsCollection.useWatcher({ company_id: group.id });
 
   return (
     <div

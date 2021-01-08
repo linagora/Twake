@@ -9,6 +9,7 @@ export default (props: { workspace: any; selected: boolean; onClick: () => {} })
     '/notifications/v1/badges/',
     NotificationResource,
     {
+      tag: props.workspace.group.id,
       queryParameters: { company_id: props.workspace.group.id },
     },
   );
