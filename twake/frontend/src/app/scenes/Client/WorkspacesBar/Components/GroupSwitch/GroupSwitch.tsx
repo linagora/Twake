@@ -15,15 +15,9 @@ export default (props: {
 }) => {
   var group = props.group || {};
 
-  const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
-    NotificationResource,
-    {
-      tag: group.id,
-      queryParameters: { company_id: group.id },
-    },
-  );
-  const notifications = notificationsCollection.useWatcher({ company_id: group.id });
+  const unreadOtherCompanies = Notifications.useWatcher(() => {
+    return Object.keys(Notifications.store.unreadCompanies).filter(id => id !== group.id).length;
+  });
 
   return (
     <div
@@ -37,7 +31,7 @@ export default (props: {
         style={{ backgroundImage: "url('" + (window as any).addApiUrlIfNeeded(group.logo) + "')" }}
       >
         {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
-        {notifications.length > 0 && <div className="notification_dot" />}
+        {unreadOtherCompanies > 0 && <div className="notification_dot" />}
       </div>
       <div className="company_name">{group.mininame || (group.name || '').substr(0, 6)}</div>
     </div>

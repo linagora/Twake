@@ -1,22 +1,15 @@
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import React, { Component } from 'react';
+import Notifications from 'services/user/notifications';
 
 import './Workspace.scss';
 
 export default (props: { workspace: any; selected: boolean; onClick: () => {} }) => {
-  const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
-    NotificationResource,
-    {
-      tag: props.workspace.group.id,
-      queryParameters: { company_id: props.workspace.group.id },
-    },
-  );
-  notificationsCollection.setOptions({
-    idGenerator: data => data.thread_id,
+  const unreadInWorkspace = Notifications.useWatcher(() => {
+    return Object.keys(Notifications.store.unreadWorkspaces).filter(id => id === props.workspace.id)
+      .length;
   });
-  const notifications = notificationsCollection.useWatcher({ workspace_id: props.workspace.id });
 
   var workspace = props.workspace || {};
   return (
@@ -24,7 +17,7 @@ export default (props: { workspace: any; selected: boolean; onClick: () => {} })
       className={
         'workspace ' +
         (props.selected ? 'is_selected ' : '') +
-        (notifications.length > 0 ? 'has_notifications ' : '')
+        (unreadInWorkspace > 0 ? 'has_notifications ' : '')
       }
       onClick={props.onClick}
     >
@@ -36,7 +29,7 @@ export default (props: { workspace: any; selected: boolean; onClick: () => {} })
       >
         {((workspace.mininame || workspace.name || '') + '-')[0].toUpperCase()}
 
-        {notifications.length > 0 && <div className="notification_dot" />}
+        {unreadInWorkspace > 0 && <div className="notification_dot" />}
       </div>
       <div className="name">{workspace.mininame || workspace.name}</div>
     </div>

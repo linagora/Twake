@@ -224,7 +224,6 @@ class ApplyUpdates
         $existingWorkspace = $workspacesRepository->findOneBy(Array("group" => $companyTwakeEntity));
 
         if(!$existingWorkspace){
-            error_log(json_encode($companyTwakeEntity->getAsArray()));
             $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId());
         }
 

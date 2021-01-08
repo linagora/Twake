@@ -11,6 +11,7 @@ import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import RouterService from '../RouterService';
+import Numbers from 'services/utils/Numbers.js';
 
 const openNotification = (n: any, callback: any) => {
   notification.open({
@@ -34,6 +35,13 @@ class Notifications extends Observable {
   private subscribedCompanies: { [companyId: string]: boolean } = {};
   private notificationCount = 0;
   private youHaveNewMessagesDelay: any;
+  public store: {
+    unreadCompanies: { [key: string]: boolean };
+    unreadWorkspaces: { [key: string]: boolean };
+  } = {
+    unreadCompanies: {},
+    unreadWorkspaces: {},
+  };
 
   constructor() {
     super();
@@ -71,6 +79,8 @@ class Notifications extends Observable {
           //Listen websockets
           notificationsCollection.addWatcher(
             () => {
+              console.log('new ws notifications');
+
               this.getNotifications(notificationsCollection, true);
             },
             { company_id: company.id },
@@ -84,8 +94,14 @@ class Notifications extends Observable {
 
   getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
     collection.find({}).then(async notifications => {
-      if (websockets && this.notificationCount != notifications.length) {
-        this.triggerUnreadMessagesPushNotification(); //TODO pass new notification as parameter
+      if (websockets && this.notificationCount < notifications.length) {
+        const lastNotification = notifications.sort((a, b) => {
+          return Numbers.compareTimeuuid(b.data.thread_id, a.data.thread_id);
+        })[0];
+
+        console.log(lastNotification.data.thread_id);
+
+        this.triggerUnreadMessagesPushNotification(lastNotification || null); //TODO pass new notification as parameter
       }
       this.notificationCount = notifications.length;
 
@@ -96,6 +112,8 @@ class Notifications extends Observable {
       let badgeCount = 0;
       const state = RouterService.getStateFromRoute();
       const ignore: any = [];
+      this.store.unreadCompanies = {};
+      this.store.unreadWorkspaces = {};
       for (let i = 0; i < notifications.length; i++) {
         const notification = notifications[i];
         if (
@@ -104,6 +122,9 @@ class Notifications extends Observable {
         ) {
           return;
         }
+        this.store.unreadCompanies[notification.data.company_id] = true;
+        this.store.unreadWorkspaces[notification.data.workspace_id] = true;
+
         if (
           notification.data.company_id !== state.companyId ||
           (notification.data.workspace_id !== state.workspaceId &&
@@ -131,6 +152,7 @@ class Notifications extends Observable {
         }
       }
       this.updateAppBadge(badgeCount);
+      this.notify();
     });
   }
 
@@ -144,6 +166,10 @@ class Notifications extends Observable {
 
       if (newNotification) {
         //TODO build more detailed message and title
+      }
+
+      if (this.newNotificationAudio) {
+        this.newNotificationAudio.play();
       }
 
       const callback = () => {
@@ -177,7 +203,7 @@ class Notifications extends Observable {
           n.close();
         };
       }
-    }, 5000);
+    }, 500);
   }
 
   updateAppBadge(notifications = 0) {
