@@ -157,12 +157,10 @@ const UserListManager = (props: PropsType) => {
         </div>
       )}
       {usersIds.length === 0 && !props.noPlaceholder && (
-        <div className="menu-text no-users">
-          {Languages.t('components.userlistmanager.no_users')}
-        </div>
+        <div className="no-users">{Languages.t('components.userlistmanager.no_users')}</div>
       )}
       {!props.readOnly && (
-        <div className="menu-text add-user-input">
+        <div className="add-user-input">
           {!editing && (
             <Typography.Link
               className="small secondary-text right-margin"

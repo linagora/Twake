@@ -20,7 +20,19 @@ export default class TransportSocket {
   private listeners: {
     [path: string]: { [tag: string]: (type: WebsocketEvents, event: any) => void };
   } = {};
-  constructor(private readonly transport: Transport) {}
+  private lastConnection: number = 0;
+
+  constructor(private readonly transport: Transport) {
+    document.addEventListener('visibilitychange', () => {
+      if (!this.socket?.connected) this.connect();
+    });
+    setInterval(() => {
+      if (new Date().getTime() - this.lastConnection > 30000) {
+        this.lastConnection = new Date().getTime();
+        if (!this.socket?.connected) this.connect();
+      }
+    }, 30000);
+  }
 
   connect() {
     const socketEndpoint = Collections.getOptions().transport?.socket?.url;

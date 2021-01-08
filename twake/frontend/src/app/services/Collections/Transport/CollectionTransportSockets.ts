@@ -24,6 +24,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
   private websocketBuffer: WebsocketResourceEvent[] = [];
   private websocketRooms: WebsocketDefinition[] = [];
   private joined: string[] = [];
+  private lastConnectedTime = 0;
 
   constructor(private readonly transport: CollectionTransport<G>) {}
 
@@ -40,9 +41,15 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
             this.transport.collection.getTag(),
             async (type: WebsocketEvents, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
               switch (type) {
+                case WebsocketEvents.Disconnected:
+                  this.lastConnectedTime = new Date().getTime();
+                  break;
                 case WebsocketEvents.Connected:
                   this.joined = [];
                   this.start();
+                  if (new Date().getTime() - this.lastConnectedTime > 1000) {
+                    this.transport.collection.reload();
+                  }
                   break;
                 case WebsocketEvents.JoinSuccess:
                   this.joined.push(event.name);
