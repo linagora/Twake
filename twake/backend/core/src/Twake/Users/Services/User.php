@@ -135,6 +135,8 @@ class User
                     }else{
                         $ok = true;
                     }
+                }else{
+                    $ok = true;
                 }
                 $counter++;
             } while (!$ok);
