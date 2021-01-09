@@ -168,7 +168,6 @@ class Websocket extends Observable {
     if (new Date().getTime() - this.last_reconnect_call_if_needed.getTime() > seconds * 1000) {
       //30 seconds
       if (LoginService.currentUserId) {
-        DepreciatedCollections.get('channels').reload();
         LoginService.updateUser();
 
         console.log(

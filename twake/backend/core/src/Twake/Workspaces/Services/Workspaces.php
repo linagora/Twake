@@ -115,7 +115,6 @@ class Workspaces
         $this->doctrine->persist($levelUser);
         $this->doctrine->flush();
 
-
         //init default apps
         $this->init($workspace);
 

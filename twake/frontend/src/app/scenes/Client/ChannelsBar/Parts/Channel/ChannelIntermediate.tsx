@@ -35,10 +35,14 @@ export default (props: Props): JSX.Element => {
     '/notifications/v1/badges/',
     NotificationResource,
     {
+      tag: props.channel.company_id + '_thus_tag_should_no_be_needed', //TODO remove this
       queryParameters: { company_id: props.channel.company_id },
     },
   );
   const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+
+  (window as any).notificationsCollection = notificationsCollection;
+  console.log(notifications);
 
   const { avatar, name } = isDirectChannel
     ? getUserParts({

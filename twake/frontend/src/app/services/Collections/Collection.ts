@@ -223,6 +223,13 @@ export default class Collection<G extends Resource<any>> {
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
   }
 
+  /**
+   * Reload collection after socket was disconnected
+   */
+  public async reload() {
+    return this.find({}, {});
+  }
+
   private updateLocalResource(mongoItem: any, item?: G) {
     if (mongoItem) {
       if (!item) {

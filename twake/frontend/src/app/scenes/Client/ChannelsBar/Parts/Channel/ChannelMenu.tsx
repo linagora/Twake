@@ -47,6 +47,7 @@ export default (props: Props): JSX.Element => {
     '/notifications/v1/badges/',
     NotificationResource,
     {
+      tag: props.channel.data.company_id,
       queryParameters: { company_id: props.channel.data.company_id },
     },
   );

@@ -426,7 +426,7 @@ export default class DriveElement extends React.Component {
 
         if (!this.state.element.trash) {
           this.common_menu = this.common_menu.concat([
-            {
+            /*{
               type: 'menu',
               text: Languages.t('scenes.apps.drive.right_preview.public', [], 'Accès public...'),
               submenu_replace: true,
@@ -451,7 +451,7 @@ export default class DriveElement extends React.Component {
                   ),
                 },
               ],
-            },
+            },*/
           ]);
 
           if (!(this.state.element.application_id && this.state.element.is_directory)) {

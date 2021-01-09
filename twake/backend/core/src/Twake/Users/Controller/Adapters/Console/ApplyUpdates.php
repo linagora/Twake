@@ -116,7 +116,7 @@ class ApplyUpdates
             $ok = false;
             $mailUsedError = false;
             do {
-                $res = $this->getAvaibleMailPseudo($email, $username);
+                $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
@@ -128,6 +128,8 @@ class ApplyUpdates
                     }else{
                         $ok = true;
                     }
+                }else{
+                    $ok = true;
                 }
                 $counter++;
             } while (!$ok);
@@ -224,7 +226,6 @@ class ApplyUpdates
         $existingWorkspace = $workspacesRepository->findOneBy(Array("group" => $companyTwakeEntity));
 
         if(!$existingWorkspace){
-            error_log(json_encode($companyTwakeEntity->getAsArray()));
             $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId());
         }
 

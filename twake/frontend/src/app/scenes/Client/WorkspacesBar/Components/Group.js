@@ -11,6 +11,7 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
 import InitService from 'app/services/InitService';
+import Notifications from 'services/user/notifications';
 
 export default class Group extends Component {
   constructor() {
@@ -29,7 +30,7 @@ export default class Group extends Component {
     Groups.removeListener(this);
   }
   renderGroupInMenu(group) {
-    const notifications = 0; //TODO
+    const notifications = Notifications.store.unreadCompanies[group.id] ? 1 : 0;
 
     return {
       type: 'react-element',
