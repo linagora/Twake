@@ -85,20 +85,21 @@ export default class Group extends Component {
           popupManager.open(<CreateCompanyView />);
         },
       });
+
+      this.change_group_menu.push({ type: 'separator' });
+      this.change_group_menu.push({
+        type: 'menu',
+        icon: 'cog',
+        text: Languages.t(
+          'scenes.app.workspacesbar.components.grp_parameters',
+          [group.name],
+          'Paramètres de $1',
+        ),
+        onClick: () => {
+          popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');
+        },
+      });
     }
-    this.change_group_menu.push({ type: 'separator' });
-    this.change_group_menu.push({
-      type: 'menu',
-      icon: 'cog',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.grp_parameters',
-        [group.name],
-        'Paramètres de $1',
-      ),
-      onClick: () => {
-        popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');
-      },
-    });
 
     var pos = window.getBoundingClientRect(this.node);
     pos.x = pos.x || pos.left;

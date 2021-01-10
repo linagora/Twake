@@ -265,19 +265,20 @@ export default class CurrentUser extends Component {
         },
       });
     }
-    usermenu.push({
-      type: 'menu',
-      text: Languages.t(
-        'scenes.app.channelsbar.currentuser.create_company_page',
-        [],
-        'Créer une entreprise',
-      ),
-      icon: 'plus',
-      onClick: () => {
-        popupManager.open(<CreateCompanyView />);
-      },
-    });
-
+    if (!InitService.server_infos?.auth?.console?.use) {
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.create_company_page',
+          [],
+          'Créer une entreprise',
+        ),
+        icon: 'plus',
+        onClick: () => {
+          popupManager.open(<CreateCompanyView />);
+        },
+      });
+    }
     usermenu = usermenu.concat([
       { type: 'separator' },
       {

@@ -39,10 +39,12 @@ export default (props: Props): JSX.Element => {
       queryParameters: { company_id: props.channel.company_id },
     },
   );
-  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
+  const notifications = notificationsCollection.useWatcher(
+    { channel_id: props.channel.id },
+    { me: true },
+  );
 
   (window as any).notificationsCollection = notificationsCollection;
-  console.log(notifications);
 
   const { avatar, name } = isDirectChannel
     ? getUserParts({
