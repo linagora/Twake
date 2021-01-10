@@ -71,6 +71,10 @@ class Notifications extends Observable {
             queryParameters: { company_id: company.id },
           },
         );
+        notificationsCollection.setOptions({
+          reloadStrategy: 'ontime',
+        });
+        notificationsCollection.getTransport().start();
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 }).then(() => {

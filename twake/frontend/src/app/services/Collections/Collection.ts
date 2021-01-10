@@ -20,6 +20,7 @@ export type GeneralOptions = {
 export type ServerRequestOptions = {
   query: any;
   waitServerReply: boolean;
+  refresh: true;
 };
 
 export type ActionOptions = {
@@ -31,6 +32,7 @@ export type CollectionOptions = {
   queryParameters?: any;
   idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
+  reloadStrategy?: 'ontime' | 'delayed' | 'none';
 };
 
 export default class Collection<G extends Resource<any>> {
@@ -40,6 +42,7 @@ export default class Collection<G extends Resource<any>> {
   protected completion: FindCompletion<G> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
+    reloadStrategy: 'delayed',
     queryParameters: {},
   };
 
@@ -227,7 +230,13 @@ export default class Collection<G extends Resource<any>> {
    * Reload collection after socket was disconnected
    */
   public async reload() {
-    return this.find({}, {});
+    if (this.options.reloadStrategy === 'delayed') {
+      setTimeout(() => {
+        this.find({}, { refresh: true });
+      }, 1000 + 15000 * Math.random());
+    } else if (this.options.reloadStrategy === 'ontime') {
+      await this.find({}, { refresh: true });
+    }
   }
 
   private updateLocalResource(mongoItem: any, item?: G) {

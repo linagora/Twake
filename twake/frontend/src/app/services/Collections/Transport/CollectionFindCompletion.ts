@@ -37,7 +37,11 @@ export default class FindCompletion<G extends Resource<any>> {
     const newItems = [];
 
     //Not taking cache replacement into account if network
-    if (!this.didLoadOnce || (this.hasMore && options.limit > mongoItems.length)) {
+    if (
+      options.refresh ||
+      !this.didLoadOnce ||
+      (this.hasMore && options.limit > mongoItems.length)
+    ) {
       this.lock();
 
       this.perPage = this.perPage || options.limit;

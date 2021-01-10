@@ -55,9 +55,6 @@ export default class Observable extends EventListener {
 
   notify() {
     this.watchers.forEach(async watcher => {
-      if (watcher.options?.me) {
-        console.log(watcher);
-      }
       const changes = await this.getChanges(watcher);
       if (changes.didChange) {
         //If things changed

@@ -32,6 +32,8 @@ export default class TransportSocket {
         if (!this.socket?.connected) this.connect();
       }
     }, 30000);
+
+    (window as any).TransportSocket = this;
   }
 
   connect() {

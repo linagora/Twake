@@ -15,7 +15,9 @@ import { NotificationResource } from 'app/models/Notification';
 export function ChannelsUser() {
   const { companyId } = RouterServices.useStateFromRoute();
   const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
-  const channelsCollection = Collection.get(url, ChannelResource, { tag: 'mine' });
+  const channelsCollection = Collection.get(url, ChannelResource, {
+    tag: 'mine',
+  });
 
   const [limit, setLimit] = useState(100);
 
