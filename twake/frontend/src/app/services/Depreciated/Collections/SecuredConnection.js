@@ -201,35 +201,41 @@ export default class SecuredConnection {
     if (!data.key_version) {
       return false;
     }
+    let res = '';
+    try {
+      var encrypted_data = data.encrypted;
+      var key = this.keys_by_version[data.key_version];
 
-    var encrypted_data = data.encrypted;
-    var key = this.keys_by_version[data.key_version];
-
-    if (!key) {
-      if (
-        this.getKeyTimestamp(key) >
-        this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])
-      ) {
-        //We have a old key, we have to update and request the message again
-        this.init(this.http_options);
-        //TODO reask lost message after init
-      } else {
-        //We have only newer keys, ask everybody to update
-        //TODO ws.publish('collections/' + websocket_id, encrypted);
+      if (!key) {
+        if (
+          this.getKeyTimestamp(key) >
+          this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])
+        ) {
+          //We have a old key, we have to update and request the message again
+          this.init(this.http_options);
+          //TODO reask lost message after init
+        } else {
+          //We have only newer keys, ask everybody to update
+          //TODO ws.publish('collections/' + websocket_id, encrypted);
+        }
+        return false;
       }
-      return false;
+
+      var salt = CryptoJS.enc.Hex.parse(data.salt);
+      var prepared_key = CryptoJS.PBKDF2(key, salt, {
+        hasher: CryptoJS.algo.SHA512,
+        keySize: 64 / 8,
+        iterations: 9,
+      });
+
+      var iv = CryptoJS.enc.Hex.parse(data.iv);
+      var bytes = CryptoJS.AES.decrypt(encrypted_data, prepared_key, { iv: iv });
+      res = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    } catch (err) {
+      console.log('Unable to read encrypted websocket event');
     }
 
-    var salt = CryptoJS.enc.Hex.parse(data.salt);
-    var prepared_key = CryptoJS.PBKDF2(key, salt, {
-      hasher: CryptoJS.algo.SHA512,
-      keySize: 64 / 8,
-      iterations: 9,
-    });
-
-    var iv = CryptoJS.enc.Hex.parse(data.iv);
-    var bytes = CryptoJS.AES.decrypt(encrypted_data, prepared_key, { iv: iv });
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    return res;
   }
 
   getKeyTimestamp(key) {

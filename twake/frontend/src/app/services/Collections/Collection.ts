@@ -20,6 +20,7 @@ export type GeneralOptions = {
 export type ServerRequestOptions = {
   query: any;
   waitServerReply: boolean;
+  refresh: true;
 };
 
 export type ActionOptions = {
@@ -31,17 +32,22 @@ export type CollectionOptions = {
   queryParameters?: any;
   idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
+  reloadStrategy?: 'ontime' | 'delayed' | 'none';
 };
 
 export default class Collection<G extends Resource<any>> {
-  private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
   protected completion: FindCompletion<G> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
+    reloadStrategy: 'delayed',
     queryParameters: {},
   };
+
+  //App state
+  private reloadRegistered = 0;
+  private resources: { [id: string]: G } = {};
 
   constructor(
     private readonly path: string = '',
@@ -227,7 +233,17 @@ export default class Collection<G extends Resource<any>> {
    * Reload collection after socket was disconnected
    */
   public async reload() {
-    return this.find({}, {});
+    if (new Date().getTime() - this.reloadRegistered < 1000) {
+      return;
+    }
+    this.reloadRegistered = new Date().getTime();
+    if (this.options.reloadStrategy === 'delayed') {
+      setTimeout(() => {
+        this.find({}, { refresh: true });
+      }, 1000 + 15000 * Math.random());
+    } else if (this.options.reloadStrategy === 'ontime') {
+      await this.find({}, { refresh: true });
+    }
   }
 
   private updateLocalResource(mongoItem: any, item?: G) {

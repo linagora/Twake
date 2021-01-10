@@ -13,6 +13,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
 import RouterServices from 'app/services/RouterService';
 import { TabResource } from 'app/models/Tab';
+import { ChannelResource } from 'app/models/Channel';
 
 class Channels extends Observable {
   constructor() {
@@ -159,6 +160,11 @@ class Channels extends Observable {
   markFrontAsRead(channel_id, date = undefined) {
     this.channel_front_read_state[channel_id] = date || new Date().getTime() / 1000;
     this.notify();
+  }
+
+  getCollection(companyId, workspaceId) {
+    const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+    return Collections.get(path, ChannelResource);
   }
 }
 

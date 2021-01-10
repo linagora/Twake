@@ -12,6 +12,8 @@ import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import RouterService from '../RouterService';
 import Numbers from 'services/utils/Numbers.js';
+import ChannelsService from 'services/channels/channels.js';
+import emojione from 'emojione';
 
 const openNotification = (n: any, callback: any) => {
   notification.open({
@@ -35,6 +37,7 @@ class Notifications extends Observable {
   private subscribedCompanies: { [companyId: string]: boolean } = {};
   private notificationCount = 0;
   private youHaveNewMessagesDelay: any;
+  private ignoreNextNotification: boolean = false;
   public store: {
     unreadCompanies: { [key: string]: boolean };
     unreadWorkspaces: { [key: string]: boolean };
@@ -45,7 +48,7 @@ class Notifications extends Observable {
 
   constructor() {
     super();
-    this.newNotificationAudio = new window.Audio('./public/sounds/newnotification.wav');
+    this.newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
   }
 
   start() {
@@ -71,6 +74,10 @@ class Notifications extends Observable {
             queryParameters: { company_id: company.id },
           },
         );
+        notificationsCollection.setOptions({
+          reloadStrategy: 'ontime',
+        });
+        notificationsCollection.getTransport().start();
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 }).then(() => {
@@ -79,8 +86,6 @@ class Notifications extends Observable {
           //Listen websockets
           notificationsCollection.addWatcher(
             () => {
-              console.log('new ws notifications');
-
               this.getNotifications(notificationsCollection, true);
             },
             { company_id: company.id },
@@ -98,8 +103,6 @@ class Notifications extends Observable {
         const lastNotification = notifications.sort((a, b) => {
           return Numbers.compareTimeuuid(b.data.thread_id, a.data.thread_id);
         })[0];
-
-        console.log(lastNotification.data.thread_id);
 
         this.triggerUnreadMessagesPushNotification(lastNotification || null); //TODO pass new notification as parameter
       }
@@ -134,21 +137,33 @@ class Notifications extends Observable {
           ignore.push(notification.data.company_id);
           ignore.push(notification.data.workspace_id);
         } else {
-          //TODO detect if we don't know the channel and mark as read in this case (caution here!)
-          const channelExists = true;
-          if (channelExists) {
-            badgeCount++;
-          } else {
-            const path = `/channels/v1/companies/${notification.data.company_id}/workspaces/${notification.data.workspace_id}/channels/::mine`;
-            const collection = Collections.get(path, ChannelResource);
-            const resource = new ChannelResource({
-              id: notification.data.channel_id,
-              company_id: notification.data.company_id,
-              workspace_id: notification.data.workspace_id,
-            });
-            resource.setCollection(collection);
-            this.read(resource);
-          }
+          //Detect if we don't know the channel and mark as read in this case (caution here!)
+          (async () => {
+            const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+              notification.data.company_id,
+              notification.data.workspace_id,
+            );
+            const channel = await collection.findOne({ id: notification.data.channel_id });
+
+            let channelExists = true;
+            if (!channel || !channel.data?.user_member?.id) {
+              channelExists = false;
+            }
+
+            if (channelExists) {
+              badgeCount++;
+            } else {
+              const path = `/channels/v1/companies/${notification.data.company_id}/workspaces/${notification.data.workspace_id}/channels/::mine`;
+              const collection = Collections.get(path, ChannelResource);
+              const resource = new ChannelResource({
+                id: notification.data.channel_id,
+                company_id: notification.data.company_id,
+                workspace_id: notification.data.workspace_id,
+              });
+              resource.setCollection(collection);
+              this.read(resource);
+            }
+          })();
         }
       }
       this.updateAppBadge(badgeCount);
@@ -157,15 +172,33 @@ class Notifications extends Observable {
   }
 
   triggerUnreadMessagesPushNotification(newNotification: NotificationResource | null = null) {
+    if (this.ignoreNextNotification) {
+      this.ignoreNextNotification = false;
+      return;
+    }
     if (this.youHaveNewMessagesDelay) {
       clearTimeout(this.youHaveNewMessagesDelay);
     }
-    this.youHaveNewMessagesDelay = setTimeout(() => {
+    this.youHaveNewMessagesDelay = setTimeout(async () => {
       let title = 'New messages';
       let message = '💬 You have new unread notifications on Twake';
 
+      // Build more detailed message and title
       if (newNotification) {
-        //TODO build more detailed message and title
+        const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+          newNotification.data.company_id,
+          newNotification.data.workspace_id,
+        );
+        const channel = await collection.findOne({ id: newNotification.data.channel_id });
+
+        if (channel && channel?.data?.name) {
+          let icon = '💬';
+          if (channel?.data?.icon) {
+            icon = emojione.shortnameToUnicode(channel?.data?.icon) || icon;
+          }
+          title = icon + ' ' + channel.data.name;
+          message = 'You have a new message';
+        }
       }
 
       if (this.newNotificationAudio) {
@@ -221,6 +254,7 @@ class Notifications extends Observable {
   }
 
   unread(channel: ChannelResource) {
+    this.ignoreNextNotification = true;
     channel.action('read', { value: false });
   }
 }

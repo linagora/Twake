@@ -46,7 +46,7 @@ export class Service implements TabService {
     };
 
     let tabEntity = await this.repository.findOne(pk);
-    if (!tabEntity) {
+    if (!tabEntity || !tab.id) {
       tabEntity = new ChannelTab();
       tabEntity = _.merge(tabEntity, pk);
       tabEntity.owner = context.user.id;
