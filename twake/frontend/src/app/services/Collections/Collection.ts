@@ -36,7 +36,6 @@ export type CollectionOptions = {
 };
 
 export default class Collection<G extends Resource<any>> {
-  private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
   protected completion: FindCompletion<G> = new FindCompletion(this);
@@ -45,6 +44,10 @@ export default class Collection<G extends Resource<any>> {
     reloadStrategy: 'delayed',
     queryParameters: {},
   };
+
+  //App state
+  private reloadRegistered = 0;
+  private resources: { [id: string]: G } = {};
 
   constructor(
     private readonly path: string = '',
@@ -230,6 +233,10 @@ export default class Collection<G extends Resource<any>> {
    * Reload collection after socket was disconnected
    */
   public async reload() {
+    if (new Date().getTime() - this.reloadRegistered < 1000) {
+      return;
+    }
+    this.reloadRegistered = new Date().getTime();
     if (this.options.reloadStrategy === 'delayed') {
       setTimeout(() => {
         this.find({}, { refresh: true });
