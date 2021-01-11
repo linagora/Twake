@@ -116,7 +116,11 @@ export default class EventCreation extends Component {
             onClick={() => {
               this.change(
                 'location',
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id,
+                location.protocol +
+                  '//' +
+                  location.host +
+                  '/bundle/connectors/jitsi/call/twake_event_' +
+                  +event.front_id,
               );
             }}
           >
