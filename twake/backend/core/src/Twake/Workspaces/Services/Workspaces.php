@@ -26,6 +26,7 @@ class Workspaces
     private $app;
     private $gms;
     private $gas;
+    private $rest;
     private $gs;
     private $doctrine;
     private $string_cleaner;
@@ -48,6 +49,7 @@ class Workspaces
         $this->calendarService = $app->getServices()->get("app.calendar.calendar");
         $this->calendarEventService = $app->getServices()->get("app.calendar.event");
         $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
+        $this->rest = $app->getServices()->get("app.restclient");
     }
 
     public function create($name, $groupId = null, $userId = null, $default = false)
