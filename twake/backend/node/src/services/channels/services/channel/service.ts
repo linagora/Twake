@@ -304,7 +304,7 @@ export class Service implements ChannelService {
         return ({
           ...channel,
           ...{ user_member: userChannel },
-          last_activity: activityPerChannel[channel.id] || 0,
+          last_activity: activityPerChannel[channel.id].last_activity || 0,
         } as unknown) as UserChannel;
       });
 
@@ -324,16 +324,10 @@ export class Service implements ChannelService {
 
     const result = await this.service.list(pagination, options, context);
 
-    result.filterEntities(
-      channel =>
-        channel.visibility !== ChannelVisibility.DIRECT,
-    );
-                        
+    result.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
+
     if (!isWorkspaceAdmin) {
-      result.filterEntities(
-        channel =>
-          channel.visibility === ChannelVisibility.PUBLIC
-      );
+      result.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
     }
 
     return result;
