@@ -15,6 +15,7 @@ type Props = {
   noBlock?: boolean;
   repliesAsLink?: boolean;
   unreadAfter: number;
+  threadHeader?: string;
   refMessage?: (node: any) => void;
 };
 
@@ -33,6 +34,7 @@ export default React.memo((props: Props) => {
         repliesAsLink={props.repliesAsLink}
         key="message"
         messageId={props.messageId}
+        threadHeader={props.threadHeader}
         highlighted={props.highlighted}
         collectionKey={props.collectionKey}
         unreadAfter={props.unreadAfter}

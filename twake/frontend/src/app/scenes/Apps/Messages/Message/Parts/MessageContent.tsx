@@ -16,6 +16,7 @@ type Props = {
   collectionKey: string;
   linkToThread?: boolean;
   edited?: boolean;
+  threadHeader?: string;
 };
 
 export default (props: Props) => {
@@ -101,6 +102,7 @@ export default (props: Props) => {
           collectionKey={props.collectionKey}
           onOpen={() => setActive(true)}
           onClose={() => setActive(false)}
+          threadHeader={props.threadHeader}
         />
       )}
     </div>
