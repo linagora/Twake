@@ -222,27 +222,6 @@ class Workspaces extends Observable {
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
 
-        // To remove, this should be created in backend instead
-        const generateDefaultChannel = async () => {
-          const collectionPath = `/channels/v1/companies/${res.data.workspace.group.id}/workspaces/${res.data.workspace.id}/channels/::mine`;
-          const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
-
-          const defaultChannel = new ChannelResource({
-            name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'),
-            description: '',
-            icon: ':mailbox:',
-            visibility: 'public',
-            company_id: res.data.workspace.group.id,
-            workspace_id: res.data.workspace.id,
-          });
-
-          await ChannelsCollections.insert(defaultChannel, {
-            waitServerReply: true,
-          });
-        };
-
-        generateDefaultChannel();
-
         if (wsMembers.length > 0) {
           var data = {
             workspaceId: res.data.workspace.id,

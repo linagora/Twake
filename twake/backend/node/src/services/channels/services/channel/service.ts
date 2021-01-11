@@ -304,7 +304,7 @@ export class Service implements ChannelService {
         return ({
           ...channel,
           ...{ user_member: userChannel },
-          last_activity: activityPerChannel[channel.id].last_activity || 0,
+          last_activity: activityPerChannel[channel.id]?.last_activity || 0,
         } as unknown) as UserChannel;
       });
 
