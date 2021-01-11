@@ -14,7 +14,7 @@ import {
   ReadChannelBody,
   UpdateChannelBody,
 } from "../types";
-import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { handleError } from ".";
 import {
   ResourceCreateResponse,

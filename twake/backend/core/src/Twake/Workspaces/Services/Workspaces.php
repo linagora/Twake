@@ -23,6 +23,7 @@ class Workspaces
     var $workspaces_service;
     private $wls;
     private $wms;
+    private $app;
     private $gms;
     private $gas;
     private $gs;
@@ -33,6 +34,7 @@ class Workspaces
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->wms = $app->getServices()->get("app.workspace_members");
@@ -124,6 +126,33 @@ class Workspaces
         if ($userId != null) {
             $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
         }
+
+        //Create default channels
+        $secret = $this->app->getContainer()->getParameter("node.secret");
+        $uri = $this->app->getContainer()->getParameter("node.api") . 
+            "companies/".$groupId."/workspaces/".$workspace->getId()."/".
+            "channels/defaultchannel";
+
+        $data = [
+            "resource" => [
+                "icon" => "💬",
+                "name" => "General",
+                "description" => "",
+                "visibility" => "public",
+                "default" => true
+            ],
+            "options" => [],
+            "user_id" => $userId
+        ];
+
+        $res = $this->rest->post($uri, $data, [
+            CURLOPT_HTTPHEADER => Array(
+                "Authorization: Token ".$secret,
+                "Content-Type: application/json"
+            ),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1
+        ]);
 
         return $workspace;
 

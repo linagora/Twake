@@ -23,7 +23,6 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
       const user: UserType = Collections.get('users').find(id);
       if (user.email) return emails.push(user.email);
     });
-    console.log(emails);
     if (props.onChange) props.onChange(emails);
     return finish(emails);
   };
@@ -91,12 +90,10 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
         </div>
       </div>
       <div className="add-user-button-container">
-        <Button
-          type="primary"
-          disabled={selectedUsers.length === 0 ? true : false}
-          onClick={onClickBtn}
-        >
-          {Languages.t('general.add')}
+        <Button type="primary" onClick={onClickBtn}>
+          {selectedUsers.length === 0
+            ? Languages.t('scenes.app.workspaces.components.skip')
+            : Languages.t('general.add')}
         </Button>
       </div>
     </div>

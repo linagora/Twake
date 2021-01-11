@@ -319,22 +319,6 @@ export class Service implements ChannelService {
         });
       }
 
-      // Create a first channel if nothing in workspace (to change when migrating the workspace code to node)
-      if (result.getEntities().length === 0) {
-        const allChannels = await this.service.list(pagination, options, context);
-        if (allChannels.getEntities().length === 0) {
-          const defaultChannel = _.assign(new Channel(), {
-            name: "General",
-            description: "",
-            icon: ":mailbox:",
-            visibility: ChannelVisibility.PUBLIC,
-            is_default: true,
-            channel_group: "",
-          });
-          this.save(defaultChannel, {}, context);
-        }
-      }
-
       return result;
     }
 
