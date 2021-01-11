@@ -222,8 +222,6 @@ class Workspaces extends Observable {
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
 
-        generateDefaultChannel();
-
         if (wsMembers.length > 0) {
           var data = {
             workspaceId: res.data.workspace.id,

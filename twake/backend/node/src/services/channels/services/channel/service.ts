@@ -328,8 +328,6 @@ export class Service implements ChannelService {
             description: "",
             icon: ":mailbox:",
             visibility: ChannelVisibility.PUBLIC,
-            company_id: context.workspace.company_id,
-            workspace_id: context.workspace.workspace_id,
             is_default: true,
             channel_group: "",
           });
