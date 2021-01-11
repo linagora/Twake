@@ -125,7 +125,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           this.channels.members,
         );
         request.currentUser = {
-          id: (request.body as any).user_id;
+          id: (request.body as any).user_id,
         };
         channelsController.save(request, reply);
       },
