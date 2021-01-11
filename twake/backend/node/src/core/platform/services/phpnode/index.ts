@@ -111,7 +111,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
      */
     this.register({
       method: "POST",
-      url: "/companies/:company_id/workspaces/:workspace_id/defaultchannel",
+      url: "/companies/:company_id/workspaces/:workspace_id/channels/defaultchannel",
       handler: (
         request: FastifyRequest<{ Body: CreateChannelBody; Params: ChannelParameters }>,
         reply,

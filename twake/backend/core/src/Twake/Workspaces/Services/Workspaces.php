@@ -147,7 +147,7 @@ class Workspaces
             "user_id" => $userId
         ];
 
-        $res = $this->rest->post($uri, $data, [
+        $res = $this->rest->post($uri, json_encode($data), [
             CURLOPT_HTTPHEADER => Array(
                 "Authorization: Token ".$secret,
                 "Content-Type: application/json"
