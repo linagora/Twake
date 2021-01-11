@@ -290,33 +290,25 @@ class Login extends Observable {
 
     document.body.classList.add('fade_out');
 
-    Globals.getDevice(device => {
-      var that = this;
-      Api.post(
-        'users/logout',
-        {
-          device: device,
-        },
-        function () {
-          if (identity_provider === 'console') {
-            var location = Api.route('users/console/openid/logout');
-            Globals.window.location = location;
-          } else if (identity_provider === 'openid') {
-            var location = Api.route('users/openid/logout');
-            Globals.window.location = location;
-          } else if (identity_provider === 'cas') {
-            var location = Api.route('users/cas/logout');
-            Globals.window.location = location;
-          } else {
-            if (!no_reload) {
-              Globals.window.location.reload();
-            }
-          }
+    Api.post('users/logout', {}, function () {
+      if (identity_provider === 'console') {
+        var location = Api.route('users/console/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'openid') {
+        var location = Api.route('users/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'cas') {
+        var location = Api.route('users/cas/logout');
+        Globals.window.location = location;
+      } else {
+        if (!no_reload) {
+          Globals.window.location.reload();
+        } else {
           RouterServices.history.push(
             RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
           );
-        },
-      );
+        }
+      }
     });
   }
 

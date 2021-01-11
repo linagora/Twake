@@ -63,7 +63,10 @@ export class MessagesListUtils extends Observable {
     this.serverService = serverService;
 
     //@ts-ignore
-    this.messagesContainerNodeResizeObserver = new window.ResizeObserver(this.onContentChange);
+    if (window?.ResizeObserver) {
+      //@ts-ignore
+      this.messagesContainerNodeResizeObserver = new window.ResizeObserver(this.onContentChange);
+    }
 
     //@ts-ignore
     window.MessagesListUtils = this;

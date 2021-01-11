@@ -49,7 +49,7 @@ class Console extends BaseController
         $this->get("app.user")->logout($request);
 
         $logout_parameter = $this->getParameter("defaults.auth.console.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
-        $logout_url_suffix = $this->getParameter("defaults.auth.console.openid.logout_suffix") ?: "/logout";
+        $logout_url_suffix = $this->getParameter("defaults.auth.console.openid.logout_suffix") ?: "/oauth2/logout";
 
         $logout_redirect_url = rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid/logout_success";
 

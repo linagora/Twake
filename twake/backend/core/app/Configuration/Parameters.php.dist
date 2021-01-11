@@ -229,6 +229,7 @@ class Parameters extends \Common\Configuration
                       "client_secret" => 'twakesecret',
                       "ignore_mail_verified" => true,
                       "ignore_id_token_verification" => true,
+                      "logout_suffix" => "/oauth2/logout",
                       //"disable_logout_redirect" => false
                       "provider_config" => [
                         "code_challenge_methods_supported" => "",
