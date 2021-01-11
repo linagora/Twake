@@ -34,6 +34,7 @@ type Props = {
   noBlock?: boolean;
   repliesAsLink?: boolean;
   unreadAfter?: number;
+  threadHeader?: string;
 };
 
 export default class MessageComponent extends Component<Props, { render: boolean }> {
@@ -187,6 +188,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
           >
             <MessageContent
               key={message?._last_modified || message?.front_id}
+              threadHeader={this.props.threadHeader}
               linkToThread={linkToThread}
               message={message}
               collectionKey={this.props.collectionKey}
