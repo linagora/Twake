@@ -273,7 +273,7 @@ class MarketApplication
 
                 if (!$application->getisAvailableToPublic()) {
 
-                    $this->doctrine->getRepository("Twake\Market:ApplicationResource")->removeBy(Array("application_id" => $application->getId()));
+                    $this->doctrine->getRepository("Twake\Market:ApplicationResourceNode")->removeBy(Array("application_id" => $application->getId()));
                     //TODO REMOVE EVERYWHERE
 
                     $this->doctrine->remove($application);
