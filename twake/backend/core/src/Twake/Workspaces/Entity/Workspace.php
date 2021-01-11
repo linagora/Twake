@@ -107,6 +107,11 @@ class Workspace extends SearchableObject
     private $total_activity = 0;
 
     /**
+     * @ORM\Column(name="isdefault", type="twake_boolean")
+     */
+    private $default = false;
+
+    /**
      * Workspace constructor.
      * @param $name
      */
@@ -121,7 +126,7 @@ class Workspace extends SearchableObject
         $return = Array(
             "id" => $this->getId() . "",
             "name" => $this->getName(),
-            "group_id" => $this->getGroup()->getId() . "",
+            "group_id" => $this->getGroup() ? $this->getGroup()->getId() . "" : "",
             "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;
@@ -376,6 +381,22 @@ class Workspace extends SearchableObject
     public function setIsNew($isnew)
     {
         $this->isnew = $isnew;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $isnew
+     */
+    public function setIsDefault($default)
+    {
+        $this->default = $default;
     }
 
     /**

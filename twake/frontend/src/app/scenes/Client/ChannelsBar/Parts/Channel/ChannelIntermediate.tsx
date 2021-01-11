@@ -69,10 +69,12 @@ export default (props: Props): JSX.Element => {
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={
         unreadMessages &&
-        (channel.data.user_member.notification_level == 'all' || notifications.length > 0)
+        (channel.data.user_member.notification_level == 'all' ||
+          isDirectChannel ||
+          notifications.length > 0)
       }
       visibility={channel.data.visibility || 'public'}
-      notifications={notifications.length || 0}
+      notifications={isDirectChannel && unreadMessages ? 1 : notifications.length || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

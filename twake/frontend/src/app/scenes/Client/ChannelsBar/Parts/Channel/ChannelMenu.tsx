@@ -83,6 +83,7 @@ export default (props: Props): JSX.Element => {
       const channelMember = new ChannelMemberResource(props.channel.data.user_member);
       channelMember.setPersisted();
       await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
+      Notifications.read(props.channel);
       return await channelMembersCollection.remove(channelMember);
     }
   };
@@ -132,6 +133,7 @@ export default (props: Props): JSX.Element => {
     },
     {
       type: 'menu',
+      hide: props.channel.data.visibility === 'direct', //TODO remove when #714 fixed
       text: Languages.t(
         props.channel.data.visibility === 'direct'
           ? 'scenes.app.channelsbar.hide_discussion_leaving'
