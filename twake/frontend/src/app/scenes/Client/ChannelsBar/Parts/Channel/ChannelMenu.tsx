@@ -129,6 +129,7 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
+      hide: props.channel.data.visibility === 'direct', //TODO remove when #714 fixed
       type: 'separator',
     },
     {

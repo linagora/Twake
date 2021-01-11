@@ -148,9 +148,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
     const message = this.message;
 
     if (message?.hidden_data?.type === 'init_channel') {
-      if (!this.state.render) {
-        return <div ref={this.setDomElement} />;
-      }
       return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
     }
 
