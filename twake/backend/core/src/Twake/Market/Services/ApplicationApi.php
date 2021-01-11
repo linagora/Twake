@@ -316,7 +316,7 @@ class ApplicationApi
         error_log("url before: " . $event_route);
 
         //Hack for having same set of apps in beta and web
-        $betaHack = explode($event_route, "/bundle/connectors/");
+        $betaHack = explode("/bundle/connectors/", $event_route);
         if(count($betaHack) > 1){
             $server_route = rtrim($this->app->getContainer()->getParameter("env.internal_server_name")?:$this->app->getContainer()->getParameter("env.server_name"), "/");
             $event_route = $server_route . "/bundle/connectors/" . $betaHack[1];
