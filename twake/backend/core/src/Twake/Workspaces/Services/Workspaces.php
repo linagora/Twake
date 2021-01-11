@@ -48,7 +48,7 @@ class Workspaces
         $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
     }
 
-    public function create($name, $groupId = null, $userId = null)
+    public function create($name, $groupId = null, $userId = null, $default = false)
     {
 
         if ($groupId == null && $userId == null) {
@@ -84,6 +84,8 @@ class Workspaces
         }
 
         $workspace->setUniqueName($uniquenameIncremented);
+
+        $workspace->setIsDefault($default);
 
         if ($groupId != null) {
             $workspace->setGroup($group);

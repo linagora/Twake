@@ -107,6 +107,11 @@ class Workspace extends SearchableObject
     private $total_activity = 0;
 
     /**
+     * @ORM\Column(name="isdefault", type="twake_boolean")
+     */
+    private $default = false;
+
+    /**
      * Workspace constructor.
      * @param $name
      */
@@ -376,6 +381,22 @@ class Workspace extends SearchableObject
     public function setIsNew($isnew)
     {
         $this->isnew = $isnew;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $isnew
+     */
+    public function setIsDefault($default)
+    {
+        $this->default = $default;
     }
 
     /**

@@ -223,10 +223,17 @@ class ApplyUpdates
         // Check if company has any workspace, if not, create a workspace and invite user in it
 
         $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
-        $existingWorkspace = $workspacesRepository->findOneBy(Array("group" => $companyTwakeEntity));
+        $existingWorkspace = $workspacesRepository->findBy(Array("group" => $companyTwakeEntity));
 
-        if(!$existingWorkspace){
-            $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId());
+        if(count($existingWorkspace) < 1){
+            $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId(), true);
+        }else{
+            foreach($existingWorkspace as $workspace){
+                if($workspace->getIsDefault() || count($existingWorkspace) == 1){
+                    //Add user in this workspace
+                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, false, null);
+                }
+            }
         }
 
         return true;

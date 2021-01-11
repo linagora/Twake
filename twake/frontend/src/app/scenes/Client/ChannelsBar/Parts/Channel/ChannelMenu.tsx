@@ -83,6 +83,7 @@ export default (props: Props): JSX.Element => {
       const channelMember = new ChannelMemberResource(props.channel.data.user_member);
       channelMember.setPersisted();
       await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
+      Notifications.read(props.channel);
       return await channelMembersCollection.remove(channelMember);
     }
   };
