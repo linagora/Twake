@@ -5,6 +5,7 @@ import { MarkChannelAsReadMessageProcessor } from "./processors/mark-channel-as-
 import { MarkChannelAsUnreadMessageProcessor } from "./processors/mark-channel-as-unread";
 import { NewChannelMessageProcessor } from "./processors/new-channel-message";
 import { PushNotificationToUsersMessageProcessor } from "./processors/push-to-users";
+import { LeaveChannelMessageProcessor } from "./processors/leave-channel";
 
 /**
  * The notification engine is in charge of processing data and delivering user notifications on the right place
@@ -13,6 +14,7 @@ export class NotificationEngine implements Initializable {
   constructor(private service: NotificationServiceAPI, private pubsub: PubsubServiceAPI) {}
 
   async init(): Promise<this> {
+    this.pubsub.processor.addHandler(new LeaveChannelMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new MarkChannelAsReadMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new MarkChannelAsUnreadMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new NewChannelMessageProcessor(this.service));

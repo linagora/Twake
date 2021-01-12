@@ -20,8 +20,6 @@ export class NotificationPubsubService extends PubsubServiceSubscription {
     this.pubsub.subscribe("channel:member:created", this.onCreated.bind(this));
 
     this.pubsub.subscribe("channel:member:updated", this.onUpdated.bind(this));
-
-    this.pubsub.subscribe("channel:member:deleted", this.onDeleted.bind(this));
   }
 
   async onCreated(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
@@ -84,36 +82,6 @@ export class NotificationPubsubService extends PubsubServiceSubscription {
       await this.service.save(preference);
 
       logger.info("service.notifications.pubsub.event - Notification preference has been updated");
-    } catch (err) {
-      logger.error(
-        { err },
-        "service.notifications.pubsub.event - Error while updating notification preference from pubsub",
-      );
-    }
-  }
-
-  async onDeleted(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
-    logger.info("service.notifications.pubsub.event - Notification preference has been deleted");
-    const notification: { channel: Channel; member: ChannelMember } = message.data;
-
-    if (!notification.channel || !notification.member) {
-      logger.warn(
-        "service.notifications.pubsub.event - Channel or ChannelMember are not defined in the pubsub message",
-      );
-
-      return;
-    }
-
-    const preference = merge(new ChannelMemberNotificationPreference(), {
-      channel_id: notification.member.channel_id,
-      company_id: notification.member.company_id,
-      user_id: notification.member.user_id,
-    });
-
-    try {
-      await this.service.delete(preference);
-
-      logger.info("service.notifications.pubsub.event - Notification preference has been deleted");
     } catch (err) {
       logger.error(
         { err },
