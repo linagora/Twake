@@ -1,0 +1,40 @@
+.ant-layout-header.banner-container {
+  padding: 0 16px;
+
+  &.primary {
+    background-color: var(--primary);
+    color: var(--white);
+  }
+
+  &.secondary {
+    //#2953b4 1
+    //#366be7 2
+    // #104fe2 3
+    //  #1f6fde 4
+    background-color: var(--secondary);
+    color: var(--white);
+    border-bottom: 1px solid var(--black);
+  }
+
+  &.default {
+    background-color: var(--primary-background);
+    color: var(--black);
+  }
+
+  &.warning {
+    background-color: var(--warning);
+    color: var(--white);
+  }
+  &.important {
+    background-color: var(--red);
+    color: var(--white);
+  }
+
+  .banner-col-icon {
+    display: flex;
+    align-items: center;
+    .icon {
+      cursor: pointer;
+    }
+  }
+}
