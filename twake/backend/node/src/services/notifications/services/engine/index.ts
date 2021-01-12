@@ -7,6 +7,7 @@ import { NewChannelMessageProcessor } from "./processors/new-channel-message";
 import { PushNotificationToUsersMessageProcessor } from "./processors/push-to-users";
 import { LeaveChannelMessageProcessor } from "./processors/channel-member-deleted";
 import { JoinChannelMessageProcessor } from "./processors/channel-member-created";
+import { UpdateChannelMemberMessageProcessor } from "./processors/channel-member-updated";
 
 /**
  * The notification engine is in charge of processing data and delivering user notifications on the right place
@@ -15,6 +16,7 @@ export class NotificationEngine implements Initializable {
   constructor(private service: NotificationServiceAPI, private pubsub: PubsubServiceAPI) {}
 
   async init(): Promise<this> {
+    this.pubsub.processor.addHandler(new UpdateChannelMemberMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new JoinChannelMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new LeaveChannelMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new MarkChannelAsReadMessageProcessor(this.service));
