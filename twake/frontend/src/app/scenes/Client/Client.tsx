@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -26,12 +26,14 @@ import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import Globals from 'services/Globals.js';
 import LoginService from 'services/login/login';
 import { Menu } from 'react-feather';
+import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 
 export default (): JSX.Element => {
   popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
   LoginService.useListener(useState);
+
   useEffect(() => {
     LoginService.init();
     ListenWorkspacesList.startListen();
@@ -40,7 +42,7 @@ export default (): JSX.Element => {
     };
   }, []);
 
-  var page: any = '';
+  let page: JSX.Element = <></>;
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
@@ -54,22 +56,23 @@ export default (): JSX.Element => {
       //Wait for the user to be connected
       if (LoginService.currentUserId) {
         page = (
-          <Layout key="appPage" className={'appPage '} hasSider>
-            <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
-              collapsedWidth="0"
-              theme="light"
-              width={290}
-              style={{ display: 'flex', flexDirection: 'column' }}
-            >
-              <Layout style={{ height: '100%' }}>
-                <WorkspacesBar />
-                <ChannelsBar />
-              </Layout>
-            </Layout.Sider>
-            <MainView />
-          </Layout>
+          <>
+            <Layout hasSider>
+              <Layout.Sider
+                trigger={<Menu size={16} />}
+                breakpoint="lg"
+                collapsedWidth="0"
+                theme="light"
+                width={290}
+              >
+                <Layout style={{ height: '100%' }}>
+                  <WorkspacesBar />
+                  <ChannelsBar />
+                </Layout>
+              </Layout.Sider>
+              <MainView />
+            </Layout>
+          </>
         );
       }
     }
@@ -77,7 +80,7 @@ export default (): JSX.Element => {
 
   return (
     <>
-      {page}
+      <NewVersionComponent>{page}</NewVersionComponent>
       <MenusBodyLayer />
       <DraggableBodyLayer />
       <UploadViewer />
