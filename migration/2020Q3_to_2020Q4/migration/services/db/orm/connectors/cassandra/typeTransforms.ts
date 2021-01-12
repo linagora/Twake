@@ -16,7 +16,11 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+export const transformValueToDbString = (
+  v: any,
+  type: ColumnType,
+  options: any = {}
+): string => {
   if (type === "number") {
     if (!isNumber(v)) {
       throw new Error(`'${v}' is not a ${type}`);
@@ -49,7 +53,11 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
+export const transformValueFromDbString = (
+  v: any,
+  type: string,
+  options: any = {}
+): any => {
   if (type === "json") {
     try {
       return JSON.parse(v);
