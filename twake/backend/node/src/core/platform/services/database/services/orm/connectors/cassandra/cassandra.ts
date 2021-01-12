@@ -311,6 +311,8 @@ export class CassandraConnector extends AbstractConnector<
             .join(", ")})`;
         }
 
+        logger.debug(`service.database.orm.upsert - Query: "${query}"`);
+
         promises.push(
           new Promise(resolve => {
             try {

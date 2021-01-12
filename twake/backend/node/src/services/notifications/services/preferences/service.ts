@@ -12,7 +12,7 @@ import {
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { TwakeContext } from "../../../../core/platform/framework";
+import { logger, TwakeContext } from "../../../../core/platform/framework";
 import { NotificationPubsubService } from "./pubsub";
 
 const TYPE = "channel_members_notification_preferences";
@@ -96,6 +96,11 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
       lessThan: number;
     },
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
+    logger.debug(
+      `ChannelMemberPreferenceService - Get Channel preferences for users ${JSON.stringify(
+        users,
+      )} with lastRead < ${lastRead?.lessThan}`,
+    );
     const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
 
     if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
@@ -103,6 +108,12 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
         return entity.last_read < lastRead.lessThan;
       });
     }
+
+    logger.debug(
+      `ChannelMemberPreferenceService - Result ${JSON.stringify(
+        result.getEntities().map(preference => preference.user_id),
+      )}`,
+    );
 
     return result;
   }
