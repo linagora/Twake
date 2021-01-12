@@ -1,0 +1,13 @@
+{
+  "name": "2020q3_to_2020q4",
+  "version": "1.0.0",
+  "description": "Data migration from 2020Q3 to 2020Q4",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Twake",
+  "license": "ISC",
+  "dependencies": {
+    "cassandra-driver": "^4.6.1"
+  }
+}
