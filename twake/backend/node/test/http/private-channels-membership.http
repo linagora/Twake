@@ -94,3 +94,15 @@ Authorization: Bearer {{authTokenUser1}}
 GET {{channelsURL}}/channels/{{getId}}/members?websockets=true
 Content-Type: application/json
 Authorization: Bearer {{authTokenUser2}}
+
+### User 1 leaves the channel he created
+
+DELETE {{channelsURL}}/channels/{{getId}}/members/{{currentUserId1}}
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser1}}
+
+### User 2 leaves the channel: Error since he is the last member, he can not leave
+
+DELETE {{channelsURL}}/channels/{{getId}}/members/{{currentUserId2}}
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser2}}
