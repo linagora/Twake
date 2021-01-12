@@ -108,16 +108,20 @@ export class NewChannelMessageProcessor
           channel_id: message.channel_id,
         })
       ).getEntities();
-    } else {
-      // get the preferences of the users involved in the thread
-      channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences({
-        channel_id: message.channel_id,
-        company_id: message.company_id,
-        thread_id: threadId,
-      });
+
+      return this.filterMembersToNotify(message, channelPreferencesForUsers).map(m => m.user_id);
     }
 
-    return this.filterMembersToNotify(message, channelPreferencesForUsers).map(m => m.user_id);
+    // get the preferences of the users involved in the thread
+    channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences({
+      channel_id: message.channel_id,
+      company_id: message.company_id,
+      thread_id: threadId,
+    });
+
+    return this.filterThreadMembersToNotify(message, channelPreferencesForUsers).map(
+      m => m.user_id,
+    );
   }
 
   protected filterMembersToNotify(
@@ -154,6 +158,20 @@ export class NewChannelMessageProcessor
 
           return truthTable.includes(true);
         })
+    );
+  }
+
+  protected filterThreadMembersToNotify(
+    message: MessageNotification,
+    membersPreferences: ChannelMemberNotificationPreference[],
+  ): ChannelMemberNotificationPreference[] {
+    logger.debug(`${this.name} - Filter thread members ${JSON.stringify(membersPreferences)}`);
+    return (
+      membersPreferences
+        // 1. Remove the ones which does not want any notification (preference === NONE)
+        .filter(preference => preference.preferences !== ChannelMemberNotificationLevel.NONE)
+        //2. Remove the sender
+        .filter(preference => String(preference.user_id) !== String(message.sender))
     );
   }
 

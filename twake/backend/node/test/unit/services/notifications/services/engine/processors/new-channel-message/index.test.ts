@@ -60,7 +60,7 @@ describe("The NewChannelMessageProcessor class", () => {
       workspace_id,
       channel_id,
       id: "id",
-      thread_id,
+      thread_id: "thread_id",
       sender: "sender",
       mentions: {
         users: [],
@@ -387,7 +387,7 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
         ]);
@@ -399,7 +399,7 @@ describe("The NewChannelMessageProcessor class", () => {
         done();
       });
 
-      it("without mentions, should get the preferences for all members involved and return only the ones who want to be notified", async done => {
+      it("without mentions, should get the preferences for all members involved and return only the ones with preference !== NONE", async done => {
         const message = getMessage();
         setUsersInThread(["1", "2", "3", "4"]);
         setThreadResponsePreferences();
@@ -410,7 +410,7 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
         ]);
@@ -418,7 +418,7 @@ describe("The NewChannelMessageProcessor class", () => {
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
 
-        expect(result.mentions.users).toEqual(["1"]);
+        expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
       });
 
@@ -434,31 +434,31 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "1",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "2",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "3",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "4",
           },
         ]);
