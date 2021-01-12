@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "channel_thread_users";
 @Entity(TYPE, {
-  primaryKey: [["company_id", "channel_id", "thread_id"]],
+  primaryKey: [["company_id", "channel_id", "thread_id"], "user_id"],
   type: TYPE,
 })
 export class ChannelThreadUsers {

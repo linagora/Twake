@@ -150,13 +150,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result).toBeUndefined();
         done();
@@ -179,13 +176,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result.mentions.users).toEqual(["1"]);
         done();
@@ -287,13 +281,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
@@ -403,13 +394,6 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
 
         expect(result).toBeUndefined();
         done();
@@ -433,13 +417,6 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
 
         expect(result.mentions.users).toEqual(["1"]);
         done();
@@ -488,14 +465,6 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
-
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
       });
