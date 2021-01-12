@@ -17,45 +17,7 @@ export class NotificationPubsubService extends PubsubServiceSubscription {
 
   async doSubscribe(): Promise<void> {
     logger.info("service.notifications - Subscribing to pubsub notifications");
-    this.pubsub.subscribe("channel:member:created", this.onCreated.bind(this));
-
     this.pubsub.subscribe("channel:member:updated", this.onUpdated.bind(this));
-  }
-
-  async onCreated(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
-    logger.debug(
-      "service.notifications.pubsub.event - Member as been created, creating notification preference",
-    );
-    const notification = message.data;
-
-    if (!notification.channel || !notification.member) {
-      logger.warn(
-        "service.notifications.pubsub.event - Channel or ChannelMember are not defined in the pubsub message",
-      );
-
-      return;
-    }
-
-    let preference = new ChannelMemberNotificationPreference();
-
-    preference = merge(preference, {
-      channel_id: notification.member.channel_id,
-      company_id: notification.member.company_id,
-      user_id: notification.member.user_id,
-      last_read: notification.member.last_access || 0,
-      preferences: notification.member.notification_level,
-    });
-
-    try {
-      await this.service.save(preference);
-
-      logger.info("service.notifications.pubsub.event - Notification preference has been created");
-    } catch (err) {
-      logger.error(
-        { err },
-        "service.notifications.pubsub.event - Error while creating notification preference from pubsub",
-      );
-    }
   }
 
   async onUpdated(message: IncomingPubsubMessage<PreferencesNotification>): Promise<void> {
