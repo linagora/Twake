@@ -39,10 +39,14 @@ Relation table:
 #### Step 0 Determinage group id if direct channel
 
 If direct channel we need to determinate a company id
+We call this company id direct_channel_company_id
 
-//TODO
-
-We call this group id direct_channel_company_id
+- Get users in this direct discussion,
+- Get list of companies of each users,
+- See what companies matches all users in direct channel
+- (1) If there is exactly one such company: use it as direct_channel_company_id
+- (>1) If there is more than one such company: use the company with the buggest number of members
+- (0) If there is zero such companies: delete this channel and note its id in order to fix this manualy after the script runs
 
 #### Step 1 Migrate workspaces channels
 
