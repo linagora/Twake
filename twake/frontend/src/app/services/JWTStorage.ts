@@ -10,6 +10,12 @@ type JWTDataType = {
   type: 'Bearer';
 };
 
+declare global {
+  interface Window {
+    AuthData:any;
+  }
+}
+
 class JWTStorageClass {
   private timeDelta = 5 * 60;
   private jwtData: JWTDataType = {
@@ -46,6 +52,9 @@ class JWTStorageClass {
     this.timeDelta = new Date().getTime() / 1000 - jwtData.time;
     this.jwtData.expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
     this.jwtData.refresh_expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
+    if (window.AuthData){ // post message for the mobile application to the channel named AuthData
+      window.AuthData.postMessage(JSON.stringify({ "token": jwtData.value, "expiration": jwtData.expiration, "refresh_token": jwtData.refresh, "refresh_expiration": jwtData.refresh_expiration }));
+    }
   }
 
   getJWT() {
