@@ -2,6 +2,7 @@ export {
   ChannelMemberNotificationPreference,
   ChannelMemberNotificationPreferencePrimaryKey,
   TYPE as ChannelMemberNotificationPreferenceType,
+  getInstance as getNotificationPreferenceInstance,
 } from "./channel-member-notification-preferences";
 
 export {
@@ -15,4 +16,5 @@ export {
   UserNotificationBadge,
   UserNotificationBadgePrimaryKey,
   TYPE as UserNotificationBadgeType,
+  getInstance as getUserNotificationBadgeInstance,
 } from "./user-notification-badges";

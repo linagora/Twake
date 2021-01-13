@@ -289,6 +289,21 @@ export class CassandraChannelService implements ChannelService {
     return this.mapRowToDirectChannel(result.rows[0]);
   }
 
+  async getDirectChannelsForUsersInCompany(
+    companyId: string,
+    userId: string,
+  ): Promise<DirectChannel[]> {
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ${companyId} AND users LIKE '%${userId}%`;
+
+    const result = await this.client.execute(query, {}, { prepare: true });
+
+    if (!result.rowLength) {
+      return [];
+    }
+
+    return result.rows.map(row => this.mapRowToDirectChannel(row));
+  }
+
   markAsRead(): Promise<boolean> {
     throw new Error("Not implemented");
   }

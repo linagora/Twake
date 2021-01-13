@@ -1,5 +1,7 @@
-import { merge } from "lodash";
-import { ChannelMemberNotificationPreference } from "../../../../entities";
+import {
+  ChannelMemberNotificationPreference,
+  getNotificationPreferenceInstance,
+} from "../../../../entities";
 import { logger } from "../../../../../../core/platform/framework";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { Channel, ChannelMember } from "../../../../../channels/entities";
@@ -26,7 +28,26 @@ export class JoinChannelMessageProcessor
     );
 
     try {
-      const preference = merge(new ChannelMemberNotificationPreference(), {
+      let preference: ChannelMemberNotificationPreference;
+
+      if (Channel.isDirectChannel(message.channel)) {
+        // Check if the user already have preference for this channel in case he already joined it before
+        preference = await this.service.channelPreferences.get({
+          company_id: message.member.company_id,
+          channel_id: message.member.channel_id,
+          user_id: message.member.user_id,
+        });
+      }
+
+      if (preference) {
+        logger.info(
+          `${this.name} - Notification preference already exists for user ${message.member.user_id} in direct channel ${message.channel.id}`,
+        );
+
+        return;
+      }
+
+      preference = getNotificationPreferenceInstance({
         channel_id: message.member.channel_id,
         company_id: message.member.company_id,
         user_id: message.member.user_id,
