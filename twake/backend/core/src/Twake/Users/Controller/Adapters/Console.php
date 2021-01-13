@@ -36,7 +36,8 @@ class Console extends BaseController
         }catch(\Exception $err){
           $message = "success";
         }
-        return $this->closeIframe($message);
+
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login");
     }
 
     function logout(Request $request, $message = null)
@@ -132,7 +133,8 @@ class Console extends BaseController
 
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
+        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/")
+            . "/?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
     private function isServiceEnabled(){
