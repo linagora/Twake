@@ -3,9 +3,10 @@ import React, { FC, useEffect, useState } from 'react';
 import Api from 'services/Api';
 import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
-import { ConfigurationResource, ConfigurationType } from 'app/models/Configuration';
+import { ConfigurationResource } from 'app/models/Configuration';
 import Environment from 'environment/environment';
 import { Col, Layout, Row, Typography } from 'antd';
+import Languages from 'services/languages/languages.js';
 
 const NewVersionComponent: FC = ({ children }) => {
   const [displayBanner, setDisplayBanner] = useState<boolean>(true);
@@ -51,8 +52,9 @@ const NewVersionComponent: FC = ({ children }) => {
           content={
             <Row align="middle" gutter={[8, 0]}>
               <Col>
-                <b>You are running an outdated Twake version</b>, we suggest you to reload the app
-                and enjoying our new features! <Emojione type="rocket" />
+                <b>{Languages.t('components.newversion.new_version_component.row.part_1')}</b>,{' '}
+                {Languages.t('components.newversion.new_version_component.row.part_2')}{' '}
+                <Emojione type="rocket" />
               </Col>
               <Col>
                 <Typography.Link
@@ -60,7 +62,7 @@ const NewVersionComponent: FC = ({ children }) => {
                   underline
                   onClick={() => window.location.reload()}
                 >
-                  Click here to reload
+                  {Languages.t('components.newversion.new_version_component.link')}
                 </Typography.Link>
               </Col>
             </Row>

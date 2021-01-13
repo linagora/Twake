@@ -1863,4 +1863,9 @@ export default {
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Add users to your company before inviting them to this workspace.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Go to Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'You are running an outdated Twake version',
+  'components.newversion.new_version_component.row.part_2':
+    'we suggest you to reload the app and enjoying our new features!',
+  'components.newversion.new_version_component.link': 'Click here to reload',
 };
