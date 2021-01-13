@@ -1,7 +1,7 @@
 "use strict";
 
-const { exec } = require("child_process");
 const cassandra = require("cassandra-driver");
+const decrypt = require("./decrypt.js");
 
 const client = new cassandra.Client({
   contactPoints: ["127.0.0.1"],
@@ -12,21 +12,10 @@ const client = new cassandra.Client({
   delay: 200,
 });
 
-const phpScriptPath = "decrypt.php";
-const decrypt = (encryptedString) => {
-  return new Promise((resolve, reject) => {
-    exec(
-      `php ${phpScriptPath} '${JSON.stringify(encryptedString)}'`,
-      (err, res) => {
-        if (err) reject(err);
-        resolve(JSON.parse(res));
-      }
-    );
-  });
-};
-
-const decryptChannels = async (channels) => {
-  return Promise.all(channels.map(async (channel) => decrypt(channel)));
+const decryptChannels = async (channels, key, defaultIv) => {
+  return Promise.all(
+    channels.map(async (channel) => decrypt(channel, key, defaultIv))
+  );
 };
 
 const getchannels = () => {
@@ -43,13 +32,31 @@ const getchannels = () => {
   });
 };
 
-const init = () => {
+const init = async (configuration) => {
+  //TODO: store the configuration somewhere and use it
+
+  //Test
+  console.log(
+    await decrypt(
+      ["hello"],
+      configuration.encryption.key,
+      configuration.encryption.defaultIv
+    )
+  );
+
+  //
   getchannels()
-    .then((channels) => decryptChannels(channels))
+    .then((channels) =>
+      decryptChannels(
+        channels,
+        configuration.encryption.key,
+        configuration.encryption.defaultIv
+      )
+    )
     .then((res) => console.log(res));
 };
 
-init();
+module.exports = init;
 
 // const getChannelMembers = () => {
 //   const query = "SELECT * FROM channel_member";

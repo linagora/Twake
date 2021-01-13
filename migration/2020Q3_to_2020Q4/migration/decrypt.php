@@ -2,8 +2,8 @@
   function convertToPHPValue() {
     global $argv;
 
-    $decrypteKey = "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0";
-    $ivDefault = "twake_constantiv";
+    $decrypteKey = json_decode($argv[2]);
+    $ivDefault = json_decode($argv[3]);
 
     $decryptedChannel = [];
     

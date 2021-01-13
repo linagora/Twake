@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Data migration from 2020Q3 to 2020Q4",
   "scripts": {
+    "start": "node start.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Twake",

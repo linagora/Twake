@@ -23,7 +23,7 @@ export class Service implements TabService {
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository("channel_tab", ChannelTab);
+    this.repository = await this.database.getRepository("channel_tabs", ChannelTab);
     return this;
   }
 
@@ -59,7 +59,7 @@ export class Service implements TabService {
 
     await this.repository.save(tabEntity);
 
-    return new SaveResult("channel_tab", tabEntity, OperationType.CREATE);
+    return new SaveResult("channel_tabs", tabEntity, OperationType.CREATE);
   }
 
   async get(tabPk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelTab> {
@@ -84,7 +84,7 @@ export class Service implements TabService {
       await this.repository.remove(tabEntity);
     }
 
-    return new DeleteResult("channel_tab", tabEntity, true);
+    return new DeleteResult("channel_tabs", tabEntity, true);
   }
 
   async list<ListOptions>(
