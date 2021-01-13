@@ -12,35 +12,21 @@ import {
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { NotificationPubsubService } from "./pubsub";
+import { logger } from "../../../../core/platform/framework";
 
 const TYPE = "channel_members_notification_preferences";
 
 export class ChannelMemberPreferencesService implements ChannelMemberPreferencesServiceAPI {
   version: "1";
   repository: Repository<ChannelMemberNotificationPreference>;
-  pubsub: NotificationPubsubService;
 
   constructor(private database: DatabaseServiceAPI) {}
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.repository = await this.database.getRepository<ChannelMemberNotificationPreference>(
       TYPE,
       ChannelMemberNotificationPreference,
     );
-    await this.subscribe(context);
-
-    return this;
-  }
-
-  async subscribe(context: TwakeContext): Promise<this> {
-    if (!context) {
-      return;
-    }
-
-    this.pubsub = new NotificationPubsubService(this);
-    this.pubsub.subscribe(context.getProvider("pubsub"));
 
     return this;
   }

@@ -160,6 +160,11 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
     const memberToDelete = await this.service.get(pk, context);
+    const channel = await this.channelService.channels.get(context.channel);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel does not exists");
+    }
 
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");
@@ -167,6 +172,14 @@ export class Service implements MemberService {
 
     if (!this.isCurrentUser(memberToDelete, context.user)) {
       throw CrudExeption.badRequest("User does not have rights to remove member");
+    }
+
+    if (ChannelEntity.isPrivateChannel(channel)) {
+      const canLeave = await this.canLeavePrivateChannel(context.user, channel);
+
+      if (!canLeave) {
+        throw CrudExeption.badRequest("User can not leave the private channel");
+      }
     }
 
     const result = await this.service.delete(pk, context);
@@ -190,6 +203,17 @@ export class Service implements MemberService {
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.service.listUserChannels(user, pagination, context);
+  }
+
+  /**
+   * Can leave only if the number of members is > 1
+   * since counting rows in DB takes too much time
+   * we query a list for 2 members without offset and check the length
+   */
+  async canLeavePrivateChannel(user: User, channel: ChannelEntity): Promise<boolean> {
+    const list = this.list(new Pagination(undefined, "2"), {}, { channel, user });
+
+    return (await list).getEntities().length > 1;
   }
 
   @PubsubPublish("channel:member:updated")
