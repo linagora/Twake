@@ -1939,4 +1939,10 @@ export default {
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'Vous utilisez une version obsolète de Twake',
+  'components.newversion.new_version_component.row.part_2':
+    "nous vous suggérons de recharger l'application et de profiter de nos nouvelles fonctionnalités!",
+  'components.newversion.new_version_component.link': 'Cliquez ici pour recharger',
+  'components.newversion.new_version_modal.title': 'Nouvelle mise à jour disponible !',
 };
