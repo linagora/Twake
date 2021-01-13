@@ -1,6 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { OperationType, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
@@ -46,20 +46,30 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Channel>> {
-    const resource = await this.service.get(
+    const channel = await this.service.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
 
-    if (!resource) {
+    if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
 
       return;
     }
 
+    if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
+      const isMember = await this.membersService.isChannelMember(request.currentUser, channel);
+
+      if (!isMember) {
+        reply.badRequest("User does not have enough rights to get channel");
+
+        return;
+      }
+    }
+
     return {
-      websocket: getWebsocketInformation(resource),
-      resource,
+      websocket: getWebsocketInformation(channel),
+      resource: channel,
     };
   }
 
