@@ -7,15 +7,18 @@ import { ConfigurationResource } from 'app/models/Configuration';
 import Environment from 'environment/environment';
 import { Col, Layout, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
+import ModalManager from 'app/components/Modal/ModalManager';
+import NewVersionModal from './NewVersionModal';
 
 const NewVersionComponent: FC = ({ children }) => {
-  const [displayBanner, setDisplayBanner] = useState<boolean>(true);
+  const [displayBanner, setDisplayBanner] = useState<boolean>(false);
   let lastScrape: number = 0;
 
   useEffect(() => {
     setInterval(() => {
       getConfiguration();
     }, 1000 * 60 * 60);
+    getConfiguration();
   }, []);
 
   const compareVersion: (v1: string, v2: string) => number = (v1: string, v2: string) => {
@@ -33,14 +36,31 @@ const NewVersionComponent: FC = ({ children }) => {
     lastScrape = new Date().getTime();
 
     const config = (await Api.get('core/version')) as ConfigurationResource;
-    const currentVersion = Environment.version_detail;
-    const newestVersion = config.data.version?.current || '';
+    const currentVersion: string = Environment.version_detail;
+    const newestVersion: string = config.data.version?.current || '';
+    const minimalWebVersion: string = config.data.version?.minimal?.web || '';
 
+    const shouldDisplayModal: boolean =
+      minimalWebVersion && compareVersion(minimalWebVersion, currentVersion) > 0 ? true : false;
     const shouldDisplayBanner: boolean =
-      compareVersion(newestVersion, currentVersion) > 0 ? true : false;
+      newestVersion && compareVersion(newestVersion, currentVersion) > 0 && !shouldDisplayModal
+        ? true
+        : false;
 
-    console.log('shouldHideBanner', shouldDisplayBanner);
-    return setDisplayBanner(shouldDisplayBanner);
+    if (shouldDisplayModal) {
+      return ModalManager.open(
+        <NewVersionModal />,
+        {
+          position: 'center',
+          size: { width: '600px' },
+        },
+        false,
+      );
+    }
+
+    if (shouldDisplayBanner) {
+      return setDisplayBanner(shouldDisplayBanner);
+    }
   };
 
   return (
