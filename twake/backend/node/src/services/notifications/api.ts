@@ -111,7 +111,7 @@ export interface ChannelThreadUsersServiceAPI
 }
 
 /**
- * A notification hander is in charge of processing a notification from the pubsub layer and then produces something to be consumed by another handler somewhere in the platform.
+ * A notification hander is in charge of processing a notification from the pubsub layer and then optionally produces something to be consumed by another handler somewhere in the platform.
  */
 export interface NotificationPubsubHandler<InputMessage, OutputMessage>
   extends PubsubHandler<InputMessage, OutputMessage> {

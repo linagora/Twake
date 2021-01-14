@@ -114,12 +114,21 @@ export class Service implements MemberService {
       const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
       const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
       const isPublicChannel = ChannelEntity.isPublicChannel(channel);
-      const isChannelCreator = channel.owner === context.user.id;
+      const isDirectChannel = ChannelEntity.isDirectChannel(channel);
+      const userIsDefinedInChannelUserList = (channel.members || []).includes(
+        String(member.user_id),
+      );
+      const isChannelCreator = context.user && channel.owner === context.user.id;
 
-      // user can not join private channel by themself when it is private
+      // 1. Private channel: user can not join private channel by themself when it is private
       // only member can add other users in channel
-      // The channel creator check is only here on channel creation
-      if (isChannelCreator || (isPrivateChannel && currentUserIsMember) || isPublicChannel) {
+      // 2. The channel creator check is only here on channel creation
+      if (
+        isChannelCreator ||
+        (isPrivateChannel && currentUserIsMember) ||
+        isPublicChannel ||
+        (isDirectChannel && userIsDefinedInChannelUserList)
+      ) {
         const saveResult = await this.service.save(member, options, context);
         this.onCreated(context.channel, member, saveResult);
       } else {
@@ -255,6 +264,10 @@ export class Service implements MemberService {
   }
 
   isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {
+    if (!user) {
+      return;
+    }
+
     return this.get({
       channel_id: channel.id,
       company_id: channel.company_id,

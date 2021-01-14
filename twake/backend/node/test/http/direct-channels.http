@@ -138,14 +138,14 @@ GET {{directChannelsURL}}/channels/{{directId}}/members/{{userId1}}
 Content-Type: application/json
 Authorization: Bearer {{authToken1}}
 
-### Leave a direct channel should not fail
-
-DELETE {{directChannelsURL}}/channels/{{directId}}/members/{{userId1}}
-Content-Type: application/json
-Authorization: Bearer {{authToken1}}
-
 ### Leave a direct channel of another user should fail
 
 DELETE {{directChannelsURL}}/channels/{{directId}}/members/{{userId2}}
+Content-Type: application/json
+Authorization: Bearer {{authToken1}}
+
+### Leave a direct channel should not fail
+
+DELETE {{directChannelsURL}}/channels/{{directId}}/members/{{userId1}}
 Content-Type: application/json
 Authorization: Bearer {{authToken1}}
