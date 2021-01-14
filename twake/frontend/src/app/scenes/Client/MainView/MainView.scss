@@ -78,10 +78,16 @@
   }
 }
 
+.main-view {
+  border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  height: 100%;
+}
+
 .main-view,
 .main-view-content {
   flex: 1;
-  background: $white;
+  background: var(--white);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -115,48 +121,40 @@
   }
 }
 
-.appPage.public {
-  background-color: $primary;
+.public_header {
+  background-color: var(--primary);
   flex-direction: column;
+  width: 100vw;
+  height: 64px;
+  display: flex;
+  flex-direction: row;
 
-  .main-view {
-    border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .public_header {
-    width: 100vw;
-    height: 64px;
+  .left {
+    padding: 16px;
+    padding-left: 24px;
     display: flex;
     flex-direction: row;
 
-    .left {
-      padding: 16px;
-      padding-left: 24px;
-      display: flex;
-      flex-direction: row;
-
-      & > .companyName {
-        margin-left: 16px;
-        line-height: 32px;
-        color: #fff;
-        font-weight: 600;
-      }
-    }
-
-    .right {
-      flex: 1;
-      text-align: right;
-      font-size: 12px;
-      padding: 16px;
-      padding-right: 24px;
+    & > .companyName {
+      margin-left: 16px;
       line-height: 32px;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
 
-      a {
-        color: #fff;
-        &:hover {
-          opacity: 0.8;
-        }
+  .right {
+    flex: 1;
+    text-align: right;
+    font-size: 12px;
+    padding: 16px;
+    padding-right: 24px;
+    line-height: 32px;
+
+    a {
+      color: #fff;
+      &:hover {
+        opacity: 0.8;
       }
     }
   }

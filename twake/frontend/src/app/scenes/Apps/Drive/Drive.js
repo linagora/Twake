@@ -107,12 +107,10 @@ export default class Drive extends Component {
       ((this.props.tab || {}).configuration || {}).directory_id ||
       '';
 
-    if ((Globals.store_public_access_get_data || {}).public_access_token) {
-      DriveService.public_access_token = (
-        Globals.store_public_access_get_data || {}
-      ).public_access_token;
-      Workspaces.currentWorkspaceId = (Globals.store_public_access_get_data || {}).workspace_id;
-      this.init_directory = (Globals.store_public_access_get_data || {}).element_id;
+    if (this.props.options.public_access_token) {
+      DriveService.public_access_token = this.props.options.public_access_token;
+      Workspaces.currentWorkspaceId = this.props.options.workspace_id;
+      this.init_directory = this.props.options.element_id;
       directory_id = this.init_directory;
     }
 

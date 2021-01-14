@@ -36,7 +36,7 @@ const NewVersionComponent: FC = ({ children }) => {
     lastScrape = new Date().getTime();
 
     const config = (await Api.get('core/version')) as ConfigurationResource;
-    const currentVersion: string = Environment.version_detail;
+    const currentVersion: string = Environment?.version_detail;
     const newestVersion: string = config.data.version?.current || '';
     const minimalWebVersion: string = config.data.version?.minimal?.web || '';
 

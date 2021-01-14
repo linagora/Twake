@@ -10,7 +10,6 @@ import { Layout } from 'antd';
 import './Client.scss';
 
 import MainView from './MainView/MainView';
-import PublicMainView from './MainView/PublicMainView.js';
 import ChannelsBar from './ChannelsBar/ChannelsBar';
 import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 
@@ -23,7 +22,6 @@ import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
-import Globals from 'services/Globals.js';
 import LoginService from 'services/login/login';
 import { Menu } from 'react-feather';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
@@ -46,35 +44,26 @@ export default (): JSX.Element => {
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
-    if (Globals.store_public_access_get_data) {
+    if (LoginService.currentUserId) {
       page = (
-        <div key="appPage" className={'appPage public'}>
-          <PublicMainView />
-        </div>
+        <>
+          <Layout hasSider>
+            <Layout.Sider
+              trigger={<Menu size={16} />}
+              breakpoint="lg"
+              collapsedWidth="0"
+              theme="light"
+              width={290}
+            >
+              <Layout style={{ height: '100%' }}>
+                <WorkspacesBar />
+                <ChannelsBar />
+              </Layout>
+            </Layout.Sider>
+            <MainView />
+          </Layout>
+        </>
       );
-    } else {
-      //Wait for the user to be connected
-      if (LoginService.currentUserId) {
-        page = (
-          <>
-            <Layout hasSider>
-              <Layout.Sider
-                trigger={<Menu size={16} />}
-                breakpoint="lg"
-                collapsedWidth="0"
-                theme="light"
-                width={290}
-              >
-                <Layout style={{ height: '100%' }}>
-                  <WorkspacesBar />
-                  <ChannelsBar />
-                </Layout>
-              </Layout.Sider>
-              <MainView />
-            </Layout>
-          </>
-        );
-      }
     }
   }
 
