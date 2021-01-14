@@ -1,6 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { OperationType, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
@@ -14,7 +14,7 @@ import {
   ReadChannelBody,
   UpdateChannelBody,
 } from "../types";
-import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
 import { handleError } from ".";
 import {
   ResourceCreateResponse,
