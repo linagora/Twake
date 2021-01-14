@@ -69,19 +69,20 @@ class Parameters extends \Common\Configuration
               "openstack" => [
                   "use" => false,
                   "project_id" => "",
-                  "auth_url" => "https//auth.cloud.ovh.net/v2.0",
+                  "auth_url" => "https//auth.cloud.ovh.net/v3",
                   "buckets_prefix" => "",
                   "buckets" => [
                       "fr" => [
                           "public" => "",
                           "private" => "",
                           "region" => "SBG5"
-                      ],
-                      "user" => [
-                          "id" => "",
-                          "password" => ""
                       ]
                   ],
+                  "user" => [
+                      "id" => "",
+                      "password" => "",
+                      "domain_name" => "default"
+                  ]
               ],
               "S3" => [
                   "base_url" => "http//127.0.0.1:9000",
