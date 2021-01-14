@@ -8,7 +8,7 @@ Then run 'yarn start' (TODO: replace by a docker execution)
 
 ## Migration doc:
 
-### Global view
+### 1 - Global view
 
 Node entities:
 
@@ -34,7 +34,7 @@ Relation table:
 - 'channel_tab' is transfered to 'channel_tabs'
 - 'channel_member' is transfered to 'channel_members', 'channel_members_notification_preferences', 'user_channels'
 
-### 'channel' migration
+### 2 - 'channel' migration
 
 #### Step 0 Determinage group id if direct channel
 
@@ -45,7 +45,7 @@ We call this company id direct_channel_company_id
 - Get list of companies of each users,
 - See what companies matches all users in direct channel
 - (1) If there is exactly one such company: use it as direct_channel_company_id
-- (>1) If there is more than one such company: use the company with the buggest number of members
+- (>1) If there is more than one such company: use the company with the bigest number of members
 - (0) If there is zero such companies: delete this channel and note its id in order to fix this manualy after the script runs
 
 #### Step 1 Migrate workspaces channels
@@ -107,7 +107,7 @@ To Node direct_channels:
 - users text, ((PHP:identifier).split("+").sort().join(","))
 - channel_id uuid, (PHP:id)
 
-### 'channel_tab' migration
+### 3 - 'channel_tab' migration
 
 As we need company_id and workspace_id, best is to run this when we get the channel itself.
 
@@ -132,6 +132,53 @@ To Node channel_tabs:
 - name text, (PHP:name)
 - owner text, (set to empty string "")
 
-### 'channel_member' migration
+### 4 - 'channel_member' migration
 
-//TODO
+We said before that 'channel_member' is transfered to 'channel_members', 'user_channels' and 'channel_members_notification_preferences'
+
+The two first recipients are just two indexation side to access all channels of a member or all members of a channel.
+
+The last one contains notification preferences for this channel for this user.
+
+From PHP channel_member:
+
+- direct tinyint,
+- user_id text,
+- channel_id timeuuid,
+- id timeuuid,
+- externe tinyint,
+- last_access timestamp,
+- last_activity timestamp,
+- last_activity_least_updated timestamp,
+- last_messages_increment int,
+- last_quoted_message_id text,
+- muted tinyint,
+
+To Node channel_members:
+
+- company_id uuid, (Channel company_id)
+- workspace_id text, (Channel workspace_id)
+- channel_id uuid, (Channel id)
+- user_id uuid, (User id)
+- type text, (set to 'member')
+
+To Node user_channels:
+
+- company_id uuid, (Channel company_id)
+- workspace_id text, (Channel workspace_id)
+- user_id uuid, (User id)
+- channel_id uuid, (Channel id)
+- expiration bigint, (set to 0)
+- favorite boolean, (set to false)
+- last_access bigint, (set to 0)
+- last_increment bigint, (set to 0)
+- notification_level text, (Follow this table: muted=0 => 'all' ; muted=1 => 'mentions' ; muted=2 => 'me' ; muted=3 => 'none')
+- type text, (set to 'member')
+
+To Node channel_members_notification_preferences:
+
+- company_id uuid, (Channel company_id)
+- channel_id uuid, (Channel id)
+- user_id uuid, (User id)
+- last_read bigint, (set to 0)
+- preferences text, (Follow this table: muted=0 => 'all' ; muted=1 => 'mentions' ; muted=2 => 'me' ; muted=3 => 'none')
