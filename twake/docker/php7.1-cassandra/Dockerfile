@@ -118,14 +118,9 @@ RUN echo "apc.enable=1" >> /usr/local/etc/php/php.ini
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc
 RUN echo 'alias sf3="php bin/console"' >> ~/.bashrc
 
-ADD docker/twake-php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+ADD ./uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-ADD docker/twake-php/www.conf /usr/local/etc/php-fpm.d/
-
-#Crontab
-ADD docker/twake-php/crontab /etc/cron.d/twake-cron
-RUN chmod 0644 /etc/cron.d/twake-cron
-RUN touch /var/log/cron.log
+ADD ./www.conf /usr/local/etc/php-fpm.d/
 
 #ENCRYPTION
 RUN apt-get update && apt-get install -y git
