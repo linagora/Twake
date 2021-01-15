@@ -209,24 +209,28 @@ class MessageSystem
     public function deleteInBloc($message)
     {
 
-        $bloc = $this->em->getRepository("Twake\GlobalSearch:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        if($message->getBlockId()){
 
-        if (!$bloc) {
-            return false;
-        }
+            $bloc = $this->em->getRepository("Twake\GlobalSearch:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
-        try {
-            $bloc->removeMessage($message->getId());
-
-            $this->em->persist($bloc);
-            $this->em->flush();
-
-            if ($bloc->getLock() == true) {
-                $this->em->es_put($bloc, $bloc->getEsType());
+            if (!$bloc) {
+                return false;
             }
 
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
+            try {
+                $bloc->removeMessage($message->getId());
+
+                $this->em->persist($bloc);
+                $this->em->flush();
+
+                if ($bloc->getLock() == true) {
+                    $this->em->es_put($bloc, $bloc->getEsType());
+                }
+
+            } catch (\Exception $e) {
+                error_log($e->getMessage());
+            }
+
         }
 
     }
