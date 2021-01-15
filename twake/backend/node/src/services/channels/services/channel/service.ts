@@ -82,10 +82,11 @@ export class Service implements ChannelService {
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
-    const isDirectChannel = channel.workspace_id === ChannelVisibility.DIRECT;
+    const isDirectChannel = Channel.isDirectChannel(channel);
 
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
+      channel.workspace_id = ChannelVisibility.DIRECT;
     }
 
     if (mode === OperationType.UPDATE) {
@@ -143,8 +144,8 @@ export class Service implements ChannelService {
         );
 
         if (directChannel) {
-          logger.info("Direct channel already exists");
-          const existingChannel = await this.get(
+          logger.debug("Direct channel already exists %o", directChannel);
+          const existingChannel = await this.service.get(
             {
               company_id: context.workspace.company_id,
               id: directChannel.channel_id,
@@ -204,7 +205,7 @@ export class Service implements ChannelService {
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Channel>> {
-    const channelToDelete = await this.get(this.getPrimaryKey(pk), context);
+    const channelToDelete = await this.service.get(this.getPrimaryKey(pk), context);
 
     if (!channelToDelete) {
       throw new CrudExeption("Channel not found", 404);
@@ -345,6 +346,10 @@ export class Service implements ChannelService {
     return this.service.getDirectChannelInCompany(companyId, users);
   }
 
+  getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]> {
+    return this.service.getDirectChannelsForUsersInCompany(companyId, userId);
+  }
+
   async markAsRead(
     pk: ChannelPrimaryKey,
     user: User,
@@ -461,7 +466,7 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
-    console.log(`PUSH ${mode}`, pushUpdates);
+    logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
   /**
@@ -471,7 +476,7 @@ export class Service implements ChannelService {
    * @param result The delete result
    */
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
-    console.log("PUSH DELETE ASYNC", channel, result);
+    logger.debug("Channel deleted", channel, result);
   }
 
   /**

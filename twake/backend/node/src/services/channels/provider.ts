@@ -45,6 +45,14 @@ export interface ChannelService
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel>;
 
   /**
+   * Get all the direct channels in a company for the given user
+   *
+   * @param companyId
+   * @param userId
+   */
+  getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]>;
+
+  /**
    * Mark the channel as read for the given user
    *
    * @param channel

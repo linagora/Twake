@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { assign, merge } from "lodash";
 import { ChannelMemberNotificationPreference, UserNotificationBadge } from "../../../../entities";
 import { logger } from "../../../../../../core/platform/framework";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
@@ -25,6 +25,13 @@ export class LeaveChannelMessageProcessor
       `${this.name} - Processing leave channel message for user ${message.member.user_id} in channel ${message.channel.id}`,
     );
 
+    if (Channel.isDirectChannel(message.channel)) {
+      logger.info(
+        `${this.name} - Channel is direct, do not clean resources for user ${message.member.user_id} in channel ${message.channel.id}`,
+      );
+      return;
+    }
+
     await Promise.all([this.removeBadges(message), this.removePreferences(message)]);
   }
 
@@ -35,7 +42,7 @@ export class LeaveChannelMessageProcessor
 
     try {
       const badgeEntity = new UserNotificationBadge();
-      _.assign(badgeEntity, {
+      assign(badgeEntity, {
         workspace_id: message.channel.workspace_id,
         company_id: message.channel.company_id,
         channel_id: message.channel.id,
@@ -56,7 +63,7 @@ export class LeaveChannelMessageProcessor
 
   async removePreferences(message: LeaveChannelMessage): Promise<void> {
     try {
-      const preference = _.merge(new ChannelMemberNotificationPreference(), {
+      const preference = merge(new ChannelMemberNotificationPreference(), {
         channel_id: message.member.channel_id,
         company_id: message.member.company_id,
         user_id: message.member.user_id,

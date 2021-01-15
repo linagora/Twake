@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel } from "../../../services/channels/types";
 
@@ -41,3 +42,9 @@ export type ChannelMemberNotificationPreferencePrimaryKey = Pick<
   ChannelMemberNotificationPreference,
   "company_id" | "channel_id" | "user_id"
 >;
+
+export function getInstance(
+  preference: ChannelMemberNotificationPreference,
+): ChannelMemberNotificationPreference {
+  return merge(new ChannelMemberNotificationPreference(), preference);
+}
