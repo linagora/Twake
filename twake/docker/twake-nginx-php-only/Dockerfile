@@ -1,5 +1,5 @@
 # nginx/Dockerfile
-FROM debian:buster
+FROM twaketech/nginx-static-yarn
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 

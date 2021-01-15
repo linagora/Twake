@@ -1,4 +1,4 @@
-FROM twake:php7.1-cassandra
+FROM twaketech/php7.1-cassandra
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 

@@ -1,4 +1,4 @@
-FROM twake:nginx-static-yarn
+FROM twaketech/nginx-static-yarn
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
