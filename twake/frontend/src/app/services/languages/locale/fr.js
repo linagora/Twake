@@ -1945,4 +1945,5 @@ export default {
     "nous vous suggérons de recharger l'application et de profiter de nos nouvelles fonctionnalités!",
   'components.newversion.new_version_component.link': 'Cliquez ici pour recharger',
   'components.newversion.new_version_modal.title': 'Nouvelle mise à jour disponible !',
+  'scenes.apps.drive.download_all_button': 'Tout télécharger',
 };
