@@ -1869,4 +1869,5 @@ export default {
     'we suggest you to reload the app and enjoy our new features!',
   'components.newversion.new_version_component.link': 'Click here to reload',
   'components.newversion.new_version_modal.title': 'New update available !',
+  'scenes.apps.drive.download_all_button': 'Download all',
 };

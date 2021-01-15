@@ -463,7 +463,7 @@ export default class Drive extends Component {
       });
     }
 
-    if (selection_length > 0 && !WorkspaceUserRights.isNotConnected()) {
+    if (selection_length > 0) {
       if (!in_trash) {
         general_menu = general_menu.concat([
           {
@@ -489,6 +489,7 @@ export default class Drive extends Component {
           },
           {
             type: 'menu',
+            hide: WorkspaceUserRights.isNotConnected(),
             text: Languages.t('scenes.apps.drive.move_text', [], 'Déplacer'),
             submenu: [
               {
@@ -521,6 +522,7 @@ export default class Drive extends Component {
 
         general_menu.push({
           type: 'menu',
+          hide: WorkspaceUserRights.isNotConnected(),
           text: Languages.t('scenes.apps.drive.throw_menu', [], 'Mettre à la corbeille'),
           className: 'error',
           onClick: () => {
@@ -590,6 +592,19 @@ export default class Drive extends Component {
           },
         });
       }
+    } else {
+      general_menu.push({
+        type: 'menu',
+        hide: !WorkspaceUserRights.isNotConnected(),
+        text: Languages.t('scenes.apps.drive.download_all_button'),
+        onClick: () => {
+          let elements = [...(directories || []), ...(files || [])];
+          if (elements.length === 0) {
+            return;
+          }
+          return window.open(DriveService.getLink(elements, undefined, 1));
+        },
+      });
     }
 
     var plus_menu = [
