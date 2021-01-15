@@ -2,17 +2,17 @@ import { without } from "lodash";
 import { Channel, ChannelMember } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
-import { MessageNotification } from "../../../../../services/messages/types";
+import { MessageNotification } from "../../../../messages/types";
 import ChannelServiceAPI from "../../../provider";
 
-export class NewChannelMessageProcessor implements PubsubHandler<MessageNotification, void> {
+export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNotification, void> {
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
     in: "message:created",
   };
 
-  readonly name = "Channel::NewChannelMessageProcessor";
+  readonly name = "Channel::NewDirectChannelMessageProcessor";
 
   validate(message: MessageNotification): boolean {
     return !!(message && message.channel_id && message.company_id && message.workspace_id);
@@ -36,7 +36,7 @@ export class NewChannelMessageProcessor implements PubsubHandler<MessageNotifica
         return;
       }
 
-      const memberIds = without(channel.members || [], message.sender);
+      const memberIds = without(channel.members || [], String(message.sender));
       if (!memberIds.length) {
         logger.debug(`${this.name} - No members to notify. Original array was %o`, channel.members);
       }
@@ -51,12 +51,21 @@ export class NewChannelMessageProcessor implements PubsubHandler<MessageNotifica
       });
 
       await Promise.all(
-        members.map(member => {
+        members.map(async member => {
           try {
             logger.info(`${this.name} - Adding ${member.user_id} to channel ${message.channel_id}`);
-            this.service.members.save(member, {}, { channel, user: { id: message.sender } });
+            const memberSaved = await this.service.members.save(
+              member,
+              {},
+              { channel, user: { id: member.user_id } },
+            );
+            logger.info(
+              `${this.name} - Member added to channel ${message.channel_id} - ${JSON.stringify(
+                memberSaved,
+              )}`,
+            );
           } catch (err) {
-            logger.debug(
+            logger.info(
               { err },
               `${this.name} - Error while adding user ${member.user_id} to direct channel ${member.channel_id}`,
             );

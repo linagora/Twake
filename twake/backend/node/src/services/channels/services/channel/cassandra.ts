@@ -187,6 +187,7 @@ export class CassandraChannelService implements ChannelService {
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
     const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
+    logger.debug("service.channel.get - %s - %o", query, key);
     const row = (await this.client.execute(query, key, { prepare: true })).first();
 
     if (!row) {

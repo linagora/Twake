@@ -1,4 +1,4 @@
-import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted, logger } from "../../../../core/platform/framework";
 import {
   DeleteResult,
   Pagination,
@@ -74,11 +74,13 @@ export class Service implements MemberService {
     const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
     const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
 
+    logger.debug(`MemberService.save - ${mode} member %o`, memberToUpdate);
+
     if (mode === OperationType.UPDATE) {
       const isCurrentUser = this.isCurrentUser(memberToUpdate, context.user);
 
       if (!isCurrentUser) {
-        throw CrudExeption.badRequest("Channel member can not be updated");
+        throw CrudExeption.badRequest(`Channel member ${member.user_id} can not be updated`);
       }
 
       const updatableParameters: Partial<Record<keyof ChannelMember, boolean>> = {
@@ -92,7 +94,7 @@ export class Service implements MemberService {
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest("Nothing to update");
+        throw CrudExeption.badRequest(`Nothing to update for member ${member.user_id}`);
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
@@ -132,7 +134,7 @@ export class Service implements MemberService {
         const saveResult = await this.service.save(member, options, context);
         this.onCreated(context.channel, member, saveResult);
       } else {
-        throw CrudExeption.badRequest("User is not allowed to join this channel");
+        throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
       }
     }
 
