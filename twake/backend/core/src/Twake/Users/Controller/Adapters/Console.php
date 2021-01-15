@@ -140,7 +140,7 @@ class Console extends BaseController
 
     }
 
-    private function redirectToApp(Request $request){
+    function redirectToApp(Request $request){
         if (!isset($_SESSION)) {
             @session_start();
         }

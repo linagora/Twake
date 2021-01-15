@@ -41,7 +41,7 @@ class UsersConnections extends BaseController
         $rememberMe = $request->request->get("remember_me", true);
 
         //Retro compatibility
-        if(!isset($usernameOrMail) && !isset($password)){
+        if(!$usernameOrMail && !$password){
             $usernameOrMail = $request->request->get("_username", "");
             $password = $request->request->get("_token", $request->request->get("_password", ""));
             $rememberMe = $request->request->get("_remember_me", true);
