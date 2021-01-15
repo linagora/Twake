@@ -250,9 +250,9 @@ class Login extends Observable {
       Api.post(
         'users/login',
         {
-          _username: username,
-          _password: password,
-          _remember_me: rememberme,
+          username: username,
+          password: password,
+          remember_me: rememberme,
           device: device,
         },
         function (res) {

@@ -36,9 +36,16 @@ class UsersConnections extends BaseController
             "data" => Array()
         );
 
-        $usernameOrMail = $request->request->get("_username", "");
-        $password = $request->request->get("_password", "");
-        $rememberMe = $request->request->get("_remember_me", true);
+        $usernameOrMail = $request->request->get("username", "");
+        $password = $request->request->get("token", $request->request->get("password", ""));
+        $rememberMe = $request->request->get("remember_me", true);
+
+        //Retro compatibility
+        if(!isset($usernameOrMail) && !isset($password)){
+            $usernameOrMail = $request->request->get("_username", "");
+            $password = $request->request->get("_token", $request->request->get("_password", ""));
+            $rememberMe = $request->request->get("_remember_me", true);
+        }
 
         $response = new Response();
         $logged = $this->getUser() && !is_string($this->getUser());
