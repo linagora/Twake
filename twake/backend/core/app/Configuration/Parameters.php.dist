@@ -71,6 +71,7 @@ class Parameters extends \Common\Configuration
                   "project_id" => "",
                   "auth_url" => "https//auth.cloud.ovh.net/v3",
                   "buckets_prefix" => "",
+                  "disable_encryption" => false,
                   "buckets" => [
                       "fr" => [
                           "public" => "",
@@ -85,9 +86,10 @@ class Parameters extends \Common\Configuration
                   ]
               ],
               "S3" => [
-                  "base_url" => "http//127.0.0.1:9000",
+                  "base_url" => "http://127.0.0.1:9000",
                   "use" => false,
                   "version" => "latest",
+                  "disable_encryption" => false,
                   "buckets_prefix" => "dev.",
                   "buckets" => [
                       "fr" => "eu-west-3"
@@ -99,6 +101,7 @@ class Parameters extends \Common\Configuration
               ],
               "local" => [
                   "use" => true,
+                  "disable_encryption" => false,
                   "location" => "../drive/",
                   "preview_location" => "../web/medias/",
                   "preview_public_path" => "/medias/"
