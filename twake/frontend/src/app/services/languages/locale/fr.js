@@ -1933,7 +1933,10 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
     "Il n'y a pas de membres dans cette chaîne, vous pouvez les inviter en cliquant sur Ajouter des utilisateurs.",
-  'scenes.app.channelsbar.hide_discussion_leaving': 'Masquer la discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Masquer la discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Masquer la discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    "Vous pouvez masquer cette discussion. Vos messages ne sont pas perdus et vous pouvez l'ouvrir à nouveau si besoin.",
   'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
     '$1 utilisateur(s) seront ajoutés',
   'scenes.app.popup.adduserfromtwakeconsole.description':

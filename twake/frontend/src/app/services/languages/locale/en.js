@@ -1858,7 +1858,10 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
     'There is no members in this channel, you can invite them by clicking on Add users.',
-  'scenes.app.channelsbar.hide_discussion_leaving': 'Hide discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Hide discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Hide discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    'You can hide this discussion. Your messages are not lost and we can reopen it again when needed.',
   'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 user(s) will be added',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Add users to your company before inviting them to this workspace.',
