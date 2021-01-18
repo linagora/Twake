@@ -82,6 +82,9 @@ class WorkspaceData extends BaseController
 
     public function getUploader()
     {
+
+        //TODO get the right provider !
+
         $storage = $this->getParameter('storage');
         if (isset($storage["S3"]["use"]) && $storage["S3"]["use"]) {
             return $this->get("app.aws_uploader");

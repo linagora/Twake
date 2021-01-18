@@ -10,7 +10,6 @@ class StorageManager
     private $aws;
     private $openstack;
     private $root;
-    private $adapter;
     private $doctrine;
 
     public function __construct(App $app)
@@ -26,40 +25,12 @@ class StorageManager
     /**
      * @return mixed
      */
-    public function getMode()
+    public function getAdapter($provider = null)
     {
-        return $this->mode;
-    }
-
-    /**
-     * @param mixed $mode
-     */
-    public function setMode($mode)
-    {
-        $this->mode = $mode;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdapter()
-    {
-        if (!$this->adapter) {
-            $this->adapter = $this->BindAdapter();
+        if(!$provider){
+            $provider = $this->getOneProvider();
         }
-        return $this->adapter;
-    }
-
-    /**
-     * @param mixed $adapter
-     */
-    public function setAdapter($adapter)
-    {
-        $this->adapter = $adapter;
-    }
-
-    public function BindAdapter()
-    {
+        //TODO use $provider
 
         if (isset($this->aws["use"]) && $this->aws["use"]) {
             return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
@@ -67,8 +38,15 @@ class StorageManager
             return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
         }
         return new Adapter_Local($this->local, $this->preview, $this->doctrine);
-
     }
 
+    /**
+     * Choose a provider in the available providers
+     */
+    public function getOneProvider(){
+        //TODO search one $provider
+
+        return null;
+    }
 
 }

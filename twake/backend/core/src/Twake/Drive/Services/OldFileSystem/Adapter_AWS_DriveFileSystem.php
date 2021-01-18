@@ -12,12 +12,16 @@ class Adapter_AWS_DriveFileSystem
 
     public function __construct(App $app)
     {
+        $this->configure($app, $app->getContainer()->getParameter("storage.S3"));
+    }
 
-        $aws_config = $app->getContainer()->getParameter("storage.S3");
+    public function configure(App $app, $config){
+        $aws_config = $config;
+        $s3_config = $aws_config;
+
         $this->root = $this->local = $app->getAppRootDir();
         $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
 
-        $s3_config = $aws_config;
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";

@@ -10,13 +10,14 @@ use Aws\S3\S3Client;
 class AWS_Uploader extends Uploader
 {
 
-
     public function __construct(App $app)
     {
-
-        $s3_config = $app->getContainer()->getParameter("storage.S3");
-
         parent::__construct($app);
+        $this->configure($app, $app->getContainer()->getParameter("storage.S3"));
+    }
+
+    public function configure(App $app, $config){
+        $s3_config = $config;
 
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];

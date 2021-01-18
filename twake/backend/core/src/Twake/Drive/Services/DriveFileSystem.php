@@ -19,6 +19,7 @@ class DriveFileSystem
         $this->ws = $app->getServices()->get("app.websockets");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->attachementManager = new AttachementManager($this->em, $this->ws);
+        $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
     }
 
     function setDriveResumable($drive_resumable)
@@ -723,6 +724,7 @@ class DriveFileSystem
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
             $last_version = new DriveFileVersion($fileordirectory, $current_user);
+            $last_version->setProvider($this->storagemanager->getOneProvider());
         }
 
         $last_version->setData(isset($upload_data["data"]) ? $upload_data["data"] : Array());
