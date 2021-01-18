@@ -10,6 +10,7 @@ import Notifications from 'services/user/notifications';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
+import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
@@ -131,7 +132,6 @@ class Login extends Observable {
       console.error(err);
       external_login_result = false;
     }
-    console.log(external_login_result);
     if (external_login_result) {
       if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
@@ -151,7 +151,13 @@ class Login extends Observable {
       this.notify();
     }
 
-    this.updateUser();
+    if (InitService.server_infos?.auth?.internal) {
+      //We can thrust the JWT
+      this.updateUser();
+    } else {
+      //Check I am connected with external sign-in provider
+      this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    }
   }
 
   updateUser(callback) {
