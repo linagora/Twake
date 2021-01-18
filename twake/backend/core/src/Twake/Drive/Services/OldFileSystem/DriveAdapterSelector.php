@@ -9,7 +9,7 @@ class DriveAdapterSelector
 
     public function __construct(App $app)
     {
-        $services = $this->getApp()->getServices();
+        $services = $app->getServices();
         $this->app = $app;
         $this->aws = $app->getContainer()->getParameter("storage.S3");
         $this->openstack = $app->getContainer()->getParameter("storage.openstack");
