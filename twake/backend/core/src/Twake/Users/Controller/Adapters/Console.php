@@ -76,6 +76,14 @@ class Console extends BaseController
 
         $this->get("app.user")->logout($request);
 
+        if($request->query->get("mobile", "")){
+            //We store the mobile session
+            if (!isset($_SESSION)) {
+                @session_start();
+            }
+            $_SESSION["mobile"] = true;
+        }
+
         try {
             $oidc = new OpenIDConnectClient(
                 $this->getParameter("defaults.auth.console.openid.provider_uri"),
@@ -113,7 +121,8 @@ class Console extends BaseController
                 }
 
                 if ($userTokens) {
-                    return $this->closeIframe("success", $userTokens);
+                    return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
+                    . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
                 }else{
                     return $this->logout($request, ["error" => "No user profile created"]);
                 }
@@ -129,6 +138,20 @@ class Console extends BaseController
 
         return $this->logout($request, ["error" => "An unknown error occurred"]);
 
+    }
+
+    function redirectToApp(Request $request){
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
+        if($_SESSION["mobile"]){
+            return new Response("", 200);
+        }else{
+            return $this->closeIframe("success", [
+                "token" => $request->query->get("token"),
+                "username" => $request->query->get("username")
+            ]);
+        }
     }
 
     private function closeIframe($message, $userTokens=null)

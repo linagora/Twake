@@ -120,11 +120,14 @@ export default class CreateWorkspacePage extends Component {
   }
   next() {
     if (this.state.page >= 2) {
-      WorkspaceService.createWorkspace(
-        this.state.name,
-        this.state.members,
-        GroupService.currentGroupId,
-      );
+      if (!this.did_create_workspace) {
+        this.did_create_workspace = true;
+        WorkspaceService.createWorkspace(
+          this.state.name,
+          this.state.members,
+          GroupService.currentGroupId,
+        );
+      }
     } else {
       this.setState({ page: this.state.page + 1 });
     }
