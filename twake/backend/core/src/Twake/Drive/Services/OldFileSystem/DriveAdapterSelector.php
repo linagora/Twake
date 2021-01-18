@@ -21,14 +21,16 @@ class DriveAdapterSelector
         if(!$provider){
             $provider = $this->storagemanager->getOneProvider();
         }
-        //TODO use $provider
+        $configuration = $this->storagemanager->getProviderConfiguration($provider);
     
-        if (isset($this->aws["use"]) && $this->aws["use"]) {
+        if ($configuration["type"] === "S3") {
             $this->aws_file_system = $this->app->getServices()->get("app.drive.old.AWS_FileSystem");
+            $this->aws_file_system->configure($this->app, $configuration);
             return $this->aws_file_system;
         }
-        if (isset($this->openstack["use"]) && $this->openstack["use"]) {
+        if ($configuration["type"] === "openstack") {
             $this->openstack_file_system = $this->app->getServices()->get("app.drive.old.OpenStack_FileSystem");
+            $this->openstack_file_system->configure($this->app, $configuration);
             return $this->openstack_file_system;
         }
 
