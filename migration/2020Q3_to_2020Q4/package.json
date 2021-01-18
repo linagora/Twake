@@ -9,6 +9,8 @@
   "author": "Twake",
   "license": "ISC",
   "dependencies": {
-    "cassandra-driver": "^4.6.1"
+    "cassandra-driver": "^4.6.1",
+    "config": "^3.3.3",
+    "node-config": "^0.0.2"
   }
 }
