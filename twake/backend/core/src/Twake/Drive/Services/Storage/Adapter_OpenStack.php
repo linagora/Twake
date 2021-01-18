@@ -198,7 +198,9 @@ class Adapter_OpenStack implements AdapterInterface
     {
 
         if($this->disable_encryption){
-            return $chunkFile;
+            $pathTemp = $chunkFile . ".encrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
         }
 
         $key = $param_bag->getKey();
@@ -270,7 +272,9 @@ class Adapter_OpenStack implements AdapterInterface
     protected function decode($chunkFile, $param_bag)
     {
         if($this->disable_encryption){
-            return $chunkFile;
+            $pathTemp = $chunkFile . ".decrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
         }
 
         $key = $param_bag->getKey();
