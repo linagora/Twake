@@ -19,6 +19,7 @@ class Adapter_AWS implements AdapterInterface
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
         $this->aws_credentials_key = $s3_config["credentials"]["key"];
         $this->aws_credentials_secret = $s3_config["credentials"]["secret"];
+        $this->disable_encryption = $s3_config["disable_encryption"] ?: false;
 
         $region = false;
         foreach ($this->aws_buckets ? $this->aws_buckets : [] as $region_code => $aws_region) {
@@ -138,13 +139,20 @@ class Adapter_AWS implements AdapterInterface
 
         try {
 
-            $object = $this->aws_s3_client->getObject([
+            $options = [
                 'Bucket' => $this->aws_bucket_name,
-                'Key' => $file_path,
-                'SSECustomerAlgorithm' => 'AES256',
-                'SSECustomerKey' => $key,
-                'SSECustomerKeyMD5' => md5($key, true)
-            ]);
+                'Key' => $file_path
+            ];
+
+            if(!$this->disable_encryption){
+                $options = array_merge($options, [
+                    'SSECustomerAlgorithm' => 'AES256',
+                    'SSECustomerKey' => $key,
+                    'SSECustomerKeyMD5' => md5($key, true)
+                ]);
+            }
+
+            $object = $this->aws_s3_client->getObject($options);
 
             if ($destination == "stream") {
                 echo $object["Body"];
@@ -180,11 +188,16 @@ class Adapter_AWS implements AdapterInterface
                 'Bucket' => $this->aws_bucket_name,
                 'Key' => $file_path,
                 'Body' => fopen($chunkFile, 'r'),
-                'ACL' => 'private',
-                'SSECustomerAlgorithm' => 'AES256',
-                'SSECustomerKey' => $key,
-                'SSECustomerKeyMD5' => md5($key, true)
+                'ACL' => 'private'
             ];
+
+            if(!$this->disable_encryption){
+                $data = array_merge($data, [
+                    'SSECustomerAlgorithm' => 'AES256',
+                    'SSECustomerKey' => $key,
+                    'SSECustomerKeyMD5' => md5($key, true)
+                ]);
+            }
 
             // Upload data.
             $result = $this->aws_s3_client->putObject($data);
