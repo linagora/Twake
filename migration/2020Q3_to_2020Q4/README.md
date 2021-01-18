@@ -6,7 +6,94 @@ To execute this script please start by configuring it, you'll need your encrypti
 
 Then run 'yarn start' (TODO: replace by a docker execution)
 
-## Migration doc:
+## How to migrate from 2020.Q3 (or earlier) to 2020.Q4 ?
+
+### Step 1 - Do a backup of your data !!!
+
+TODO
+
+### Step 2 - Update docker-compose and get last changes
+
+TODO
+
+- Replace docker-compose.yml with new one from Q4
+
+- Pull images
+
+- Set the environment variables
+
+### Step 3 - Update configuration
+
+#### Add new configuration for node backend and JWT
+
+Add this in root configuration of Parameters.php
+
+```
+"jwt" => [
+    "secret" => "supersecret",
+    "expiration" => 60*60, //1 hour
+    "refresh_expiration" => 60*60*24*31 //1 month
+],
+"node" => [
+    "api" => "http://node:3000/private/",
+    "secret" => "api_supersecret"
+],
+```
+
+#### Storage update
+
+Now we provide a multi-buckets feature that allows our users to defined multiple buckets and loadbalance files between them. A bucket can also be defined as readonly if it is no longer needed.
+
+```
+"storage" => [
+    "drive_previews_tmp_folder" => "/tmp/",
+    "drive_tmp_folder" => "/tmp/",
+    "drive_salt" => "SecretPassword",
+    "S3" => [
+        "use" => false
+        ...
+    ],
+    "openstack" => [
+        "use" => true
+        ...
+    ],
+    "local" => [
+        "use" => false
+        ...
+    ]
+```
+
+becomes
+
+```
+"storage" => [
+    "providers" => [
+        [
+        "label" => "someawss3",
+        "type" => "S3",
+        "use" => false
+        ...
+        ],
+        [
+        "label" => "someopenstack",
+        "type" => "openstack",
+        "use" => true,
+        ...
+        ],
+        [
+        "label" => "somelocal",
+        "type" => "local",
+        "use" => false
+        ...
+        ]
+    ]
+```
+
+### Step 2 - Migrate database to new format
+
+... Execute this script (TODO)
+
+## Database migration developer details:
 
 ### 1 - Global view
 
