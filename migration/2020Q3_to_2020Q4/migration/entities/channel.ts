@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { Entity } from "../services/db/orm/decorators";
+import { Column, Entity } from "../services/db/orm/decorators";
 import { ChannelMember } from "./channel-member";
 
 @Entity("channels", {
@@ -9,43 +9,49 @@ import { ChannelMember } from "./channel-member";
 export class Channel {
   // uuid-v4
   @Type(() => String)
+  @Column("company_id", "uuid")
   company_id: string;
 
   @Type(() => String)
+  @Column("workspace_id", "plainstring")
   workspace_id: string;
 
   @Type(() => String)
+  @Column("id", "uuid")
   id: string;
 
+  @Column("name", "string")
   name: string;
 
+  @Column("icon", "string")
   icon: string;
 
+  @Column("description", "string")
   description: string;
 
+  @Column("channel_group", "string")
   channel_group: string;
 
+  @Column("visibility", "string")
   visibility: string;
 
+  @Column("is_default", "uuid")
   is_default: boolean;
 
+  @Column("archived", "boolean")
   archived: boolean;
 
+  @Column("archivation_date", "number")
   archivation_date: number;
 
   // uuid
   @Type(() => String)
+  @Column("owner", "uuid")
   owner: string;
 
+  @Column("members", "json")
   members: string[] = [];
 
+  @Column("connectors", "json")
   connectors: string[] = []; //list of app-ids
-}
-
-export class UserChannel extends Channel {
-  user_member: ChannelMember;
-}
-
-export class UserDirectChannel extends UserChannel {
-  direct_channel_members: string[];
 }

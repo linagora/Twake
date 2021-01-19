@@ -8,22 +8,22 @@ import { Entity, Column } from "../services/db/orm/decorators";
 export class ChannelTab {
   // uuid-v4
   @Type(() => String)
-  @Column("company_id", "string", { generator: "uuid" })
+  @Column("company_id", "plainstring", { generator: "uuid" })
   company_id: string;
 
   // "uuid-v4" | "direct"
   @Type(() => String)
-  @Column("workspace_id", "string", { generator: "uuid" })
+  @Column("workspace_id", "plainstring", { generator: "uuid" })
   workspace_id: string;
 
   // uuid-v4
   @Type(() => String)
-  @Column("channel_id", "string", { generator: "uuid" })
+  @Column("channel_id", "plainstring", { generator: "uuid" })
   channel_id: string;
 
   // uuid-v4
   @Type(() => String)
-  @Column("id", "string", { generator: "uuid" })
+  @Column("id", "plainstring", { generator: "uuid" })
   id: string;
 
   @Column("name", "string")

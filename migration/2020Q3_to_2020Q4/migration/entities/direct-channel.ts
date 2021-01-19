@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { Column, Entity } from "../services/db/orm/decorators";
 
 /**
  * Direct Channel information.
@@ -14,6 +15,7 @@ export class DirectChannel {
    * uuid-v4
    */
   @Type(() => String)
+  @Column("company_id", "uuid")
   company_id: string;
 
   /**
@@ -21,11 +23,13 @@ export class DirectChannel {
    * uuid-v4
    */
   @Type(() => String)
+  @Column("channel_id", "plainstring")
   channel_id: string;
 
   /**
    * CSV list of ordered user ids
    */
+  @Column("users", "plainstring")
   users: string;
 
   static getUsersAsString(users: string[] = []): string {
