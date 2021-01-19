@@ -3,7 +3,6 @@ import cassandra from "cassandra-driver";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
 import { UpsertOptions } from "..";
-import { logger } from "../../../../../../framework";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { EntityDefinition, ColumnDefinition, ObjectType } from "../../types";
 import { AbstractConnector } from "../abstract-connector";
@@ -60,7 +59,7 @@ export class CassandraConnector extends AbstractConnector<
     try {
       await this.createKeyspace();
     } catch (err) {
-      logger.warn("Keyspace can not be created", err);
+      console.log("Keyspace can not be created", err);
     }
 
     if (this.options.wait) {
@@ -106,16 +105,16 @@ export class CassandraConnector extends AbstractConnector<
           errors.pipe(
             delayWhen((_, i) => timer(i * delay)),
             //delay(1000), if we want fixed delay
-            tap(() => logger.debug("Retrying...")),
+            tap(() => console.log("Retrying...")),
             take(retries),
             concat(throwError("Maximum number of retries reached"))
           )
         )
       )
       .subscribe(
-        () => logger.debug("Keyspace has been found"),
+        () => console.log("Keyspace has been found"),
         (err) => {
-          logger.error({ err }, "Error while getting keyspace information");
+          console.log({ err }, "Error while getting keyspace information");
           subject.error(new Error("Can not find keyspace information"));
         },
         () => subject.complete()
@@ -130,7 +129,7 @@ export class CassandraConnector extends AbstractConnector<
         `DROP KEYSPACE IF EXISTS ${this.options.keyspace};`
       );
     } catch (err) {
-      logger.error({ err }, "Error while dropping keyspace");
+      console.log({ err }, "Error while dropping keyspace");
     }
 
     return this;
@@ -189,7 +188,7 @@ export class CassandraConnector extends AbstractConnector<
     const primaryKey = entity.options.primaryKey || [];
 
     if (primaryKey.length === 0) {
-      logger.error("Primary key was not defined for table " + entity.name);
+      console.log("Primary key was not defined for table " + entity.name);
       return false;
     }
 
@@ -204,7 +203,7 @@ export class CassandraConnector extends AbstractConnector<
         (key) => columns[key] === undefined
       )
     ) {
-      logger.error(
+      console.log(
         "One primary key item doesn't exists in entity columns for table " +
           entity.name
       );
@@ -241,7 +240,7 @@ export class CassandraConnector extends AbstractConnector<
     // --- Alter table if not up to date --- //
     const existingColumns = await this.getTableDefinition(entity.name);
     if (existingColumns.length > 0) {
-      logger.debug(
+      console.log(
         `Existing columns for table ${entity.name}, generating altertable queries`
       );
       const alterQueryColumns = Object.keys(columns)
@@ -258,12 +257,12 @@ export class CassandraConnector extends AbstractConnector<
 
     // --- Write table --- //
     try {
-      logger.debug(
+      console.log(
         `service.database.orm.createTable - Creating table ${entity.name} : ${query}`
       );
       await this.client.execute(query);
     } catch (err) {
-      logger.warn(
+      console.log(
         { err },
         `service.database.orm.createTable - creation error for table ${entity.name} : ${err.message}`
       );
@@ -335,7 +334,7 @@ export class CassandraConnector extends AbstractConnector<
             .join(", ")}) VALUES (${where.map((e) => e[1]).join(", ")})`;
         }
 
-        logger.debug(`service.database.orm.upsert - Query: "${query}"`);
+        console.log(`service.database.orm.upsert - Query: "${query}"`);
 
         promises.push(
           new Promise((resolve) => {
@@ -424,7 +423,7 @@ export class CassandraConnector extends AbstractConnector<
       }
     );
 
-    logger.debug(`services.database.orm.cassandra - ${query}`);
+    console.log(`services.database.orm.cassandra - ${query}`);
 
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),
@@ -469,16 +468,16 @@ export function waitForTable(
         errors.pipe(
           delayWhen((_, i) => timer(i * delay)),
           //delay(1000),
-          tap(() => logger.debug("Retrying to get table metadata...")),
+          tap(() => console.log("Retrying to get table metadata...")),
           take(retries),
           concat(throwError("Maximum number of retries reached"))
         )
       )
     )
     .subscribe(
-      () => logger.debug(`Table ${table} has been found`),
+      () => console.log(`Table ${table} has been found`),
       (err) => {
-        logger.debug(`Table ${table} error: ${err.message}`);
+        console.log(`Table ${table} error: ${err.message}`);
         subject.error(new Error("Can not find table"));
       },
       () => subject.complete()
@@ -499,13 +498,13 @@ async function checkForTable(
 
     const tableMetadata = result.rows[0];
 
-    logger.debug("Table metadata %o", tableMetadata);
+    console.log("Table metadata %o", tableMetadata);
 
     if (!tableMetadata) {
       throw new Error("Can not find table metadata");
     }
   } catch (err) {
-    logger.error({ err }, "Error while getting table metadata");
+    console.log({ err }, "Error while getting table metadata");
     throw new Error("Error while getting table metadata");
   }
 }

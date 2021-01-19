@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Data migration from 2020Q3 to 2020Q4",
   "scripts": {
-    "start": "node start.js",
+    "start": "tsc && node start.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Twake",
@@ -14,6 +14,10 @@
     "cassandra-driver": "^4.6.1",
     "config": "^3.3.3",
     "lodash": "^4.17.20",
-    "node-config": "^0.0.2"
+    "mongodb": "^3.6.3",
+    "node-config": "^0.0.2",
+    "rxjs": "^6.6.3",
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.1.3"
   }
 }

@@ -3,7 +3,7 @@ const config = require("config");
 
 const configuration = {
   db: config.get("db"),
-  encryption: config.get("enryption"),
+  encryption: config.get("encryption"),
 };
 
 console.log(configuration);

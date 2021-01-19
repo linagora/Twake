@@ -1,4 +1,3 @@
-import { logger } from "../../../../../../../core/platform/framework";
 import { ListResult, Pagination } from "../../crud-service";
 import { Connector } from "../connectors";
 import Manager from "../manager";
@@ -87,7 +86,7 @@ export default class Repository<EntityType> {
   }
 
   async saveAll(entities: EntityType[] = []): Promise<void> {
-    logger.debug("services.database.repository - Saving entities");
+    console.log("services.database.repository - Saving entities");
 
     entities.forEach((entity) => this.manager.persist(entity));
     await (await this.manager.flush()).reset();
