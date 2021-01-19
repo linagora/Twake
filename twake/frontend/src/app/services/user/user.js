@@ -88,10 +88,13 @@ class User {
         ) {
           let in_scope = true;
           if (scope === 'workspace') {
-            in_scope = (user.workspaces_id || []).indexOf(options.workspace_id) >= 0;
+            in_scope =
+              (user.workspaces_id || []).indexOf(options.workspace_id) >= 0 ||
+              !user.workspaces_id?.length;
           }
           if (scope === 'group') {
-            in_scope = (user.groups_id || []).indexOf(options.group_id) >= 0;
+            in_scope =
+              (user.groups_id || []).indexOf(options.group_id) >= 0 || !user.groups_id?.length;
           }
           if (in_scope) {
             res.push(user);
@@ -103,6 +106,10 @@ class User {
       });
 
     callback(res);
+
+    if (res.length > 5) {
+      return;
+    }
 
     //Then search on server
     if (noHttp || query.length < 2 || (this.old_search_query || '').startsWith(query)) {
