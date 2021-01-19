@@ -14,13 +14,14 @@ use App\App;
 class OpenStack_Uploader extends Uploader
 {
 
-
     public function __construct(App $app)
     {
-
-        $openstack_config = $app->getContainer()->getParameter("storage.openstack");
-
         parent::__construct($app);
+        $this->configure($app, $app->getContainer()->getParameter("storage.openstack"));
+    }
+
+    public function configure(App $app, $config){
+        $openstack_config = $config;
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = $openstack_config["buckets_prefix"];

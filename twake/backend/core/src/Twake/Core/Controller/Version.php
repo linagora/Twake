@@ -37,6 +37,9 @@ class Version extends BaseController
         if ($this->getParameter("defaults.auth.console.use")) {
             $auth["console"] = [
               "use" => true,
+              "account_management_url" => $this->getParameter("defaults.auth.console.redirections.account_management_url"),
+              "company_management_url" => $this->getParameter("defaults.auth.console.redirections.company_management_url"),
+              "collaborators_management_url" => $this->getParameter("defaults.auth.console.redirections.collaborators_management_url"),
             ];
         }
 
@@ -45,7 +48,7 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
-            "help_link" => "https://community.twake.app"
+            "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161"
         );
 
         if ($this->container->hasParameter("defaults.branding")) {

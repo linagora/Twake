@@ -12,35 +12,21 @@ import {
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../../api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { TwakeContext } from "../../../../core/platform/framework";
-import { NotificationPubsubService } from "./pubsub";
+import { logger } from "../../../../core/platform/framework";
 
 const TYPE = "channel_members_notification_preferences";
 
 export class ChannelMemberPreferencesService implements ChannelMemberPreferencesServiceAPI {
   version: "1";
   repository: Repository<ChannelMemberNotificationPreference>;
-  pubsub: NotificationPubsubService;
 
   constructor(private database: DatabaseServiceAPI) {}
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.repository = await this.database.getRepository<ChannelMemberNotificationPreference>(
       TYPE,
       ChannelMemberNotificationPreference,
     );
-    await this.subscribe(context);
-
-    return this;
-  }
-
-  async subscribe(context: TwakeContext): Promise<this> {
-    if (!context) {
-      return;
-    }
-
-    this.pubsub = new NotificationPubsubService(this);
-    this.pubsub.subscribe(context.getProvider("pubsub"));
 
     return this;
   }
@@ -92,7 +78,72 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
       "channel_id" | "company_id"
     >,
     users: string[] = [],
+    lastRead: {
+      lessThan: number;
+    },
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    return this.repository.find({ ...channelAndCompany, ...{ user_id: users } });
+    logger.debug(
+      `ChannelMemberPreferenceService - Get Channel preferences for users ${JSON.stringify(
+        users,
+      )} with lastRead < ${lastRead?.lessThan}`,
+    );
+    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
+
+    if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
+      result.filterEntities(entity => {
+        return entity.last_read < lastRead.lessThan;
+      });
+    }
+
+    logger.debug(
+      `ChannelMemberPreferenceService - Result ${JSON.stringify(
+        result.getEntities().map(preference => preference.user_id),
+      )}`,
+    );
+
+    return result;
+  }
+
+  async getChannelPreferencesForUsersFilteredByReadTime(
+    channelAndCompany: Pick<
+      ChannelMemberNotificationPreferencePrimaryKey,
+      "channel_id" | "company_id"
+    >,
+    users: string[] = [],
+    lastRead: number,
+  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
+    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
+
+    if (result.getEntities().length > 0 && lastRead) {
+      result.filterEntities(entity => {
+        return entity.last_read < lastRead;
+      });
+    }
+
+    return result;
+  }
+
+  async updateLastRead(
+    channelAndCompany: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+    user_id: string,
+    lastRead: number,
+  ): Promise<ChannelMemberNotificationPreference> {
+    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
+      user_id,
+      company_id: channelAndCompany.company_id,
+      channel_id: channelAndCompany.channel_id,
+    };
+
+    const preference = await this.repository.findOne(pk);
+
+    if (!preference) {
+      return;
+    }
+
+    preference.last_read = lastRead;
+
+    await this.repository.save(preference);
+
+    return preference;
   }
 }

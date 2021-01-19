@@ -1,4 +1,4 @@
-import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted, logger } from "../../../../core/platform/framework";
 import {
   DeleteResult,
   Pagination,
@@ -8,9 +8,9 @@ import {
   OperationType,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { MemberService } from "../../provider";
+import ChannelServiceAPI, { MemberService } from "../../provider";
 
-import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { Channel as ChannelEntity, ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { Channel, User } from "../../../../services/types";
 import { cloneDeep, isNil, omitBy } from "lodash";
@@ -18,7 +18,6 @@ import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
-import { isDirectChannel } from "../../utils";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
   PubsubParameter,
@@ -28,7 +27,7 @@ import {
 export class Service implements MemberService {
   version: "1";
 
-  constructor(private service: MemberService) {}
+  constructor(private service: MemberService, private channelService: ChannelServiceAPI) {}
 
   async init(): Promise<this> {
     try {
@@ -66,19 +65,28 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
+    const channel = await this.channelService.channels.get(context.channel);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel does not exists");
+    }
+
     const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
     const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
+
+    logger.debug(`MemberService.save - ${mode} member %o`, memberToUpdate);
 
     if (mode === OperationType.UPDATE) {
       const isCurrentUser = this.isCurrentUser(memberToUpdate, context.user);
 
       if (!isCurrentUser) {
-        throw CrudExeption.badRequest("Channel member can not be updated");
+        throw CrudExeption.badRequest(`Channel member ${member.user_id} can not be updated`);
       }
 
       const updatableParameters: Partial<Record<keyof ChannelMember, boolean>> = {
         notification_level: isCurrentUser,
         favorite: isCurrentUser,
+        last_access: isCurrentUser,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
@@ -86,7 +94,7 @@ export class Service implements MemberService {
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest("Nothing to update");
+        throw CrudExeption.badRequest(`Nothing to update for member ${member.user_id}`);
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
@@ -105,14 +113,38 @@ export class Service implements MemberService {
       const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
       this.onUpdated(context.channel, memberToSave, updateResult);
     } else {
-      const saveResult = await this.service.save(member, options, context);
-      this.onCreated(context.channel, member, saveResult);
+      const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
+      const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
+      const isPublicChannel = ChannelEntity.isPublicChannel(channel);
+      const isDirectChannel = ChannelEntity.isDirectChannel(channel);
+      const userIsDefinedInChannelUserList = (channel.members || []).includes(
+        String(member.user_id),
+      );
+      const isChannelCreator = context.user && channel.owner === context.user.id;
+
+      // 1. Private channel: user can not join private channel by themself when it is private
+      // only member can add other users in channel
+      // 2. The channel creator check is only here on channel creation
+      if (
+        isChannelCreator ||
+        (isPrivateChannel && currentUserIsMember) ||
+        isPublicChannel ||
+        (isDirectChannel && userIsDefinedInChannelUserList)
+      ) {
+        const saveResult = await this.service.save(member, options, context);
+        this.onCreated(context.channel, member, saveResult);
+      } else {
+        throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
+      }
     }
 
     return new SaveResult<ChannelMember>("channel_member", member, mode);
   }
 
-  async get(pk: ChannelMemberPrimaryKey, context: ChannelExecutionContext): Promise<ChannelMember> {
+  async get(
+    pk: ChannelMemberPrimaryKey,
+    context?: ChannelExecutionContext,
+  ): Promise<ChannelMember> {
     // FIXME: Who can fetch a single member?
     return await this.service.get(this.getPrimaryKey(pk), context);
   }
@@ -139,6 +171,11 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
     const memberToDelete = await this.service.get(pk, context);
+    const channel = await this.channelService.channels.get(context.channel);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel does not exists");
+    }
 
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");
@@ -146,6 +183,14 @@ export class Service implements MemberService {
 
     if (!this.isCurrentUser(memberToDelete, context.user)) {
       throw CrudExeption.badRequest("User does not have rights to remove member");
+    }
+
+    if (ChannelEntity.isPrivateChannel(channel)) {
+      const canLeave = await this.canLeavePrivateChannel(context.user, channel);
+
+      if (!canLeave) {
+        throw CrudExeption.badRequest("User can not leave the private channel");
+      }
     }
 
     const result = await this.service.delete(pk, context);
@@ -169,6 +214,17 @@ export class Service implements MemberService {
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
     return this.service.listUserChannels(user, pagination, context);
+  }
+
+  /**
+   * Can leave only if the number of members is > 1
+   * since counting rows in DB takes too much time
+   * we query a list for 2 members without offset and check the length
+   */
+  async canLeavePrivateChannel(user: User, channel: ChannelEntity): Promise<boolean> {
+    const list = this.list(new Pagination(undefined, "2"), {}, { channel, user });
+
+    return (await list).getEntities().length > 1;
   }
 
   @PubsubPublish("channel:member:updated")
@@ -207,6 +263,19 @@ export class Service implements MemberService {
 
   isCurrentUser(member: ChannelMember, user: User): boolean {
     return member.user_id === user.id;
+  }
+
+  isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {
+    if (!user) {
+      return;
+    }
+
+    return this.get({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      workspace_id: channel.workspace_id,
+      user_id: user.id,
+    });
   }
 
   getPrimaryKey(

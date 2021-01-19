@@ -120,20 +120,29 @@ class User
             //Find allowed username / email
             $counter = 1;
             $original_username = $username;
+            $ok = false;
+            $mailUsedError = false;
             do {
                 $res = $this->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
-                        return false;
+                        $mailUsedError = true;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                    }else{
+                        $ok = true;
                     }
+                }else{
+                    $ok = true;
                 }
                 $counter++;
-            } while (!$res);
+            } while (!$ok);
+            if($mailUsedError){
+                return false;
+            }
 
             $user = new \Twake\Users\Entity\User();
             $user->setSalt(bin2hex(random_bytes(40)));

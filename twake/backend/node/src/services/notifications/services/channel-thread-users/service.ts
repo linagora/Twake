@@ -4,7 +4,11 @@ import {
   SaveResult,
   OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelThreadUsers, ChannelThreadUsersPrimaryKey } from "../../entities";
+import {
+  ChannelThreadUsers,
+  ChannelThreadUsersPrimaryKey,
+  ChannelThreadUsersType,
+} from "../../entities";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ChannelThreadUsersServiceAPI } from "../../api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -17,7 +21,7 @@ export class ChannelThreadUsersService implements ChannelThreadUsersServiceAPI {
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository<ChannelThreadUsers>(
-      ChannelThreadUsers.TYPE,
+      ChannelThreadUsersType,
       ChannelThreadUsers,
     );
 
@@ -27,7 +31,7 @@ export class ChannelThreadUsersService implements ChannelThreadUsersServiceAPI {
   async bulkSave(entities: ChannelThreadUsers[]): Promise<SaveResult<ChannelThreadUsers[]>> {
     await this.repository.saveAll(entities);
 
-    return new SaveResult(ChannelThreadUsers.TYPE, entities, OperationType.CREATE);
+    return new SaveResult(ChannelThreadUsersType, entities, OperationType.CREATE);
   }
 
   async get(pk: ChannelThreadUsersPrimaryKey): Promise<ChannelThreadUsers> {
@@ -37,7 +41,7 @@ export class ChannelThreadUsersService implements ChannelThreadUsersServiceAPI {
   async delete(pk: ChannelThreadUsersPrimaryKey): Promise<DeleteResult<ChannelThreadUsers>> {
     await this.repository.remove(pk as ChannelThreadUsers);
 
-    return new DeleteResult(ChannelThreadUsers.TYPE, pk as ChannelThreadUsers, true);
+    return new DeleteResult(ChannelThreadUsersType, pk as ChannelThreadUsers, true);
   }
 
   list(): Promise<ListResult<ChannelThreadUsers>> {

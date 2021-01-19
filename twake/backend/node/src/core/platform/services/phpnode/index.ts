@@ -1,15 +1,22 @@
 import { FastifyRequest, RouteHandlerMethod } from "fastify";
 import { FastifyInstance } from "fastify/types/instance";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { ChannelMemberCrudController } from "../../../../services/channels/web/controllers";
-import { ChannelMemberParameters } from "../../../../services/channels/web/types";
+import {
+  ChannelCrudController,
+  ChannelMemberCrudController,
+} from "../../../../services/channels/web/controllers";
+import {
+  ChannelMemberParameters,
+  ChannelParameters,
+  CreateChannelBody,
+} from "../../../../services/channels/web/types";
 import ChannelServiceAPI from "../../../../services/channels/provider";
 import { Consumes, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
 
-@Consumes(["webserver", "websocket", "channels"])
+@Consumes(["webserver", "websocket"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
   name = "phpnode";
   version = "1";
@@ -59,10 +66,14 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
     });
   }
 
+  async doStart(): Promise<this> {
+    this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
+    return this;
+  }
+
   async doInit(): Promise<this> {
     this.server = this.context.getProvider<WebServerAPI>("webserver").getServer();
     this.ws = this.context.getProvider<WebSocketAPI>("websocket");
-    this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
 
     /**
      * Register private calls from php for websockets
@@ -86,8 +97,37 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
       method: "GET",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/:id/members/:member_id/exists",
       handler: (request: FastifyRequest<{ Params: ChannelMemberParameters }>, reply) => {
+        if (!this.channels) {
+          reply.code(500).send(); //Server is not ready
+          return;
+        }
         const membersController = new ChannelMemberCrudController(this.channels.members);
         membersController.exists(request, reply);
+      },
+    });
+
+    /**
+     * Register private calls from php channels
+     */
+    this.register({
+      method: "POST",
+      url: "/companies/:company_id/workspaces/:workspace_id/channels/defaultchannel",
+      handler: (
+        request: FastifyRequest<{ Body: CreateChannelBody; Params: ChannelParameters }>,
+        reply,
+      ) => {
+        if (!this.channels) {
+          reply.code(500).send(); //Server is not ready
+          return;
+        }
+        const channelsController = new ChannelCrudController(
+          this.channels.channels,
+          this.channels.members,
+        );
+        request.currentUser = {
+          id: (request.body as any).user_id,
+        };
+        channelsController.save(request, reply);
       },
     });
 

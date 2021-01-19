@@ -93,9 +93,6 @@ END;
 
     public function verifyMail($mail)
     {
-        if (strpos($mail, "@yopmail") > 0 || strpos($mail, "@mailinator") > 0) {
-            return false;
-        }
         return preg_match("/^[A-Za-z0-9.\-_]{1,250}@[A-Za-z0-9.\-_]{2,250}\.[A-Za-z0-9]{2,16}$/", $mail);
     }
 

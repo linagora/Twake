@@ -27,10 +27,10 @@ class ApplyUpdates
     
     function updateCompany($companyDTO){
 
-        $companyConsoleId = $companyDTO["company_id"];
+        $companyConsoleCode = $companyDTO["company"]["details"]["code"];
 
         $extRepository = $this->em->getRepository("Twake\Workspaces:ExternalGroupRepository");
-        $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleId));
+        $company_link = $extRepository->findOneBy(Array("service_id" => "console", "external_id" => $companyConsoleCode));
 
         $company = null;
         if ($company_link) {
@@ -45,7 +45,7 @@ class ApplyUpdates
             $this->em->persist($company);
             $this->em->flush();
 
-            $company_link = new ExternalGroupRepository("console", $companyConsoleId, $company->getId());
+            $company_link = new ExternalGroupRepository("console", $companyConsoleCode, $company->getId());
             $this->em->persist($company_link);
         }
 
@@ -53,7 +53,7 @@ class ApplyUpdates
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
 
         // Format is {name: "string", limits: {}}
-        $company->setPlan($companyDTO["plan"]);
+        $company->setPlan($companyDTO["company"]["plan"]);
 
         $logo = $companyDTO["company"]["details"]["logo"];
         if ($logo) {
@@ -78,7 +78,7 @@ class ApplyUpdates
 
     }
     
-    function removeCompany($companyId){
+    function removeCompany($companyConsoleCode){
         //Not implemented
         error_log("not implemented");
         return false;
@@ -88,6 +88,7 @@ class ApplyUpdates
      * Take a user from api and save it into PHP
      */
     function updateUser($userDTO){
+        error_log("updateUser with params: ". json_encode([$userDTO]));
 
         $roles = $userDTO["roles"];
 
@@ -112,20 +113,29 @@ class ApplyUpdates
             //Find allowed username / email
             $counter = 1;
             $original_username = $username;
+            $ok = false;
+            $mailUsedError = false;
             do {
                 $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
-                        return false;
+                        $mailUsedError = true;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                    }else{
+                        $ok = true;
                     }
+                }else{
+                    $ok = true;
                 }
                 $counter++;
-            } while (!$res);
+            } while (!$ok);
+            if($mailUsedError){
+                return false;
+            }
 
             $user = new \Twake\Users\Entity\User();
             $user->setSalt(bin2hex(random_bytes(40)));
@@ -171,11 +181,11 @@ class ApplyUpdates
         //TODO websocket update
 
         foreach($roles as $role){
-            $companyConsoleId = $role["company"]["_id"];
+            $companyConsoleCode = $role["targetCode"];
             $level = $role["roleCode"];
             //Double check we created this user in external users repo
-            if($companyConsoleId && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
-                (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleId, $userDTO);
+            if($companyConsoleCode && $this->user_service->getUserFromExternalRepository("console", $userConsoleId)){
+                (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleCode, $userDTO);
             }
         }
 
@@ -189,6 +199,7 @@ class ApplyUpdates
      * status: "active",
      */
     function addUser($userTwakeEntity, $companyTwakeEntity, $roleDTO){
+        error_log("addUser with params: ". json_encode([$userTwakeEntity, $companyTwakeEntity, $roleDTO]));
 
         if($roleDTO["status"] !== "active"){
             return $this->removeUser($userTwakeEntity, $companyTwakeEntity);
@@ -212,11 +223,17 @@ class ApplyUpdates
         // Check if company has any workspace, if not, create a workspace and invite user in it
 
         $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
-        $existingWorkspace = $workspacesRepository->findOneBy(Array("group" => $companyTwakeEntity));
+        $existingWorkspace = $workspacesRepository->findBy(Array("group" => $companyTwakeEntity));
 
-        if(!$existingWorkspace){
-            error_log(json_encode($companyTwakeEntity->getAsArray()));
-            $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId());
+        if(count($existingWorkspace) < 1){
+            $this->app->getServices()->get("app.workspaces")->create($companyTwakeEntity->getDisplayName(), $companyTwakeEntity->getId(), $userTwakeEntity->getId(), true);
+        }else{
+            foreach($existingWorkspace as $workspace){
+                if($workspace->getIsDefault() || count($existingWorkspace) == 1){
+                    //Add user in this workspace
+                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, false, null);
+                }
+            }
         }
 
         return true;
@@ -224,6 +241,7 @@ class ApplyUpdates
     }
     
     function removeUser($userTwakeEntity, $companyTwakeEntity){
+        error_log("removeUser with params: ". json_encode([$userTwakeEntity, $companyTwakeEntity]));
         $companyUserRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
         $companyUserEntity = $companyUserRepository->findOneBy(Array("group" => $companyTwakeEntity, "user" => $userTwakeEntity));
         

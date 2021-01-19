@@ -14,26 +14,40 @@ import _ from 'lodash';
 export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
+  query: any;
 } & any;
 
 export type ServerRequestOptions = {
   query: any;
   waitServerReply: boolean;
+  refresh: true;
 };
+
+export type ActionOptions = {
+  onResourceId: string;
+} & GeneralOptions;
 
 export type CollectionOptions = {
   tag?: string;
+  queryParameters?: any;
+  idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
+  reloadStrategy?: 'ontime' | 'delayed' | 'none';
 };
 
 export default class Collection<G extends Resource<any>> {
-  private resources: { [id: string]: G } = {};
   protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
   protected transport: CollectionTransport<G> = new CollectionTransport(this);
   protected completion: FindCompletion<G> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
+    reloadStrategy: 'delayed',
+    queryParameters: {},
   };
+
+  //App state
+  private reloadRegistered = 0;
+  private resources: { [id: string]: G } = {};
 
   constructor(
     private readonly path: string = '',
@@ -41,7 +55,7 @@ export default class Collection<G extends Resource<any>> {
     options?: CollectionOptions,
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
-    this.options = _.assign(this.options, options);
+    this.setOptions(options || {});
   }
 
   public getPath() {
@@ -52,12 +66,16 @@ export default class Collection<G extends Resource<any>> {
     return this.options;
   }
 
+  public setOptions(options: CollectionOptions) {
+    this.options = _.assign(this.options, options);
+  }
+
   public getTag() {
     return this.path.split('::')[1] || '';
   }
 
   public getRestPath() {
-    return this.path.split('::')[0] || '';
+    return (this.path.split('::')[0] || '').split('?')[0];
   }
 
   public getTransport() {
@@ -78,8 +96,8 @@ export default class Collection<G extends Resource<any>> {
   /**
    * Run an action on the backend (POST on `${this.path}/actionName`)
    */
-  public async action(actionName: string, object: any, options?: GeneralOptions): Promise<any> {
-    return {};
+  public async action(actionName: string, object: any, options?: ActionOptions): Promise<any> {
+    return await this.transport.action(actionName, object, options);
   }
 
   /**
@@ -149,13 +167,18 @@ export default class Collection<G extends Resource<any>> {
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
    */
-  public async find(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G[]> {
+  public async find(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<G[]> {
+    options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     let mongoItems = await Storage.find(this.getPath(), filter, options);
 
     if (typeof filter === 'string' || filter?.id) {
       return [await this.findOne(filter, options)];
     }
 
+    await this.completion.wait();
     this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
       if (mongoItems.length > 0) {
         mongoItems.forEach(mongoItem => {
@@ -177,20 +200,26 @@ export default class Collection<G extends Resource<any>> {
    * Find a specific document
    * This will call backend if we don't find this document in frontend.
    */
-  public async findOne(filter?: any, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
+  public async findOne(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<G> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
 
     await this.completion.wait();
 
+    options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     let mongoItem = await Storage.findOne(this.getPath(), filter, options);
 
     if (!mongoItem) {
+      await this.completion.wait();
       this.completion.completeFindOne(filter, options).then(async mongoItem => {
         if (mongoItem) {
           this.eventEmitter.notify();
         }
+        await this.completion.unlock();
       });
     }
 
@@ -198,6 +227,23 @@ export default class Collection<G extends Resource<any>> {
       this.updateLocalResource(mongoItem);
     }
     return mongoItem ? this.resources[mongoItem.id] : mongoItem;
+  }
+
+  /**
+   * Reload collection after socket was disconnected
+   */
+  public async reload() {
+    if (new Date().getTime() - this.reloadRegistered < 1000) {
+      return;
+    }
+    this.reloadRegistered = new Date().getTime();
+    if (this.options.reloadStrategy === 'delayed') {
+      setTimeout(() => {
+        this.find({}, { refresh: true });
+      }, 1000 + 15000 * Math.random());
+    } else if (this.options.reloadStrategy === 'ontime') {
+      await this.find({}, { refresh: true });
+    }
   }
 
   private updateLocalResource(mongoItem: any, item?: G) {
@@ -211,6 +257,7 @@ export default class Collection<G extends Resource<any>> {
           item.setUpToDate(false);
         }
       }
+      item.setCollection(this);
       item.data = _.assign(mongoItem, item.data);
       this.resources[mongoItem.id] = item;
     }

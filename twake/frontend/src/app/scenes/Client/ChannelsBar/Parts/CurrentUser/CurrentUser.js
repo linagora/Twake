@@ -19,6 +19,7 @@ import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateC
 import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Button from 'components/Buttons/Button.js';
+import InitService from 'app/services/InitService';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -153,7 +154,14 @@ export default class CurrentUser extends Component {
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
         icon: 'cog',
         onClick: () => {
-          popupManager.open(<UserParameter />);
+          if (InitService.server_infos?.auth?.console?.use) {
+            return window.open(
+              InitService.server_infos?.auth?.console?.account_management_url,
+              '_blank',
+            );
+          } else {
+            popupManager.open(<UserParameter />);
+          }
         },
       },
       { type: 'separator' },
@@ -257,19 +265,20 @@ export default class CurrentUser extends Component {
         },
       });
     }
-    usermenu.push({
-      type: 'menu',
-      text: Languages.t(
-        'scenes.app.channelsbar.currentuser.create_company_page',
-        [],
-        'Créer une entreprise',
-      ),
-      icon: 'plus',
-      onClick: () => {
-        popupManager.open(<CreateCompanyView />);
-      },
-    });
-
+    if (!InitService.server_infos?.auth?.console?.use) {
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.create_company_page',
+          [],
+          'Créer une entreprise',
+        ),
+        icon: 'plus',
+        onClick: () => {
+          popupManager.open(<CreateCompanyView />);
+        },
+      });
+    }
     usermenu = usermenu.concat([
       { type: 'separator' },
       {

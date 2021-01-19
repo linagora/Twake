@@ -8,6 +8,8 @@ import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
+import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
+import InitService from 'app/services/InitService';
 
 export default class Members extends React.Component {
   render() {
@@ -18,7 +20,11 @@ export default class Members extends React.Component {
           onAdd={
             workspaceUserRightsService.hasWorkspacePrivilege() &&
             (() => {
-              popupManager.open(<AddUser standalone />);
+              if (InitService.server_infos?.auth?.console?.use) {
+                return popupManager.open(<AddUserFromTwakeConsole standalone />);
+              } else {
+                return popupManager.open(<AddUser standalone />);
+              }
             })
           }
           addText={Languages.t(
@@ -99,7 +105,7 @@ export default class Members extends React.Component {
                       }}
                     />
                     <div className="fix_text_padding_medium text-complete-width">
-                      {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
+                      {UserService.getFullName(col.user)} {col.user.email}
                     </div>
 
                     <div className="fix_text_padding_medium">{tags}</div>

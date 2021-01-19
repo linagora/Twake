@@ -43,6 +43,39 @@ export interface ChannelService
    * Get a direct channel in company for given company id and set of users
    */
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel>;
+
+  /**
+   * Get all the direct channels in a company for the given user
+   *
+   * @param companyId
+   * @param userId
+   */
+  getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]>;
+
+  /**
+   * Mark the channel as read for the given user
+   *
+   * @param channel
+   * @param user
+   */
+  markAsRead(
+    channel: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean>;
+
+  /**
+   * Mark the channel as unread
+   *
+   * @param channel
+   * @param user
+   * @param context
+   */
+  markAsUnread(
+    channel: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean>;
 }
 export interface MemberService
   extends TwakeServiceProvider,
@@ -53,6 +86,11 @@ export interface MemberService
     pagination: Pagination,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>>;
+
+  /**
+   * Check if user is channel member
+   */
+  isChannelMember(user: User, channel: Channel): Promise<ChannelMember>;
 }
 
 export interface TabService

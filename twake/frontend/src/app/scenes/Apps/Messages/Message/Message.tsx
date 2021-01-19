@@ -34,6 +34,7 @@ type Props = {
   noBlock?: boolean;
   repliesAsLink?: boolean;
   unreadAfter?: number;
+  threadHeader?: string;
 };
 
 export default class MessageComponent extends Component<Props, { render: boolean }> {
@@ -148,9 +149,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
     const message = this.message;
 
     if (message?.hidden_data?.type === 'init_channel') {
-      if (!this.state.render) {
-        return <div ref={this.setDomElement} />;
-      }
       return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
     }
 
@@ -190,6 +188,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
           >
             <MessageContent
               key={message?._last_modified || message?.front_id}
+              threadHeader={this.props.threadHeader}
               linkToThread={linkToThread}
               message={message}
               collectionKey={this.props.collectionKey}

@@ -5,7 +5,7 @@ import Icon from 'components/Icon/Icon.js';
 import './ObjectModal.scss';
 
 type PropsType = {
-  title?: string;
+  title?: string | JSX.Element;
   closable?: boolean;
   children?: React.Component | JSX.Element | any;
   footer?: React.Component | JSX.Element | any;

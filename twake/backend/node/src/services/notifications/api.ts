@@ -14,12 +14,13 @@ import {
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
+import { NotificationEngine } from "./services/engine";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
   channelPreferences: ChannelMemberPreferencesServiceAPI;
   channelThreads: ChannelThreadUsersServiceAPI;
-  engine: NotificationEngineAPI;
+  engine: NotificationEngine;
 }
 
 export interface UserNotificationBadgeServiceAPI
@@ -29,7 +30,30 @@ export interface UserNotificationBadgeServiceAPI
       UserNotificationBadge,
       UserNotificationBadgePrimaryKey,
       NotificationExecutionContext
-    > {}
+    > {
+  /**
+   * List badges for user in a company. The filter allows to get the badges per workspace/channel/thread when they are defined
+   * @param company
+   * @param user
+   * @param filter
+   */
+  listForUser(
+    company_id: string,
+    user_id: string,
+    filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
+  ): Promise<ListResult<UserNotificationBadge>>;
+
+  /**
+   * Remove all the badges in channel for user
+   * @param
+   */
+  removeUserChannelBadges(
+    filter: Pick<
+      UserNotificationBadgePrimaryKey,
+      "workspace_id" | "company_id" | "channel_id" | "user_id"
+    >,
+  ): Promise<number>;
+}
 
 export interface ChannelMemberPreferencesServiceAPI
   extends TwakeServiceProvider,
@@ -48,7 +72,23 @@ export interface ChannelMemberPreferencesServiceAPI
   getChannelPreferencesForUsers(
     channel: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
     users?: string[],
+    lastRead?: {
+      lessThan: number;
+    },
   ): Promise<ListResult<ChannelMemberNotificationPreference>>;
+
+  /**
+   * Update the last read value for given user/channel. Will not create the preference if not exists
+   *
+   * @param channel
+   * @param user
+   * @param lastRead
+   */
+  updateLastRead(
+    channel: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+    user: string,
+    lastRead: number,
+  ): Promise<ChannelMemberNotificationPreference>;
 }
 
 export interface ChannelThreadUsersServiceAPI
@@ -71,16 +111,7 @@ export interface ChannelThreadUsersServiceAPI
 }
 
 /**
- * The notification engine processes various types of messages in order to create user notifications.
- * Notifications are then published in notification transport to the clients.
- */
-export interface NotificationEngineAPI extends Initializable {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register(handler: NotificationPubsubHandler<any, any>): void;
-}
-
-/**
- * A notification hander is in charge of processing a notification from the pubsub layer and then produces something to be consumed by another handler somewhere in the platform.
+ * A notification hander is in charge of processing a notification from the pubsub layer and then optionally produces something to be consumed by another handler somewhere in the platform.
  */
 export interface NotificationPubsubHandler<InputMessage, OutputMessage>
   extends PubsubHandler<InputMessage, OutputMessage> {

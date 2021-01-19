@@ -6,10 +6,11 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
-import Notifications from 'services/user/notifications.js';
+import Notifications from 'services/user/notifications';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
+import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
@@ -131,7 +132,6 @@ class Login extends Observable {
       console.error(err);
       external_login_result = false;
     }
-    console.log(external_login_result);
     if (external_login_result) {
       if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
@@ -151,7 +151,13 @@ class Login extends Observable {
       this.notify();
     }
 
-    this.updateUser();
+    if (InitService.server_infos?.auth?.internal) {
+      //We can thrust the JWT
+      this.updateUser();
+    } else {
+      //Check I am connected with external sign-in provider
+      this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    }
   }
 
   updateUser(callback) {
@@ -250,9 +256,9 @@ class Login extends Observable {
       Api.post(
         'users/login',
         {
-          _username: username,
-          _password: password,
-          _remember_me: rememberme,
+          username: username,
+          password: password,
+          remember_me: rememberme,
           device: device,
         },
         function (res) {
@@ -290,33 +296,25 @@ class Login extends Observable {
 
     document.body.classList.add('fade_out');
 
-    Globals.getDevice(device => {
-      var that = this;
-      Api.post(
-        'users/logout',
-        {
-          device: device,
-        },
-        function () {
-          if (identity_provider === 'console') {
-            var location = Api.route('users/console/openid/logout');
-            Globals.window.location = location;
-          } else if (identity_provider === 'openid') {
-            var location = Api.route('users/openid/logout');
-            Globals.window.location = location;
-          } else if (identity_provider === 'cas') {
-            var location = Api.route('users/cas/logout');
-            Globals.window.location = location;
-          } else {
-            if (!no_reload) {
-              Globals.window.location.reload();
-            }
-          }
+    Api.post('users/logout', {}, function () {
+      if (identity_provider === 'console') {
+        var location = Api.route('users/console/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'openid') {
+        var location = Api.route('users/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'cas') {
+        var location = Api.route('users/cas/logout');
+        Globals.window.location = location;
+      } else {
+        if (!no_reload) {
+          Globals.window.location.reload();
+        } else {
           RouterServices.history.push(
             RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
           );
-        },
-      );
+        }
+      }
     });
   }
 

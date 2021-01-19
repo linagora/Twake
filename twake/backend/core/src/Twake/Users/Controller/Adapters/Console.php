@@ -20,7 +20,9 @@ class Console extends BaseController
         }
 
         $handler = new Hooks($this->app);
-        return $handler->handle($request);
+        $res = $handler->handle($request);
+        error_log(json_encode($res->getContent()));
+        return $res;
     }
 
     
@@ -34,7 +36,8 @@ class Console extends BaseController
         }catch(\Exception $err){
           $message = "success";
         }
-        return $this->closeIframe($message);
+
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login");
     }
 
     function logout(Request $request, $message = null)
@@ -47,7 +50,7 @@ class Console extends BaseController
         $this->get("app.user")->logout($request);
 
         $logout_parameter = $this->getParameter("defaults.auth.console.openid.logout_query_parameter_key") ?: "post_logout_redirect_uri";
-        $logout_url_suffix = $this->getParameter("defaults.auth.console.openid.logout_suffix") ?: "/logout";
+        $logout_url_suffix = $this->getParameter("defaults.auth.console.openid.logout_suffix") ?: "/oauth2/logout";
 
         $logout_redirect_url = rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid/logout_success";
 
@@ -73,6 +76,14 @@ class Console extends BaseController
 
         $this->get("app.user")->logout($request);
 
+        if($request->query->get("mobile", "")){
+            //We store the mobile session
+            if (!isset($_SESSION)) {
+                @session_start();
+            }
+            $_SESSION["mobile"] = true;
+        }
+
         try {
             $oidc = new OpenIDConnectClient(
                 $this->getParameter("defaults.auth.console.openid.provider_uri"),
@@ -85,8 +96,7 @@ class Console extends BaseController
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
 
-            $oidc->addScope(array('openid'));
-
+            $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone'));
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true
@@ -97,7 +107,7 @@ class Console extends BaseController
             }
             if ($authentificated) {
 
-                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/idToken?idToken=" . $oidc->getIdToken();
+                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/profile";
                 $header = "Authorization: Bearer " . $oidc->getAccessToken();
                 $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
                 $response = json_decode($response->getContent(), 1);
@@ -111,7 +121,8 @@ class Console extends BaseController
                 }
 
                 if ($userTokens) {
-                    return $this->closeIframe("success", $userTokens);
+                    return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
+                    . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
                 }else{
                     return $this->logout($request, ["error" => "No user profile created"]);
                 }
@@ -129,9 +140,24 @@ class Console extends BaseController
 
     }
 
+    function redirectToApp(Request $request){
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
+        if($_SESSION["mobile"]){
+            return new Response("", 200);
+        }else{
+            return $this->closeIframe("success", [
+                "token" => $request->query->get("token"),
+                "username" => $request->query->get("username")
+            ]);
+        }
+    }
+
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
+        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/")
+            . "/?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
     private function isServiceEnabled(){

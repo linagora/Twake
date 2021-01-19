@@ -1,64 +1,68 @@
 import { isDirectChannel } from "../../../../../channels/utils";
 import { logger } from "../../../../../../core/platform/framework";
-import { MessageNotification, MessageNotificationResult } from "../../../../../messages/types";
+import { MessageNotification } from "../../../../../messages/types";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { ChannelMemberNotificationPreference, ChannelThreadUsers } from "../../../../entities";
+import {
+  ChannelMemberNotificationPreference,
+  ChannelThreadUsers,
+  getChannelThreadUsersInstance,
+} from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
+import { MentionNotification } from "../../../../types";
 
 export class NewChannelMessageProcessor
-  implements NotificationPubsubHandler<MessageNotification, MessageNotificationResult> {
+  implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
   constructor(readonly service: NotificationServiceAPI) {}
 
-  topics: {
-    in: "message:created";
-    out: "message:created:response";
+  readonly topics = {
+    in: "message:created",
+    out: "notification:mentions",
   };
 
-  name: "NewChannelMessageProcessor";
+  readonly name = "NewChannelMessageProcessor";
 
-  async process(message: MessageNotification): Promise<MessageNotificationResult> {
+  validate(message: MessageNotification): boolean {
+    return !!(message && message.channel_id && message.company_id && message.workspace_id);
+  }
+
+  async process(message: MessageNotification): Promise<MentionNotification> {
     logger.info(
-      `Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+      `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
-
-    if (!message.channel_id || !message.company_id || !message.workspace_id) {
-      throw new Error("Missing required fields");
-    }
+    logger.debug(`${this.name} - Notification message ${JSON.stringify(message)}`);
 
     try {
       const usersToNotify = await this.getUsersToNotify(message);
 
       if (!usersToNotify?.length) {
         logger.info(
-          `No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+          `${this.name} - No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
         );
 
         return;
       }
 
       logger.info(
-        `Users to notify for message ${message.thread_id}/${message.id} in channel ${
+        `${this.name} - Users to notify for message ${message.thread_id}/${message.id} in channel ${
           message.channel_id
-        } : ${usersToNotify.join("/")}`,
+        } : ['${usersToNotify.join("', '")}']`,
       );
 
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
-        id: message.id,
-        sender: message.sender,
+        message_id: message.id,
         thread_id: message.thread_id,
         workspace_id: message.workspace_id,
+        creation_date: message.creation_date,
         mentions: {
           users: usersToNotify || [],
         },
-      } as MessageNotificationResult;
-
-      // TODO: Publish into pubsub.
+      } as MentionNotification;
     } catch (err) {
       logger.error(
         { err },
-        `Error while gettings users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
+        `${this.name} - Error while gettings users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
       );
     }
   }
@@ -66,79 +70,114 @@ export class NewChannelMessageProcessor
   async getUsersToNotify(message: MessageNotification): Promise<string[]> {
     let channelPreferencesForUsers: ChannelMemberNotificationPreference[];
     const threadId = message.thread_id || message.id;
-    const isNewThread = !!message.thread_id;
+    const isNewThread = !message.thread_id;
     const isDirect = isDirectChannel({ workspace_id: message.workspace_id });
     const isAllOrHereMention = this.isAllOrHereMention(message);
 
     const users: ChannelThreadUsers[] = [
+      // message sender is a user in the thread
       ...[
-        {
+        getChannelThreadUsersInstance({
           company_id: message.company_id,
           channel_id: message.channel_id,
           thread_id: threadId,
           user_id: message.sender,
-        },
+        }),
       ],
+
+      // mentionned users are users in the thread
       ...(message?.mentions?.users?.length
-        ? message.mentions.users.map(user_id => ({
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-            thread_id: threadId,
-            user_id,
-          }))
+        ? message.mentions.users.map(user_id =>
+            getChannelThreadUsersInstance({
+              company_id: message.company_id,
+              channel_id: message.channel_id,
+              thread_id: threadId,
+              user_id,
+            }),
+          )
         : []),
     ];
 
     await this.service.channelThreads.bulkSave(users);
 
     if (isNewThread || isDirect || isAllOrHereMention) {
+      //get the channel level preferences
       channelPreferencesForUsers = (
         await this.service.channelPreferences.getChannelPreferencesForUsers({
           company_id: message.company_id,
           channel_id: message.channel_id,
         })
       ).getEntities();
-    } else {
-      channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences({
-        channel_id: message.channel_id,
-        company_id: message.company_id,
-        thread_id: threadId,
-      });
+
+      return this.filterMembersToNotify(message, channelPreferencesForUsers).map(m => m.user_id);
     }
 
-    return this.filterMembersToNotify(message, channelPreferencesForUsers).map(m => m.user_id);
+    // get the preferences of the users involved in the thread
+    channelPreferencesForUsers = await this.getAllInvolvedUsersPreferences({
+      channel_id: message.channel_id,
+      company_id: message.company_id,
+      thread_id: threadId,
+    });
+
+    return this.filterThreadMembersToNotify(message, channelPreferencesForUsers).map(
+      m => m.user_id,
+    );
   }
 
   protected filterMembersToNotify(
     message: MessageNotification,
     membersPreferences: ChannelMemberNotificationPreference[],
   ): ChannelMemberNotificationPreference[] {
+    logger.debug(`${this.name} - Filter members ${JSON.stringify(membersPreferences)}`);
     const isAllOrHere = this.isAllOrHereMention(message);
+    return (
+      membersPreferences
+        // 1. Remove the ones which does not want any notification (preference === NONE)
+        .filter(preference => preference.preferences !== ChannelMemberNotificationLevel.NONE)
+        //2. Remove the sender
+        .filter(preference => String(preference.user_id) !== String(message.sender))
+        // 3. Filter based on truth table based on user preferences and current message
+        .filter(memberPreference => {
+          const userIsMentionned = this.userIsMentionned(memberPreference.user_id, message);
 
-    // 1. Remove the ones which does not want any notification (preference === NONE)
-    const result = membersPreferences.filter(
-      preference => preference.preferences !== ChannelMemberNotificationLevel.NONE,
+          const truthTable = [
+            // all
+            memberPreference.preferences === ChannelMemberNotificationLevel.ALL,
+            // mentions
+            memberPreference.preferences === ChannelMemberNotificationLevel.MENTIONS &&
+              (isAllOrHere || userIsMentionned),
+            // me
+            memberPreference.preferences === ChannelMemberNotificationLevel.ME && userIsMentionned,
+          ];
+
+          logger.debug(
+            `${this.name} - ${
+              memberPreference.user_id
+            } truth table [all, mentions, me] : ${JSON.stringify(truthTable)}`,
+          );
+
+          return truthTable.includes(true);
+        })
     );
+  }
 
-    // 2. Filter based on truth table based on user preferences and current message
-    return result.filter(memberPreference => {
-      const userIsMentionned = this.userIsMentionned(memberPreference.user_id, message);
-      const truthTable = [
-        // all
-        memberPreference.preferences === ChannelMemberNotificationLevel.ALL,
-        // mentions
-        memberPreference.preferences === ChannelMemberNotificationLevel.MENTIONS &&
-          (isAllOrHere || userIsMentionned),
-        // me
-        memberPreference.preferences === ChannelMemberNotificationLevel.ME && userIsMentionned,
-      ];
-
-      return truthTable.includes(true);
-    });
+  protected filterThreadMembersToNotify(
+    message: MessageNotification,
+    membersPreferences: ChannelMemberNotificationPreference[],
+  ): ChannelMemberNotificationPreference[] {
+    logger.debug(`${this.name} - Filter thread members ${JSON.stringify(membersPreferences)}`);
+    return (
+      membersPreferences
+        // 1. Remove the ones which does not want any notification (preference === NONE)
+        .filter(preference => preference.preferences !== ChannelMemberNotificationLevel.NONE)
+        //2. Remove the sender
+        .filter(preference => String(preference.user_id) !== String(message.sender))
+    );
   }
 
   /**
    * When message is a response in a thread, get all the users involved in the thread
+   * ie the ones who where initially mentionned, mentionned in children messages, and the ones who replied
    */
   protected async getAllInvolvedUsersPreferences(thread: {
     company_id: string;
@@ -161,11 +200,14 @@ export class NewChannelMessageProcessor
     return (
       message.mentions &&
       message.mentions.specials &&
-      (message.mentions.specials.includes("all") || message.mentions.specials.includes("here"))
+      (message.mentions.specials.includes("all") ||
+        message.mentions.specials.includes("here") ||
+        message.mentions.specials.includes("channel") ||
+        message.mentions.specials.includes("everyone"))
     );
   }
 
   private userIsMentionned(user: string, message: MessageNotification) {
-    return message?.mentions?.users?.includes(user);
+    return message?.mentions?.users?.includes(String(user));
   }
 }

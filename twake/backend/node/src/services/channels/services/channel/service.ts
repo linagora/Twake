@@ -14,12 +14,17 @@ import {
   OperationType,
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelPrimaryKey, MemberService } from "../../provider";
+import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
 import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
-import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import {
+  ChannelType,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+  ChannelSystemExecutionContext,
+} from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
 import { User } from "../../../../services/types";
 import { pick } from "../../../../utils/pick";
@@ -28,13 +33,31 @@ import { DirectChannel } from "../../entities/direct-channel";
 import { ChannelListOptions, ChannelSaveOptions } from "../../web/types";
 import { isDirectChannel } from "../../utils";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import { ChannelActivity } from "../../entities/channel-activity";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import {
+  PubsubPublish,
+  PubsubParameter,
+} from "../../../../core/platform/services/pubsub/decorators/publish";
+import _ from "lodash";
 
 export class Service implements ChannelService {
   version: "1";
+  activityRepository: Repository<ChannelActivity>;
 
-  constructor(private service: ChannelService, private members: MemberService) {}
+  constructor(
+    private service: ChannelService,
+    private channelService: ChannelServiceAPI,
+    private database: DatabaseServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
+    this.activityRepository = await this.database.getRepository(
+      "channel_activity",
+      ChannelActivity,
+    );
+
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
@@ -59,10 +82,11 @@ export class Service implements ChannelService {
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
-    const isDirectChannel = channel.workspace_id === ChannelVisibility.DIRECT;
+    const isDirectChannel = Channel.isDirectChannel(channel);
 
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
+      channel.workspace_id = ChannelVisibility.DIRECT;
     }
 
     if (mode === OperationType.UPDATE) {
@@ -120,8 +144,8 @@ export class Service implements ChannelService {
         );
 
         if (directChannel) {
-          logger.info("Direct channel already exists");
-          const existingChannel = await this.get(
+          logger.debug("Direct channel already exists %o", directChannel);
+          const existingChannel = await this.service.get(
             {
               company_id: context.workspace.company_id,
               id: directChannel.channel_id,
@@ -181,7 +205,7 @@ export class Service implements ChannelService {
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Channel>> {
-    const channelToDelete = await this.get(this.getPrimaryKey(pk), context);
+    const channelToDelete = await this.service.get(this.getPrimaryKey(pk), context);
 
     if (!channelToDelete) {
       throw new CrudExeption("Channel not found", 404);
@@ -205,24 +229,84 @@ export class Service implements ChannelService {
     return result;
   }
 
+  @RealtimeUpdated<ChannelActivity>((channelActivity, context) => {
+    return [
+      {
+        room: ResourcePath.get(
+          getRoomName(channelActivity.getChannelPrimaryKey(), context as WorkspaceExecutionContext),
+        ),
+        path: getChannelPath(
+          channelActivity.getChannelPrimaryKey(),
+          context as WorkspaceExecutionContext,
+        ),
+        resource: {
+          company_id: channelActivity.company_id,
+          workspace_id: channelActivity.workspace_id,
+          id: channelActivity.channel_id,
+          last_activity: channelActivity.last_activity,
+        },
+      },
+    ];
+  })
+  async updateLastActivity(
+    options: ChannelPrimaryKey,
+    context: ChannelSystemExecutionContext,
+  ): Promise<UpdateResult<ChannelActivity>> {
+    const channel = await this.service.get(
+      options,
+      _.pick(context, "workspace") as WorkspaceExecutionContext,
+    );
+
+    const entity = new ChannelActivity();
+    entity.channel_id = options.id;
+    entity.company_id = options.company_id;
+    entity.workspace_id = options.workspace_id;
+    entity.last_activity = new Date().getTime();
+
+    entity.channel = channel;
+
+    await this.activityRepository.save(entity);
+    return new UpdateResult<ChannelActivity>("channel_activity", entity);
+  }
+
   async list(
     pagination: Pagination,
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
     const isDirectWorkspace = isDirectChannel(context.workspace);
+    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
 
     if (options?.mine || isDirectWorkspace) {
-      const userChannels = await this.members.listUserChannels(context.user, pagination, context);
+      const userChannels = await this.channelService.members.listUserChannels(
+        context.user,
+        pagination,
+        context,
+      );
 
       options.channels = userChannels.getEntities().map(channelMember => channelMember.channel_id);
 
       const result = await this.service.list(pagination, options, context);
 
+      const activityPerChannel: { [channelId: string]: ChannelActivity } = {};
+      await Promise.all(
+        result.getEntities().map(async channel => {
+          activityPerChannel[channel.id] = await this.activityRepository.findOne({
+            channel_id: channel.id,
+            company_id: channel.company_id,
+            workspace_id: channel.workspace_id,
+          });
+        }),
+      );
+
       result.mapEntities(<UserChannel>(channel: Channel) => {
         const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
 
-        return ({ ...channel, ...{ user_member: userChannel } } as unknown) as UserChannel;
+        return ({
+          ...channel,
+          ...{ user_member: userChannel },
+          last_activity: activityPerChannel[channel.id]?.last_activity || 0,
+        } as unknown) as UserChannel;
       });
 
       if (isDirectWorkspace) {
@@ -239,7 +323,15 @@ export class Service implements ChannelService {
       return result;
     }
 
-    return this.service.list(pagination, options, context);
+    const result = await this.service.list(pagination, options, context);
+
+    result.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
+
+    if (!isWorkspaceAdmin) {
+      result.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
+    }
+
+    return result;
   }
 
   createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
@@ -252,6 +344,67 @@ export class Service implements ChannelService {
 
   getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel> {
     return this.service.getDirectChannelInCompany(companyId, users);
+  }
+
+  getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]> {
+    return this.service.getDirectChannelsForUsersInCompany(companyId, userId);
+  }
+
+  async markAsRead(
+    pk: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean> {
+    const now = Date.now();
+    const channel = await this.get(pk, context);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    const member = await this.channelService.members.isChannelMember(user, channel);
+
+    if (!member) {
+      throw CrudExeption.badRequest("User is not channel member");
+    }
+
+    // Updating the member will also publish a message in the pubsub channel
+    // This message will be handled in the notification service and will update the notification preferences for the member
+    // cf this.members.onUpdated
+    member.last_access = now;
+    const updatedMember = (
+      await this.channelService.members.save(member, null, {
+        channel,
+        user,
+      })
+    ).entity;
+
+    this.onRead(channel, updatedMember);
+
+    return true;
+  }
+
+  async markAsUnread(
+    pk: ChannelPrimaryKey,
+    user: User,
+    context: WorkspaceExecutionContext,
+  ): Promise<boolean> {
+    const channel = await this.get(pk, context);
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    const member = await this.channelService.members.isChannelMember(user, channel);
+
+    if (!member) {
+      throw CrudExeption.badRequest("User is not channel member");
+    }
+
+    // do nothing here but send a notification so that notification service is updated...
+    this.onUnread(channel, member);
+
+    return true;
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
@@ -298,7 +451,11 @@ export class Service implements ChannelService {
 
         await Promise.all(
           members.map(member =>
-            this.members.save(member, {}, { channel: savedChannel, user: context.user }),
+            this.channelService.members.save(
+              member,
+              {},
+              { channel: savedChannel, user: context.user },
+            ),
           ),
         );
       }
@@ -309,7 +466,7 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
-    console.log(`PUSH ${mode}`, pushUpdates);
+    logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
   /**
@@ -319,6 +476,40 @@ export class Service implements ChannelService {
    * @param result The delete result
    */
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
-    console.log("PUSH DELETE ASYNC", channel, result);
+    logger.debug("Channel deleted", channel, result);
+  }
+
+  /**
+   * Called when a channel as been marked as read.
+   * Will publish `channel:read` notification in the pubsub service
+   *
+   * @param channel
+   * @param member
+   */
+  @PubsubPublish("channel:read")
+  onRead(
+    @PubsubParameter("channel")
+    channel: Channel,
+    @PubsubParameter("member")
+    member: ChannelMember,
+  ): void {
+    logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
+  }
+
+  /**
+   * Called when a channel as been marked as unread.
+   * Will publish `channel:unread` notification in the pubsub service
+   *
+   * @param channel
+   * @param member
+   */
+  @PubsubPublish("channel:unread")
+  onUnread(
+    @PubsubParameter("channel")
+    channel: Channel,
+    @PubsubParameter("member")
+    member: ChannelMember,
+  ): void {
+    logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
   }
 }

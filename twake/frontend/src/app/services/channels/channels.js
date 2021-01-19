@@ -6,7 +6,6 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'services/localStorage.js';
-import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import emojione from 'emojione';
 import Number from 'services/utils/Numbers.js';
@@ -14,6 +13,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
 import RouterServices from 'app/services/RouterService';
 import { TabResource } from 'app/models/Tab';
+import { ChannelResource } from 'app/models/Channel';
 
 class Channels extends Observable {
   constructor() {
@@ -50,6 +50,8 @@ class Channels extends Observable {
     });
   }
 
+  readChannelIfNeeded(channel) {}
+
   select(channel, side = false, sideOptions = {}) {
     if (side) {
       if (
@@ -58,7 +60,6 @@ class Channels extends Observable {
         !channel.application
       ) {
         this.readChannelIfNeeded(channel);
-        delete Notifications.marked_as_unread[channel.id];
       }
 
       this.currentSideChannelOptions = sideOptions;
@@ -83,7 +84,6 @@ class Channels extends Observable {
 
       if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
         this.readChannelIfNeeded(channel);
-        delete Notifications.marked_as_unread[channel.id];
       }
 
       if (this.currentChannelFrontId != channel.front_id) {
@@ -118,7 +118,6 @@ class Channels extends Observable {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
     const TabsCollection = Collections.get(collectionPath, TabResource);
     const tab = await TabsCollection.findOne(tabId);
-    console.log(tabId, tab, collectionPath);
     tab.data.configuration = configuration;
     await TabsCollection.upsert(tab);
   }
@@ -138,17 +137,6 @@ class Channels extends Observable {
       return;
     }
     this.old_channel_state[channel.id] = state;
-    Notifications.updateBadge('channel', channel.id, state);
-  }
-
-  readChannelIfNeeded(channel) {
-    if (!channel) {
-      return;
-    }
-    var messages = DepreciatedCollections.get('messages').findBy({ channel_id: channel.id });
-    if (messages.length > 0) {
-      Notifications.read(channel);
-    }
   }
 
   incrementChannel(channel) {
@@ -172,6 +160,11 @@ class Channels extends Observable {
   markFrontAsRead(channel_id, date = undefined) {
     this.channel_front_read_state[channel_id] = date || new Date().getTime() / 1000;
     this.notify();
+  }
+
+  getCollection(companyId, workspaceId) {
+    const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+    return Collections.get(path, ChannelResource);
   }
 }
 

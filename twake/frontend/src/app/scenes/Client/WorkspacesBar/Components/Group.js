@@ -8,9 +8,10 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import Notifications from 'services/user/notifications.js';
-import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch.js';
+import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
+import InitService from 'app/services/InitService';
+import Notifications from 'services/user/notifications';
 
 export default class Group extends Component {
   constructor() {
@@ -23,14 +24,14 @@ export default class Group extends Component {
 
     Groups.addListener(this);
     Collections.get('groups').addListener(this);
-    Notifications.addListener(this);
   }
   componentWillUnmount() {
     Collections.get('groups').removeListener(this);
     Groups.removeListener(this);
-    Notifications.removeListener(this);
   }
   renderGroupInMenu(group) {
+    const notifications = Notifications.store.unreadCompanies[group.id] ? 1 : 0;
+
     return {
       type: 'react-element',
       reactElement: [
@@ -51,11 +52,9 @@ export default class Group extends Component {
             )}
           </div>
           <div className="text">{group.name}</div>
-          {!!(Notifications.notification_by_group[group.id] || {}).count && (
+          {notifications > 0 && (
             <div className="group_notification">
-              <div className={'badge circle'}>
-                {(Notifications.notification_by_group[group.id] || {}).count || 0}
-              </div>
+              <div className={'badge circle'}>{notifications || 0}</div>
             </div>
           )}
         </div>,
@@ -77,31 +76,30 @@ export default class Group extends Component {
     Groups.getOrderedGroups().map(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
-    this.change_group_menu.push({
-      type: 'menu',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.create_company_menu',
-        [],
-        'Créer une entreprise',
-      ),
-      icon: 'plus',
-      onClick: () => {
-        popupManager.open(<CreateCompanyView />);
-      },
-    });
-    this.change_group_menu.push({ type: 'separator' });
-    this.change_group_menu.push({
-      type: 'menu',
-      icon: 'cog',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.grp_parameters',
-        [group.name],
-        'Paramètres de $1',
-      ),
-      onClick: () => {
-        popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');
-      },
-    });
+    if (!InitService.server_infos?.auth?.console?.use) {
+      this.change_group_menu.push({
+        type: 'menu',
+        text: Languages.t('scenes.app.workspacesbar.components.create_company_menu'),
+        icon: 'plus',
+        onClick: () => {
+          popupManager.open(<CreateCompanyView />);
+        },
+      });
+
+      this.change_group_menu.push({ type: 'separator' });
+      this.change_group_menu.push({
+        type: 'menu',
+        icon: 'cog',
+        text: Languages.t(
+          'scenes.app.workspacesbar.components.grp_parameters',
+          [group.name],
+          'Paramètres de $1',
+        ),
+        onClick: () => {
+          popupManager.open(<WorkspaceParameter initial_page={4} />, true, 'workspace_parameters');
+        },
+      });
+    }
 
     var pos = window.getBoundingClientRect(this.node);
     pos.x = pos.x || pos.left;
@@ -115,19 +113,10 @@ export default class Group extends Component {
       return '';
     }
 
-    var notifications = 0;
-
-    Object.keys(Notifications.notification_by_group).forEach(group_id => {
-      if (group_id != this.group.id) {
-        notifications += (Notifications.notification_by_group[group_id] || {}).count || 0;
-      }
-    });
-
     return (
       <GroupSwitch
         refLogo={node => (this.node = node)}
         group={this.group}
-        notifications={notifications || 0}
         onClick={evt => {
           this.openMenu(evt);
         }}

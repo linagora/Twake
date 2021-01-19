@@ -52,7 +52,6 @@ class Parameters extends \Common\Configuration
                         "key" => "",
                         "secret" => ""
                     ]
-
                 ],
                 "rabbitmq" => [
                     "use" => true,
@@ -67,41 +66,53 @@ class Parameters extends \Common\Configuration
               "drive_previews_tmp_folder" => "/tmp/",
               "drive_tmp_folder" => "/tmp/",
               "drive_salt" => "SecretPassword",
-              "openstack" => [
-                  "use" => false,
-                  "project_id" => "",
-                  "auth_url" => "https//auth.cloud.ovh.net/v2.0",
-                  "buckets_prefix" => "",
-                  "buckets" => [
-                      "fr" => [
-                          "public" => "",
-                          "private" => "",
-                          "region" => "SBG5"
-                      ],
-                      "user" => [
-                          "id" => "",
-                          "password" => ""
-                      ]
-                  ],
-              ],
-              "S3" => [
-                  "base_url" => "http//127.0.0.1:9000",
-                  "use" => false,
-                  "version" => "latest",
-                  "buckets_prefix" => "dev.",
-                  "buckets" => [
-                      "fr" => "eu-west-3"
-                  ],
-                  "credentials" => [
-                      "key" => "",
-                      "secret" => ""
-                  ]
-              ],
-              "local" => [
-                  "use" => true,
-                  "location" => "../drive/",
-                  "preview_location" => "../web/medias/",
-                  "preview_public_path" => "/medias/"
+              "providers" => [
+                [
+                    "label" => "someOpenStack",
+                    "type" => "openstack",
+                    "use" => false,
+                    "project_id" => "",
+                    "auth_url" => "https//auth.cloud.ovh.net/v3",
+                    "buckets_prefix" => "",
+                    "disable_encryption" => false,
+                    "buckets" => [
+                        "fr" => [
+                            "public" => "",
+                            "private" => "",
+                            "region" => "SBG5"
+                        ]
+                    ],
+                    "user" => [
+                        "id" => "",
+                        "password" => "",
+                        "domain_name" => "default"
+                    ]
+                ],
+                [
+                    "label" => "someS3",
+                    "type" => "S3",
+                    "base_url" => "http://127.0.0.1:9000",
+                    "use" => false,
+                    "version" => "latest",
+                    "disable_encryption" => false,
+                    "buckets_prefix" => "dev.",
+                    "buckets" => [
+                        "fr" => "eu-west-3"
+                    ],
+                    "credentials" => [
+                        "key" => "",
+                        "secret" => ""
+                    ]
+                ],
+                [
+                    "label" => "someLocal",
+                    "type" => "local",
+                    "use" => true,
+                    "disable_encryption" => false,
+                    "location" => "../drive/",
+                    "preview_location" => "../web/medias/",
+                    "preview_public_path" => "/medias/"
+                ],
               ],
             ],
             "mail" => [
@@ -212,9 +223,15 @@ class Parameters extends \Common\Configuration
                     "use" => true,
                     "provider" => "http://account-twakeconsole.linagora.vn/api/",
                     "public_key" => "",
+                    "secret" => "secret",
                     "credentials" => [
                       "key" => "twake",
                       "secret" => "secret"
+                    ],
+                    "redirections" => [
+                      "account_management_url" => "http://web-twakeconsole.linagora.vn/profile",
+                      "company_management_url" => "http://web-twakeconsole.linagora.vn/company",
+                      "collaborators_management_url" => "http://web-twakeconsole.linagora.vn/company/users",
                     ],
                     //"None" signature is not supported
                     //PKCE not tested but implemented in our lib
@@ -224,6 +241,7 @@ class Parameters extends \Common\Configuration
                       "client_secret" => 'twakesecret',
                       "ignore_mail_verified" => true,
                       "ignore_id_token_verification" => true,
+                      "logout_suffix" => "/oauth2/logout",
                       //"disable_logout_redirect" => false
                       "provider_config" => [
                         "code_challenge_methods_supported" => "",

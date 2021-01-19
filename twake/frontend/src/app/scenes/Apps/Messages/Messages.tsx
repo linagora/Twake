@@ -6,8 +6,8 @@ import ChannelsService from 'services/channels/channels.js';
 import MessagesList from './MessagesList';
 import './Messages.scss';
 import NewThread from './Input/NewThread';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
+import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
 
 type Props = {
   channel: any;
@@ -41,7 +41,20 @@ export default class MainView extends Component<Props> {
   render() {
     const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.data.id];
     return (
-      <div className="messages-view">
+      <div
+        className="messages-view"
+        onClick={() => {
+          //Mark channel as read
+          const messagesListServerService = MessagesListServerServicesManager.get(
+            this.props.channel.company_id,
+            this.props.channel.workspace_id,
+            this.props.channel.id,
+            this.threadId,
+            this.collectionKey,
+          );
+          messagesListServerService.readChannelOrThread();
+        }}
+      >
         <MessagesList
           threadId={this.threadId}
           channel={this.props.channel.data}

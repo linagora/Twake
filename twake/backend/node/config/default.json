@@ -11,6 +11,9 @@
     "realtime",
     "phpnode"
   ],
+  "logger": {
+    "level": "debug"
+  },
   "webserver": {
     "port": 3000,
     "logger": {

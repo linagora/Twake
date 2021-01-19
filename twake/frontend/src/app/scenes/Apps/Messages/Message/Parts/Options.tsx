@@ -23,6 +23,7 @@ type Props = {
   collectionKey: string;
   onOpen?: () => void;
   onClose?: () => void;
+  threadHeader?: string;
 };
 
 export default (props: Props) => {
@@ -186,11 +187,13 @@ export default (props: Props) => {
 
   return (
     <div>
-      <div className="message-options drag" key="drag">
-        <div className="option js-drag-handler-message">
-          <DragIndicator style={{ width: '18px' }} />
+      {!props.threadHeader && (
+        <div className="message-options drag" key="drag">
+          <div className="option js-drag-handler-message">
+            <DragIndicator style={{ width: '18px' }} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="message-options right" key="options">
         <Menu
           className="option"
@@ -217,14 +220,16 @@ export default (props: Props) => {
         >
           <Smile size={16} />
         </Menu>
-        <div
-          className="option"
-          onClick={() => {
-            MessagesService.showMessage(props.message.parent_message_id || props.message.id);
-          }}
-        >
-          <ArrowUpRight size={16} />
-        </div>
+        {!props.threadHeader && (
+          <div
+            className="option"
+            onClick={() => {
+              MessagesService.showMessage(props.message.parent_message_id || props.message.id);
+            }}
+          >
+            <ArrowUpRight size={16} />
+          </div>
+        )}
         {menu.length > 0 && (
           <Menu
             className="option"

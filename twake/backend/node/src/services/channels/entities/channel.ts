@@ -36,6 +36,21 @@ export class Channel {
   members: string[] = [];
 
   connectors: string[] = []; //list of app-ids
+
+  static isPrivateChannel(channel: Channel): boolean {
+    return channel.visibility === ChannelVisibility.PRIVATE;
+  }
+
+  static isPublicChannel(channel: Channel): boolean {
+    return channel.visibility === ChannelVisibility.PUBLIC;
+  }
+
+  static isDirectChannel(channel: Channel): boolean {
+    return (
+      channel.visibility === ChannelVisibility.DIRECT ||
+      channel.workspace_id === ChannelVisibility.DIRECT
+    );
+  }
 }
 
 export class UserChannel extends Channel {

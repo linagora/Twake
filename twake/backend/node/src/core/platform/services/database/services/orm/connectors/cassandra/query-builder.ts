@@ -1,3 +1,4 @@
+import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
 import { getEntityDefinition } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
@@ -5,6 +6,7 @@ import { transformValueToDbString } from "./typeTransforms";
 export function buildSelectQuery<Entity>(
   entityType: ObjectType<Entity>,
   filters: any,
+  findOptions: FindOptions,
   options: {
     keyspace: string;
   } = {
@@ -49,9 +51,40 @@ export function buildSelectQuery<Entity>(
     })
     .filter(Boolean);
 
-  const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} WHERE ${where.join(
-    " AND ",
-  )}`;
+  const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} WHERE ${[
+    ...where,
+    ...(buildComparison(findOptions) || []),
+  ].join(" AND ")}`;
 
   return query;
+}
+
+export function buildComparison(options: FindOptions = {}): string[] {
+  let lessClause;
+  let lessEqualClause;
+  let greaterClause;
+  let greaterEqualClause;
+
+  if (options.$lt) {
+    lessClause = options.$lt.map(element => `${element[0]} < ${element[1]}`);
+  }
+
+  if (options.$lte) {
+    lessEqualClause = options.$lte.map(element => `${element[0]} <= ${element[1]}`);
+  }
+
+  if (options.$gt) {
+    greaterClause = options.$gt.map(element => `${element[0]} > ${element[1]}`);
+  }
+
+  if (options.$gte) {
+    greaterEqualClause = options.$gte.map(element => `${element[0]} >= ${element[1]}`);
+  }
+
+  return [
+    ...(lessClause || []),
+    ...(lessEqualClause || []),
+    ...(greaterClause || []),
+    ...(greaterEqualClause || []),
+  ];
 }

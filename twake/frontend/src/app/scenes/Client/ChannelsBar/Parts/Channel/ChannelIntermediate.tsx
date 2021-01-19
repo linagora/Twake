@@ -5,10 +5,9 @@ import ChannelMenu from './ChannelMenu';
 
 import { ChannelResource, ChannelType, ChannelMemberResource } from 'app/models/Channel';
 
-import RouterServices, { ClientStateType } from 'services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
-import UsersService from 'services/user/user.js';
-import { getUserParts } from 'app/components/Member/UserParts';
+import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { NotificationResource } from 'app/models/Notification';
 
 type Props = {
   channel: ChannelType;
@@ -16,8 +15,6 @@ type Props = {
 };
 
 export default (props: Props): JSX.Element => {
-  const userId: string = UsersService.getCurrentUserId();
-  const { companyId }: ClientStateType = RouterServices.useStateFromRoute();
   const isDirectChannel = props.channel.visibility === 'direct';
 
   const menu = (channel: ChannelResource) => {
@@ -30,16 +27,38 @@ export default (props: Props): JSX.Element => {
     { query: { mine: true } },
   )[0];
 
+  useUsersListener(
+    isDirectChannel ? props.channel.direct_channel_members || props.channel.members || [] : [],
+  );
+
+  const notificationsCollection = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+    {
+      tag: props.channel.company_id + '_thus_tag_should_no_be_needed', //TODO remove this
+      queryParameters: { company_id: props.channel.company_id },
+    },
+  );
+  const notifications = notificationsCollection.useWatcher(
+    { channel_id: props.channel.id },
+    { me: true },
+  );
+
+  (window as any).notificationsCollection = notificationsCollection;
+
   const { avatar, name } = isDirectChannel
     ? getUserParts({
-        usersIds: props.channel.direct_channel_members || [],
+        usersIds: props.channel.direct_channel_members || props.channel.members || [],
       })
     : { avatar: '', name: '' };
 
-  if (!channel || !channel.data.user_member?.id || !channel.state.persisted) return <></>;
+  if (!channel || !channel.data.user_member?.user_id || !channel.state.persisted) return <></>;
 
   const channelIcon = isDirectChannel ? avatar : channel.data.icon || '';
   const channeName = isDirectChannel ? name : channel.data.name || '';
+
+  const unreadMessages =
+    (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0);
 
   return (
     <ChannelUI
@@ -48,9 +67,9 @@ export default (props: Props): JSX.Element => {
       icon={channelIcon}
       muted={channel.data.user_member?.notification_level === 'none'}
       favorite={channel.data.user_member?.favorite || false}
-      unreadMessages={false}
+      unreadMessages={unreadMessages && channel.data.user_member.notification_level != 'none'}
       visibility={channel.data.visibility || 'public'}
-      notifications={channel.data.messages_count || 0}
+      notifications={isDirectChannel && unreadMessages ? 1 : notifications.length || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

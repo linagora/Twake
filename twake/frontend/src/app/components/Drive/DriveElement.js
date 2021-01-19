@@ -17,6 +17,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
+import RouterServices from 'services/RouterService';
 
 const RenameInput = props => {
   const [value, setValue] = useState(props.value);
@@ -58,21 +59,20 @@ const PublicSharing = props => {
   if (!element) {
     return <div />;
   }
+  const sharedUrl = RouterServices.generateRouteFromState({
+    workspaceId: element.workspace_id,
+    documentId: element.id,
+    appName: 'drive',
+    shared: true,
+    token: (element.acces_info || {}).token,
+  });
   return (
     <div>
       {(element.acces_info || {}).token && (
         <div>
           <InputWithClipBoard
             className={'bottom-margin full_width'}
-            value={
-              Globals.window.api_root_url +
-              '?view=drive_public_access&workspace_id=' +
-              element.workspace_id +
-              '&element_id=' +
-              element.id +
-              '&public_access_token=' +
-              (element.acces_info || {}).token
-            }
+            value={Globals.window.front_root_url + sharedUrl}
             disabled={false}
           />
           <br />

@@ -5,12 +5,12 @@ import PopupManager from 'services/popupManager/popupManager.js';
 import User from 'services/user/user.js';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/CollectionsReact/Collections';
+import { ChannelResource } from 'app/models/Channel';
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'services/localStorage.js';
 import workspacesUsers from './workspaces_users.js';
-import WorkspaceUserRights from './workspace_user_rights.js';
-import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -45,7 +45,7 @@ class Workspaces extends Observable {
   updateCurrentWorkspaceId(workspaceId) {
     if (this.currentWorkspaceId != workspaceId && workspaceId) {
       this.currentWorkspaceId = workspaceId;
-      const workspace = Collections.get('workspaces').find(workspaceId);
+      const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
 
       if (!this.getting_details[workspaceId]) {
@@ -54,8 +54,8 @@ class Workspaces extends Observable {
         workspacesApps.unload(this.currentWorkspaceId);
         Api.post('workspace/get', { workspaceId: workspaceId }, res => {
           if (res && res.data) {
-            Collections.get('workspaces').updateObject(res.data);
-            Collections.get('groups').updateObject(res.data.group);
+            DepreciatedCollections.get('workspaces').updateObject(res.data);
+            DepreciatedCollections.get('groups').updateObject(res.data.group);
             workspacesApps.load(workspaceId, false, { apps: res.data.apps });
           } else {
             this.removeFromUser(workspaceId);
@@ -80,16 +80,16 @@ class Workspaces extends Observable {
 
     workspaceId = workspaceId || autoload_workspaces.id || '';
 
-    let workspace = Collections.get('workspaces').find(workspaceId);
+    let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
     if (!workspace) {
-      workspace = Collections.get('workspaces').findBy({})[0];
+      workspace = DepreciatedCollections.get('workspaces').findBy({})[0];
       workspaceId = workspace?.id;
     }
 
     if (!routerWorkspaceId || !workspace) {
       if (
         !workspace ||
-        Collections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
+        DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
       ) {
         this.openWelcomePage();
       } else if (workspaceId !== this.currentWorkspaceId) {
@@ -108,7 +108,7 @@ class Workspaces extends Observable {
   closeWelcomePage(forever) {
     if (forever) {
       Api.post('users/set/isNew', { value: false }, function (res) {});
-      Collections.get('users').updateObject({
+      DepreciatedCollections.get('users').updateObject({
         id: User.getCurrentUserId(),
         isNew: false,
       });
@@ -164,14 +164,12 @@ class Workspaces extends Observable {
 
   addToUser(workspace) {
     var id = workspace.id;
-    Collections.get('workspaces').updateObject(workspace);
-    this.user_workspaces[id] = Collections.get('workspaces').known_objects_by_id[id];
+    DepreciatedCollections.get('workspaces').updateObject(workspace);
+    this.user_workspaces[id] = DepreciatedCollections.get('workspaces').known_objects_by_id[id];
 
     if (workspace._user_hasnotifications) {
       workspace.group._user_hasnotifications = true;
     }
-
-    Notifications.updateBadge('workspace', workspace.id, workspace._user_hasnotifications ? 1 : 0);
   }
 
   removeFromUser(workspace) {
@@ -211,13 +209,7 @@ class Workspaces extends Observable {
       groupId: groupId,
       group_name: groupName,
       group_creation_data: groupCreationData,
-      channels: [
-        {
-          name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'),
-          icon: ':mailbox:',
-        },
-        { name: 'Random', icon: ':beach_umbrella:' },
-      ],
+      channels: [],
     };
     that.loading = true;
     that.notify();
@@ -236,6 +228,7 @@ class Workspaces extends Observable {
             list: wsMembers.join(','),
             asExterne: false,
           };
+
           Api.post('workspace/members/addlist', data, () => {
             that.loading = false;
             popupManager.close();
@@ -272,7 +265,7 @@ class Workspaces extends Observable {
             id: that.currentWorkspaceId,
             name: name,
           };
-          Collections.get('workspaces').updateObject(update);
+          DepreciatedCollections.get('workspaces').updateObject(update);
           ws.publish('workspace/' + update.id, { workspace: update });
         }
         that.loading = false;
@@ -319,7 +312,7 @@ class Workspaces extends Observable {
               that.notify();
             } else {
               var update = resp.data;
-              Collections.get('workspaces').updateObject(update);
+              DepreciatedCollections.get('workspaces').updateObject(update);
               ws.publish('workspace/' + update.id, { workspace: update });
               that.notify();
             }
@@ -347,7 +340,7 @@ class Workspaces extends Observable {
   }
 
   getCurrentWorkspace() {
-    return Collections.get('workspaces').find(this.currentWorkspaceId) || {};
+    return DepreciatedCollections.get('workspaces').find(this.currentWorkspaceId) || {};
   }
 }
 

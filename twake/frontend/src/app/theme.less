@@ -129,15 +129,13 @@
 textarea.ant-input,
 .ant-input {
   resize: none;
+  min-height: @height-base;
 
   &.ant-input-sm {
     min-height: @height-sm;
   }
   &.ant-input-lg {
     min-height: @height-lg;
-  }
-  :not(&.ant-input-sm):not(&.ant-input-lg) {
-    min-height: @height-base;
   }
 }
 

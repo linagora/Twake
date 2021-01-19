@@ -2,9 +2,9 @@ import { Type } from "class-transformer";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
 
-@Entity("channel_tab", {
+@Entity("channel_tabs", {
   primaryKey: [["company_id", "workspace_id"], "channel_id", "id"],
-  type: "channel_tab",
+  type: "channel_tabs",
 })
 export class ChannelTab {
   // uuid-v4

@@ -45,6 +45,8 @@ export default class User extends React.Component {
     const highlighted =
       this.props.id == UserService.getCurrentUserId() ||
       this.props.username == 'here' ||
+      this.props.username == 'everyone' ||
+      this.props.username == 'channel' ||
       this.props.username == 'all';
     if (!this.props.id) {
       return (

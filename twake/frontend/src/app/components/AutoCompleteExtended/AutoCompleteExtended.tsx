@@ -36,7 +36,6 @@ export default (
       onSearch={(text: string) => {
         props.onSearch &&
           props.onSearch(text, (res: any[]) => {
-            console.log(res);
             setList(res);
           });
       }}

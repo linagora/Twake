@@ -1,15 +1,14 @@
 import { FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
+import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 import { NotificationServiceAPI } from "../../api";
-import { NotificationExecutionContext } from "../../types";
+import { NotificationListQueryParameters } from "../../types";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
-  ResourceListQueryParameters,
   ResourceListResponse,
 } from "../../../../services/types";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 
@@ -24,12 +23,16 @@ export class NotificationController
   constructor(protected service: NotificationServiceAPI) {}
 
   async list(
-    request: FastifyRequest<{ Querystring: ResourceListQueryParameters }>,
+    request: FastifyRequest<{ Querystring: NotificationListQueryParameters }>,
   ): Promise<ResourceListResponse<UserNotificationBadge>> {
-    const list = await this.service.badges.list(
-      new Pagination(request.query.page_token, request.query.limit),
+    if (!request.query.company_id) {
+      throw CrudExeption.badRequest("?company_id is required");
+    }
+
+    const list = await this.service.badges.listForUser(
+      request.query.company_id,
+      request.currentUser.id,
       { ...request.query },
-      getExecutionContext(request),
     );
 
     return {
@@ -44,13 +47,4 @@ export class NotificationController
       }),
     };
   }
-}
-
-function getExecutionContext(request: FastifyRequest): NotificationExecutionContext {
-  return {
-    user: request.currentUser,
-    url: request.url,
-    method: request.routerMethod,
-    transport: "http",
-  };
 }

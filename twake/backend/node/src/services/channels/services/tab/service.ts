@@ -25,7 +25,7 @@ export class Service implements TabService {
   constructor(private database: DatabaseServiceAPI, private members: MemberService) {}
 
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository("channel_tab", ChannelTab);
+    this.repository = await this.database.getRepository("channel_tabs", ChannelTab);
     return this;
   }
 
@@ -56,7 +56,7 @@ export class Service implements TabService {
     }
 
     let tabEntity = await this.repository.findOne(pk);
-    if (!tabEntity) {
+    if (!tabEntity || !tab.id) {
       tabEntity = new ChannelTab();
       tabEntity = _.merge(tabEntity, pk);
       tabEntity.owner = context.user.id;
@@ -69,9 +69,7 @@ export class Service implements TabService {
     
     await this.repository.save(tabEntity);
 
-    const result =  new SaveResult("channel_tab", tabEntity, OperationType.CREATE);
-    this.onCreated(pk, tabEntity, result);
-    return result;
+    return new SaveResult("channel_tabs", tabEntity, OperationType.CREATE);
   }
 
   async get(tabPk: ChannelTabPrimaryKey, context: ChannelExecutionContext): Promise<ChannelTab> {
@@ -99,8 +97,8 @@ export class Service implements TabService {
     if (tabEntity) {
       await this.repository.remove(tabEntity);
     }
-    this.onDeleted(pk, tabEntity);
-    return new DeleteResult("channel_tab", tabEntity, true);
+    
+    return new DeleteResult("channel_tabs", tabEntity, true);
   }
 
   async list<ListOptions>(

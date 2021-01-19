@@ -56,7 +56,7 @@ export default () => {
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
-      <Tutorial />
+      {/*<Tutorial />*/}
       <Footer />
     </Layout.Sider>
   );

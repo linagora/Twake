@@ -17,6 +17,7 @@ import './Pages.scss';
 import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending.js';
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
 import Tabs from 'components/Tabs/Tabs.js';
+import InitService from 'app/services/InitService';
 
 export default class WorkspacePartner extends Component {
   constructor() {
@@ -88,7 +89,7 @@ export default class WorkspacePartner extends Component {
     var adminLevelId = workspacesUsers.getAdminLevel().id;
 
     var bloc_edit_group_manager = [
-      {
+      !InitService.server_infos?.auth?.console?.use && {
         type: 'react-element',
         text: '',
         icon: 'edit',
@@ -123,11 +124,7 @@ export default class WorkspacePartner extends Component {
       },
       {
         type: 'text',
-        text: Languages.t(
-          'scenes.app.popup.workspaceparameter.pages.edit_level_user_text',
-          [],
-          "Un utilisateur gérant d'entreprise peut accéder à l'administration complète de l'entreprise (paiements, membres de l'entreprise, identité de l'entreprise).",
-        ),
+        text: Languages.t('scenes.app.popup.workspaceparameter.pages.edit_level_user_text'),
       },
     ];
 
@@ -140,7 +137,7 @@ export default class WorkspacePartner extends Component {
           <div className="editLevel">
             <Switch
               disabled={workspacesUsers.updateLevelUserLoading[col.user.id]}
-              label={'Administrateur'}
+              label={Languages.t('scenes.app.popup.workspaceparameter.pages.administrater_status')}
               value={col.level == adminLevelId}
               onChange={state =>
                 this.confirmIfMe(
@@ -342,7 +339,7 @@ export default class WorkspacePartner extends Component {
               ),
               render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
-            {
+            !InitService.server_infos?.auth?.console?.use && {
               title: Languages.t(
                 'scenes.apps.parameters.workspace_sections.members.pending',
                 [],

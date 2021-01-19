@@ -12,6 +12,7 @@ export type ChannelType = {
   visibility?: string;
   default?: boolean;
   direct_channel_members?: string[];
+  members?: string[]; //Todo should not be used if backend is stable
   owner?: string;
   members_count?: number;
   guests_count?: number;
@@ -20,6 +21,7 @@ export type ChannelType = {
   archivation_date?: number; //Timestamp
   user_member?: ChannelMemberType;
   connectors?: string[];
+  last_activity?: number;
 };
 
 export type ChannelMemberType = {
@@ -29,7 +31,7 @@ export type ChannelMemberType = {
   last_access?: number; //Timestamp in seconds
   last_increment?: number; //Number
   favorite?: boolean; //Did the user add this channel to its favorites
-  notification_level?: 'all' | 'none' | 'group_mentions' | 'user_mentions';
+  notification_level?: 'all' | 'none' | 'mentions' | 'me';
 };
 
 export class ChannelResource extends Resource<ChannelType> {}

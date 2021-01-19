@@ -23,8 +23,10 @@ class Workspaces
     var $workspaces_service;
     private $wls;
     private $wms;
+    private $app;
     private $gms;
     private $gas;
+    private $rest;
     private $gs;
     private $doctrine;
     private $string_cleaner;
@@ -33,6 +35,7 @@ class Workspaces
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->wms = $app->getServices()->get("app.workspace_members");
@@ -46,9 +49,10 @@ class Workspaces
         $this->calendarService = $app->getServices()->get("app.calendar.calendar");
         $this->calendarEventService = $app->getServices()->get("app.calendar.event");
         $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
+        $this->rest = $app->getServices()->get("app.restclient");
     }
 
-    public function create($name, $groupId = null, $userId = null)
+    public function create($name, $groupId = null, $userId = null, $default = false)
     {
 
         if ($groupId == null && $userId == null) {
@@ -85,6 +89,8 @@ class Workspaces
 
         $workspace->setUniqueName($uniquenameIncremented);
 
+        $workspace->setIsDefault($default);
+
         if ($groupId != null) {
             $workspace->setGroup($group);
         }
@@ -115,7 +121,6 @@ class Workspaces
         $this->doctrine->persist($levelUser);
         $this->doctrine->flush();
 
-
         //init default apps
         $this->init($workspace);
 
@@ -123,6 +128,33 @@ class Workspaces
         if ($userId != null) {
             $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
         }
+
+        //Create default channels
+        $secret = $this->app->getContainer()->getParameter("node.secret");
+        $uri = $this->app->getContainer()->getParameter("node.api") . 
+            "companies/".$groupId."/workspaces/".$workspace->getId()."/".
+            "channels/defaultchannel";
+
+        $data = [
+            "resource" => [
+                "icon" => "💬",
+                "name" => "General",
+                "description" => "",
+                "visibility" => "public",
+                "default" => true
+            ],
+            "options" => [],
+            "user_id" => $userId
+        ];
+
+        $res = $this->rest->post($uri, json_encode($data), [
+            CURLOPT_HTTPHEADER => Array(
+                "Authorization: Token ".$secret,
+                "Content-Type: application/json"
+            ),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1
+        ]);
 
         return $workspace;
 

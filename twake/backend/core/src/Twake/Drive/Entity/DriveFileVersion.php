@@ -71,6 +71,10 @@ class DriveFileVersion
      */
     private $data;
 
+    /**
+     * @ORM\Column(name="provider", type="string")
+     */
+    private $provider;
 
     public function __construct(DriveFile $file, $user_id)
     {
@@ -110,6 +114,16 @@ class DriveFileVersion
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+    }
+
+    public function getProvider()
+    {
+        return $this->provider;
     }
 
     /**

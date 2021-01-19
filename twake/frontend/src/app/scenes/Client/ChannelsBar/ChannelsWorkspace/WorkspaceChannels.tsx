@@ -41,25 +41,6 @@ export default (props: Props) => {
     });
   };
 
-  let channels;
-
-  if (props.channels.length === 0) {
-    channels = (
-      <div className="channel_small_text">
-        {Languages.t('scenes.app.channelsbar.channelsworkspace.no_channel')}
-      </div>
-    );
-  } else {
-    channels = props.channels.map(({ data, key }) => {
-      return (
-        <ChannelIntermediate
-          key={key}
-          collection={data.visibility === 'direct' ? props.directCollection : props.collection}
-          channel={data || ''}
-        />
-      );
-    });
-  }
   return (
     <>
       <ChannelCategory
@@ -86,7 +67,21 @@ export default (props: Props) => {
           )
         }
       />
-      {channels}
+      {props.channels.length === 0 && (
+        <div className="channel_small_text">
+          {Languages.t('scenes.app.channelsbar.channelsworkspace.no_channel')}
+        </div>
+      )}
+      {props.channels.length > 0 &&
+        props.channels.map(({ data, key }) => {
+          return (
+            <ChannelIntermediate
+              key={key}
+              collection={data.visibility === 'direct' ? props.directCollection : props.collection}
+              channel={data || ''}
+            />
+          );
+        })}
     </>
   );
 };

@@ -5,7 +5,6 @@ import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
-import Notifications from 'services/user/notifications.js';
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
 
@@ -50,8 +49,6 @@ class Groups extends Observable {
     var id = group.id;
     Collections.get('groups').updateObject(group);
     this.user_groups[id] = Collections.get('groups').known_objects_by_id[id];
-
-    Notifications.updateBadge('group', group.id, group._user_hasnotifications ? 1 : 0);
   }
 
   getOrderedGroups() {

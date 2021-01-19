@@ -22,7 +22,7 @@ const MainContent: FC<{}> = () => {
 
   return (
     <Layout.Content className={'global-view-content'}>
-      <Layout style={{ height: '100%' }}>
+      <Layout style={{ flex: '1' }}>
         {mainConfiguration.hasTabs && (
           <Layout.Header className="main-view-tabs-header">
             <Tabs key={mainId} />

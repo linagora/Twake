@@ -138,6 +138,7 @@ export default class MessagesList extends Component<Props> {
               <div className="message_header">
                 <MessageComponent
                   noReplies
+                  threadHeader={this.props.threadId}
                   key={headerMessage?.id}
                   messageId={headerMessage?.id}
                   collectionKey={this.props.collectionKey}
@@ -152,6 +153,7 @@ export default class MessagesList extends Component<Props> {
                   delayRender
                   key={messages[index].front_id}
                   messageId={messages[index]?.id || messages[index]?.front_id}
+                  threadHeader={this.props.threadId}
                   previousMessageId={messages[index - 1]?.id}
                   unreadAfter={this.props.unreadAfter}
                   highlighted={highlighted}

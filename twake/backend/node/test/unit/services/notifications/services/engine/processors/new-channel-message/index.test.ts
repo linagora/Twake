@@ -3,16 +3,16 @@ import {
   ListResult,
   OperationType,
   SaveResult,
-} from "../../../../../../../src/core/platform/framework/api/crud-service";
-import { ChannelMemberNotificationLevel } from "../../../../../../../src/services/channels/types";
-import { MessageNotification } from "../../../../../../../src/services/messages/types";
-import { NotificationServiceAPI } from "../../../../../../../src/services/notifications/api";
+} from "../../../../../../../../src/core/platform/framework/api/crud-service";
+import { ChannelMemberNotificationLevel } from "../../../../../../../../src/services/channels/types";
+import { MessageNotification } from "../../../../../../../../src/services/messages/types";
+import { NotificationServiceAPI } from "../../../../../../../../src/services/notifications/api";
 import {
   ChannelMemberNotificationPreference,
   ChannelThreadUsers,
-} from "../../../../../../../src/services/notifications/entities";
-import { NewChannelMessageProcessor } from "../../../../../../../src/services/notifications/services/engine/processors/new-channel-message/index";
-import { ChannelType } from "../../../../../../../src/services/types";
+} from "../../../../../../../../src/services/notifications/entities";
+import { NewChannelMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/new-channel-message/index";
+import { ChannelType } from "../../../../../../../../src/services/types";
 
 describe("The NewChannelMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
@@ -60,7 +60,7 @@ describe("The NewChannelMessageProcessor class", () => {
       workspace_id,
       channel_id,
       id: "id",
-      thread_id,
+      thread_id: "thread_id",
       sender: "sender",
       mentions: {
         users: [],
@@ -150,13 +150,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result).toBeUndefined();
         done();
@@ -179,13 +176,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result.mentions.users).toEqual(["1"]);
         done();
@@ -287,13 +281,10 @@ describe("The NewChannelMessageProcessor class", () => {
 
         expect(service.channelThreads.getUsersInThread).not.toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          [],
-        );
+        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith({
+          company_id: message.company_id,
+          channel_id: message.channel_id,
+        });
 
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
@@ -396,26 +387,19 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
         ]);
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
 
         expect(result).toBeUndefined();
         done();
       });
 
-      it("without mentions, should get the preferences for all members involved and return only the ones who want to be notified", async done => {
+      it("without mentions, should get the preferences for all members involved and return only the ones with preference !== NONE", async done => {
         const message = getMessage();
         setUsersInThread(["1", "2", "3", "4"]);
         setThreadResponsePreferences();
@@ -426,22 +410,15 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
         ]);
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
 
-        expect(result.mentions.users).toEqual(["1"]);
+        expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
       });
 
@@ -457,45 +434,37 @@ describe("The NewChannelMessageProcessor class", () => {
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: message.sender,
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "1",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "2",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "3",
           },
           {
             company_id: message.company_id,
             channel_id: message.channel_id,
-            thread_id: message.id,
+            thread_id: message.thread_id,
             user_id: "4",
           },
         ]);
 
         expect(service.channelThreads.getUsersInThread).toBeCalled;
         expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledTimes(1);
-        expect(service.channelPreferences.getChannelPreferencesForUsers).toBeCalledWith(
-          {
-            company_id: message.company_id,
-            channel_id: message.channel_id,
-          },
-          ["1", "2", "3", "4"],
-        );
-
         expect(result.mentions.users).toEqual(["1", "2", "3"]);
         done();
       });
