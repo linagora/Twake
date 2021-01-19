@@ -11,17 +11,17 @@ import { ChannelType } from "../types";
 export class ChannelActivity {
   // uuid-v4
   @Type(() => String)
-  @Column("company_id", "string", { generator: "uuid" })
+  @Column("company_id", "plainstring", { generator: "uuid" })
   company_id: string;
 
   // "uuid-v4" | "direct"
   @Type(() => String)
-  @Column("workspace_id", "string", { generator: "uuid" })
+  @Column("workspace_id", "plainstring", { generator: "uuid" })
   workspace_id: string | ChannelType.DIRECT;
 
   // uuid-v4
   @Type(() => String)
-  @Column("channel_id", "string", { generator: "uuid" })
+  @Column("channel_id", "plainstring", { generator: "uuid" })
   channel_id: string;
 
   @Column("last_activity", "number")
