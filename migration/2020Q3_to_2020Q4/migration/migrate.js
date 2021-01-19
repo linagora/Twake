@@ -23,7 +23,7 @@ const getchannels = () => {
 
   return new Promise((resolve, reject) => {
     client.execute(query, (err, result) => {
-      if (err) reject(err);
+      if (err || !result) reject(err);
 
       resolve(result.rows);
 

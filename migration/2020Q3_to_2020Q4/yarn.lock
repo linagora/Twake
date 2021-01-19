@@ -42,6 +42,10 @@ cassandra-driver@^4.6.1:
     adm-zip "^0.4.13"
     long "^2.2.0"
 
+class-transformer@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.3.2.tgz#779ef5f124784324b40f8e927c774bd96cdecd4b"
+
 config@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/config/-/config-3.3.3.tgz#d3c110fce543022c2fde28712e4f1b8440dee101"
