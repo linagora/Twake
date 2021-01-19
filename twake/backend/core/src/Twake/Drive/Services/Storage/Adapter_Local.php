@@ -21,6 +21,7 @@ class Adapter_Local implements AdapterInterface
         $this->root = $local_config["location"];
         $this->preview_root = $local_config["preview_location"];
         $this->pre_public_path = $local_config["preview_public_path"];
+        $this->disable_encryption = $local_config["disable_encryption"];
         $this->preview = $preview;
         $this->doctrine = $doctrine;
     }
@@ -135,6 +136,12 @@ class Adapter_Local implements AdapterInterface
 
     private function encode($chunkFile, $param_bag)
     {
+
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".encrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
         //error_log(print_r($chunkFile,true));
 
         $key = $param_bag->getKey();
@@ -201,6 +208,12 @@ class Adapter_Local implements AdapterInterface
 
     protected function decode($chunkFile, $param_bag)
     {
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".decrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
+
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
             $mcrypt = new MCryptAES256Implementation();

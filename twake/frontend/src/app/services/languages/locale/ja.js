@@ -844,7 +844,7 @@ export default {
   //-End ForgotPassword
   //-Home
   'scenes.login.home.title': 'Twakeにサインインする',
-  'scenes.login.home.email': 'ユーザー名または電子メール',
+  'scenes.login.home.email': '電子メイル',
   'scenes.login.home.unable_to_connect': '無効な資格情報',
   'scenes.login.home.password': 'パスワード',
   'scenes.login.home.login_btn': 'ログイン',

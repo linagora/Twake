@@ -1083,7 +1083,7 @@ export default {
     'Ваши пароли не совпадают или слишком малы, пожалуйста, введите пароль, состоящий не менее чем из 8 символов.',
   'scenes.login.home.title': 'Вход в Twake',
   'scenes.login.home.subtitle': 'Рад вас видеть',
-  'scenes.login.home.email': 'Имя пользователя или эл. почта',
+  'scenes.login.home.email': 'Почта',
   'scenes.login.home.unable_to_connect': 'Недействительные идентификационные данные',
   'scenes.login.home.password': 'Пароль',
   'scenes.login.home.login_btn': 'Войти',

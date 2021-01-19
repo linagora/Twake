@@ -1090,7 +1090,7 @@ export default {
     "Vos mots de passe ne correspondent pas ou sont trop petits, veuillez saisir un mot de passe d'au moins 8 caractères.",
   'scenes.login.home.title': 'Connectez-vous à Twake',
   'scenes.login.home.subtitle': 'Heureux de vous revoir',
-  'scenes.login.home.email': "Nom d'utilisateur ou email",
+  'scenes.login.home.email': 'Email',
   'scenes.login.home.unable_to_connect': "Informations d'identification invalides",
   'scenes.login.home.password': 'Mot de passe',
   'scenes.login.home.login_btn': "S'identifier",

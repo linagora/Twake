@@ -42,6 +42,7 @@ class Adapter_OpenStack implements AdapterInterface
         $this->openstack_domain_name = $openstack["user"]["domain_name"];
         $this->openstack_project_id = $openstack["project_id"];
         $this->openstack_auth_url = $openstack["auth_url"];
+        $this->disable_encryption = $openstack["disable_encryption"];
 
         $httpClient = new Client([
             'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url ? $this->openstack_auth_url : ""),
@@ -195,7 +196,12 @@ class Adapter_OpenStack implements AdapterInterface
 
     private function encode($chunkFile, $param_bag)
     {
-        //error_log(print_r($chunkFile,true));
+
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".encrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
 
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
@@ -265,6 +271,12 @@ class Adapter_OpenStack implements AdapterInterface
 
     protected function decode($chunkFile, $param_bag)
     {
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".decrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
+
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
             $mcrypt = new MCryptAES256Implementation();
