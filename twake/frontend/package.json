@@ -190,7 +190,7 @@
     "react-transition-group": "^4.4.1",
     "react-virtualized": "^9.22.2",
     "redux": "^4.0.5",
-    "resolve": "1.15.0",
+    "resolve": "1.19.0",
     "resolve-url-loader": "3.1.2",
     "rrule": "=2.6.4",
     "sass-loader": "8.0.2",
