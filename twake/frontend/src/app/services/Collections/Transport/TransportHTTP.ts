@@ -1,10 +1,14 @@
+import Logger from "services/Logger";
 import Collections from '../Collections';
 import Transport from './Transport';
+
+const logger = Logger.getLogger("Collections/Transport/HTTP");
 
 export default class TransportHTTP {
   constructor(private readonly transport: Transport) {}
 
   private async request(method: string, route: string, options: any) {
+    logger.debug(`${method.toUpperCase()} ${route}`);
     const prefix = Collections.getOptions().transport?.rest?.url;
     if (!prefix) {
       return { offline: true };
