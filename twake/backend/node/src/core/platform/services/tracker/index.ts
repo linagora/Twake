@@ -28,10 +28,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     const trackerKey = this.configuration.get<string>(trackerName, "");
 
     if (!this.analytics && trackerKey) {
-      this.analytics = new Analytics(trackerKey, {
-        flushAt: 20,
-        flushInterval: 10000,
-      });
+      this.analytics = new Analytics(trackerKey);
     }
     return this.analytics;
   }

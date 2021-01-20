@@ -17,10 +17,8 @@ export type TrackedEventType = IdentityType & {
     | "twake:message_sent"
     | "twake:channel_create"
     | "twake:channel_join"
-    | "twake:channel_invite"
-    | "console:add_user"
-    | "console:signup_email_validation"
-    | "console:signup_user_creation";
+    | "twake:channel_invite";
+
   properties?: { [key: string]: unknown };
   timestamp?: Date;
   context?: { [key: string]: unknown };

@@ -41,7 +41,10 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
-import TrackerAPI, { TrackedEventType } from "../../../../core/platform/services/tracker/provider";
+import TrackerAPI, {
+  IdentifyObjectType,
+  TrackedEventType,
+} from "../../../../core/platform/services/tracker/provider";
 
 export class Service implements ChannelService {
   version: "1";
@@ -331,8 +334,19 @@ export class Service implements ChannelService {
           } as unknown) as UserDirectChannel;
         });
       }
-      // ici
+      const identity: IdentifyObjectType = {
+        userId: context.user.id,
+        timestamp: new Date(),
+      };
 
+      const trackedEvent: TrackedEventType = {
+        userId: context.user.id,
+        event: "twake:open",
+        timestamp: new Date(),
+      };
+
+      this.tracker.identify(identity, (err: Error) => logger.error(err));
+      this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
       return result;
     }
 

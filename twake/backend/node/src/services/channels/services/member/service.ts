@@ -145,6 +145,7 @@ export class Service implements MemberService {
           properties: {
             visibility: channel.visibility,
           },
+          timestamp: new Date(),
         };
 
         this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
