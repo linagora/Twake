@@ -3,7 +3,7 @@ import { logger } from "../../../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { MobilePushNotifier } from "../../../../../notifications/notifiers";
 import {
-  CounterUpdateMessage,
+  PushNotificationMessage,
   MentionNotification,
   MentionNotificationResult,
 } from "../../../../types";
@@ -72,6 +72,8 @@ export class PushNotificationToUsersMessageProcessor
         workspace_id: message.workspace_id,
         channel_id: message.channel_id,
         user: badge.user_id,
+        thread_id: message.thread_id || message.message_id,
+        message_id: message.message_id,
         value: 1,
       }),
     );
@@ -132,7 +134,7 @@ export class PushNotificationToUsersMessageProcessor
       });
   }
 
-  sendPushNotification(user: string, counterUpdate: CounterUpdateMessage): void {
+  sendPushNotification(user: string, counterUpdate: PushNotificationMessage): void {
     MobilePushNotifier.get(this.pubsub).notify(user, counterUpdate);
   }
 }

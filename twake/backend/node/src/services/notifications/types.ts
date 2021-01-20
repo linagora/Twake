@@ -24,10 +24,12 @@ export type MentionNotificationResult = MentionNotification;
 export type ChannelReadMessage = { member: ChannelMember; channel: Channel };
 export type ChannelUnreadMessage = ChannelReadMessage;
 
-export type CounterUpdateMessage = {
+export type PushNotificationMessage = {
   company_id: uuid;
   workspace_id: uuid | "direct";
   channel_id: uuid;
+  message_id: uuid;
+  thread_id: uuid;
   value: number;
   user: string;
 };
