@@ -60,12 +60,16 @@
     }
   }*/
 
-  & > .menu {
+  & > .users-list .ant-row {
     display: flex;
-    height: 32px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    box-sizing: border-box;
+    flex-flow: nowrap;
+
+    & > * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
 
     .icon {
       margin-right: 8px;
