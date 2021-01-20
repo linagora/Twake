@@ -32,7 +32,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
       - run: cd twake/frontend/ && yarn install
-      - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
       - run: cp twake/frontend/src/app/environment/environment.ts.dist twake/frontend/src/app/environment/environment.ts
       - if: ${{env.FRONTEND_ENV}}
         run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts

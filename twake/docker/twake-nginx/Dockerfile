@@ -13,6 +13,8 @@ COPY frontend /twake-react/
 RUN cp /twake-react/src/app/environment/environment.ts.dist /twake-react/src/app/environment/environment.ts
 RUN yarn install --network-timeout 1000000000
 ENV GENERATE_SOURCEMAP false
+RUN cat /twake-react/src/app/environment/environment.ts.dist
+RUN cat /twake-react/src/app/environment/environment.ts
 RUN yarn build
 
 RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist
