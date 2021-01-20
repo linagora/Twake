@@ -40,6 +40,15 @@ export class PushNotificationToUsersMessageProcessor
   async process(message: MentionNotification): Promise<MentionNotificationResult> {
     logger.info(`${this.name} - Processing mention notification for channel ${message.channel_id}`);
 
+    if (
+      !message.company_id ||
+      !message.workspace_id ||
+      !message.channel_id ||
+      !message.creation_date
+    ) {
+      throw new Error("Missing required fields");
+    }
+
     if (!message.mentions || !message.mentions.users || !message.mentions.users.length) {
       logger.info(`${this.name} - Message does not have any user to mention`);
       return;
@@ -117,7 +126,6 @@ export class PushNotificationToUsersMessageProcessor
             thread_id: badge.thread_id,
             user_id: user,
           });
-          console.log(badgeEntity);
           return this.saveBadge(badgeEntity);
         }),
       )
