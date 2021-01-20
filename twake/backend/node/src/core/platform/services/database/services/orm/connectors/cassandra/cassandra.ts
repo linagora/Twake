@@ -411,7 +411,7 @@ export class CassandraConnector extends AbstractConnector<
         entity[columnsDefinition[key].nodename] = transformValueFromDbString(
           row[key],
           columnsDefinition[key].type,
-          columnsDefinition[key].options,
+          {key: key, ...columnsDefinition[key].options},
         );
       });
       entities.push(entity);

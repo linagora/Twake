@@ -4,10 +4,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
-import crypto, { createSecretKey, randomBytes } from 'crypto' 
+import crypto, { randomBytes } from 'crypto' 
 
 export const cassandraType = {
-  plainstring: "TEXT",
+  encoded_string: "TEXT",
+  encoded_json: "TEXT",
   string: "TEXT",
   json: "TEXT",
   number: "BIGINT",
@@ -37,7 +38,21 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
     }
     return `${!!v}`;
   }
-  if ( v !== null && type === "string" || type === "json" ) {
+  if (type === "encoded_string" || type === "encoded_json") {
+    if (type === "encoded_json") {
+      try {
+        v = JSON.stringify(v);
+      } catch (err) {
+        v = null;
+      }
+    }
+    v = encrypting(v);
+    return `'${v || ""}'`;
+  }
+  if (type === "blob") {
+    return "''"; //Not implemented yet
+  }
+  if (type === "string" || type === "json") {
     if (type === "json") {
       try {
         v = JSON.stringify(v);
@@ -45,51 +60,19 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
         v = null;
       }
     }
-    
-    let iv = randomBytes(16);
-    var encrypt = ((val: any) => {
-      let cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
-      return Buffer.concat([
-        cipher.update(val),
-        cipher.final()
-      ]);
-    });
-    console.log("A ENCODER: ", v);
-    console.log("TRUC STOCKEE EN BD: ",  iv.toString('hex') + ":" + encrypt(v).toString('hex'));
-   
-    return `'${  iv.toString('hex') + ":" + encrypt(v).toString('hex') || ""}'`;
-  }
-  if (type === "blob") {
-    return "''"; //Not implemented yet
-  }
-  if (type === "plainstring") {
     return `'${v}'`; //Not implemented yet
   }
   return `'${v || ""}'`;
 };
 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
-  if (type === "string" || type === "json" ){
-    console.log("A DECODER: ", v);
-    //let iv = v.substring(0,34);
-    var decrypt = ((val: string) => {
-      let encryptedArray = val.split(':');
-      let iv = Buffer.from(encryptedArray[0], 'hex');
-      let encrypted = Buffer.from(encryptedArray[1], 'hex');
-      let decipher = crypto.createDecipheriv('aes-256-cbc', encryptionKey, iv);
-      return Buffer.concat([
-        decipher.update(encrypted),
-        decipher.final()
-      ]);
-    });
+  if (v !== null && type === "encoded_string" || type === "encoded_json"){
     try{
-      v = decrypt(v).toString();
+      v = decrypting(v);
     }catch(err){
-      v = v; //No-op
+      v = v;
     }
-    console.log("DECODEE: ", v);
-
-    if (type === "json") {
+    if (type === "encoded_json") {
       try {
         return JSON.parse(v);
       } catch (err) {
@@ -97,6 +80,38 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
       }
     }
   }
-  
+  if (type === "json") {
+    try {
+      return JSON.parse(v);
+    } catch (err) {
+      return null;
+    }
+  }
   return v
 };
+
+export function encrypting (v: any ): string {
+  const iv = randomBytes(16);
+    var encrypt = ((val: any) => {
+      const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
+      return Buffer.concat([
+        cipher.update(JSON.stringify(val)),
+        cipher.final()
+      ]).toString('hex');
+    });
+  return (iv.toString('hex') + ":" + encrypt(v))
+}
+
+export function decrypting (v: any): any {
+  var decrypt = ((val: string) => {
+    const encryptedArray = val.split(':');
+    const iv = Buffer.from(encryptedArray[0], 'hex');
+    const encrypted = Buffer.from(encryptedArray[1], 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', encryptionKey, iv);
+    return JSON.parse(Buffer.concat([
+      decipher.update(encrypted),
+      decipher.final()
+    ]).toString());
+  });
+  return decrypt(v)
+}

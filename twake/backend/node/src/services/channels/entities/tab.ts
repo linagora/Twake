@@ -9,37 +9,37 @@ import { ChannelType } from "../types";
 export class ChannelTab {
   // uuid-v4
   @Type(() => String)
-  @Column("company_id", "plainstring", { generator: "uuid" })
+  @Column("company_id", "string", { generator: "uuid" })
   company_id: string;
 
   // "uuid-v4" | "direct"
   @Type(() => String)
-  @Column("workspace_id", "plainstring", { generator: "uuid" })
+  @Column("workspace_id", "string", { generator: "uuid" })
   workspace_id: string | ChannelType.DIRECT;
 
   // uuid-v4
   @Type(() => String)
-  @Column("channel_id", "plainstring", { generator: "uuid" })
+  @Column("channel_id", "string", { generator: "uuid" })
   channel_id: string;
 
   // uuid-v4
   @Type(() => String)
-  @Column("id", "plainstring", { generator: "uuid" })
+  @Column("id", "string", { generator: "uuid" })
   id: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
 
-  @Column("configuration", "json")
+  @Column("configuration", "encoded_json")
   configuration: string;
 
-  @Column("application_id", "string")
+  @Column("application_id", "encoded_string")
   application_id: string;
 
-  @Column("owner", "string")
+  @Column("owner", "encoded_string")
   owner: string;
 
-  @Column("col_order", "string")
+  @Column("col_order", "encoded_string")
   order: string;
 }
 
