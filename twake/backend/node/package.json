@@ -84,7 +84,7 @@
     "deep-object-diff": "^1.1.0",
     "fastify": "3.4.1",
     "fastify-cors": "^4.1.0",
-    "fastify-jwt": "^2.1.3",
+    "fastify-jwt": "^2.2.0",
     "fastify-plugin": "^2.3.4",
     "fastify-sensible": "^3.0.1",
     "fastify-websocket": "^2.0.7",
