@@ -34,7 +34,7 @@ class Service implements ChannelServiceAPI {
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, tracker: TrackerAPI) {
     this.pubsub = pubsub;
-    this.members = getMemberService(databaseService, this);
+    this.members = getMemberService(databaseService, this, tracker);
     this.channels = getChannelService(databaseService, this, tracker);
     this.tabs = getTabService(databaseService);
     this.pubsubListener = new PubsubListener(this, pubsub);

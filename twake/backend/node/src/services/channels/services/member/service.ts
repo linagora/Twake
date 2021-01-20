@@ -23,11 +23,16 @@ import {
   PubsubParameter,
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
+import TrackerAPI, { TrackedEventType } from "../../../../core/platform/services/tracker/provider";
 
 export class Service implements MemberService {
   version: "1";
 
-  constructor(private service: MemberService, private channelService: ChannelServiceAPI) {}
+  constructor(
+    private service: MemberService,
+    private channelService: ChannelServiceAPI,
+    private tracker: TrackerAPI,
+  ) {}
 
   async init(): Promise<this> {
     try {
@@ -133,6 +138,16 @@ export class Service implements MemberService {
       ) {
         const saveResult = await this.service.save(member, options, context);
         this.onCreated(context.channel, member, saveResult);
+
+        const trackedEvent: TrackedEventType = {
+          userId: member.user_id,
+          event: context.user.id !== member.user_id ? "twake:channel_invite" : "twake:channel_join",
+          properties: {
+            visibility: channel.visibility,
+          },
+        };
+
+        this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
       } else {
         throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
       }

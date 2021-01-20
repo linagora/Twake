@@ -178,7 +178,7 @@ export class Service implements ChannelService {
 
     const trackedEvent: TrackedEventType = {
       userId: channelToSave.owner,
-      event: "twake:chanel_create",
+      event: "twake:channel_create",
       timestamp: new Date(),
       properties: {
         visibility: channelToSave.visibility,
@@ -331,6 +331,7 @@ export class Service implements ChannelService {
           } as unknown) as UserDirectChannel;
         });
       }
+      // ici
 
       return result;
     }
