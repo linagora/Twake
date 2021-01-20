@@ -7,12 +7,14 @@ import ChannelServiceAPI, { ChannelService } from "../../provider";
 import { MongoChannelService } from "./mongo";
 import { CassandraChannelService } from "./cassandra";
 import { Service } from "./service";
+import TrackerAPI from "../../../../core/platform/services/tracker/provider";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   channelService: ChannelServiceAPI,
+  tracker: TrackerAPI,
 ): ChannelService {
-  return new Service(getServiceInstance(databaseService), channelService, databaseService);
+  return new Service(getServiceInstance(databaseService), channelService, databaseService, tracker);
 }
 
 function getServiceInstance(databaseService: DatabaseServiceAPI): ChannelService {

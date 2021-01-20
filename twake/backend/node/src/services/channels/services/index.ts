@@ -6,19 +6,22 @@ import { getService as getMemberService } from "./member";
 import { getService as getTabService } from "./tab";
 import { NewChannelActivityProcessor } from "./channel/new-channel-activity";
 import { PubsubListener } from "./pubsub";
+import TrackerAPI from "../../../core/platform/services/tracker/provider";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  tracker: TrackerAPI,
 ): ChannelServiceAPI {
-  return getServiceInstance(databaseService, pubsub);
+  return getServiceInstance(databaseService, pubsub, tracker);
 }
 
 function getServiceInstance(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  tracker: TrackerAPI,
 ): ChannelServiceAPI {
-  return new Service(databaseService, pubsub);
+  return new Service(databaseService, pubsub, tracker);
 }
 
 class Service implements ChannelServiceAPI {
@@ -29,10 +32,10 @@ class Service implements ChannelServiceAPI {
   pubsub: PubsubServiceAPI;
   pubsubListener: PubsubListener;
 
-  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
+  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, tracker: TrackerAPI) {
     this.pubsub = pubsub;
     this.members = getMemberService(databaseService, this);
-    this.channels = getChannelService(databaseService, this);
+    this.channels = getChannelService(databaseService, this, tracker);
     this.tabs = getTabService(databaseService);
     this.pubsubListener = new PubsubListener(this, pubsub);
   }

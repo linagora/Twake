@@ -41,6 +41,7 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
+import TrackerAPI, { TrackedEventType } from "../../../../core/platform/services/tracker/provider";
 
 export class Service implements ChannelService {
   version: "1";
@@ -50,6 +51,7 @@ export class Service implements ChannelService {
     private service: ChannelService,
     private channelService: ChannelServiceAPI,
     private database: DatabaseServiceAPI,
+    private tracker: TrackerAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -174,6 +176,16 @@ export class Service implements ChannelService {
 
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
+    const trackedEvent: TrackedEventType = {
+      userId: channelToSave.owner,
+      event: "twake:chanel_create",
+      timestamp: new Date(),
+      properties: {
+        visibility: channelToSave.visibility,
+      },
+    };
+
+    this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
     return saveResult;
   }
 
