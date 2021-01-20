@@ -90,7 +90,7 @@
     "fastify-websocket": "^2.0.7",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.2",
-    "pino": "^6.6.1",
+    "pino": "^6.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "socket.io": "^2.3.0",
