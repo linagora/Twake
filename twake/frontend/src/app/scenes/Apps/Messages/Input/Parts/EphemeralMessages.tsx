@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
-import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
-import popupManager from 'services/popupManager/popupManager.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'services/user/current_user.js';
 import MessageComponent from '../../Message/Message';
@@ -41,7 +35,11 @@ export default (props: Props) => {
       .sort((a: any, b: any) => a.creation_date - b.creation_date);
   };
 
-  Collections.get('messages').useListener(useState);
+  const listener = Collections.get('messages').useListener(useState);
+
+  useEffect(() => () => {
+    Collections.get('messages').removeListener(listener);
+  }, []);
 
   let lastEphemeral: any = null;
   getEphemeralMessages().forEach((item: any) => {

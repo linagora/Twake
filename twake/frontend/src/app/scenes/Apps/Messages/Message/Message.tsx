@@ -15,9 +15,7 @@ import UserService from 'services/user/user.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import TimeSeparator from './TimeSeparator';
-import MessagesListServiceManager, {
-  MessagesListUtils as MessagesListService,
-} from 'app/services/Apps/Messages/MessagesListUtils';
+import MessagesListServiceManager from 'app/services/Apps/Messages/MessagesListUtils';
 
 import Input from '../Input/Input';
 
@@ -270,5 +268,9 @@ export default class MessageComponent extends Component<Props, { render: boolean
         </Thread>
       </DroppableZone>
     );
+  }
+
+  componentWillUnmount() {
+    Collections.get('messages').removeListener(this);
   }
 }

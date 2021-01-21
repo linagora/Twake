@@ -118,7 +118,6 @@ class Messages extends Observable {
         Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
 
       value = PseudoMarkdownCompiler.transformChannelsUsers(value);
-      console.log(options.channel_id);
       var channel = await this.findChannel(options.channel_id);
 
       if (value[0] == '/') {

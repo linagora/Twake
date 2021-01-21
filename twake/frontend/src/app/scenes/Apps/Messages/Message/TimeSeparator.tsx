@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Message.scss';
 import moment from 'moment';
 import 'moment-timezone';
@@ -19,8 +19,11 @@ export default React.memo((props: Props) => {
 
   const previousMessage = Collections.get('messages').find(props.previousMessageId);
   const message = Collections.get('messages').find(props.messageId);
+  const listener = Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
 
-  Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
+  useEffect(() => () => {
+    Collections.get('messages').removeListener(listener);
+  }, []);
 
   const isFirstNewMessage =
     (message?.creation_date || 0) >= props.unreadAfter &&
