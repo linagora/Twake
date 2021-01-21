@@ -46,10 +46,8 @@ export default class Attribute extends React.Component {
           this.value_height = window.getBoundingClientRect(this.value_node).height;
         }, 200);
       }, 50);
-      console.log('will focus ', this.props.focusOnOpen);
 
       if (this.props.focusOnOpen) {
-        console.log('focus');
         this.props.focusOnOpen.focus();
       }
     } else if (!open && this.was_open) {

@@ -46,7 +46,6 @@ export default class TaskEditor extends React.Component {
     TasksService.unarchive(this.props.task, this.props.collectionKey);
   }
   change(key, value, notify) {
-    console.log('change ' + key, value);
     this.props.task[key] = value;
     Collections.get('tasks').notify();
   }

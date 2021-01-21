@@ -17,8 +17,6 @@ export default class TwacodeTester extends Component {
   }
 
   onAction(type, id, context, passives, evt) {
-    console.log(type, id, evt);
-
     //Button pressed
     if (type == 'interactive_action') {
       this.state.logs.push({

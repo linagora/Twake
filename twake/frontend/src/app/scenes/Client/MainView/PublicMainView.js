@@ -37,7 +37,6 @@ export default class MainView extends Component {
   componentDidMount() {
     Api.post('workspace/get_public_data', { workspace_id: this.routeState.workspaceId }, res => {
       if (res && res.data) {
-        console.log(res.data);
         this.state.group = {
           name: res.data.group_name,
           logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),

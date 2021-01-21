@@ -25,8 +25,6 @@ class ListenGroups {
         if (data.group) {
           data.group.id = idGroup;
           that.groups_repository.updateObject(data.group);
-          console.log(that.groups_repository);
-          console.log(that.groups_repository.find(data.group.id));
         }
       });
     }

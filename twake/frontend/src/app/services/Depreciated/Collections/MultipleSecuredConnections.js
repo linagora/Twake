@@ -55,7 +55,6 @@ export default class MultipleSecuredConnections {
     }
 
     if (this.secured_connections[route]) {
-      console.log('Connection to ' + route + ' already set.');
       return;
     }
 

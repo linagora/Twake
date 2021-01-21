@@ -292,10 +292,7 @@ class WorkspacesApps extends Observable {
     this.notify();
   }
 
-  openAppPopup(app_id) {
-    //TODO
-    console.log('Open App Popup loader waiting for content');
-  }
+  openAppPopup(app_id) {}
 
   getAppIcon(app, feather = false) {
     if (app && app.simple_name) {

@@ -92,7 +92,6 @@ export default class RepetitionSelector extends React.Component {
   }
 
   render() {
-    console.log(this.state.value, this.state.date);
     return (
       <div>
         <Select
@@ -100,9 +99,7 @@ export default class RepetitionSelector extends React.Component {
           options={this.options}
           value={this.state.value}
           onChange={v => {
-            console.log(v);
             if (v.includes('customSelect')) {
-              console.log('Avant', this.state.date);
               MediumPopupManager.open(
                 <Repetitionpopup date={this.state.date} value={'RRule.DAILY'} />,
                 {

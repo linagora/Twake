@@ -19,7 +19,6 @@ export default class TaskPicker extends Component {
 
   constructor(props) {
     super(props);
-    console.log('uri : ' + 'boards/' + Workspaces.currentWorkspaceId);
     this.tasks_collection_key = 'tasks_picker_' + Workspaces.currentWorkspaceId;
     this.collection_key = [];
 
@@ -124,11 +123,6 @@ export default class TaskPicker extends Component {
     );
   }
   renderListPicker() {
-    console.log(Collections.get('lists').did_load_first_time);
-    console.log(
-      Collections.get('lists').findBy({ board_id: this.state.currentBoard.id }),
-      this.state.currentBoard.id,
-    );
     var loading = !Collections.get('lists').did_load_first_time[
       this.tasks_collection_key + '_' + this.state.currentBoard.id
     ];

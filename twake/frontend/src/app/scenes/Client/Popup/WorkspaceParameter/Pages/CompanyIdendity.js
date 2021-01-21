@@ -14,7 +14,6 @@ export default class CompanyIdendity extends Component {
   constructor() {
     super();
     var group = Collections.get('groups').find(groupService.currentGroupId);
-    console.log(group);
     this.state = {
       i18n: Languages,
       group: Collections.get('groups'),
@@ -41,7 +40,6 @@ export default class CompanyIdendity extends Component {
           that.groupLogo.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ groupLogo: first });
-        console.log(that.state.groupLogo);
         reader.readAsDataURL(first);
       }
     });
