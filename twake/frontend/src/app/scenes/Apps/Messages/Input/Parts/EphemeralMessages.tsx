@@ -35,11 +35,7 @@ export default (props: Props) => {
       .sort((a: any, b: any) => a.creation_date - b.creation_date);
   };
 
-  const listener = Collections.get('messages').useListener(useState);
-
-  useEffect(() => () => {
-    Collections.get('messages').removeListener(listener);
-  }, []);
+  Collections.get('messages').useListener(useState);
 
   let lastEphemeral: any = null;
   getEphemeralMessages().forEach((item: any) => {

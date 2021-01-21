@@ -29,10 +29,6 @@ export default (props: Props) => {
     'msgcontent',
   ]);
 
-  useEffect(() => () => {
-    Collections.get('messages').removeListener(listener);
-  }, []);
-
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
     var app_id = props.message.application_id;
     var type = 'interactive_message_action';

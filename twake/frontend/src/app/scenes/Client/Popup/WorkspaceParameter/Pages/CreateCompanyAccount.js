@@ -23,6 +23,11 @@ export default class CreateCompanyAccount extends Component {
     };
     Languages.addListener(this);
   }
+
+  componentWillUnmount() {
+    Languages.removeListener(this);
+  }
+
   save() {
     if (!(this.state.password || '').trim() || (this.state.password || '').length < 8) {
       return;

@@ -9,7 +9,6 @@ export default class RepetitionSelector extends React.Component {
   constructor(props) {
     super();
     this.props = props;
-    console.log(this.props.rrule);
 
     this.state = {
       value: this.props.value,
@@ -78,7 +77,6 @@ export default class RepetitionSelector extends React.Component {
           '\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
       },
     ];
-    console.log('LAAAAAA');
 
     if (this.props.rrule !== undefined) {
       this.options.push({
@@ -92,6 +90,7 @@ export default class RepetitionSelector extends React.Component {
       });
     }
   }
+
   render() {
     console.log(this.state.value, this.state.date);
     return (
@@ -119,5 +118,9 @@ export default class RepetitionSelector extends React.Component {
         />
       </div>
     );
+  }
+
+  componentWillUnmount() {
+    Languages.removeListener(this);
   }
 }

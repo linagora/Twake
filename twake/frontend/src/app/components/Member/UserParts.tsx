@@ -11,7 +11,8 @@ import UsersService from 'services/user/user.js';
 export const useUsersListener = (usersIds: string[]) => {
   const channelMembers = (usersIds || []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
-  );
+    );
+  OldCollections.get('users').useListener(useState, channelMembers);
 
   useEffect(() => {
     channelMembers?.map(userId => {
@@ -25,8 +26,6 @@ export const useUsersListener = (usersIds: string[]) => {
       });
     };
   }, []);
-
-  OldCollections.get('users').useListener(useState, channelMembers);
 };
 
 export const getUserParts = (props: {

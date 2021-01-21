@@ -19,11 +19,8 @@ export default React.memo((props: Props) => {
 
   const previousMessage = Collections.get('messages').find(props.previousMessageId);
   const message = Collections.get('messages').find(props.messageId);
-  const listener = Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
 
-  useEffect(() => () => {
-    Collections.get('messages').removeListener(listener);
-  }, []);
+  Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
 
   const isFirstNewMessage =
     (message?.creation_date || 0) >= props.unreadAfter &&

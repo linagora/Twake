@@ -60,6 +60,7 @@ export default class MessageHeader extends Component<Props, State> {
     if (senderData.type === 'user') {
       ListenUsers.cancelListenUser(senderData.id);
     }
+    Collections.get('users').removeListener(this);
   }
 
   render() {

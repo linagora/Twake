@@ -28,7 +28,6 @@ export default class RepetitionSelector extends React.Component {
       colorFont: '#837dff',
     };
     this.days = [];
-    console.log('LA DATE ', this.props.date);
     Languages.addListener(this);
     this.rule = new RRule();
     moment.updateLocale({
@@ -36,6 +35,10 @@ export default class RepetitionSelector extends React.Component {
         dow: 1,
       },
     });
+  }
+
+  componentWillUnmount() {
+    Languages.removeListener(this);
   }
 
   render() {

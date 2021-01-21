@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 let observables_count = 0;
 export default class Observable {
@@ -15,8 +15,17 @@ export default class Observable {
     this.observableName = name;
   }
   useListener(_removed = undefined, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
-    const [_, setState] = useState(0);
-    return this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
+    const [, setState] = useState(0);
+    const listener = this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
+
+    useEffect(
+      () => () => {
+        this.removeListener(listener);
+      },
+      [],
+    );
+
+    return listener;
   }
   addListener(listener, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {

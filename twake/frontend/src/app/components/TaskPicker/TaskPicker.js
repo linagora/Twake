@@ -48,7 +48,7 @@ export default class TaskPicker extends Component {
     );
   }
   componentWillUnmount() {
-    console.log('unmout');
+    Languages.removeListener(this);
     Collections.get('boards').removeSource(this.tasks_collection_key);
     Collections.get('lists').removeSource(this.tasks_collection_key);
     Collections.get('tasks').removeSource(this.tasks_collection_key);
@@ -57,7 +57,6 @@ export default class TaskPicker extends Component {
     Collections.get('tasks').removeListener();
   }
   selectBoard(board) {
-    console.log('collection_key', this.collection_key);
     if (this.collection_key.indexOf(this.tasks_collection_key + '_' + board.id) < 0) {
       this.collection_key.push(this.tasks_collection_key + '_' + board.id);
       Collections.get('lists').addSource(
