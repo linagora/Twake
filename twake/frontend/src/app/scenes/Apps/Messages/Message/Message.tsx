@@ -272,5 +272,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
 
   componentWillUnmount() {
     Collections.get('messages').removeListener(this);
+    this.messageEditorService.removeListener(this);
   }
 }
