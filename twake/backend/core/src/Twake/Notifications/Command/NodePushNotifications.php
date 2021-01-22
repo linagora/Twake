@@ -17,7 +17,7 @@ use Pusher\Model\Push;
 use Pusher\Pusher;
 
 
-class NotificationQueueCommand extends ContainerAwareCommand
+class NodePushNotifications extends ContainerAwareCommand
 {
 
     var $parameters = [];
