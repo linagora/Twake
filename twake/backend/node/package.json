@@ -41,6 +41,7 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-typescript": "^7.10.4",
     "@types/amqp-connection-manager": "^2.0.10",
+    "@types/analytics-node": "^3.1.4",
     "@types/chai": "^4.2.12",
     "@types/config": "0.0.36",
     "@types/eslint": "^7.2.3",
@@ -78,6 +79,7 @@
   "dependencies": {
     "amqp-connection-manager": "^3.2.1",
     "amqplib": "^0.6.0",
+    "analytics-node": "^3.5.0",
     "cassandra-driver": "^4.6.0",
     "class-transformer": "^0.3.1",
     "config": "^3.3.2",

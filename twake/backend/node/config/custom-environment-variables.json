@@ -9,6 +9,9 @@
       }
     }
   },
+  "tracker": {
+    "segment": "SEGMENT_SECRET_KEY"
+  },
   "auth": {
     "jwt": {
       "secret": "AUTH_JWT_SECRET"

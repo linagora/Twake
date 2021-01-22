@@ -7,7 +7,7 @@ import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 
 @Prefix("/internal/services/notifications/v1")
-@Consumes(["webserver", "database", "pubsub"])
+@Consumes(["webserver", "database", "pubsub", "tracker"])
 export default class NotificationService extends TwakeService<NotificationServiceAPI> {
   version = "1";
   name = "notifications";

@@ -9,10 +9,14 @@
     "database",
     "pubsub",
     "realtime",
-    "phpnode"
+    "phpnode",
+    "tracker"
   ],
   "logger": {
     "level": "debug"
+  },
+  "tracker": {
+    "segment": ""
   },
   "webserver": {
     "port": 3000,

@@ -41,6 +41,11 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
+import { trackedEventBus } from "../../../../core/platform/framework/pubsub";
+import {
+  TrackerEventActions,
+  TrackerDataListener,
+} from "../../../../core/platform/services/tracker/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -320,6 +325,9 @@ export class Service implements ChannelService {
         });
       }
 
+      trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_OPEN_CLIENT, {
+        user: context.user,
+      });
       return result;
     }
 
@@ -466,6 +474,9 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
+    trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_CREATED, {
+      channel: channel,
+    });
     logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
