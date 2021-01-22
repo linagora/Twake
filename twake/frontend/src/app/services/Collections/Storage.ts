@@ -151,10 +151,8 @@ export default class CollectionStorage {
                   reject,
                 );
               } else if (mongoItems.length === 0) {
-                console.log('item not found', item, path);
                 resolve();
               } else {
-                console.log('too many items', mongoItems);
                 reject(
                   'The remove filter was not precise enough, cannot remove multiple elements at once.',
                 );

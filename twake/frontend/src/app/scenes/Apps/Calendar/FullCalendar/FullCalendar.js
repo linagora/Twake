@@ -103,7 +103,6 @@ export default class FullCalendar extends Component {
       },
       eventClick: function (_event) {
         if (this.disableUpdate) {
-          console.log('click event');
           this.disableUpdate = false;
           this.refreshEvent();
         }
@@ -217,7 +216,6 @@ export default class FullCalendar extends Component {
 
   refreshEvent() {
     if (this.disableUpdate) {
-      console.log('cancelled update');
       this.missedRefresh = true;
       return;
     }

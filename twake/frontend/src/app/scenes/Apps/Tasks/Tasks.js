@@ -38,8 +38,6 @@ export default class Tasks extends Component {
     TasksService.addListener(this);
     WorkspacesUsers.addListener(this);
 
-    console.log(this.props.channel);
-
     this.boards_collection_key = 'boards_' + this.props.channel.data.workspace_id;
 
     Collections.get('boards').addListener(this);

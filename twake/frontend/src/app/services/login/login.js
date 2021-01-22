@@ -559,7 +559,6 @@ class Login extends Observable {
       if (res.data.status === 'success') {
         callback(th, 0);
       } else {
-        //console.log(res.errors);
         if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;

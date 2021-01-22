@@ -1,3 +1,4 @@
+import Logger from "services/Logger";
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
@@ -19,6 +20,9 @@ type Options = {
     };
   };
 };
+
+const logger = Logger.getLogger("Collections");
+
 class Collections {
   private collections: { [key: string]: Collection<Resource<any>> } = {};
   private options: Options = { transport: {} };
@@ -51,6 +55,7 @@ class Collections {
     existingCollectionCreator?: () => C,
     options?: CollectionOptions,
   ): Collection<G> {
+    logger.debug(`Get collection ${path}`);
     options = options || {};
 
     const parts = path.split('::');
@@ -59,7 +64,7 @@ class Collections {
 
     let formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
     if (formattedPath !== path) {
-      console.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
+      logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
     let creation = false;

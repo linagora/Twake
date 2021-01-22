@@ -64,7 +64,6 @@ class Groups extends Observable {
     Api.post('workspace/group/data/name', { groupId: this.currentGroupId, name: name }, res => {
       if (res.errors.length == 0) {
         var group = { id: that.currentGroupId, name: name };
-        console.log(Collections.get('groups'));
         Collections.get('groups').updateObject(group);
         ws.publish('group/' + group.id, { data: { group: group } });
       }
@@ -80,8 +79,6 @@ class Groups extends Observable {
     var data = new FormData();
     if (logo !== false) {
       data.append('logo', logo);
-    } else {
-      console.log('no logo');
     }
     data.append('groupId', this.currentGroupId);
     var that = this;

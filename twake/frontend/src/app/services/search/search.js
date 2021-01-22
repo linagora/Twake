@@ -61,15 +61,7 @@ class SearchService extends Observable {
     ChannelsService.select(item.channel);
 
     if (ChannelsService.currentChannelFrontId == item.channel.front_id) {
-      console.log(item);
-
       if (!item.message.parent_message_id) {
-        console.log(
-          'search Ea',
-          item.channel.id || '',
-          item.message.parent_message_id || '',
-          item.message.id || '',
-        );
         MessagesService.scrollToMessage(
           item.channel.id,
           item.message.parent_message_id,

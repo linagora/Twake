@@ -63,7 +63,6 @@ export default class Drive extends Component {
     SelectionsManager.removeListener(this);
 
     if (this.drive_channel) {
-      console.log('unmount drive remove source');
       Collections.get('drive').removeSource(
         this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
       );
@@ -83,9 +82,6 @@ export default class Drive extends Component {
     }
     this.state.app_drive_service.current_directory_channels[this.drive_channel] =
       currentdir || this.props.directory || {};
-
-    console.log(this.state.app_drive_service.current_directory_channels[this.drive_channel]);
-
     this.did_mount = false;
     this.onUpdate(this.props, this.state);
 

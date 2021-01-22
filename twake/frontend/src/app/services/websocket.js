@@ -169,11 +169,6 @@ class Websocket extends Observable {
       //30 seconds
       if (LoginService.currentUserId) {
         LoginService.updateUser();
-
-        console.log(
-          'Refresh notifications',
-          new Date().getTime() - this.last_reconnect_call_if_needed.getTime(),
-        );
       }
 
       this.last_reconnect_call_if_needed = new Date();
@@ -192,7 +187,6 @@ class Websocket extends Observable {
     if (state != this.connected) {
       this.connected = state;
       this.notify();
-      console.log('CONNECTED_STATE = ', state);
     }
   }
 

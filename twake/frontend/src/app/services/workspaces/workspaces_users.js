@@ -476,7 +476,6 @@ class WorkspacesUsers extends Observable {
         },
         res => {
           if (res.errors.length > 0 || res.data.updated == 0) {
-            console.log('error, going to previous state' + previousState);
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }

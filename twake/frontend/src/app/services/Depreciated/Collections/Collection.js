@@ -813,8 +813,6 @@ export default class Collection extends Observable {
       return;
     }
 
-    //TODO reimplement this
-    console.log('retry' + JSON.stringify(object));
     var that = this;
     if (!object._retrying) {
       // only one retry
@@ -982,7 +980,6 @@ export default class Collection extends Observable {
         }
         Object.values(item.objects).forEach(itemOfList => {
           if (itemOfList._failed || itemOfList._retrying) {
-            console.log('retry from cache');
             that.retry(itemOfList);
           }
         });

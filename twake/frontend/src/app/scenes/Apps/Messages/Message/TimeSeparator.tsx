@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Message.scss';
 import moment from 'moment';
 import 'moment-timezone';

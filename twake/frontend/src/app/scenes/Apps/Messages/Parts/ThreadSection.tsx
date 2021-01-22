@@ -26,11 +26,18 @@ type Props = {
 
 export default class ThreadSection extends Component<Props> {
   node: any;
+  listener: any;
+
+  componentWillUnmount() {
+    if (this.listener) {
+      Collections.get('users').removeListener(this.listener);
+    }
+  }
 
   render() {
     let senderData: any = getSender(this.props.message);
     if (senderData.type === 'user') {
-      Collections.get('users').addListener(this);
+      this.listener = Collections.get('users').addListener(this);
       Collections.get('users').listenOnly(this, [senderData.id]);
     }
     if (!senderData.type || senderData.type === 'unknown') {

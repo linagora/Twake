@@ -23,7 +23,6 @@ export default class BoardEditor extends React.Component {
       if (board) {
         this.state.name = board.title;
         this.state.emoji = board.emoji;
-        console.log(this.state);
       }
     }
   }

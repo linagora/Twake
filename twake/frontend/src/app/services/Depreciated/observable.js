@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 let observables_count = 0;
 export default class Observable {
@@ -15,8 +15,17 @@ export default class Observable {
     this.observableName = name;
   }
   useListener(_removed = undefined, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
-    const [_, setState] = useState(0);
-    this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
+    const [, setState] = useState(0);
+    const listener = this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
+
+    useEffect(
+      () => () => {
+        this.removeListener(listener);
+      },
+      [],
+    );
+
+    return listener;
   }
   addListener(listener, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
     if (this.observableListenersList.length == 0 && this.onFirstListener) {
@@ -27,6 +36,8 @@ export default class Observable {
       this.observableListenersShouldNotifyList.push(shouldNotify);
       this.observableListenersList.push(listener);
     }
+
+    return listener;
   }
   removeListener(listener) {
     var index = this.observableListenersList.indexOf(listener);
@@ -51,7 +62,6 @@ export default class Observable {
     return true;
   }
   notify(force = false) {
-    let count = [];
     for (var i = 0; i < this.observableListenersList.length; i++) {
       var update =
         force ||
@@ -66,7 +76,6 @@ export default class Observable {
         var data = {};
         data[this.observableName] = this;
         try {
-          count.push(this.observableListenersList[i]);
           if (typeof this.observableListenersList[i] === 'function') {
             this.observableListenersList[i](data);
           } else {

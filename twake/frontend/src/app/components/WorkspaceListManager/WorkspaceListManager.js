@@ -92,10 +92,7 @@ export default class WorkspaceListManager extends React.Component {
       return '';
     }
 
-    console.log(item);
-
     var id = item.id;
-
     var group = Collections.get('groups').find(id);
     var workspace = null;
     var type = '(company)';
