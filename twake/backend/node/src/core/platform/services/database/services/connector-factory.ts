@@ -1,4 +1,4 @@
-import { DatabaseType } from ".";
+import { DatabaseSecret, DatabaseType } from ".";
 import { ConnectionOptions, Connector } from "./orm/connectors";
 import {
   CassandraConnectionOptions,
@@ -7,12 +7,12 @@ import {
 import { MongoConnectionOptions, MongoConnector } from "./orm/connectors/mongodb/mongodb";
 
 export class ConnectorFactory {
-  public create(type: DatabaseType, options: ConnectionOptions): Connector {
+  public create(type: DatabaseType, options: ConnectionOptions, secret: DatabaseSecret): Connector {
     switch (type) {
       case "cassandra":
-        return new CassandraConnector(type, options as CassandraConnectionOptions);
+        return new CassandraConnector(type, options as CassandraConnectionOptions, secret);
       case "mongodb":
-        return new MongoConnector(type, options as MongoConnectionOptions);
+        return new MongoConnector(type, options as MongoConnectionOptions, secret);
       default:
         throw new Error(`${type} is not supported`);
     }

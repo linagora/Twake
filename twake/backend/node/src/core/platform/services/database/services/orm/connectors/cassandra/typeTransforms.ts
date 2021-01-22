@@ -1,10 +1,9 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
-import crypto, { randomBytes } from 'crypto' 
+import { decrypt, encrypt } from "../../utils";
 
 export const cassandraType = {
   encoded_string: "TEXT",
@@ -19,9 +18,13 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-const encryptionKey = randomBytes(32);
+type TransformOptions = any; //To complete
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+export const transformValueToDbString = (
+  v: any,
+  type: ColumnType,
+  options: TransformOptions = {},
+): string => {
   if (type === "number") {
     if (!isNumber(v)) {
       throw new Error(`'${v}' is not a ${type}`);
@@ -46,7 +49,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
         v = null;
       }
     }
-    v = encrypting(v);
+    v = encrypt(v, options.secret);
     return `'${v || ""}'`;
   }
   if (type === "blob") {
@@ -65,11 +68,15 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   return `'${v || ""}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
-  if (v !== null && type === "encoded_string" || type === "encoded_json"){
-    try{
-      v = decrypting(v);
-    }catch(err){
+export const transformValueFromDbString = (
+  v: any,
+  type: string,
+  options: TransformOptions = {},
+): any => {
+  if ((v !== null && type === "encoded_string") || type === "encoded_json") {
+    try {
+      v = decrypt(v, options.secret);
+    } catch (err) {
       v = v;
     }
     if (type === "encoded_json") {
@@ -87,31 +94,5 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
       return null;
     }
   }
-  return v
+  return v;
 };
-
-export function encrypting (v: any ): string {
-  const iv = randomBytes(16);
-    var encrypt = ((val: any) => {
-      const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
-      return Buffer.concat([
-        cipher.update(JSON.stringify(val)),
-        cipher.final()
-      ]).toString('hex');
-    });
-  return (iv.toString('hex') + ":" + encrypt(v))
-}
-
-export function decrypting (v: any): any {
-  var decrypt = ((val: string) => {
-    const encryptedArray = val.split(':');
-    const iv = Buffer.from(encryptedArray[0], 'hex');
-    const encrypted = Buffer.from(encryptedArray[1], 'hex');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', encryptionKey, iv);
-    return JSON.parse(Buffer.concat([
-      decipher.update(encrypted),
-      decipher.final()
-    ]).toString());
-  });
-  return decrypt(v)
-}

@@ -1,6 +1,6 @@
 import { TwakeService, logger, ServiceName } from "../../framework";
 import { DatabaseServiceAPI } from "./api";
-import DatabaseService from "./services";
+import DatabaseService, { DatabaseSecret } from "./services";
 import { DatabaseType } from "./services";
 import { ConnectionOptions } from "./services/orm/connectors";
 
@@ -12,6 +12,7 @@ export default class Database extends TwakeService<DatabaseServiceAPI> {
 
   public async doInit(): Promise<this> {
     const driver = this.configuration.get<DatabaseType>("type");
+    const secret = this.configuration.get<DatabaseSecret>("secret");
 
     if (!driver) {
       throw new Error("Database driver name must be specified in 'database.type' contfiguration");
@@ -19,7 +20,7 @@ export default class Database extends TwakeService<DatabaseServiceAPI> {
 
     const configuration: ConnectionOptions = this.configuration.get<ConnectionOptions>(driver);
 
-    this.service = new DatabaseService(driver, configuration);
+    this.service = new DatabaseService(driver, configuration, secret);
     const dbConnector = this.service.getConnector();
 
     try {

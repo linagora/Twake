@@ -275,7 +275,7 @@ export class CassandraConnector extends AbstractConnector<
             `${transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              columnsDefinition[key].options,
+              { columns: columnsDefinition[key].options, secret: this.secret },
             )}`,
           ]);
         //Set primary key
@@ -284,7 +284,7 @@ export class CassandraConnector extends AbstractConnector<
           `${transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            columnsDefinition[key].options,
+            { columns: columnsDefinition[key].options, secret: this.secret },
           )}`,
         ]);
 
@@ -343,7 +343,7 @@ export class CassandraConnector extends AbstractConnector<
             `${key} = ${transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              columnsDefinition[key].options,
+              { columns: columnsDefinition[key].options, secret: this.secret },
             )}`,
         );
 
@@ -411,7 +411,7 @@ export class CassandraConnector extends AbstractConnector<
         entity[columnsDefinition[key].nodename] = transformValueFromDbString(
           row[key],
           columnsDefinition[key].type,
-          {key: key, ...columnsDefinition[key].options},
+          { column: { key: key, ...columnsDefinition[key].options }, secret: this.secret },
         );
       });
       entities.push(entity);
