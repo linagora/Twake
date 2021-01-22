@@ -5,7 +5,6 @@ import { getService } from "./services";
 import web from "./web/index";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
-import TrackerAPI from "../../core/platform/services/tracker/provider";
 
 @Prefix("/internal/services/channels/v1")
 @Consumes(["webserver", "database", "pubsub", "tracker"])
@@ -22,9 +21,8 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
-    const tracker = this.context.getProvider<TrackerAPI>("tracker");
 
-    this.service = getService(database, pubsub, tracker);
+    this.service = getService(database, pubsub);
     this.service.init && (await this.service.init());
 
     fastify.register((instance, _opts, next) => {

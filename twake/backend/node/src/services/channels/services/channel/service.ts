@@ -41,10 +41,11 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
-import TrackerAPI, {
-  IdentifyObjectType,
-  TrackedEventType,
-} from "../../../../core/platform/services/tracker/provider";
+import { trackedEventBus } from "../../../../core/platform/framework/pubsub";
+import {
+  TrackerEventActions,
+  TrackerDataListener,
+} from "../../../../core/platform/services/tracker/types";
 
 export class Service implements ChannelService {
   version: "1";
@@ -54,7 +55,6 @@ export class Service implements ChannelService {
     private service: ChannelService,
     private channelService: ChannelServiceAPI,
     private database: DatabaseServiceAPI,
-    private tracker: TrackerAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -179,16 +179,6 @@ export class Service implements ChannelService {
 
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
-    const trackedEvent: TrackedEventType = {
-      userId: channelToSave.owner,
-      event: "twake:channel_create",
-      timestamp: new Date(),
-      properties: {
-        visibility: channelToSave.visibility,
-      },
-    };
-
-    this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
     return saveResult;
   }
 
@@ -334,19 +324,10 @@ export class Service implements ChannelService {
           } as unknown) as UserDirectChannel;
         });
       }
-      const identity: IdentifyObjectType = {
-        userId: context.user.id,
-        timestamp: new Date(),
-      };
 
-      const trackedEvent: TrackedEventType = {
-        userId: context.user.id,
-        event: "twake:open",
-        timestamp: new Date(),
-      };
-
-      this.tracker.identify(identity, (err: Error) => logger.error(err));
-      this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
+      trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_OPEN_CLIENT, {
+        user: context.user,
+      });
       return result;
     }
 
@@ -493,6 +474,9 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
+    trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_CREATED, {
+      channel: channel,
+    });
     logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 

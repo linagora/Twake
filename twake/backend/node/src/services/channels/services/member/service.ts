@@ -23,16 +23,16 @@ import {
   PubsubParameter,
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
-import TrackerAPI, { TrackedEventType } from "../../../../core/platform/services/tracker/provider";
+import { trackedEventBus } from "../../../../core/platform/framework/pubsub";
+import {
+  TrackerDataListener,
+  TrackerEventActions,
+} from "../../../../core/platform/services/tracker/types";
 
 export class Service implements MemberService {
   version: "1";
 
-  constructor(
-    private service: MemberService,
-    private channelService: ChannelServiceAPI,
-    private tracker: TrackerAPI,
-  ) {}
+  constructor(private service: MemberService, private channelService: ChannelServiceAPI) {}
 
   async init(): Promise<this> {
     try {
@@ -137,18 +137,7 @@ export class Service implements MemberService {
         (isDirectChannel && userIsDefinedInChannelUserList)
       ) {
         const saveResult = await this.service.save(member, options, context);
-        this.onCreated(context.channel, member, saveResult);
-
-        const trackedEvent: TrackedEventType = {
-          userId: member.user_id,
-          event: context.user.id !== member.user_id ? "twake:channel_invite" : "twake:channel_join",
-          properties: {
-            visibility: channel.visibility,
-          },
-          timestamp: new Date(),
-        };
-
-        this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
+        this.onCreated(channel, member, context.user, saveResult);
       } else {
         throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
       }
@@ -258,13 +247,21 @@ export class Service implements MemberService {
   @PubsubPublish("channel:member:created")
   onCreated(
     @PubsubParameter("channel")
-    channel: Channel,
+    channel: ChannelEntity,
     @PubsubParameter("member")
     member: ChannelMember,
+    @PubsubParameter("user")
+    user: User,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelMember>,
   ): void {
     console.log("Member created", member);
+
+    trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_MEMBER_CREATED, {
+      channel,
+      user,
+      member,
+    });
   }
 
   @PubsubPublish("channel:member:deleted")

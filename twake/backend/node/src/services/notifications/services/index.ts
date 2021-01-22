@@ -11,22 +11,19 @@ import { getService as getBadgeService } from "./badges";
 import { getService as getPreferencesService } from "./preferences";
 import { getService as getChannelThreadsService } from "./channel-thread-users";
 import { NotificationEngine } from "./engine";
-import TrackerAPI from "../../../core/platform/services/tracker/provider";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
-  tracker: TrackerAPI,
 ): NotificationServiceAPI {
-  return getServiceInstance(databaseService, pubsub, tracker);
+  return getServiceInstance(databaseService, pubsub);
 }
 
 function getServiceInstance(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
-  tracker: TrackerAPI,
 ): NotificationServiceAPI {
-  return new Service(databaseService, pubsub, tracker);
+  return new Service(databaseService, pubsub);
 }
 
 class Service implements NotificationServiceAPI {
@@ -36,11 +33,11 @@ class Service implements NotificationServiceAPI {
   engine: NotificationEngine;
   channelThreads: ChannelThreadUsersServiceAPI;
 
-  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, tracker: TrackerAPI) {
+  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
     this.badges = getBadgeService(databaseService);
     this.channelPreferences = getPreferencesService(databaseService);
     this.channelThreads = getChannelThreadsService(databaseService);
-    this.engine = new NotificationEngine(this, pubsub, tracker);
+    this.engine = new NotificationEngine(this, pubsub);
   }
 
   async init(context: TwakeContext): Promise<this> {

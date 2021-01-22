@@ -9,13 +9,15 @@ import {
 } from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
-import TrackerAPI, {
-  TrackedEventType,
-} from "../../../../../../core/platform/services/tracker/provider";
+import { trackedEventBus } from "../../../../../../core/platform/framework/pubsub";
+import {
+  TrackerDataListener,
+  TrackerEventActions,
+} from "../../../../../../core/platform/services/tracker/types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
-  constructor(readonly service: NotificationServiceAPI, readonly tracker: TrackerAPI) {}
+  constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {
     in: "message:created",
@@ -29,18 +31,6 @@ export class NewChannelMessageProcessor
   }
 
   async process(message: MessageNotification): Promise<MentionNotification> {
-    const trackedEvent: TrackedEventType = {
-      userId: message.sender,
-      event: "twake:message_sent",
-      timestamp: new Date(),
-      properties: {
-        is_direct_channel: message.workspace_id === "direct" ? true : false,
-        is_replying_to_thread: message.thread_id ? true : false,
-      },
-    };
-
-    this.tracker.track(trackedEvent, (err: Error) => logger.error(err));
-
     logger.info(
       `${this.name} - Processing notification for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
     );
@@ -63,6 +53,9 @@ export class NewChannelMessageProcessor
         } : ['${usersToNotify.join("', '")}']`,
       );
 
+      trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_MESSAGE_SENT, {
+        message,
+      });
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
