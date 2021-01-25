@@ -25,6 +25,9 @@ class Globals {
         this.window[key] = environment[key];
       }
     });
+    this.window.mixpanel_enabled = false;
+    window.mixpanel_enabled = false;
+    
     Object.keys(version).forEach(key => {
       this.window[key] = version[key];
     });
@@ -72,8 +75,6 @@ class Globals {
 
     if (typeof MixpanelInstance != 'undefined') {
       // eslint-disable-line no-undef
-      var mixpanel = undefined;
-      mixpanel = new MixpanelInstance('8d6e53f2820846e3784fcfd4b308acab'); // eslint-disable-line no-undef
       if (this.isReactNative) {
         // eslint-disable-next-line no-undef
         if (mixpanel && Platform.OS === 'ios') {
