@@ -183,7 +183,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       .limit(parseInt(options.pagination.limitStr));
 
     const entities: Table[] = [];
-    await results.forEach(row => {
+    results.forEach(row => {
       row = { ...row.set, ...row };
       const entity = new (entityType as any)();
       Object.keys(row)
