@@ -39,7 +39,7 @@ const getUserCompanies = (userId) => {
 
   return new Promise((resolve, reject) => {
     client.execute(query, (err, result) => {
-      if (err) console.log(err);
+      if (err || !result) reject(err);
 
       resolve(result.rows);
 
@@ -57,7 +57,7 @@ const getNumberOfUsersInCompany = (companyId) => {
 
       if (!result) throw "Something went wrong in getting Channels";
 
-      resolve({ companyId, numberOfUsers: result.rows[0].member_count });
+      resolve({ id: companyId, numberOfUsers: result.rows[0].member_count });
 
       // client.shutdown();
     });
@@ -75,8 +75,8 @@ const addChannelEntity = (channel, direct_channel_company_id) => {
     archived: false,
     channel_group: channel.direct
       ? direct_channel_company_id
-      : channel.channel_group_name, // pass it in prams!
-    connectors: channel.connectors, //json.decode?? parse
+      : channel.channel_group_name,
+    connectors: JSON.parse(channel.connectors),
     description: channel.description,
     icon: channel.icon,
     is_default: true,
@@ -99,7 +99,7 @@ const addChannelEntity = (channel, direct_channel_company_id) => {
     };
   }
 
-  // console.log(newChannel);
+  console.log(newChannel);
 };
 
 const getCompanyWithBigestNumberOfUsers = async (matchedCompanies) => {
@@ -107,18 +107,10 @@ const getCompanyWithBigestNumberOfUsers = async (matchedCompanies) => {
     matchedCompanies.map(({ group_id }) => getNumberOfUsersInCompany(group_id))
   );
 
-  /*
-  [
-    {
-      companyId: TimeUuid: 5bae5ba6-f409-11ea-919a-0242ac120006,
-      numberOfUsers: Long: 0 
-    },
-    {
-      companyId: TimeUuid: 6a938522-f640-11ea-b92e-0242ac120006,
-      numberOfUsers: Long: 1
-    }
-  ]
-  */
+  // Math.max.apply(Math, companies.map(company => company.numberOfUsers))
+  return companies.reduce((prev, current) =>
+    prev.numberOfUsers > current.numberOfUsers ? prev : current
+  );
 };
 
 const determinareCompanyId = async (channel) => {
@@ -129,15 +121,15 @@ const determinareCompanyId = async (channel) => {
     switch (true) {
       case !matchedCompanies.length:
         //delete channel
-        // console.log("Delete");
         break;
       case matchedCompanies.length === 1:
-        // console.log(matchedCompanies[0].group_id);
-        // directChannelCompanyId = matchedCompanies[0]
+        directChannelCompanyId = matchedCompanies[0].group_id;
         break;
       case matchedCompanies.length > 1:
-        await getCompanyWithBigestNumberOfUsers(matchedCompanies);
-        // console.log("222222222222222222");
+        const companyWithBigestNumberOfUsers = await getCompanyWithBigestNumberOfUsers(
+          matchedCompanies
+        );
+        directChannelCompanyId = companyWithBigestNumberOfUsers.id;
         break;
     }
   };
@@ -158,7 +150,7 @@ const determinareCompanyId = async (channel) => {
     _fillCompanyId(matchedCompanies);
   }
 
-  // console.log(userCompanies);
+  return directChannelCompanyId;
 };
 
 const importChannel = async (channel) => {
@@ -168,10 +160,9 @@ const importChannel = async (channel) => {
     configuration.encryption.defaultIv
   );
 
-  // Determinate a company id: direct_channel_company_id
-  const directChannelCompanyId = determinareCompanyId(decryptedChannel);
+  const directChannelCompanyId = await determinareCompanyId(decryptedChannel);
 
-  // addChannelEntity(decryptedChannel, "direct_channel_company_id");
+  addChannelEntity(decryptedChannel, directChannelCompanyId);
 };
 
 const init = () => {

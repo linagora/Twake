@@ -175,14 +175,14 @@ To Node channels:
 - id uuid, (PHP:id)
 - archived boolean, (false)
 - channel_group text, direct ? direct_channel_company_id : (PHP:channel_group_name)
-- connectors frozen<set<text>>, (json_decode(PHP:connectors))
+- connectors json, (json_decode(PHP:connectors))
 - description text, (PHP:description)
 - icon text, (PHP:icon)
 - is_default boolean, (true)
 - name text, (PHP:name)
 - owner uuid, (set to empty string "")
 - visibility text, direct ? "direct" : (private ? "private" : "public")
-- members frozen<set<text>>, direct ? (PHP:identifier).split("+") : []
+- members json, direct ? (PHP:identifier).split("+") : []
 
 #### Step 2 If channel is "Direct"
 
