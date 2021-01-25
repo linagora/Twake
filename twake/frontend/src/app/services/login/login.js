@@ -319,22 +319,6 @@ class Login extends Observable {
   }
 
   startApp(user) {
-    if (!window.mixpanel) {
-      Globals.window.mixpanel_enabled = false;
-    }
-    if (Globals.window.mixpanel_enabled) {
-      window.mixpanel.identify(user.id);
-      window.mixpanel.people.set({
-        $email: ((user.mails || []).filter(mail => mail.main)[0] || {}).email,
-        $first_name: user.firstname,
-        $last_name: user.lastname,
-        object: JSON.stringify(user),
-      });
-    }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
-
     this.currentUserId = user.id;
     DepreciatedCollections.get('users').updateObject(user);
 

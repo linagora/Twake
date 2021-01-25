@@ -146,8 +146,6 @@ class Calendar extends Observable {
     if (!event.front_id) {
       return;
     }
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Update Event');
     event = Collections.get('events').completeObject(event, event.front_id);
 
     if (event.workspaces_calendars && event.workspaces_calendars.length > 0) {
