@@ -1,16 +1,12 @@
 import { Connector } from ".";
-import { ConnectionOptions, DatabaseSecret, DatabaseType } from "../..";
+import { ConnectionOptions, DatabaseType } from "../..";
 import { FindOptions } from "../repository/repository";
 import { ColumnDefinition, EntityDefinition } from "../types";
 import { ListResult } from "../../../../../framework/api/crud-service";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
   implements Connector {
-  constructor(
-    protected type: DatabaseType,
-    protected options: T,
-    protected secret: DatabaseSecret,
-  ) {}
+  constructor(protected type: DatabaseType, protected options: T, protected secret: string) {}
 
   abstract connect(): Promise<this>;
 
@@ -41,7 +37,7 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
     return this.type;
   }
 
-  getSecret(): DatabaseSecret {
+  getSecret(): string {
     return this.secret;
   }
 }

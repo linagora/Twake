@@ -1,4 +1,4 @@
-import { DatabaseSecret, DatabaseType } from ".";
+import { DatabaseType } from ".";
 import { ConnectionOptions, Connector } from "./orm/connectors";
 import {
   CassandraConnectionOptions,
@@ -7,7 +7,7 @@ import {
 import { MongoConnectionOptions, MongoConnector } from "./orm/connectors/mongodb/mongodb";
 
 export class ConnectorFactory {
-  public create(type: DatabaseType, options: ConnectionOptions, secret: DatabaseSecret): Connector {
+  public create(type: DatabaseType, options: ConnectionOptions, secret: string): Connector {
     switch (type) {
       case "cassandra":
         return new CassandraConnector(type, options as CassandraConnectionOptions, secret);
