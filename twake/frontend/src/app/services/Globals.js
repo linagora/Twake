@@ -7,7 +7,6 @@
 
 import environment from 'environment/environment';
 import version from 'environment/version';
-// const mixpanel = new MixpanelInstance(window.mixpanel_id);
 
 
 class Globals {
@@ -73,28 +72,8 @@ class Globals {
 
     this.window.mixpanel_prefix = '';
 
-    if (typeof MixpanelInstance != 'undefined') {
-      // eslint-disable-line no-undef
-      if (this.isReactNative) {
-        // eslint-disable-next-line no-undef
-        if (mixpanel && Platform.OS === 'ios') {
-          this.window.mixpanel_prefix = 'mobile_';
-
-          (async () => {
-            await mixpanel.initialize();
-            this.window.mixpanel_enabled = true;
-            this.window.mixpanel.people = this.window.mixpanel;
-          })();
-
-          this.window.mixpanel = mixpanel;
-        } else {
-          this.window.mixpanel_enabled = false;
-        }
-      }
-    }
-
       // eslint-disable-next-line no-undef
-      if (typeof PushNotification != 'undefined') {
+    if (typeof PushNotification != 'undefined') {
       this.PushNotification = PushNotification; // eslint-disable-line no-undef
     }
 
