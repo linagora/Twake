@@ -5,14 +5,13 @@ import { FindOptions } from "../../repository/repository";
 import { ColumnDefinition, EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
-import { transformValueToDbString } from "./typeTransforms";
+import { transformValueFromDbString, transformValueToDbString } from "./typeTransforms";
 
 export { MongoPagination } from "./pagination";
 
 export interface MongoConnectionOptions {
   // TODO: More options
   uri: string;
-
   database: string;
 }
 
@@ -87,12 +86,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const set: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
-          .filter(key => entity[columnsDefinition[key].nodename] !== undefined)
+          .filter(key => columnsDefinition[key].nodename !== undefined)
           .forEach(key => {
             set[key] = transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              columnsDefinition[key].options,
+              { columns: columnsDefinition[key].options, secret: this.secret },
             );
           });
 
@@ -102,12 +101,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            columnsDefinition[key].options,
+            { columns: columnsDefinition[key].options, secret: this.secret },
           );
         });
 
         const collection = db.collection(`${entityDefinition.name}`);
-        promises.push(collection.updateOne(where, set, { upsert: true }));
+        promises.push(collection.updateOne(where, { $set: { set } }, { upsert: true }));
       });
 
       Promise.all(promises).then(results => {
@@ -131,7 +130,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            columnsDefinition[key].options,
+            { columns: columnsDefinition[key].options, secret: this.secret },
           );
         });
 
@@ -169,11 +168,10 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     //Set primary key
     const where: any = {};
     Object.keys(filters).forEach(key => {
-      where[key] = transformValueToDbString(
-        filters[key],
-        columnsDefinition[key].type,
-        columnsDefinition[key].options,
-      );
+      where[key] = transformValueToDbString(filters[key], columnsDefinition[key].type, {
+        columns: columnsDefinition[key].options,
+        secret: this.secret,
+      });
     });
 
     const db = await this.getDatabase();
@@ -182,19 +180,21 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const results = await collection
       .find(where)
       .skip(parseInt(options.pagination.page_token))
-      .limit(parseInt(options.pagination.limitStr))
-      .toArray();
+      .limit(parseInt(options.pagination.limitStr));
 
     const entities: Table[] = [];
-    results.forEach(row => {
+    await results.forEach(row => {
+      row = { ...row.set, ...row };
       const entity = new (entityType as any)();
-      Object.keys(row).forEach(key => {
-        entity[columnsDefinition[key].nodename] = transformValueToDbString(
-          row[key],
-          columnsDefinition[key].type,
-          columnsDefinition[key].options,
-        );
-      });
+      Object.keys(row)
+        .filter(key => columnsDefinition[key] !== undefined)
+        .forEach(key => {
+          entity[columnsDefinition[key].nodename] = transformValueFromDbString(
+            row[key],
+            columnsDefinition[key].type,
+            { columns: columnsDefinition[key].options, secret: this.secret },
+          );
+        });
       entities.push(entity);
     });
 

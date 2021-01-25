@@ -13,7 +13,11 @@ export default class DatabaseService implements DatabaseServiceAPI {
   private connector: Connector;
   private entityManager: RepositoryManager;
 
-  constructor(readonly type: DatabaseType, private options: ConnectionOptions) {
+  constructor(
+    readonly type: DatabaseType,
+    private options: ConnectionOptions,
+    readonly secret: DatabaseSecret,
+  ) {
     this.entityManager = new RepositoryManager(this);
   }
 
@@ -22,7 +26,7 @@ export default class DatabaseService implements DatabaseServiceAPI {
       return this.connector;
     }
 
-    this.connector = new ConnectorFactory().create(this.type, this.options);
+    this.connector = new ConnectorFactory().create(this.type, this.options, this.secret);
 
     return this.connector;
   }
@@ -39,3 +43,5 @@ export default class DatabaseService implements DatabaseServiceAPI {
 export declare type ConnectionOptions = MongoConnectionOptions | CassandraConnectionOptions;
 
 export declare type DatabaseType = "mongodb" | "cassandra";
+
+export declare type DatabaseSecret = string;

@@ -27,19 +27,19 @@ export class ChannelTab {
   @Column("id", "string", { generator: "uuid" })
   id: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
 
-  @Column("configuration", "json")
+  @Column("configuration", "encoded_json")
   configuration: string;
 
-  @Column("application_id", "string")
+  @Column("application_id", "encoded_string")
   application_id: string;
 
-  @Column("owner", "string")
+  @Column("owner", "encoded_string")
   owner: string;
 
-  @Column("col_order", "string")
+  @Column("col_order", "encoded_string")
   order: string;
 }
 

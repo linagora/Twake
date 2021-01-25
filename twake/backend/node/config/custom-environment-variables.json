@@ -18,6 +18,7 @@
     }
   },
   "database": {
+    "secret": "DATABASE_KEY",
     "type": "DB_DRIVER",
     "mongodb": {
       "uri": "DB_MONGO_URI",
