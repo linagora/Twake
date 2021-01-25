@@ -122,7 +122,7 @@ const determinareCompanyId = async (channel) => {
       });
     });
 
-    _fillCompanyId(matchedCompanies);
+    await _fillCompanyId(matchedCompanies);
   }
 
   return directChannelCompanyId;
@@ -142,6 +142,8 @@ const importChannel = async (channel) => {
   const directChannelCompanyId = await determinareCompanyId(decryptedChannel);
 
   await addChannelEntity(decryptedChannel, directChannelCompanyId);
+
+  console.log("ended", directChannelCompanyId + "");
 };
 
 /**
@@ -189,12 +191,13 @@ const init = async () => {
       result.pageState != pageState
     ) {
       await Promise.all(
-        result.rows.map(async (channel) => {
+        result.rows.map((channel) => {
           try {
-            await importChannel(channel);
+            return importChannel(channel);
           } catch (err) {
             console.log("Channel import error: ", err);
           }
+          return new Promise((resolve) => resolve());
         })
       );
       channels_counter += result.rows.length;
@@ -206,6 +209,7 @@ const init = async () => {
     pageState = result.pageState;
   }
   console.log("> Ended with ", channels_counter, " channels migrated.");
+  client.shutdown();
 };
 
 module.exports = init;
