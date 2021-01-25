@@ -1,8 +1,13 @@
 "use strict";
 
-const cassandra = require("cassandra-driver");
-const decrypt = require("./decrypt.js");
-const config = require("config");
+import cassandra from "cassandra-driver";
+import decrypt from "./decrypt.js";
+import config from "config";
+
+import DatabaseServiceClass from "./services/db/index.ts";
+const databaseService = new DatabaseServiceClass("cassandra", {
+  ...config.get("db"),
+});
 
 let channels_counter = 0;
 
@@ -171,18 +176,22 @@ const getChannels = async (pageState = undefined) => {
   });
 };
 
-let client = new cassandra.Client({
-  contactPoints: configuration.db.contactPoints, //["172.17.0.1:9042"]
-  localDataCenter: configuration.db.localDataCenter,
-  keyspace: configuration.db.keyspace,
-  wait: false,
-  retries: 10,
-  delay: 200,
-});
+let client;
 
 const init = async () => {
+  await databaseService.getConnector().init();
+
   let pageState;
   while (true) {
+    client = new cassandra.Client({
+      contactPoints: configuration.db.contactPoints, //["172.17.0.1:9042"]
+      localDataCenter: configuration.db.localDataCenter,
+      keyspace: configuration.db.keyspace,
+      wait: false,
+      retries: 10,
+      delay: 200,
+    });
+
     const result = await getChannels(pageState);
     if (
       result &&
@@ -205,11 +214,17 @@ const init = async () => {
     } else {
       break;
     }
+    client.shutdown();
+
+    await new Promise((resolve) =>
+      setTimeout(() => {
+        resolve();
+      }, 5000)
+    );
 
     pageState = result.pageState;
   }
   console.log("> Ended with ", channels_counter, " channels migrated.");
-  client.shutdown();
 };
 
-module.exports = init;
+export default init;

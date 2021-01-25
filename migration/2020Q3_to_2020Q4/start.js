@@ -1,5 +1,3 @@
-"use strict";
-
-const migration = require("./migration/migrate.js");
+import migration from "./migration/migrate.js";
 
 migration();
