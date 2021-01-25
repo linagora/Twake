@@ -4,7 +4,7 @@
     "defaultIv": "twake_constantiv"
   },
   "db": {
-    "contactPoints": ["127.0.0.1"],
+    "contactPoints": ["172.17.0.1"],
     "localDataCenter": "datacenter1",
     "keyspace": "twake"
   }

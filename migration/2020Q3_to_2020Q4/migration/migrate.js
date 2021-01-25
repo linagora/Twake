@@ -4,34 +4,11 @@ const cassandra = require("cassandra-driver");
 const decrypt = require("./decrypt.js");
 const config = require("config");
 
+let channels_counter = 0;
+
 const configuration = {
   db: config.get("db"),
   encryption: config.get("encryption"),
-};
-
-const client = new cassandra.Client({
-  contactPoints: configuration.db.contactPoints, //["172.17.0.1:9042"]
-  localDataCenter: configuration.db.localDataCenter,
-  keyspace: configuration.db.keyspace,
-  wait: false,
-  retries: 10,
-  delay: 200,
-});
-
-const getChannels = () => {
-  const query = "SELECT * FROM channel";
-
-  return new Promise((resolve, reject) => {
-    client.execute(query, (err, result) => {
-      if (err) console.log(err);
-
-      if (!result) throw "Something went wrong in getting Channels";
-
-      resolve(result.rows);
-
-      // client.shutdown();
-    });
-  });
 };
 
 const getUserCompanies = (userId) => {
@@ -64,7 +41,7 @@ const getNumberOfUsersInCompany = (companyId) => {
   });
 };
 
-const addChannelEntity = (channel, direct_channel_company_id) => {
+const addChannelEntity = async (channel, direct_channel_company_id) => {
   let newChannel = {};
 
   // Store in channels
@@ -98,8 +75,6 @@ const addChannelEntity = (channel, direct_channel_company_id) => {
       channel_id: channel.id,
     };
   }
-
-  console.log(newChannel);
 };
 
 const getCompanyWithBigestNumberOfUsers = async (matchedCompanies) => {
@@ -153,6 +128,10 @@ const determinareCompanyId = async (channel) => {
   return directChannelCompanyId;
 };
 
+/**
+ * Channel importation root
+ */
+
 const importChannel = async (channel) => {
   const decryptedChannel = await decrypt(
     channel,
@@ -162,13 +141,71 @@ const importChannel = async (channel) => {
 
   const directChannelCompanyId = await determinareCompanyId(decryptedChannel);
 
-  addChannelEntity(decryptedChannel, directChannelCompanyId);
+  await addChannelEntity(decryptedChannel, directChannelCompanyId);
 };
 
-const init = () => {
-  getChannels().then((channels) =>
-    Promise.all(channels.map(async (channel) => importChannel(channel)))
-  );
+/**
+ * Main channels loop
+ */
+
+const getChannels = async (pageState = undefined) => {
+  const query = "SELECT * FROM channel";
+
+  return new Promise((resolve, reject) => {
+    client.execute(
+      query,
+      (err, result) => {
+        if (err || !result) {
+          console.log(err);
+          resolve({ rows: [], pageState: pageState });
+        }
+
+        if (!result) throw "Something went wrong in getting Channels";
+
+        resolve({ rows: result.rows, pageState: result.pageState });
+      },
+      { pageState, fetchSize: 500 }
+    );
+  });
+};
+
+let client = new cassandra.Client({
+  contactPoints: configuration.db.contactPoints, //["172.17.0.1:9042"]
+  localDataCenter: configuration.db.localDataCenter,
+  keyspace: configuration.db.keyspace,
+  wait: false,
+  retries: 10,
+  delay: 200,
+});
+
+const init = async () => {
+  let pageState;
+  while (true) {
+    const result = await getChannels(pageState);
+    if (
+      result &&
+      result.rows &&
+      result.rows.length > 0 &&
+      result.pageState != pageState
+    ) {
+      await Promise.all(
+        result.rows.map(async (channel) => {
+          try {
+            await importChannel(channel);
+          } catch (err) {
+            console.log("Channel import error: ", err);
+          }
+        })
+      );
+      channels_counter += result.rows.length;
+      console.log(channels_counter);
+    } else {
+      break;
+    }
+
+    pageState = result.pageState;
+  }
+  console.log("> Ended with ", channels_counter, " channels migrated.");
 };
 
 module.exports = init;
