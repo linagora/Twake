@@ -39,16 +39,13 @@ const init = async () => {
 
     const result: any = await getChannels(pageState);
     if (result && result.rows && result.rows.length > 0) {
-      await Promise.all(
-        result.rows.map((channel: any) => {
-          try {
-            return importChannel(channel);
-          } catch (err) {
-            console.log("Channel import error: ", err);
-          }
-          return new Promise((resolve) => resolve(""));
-        })
-      );
+      for (let channel of result.rows) {
+        try {
+          await importChannel(channel);
+        } catch (err) {
+          console.log("Channel import error: ", err);
+        }
+      }
       channels_counter += result.rows.length;
       console.log("Imported: ", channels_counter);
     } else {

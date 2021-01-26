@@ -334,6 +334,7 @@ export class CassandraConnector extends AbstractConnector<
               this.getClient().execute(query);
               resolve(true);
             } catch (err) {
+              console.log(query);
               resolve(false);
             }
           })
@@ -373,6 +374,7 @@ export class CassandraConnector extends AbstractConnector<
               this.getClient().execute(query);
               resolve(true);
             } catch (err) {
+              console.log(query);
               resolve(false);
             }
           })
