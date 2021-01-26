@@ -14,6 +14,7 @@ import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
+import Environment from 'environment/environment';
 
 class Login extends Observable {
   constructor() {
@@ -187,7 +188,12 @@ class Login extends Observable {
               ((that.server_infos.auth || {}).console || {}).use) &&
             !that.external_login_error
           ) {
-            document.location = Api.route('users/console/openid');
+            let developerSuffix = '';
+            if (Environment.env_dev) {
+              developerSuffix = '?localhost=1&port=' + window.location.port;
+            }
+
+            document.location = Api.route('users/console/openid' + developerSuffix);
             return;
           } else if (
             (res.errors.indexOf('redirect_to_cas') >= 0 ||
