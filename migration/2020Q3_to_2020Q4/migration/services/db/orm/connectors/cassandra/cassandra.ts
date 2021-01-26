@@ -240,9 +240,6 @@ export class CassandraConnector extends AbstractConnector<
     // --- Alter table if not up to date --- //
     const existingColumns = await this.getTableDefinition(entity.name);
     if (existingColumns.length > 0) {
-      console.log(
-        `Existing columns for table ${entity.name}, generating altertable queries`
-      );
       const alterQueryColumns = Object.keys(columns)
         .filter((colName) => existingColumns.indexOf(colName) < 0)
         .map((colName) => `${colName} ${cassandraType[columns[colName].type]}`);
@@ -257,9 +254,6 @@ export class CassandraConnector extends AbstractConnector<
 
     // --- Write table --- //
     try {
-      console.log(
-        `service.database.orm.createTable - Creating table ${entity.name} : ${query}`
-      );
       await this.client.execute(query);
     } catch (err) {
       console.log(
@@ -333,8 +327,6 @@ export class CassandraConnector extends AbstractConnector<
             .map((e) => e[0])
             .join(", ")}) VALUES (${where.map((e) => e[1]).join(", ")})`;
         }
-
-        console.log(`service.database.orm.upsert - Query: "${query}"`);
 
         promises.push(
           new Promise((resolve) => {
@@ -422,8 +414,6 @@ export class CassandraConnector extends AbstractConnector<
         keyspace: this.options.keyspace,
       }
     );
-
-    console.log(`services.database.orm.cassandra - ${query}`);
 
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),

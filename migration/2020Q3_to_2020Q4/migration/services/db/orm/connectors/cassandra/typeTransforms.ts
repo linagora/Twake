@@ -16,7 +16,11 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+export const transformValueToDbString = (
+  v: any,
+  type: ColumnType,
+  options: any = {}
+): string => {
   if (type === "number") {
     if (!isNumber(v)) {
       throw new Error(`'${v}' is not a ${type}`);
@@ -25,7 +29,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   }
   if (type === "uuid" || type === "timeuuid") {
     v = ((v || "") + "").replace(/[^a-zA-Z0-9-]/g, "");
-    return `${v}`;
+    return `${v || "00000000-0000-4000-0000-000000000000"}`;
   }
   if (type === "boolean") {
     if (!isBoolean(v)) {
@@ -49,7 +53,11 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   return `'${v || ""}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
+export const transformValueFromDbString = (
+  v: any,
+  type: string,
+  options: any = {}
+): any => {
   if (type === "json") {
     try {
       return JSON.parse(v);

@@ -15,6 +15,7 @@ class Store {
     this.databaseService = new DatabaseServiceClass("cassandra", {
       ...config.get("db"),
     });
+    this.databaseService.getConnector().connect();
   }
   getOrmClient() {
     return this.databaseService;

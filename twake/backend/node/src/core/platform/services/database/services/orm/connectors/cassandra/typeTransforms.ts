@@ -25,7 +25,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
   }
   if (type === "uuid" || type === "timeuuid") {
     v = ((v || "") + "").replace(/[^a-zA-Z0-9-]/g, "");
-    return `${v}`;
+    return `${v || "00000000-0000-4000-0000-000000000000"}`;
   }
   if (type === "boolean") {
     if (!isBoolean(v)) {

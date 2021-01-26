@@ -38,12 +38,7 @@ const init = async () => {
     let client = Store.getCassandraClient();
 
     const result: any = await getChannels(pageState);
-    if (
-      result &&
-      result.rows &&
-      result.rows.length > 0 &&
-      result.pageState != pageState
-    ) {
+    if (result && result.rows && result.rows.length > 0) {
       await Promise.all(
         result.rows.map((channel: any) => {
           try {
@@ -57,9 +52,14 @@ const init = async () => {
       channels_counter += result.rows.length;
       console.log("Imported: ", channels_counter);
     } else {
+      client.shutdown();
       break;
     }
     client.shutdown();
+
+    if (!result.pageState) {
+      break;
+    }
 
     await new Promise((resolve) =>
       setTimeout(() => {

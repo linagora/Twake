@@ -6,7 +6,7 @@ import { CassandraConnectionOptions } from "./orm/connectors/cassandra/cassandra
 import { MongoConnectionOptions } from "./orm/connectors/mongodb/mongodb";
 import { EntityTarget } from "./orm/types";
 import { RepositoryManager } from "./orm/repository/manager";
-
+import "reflect-metadata";
 export default class DatabaseService {
   version = "1";
   private connector: Connector;

@@ -4,7 +4,7 @@ This script is used to migrate from Q3 to Q4 as we changed our backend database.
 
 To execute this script please start by configuring it, you'll need your encryption key and defaultIv (if you don't know your defaultIv just let it as is it). Then you'll need to configure your database.
 
-Then run 'docker build . -t migration; docker run migration'
+Then run 'docker build . -t migration; docker run --env NODE_ENV=production migration'
 
 ## How to migrate from 2020.Q3 (or earlier) to 2020.Q4 ?
 

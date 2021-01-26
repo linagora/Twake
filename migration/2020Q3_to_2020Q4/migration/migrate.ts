@@ -3,6 +3,9 @@
 import decrypt from "./decrypt";
 import config from "config";
 import Store from "./store";
+import { Channel } from "./entities/channel";
+import _ from "lodash";
+import { DirectChannel } from "./entities/direct-channel";
 
 const configuration: any = {
   db: config.get("db"),
@@ -43,10 +46,8 @@ const addChannelEntity = async (
   channel: any,
   direct_channel_company_id: string
 ) => {
-  let newChannel = {};
-
-  // Store in channels
-  newChannel = {
+  const newChannel = new Channel();
+  _.assign(newChannel, {
     company_id: channel.original_group_id,
     workspace_id: channel.direct ? "direct" : channel.original_workspace_id,
     id: channel.id,
@@ -66,15 +67,22 @@ const addChannelEntity = async (
       ? "private"
       : "public",
     members: channel.direct ? channel.identifier.split("+") : [],
-  };
+  });
+  await (await Store.getOrmClient().getRepository("channels", Channel)).save(
+    newChannel
+  );
 
   // Store it in Direct channels
   if (channel.direct) {
-    newChannel = {
+    const newDirectChannel = new DirectChannel();
+    _.assign(newDirectChannel, {
       company_id: direct_channel_company_id,
       users: channel.identifier.split("+").sort().join(","),
       channel_id: channel.id,
-    };
+    });
+    await (
+      await Store.getOrmClient().getRepository("direct_channels", DirectChannel)
+    ).save(newDirectChannel);
   }
 };
 

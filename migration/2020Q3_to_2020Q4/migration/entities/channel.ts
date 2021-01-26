@@ -35,7 +35,7 @@ export class Channel {
   @Column("visibility", "string")
   visibility: string;
 
-  @Column("is_default", "uuid")
+  @Column("is_default", "boolean")
   is_default: boolean;
 
   @Column("archived", "boolean")
