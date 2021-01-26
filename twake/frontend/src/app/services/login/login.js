@@ -151,12 +151,12 @@ class Login extends Observable {
       this.notify();
     }
 
-    if (InitService.server_infos?.auth?.internal) {
+    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+      //Check I am connected with external sign-in provider
+      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    } else {
       //We can thrust the JWT
       this.updateUser();
-    } else {
-      //Check I am connected with external sign-in provider
-      this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
     }
   }
 
