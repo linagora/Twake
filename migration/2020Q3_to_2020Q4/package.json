@@ -2,8 +2,9 @@
   "name": "2020q3_to_2020q4",
   "version": "1.0.0",
   "description": "Data migration from 2020Q3 to 2020Q4",
+  "main": "dist/migration/start.js",
   "scripts": {
-    "start": "tsc && node start.js",
+    "start": "tsc && node dist/start.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Twake",
@@ -20,6 +21,7 @@
     "node-config": "^0.0.2",
     "rxjs": "^6.6.3",
     "tsc": "^1.20150623.0",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "uuid": "^8.3.1"
   }
 }

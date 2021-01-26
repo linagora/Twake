@@ -4,7 +4,7 @@ import cassandra from "cassandra-driver";
 import decrypt from "./decrypt.js";
 import config from "config";
 
-import DatabaseServiceClass from "./services/db/index.ts";
+import DatabaseServiceClass from "./services/db/index";
 const databaseService = new DatabaseServiceClass("cassandra", {
   ...config.get("db"),
 });
@@ -24,8 +24,6 @@ const getUserCompanies = (userId) => {
       if (err || !result) reject(err);
 
       resolve(result.rows);
-
-      // client.shutdown();
     });
   });
 };
@@ -40,8 +38,6 @@ const getNumberOfUsersInCompany = (companyId) => {
       if (!result) throw "Something went wrong in getting Channels";
 
       resolve({ id: companyId, numberOfUsers: result.rows[0].member_count });
-
-      // client.shutdown();
     });
   });
 };
@@ -87,7 +83,6 @@ const getCompanyWithBigestNumberOfUsers = async (matchedCompanies) => {
     matchedCompanies.map(({ group_id }) => getNumberOfUsersInCompany(group_id))
   );
 
-  // Math.max.apply(Math, companies.map(company => company.numberOfUsers))
   return companies.reduce((prev, current) =>
     prev.numberOfUsers > current.numberOfUsers ? prev : current
   );
@@ -193,27 +188,28 @@ const init = async () => {
     });
 
     const result = await getChannels(pageState);
-    if (
-      result &&
-      result.rows &&
-      result.rows.length > 0 &&
-      result.pageState != pageState
-    ) {
-      await Promise.all(
-        result.rows.map((channel) => {
-          try {
-            return importChannel(channel);
-          } catch (err) {
-            console.log("Channel import error: ", err);
-          }
-          return new Promise((resolve) => resolve());
-        })
-      );
-      channels_counter += result.rows.length;
-      console.log(channels_counter);
-    } else {
-      break;
-    }
+    await Promise.all(result.rows.map((channel) => importChannel(channel)));
+    // if (
+    //   result &&
+    //   result.rows &&
+    //   result.rows.length > 0 &&
+    //   result.pageState != pageState
+    // ) {
+    //   await Promise.all(
+    //     result.rows.map((channel) => {
+    //       try {
+    //         return importChannel(channel);
+    //       } catch (err) {
+    //         console.log("Channel import error: ", err);
+    //       }
+    //       return new Promise((resolve) => resolve());
+    //     })
+    //   );
+    //   channels_counter += result.rows.length;
+    //   console.log(channels_counter);
+    // } else {
+    //   break;
+    // }
     client.shutdown();
 
     await new Promise((resolve) =>
@@ -224,7 +220,7 @@ const init = async () => {
 
     pageState = result.pageState;
   }
-  console.log("> Ended with ", channels_counter, " channels migrated.");
+  // console.log("> Ended with ", channels_counter, " channels migrated.");
 };
 
 export default init;
