@@ -80,7 +80,7 @@ export class PushNotificationToUsersMessageProcessor
         company_id: message.company_id,
         workspace_id: message.workspace_id,
         channel_id: message.channel_id,
-        user: badge.user_id,
+        user: badge.user_id.toString(),
         thread_id: message.thread_id || message.message_id,
         message_id: message.message_id,
         badge_value: 1,

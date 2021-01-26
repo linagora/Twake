@@ -12,6 +12,8 @@ use Twake\Discussion\Entity\MessageReaction;
 use Twake\Discussion\Model\MessagesSystemInterface;
 use Twake\GlobalSearch\Entity\Bloc;
 use Twake\Core\Entity\CachedFromNode;
+use Emojione\Client;
+use Emojione\Ruleset;
 
 class MessageSystem
 {
@@ -24,6 +26,7 @@ class MessageSystem
         $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->queues = $app->getServices()->get('app.queues')->getAdapter();
+        $this->emojione_client = new Client(new Ruleset());
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -566,7 +569,7 @@ class MessageSystem
 
     public function sendToNode($channel, $message, $did_create){
         $messageArray = $message->getAsArray();
-        $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
+        $sender_user = $messageArray["sender"] ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $messageArray["sender"])) : null;
         $senderName = "";
         if($sender_user){
             $senderName = $sender_user->getFullName();
