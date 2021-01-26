@@ -10,6 +10,7 @@
   "author": "Twake",
   "license": "ISC",
   "dependencies": {
+    "@types/config": "0.0.38",
     "@types/lodash": "^4.14.168",
     "@types/mongodb": "^3.6.3",
     "@types/uuid": "^8.3.0",
