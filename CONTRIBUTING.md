@@ -3,9 +3,9 @@
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
 
-#### Run Twake in dev mode and get dthe documentation
+#### Run Twake in dev mode and get the documentation
 
-Everythinng you need is on the Twake documentation for internal developers:
+Everything you need is on the Twake documentation for internal developers:
 > https://doc.twake.app/internal-documentation/get_started
 
 #### How to contribute
