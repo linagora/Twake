@@ -83,7 +83,11 @@ export class PushNotificationToUsersMessageProcessor
         user: badge.user_id,
         thread_id: message.thread_id || message.message_id,
         message_id: message.message_id,
-        value: 1,
+        badge_value: 1,
+
+        //Temp fix, should not be used like this by node except for push notification
+        sender_name: message.sender_name,
+        text: message.text,
       }),
     );
   }
@@ -142,7 +146,7 @@ export class PushNotificationToUsersMessageProcessor
       });
   }
 
-  sendPushNotification(user: string, counterUpdate: PushNotificationMessage): void {
-    MobilePushNotifier.get(this.pubsub).notify(user, counterUpdate);
+  sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
+    MobilePushNotifier.get(this.pubsub).notify(user, pushNotification);
   }
 }

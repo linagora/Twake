@@ -95,7 +95,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
 
     }
 
-    function sendAPNS($deviceId, $title, $message, $data, $badge)
+    function sendAPNS($deviceId, $title, $message, $_data, $badge)
     {
         $apns_certificate = $this->parameters["apns_certificate"];
 

@@ -15,4 +15,8 @@ export type MessageNotification = {
     teams?: uuid[];
     specials?: specialMention[];
   };
+
+  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  text: string;
 };

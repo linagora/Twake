@@ -17,6 +17,10 @@ export type MentionNotification = {
     users: uuid[];
     specials?: specialMention[];
   };
+
+  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  text: string;
 };
 
 export type MentionNotificationResult = MentionNotification;
@@ -30,8 +34,12 @@ export type PushNotificationMessage = {
   channel_id: uuid;
   message_id: uuid;
   thread_id: uuid;
-  value: number;
+  badge_value: number;
   user: string;
+
+  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  text: string;
 };
 
 export interface NotificationListQueryParameters extends PaginationQueryParameters {

@@ -58,6 +58,10 @@ export class NewChannelMessageProcessor
         mentions: {
           users: usersToNotify || [],
         },
+
+        //Temp: should not be used like this when migrating messages to node
+        text: message.text,
+        sender_name: message.sender,
       } as MentionNotification;
     } catch (err) {
       logger.error(

@@ -566,6 +566,11 @@ class MessageSystem
 
     public function sendToNode($channel, $message, $did_create){
         $messageArray = $message->getAsArray();
+        $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
+        $senderName = "";
+        if($sender_user){
+            $senderName = $sender_user->getFullName();
+        }
 
         if($channel){
 
@@ -586,6 +591,10 @@ class MessageSystem
                 "sender" => $messageArray["sender"],
                 "creation_date" => $messageArray["creation_date"] * 1000,
                 "mentions" => $mentions,
+
+                //Temp fix to allow node to get back the message content for push notifications
+                "sender_name" => $senderName,
+                "text" => $this->buildShortText($message)
             ];
             $rabbitChannelData = [
                 "company_id" => $channel->getData()["company_id"],
@@ -602,6 +611,15 @@ class MessageSystem
                 }
             }
         }
+    }
+
+    private function buildShortText($message){
+        $text = $this->mdToText($message->getContent()) ?: "No text content.";
+        $text = preg_replace("/ +/", " ", trim(html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8')));
+        if(strlen($text) > 180){
+            $text = substr($text, 0, 180) . "...";
+        }
+        return $text;
     }
 
     public function dispatchMessage($channel_id, $application_id, $user_id, $message_id){
