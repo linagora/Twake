@@ -24,7 +24,7 @@ Twake offers all the features for collaboration :
 
 ## Demo
 
-You can <a href="https://web.twake.app"> try Twake</a> in SaaS.
+You can <a href="https://twake.app"> try Twake</a> in SaaS.
 
 Or run your own local Twake instance with :
 
