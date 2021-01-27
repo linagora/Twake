@@ -1949,4 +1949,7 @@ export default {
   'components.newversion.new_version_component.link': 'Cliquez ici pour recharger',
   'components.newversion.new_version_modal.title': 'Nouvelle mise à jour disponible !',
   'scenes.apps.drive.download_all_button': 'Tout télécharger',
+  'components.inputs.input_with_select.input.placeholder': 'Ma chaîne',
+  'components.inputs.input_with_select.select.placeholder': 'Mon groupe',
+  'components.inputs.input_with_select.button.tooltip': 'Définir un groupe de chaînes',
 };

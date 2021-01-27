@@ -52,6 +52,10 @@
 @btn-border-width: 0;
 @btn-primary-color: @white;
 
+.ant-btn {
+  box-shadow: none;
+}
+
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
   background: @primary-hover;
@@ -178,6 +182,12 @@ textarea.ant-input,
 
 .ant-select {
   width: 172px;
+}
+
+.ant-select-open {
+  .ant-select-arrow {
+    display: none;
+  }
 }
 
 .ant-select-focused .ant-select-selector,
