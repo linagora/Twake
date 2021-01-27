@@ -1,9 +1,9 @@
-import Storage from './Storage';
+import { assign } from 'lodash';
+import getStore, { CollectionStore } from './Storage';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
 import CollectionTransport from './Transport/CollectionTransport';
 import FindCompletion from './Transport/CollectionFindCompletion';
-import _ from 'lodash';
 
 /**
  * This is a Collection.
@@ -35,10 +35,10 @@ export type CollectionOptions = {
   reloadStrategy?: 'ontime' | 'delayed' | 'none';
 };
 
-export default class Collection<G extends Resource<any>> {
-  protected eventEmitter: EventEmitter<G> = new EventEmitter(this, null);
-  protected transport: CollectionTransport<G> = new CollectionTransport(this);
-  protected completion: FindCompletion<G> = new FindCompletion(this);
+export default class Collection<R extends Resource<any>> {
+  protected eventEmitter: EventEmitter<R> = new EventEmitter(this, null);
+  protected transport: CollectionTransport<R> = new CollectionTransport(this);
+  protected completion: FindCompletion<R> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
     reloadStrategy: 'delayed',
@@ -47,15 +47,17 @@ export default class Collection<G extends Resource<any>> {
 
   //App state
   private reloadRegistered = 0;
-  private resources: { [id: string]: G } = {};
+  private resources: { [id: string]: R } = {};
+  private storage: Promise<CollectionStore>;
 
   constructor(
     private readonly path: string = '',
-    private readonly type: new (data: any) => G,
+    private readonly type: new (data: any) => R,
     options?: CollectionOptions,
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
     this.setOptions(options || {});
+    this.storage = getStore();
   }
 
   public getPath() {
@@ -66,8 +68,12 @@ export default class Collection<G extends Resource<any>> {
     return this.options;
   }
 
+  public getStorage(): Promise<CollectionStore> {
+    return this.storage;
+  }
+
   public setOptions(options: CollectionOptions) {
-    this.options = _.assign(this.options, options);
+    this.options = assign(this.options, options);
   }
 
   public getTag() {
@@ -113,8 +119,9 @@ export default class Collection<G extends Resource<any>> {
   /**
    * Upsert document (this will call backend)
    */
-  public async upsert(item: G, options?: GeneralOptions & ServerRequestOptions): Promise<G> {
-    const mongoItem = await Storage.upsert(this.getPath(), item.getDataForStorage());
+  public async upsert(item: R, options?: GeneralOptions & ServerRequestOptions): Promise<R> {
+    const storage = await this.getStorage();
+    const mongoItem = await storage.upsert(this.getPath(), item.getDataForStorage());
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
@@ -127,7 +134,7 @@ export default class Collection<G extends Resource<any>> {
         if (!resourceSaved) {
           this.remove(item, { withoutBackend: true });
         }
-        return resourceSaved as G;
+        return resourceSaved as R;
       } else {
         this.transport.upsert(this.resources[mongoItem.id], options?.query);
       }
@@ -140,7 +147,7 @@ export default class Collection<G extends Resource<any>> {
    * Remove document (this will call backend)
    */
   public async remove(
-    filter: G | any,
+    filter: R | any,
     options?: GeneralOptions & ServerRequestOptions,
   ): Promise<void> {
     if (filter?.constructor?.name && filter?.constructor?.name !== 'Object') {
@@ -149,7 +156,8 @@ export default class Collection<G extends Resource<any>> {
     if (filter) {
       const resource = await this.findOne(filter);
       if (resource) {
-        await Storage.remove(this.getPath(), filter);
+        const storage = await this.getStorage();
+        await storage.remove(this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
@@ -170,9 +178,10 @@ export default class Collection<G extends Resource<any>> {
   public async find(
     filter?: any,
     options: GeneralOptions & ServerRequestOptions = {},
-  ): Promise<G[]> {
+  ): Promise<R[]> {
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
-    let mongoItems = await Storage.find(this.getPath(), filter, options);
+    const storage = await this.getStorage();
+    let mongoItems = await storage.find(this.getPath(), filter, options);
 
     if (typeof filter === 'string' || filter?.id) {
       return [await this.findOne(filter, options)];
@@ -203,7 +212,7 @@ export default class Collection<G extends Resource<any>> {
   public async findOne(
     filter?: any,
     options: GeneralOptions & ServerRequestOptions = {},
-  ): Promise<G> {
+  ): Promise<R> {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
@@ -211,7 +220,8 @@ export default class Collection<G extends Resource<any>> {
     await this.completion.wait();
 
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
-    let mongoItem = await Storage.findOne(this.getPath(), filter, options);
+    const storage = await this.getStorage();
+    let mongoItem = await storage.findOne(this.getPath(), filter, options);
 
     if (!mongoItem) {
       await this.completion.wait();
@@ -246,7 +256,7 @@ export default class Collection<G extends Resource<any>> {
     }
   }
 
-  private updateLocalResource(mongoItem: any, item?: G) {
+  private updateLocalResource(mongoItem: any, item?: R) {
     if (mongoItem) {
       if (!item) {
         if (this.resources[mongoItem.id]) {
@@ -258,7 +268,7 @@ export default class Collection<G extends Resource<any>> {
         }
       }
       item.setCollection(this);
-      item.data = _.assign(mongoItem, item.data);
+      item.data = assign(mongoItem, item.data);
       this.resources[mongoItem.id] = item;
     }
   }
