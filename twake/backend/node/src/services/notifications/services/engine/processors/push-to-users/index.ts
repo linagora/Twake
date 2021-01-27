@@ -3,7 +3,7 @@ import { logger } from "../../../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { MobilePushNotifier } from "../../../../../notifications/notifiers";
 import {
-  CounterUpdateMessage,
+  PushNotificationMessage,
   MentionNotification,
   MentionNotificationResult,
 } from "../../../../types";
@@ -40,6 +40,15 @@ export class PushNotificationToUsersMessageProcessor
   async process(message: MentionNotification): Promise<MentionNotificationResult> {
     logger.info(`${this.name} - Processing mention notification for channel ${message.channel_id}`);
 
+    if (
+      !message.company_id ||
+      !message.workspace_id ||
+      !message.channel_id ||
+      !message.creation_date
+    ) {
+      throw new Error("Missing required fields");
+    }
+
     if (!message.mentions || !message.mentions.users || !message.mentions.users.length) {
       logger.info(`${this.name} - Message does not have any user to mention`);
       return;
@@ -71,8 +80,14 @@ export class PushNotificationToUsersMessageProcessor
         company_id: message.company_id,
         workspace_id: message.workspace_id,
         channel_id: message.channel_id,
-        user: badge.user_id,
-        value: 1,
+        user: badge.user_id.toString(),
+        thread_id: message.thread_id || message.message_id,
+        message_id: message.message_id,
+        badge_value: 1,
+
+        //Temp fix, should not be used like this by node except for push notification
+        sender_name: message.sender_name,
+        text: message.text,
       }),
     );
   }
@@ -115,7 +130,6 @@ export class PushNotificationToUsersMessageProcessor
             thread_id: badge.thread_id,
             user_id: user,
           });
-          console.log(badgeEntity);
           return this.saveBadge(badgeEntity);
         }),
       )
@@ -132,7 +146,7 @@ export class PushNotificationToUsersMessageProcessor
       });
   }
 
-  sendPushNotification(user: string, counterUpdate: CounterUpdateMessage): void {
-    MobilePushNotifier.get(this.pubsub).notify(user, counterUpdate);
+  sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
+    MobilePushNotifier.get(this.pubsub).notify(user, pushNotification);
   }
 }

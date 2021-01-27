@@ -114,13 +114,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
   }
 
   dropMessage(message: any) {
-    //@ts-ignore
-    if (Globals.window.mixpanel_enabled) {
-      //@ts-ignore
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
-      //@ts-ignore
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Drop message Event');
-    }
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 

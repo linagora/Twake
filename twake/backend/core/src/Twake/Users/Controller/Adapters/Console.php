@@ -76,12 +76,18 @@ class Console extends BaseController
 
         $this->get("app.user")->logout($request);
 
+        //We store the mobile session
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
+
         if($request->query->get("mobile", "")){
-            //We store the mobile session
-            if (!isset($_SESSION)) {
-                @session_start();
-            }
             $_SESSION["mobile"] = true;
+        }
+
+        if($request->query->get("localhost", "")){
+            $_SESSION["localhost"] = true;
+            $_SESSION["localhost_port"] = $request->query->get("port", "3000");
         }
 
         try {
@@ -156,7 +162,11 @@ class Console extends BaseController
 
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/")
+        $server = rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/");
+        if($_SESSION["localhost"]){
+            $server = "http://localhost:" . $_SESSION["localhost_port"];
+        }
+        $this->redirect($server
             . "/?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 

@@ -1,10 +1,3 @@
-// import AsyncStorage from '@react-native-community/async-storage';
-// import SyncStorage from 'sync-storage';
-// import { Platform, NativeModules } from 'react-native';
-// var PushNotification = require('react-native-push-notification');
-// import { MixpanelInstance } from 'react-native-mixpanel';
-// const mixpanel = new MixpanelInstance(window.mixpanel_id);
-
 import Globals from 'services/JWTStorage';
 import JWTStorage from 'services/JWTStorage';
 

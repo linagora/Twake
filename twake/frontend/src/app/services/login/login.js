@@ -14,6 +14,7 @@ import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
+import Environment from 'environment/environment';
 
 class Login extends Observable {
   constructor() {
@@ -151,12 +152,12 @@ class Login extends Observable {
       this.notify();
     }
 
-    if (InitService.server_infos?.auth?.internal) {
+    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+      //Check I am connected with external sign-in provider
+      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    } else {
       //We can thrust the JWT
       this.updateUser();
-    } else {
-      //Check I am connected with external sign-in provider
-      this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
     }
   }
 
@@ -187,7 +188,12 @@ class Login extends Observable {
               ((that.server_infos.auth || {}).console || {}).use) &&
             !that.external_login_error
           ) {
-            document.location = Api.route('users/console/openid');
+            let developerSuffix = '';
+            if (Environment.env_dev) {
+              developerSuffix = '?localhost=1&port=' + window.location.port;
+            }
+
+            document.location = Api.route('users/console/openid' + developerSuffix);
             return;
           } else if (
             (res.errors.indexOf('redirect_to_cas') >= 0 ||
@@ -319,22 +325,6 @@ class Login extends Observable {
   }
 
   startApp(user) {
-    if (!window.mixpanel) {
-      Globals.window.mixpanel_enabled = false;
-    }
-    if (Globals.window.mixpanel_enabled) {
-      window.mixpanel.identify(user.id);
-      window.mixpanel.people.set({
-        $email: ((user.mails || []).filter(mail => mail.main)[0] || {}).email,
-        $first_name: user.firstname,
-        $last_name: user.lastname,
-        object: JSON.stringify(user),
-      });
-    }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
-
     this.currentUserId = user.id;
     DepreciatedCollections.get('users').updateObject(user);
 

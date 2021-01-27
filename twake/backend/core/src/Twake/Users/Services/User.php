@@ -778,6 +778,12 @@ class User
             $device = $devicesRepository->findOneBy(Array("value" => $value));
             if (!$device) {
                 $newDevice = new Device($user->getId(), $type, $value, $version);
+
+                $userDevices = $devicesRepository->findBy(Array("user_id" => $userId));
+                foreach($userDevices as $userDevice){
+                    $this->em->remove($userDevice);
+                }
+                
             } else if ($device->getUserId() != $user->getId()) {
                 $this->em->remove($device);
                 $newDevice = new Device($user->getId(), $type, $value, $version);

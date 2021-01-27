@@ -345,17 +345,30 @@ class DriveFileSystem
         }
     }
 
-    public function recursedelete($directory)
+    public function recursedelete($directoryOrFile)
     {
-        if ($directory->getIsDirectory()) {
-            $fileson = $this->em->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId() . "", "parent_id" => $directory->getId() . ""));
+        if ($directoryOrFile->getIsDirectory()) {
+            $fileson = $this->em->getRepository("Twake\Drive:DriveFile")->findBy(Array("workspace_id" => $directoryOrFile->getWorkspaceId() . "", "parent_id" => $directoryOrFile->getId() . ""));
             if (isset($fileson)) {
                 foreach ($fileson as $file) {
                     $this->recursedelete($file);
                 }
             }
+        }else{
+            try{
+                //Remove file from storage
+                $version = $directoryOrFile->getLastVersion($this->em);
+                $adapter = $this->storagemanager->getAdapter($version->getProvider());
+                $identifier = $version->getData()["identifier"];
+                $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
+                for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
+                    $adapter->remove($uploadstate, $i);
+                }
+            }catch(\Exception $err){
+                error_log($err);
+            }
         }
-        $this->em->remove($directory);
+        $this->em->remove($directoryOrFile);
         $this->em->flush();
     }
 
@@ -805,6 +818,8 @@ class DriveFileSystem
         $trash->setName("removed_trash_" . date("U"));
         $this->em->persist($trash);
         $this->em->flush();
+
+        $this->recursedelete($trash);
 
         //Regenerate new trash
         $new_trash = $this->getTrashEntity($workspace_id);

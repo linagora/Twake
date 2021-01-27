@@ -12,6 +12,8 @@ use Twake\Discussion\Entity\MessageReaction;
 use Twake\Discussion\Model\MessagesSystemInterface;
 use Twake\GlobalSearch\Entity\Bloc;
 use Twake\Core\Entity\CachedFromNode;
+use Emojione\Client;
+use Emojione\Ruleset;
 
 class MessageSystem
 {
@@ -24,6 +26,7 @@ class MessageSystem
         $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->queues = $app->getServices()->get('app.queues')->getAdapter();
+        $this->emojione_client = new Client(new Ruleset());
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -566,6 +569,11 @@ class MessageSystem
 
     public function sendToNode($channel, $message, $did_create){
         $messageArray = $message->getAsArray();
+        $sender_user = $messageArray["sender"] ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $messageArray["sender"])) : null;
+        $senderName = "";
+        if($sender_user){
+            $senderName = $sender_user->getFullName();
+        }
 
         if($channel){
 
@@ -586,6 +594,10 @@ class MessageSystem
                 "sender" => $messageArray["sender"],
                 "creation_date" => $messageArray["creation_date"] * 1000,
                 "mentions" => $mentions,
+
+                //Temp fix to allow node to get back the message content for push notifications
+                "sender_name" => $senderName,
+                "text" => $this->buildShortText($message)
             ];
             $rabbitChannelData = [
                 "company_id" => $channel->getData()["company_id"],
@@ -602,6 +614,15 @@ class MessageSystem
                 }
             }
         }
+    }
+
+    private function buildShortText($message){
+        $text = $this->mdToText($message->getContent()) ?: "No text content.";
+        $text = preg_replace("/ +/", " ", trim(html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8')));
+        if(strlen($text) > 180){
+            $text = substr($text, 0, 180) . "...";
+        }
+        return $text;
     }
 
     public function dispatchMessage($channel_id, $application_id, $user_id, $message_id){

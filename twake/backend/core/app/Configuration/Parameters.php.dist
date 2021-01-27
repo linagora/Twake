@@ -43,16 +43,6 @@ class Parameters extends \Common\Configuration
               "host" => "elasticsearch:9200"
             ],
             "queues" => [
-                "sqs" => [
-                    "use" => false,
-                    "profile" => "default",
-                    "version" => "2012-11-05",
-                    'region' => 'us-west-2',
-                    "credentials" => [
-                        "key" => "",
-                        "secret" => ""
-                    ]
-                ],
                 "rabbitmq" => [
                     "use" => true,
                     "host" => "rabbitmq",

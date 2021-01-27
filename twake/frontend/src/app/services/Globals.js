@@ -57,7 +57,6 @@ class Globals {
       }
     });
 
-    this.window.mixpanel_prefix = '';
     this.device = null;
     this.store_public_access_get_data = undefined;
   }
