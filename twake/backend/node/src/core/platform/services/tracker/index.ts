@@ -1,13 +1,9 @@
+import Analytics from "analytics-node";
 import { Consumes, TwakeService, logger } from "../../framework";
 import TrackerAPI from "./provider";
-import { trackedEventBus } from "../../framework/pubsub";
-import {
-  TrackerEventActions,
-  TrackerDataListener,
-  IdentifyObjectType,
-  TrackedEventType,
-} from "./types";
-import Analytics from "analytics-node";
+import { localEventBus } from "../../framework/pubsub";
+import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
+import { ResourceEventsPayload } from "../../../../services/types";
 
 @Consumes([])
 export default class Tracker extends TwakeService<TrackerAPI> implements TrackerAPI {
@@ -16,63 +12,72 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
   analytics: Analytics;
 
   async doInit(): Promise<this> {
-    trackedEventBus.subscribe<TrackerDataListener>(TrackerEventActions.TWAKE_OPEN_CLIENT, data => {
+    const channelListEvent = "channel:list";
+    localEventBus.subscribe<ResourceEventsPayload>(channelListEvent, data => {
+      logger.debug(`Tracker - New ${channelListEvent} event`);
       this.identify({
         userId: data.user.id,
       });
       this.track(
         {
           userId: data.user.id,
-          event: TrackerEventActions.TWAKE_OPEN_CLIENT,
+          event: "open_client",
         },
-        (err: Error) => (err ? logger.error("Error while tracking -->", err) : false),
+        (err: Error) =>
+          err
+            ? logger.error({ err }, "Tracker - Error while tracking event", channelListEvent)
+            : false,
       );
     });
-    trackedEventBus.subscribe<TrackerDataListener>(
-      TrackerEventActions.TWAKE_CHANNEL_MESSAGE_SENT,
-      data => {
-        this.track(
-          {
-            userId: data.message.sender,
-            event: TrackerEventActions.TWAKE_CHANNEL_MESSAGE_SENT,
-            properties: {
-              is_direct: data.message.workspace_id === "direct" ? true : false,
-              is_thread_reply: data.message.thread_id ? true : false,
-            },
+
+    const messageSentEvent = "channel:message_sent";
+    localEventBus.subscribe<ResourceEventsPayload>(messageSentEvent, data => {
+      logger.debug(`Tracker - New ${messageSentEvent} event`);
+      this.track(
+        {
+          userId: data.message.sender,
+          event: messageSentEvent,
+          properties: {
+            is_direct: data.message.workspace_id === "direct" ? true : false,
+            is_thread_reply: data.message.thread_id ? true : false,
           },
-          (err: Error) => (err ? logger.error("Error while tracking -->", err) : false),
-        );
-      },
-    );
-    trackedEventBus.subscribe<TrackerDataListener>(
-      TrackerEventActions.TWAKE_CHANNEL_CREATED,
-      data => {
-        this.track(
-          {
-            userId: data.channel.owner,
-            event: TrackerEventActions.TWAKE_CHANNEL_CREATED,
-            properties: this.getVisibilityObject(data.channel.visibility),
-          },
-          (err: Error) => (err ? logger.error("Error while tracking -->", err) : false),
-        );
-      },
-    );
-    trackedEventBus.subscribe<TrackerDataListener>(
-      TrackerEventActions.TWAKE_CHANNEL_MEMBER_CREATED,
-      data => {
-        this.track(
-          {
-            userId: data.member.user_id,
-            event:
-              data.user.id !== data.member.user_id
-                ? TrackerEventActions.TWAKE_CHANNEL_INVITE
-                : TrackerEventActions.TWAKE_CHANNEL_JOIN,
-            properties: this.getVisibilityObject(data.channel.visibility),
-          },
-          (err: Error) => (err ? logger.error("Error while tracking -->", err) : false),
-        );
-      },
-    );
+        },
+        (err: Error) =>
+          err ? logger.error({ err }, "Tracker - Error while tracking", messageSentEvent) : false,
+      );
+    });
+
+    const channelCreatedEvent = "channel:created";
+    localEventBus.subscribe<ResourceEventsPayload>(channelCreatedEvent, data => {
+      logger.debug(`Tracker - New ${channelCreatedEvent} event`);
+      this.track(
+        {
+          userId: data.channel.owner,
+          event: channelCreatedEvent,
+          properties: this.getVisibilityObject(data.channel.visibility),
+        },
+        (err: Error) =>
+          err
+            ? logger.error({ err }, "Tracker - Error while tracking", channelCreatedEvent)
+            : false,
+      );
+    });
+
+    const channelMemberCreatedEvent = "channel:member:created";
+    localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data => {
+      logger.debug(`Tracker - New ${channelMemberCreatedEvent} event`);
+      this.track(
+        {
+          userId: data.member.user_id,
+          event: data.user.id !== data.member.user_id ? "channel:invite" : "channel:join",
+          properties: this.getVisibilityObject(data.channel.visibility),
+        },
+        (err: Error) =>
+          err
+            ? logger.error({ err }, "Tracker - Error while tracking", channelMemberCreatedEvent)
+            : false,
+      );
+    });
 
     return this;
   }
@@ -89,7 +94,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     identity: IdentifyObjectType,
     callback?: (err: Error) => void,
   ): Promise<Analytics> {
-    const analytics = await this.getAnalytics("segment");
+    const analytics = await this.getAnalytics();
 
     if (analytics && identity) return analytics.identify(identity, callback);
   }
@@ -98,17 +103,31 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     tracker: TrackedEventType,
     callback?: (err: Error) => void,
   ): Promise<Analytics> {
-    const analytics = await this.getAnalytics("segment");
+    const analytics = await this.getAnalytics();
 
-    if (analytics && tracker) return analytics.track(tracker, callback);
+    if (analytics && tracker) {
+      tracker.event = `twake:${tracker.event}`;
+      return analytics.track(tracker, callback);
+    }
   }
 
-  private async getAnalytics(trackerName: string): Promise<Analytics> {
-    const trackerKey = this.configuration.get<string>(trackerName, "");
-
-    if (!this.analytics && trackerKey) {
-      this.analytics = new Analytics(trackerKey);
+  private async getAnalytics(): Promise<Analytics | void> {
+    const type = this.configuration.get<string>("type");
+    if (!type || !type.length) {
+      logger.info("Tracker - No tracker type specified");
+      return;
     }
+
+    const config = this.configuration.get<TrackerConfiguration>(type);
+    if (!config) {
+      logger.info("Tracker - No tracker configured for type", type);
+      return;
+    }
+
+    if (!this.analytics && config.key) {
+      this.analytics = new Analytics(config.key);
+    }
+
     return this.analytics;
   }
 

@@ -2,7 +2,9 @@
  * Common types for business services
  */
 
+import { ChannelMember, Channel as ChannelEntity } from "../channels/entities";
 import { PaginationQueryParameters } from "../channels/web/types";
+import { MessageNotification } from "../messages/types";
 
 export type uuid = string;
 
@@ -93,4 +95,11 @@ export declare type DeleteStatus = "success" | "error";
 export interface ResourceWebsocket {
   room: string;
   encryption_key?: string;
+}
+
+export interface ResourceEventsPayload {
+  user?: User;
+  channel?: ChannelEntity;
+  member?: ChannelMember;
+  message?: MessageNotification;
 }

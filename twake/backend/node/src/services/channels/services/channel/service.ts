@@ -26,7 +26,7 @@ import {
   ChannelSystemExecutionContext,
 } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
-import { User } from "../../../../services/types";
+import { ResourceEventsPayload, User } from "../../../types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
 import { DirectChannel } from "../../entities/direct-channel";
@@ -41,11 +41,7 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
-import { trackedEventBus } from "../../../../core/platform/framework/pubsub";
-import {
-  TrackerEventActions,
-  TrackerDataListener,
-} from "../../../../core/platform/services/tracker/types";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class Service implements ChannelService {
   version: "1";
@@ -325,9 +321,10 @@ export class Service implements ChannelService {
         });
       }
 
-      trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_OPEN_CLIENT, {
+      localEventBus.publish<ResourceEventsPayload>("channel:list", {
         user: context.user,
       });
+
       return result;
     }
 
@@ -474,9 +471,7 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
-    trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_CREATED, {
-      channel: channel,
-    });
+    localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
