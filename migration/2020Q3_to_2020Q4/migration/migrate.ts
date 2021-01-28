@@ -268,9 +268,7 @@ const determinareCompanyId = async (channel: any) => {
 
   if (!!channelMembers.length) {
     userCompanies = await Promise.all(
-      channelMembers.map((userId: string) =>
-        getUserCompanies(userId)
-      )
+      channelMembers.map((userId: string) => getUserCompanies(userId))
     );
 
     const matchedCompanies = userCompanies.shift().filter((v: any) => {
@@ -302,6 +300,10 @@ export const importChannel = async (channel: any) => {
     : decryptedChannel.original_workspace_id;
 
   await addChannelEntity(decryptedChannel, directChannelCompanyId);
-  //  await addChannelTabEntity(channel.id, directChannelCompanyId, workspaceId);
-  //  await addChannelMembersEntities(channel.id, directChannelCompanyId, workspaceId);
+  await addChannelTabEntity(channel.id, directChannelCompanyId, workspaceId);
+  await addChannelMembersEntities(
+    channel.id,
+    directChannelCompanyId,
+    workspaceId
+  );
 };

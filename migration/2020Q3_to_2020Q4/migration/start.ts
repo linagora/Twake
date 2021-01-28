@@ -47,9 +47,6 @@ const init = async () => {
         }
       }
       channels_counter += channels.rows.length;
-
-      client.shutdown();
-      break;
     } else {
       client.shutdown();
       break;
