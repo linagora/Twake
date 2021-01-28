@@ -41,12 +41,12 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
         v = null;
       }
     }
-    return `'${(v || "").replace(/'/gm, "''")}'`; //Encryption not implemented yet
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`; //Encryption not implemented yet
   }
   if (type === "blob") {
     return "''"; //Not implemented yet
   }
-  return `'${(v || "").replace(/'/gm, "''")}'`;
+  return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {

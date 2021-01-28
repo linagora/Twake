@@ -43,7 +43,7 @@ const init = async () => {
         try {
           await importChannel(channel);
         } catch (err) {
-          console.log("Channel import error: ", err);
+          console.log("Channel import error: ", channel, err);
         }
       }
       channels_counter += channels.rows.length;
