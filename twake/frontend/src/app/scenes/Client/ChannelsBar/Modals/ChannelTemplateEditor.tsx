@@ -1,8 +1,11 @@
 import React, { FC, useState, useEffect } from 'react';
 import Languages from 'services/languages/languages.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
-import { ChannelType } from 'app/models/Channel';
-import { Select, Typography, Divider, Checkbox, Input } from 'antd';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { Select, Typography, Divider, Checkbox, Input, Button, Row, Col } from 'antd';
+import InputWithSelect from 'app/components/Inputs/InputWithSelect';
+import { Collection } from 'services/CollectionsReact/Collections';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   channel: ChannelType | undefined;
@@ -25,6 +28,11 @@ const ChannelTemplateEditor: FC<Props> = ({
   const [description, setDescription] = useState<string>(channel?.description || '');
   const [visibility, setVisibility] = useState<string>(channel?.visibility || 'public');
   const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
+  const [group, setGroup] = useState<string>(channel?.channel_group || '');
+  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
+  const channelsCollection = Collection.get(url, ChannelResource);
+  const channels = channelsCollection.useWatcher({});
 
   useEffect(() => {
     onChange({
@@ -32,9 +40,21 @@ const ChannelTemplateEditor: FC<Props> = ({
       name,
       description,
       visibility,
+      channel_group: group,
       default: defaultChannel,
     });
   });
+
+  const getGroups = (channels: ChannelResource[]) => {
+    const groupsNames: string[] = [];
+    channels
+      .sort((a, b) => (a.data.channel_group || '').localeCompare(b.data.channel_group || ''))
+      .forEach((channel: ChannelResource) => {
+        if (channel.data.channel_group && !groupsNames.includes(channel.data.channel_group))
+          groupsNames.push(channel.data.channel_group);
+      });
+    return groupsNames;
+  };
 
   const isAbleToEditVisibility = () => {
     const isNewChannel = !channel;
@@ -54,11 +74,17 @@ const ChannelTemplateEditor: FC<Props> = ({
             'Name',
           )}
           value={[icon, name]}
-          onChange={(value: any[]) => {
-            setIcon(value[0]);
-            setName(value[1]);
-          }}
-        />
+          onChange={(value: string[]) => setIcon(value[0])}
+        >
+          <InputWithSelect
+            channel={channel}
+            groups={getGroups(channels)}
+            onChange={(values: string[]) => {
+              setGroup(values[0]);
+              setName(values[1]);
+            }}
+          />
+        </InputWithIcon>
       </div>
       <Divider />
       <div className="x-margin">
@@ -70,9 +96,7 @@ const ChannelTemplateEditor: FC<Props> = ({
           autoSize={{ minRows: 1, maxRows: 4 }}
           placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
           value={description}
-          onChange={(e: any) => {
-            setDescription(e.target.value);
-          }}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
           rows={1}
         />
       </div>
@@ -89,9 +113,7 @@ const ChannelTemplateEditor: FC<Props> = ({
             <Select
               size={'large'}
               value={visibility ? visibility : 'private'}
-              onChange={(value: any) => {
-                setVisibility(value);
-              }}
+              onChange={(value: string) => setVisibility(value)}
             >
               <Option value="private">
                 {Languages.t('scenes.app.channelsbar.private_channel_label', 'Private channel')}
