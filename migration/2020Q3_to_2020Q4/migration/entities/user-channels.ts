@@ -9,7 +9,7 @@ import { Column, Entity } from "../services/db/orm/decorators";
   primaryKey: [["company_id", "workspace_id"], "user_id", "channel_id"],
   type: "user_channels",
 })
-export class ChannelMember {
+export class UserChannel {
   /**
    * Primary key
    */
@@ -39,7 +39,7 @@ export class ChannelMember {
   @Column("channel_id", "uuid")
   channel_id: string;
 
-  @Column("type", "uuid")
+  @Column("type", "plainstring")
   type: string;
 
   /**

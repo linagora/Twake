@@ -9,7 +9,7 @@ const getChannels = async (pageState: any = undefined) => {
   const query = "SELECT * FROM channel";
 
   return new Promise((resolve, reject) => {
-    let client = Store.getCassandraClient();
+    const client = Store.getCassandraClient();
     client.execute(
       query,
       (err: any, result: any) => {
@@ -37,24 +37,25 @@ const init = async () => {
     await Store.initCassandraClient();
     let client = Store.getCassandraClient();
 
-    const result: any = await getChannels(pageState);
-    if (result && result.rows && result.rows.length > 0) {
-      for (let channel of result.rows) {
+    const channels: any = await getChannels(pageState);
+    if (channels && channels.rows && channels.rows.length > 0) {
+      for (let channel of channels.rows) {
         try {
           await importChannel(channel);
         } catch (err) {
           console.log("Channel import error: ", err);
         }
       }
-      channels_counter += result.rows.length;
+      channels_counter += channels.rows.length;
       console.log("Imported: ", channels_counter);
     } else {
       client.shutdown();
       break;
     }
+
     client.shutdown();
 
-    if (!result.pageState) {
+    if (!channels.pageState) {
       break;
     }
 
@@ -64,7 +65,7 @@ const init = async () => {
       }, 5000)
     );
 
-    pageState = result.pageState;
+    pageState = channels.pageState;
   }
   console.log("> Ended with ", channels_counter, " channels migrated.");
 };

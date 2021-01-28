@@ -38,4 +38,7 @@ export class ChannelMember {
   @Type(() => String)
   @Column("channel_id", "uuid")
   channel_id: string;
+
+  @Column("type", "plainstring")
+  type: string;
 }

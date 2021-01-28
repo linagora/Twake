@@ -1,11 +1,18 @@
 "use strict";
 
+import _ from "lodash";
+
 import decrypt from "./decrypt";
 import config from "config";
 import Store from "./store";
+
 import { Channel } from "./entities/channel";
-import _ from "lodash";
 import { DirectChannel } from "./entities/direct-channel";
+import { ChannelTab } from "./entities/tab";
+import { ChannelMember } from "./entities/channel-member";
+import { UserChannel } from "./entities/user-channels";
+import { ChannelMemberNotificationPreference } from "./entities/channel-member-notification-preferences";
+
 
 const configuration: any = {
   db: config.get("db"),
@@ -13,8 +20,7 @@ const configuration: any = {
 };
 
 const getUserCompanies = (userId: string) => {
-  let client = Store.getCassandraClient();
-
+  const client = Store.getCassandraClient();
   const query = `SELECT group_id FROM group_user WHERE user_id = ${userId}`;
 
   return new Promise((resolve, reject) => {
@@ -27,8 +33,7 @@ const getUserCompanies = (userId: string) => {
 };
 
 const getNumberOfUsersInCompany = (companyId: string) => {
-  let client = Store.getCassandraClient();
-
+  const client = Store.getCassandraClient();
   const query = `SELECT member_count FROM group_entity WHERE id = ${companyId}`;
 
   return new Promise((resolve, reject) => {
@@ -40,6 +45,69 @@ const getNumberOfUsersInCompany = (companyId: string) => {
       resolve({ id: companyId, numberOfUsers: result.rows[0].member_count });
     });
   });
+};
+
+/**
+ * Get the old entity channel_member
+ */
+
+const getchannelMember = (channelId:string) => {
+  const client = Store.getCassandraClient();
+  const query = `SELECT * FROM channel_member WHERE channel_id = ${channelId}`;
+
+  return new Promise((resolve, reject) => {
+    client.execute(query, (err:any, result:any) => {
+      if (err) console.log(err);
+
+      resolve(result.rows);
+    });
+  });
+};
+
+
+/**
+ * Get the old entity channel_tab
+ */
+
+const getChannelTab = (channelId:string) => {
+  const client = Store.getCassandraClient();
+  const query = `SELECT * FROM channel_tab WHERE channel_id = ${channelId}`;
+
+  return new Promise((resolve, reject) => {
+    client.execute(query, (err: any, result: any) => {
+      if (err) console.log(err);
+
+      resolve(result.rows);
+    });
+  });
+};
+
+const addChannelTabEntity = async (channelId:any, directChannelCompanyId:string, workspaceId:string) => {
+  const channelTabs:any = await getChannelTab(channelId);
+
+  await Promise.all(channelTabs.map(async (channelTab:any) => {
+    const decryptedTab:any = await decrypt(
+      channelTab,
+      configuration.encryption.key,
+      configuration.encryption.defaultIv
+    );
+
+    const newChannelTab = new ChannelTab();
+    _.assign(newChannelTab, {
+      company_id: directChannelCompanyId,
+      workspace_id: workspaceId,
+      channel_id: decryptedTab.channel_id,
+      id: decryptedTab.id,
+      application_id: decryptedTab.app_id,
+      col_order: "",
+      configuration: decryptedTab.configuration,
+      name: decryptedTab.name,
+      owner: "",
+    })
+    await (
+      await Store.getOrmClient().getRepository("channel_tabs", ChannelTab)
+    ).save(newChannelTab);
+  }))
 };
 
 const addChannelEntity = async (
@@ -72,7 +140,6 @@ const addChannelEntity = async (
     newChannel
   );
 
-  // Store it in Direct channels
   if (channel.direct) {
     const newDirectChannel = new DirectChannel();
     _.assign(newDirectChannel, {
@@ -85,6 +152,60 @@ const addChannelEntity = async (
     ).save(newDirectChannel);
   }
 };
+
+const addChannelMembersEntities = async (channelId:any, directChannelCompanyId:any, workspaceId:any) => {
+  const preferences = ['all', 'mentions', 'me', 'none'];
+  const uuidVerficationRegex = /^(?:.*[-]){4}/;
+  const channelMembers:any = await getchannelMember(channelId);
+
+  for(const channelMember of channelMembers ) {
+    /*
+      We check the user_id before the upsert after we have found some weird 
+      strings instead of a uuid stored in the old database (ex: romaric@wanadoo.fr)
+    */
+    if(uuidVerficationRegex.test(channelMember.user_id)) {
+      const newChannelMember = new ChannelMember();
+      _.assign(newChannelMember, {
+        company_id: directChannelCompanyId,
+        workspace_id: workspaceId,
+        channel_id: channelId,
+        user_id: channelMember.user_id,
+        type: 'member'
+      });
+
+      await(await Store.getOrmClient().getRepository("channel_members", ChannelMember)).save(newChannelMember);
+  
+      const newUserChannel = new UserChannel();
+      _.assign(newUserChannel, {
+        company_id: directChannelCompanyId,
+        workspace_id: workspaceId,
+        user_id: channelMember.user_id,
+        channel_id: channelId,
+        expiration: 0,
+        favorite: false,
+        last_access: 0,
+        last_increment: 0,
+        notification_level: typeof channelMember.muted === "number" ? preferences[channelMember.muted] : 'mentions',
+        type: 'member'
+      });
+
+      await(await Store.getOrmClient().getRepository("user_channels", UserChannel)).save(newUserChannel);
+
+      const newChannelMemberNotificationPreferences = new ChannelMemberNotificationPreference();
+      _.assign(newChannelMemberNotificationPreferences, {
+        company_id: directChannelCompanyId,
+        channel_id: channelId,
+        user_id: channelMember.user_id,
+        last_read:0,
+        preferences: typeof channelMember.muted === "number" ? preferences[channelMember.muted] : 'mentions'
+      });
+
+      await(
+        await Store.getOrmClient().getRepository("channel_members_notification_preferences", ChannelMemberNotificationPreference)
+      ).save(newChannelMemberNotificationPreferences);
+    }
+  }
+}
 
 const getCompanyWithBigestNumberOfUsers = async (matchedCompanies: any) => {
   const companies = await Promise.all(
@@ -105,7 +226,7 @@ const determinareCompanyId = async (channel: any) => {
   const _fillCompanyId = async (matchedCompanies: any) => {
     switch (true) {
       case !matchedCompanies.length:
-        //delete channel
+        //Ignore it
         break;
       case matchedCompanies.length === 1:
         directChannelCompanyId = matchedCompanies[0].group_id;
@@ -145,13 +266,16 @@ const determinareCompanyId = async (channel: any) => {
  */
 
 export const importChannel = async (channel: any) => {
-  const decryptedChannel = await decrypt(
+  const decryptedChannel:any = await decrypt(
     channel,
     configuration.encryption.key,
     configuration.encryption.defaultIv
   );
 
   const directChannelCompanyId = await determinareCompanyId(decryptedChannel);
+  const workspaceId = decryptedChannel.direct ? "direct" : decryptedChannel.original_workspace_id;
 
   await addChannelEntity(decryptedChannel, directChannelCompanyId);
+  await addChannelTabEntity(channel.id, directChannelCompanyId, workspaceId);
+  await addChannelMembersEntities(channel.id, directChannelCompanyId, workspaceId);
 };
