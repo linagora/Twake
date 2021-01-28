@@ -64,7 +64,7 @@ class NodePushNotifications extends ContainerAwareCommand
 
                     //Get $title and $message from $message_id
                     $messageEntity = $messagesRepo->findOneBy(["id" => $message_id]);
-                    $title = $push_message["sender_name"]; //TODO need to add channel name
+                    $title = $push_message["title"];
                     $message = $push_message["text"];
             
                     $device_data = [

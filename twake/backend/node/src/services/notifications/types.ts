@@ -17,9 +17,7 @@ export type MentionNotification = {
     users: uuid[];
     specials?: specialMention[];
   };
-
-  //Temp fix, should not be used like this by node except for push notification
-  sender_name: string;
+  title: string;
   text: string;
 };
 
@@ -36,9 +34,7 @@ export type PushNotificationMessage = {
   thread_id: uuid;
   badge_value: number;
   user: string;
-
-  //Temp fix, should not be used like this by node except for push notification
-  sender_name: string;
+  title: string;
   text: string;
 };
 

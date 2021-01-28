@@ -70,17 +70,13 @@ class MessageSystem
 
         $channel_id = $data["channel_id"];
 
-        if($data["company_id"] && $data["workspace_id"]){
-            $cacheChannel = new CachedFromNode("unused", "channel", $channel_id, ["company_id" => $data["company_id"], "workspace_id" => $data["workspace_id"], "channel_id" => $channel_id]);
-            $this->em->persist($cacheChannel);
-            $this->em->flush();
-        }
-
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
             "edition" => false,
             "object_id" => $channel_id
         ], [
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"]
         ]);
     }
 
@@ -472,45 +468,10 @@ class MessageSystem
             $channel = $this->em->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
             $this->sendToNode($channel, $message, $did_create);
 
-            //Channel is now never defined except for old channels so never pass here
-            $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
-            $old_channel = $channel_repo->findOneBy(Array("id" => $channel_id));
-            if($old_channel){
-    
-                try {
-                    $this->indexMessage($message, $channel->getData()["workspace_id"], $channel_id);
-                } catch (\Exception $e) {
-                    error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
-                }
-                
-                //Replaced by new notifications in node
-                $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
-                if ($channel && $did_create && !$init_channel) {
-                    $old_channel->setLastActivity(new \DateTime());
-                    $old_channel->setMessagesIncrement($old_channel->getMessagesIncrement() + 1);
-                    $this->em->persist($channel);
-                    
-                    //Sender autoread the channel
-                    if($user){
-                        $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
-                        $member = $membersRepo->findOneBy(Array("direct" => $old_channel->getDirect(), "channel_id" => $old_channel->getId(), "user_id" => $user->getId()));
-                        $member->setLastMessagesIncrement($old_channel->getMessagesIncrement());
-                        $this->em->persist($member);
-                    }
-
-                    try{
-                        $this->queues->push("message_dispatch_queue", [
-                            "channel" => $channel_id,
-                            "message_id" => $message->getId(),
-                            "application_id" => $application ? $application->getId() : null,
-                            "user_id" => $user ? $user->getId() : null,
-                        ]);
-                    }catch(\Exception $err){
-                        error_log($err->getMessage());
-                    }
-                }
-
-
+            try {
+                $this->indexMessage($message, $channel->getData()["workspace_id"], $channel_id);
+            } catch (\Exception $e) {
+                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
             }
 
             $this->em->flush();
@@ -569,10 +530,20 @@ class MessageSystem
 
     public function sendToNode($channel, $message, $did_create){
         $messageArray = $message->getAsArray();
-        $sender_user = $messageArray["sender"] ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $messageArray["sender"])) : null;
+
         $senderName = "";
-        if($sender_user){
-            $senderName = $sender_user->getFullName();
+        if($messageArray["sender"]){
+            $sender_user = $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $messageArray["sender"]));
+            $senderName = $sender_user ? $sender_user->getFullName() : "";
+        }
+
+        $title = $senderName ?: "Notification";
+        if (!$channel->getData()["is_direct"]) {
+            $title .= " to ";
+            $title .= $channel->getData()["name"];
+            $title .= " in " . $channel->getData()["workspace_name"] . " (" . $channel->getData()["company_name"] . ")";
+        }else{
+            $title .= " (" . $channel->getData()["company_name"] . ")";
         }
 
         if($channel){
@@ -595,8 +566,12 @@ class MessageSystem
                 "creation_date" => $messageArray["creation_date"] * 1000,
                 "mentions" => $mentions,
 
-                //Temp fix to allow node to get back the message content for push notifications
                 "sender_name" => $senderName,
+                "channel_name" => $channel->getData()["name"],
+                "company_name" => $channel->getData()["workspace_name"],
+                "workspace_name" => $channel->getData()["company_name"],
+
+                "title" => $title,
                 "text" => $this->buildShortText($message)
             ];
             $rabbitChannelData = [
@@ -605,6 +580,7 @@ class MessageSystem
                 "channel_id" => $messageArray["channel_id"],
                 "date" => $messageArray["creation_date"] * 1000,
             ];
+
             if($messageArray["message_type"] != 2){ //Ignore system messages
                 if($did_create){
                     $this->queues->push("channel:activity", $rabbitChannelData, ["exchange_type" => "fanout"]);

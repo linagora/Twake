@@ -50,11 +50,24 @@ class AccessManager
                     return true;
                 }
             }
-            
 
+            $getChannelCache = false;
             $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
-            $companyId = $channelDetails->getData()["company_id"];
-            $workspaceId = $channelDetails->getData()["workspace_id"];
+            if($channelDetails){
+                $companyId = $channelDetails->getData()["company_id"];
+                $workspaceId = $channelDetails->getData()["workspace_id"];
+                if($channelDetails->getData()["last_update"] < date("U") - 0 * 60 * 60){
+                    $getChannelCache = true;
+                }
+            }else{
+                $getChannelCache = true;
+            }
+            $getChannelCache = true;
+
+            if($options["company_id"] && $options["workspace_id"]){
+                $companyId = $options["company_id"];
+                $workspaceId = $options["workspace_id"];
+            }
 
             $cacheKey = $userId."_".$channelId;
             $data = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "access_channel", "key"=>$cacheKey));
@@ -82,9 +95,34 @@ class AccessManager
         
                         $hasAccess = $res["has_access"] == true;
 
-                        $cache = new CachedFromNode("unknown", "access_channel", $cacheKey, ["has_access" => $hasAccess]);
+                        if($getChannelCache){
+
+                            $workspace = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspaceId));
+                            $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $companyId));
+                            $workspaceName = $workspace ? $workspace->getName() : "";
+                            $companyName = $group ? $group->getDisplayName() : "";
+
+                            $cacheChannel = new CachedFromNode("unused", "channel", $channelId, [
+                                "company_id" => $companyId,
+                                "workspace_id" => $workspaceId,
+                                "channel_id" => $channelId,
+                                "is_direct" => $workspace_id === "direct",
+                                "name" => "No name",
+                                "workspace_name" => $workspaceName,
+                                "company_name" => $companyName,
+                                "last_update" => date("U")
+                            ]);
+                            $this->doctrine->persist($cacheChannel);
+                            $this->doctrine->flush();
+                        }
+    
+
+                        $cache = new CachedFromNode("unknown", "access_channel", $cacheKey, [
+                            "has_access" => $hasAccess
+                        ]);
                         $this->doctrine->useTTLOnFirstInsert(60*60*6); //6 hours
                         $this->doctrine->persist($cache);
+                        $this->doctrine->flush();
 
                         return $hasAccess;
 

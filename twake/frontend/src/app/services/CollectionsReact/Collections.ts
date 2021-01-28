@@ -56,16 +56,13 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   };
   removeWatcher: (callback: (transform: any) => void) => void;
   addEventListener: (
-    callback: (transform: any) => void,
-    observedScope: () => any,
-    options?: any,
-  ) => {
-    callback: (transform: any) => void;
-    observedScope: () => any;
-    savedChanges: any;
-    options?: any;
-  };
-  removeEventListener: (callback: (transform: any) => void) => void;
+    event: string | symbol,
+    listener: (...args: any[]) => void,
+  ) => ObservableAdapter;
+  removeEventListener: (
+    event: string | symbol,
+    listener: (...args: any[]) => void,
+  ) => ObservableAdapter;
 
   constructor(
     path: string = '',
@@ -83,8 +80,8 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     this.addWatcher = (callback: (transform: any) => void, filter?: any, options?: any) =>
       this.observable.addWatcher(callback, ...this.getWatcherArgs(filter, options));
     this.removeWatcher = this.observable.removeWatcher.bind(this.observable);
-    this.addEventListener = this.observable.addWatcher.bind(this.observable);
-    this.removeEventListener = this.observable.removeWatcher.bind(this.observable);
+    this.addEventListener = this.observable.addListener.bind(this.observable);
+    this.removeEventListener = this.observable.removeListener.bind(this.observable);
   }
 
   private observedChangesReactOptionsAdapter = (observedFields: string[]) => {

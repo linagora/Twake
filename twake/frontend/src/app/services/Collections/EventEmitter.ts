@@ -22,6 +22,10 @@ export default class EventEmitter<G extends Resource<any>> {
     });
   }
 
+  public emit(action: string, body: any) {
+    this.attachedEventEmitter?.emit(action, body);
+  }
+
   public notify() {
     if (this.attachedEventEmitter) {
       this.attachedEventEmitter.notify();

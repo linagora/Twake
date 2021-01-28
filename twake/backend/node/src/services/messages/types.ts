@@ -17,6 +17,6 @@ export type MessageNotification = {
   };
 
   //Temp fix, should not be used like this by node except for push notification
-  sender_name: string;
+  title: string;
   text: string;
 };

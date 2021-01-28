@@ -62,7 +62,7 @@ export default (props: Props) => {
                 },
               ]}
             >
-              <Icon type="plus-circle" className="m-icon-small" />
+              <Icon type="plus" className="m-icon-small" />
             </Menu>
           )
         }

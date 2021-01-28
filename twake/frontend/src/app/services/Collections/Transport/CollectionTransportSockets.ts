@@ -12,6 +12,7 @@ type WebsocketResourceEvent = {
     | 'realtime:join:success'
     | 'realtime:join:error';
   resource: any;
+  type: string;
 };
 type WebsocketJoinEvent = {
   name: string;
@@ -84,7 +85,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
     const buffer = this.websocketBuffer;
     this.websocketBuffer = [];
     buffer.forEach(event => {
-      this.onWebsocketResourceEvent(event.action, event.resource);
+      this.onWebsocketResourceEvent(event.action, event.type, event.resource);
     });
   }
 
@@ -93,7 +94,10 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
     this.start();
   }
 
-  async onWebsocketResourceEvent(action: string, resource: any) {
+  async onWebsocketResourceEvent(action: string, type: string, resource: any) {
+    if (action === 'event') {
+      this.transport.collection.getEventEmitter().emit(type, resource);
+    }
     if (action === 'created' || action === 'updated' || action === 'saved') {
       let localResource = await this.transport.collection.findOne(resource.id);
       if (!localResource) {
