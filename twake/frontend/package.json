@@ -1,6 +1,6 @@
 {
-  "name": "Twake",
-  "version": "2020.3.107'",
+  "name": "twake",
+  "version": "2020.3.107",
   "repository": "https://github.com/TwakeApp/Twake",
   "license": "AGPL-3.0",
   "scripts": {
