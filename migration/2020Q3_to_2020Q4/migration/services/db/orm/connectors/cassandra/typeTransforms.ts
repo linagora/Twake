@@ -45,12 +45,12 @@ export const transformValueToDbString = (
         v = null;
       }
     }
-    return `'${(v || "").replace(/'/, "\\'")}'`; //Encryption not implemented yet
+    return `'${(v || "").replace(/'/gm, "''")}'`; //Encryption not implemented yet
   }
   if (type === "blob") {
     return "''"; //Not implemented yet
   }
-  return `'${(v || "").replace(/'/, "\\'")}'`;
+  return `'${(v || "").replace(/'/gm, "''")}'`;
 };
 
 export const transformValueFromDbString = (
