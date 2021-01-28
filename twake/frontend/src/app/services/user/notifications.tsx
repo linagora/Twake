@@ -25,8 +25,12 @@ type DesktopNotification = {
   text: string;
 };
 
+let inAppNotificationKey = 0;
 const openNotification = (n: any, callback: any) => {
+  notification.close(inAppNotificationKey.toString());
+  inAppNotificationKey++;
   notification.open({
+    key: inAppNotificationKey.toString(),
     message: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(n.title),
     ),
