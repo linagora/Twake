@@ -50,7 +50,7 @@ export const transformValueToDbString = (
       }
     }
     v = encrypt(v, options.secret);
-    return `'${(v || "").toString().replace(/'/gm, "''")}'`; //Encryption not implemented yet
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
   if (type === "blob") {
     return "''"; //Not implemented yet

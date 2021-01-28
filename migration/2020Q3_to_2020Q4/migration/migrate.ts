@@ -264,7 +264,7 @@ const determinareCompanyId = async (channel: any) => {
 
   const channelMembers = Array.isArray(JSON.parse(channel.members))
     ? JSON.parse(channel.members)
-    : Object.values(JSON.parse(channel.members));
+    : Object.values(JSON.parse(channel.members) || {});
 
   if (!!channelMembers.length) {
     userCompanies = await Promise.all(
