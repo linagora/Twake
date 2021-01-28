@@ -186,7 +186,7 @@ export class ChannelMemberCrudController
     );
 
     if (!resource) {
-      return reply.status(200).send({ has_access: true });
+      return reply.status(200).send({ has_access: false });
     }
 
     return reply.status(200).send({ has_access: true });
