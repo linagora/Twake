@@ -11,20 +11,26 @@ import { ChannelResource } from 'app/models/Channel';
 import WorkspaceChannelRow from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList/WorkspaceChannelRow';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
+type AutoChannelType = {
+  id: string;
+  name: string;
+  type: string;
+  channelResource: ChannelResource;
+};
+
 export default () => {
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(100);
-  const autoChannels: {
-    id: string;
-    name: string;
-    type: string;
-    channelResource: ChannelResource;
-  }[] = [];
+  const autoChannels: AutoChannelType[] = [];
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
   const channels = channelsCollection.useWatcher({}, { limit: limit });
+
+  const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+  const mineCollection = Collection.get(minePath, ChannelResource);
+  const mine = mineCollection.useWatcher({});
 
   channels.map((channel: ChannelResource) => {
     autoChannels.push({
@@ -34,6 +40,12 @@ export default () => {
       channelResource: channel,
     });
   });
+
+  const filterMineAutoChannels = (autoChannel: AutoChannelType) => {
+    return !mine.some(
+      channel => autoChannel.channelResource.id === channel.id && channel.data.user_member?.user_id,
+    );
+  };
 
   return (
     <ObjectModal title={Languages.t('components.channelworkspacelist.title')} closable>
@@ -55,6 +67,7 @@ export default () => {
       >
         <div style={{ height: '240px' }}>
           {autoChannels
+            .filter(filterMineAutoChannels)
             .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
             .map(autoChannel => {
               return (
