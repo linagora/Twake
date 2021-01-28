@@ -182,10 +182,6 @@ export class Service implements MemberService {
       throw CrudExeption.notFound("Channel member not found");
     }
 
-    if (!this.isCurrentUser(memberToDelete, context.user)) {
-      throw CrudExeption.badRequest("User does not have rights to remove member");
-    }
-
     if (ChannelEntity.isPrivateChannel(channel)) {
       const canLeave = await this.canLeavePrivateChannel(context.user, channel);
 

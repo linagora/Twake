@@ -77,7 +77,9 @@ export default (props: Props) => {
           return (
             <ChannelIntermediate
               key={key}
-              collection={data.visibility === 'direct' ? props.directCollection : props.collection}
+              collection={
+                data.workspace_id === 'direct' ? props.directCollection : props.collection
+              }
               channel={data || ''}
             />
           );
