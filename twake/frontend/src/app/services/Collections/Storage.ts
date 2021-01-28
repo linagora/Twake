@@ -2,6 +2,7 @@ import _ from 'lodash';
 import minimongo from 'minimongo';
 import semaphore from 'semaphore';
 import Logger from '../Logger';
+import Login from 'services/login/login';
 
 export type MongoItemType = {
   _state: any;
@@ -27,7 +28,7 @@ export interface CollectionStore {
  * - It choose the right db to use
  * - It abstract the minimongo internal _id and try to not duplicates objects with same id
  */
-class CollectionStorage implements CollectionStore {
+export class CollectionStorage implements CollectionStore {
   static miniMongoInstance: minimongo.MinimongoDb;
 
   private semaphores: { [path: string]: semaphore.Semaphore } = {};
@@ -201,7 +202,7 @@ class CollectionStorage implements CollectionStore {
   }
 }
 
-async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
+export async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
   if (CollectionStorage.miniMongoInstance) {
     return CollectionStorage.miniMongoInstance;
   }
@@ -237,8 +238,18 @@ async function getDB(options: { namespace: string } = { namespace: "twake"}): Pr
   });
 }
 
-export default async function getStore(options: { namespace: string } = { namespace: "twake"}): Promise<CollectionStore> {
+export default async function getStore(): Promise<CollectionStore> {
+  if (!Login) {
+    throw new Error("Service is not ready");
+  }
+
+  const userId = await Login.userIsSet;
+
+  if (!userId) {
+    throw new Error("User is not set");
+  }
+
   // TODO: Save storages in Map based on options. If not created, create it...
-  const mongoDb = await getDB(options);
+  const mongoDb = await getDB({ namespace: userId });
   return new CollectionStorage(mongoDb);
 }

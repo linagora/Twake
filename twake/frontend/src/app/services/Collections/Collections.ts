@@ -37,7 +37,8 @@ class Collections {
   }
 
   public connect(options?: Options) {
-    if (options) this.setOptions(options);
+    options && this.setOptions(options);
+
     this.transport.connect();
   }
 
@@ -63,7 +64,7 @@ class Collections {
       logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
-    let key = formattedPath + '::' + options.tag;
+    const key = formattedPath + '::' + options.tag;
 
     if (!this.collections[key]) {
       this.collections[key] = existingCollectionCreator

@@ -1,6 +1,9 @@
 import React from 'react';
-import Collections, { Resource, Collection } from '../Collections';
+import Login from 'services/login/login';
+import { Resource, Collection } from '../Collections';
 import { shallow } from 'enzyme';
+
+Login.userIsSet = true;
 
 /** Messages example component */
 
