@@ -4,7 +4,8 @@ namespace Twake\Core\Services;
 
 use App\App;
 use Twake\Core\Entity\CachedFromNode;
-
+use Emojione\Client;
+use Emojione\Ruleset;
 class AccessManager
 {
 
@@ -14,6 +15,7 @@ class AccessManager
         $this->rest = $app->getServices()->get("app.restclient");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->memberservice = $app->getServices()->get("app.workspace_members");
+        $this->emojione_client = new Client(new Ruleset());
     }
 
     public function has_access($current_user_id, $data, $options = null)
@@ -75,27 +77,29 @@ class AccessManager
 
                 try{
 
-                    $secret = $this->app->getContainer()->getParameter("node.secret");
-                    $uri = $this->app->getContainer()->getParameter("node.api") . 
+                    $res = $this->callNode(
                         "companies/".$companyId."/workspaces/".$workspaceId."/".
-                        "channels/".$channelId."/members/".$userId."/exists";
-            
-                    $res = $this->rest->get($uri, [
-                        CURLOPT_HTTPHEADER => Array(
-                            "Authorization: Token ".$secret,
-                            "Content-Type: application/json"
-                        ),
-                        CURLOPT_CONNECTTIMEOUT => 1,
-                        CURLOPT_TIMEOUT => 1
-                    ]);
-                    $res = $res->getContent();
-                    $res = json_decode($res, 1);
+                        "channels/".$channelId."/members/".$userId."/exists"
+                    );
 
                     if(isset($res["has_access"])){
         
                         $hasAccess = $res["has_access"] == true;
 
                         if($getChannelCache){
+
+                            $resChannel = $this->callNode(
+                                "companies/".$companyId
+                                ."/workspaces/".$workspaceId."/"
+                                ."channels/".$channelId
+                            );
+
+                            $name = $resChannel["icon"] . " " . $resChannel["name"];
+                            if($resChannel["workspace_id"] === "direct"){
+                                $name = "";
+                            }
+
+                            $name = html_entity_decode($this->emojione_client->shortnameToUnicode($name), ENT_NOQUOTES, 'UTF-8');
 
                             $workspace = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspaceId));
                             $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $companyId));
@@ -106,8 +110,8 @@ class AccessManager
                                 "company_id" => $companyId,
                                 "workspace_id" => $workspaceId,
                                 "channel_id" => $channelId,
-                                "is_direct" => $workspace_id === "direct",
-                                "name" => "No name",
+                                "is_direct" => $workspaceId === "direct",
+                                "name" => $name,
                                 "workspace_name" => $workspaceName,
                                 "company_name" => $companyName,
                                 "last_update" => date("U")
@@ -236,6 +240,24 @@ class AccessManager
     public function user_has_workspace_access($current_user_id, $workspace_id)
     {
         return $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser")->findOneBy(Array("workspace_id" => $workspace_id, "user_id" => $current_user_id));
+    }
+
+    private function callNode($route){
+        $secret = $this->app->getContainer()->getParameter("node.secret");
+        $uri = $this->app->getContainer()->getParameter("node.api") . 
+            $route;
+
+        $res = $this->rest->get($uri, [
+            CURLOPT_HTTPHEADER => Array(
+                "Authorization: Token ".$secret,
+                "Content-Type: application/json"
+            ),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1
+        ]);
+        $res = $res->getContent();
+        $res = json_decode($res, 1);
+        return $res;
     }
 
 }

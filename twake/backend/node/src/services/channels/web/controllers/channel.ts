@@ -8,6 +8,7 @@ import { getWebsocketInformation, getWorkspaceRooms } from "../../services/chann
 import {
   BaseChannelsParameters,
   ChannelListQueryParameters,
+  ChannelMemberParameters,
   ChannelParameters,
   ChannelSaveOptions,
   CreateChannelBody,
@@ -51,6 +52,8 @@ export class ChannelCrudController
       getExecutionContext(request),
     );
 
+    console.log(channel);
+
     if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
 
@@ -71,6 +74,18 @@ export class ChannelCrudController
       websocket: getWebsocketInformation(channel),
       resource: channel,
     };
+  }
+
+  async getForPHP(
+    request: FastifyRequest<{ Params: ChannelParameters }>,
+    reply: FastifyReply,
+  ): Promise<void> {
+    const channel = await this.service.get(
+      this.getPrimaryKey(request),
+      getExecutionContext(request),
+    );
+
+    reply.send(channel);
   }
 
   async save(

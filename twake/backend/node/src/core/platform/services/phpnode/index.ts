@@ -110,6 +110,25 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
      * Register private calls from php channels
      */
     this.register({
+      method: "GET",
+      url: "/companies/:company_id/workspaces/:workspace_id/channels/:id",
+      handler: (request: FastifyRequest<{ Params: ChannelParameters }>, reply) => {
+        if (!this.channels) {
+          reply.code(500).send(); //Server is not ready
+          return;
+        }
+        const channelsController = new ChannelCrudController(
+          this.channels.channels,
+          this.channels.members,
+        );
+        channelsController.getForPHP(request, reply);
+      },
+    });
+
+    /**
+     * Register private calls from php channels
+     */
+    this.register({
       method: "POST",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/defaultchannel",
       handler: (

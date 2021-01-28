@@ -69,6 +69,10 @@ class Notifications extends Observable {
       }
     }
 
+    this.triggerUnreadMessagesPushNotification = this.triggerUnreadMessagesPushNotification.bind(
+      this,
+    );
+
     this.subscribeToCompaniesNotifications();
   }
 
@@ -77,22 +81,22 @@ class Notifications extends Observable {
       const company = (WorkspacesService.user_workspaces as any)[id].group;
       if (!this.subscribedCompanies[company.id]) {
         const notificationsCollection = Collection.get(
-          '/notifications/v1/badges/',
+          '/notifications/v1/badges/' + company.id,
           NotificationResource,
-          {
-            tag: company.id,
-            queryParameters: { company_id: company.id },
-          },
         );
         notificationsCollection.setOptions({
           reloadStrategy: 'ontime',
         });
         notificationsCollection.getTransport().start();
 
-        notificationsCollection.addEventListener('notification:desktop', notification => {
-          //Desktop push notifications are here
-          this.triggerUnreadMessagesPushNotification(notification);
-        });
+        notificationsCollection.removeEventListener(
+          'notification:desktop',
+          this.triggerUnreadMessagesPushNotification,
+        );
+        notificationsCollection.addEventListener(
+          'notification:desktop',
+          this.triggerUnreadMessagesPushNotification,
+        );
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 }).then(() => {

@@ -45,12 +45,8 @@ export default (props: Props): JSX.Element => {
   Languages.useListener(useState);
 
   const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
+    '/notifications/v1/badges/' + props.channel.data.company_id,
     NotificationResource,
-    {
-      tag: props.channel.data.company_id,
-      queryParameters: { company_id: props.channel.data.company_id },
-    },
   );
   const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
   const hasNotification = notifications.length > 0;

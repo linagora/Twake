@@ -537,13 +537,14 @@ class MessageSystem
             $senderName = $sender_user ? $sender_user->getFullName() : "";
         }
 
-        $title = $senderName ?: "Notification";
-        if (!$channel->getData()["is_direct"]) {
-            $title .= " to ";
-            $title .= $channel->getData()["name"];
-            $title .= " in " . $channel->getData()["workspace_name"] . " (" . $channel->getData()["company_name"] . ")";
+        $title = "";
+        $text = $this->buildShortText($message);
+        if ($channel->getData()["is_direct"]) {
+            $title = $senderName . " in " . $channel->getData()["company_name"];
         }else{
-            $title .= " (" . $channel->getData()["company_name"] . ")";
+            $title = $channel->getData()["name"];
+            $title .= " in " . $channel->getData()["company_name"] . " • " . $channel->getData()["workspace_name"];
+            $text = $senderName . ": " . $text;
         }
 
         if($channel){
@@ -572,7 +573,7 @@ class MessageSystem
                 "workspace_name" => $channel->getData()["company_name"],
 
                 "title" => $title,
-                "text" => $this->buildShortText($message)
+                "text" => $text
             ];
             $rabbitChannelData = [
                 "company_id" => $channel->getData()["company_id"],
