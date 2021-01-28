@@ -1,74 +1,50 @@
 import _ from 'lodash';
 import minimongo from 'minimongo';
 import semaphore from 'semaphore';
+import Logger from '../Logger';
 
 export type MongoItemType = {
   _state: any;
   [key: string]: any;
 };
 
+const logger = Logger.getLogger("Collections/Storage");
+
+/**
+ * Collection store API
+ */
+export interface CollectionStore {
+  addCollection(path: string): Promise<void>;
+  upsert(path: string, item: any): Promise<any>;
+  remove(path: string, item: any): Promise<any>;
+  clear(path: string): Promise<void>;
+  find(path: string, filters?: any, options?: any): Promise<any[]>;
+  findOne(path: string, filters?: any, options?: any): Promise<any>;
+}
+
 /**
  * This class is the link between minimongo and our Collections.
  * - It choose the right db to use
  * - It abstract the minimongo internal _id and try to not duplicates objects with same id
  */
-export default class CollectionStorage {
-  static mongoDb: minimongo.MinimongoDb;
-  static mongoDbPromises: ((db: minimongo.MinimongoDb) => void)[] = [];
-  static semaphores: { [path: string]: semaphore.Semaphore } = {};
+class CollectionStorage implements CollectionStore {
+  static miniMongoInstance: minimongo.MinimongoDb;
+
+  private semaphores: { [path: string]: semaphore.Semaphore } = {};
 
   //Ensure unicity of objects in mongo and frontend
-  static idKeeper: { [path: string]: { [id: string]: string | true } } = {};
+  private idKeeper: { [path: string]: { [id: string]: string | true } } = {};
 
-  static async getMongoDb(): Promise<minimongo.MinimongoDb> {
-    if (!CollectionStorage.mongoDb) {
-      return new Promise(resolve => {
-        CollectionStorage.mongoDbPromises.push(resolve);
-        if (CollectionStorage.mongoDbPromises.length === 1) {
-          if (
-            //@ts-ignore
-            window.indexedDB ||
-            //@ts-ignore
-            window.mozIndexedDB ||
-            //@ts-ignore
-            window.webkitIndexedDB ||
-            //@ts-ignore
-            window.msIndexedDB
-          ) {
-            const db = new minimongo.IndexedDb(
-              //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
-              { namespace: 'twake' },
-              () => {
-                const tmp = db;
-                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
-                CollectionStorage.mongoDb = tmp;
-              },
-              () => {
-                const tmp = new minimongo.MemoryDb();
-                CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
-                CollectionStorage.mongoDb = tmp;
-              },
-            );
-          } else {
-            const tmp = new minimongo.MemoryDb();
-            CollectionStorage.mongoDbPromises.forEach(c => c(tmp));
-            CollectionStorage.mongoDb = tmp;
-          }
-        }
-      });
-    }
+  constructor(readonly mongoDb: minimongo.MinimongoDb) {}
 
-    return CollectionStorage.mongoDb;
-  }
-
-  static async addCollection(path: string) {
-    CollectionStorage.idKeeper[path] = CollectionStorage.idKeeper[path] || {};
-    if (!(await CollectionStorage.getMongoDb()).collections[path]) {
-      (await CollectionStorage.getMongoDb()).addCollection(path);
+  async addCollection(path: string) {
+    this.idKeeper[path] = this.idKeeper[path] || {};
+    if (!await this.mongoDb.collections[path]) {
+      await this.mongoDb.addCollection(path);
     }
   }
 
-  static upsert(path: string, item: any): Promise<any> {
+  upsert(path: string, item: any): Promise<any> {
     this.semaphores[path] = this.semaphores[path] || semaphore(1);
     return new Promise((resolve, reject) => {
       this.semaphores[path].take(async () => {
@@ -77,19 +53,19 @@ export default class CollectionStorage {
             reject('Every resources must contain an id');
             return;
           }
-          await CollectionStorage.addCollection(path);
+          await this.addCollection(path);
 
           let exists = false;
           if (
             item.id &&
-            CollectionStorage.idKeeper[path] &&
-            CollectionStorage.idKeeper[path][item.id]
+            this.idKeeper[path] &&
+            this.idKeeper[path][item.id]
           ) {
             exists = true;
           }
-          CollectionStorage.idKeeper[path][item.id] = true;
+          this.idKeeper[path][item.id] = true;
 
-          const mongoItems = await CollectionStorage.find(path, { id: item.id });
+          const mongoItems = await this.find(path, { id: item.id });
           if (!mongoItems && exists) {
             //Should have find it in mongo, so this is an error
             resolve();
@@ -99,7 +75,7 @@ export default class CollectionStorage {
             if (mongoItems && mongoItems[0]?._id && mongoItems[0]?._id != item._id) {
               if (item._id) {
                 await new Promise(async resolve => {
-                  (await CollectionStorage.getMongoDb()).collections[path].remove(
+                  await this.mongoDb.collections[path].remove(
                     item._id,
                     resolve,
                     resolve,
@@ -109,7 +85,7 @@ export default class CollectionStorage {
               item._id = mongoItems[0]?._id;
               item = _.assign(mongoItems[0] || {}, item);
             }
-            (await CollectionStorage.getMongoDb()).collections[path].upsert(
+            await this.mongoDb.collections[path].upsert(
               item,
               null,
               resolve,
@@ -128,16 +104,16 @@ export default class CollectionStorage {
     });
   }
 
-  static remove(path: string, item: any): Promise<any> {
+  remove(path: string, item: any): Promise<any> {
     this.semaphores[path] = this.semaphores[path] || semaphore(1);
     return new Promise((resolve, reject) => {
       this.semaphores[path].take(async () => {
         new Promise(async (resolve, reject) => {
-          await CollectionStorage.addCollection(path);
+          await this.addCollection(path);
 
-          delete CollectionStorage.idKeeper[path][item.id];
+          delete this.idKeeper[path][item.id];
 
-          CollectionStorage.find(path, item)
+          this.find(path, item)
             .then(async mongoItems => {
               if (mongoItems.length === 1) {
                 const mongoItem = mongoItems[0];
@@ -145,7 +121,7 @@ export default class CollectionStorage {
                 if (mongoItem) {
                   mongoId = mongoItem._id;
                 }
-                (await CollectionStorage.getMongoDb()).collections[path].remove(
+                await this.mongoDb.collections[path].remove(
                   mongoId,
                   resolve,
                   reject,
@@ -169,12 +145,12 @@ export default class CollectionStorage {
     });
   }
 
-  static async clear(path: string) {
-    await (await CollectionStorage.getMongoDb()).removeCollection(path);
-    await CollectionStorage.addCollection(path);
+  async clear(path: string) {
+    await this.mongoDb.removeCollection(path);
+    await this.addCollection(path);
   }
 
-  static find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {
+  find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {
     //Fixme: we need to keep only string / number parameters
     //This hack is when whe search using the resource itself as filter, some field make the find not work
     if (filters.id) {
@@ -182,15 +158,15 @@ export default class CollectionStorage {
     }
 
     return new Promise(async (resolve, reject) => {
-      await CollectionStorage.addCollection(path);
-      (await CollectionStorage.getMongoDb()).collections[path]
+      await this.addCollection(path);
+      await this.mongoDb.collections[path]
         .find(filters, options)
         .fetch(results => {
           //Tofix right now we need this to avoid some duplications...
           results
             .filter((e, index) => index !== results.map(e => e.id).indexOf(e.id))
             .forEach(async e => {
-              (await CollectionStorage.getMongoDb()).collections[path].remove(
+              await this.mongoDb.collections[path].remove(
                 e._id,
                 resolve,
                 reject,
@@ -199,14 +175,14 @@ export default class CollectionStorage {
           results = results.filter((e, index) => index === results.map(e => e.id).indexOf(e.id));
 
           results.forEach(item => {
-            CollectionStorage.idKeeper[path][item.id] = true;
+            this.idKeeper[path][item.id] = true;
           });
           resolve(results);
         }, reject);
     });
   }
 
-  static findOne(path: string, filters: any = {}, options: any = {}): Promise<any> {
+  findOne(path: string, filters: any = {}, options: any = {}): Promise<any> {
     //Fixme: we need to keep only string / number parameters
     //This hack is when whe search using the resource itself as filter, some field make the find not work
     if (filters.id) {
@@ -214,10 +190,10 @@ export default class CollectionStorage {
     }
 
     return new Promise(async (resolve, reject) => {
-      await CollectionStorage.addCollection(path);
-      CollectionStorage.find(path, filters, options)
+      await this.addCollection(path);
+      this.find(path, filters, options)
         .then((items: any[]) => {
-          if (items[0]) CollectionStorage.idKeeper[path][items[0].id] = true;
+          if (items[0]) this.idKeeper[path][items[0].id] = true;
           resolve(items[0]);
         })
         .catch(reject);
@@ -225,4 +201,44 @@ export default class CollectionStorage {
   }
 }
 
-(window as any).CollectionStorage = CollectionStorage;
+async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
+  if (CollectionStorage.miniMongoInstance) {
+    return CollectionStorage.miniMongoInstance;
+  }
+
+  return new Promise<minimongo.MinimongoDb>(resolve => {
+    if (
+      //@ts-ignore
+      window.indexedDB ||
+      //@ts-ignore
+      window.mozIndexedDB ||
+      //@ts-ignore
+      window.webkitIndexedDB ||
+      //@ts-ignore
+      window.msIndexedDB
+    ) {
+      const mongo = new minimongo.IndexedDb(
+        //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
+        { namespace: options.namespace },
+        () => {
+          logger.debug("Mini Mongo is ready");
+          resolve(mongo);
+        },
+        () => resolve(new minimongo.MemoryDb())
+      );
+    } else {
+      resolve(new minimongo.MemoryDb());
+    }
+  })
+  .then((db: minimongo.MinimongoDb) => {
+    CollectionStorage.miniMongoInstance = db;
+
+    return CollectionStorage.miniMongoInstance;
+  });
+}
+
+export default async function getStore(options: { namespace: string } = { namespace: "twake"}): Promise<CollectionStore> {
+  // TODO: Save storages in Map based on options. If not created, create it...
+  const mongoDb = await getDB(options);
+  return new CollectionStorage(mongoDb);
+}

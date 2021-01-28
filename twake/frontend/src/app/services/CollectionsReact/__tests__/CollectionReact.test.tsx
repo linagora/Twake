@@ -44,7 +44,7 @@ const MessagesComponent = (props: { channelId: string }) => {
 //To be able to wait for collection changes
 let setImmediate = () => {};
 const flushPromises = () => {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     setImmediate = () => {
       resolve();
     };
