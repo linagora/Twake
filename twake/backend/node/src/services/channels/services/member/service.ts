@@ -12,7 +12,7 @@ import ChannelServiceAPI, { MemberService } from "../../provider";
 
 import { Channel as ChannelEntity, ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
-import { Channel, User } from "../../../../services/types";
+import { Channel, ResourceEventsPayload, User } from "../../../types";
 import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
@@ -23,11 +23,7 @@ import {
   PubsubParameter,
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
-import { trackedEventBus } from "../../../../core/platform/framework/pubsub";
-import {
-  TrackerDataListener,
-  TrackerEventActions,
-} from "../../../../core/platform/services/tracker/types";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class Service implements MemberService {
   version: "1";
@@ -38,7 +34,7 @@ export class Service implements MemberService {
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
-      console.error("Can not initialize channel member service");
+      logger.error("Can not initialize channel member service");
     }
 
     return this;
@@ -241,7 +237,7 @@ export class Service implements MemberService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateResult: UpdateResult<ChannelMember>,
   ): void {
-    console.log("Member updated", member);
+    logger.debug("Member updated %o", member);
   }
 
   @PubsubPublish("channel:member:created")
@@ -255,9 +251,9 @@ export class Service implements MemberService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelMember>,
   ): void {
-    console.log("Member created", member);
+    logger.debug("Member created %o", member);
 
-    trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_MEMBER_CREATED, {
+    localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
       member,
@@ -271,7 +267,7 @@ export class Service implements MemberService {
     @PubsubParameter("member")
     member: ChannelMember,
   ): void {
-    console.log("Member deleted", member);
+    logger.debug("Member deleted %o", member);
   }
 
   isCurrentUser(member: ChannelMember, user: User): boolean {

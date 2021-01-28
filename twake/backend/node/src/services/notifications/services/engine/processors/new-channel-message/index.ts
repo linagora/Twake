@@ -9,11 +9,8 @@ import {
 } from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
-import { trackedEventBus } from "../../../../../../core/platform/framework/pubsub";
-import {
-  TrackerDataListener,
-  TrackerEventActions,
-} from "../../../../../../core/platform/services/tracker/types";
+import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../../../types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
@@ -53,9 +50,8 @@ export class NewChannelMessageProcessor
         } : ['${usersToNotify.join("', '")}']`,
       );
 
-      trackedEventBus.publish<TrackerDataListener>(TrackerEventActions.TWAKE_CHANNEL_MESSAGE_SENT, {
-        message,
-      });
+      localEventBus.publish<ResourceEventsPayload>("channel:message_sent", { message });
+
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,

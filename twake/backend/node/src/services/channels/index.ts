@@ -7,7 +7,7 @@ import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 
 @Prefix("/internal/services/channels/v1")
-@Consumes(["webserver", "database", "pubsub", "tracker"])
+@Consumes(["webserver", "database", "pubsub"])
 export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   version = "1";
   name = "channels";
