@@ -22,7 +22,7 @@ const getChannels = async (pageState: any = undefined) => {
 
         resolve({ rows: result.rows, pageState: result.pageState });
       },
-      { pageState, fetchSize: 500 }
+      { pageState, fetchSize: 100 }
     );
   });
 };
@@ -41,12 +41,14 @@ const init = async () => {
     if (channels && channels.rows && channels.rows.length > 0) {
       for (let channel of channels.rows) {
         try {
+          process.stdout.write("|");
           await importChannel(channel);
         } catch (err) {
           console.log("Channel import error: ", channel, err);
         }
       }
       channels_counter += channels.rows.length;
+      console.log("Imported channels: ", channels_counter);
     } else {
       client.shutdown();
       break;
