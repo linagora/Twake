@@ -249,9 +249,7 @@ const determinareCompanyId = async (channel: any) => {
 
   const _fillCompanyId = async (matchedCompanies: any) => {
     switch (true) {
-      case !matchedCompanies.length:
-        //Ignore it
-        break;
+      //Ignore if there's no matched companies
       case matchedCompanies.length === 1:
         directChannelCompanyId = matchedCompanies[0].group_id;
         break;
@@ -264,11 +262,13 @@ const determinareCompanyId = async (channel: any) => {
     }
   };
 
-  // Todo: handle the case when channel.member is an object
+  const channelMembers = Array.isArray(JSON.parse(channel.members))
+    ? JSON.parse(channel.members)
+    : Object.values(JSON.parse(channel.members));
 
-  if (!!JSON.parse(channel.members).length) {
+  if (!!channelMembers.length) {
     userCompanies = await Promise.all(
-      JSON.parse(channel.members).map((userId: string) =>
+      channelMembers.map((userId: string) =>
         getUserCompanies(userId)
       )
     );
