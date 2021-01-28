@@ -1,4 +1,4 @@
-import { RealtimeSaved, RealtimeDeleted } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted, logger } from "../../../../core/platform/framework";
 import {
   DeleteResult,
   Pagination,
@@ -12,7 +12,7 @@ import ChannelServiceAPI, { MemberService } from "../../provider";
 
 import { Channel as ChannelEntity, ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
-import { Channel, User } from "../../../../services/types";
+import { Channel, ResourceEventsPayload, User } from "../../../types";
 import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
@@ -23,6 +23,7 @@ import {
   PubsubParameter,
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class Service implements MemberService {
   version: "1";
@@ -33,7 +34,7 @@ export class Service implements MemberService {
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
-      console.error("Can not initialize channel member service");
+      logger.error("Can not initialize channel member service");
     }
 
     return this;
@@ -74,11 +75,13 @@ export class Service implements MemberService {
     const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
     const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
 
+    logger.debug(`MemberService.save - ${mode} member %o`, memberToUpdate);
+
     if (mode === OperationType.UPDATE) {
       const isCurrentUser = this.isCurrentUser(memberToUpdate, context.user);
 
       if (!isCurrentUser) {
-        throw CrudExeption.badRequest("Channel member can not be updated");
+        throw CrudExeption.badRequest(`Channel member ${member.user_id} can not be updated`);
       }
 
       const updatableParameters: Partial<Record<keyof ChannelMember, boolean>> = {
@@ -92,7 +95,7 @@ export class Service implements MemberService {
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest("Nothing to update");
+        throw CrudExeption.badRequest(`Nothing to update for member ${member.user_id}`);
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
@@ -114,16 +117,25 @@ export class Service implements MemberService {
       const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
       const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
       const isPublicChannel = ChannelEntity.isPublicChannel(channel);
-      const isChannelCreator = channel.owner === context.user.id;
+      const isDirectChannel = ChannelEntity.isDirectChannel(channel);
+      const userIsDefinedInChannelUserList = (channel.members || []).includes(
+        String(member.user_id),
+      );
+      const isChannelCreator = context.user && channel.owner === context.user.id;
 
-      // user can not join private channel by themself when it is private
+      // 1. Private channel: user can not join private channel by themself when it is private
       // only member can add other users in channel
-      // The channel creator check is only here on channel creation
-      if (isChannelCreator || (isPrivateChannel && currentUserIsMember) || isPublicChannel) {
+      // 2. The channel creator check is only here on channel creation
+      if (
+        isChannelCreator ||
+        (isPrivateChannel && currentUserIsMember) ||
+        isPublicChannel ||
+        (isDirectChannel && userIsDefinedInChannelUserList)
+      ) {
         const saveResult = await this.service.save(member, options, context);
-        this.onCreated(context.channel, member, saveResult);
+        this.onCreated(channel, member, context.user, saveResult);
       } else {
-        throw CrudExeption.badRequest("User is not allowed to join this channel");
+        throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
       }
     }
 
@@ -225,19 +237,27 @@ export class Service implements MemberService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateResult: UpdateResult<ChannelMember>,
   ): void {
-    console.log("Member updated", member);
+    logger.debug("Member updated %o", member);
   }
 
   @PubsubPublish("channel:member:created")
   onCreated(
     @PubsubParameter("channel")
-    channel: Channel,
+    channel: ChannelEntity,
     @PubsubParameter("member")
     member: ChannelMember,
+    @PubsubParameter("user")
+    user: User,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelMember>,
   ): void {
-    console.log("Member created", member);
+    logger.debug("Member created %o", member);
+
+    localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
+      channel,
+      user,
+      member,
+    });
   }
 
   @PubsubPublish("channel:member:deleted")
@@ -247,7 +267,7 @@ export class Service implements MemberService {
     @PubsubParameter("member")
     member: ChannelMember,
   ): void {
-    console.log("Member deleted", member);
+    logger.debug("Member deleted %o", member);
   }
 
   isCurrentUser(member: ChannelMember, user: User): boolean {
@@ -255,6 +275,10 @@ export class Service implements MemberService {
   }
 
   isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {
+    if (!user) {
+      return;
+    }
+
     return this.get({
       channel_id: channel.id,
       company_id: channel.company_id,

@@ -130,8 +130,6 @@ export default (): JSX.Element => {
           icon={<Search size={16} />}
           onClick={() => {
             SearchService.open();
-
-            return console.log(SearchService.isOpen());
           }}
         />
       </Col>

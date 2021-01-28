@@ -34,6 +34,7 @@ services:
       - DB_CASSANDRA_URI=scylladb:9042
       - DB_CASSANDRA_KEYSPACE=twake
       - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - SEGMENT_SECRET_KEY=YOUR_SECRET_KEY
     volumes:
       - ./configuration/backend-node/:/configuration/
       - ./docker-data/drive/:/twake-core/drive/

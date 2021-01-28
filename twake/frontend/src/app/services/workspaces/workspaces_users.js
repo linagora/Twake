@@ -302,19 +302,7 @@ class WorkspacesUsers extends Observable {
             CurrentUser.updateTutorialStatus('did_invite_collaborators');
           }
 
-          ((res.data.added || {}).user || []).forEach(() => {
-            if (Globals.window.mixpanel_enabled)
-              Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Add Collaborator', {
-                workspace_id: workspaceService.currentWorkspaceId,
-              });
-          });
-
           res.data.added.pending.forEach(mail => {
-            if (Globals.window.mixpanel_enabled)
-              Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Add Collaborator', {
-                workspace_id: workspaceService.currentWorkspaceId,
-              });
-
             WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, {
               mail: mail,
             });
@@ -476,7 +464,6 @@ class WorkspacesUsers extends Observable {
         },
         res => {
           if (res.errors.length > 0 || res.data.updated == 0) {
-            console.log('error, going to previous state' + previousState);
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }

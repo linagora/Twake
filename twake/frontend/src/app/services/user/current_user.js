@@ -91,9 +91,6 @@ class CurrentUser extends Observable {
   }
 
   updateWorkspacesPreferences(preferences) {
-    console.log(preferences);
-    console.log(JSON.stringify(preferences));
-    console.log(JSON.parse(JSON.stringify(preferences)));
     var update = {
       id: Login.currentUserId,
       workspaces_preferences: JSON.parse(JSON.stringify(preferences)),
@@ -275,7 +272,6 @@ class CurrentUser extends Observable {
             mails[i].main = true;
           }
         }
-        console.log('update mails ', mails);
         var update = {
           id: Login.currentUserId,
           mails: mails,
@@ -299,7 +295,6 @@ class CurrentUser extends Observable {
             newMails.push(mails[i]);
           }
         }
-        console.log('update mails ', mails);
         var update = {
           id: Login.currentUserId,
           mails: newMails,

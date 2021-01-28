@@ -22,11 +22,9 @@ class DroppableManager {
   up() {
     var that = this;
     if (!that.draggingData.type || !that.draggingData.data || that.draggingData.data.length == 0) {
-      //console.log("Data should be of the form {type:string, data: [...]}");
       return;
     }
     if (!this.dragging) {
-      //console.log("not dragging right now");
       return;
     }
     this.drop.forEach(el => {

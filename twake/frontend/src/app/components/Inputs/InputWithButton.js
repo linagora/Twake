@@ -24,6 +24,10 @@ export default class InputWithButton extends Component {
     this.inputElement = false;
   }
 
+  componentWillUnmount() {
+    Languages.removeListener(this);
+  }
+
   render() {
     return (
       <div className="inputWithButton">

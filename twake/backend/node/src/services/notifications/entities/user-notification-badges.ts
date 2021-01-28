@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { ChannelType } from "../../types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { v4 as uuidv4 } from "uuid";
+import { merge } from "lodash";
 
 export const TYPE = "user_notification_badges";
 /**
@@ -64,3 +65,7 @@ export type UserNotificationBadgePrimaryKey = Pick<
   UserNotificationBadge,
   "user_id" | "company_id" | "workspace_id" | "channel_id" | "thread_id"
 >;
+
+export function getInstance(badge: UserNotificationBadge): UserNotificationBadge {
+  return merge(new UserNotificationBadge(), badge);
+}

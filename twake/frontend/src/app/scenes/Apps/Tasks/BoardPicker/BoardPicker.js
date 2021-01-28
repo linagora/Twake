@@ -29,6 +29,7 @@ export default class BoardPicker extends React.Component {
     );
   }
   componentWillUnmount() {
+    Languages.removeListener(this);
     Collections.get('boards').removeSource(this.boards_collection_key);
   }
   render() {

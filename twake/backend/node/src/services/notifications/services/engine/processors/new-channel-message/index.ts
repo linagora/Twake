@@ -9,6 +9,8 @@ import {
 } from "../../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
+import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../../../types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
@@ -48,6 +50,8 @@ export class NewChannelMessageProcessor
         } : ['${usersToNotify.join("', '")}']`,
       );
 
+      localEventBus.publish<ResourceEventsPayload>("channel:message_sent", { message });
+
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
@@ -58,6 +62,10 @@ export class NewChannelMessageProcessor
         mentions: {
           users: usersToNotify || [],
         },
+
+        //Temp: should not be used like this when migrating messages to node
+        text: message.text,
+        sender_name: message.sender_name,
       } as MentionNotification;
     } catch (err) {
       logger.error(

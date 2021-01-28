@@ -49,7 +49,6 @@ export default class WorkspaceIdentity extends Component {
           that.workspaceLogo.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ workspaceLogo: first });
-        console.log(that.state.workspaceLogo);
         reader.readAsDataURL(first);
       }
     });

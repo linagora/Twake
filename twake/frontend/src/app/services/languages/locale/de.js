@@ -1054,7 +1054,7 @@ export default {
   'scenes.login.forgot_password.password_dont_match':
     'Ihre Passwörter stimmen nicht überein oder sind zu kurz; bitte geben Sie ein Passwort mit mindestens 8 Zeichen ein.',
   'scenes.login.home.title': 'Auf Twake anmelden',
-  'scenes.login.home.email': 'Benutzername oder E-Mail-Adresse',
+  'scenes.login.home.email': 'E-Mail-Adresse',
   'scenes.login.home.unable_to_connect': 'ID-Angaben ungültig',
   'scenes.login.home.password': 'Passwort',
   'scenes.login.home.login_btn': 'Anmelden',

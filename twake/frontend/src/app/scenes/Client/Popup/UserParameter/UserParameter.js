@@ -65,7 +65,6 @@ export default class UserParameter extends Component {
           that.thumbnail.style.backgroundImage = "url('" + e.target.result + "')";
         };
         that.setState({ thumbnail: first });
-        console.log(that.state.thumbnail);
         reader.readAsDataURL(first);
       }
     });

@@ -23,27 +23,36 @@ class MappingCommand extends ContainerAwareCommand
         @file_put_contents("/twake.status.es_mapping", "0");
         @file_put_contents("/twake.status.no_es", "0");
 
-        //Wait for es connection
-        error_log("\n⏳Waiting for ElasticSearch connection");
-        $connected = false;
-        $iteration = 0;
-        while(!$connected && $iteration < 15){
-          try{
-            $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $this->getApp()->getContainer()->getParameter('es.host'));
-            $connected = $test->getContent();
-          }catch(\Exception $e){
+        $es_host = $this->getApp()->getContainer()->getParameter('es.host');
+        $es_disabled = $es_host === "false" || !$es_host;
+
+        if ($es_disabled) {
+            error_log("\nℹ️ ElasticSearch is disabled");
+            @file_put_contents("/twake.status.no_es", "1");
+            return;
+        } else {
+            //Wait for es connection
+            error_log("\n⏳Waiting for ElasticSearch connection");
             $connected = false;
-          }
-          if(!$connected){
-            error_log("... not found, retry in 5 seconds (timeout 180s)");
-            sleep(5);
-          }
-          $iteration++;
-        }
-        if(!$connected){
-          @file_put_contents("/twake.status.no_es", "1");
-          error_log("\n💥 Unable to join ElasticSearch !\n");
-          return;
+            $iteration = 0;
+            while(!$connected && $iteration < 15){
+            try{
+                $test = $this->getApp()->getServices()->get("app.restclient")->get("http://" . $es_host);
+                $connected = $test->getContent();
+            }catch(\Exception $e){
+                $connected = false;
+            }
+            if(!$connected){
+                error_log("... not found, retry in 5 seconds (timeout 180s)");
+                sleep(5);
+            }
+            $iteration++;
+            }
+            if(!$connected){
+                @file_put_contents("/twake.status.no_es", "1");
+                error_log("\n💥 Unable to join ElasticSearch !\n");
+                return;
+            }
         }
 
         $mapping_workspace = Array(

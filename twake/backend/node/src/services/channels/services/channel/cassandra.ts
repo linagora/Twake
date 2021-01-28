@@ -193,6 +193,7 @@ export class CassandraChannelService implements ChannelService {
 
   async get(key: ChannelPrimaryKey): Promise<Channel> {
     const query = `SELECT * FROM ${this.options.keyspace}.${this.table} WHERE id = ? AND company_id = ? AND workspace_id = ?`;
+    logger.debug("service.channel.get - %s - %o", query, key);
     const row = (await this.client.execute(query, key, { prepare: true })).first();
 
     if (!row) {
@@ -309,6 +310,21 @@ export class CassandraChannelService implements ChannelService {
     }
 
     return this.mapRowToDirectChannel(result.rows[0]);
+  }
+
+  async getDirectChannelsForUsersInCompany(
+    companyId: string,
+    userId: string,
+  ): Promise<DirectChannel[]> {
+    const query = `SELECT * FROM ${this.options.keyspace}.${this.directChannelsTableName} WHERE company_id = ${companyId} AND users LIKE '%${userId}%`;
+
+    const result = await this.client.execute(query, {}, { prepare: true });
+
+    if (!result.rowLength) {
+      return [];
+    }
+
+    return result.rows.map(row => this.mapRowToDirectChannel(row));
   }
 
   markAsRead(): Promise<boolean> {

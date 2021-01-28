@@ -9,10 +9,17 @@
     "database",
     "pubsub",
     "realtime",
-    "phpnode"
+    "phpnode",
+    "tracker"
   ],
   "logger": {
     "level": "debug"
+  },
+  "tracker": {
+    "type": "segment",
+    "segment": {
+      "key": ""
+    }
   },
   "webserver": {
     "port": 3000,
@@ -47,13 +54,16 @@
     }
   },
   "database": {
+    "secret": "01234567890123456789012345678901",
     "type": "mongodb",
     "mongodb": {
       "uri": "mongodb://localhost:27017",
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": ["scylladb:9042"],
+      "contactPoints": [
+        "scylladb:9042"
+      ],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -62,6 +72,8 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://guest:guest@localhost:5672"]
+    "urls": [
+      "amqp://guest:guest@localhost:5672"
+    ]
   }
 }

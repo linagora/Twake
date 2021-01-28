@@ -17,8 +17,6 @@ type Props = {
   currentUserId?: string;
 };
 
-const { Title } = Typography;
-
 const ChannelWorkspaceEditor: FC<Props> = ({
   title,
   channel,
@@ -52,6 +50,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
         visibility: newChannel.visibility || channel.data.visibility,
+        channel_group: newChannel.channel_group || channel.data.channel_group,
       });
       await ChannelsCollections.upsert(insertedChannel);
       ModalManager.close();

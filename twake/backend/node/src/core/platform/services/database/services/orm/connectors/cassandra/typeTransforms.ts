@@ -3,9 +3,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isBoolean, isNumber } from "lodash";
 import { ColumnType } from "../../types";
+import { decrypt, encrypt } from "../../utils";
 
 export const cassandraType = {
-  plainstring: "TEXT",
+  encoded_string: "TEXT",
+  encoded_json: "TEXT",
   string: "TEXT",
   json: "TEXT",
   number: "BIGINT",
@@ -16,7 +18,13 @@ export const cassandraType = {
   boolean: "BOOLEAN",
 };
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
+type TransformOptions = any; //To complete
+
+export const transformValueToDbString = (
+  v: any,
+  type: ColumnType,
+  options: TransformOptions = {},
+): string => {
   if (type === "number") {
     if (!isNumber(v)) {
       throw new Error(`'${v}' is not a ${type}`);
@@ -33,6 +41,20 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
     }
     return `${!!v}`;
   }
+  if (type === "encoded_string" || type === "encoded_json") {
+    if (type === "encoded_json") {
+      try {
+        v = JSON.stringify(v);
+      } catch (err) {
+        v = null;
+      }
+    }
+    v = encrypt(v, options.secret);
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`; //Encryption not implemented yet
+  }
+  if (type === "blob") {
+    return "''"; //Not implemented yet
+  }
   if (type === "string" || type === "json") {
     if (type === "json") {
       try {
@@ -41,15 +63,30 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
         v = null;
       }
     }
-    return `'${(v || "").toString().replace(/'/gm, "''")}'`; //Encryption not implemented yet
-  }
-  if (type === "blob") {
-    return "''"; //Not implemented yet
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
   return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
-export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
+export const transformValueFromDbString = (
+  v: any,
+  type: string,
+  options: TransformOptions = {},
+): any => {
+  if ((v !== null && type === "encoded_string") || type === "encoded_json") {
+    try {
+      v = decrypt(v, options.secret);
+    } catch (err) {
+      v = v;
+    }
+    if (type === "encoded_json") {
+      try {
+        return JSON.parse(v);
+      } catch (err) {
+        return null;
+      }
+    }
+  }
   if (type === "json") {
     try {
       return JSON.parse(v);
@@ -57,6 +94,5 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
       return null;
     }
   }
-
   return v;
 };

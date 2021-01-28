@@ -166,19 +166,22 @@ export default class InputWithIcon extends React.Component {
             </div>
           </Col>
           <Col flex="auto">
-            <Input
-              size={'large'}
-              style={{ paddingLeft: 15 }}
-              autoFocus
-              refInput={obj => (this.input = obj)}
-              type="text"
-              placeholder={this.props.placeholder}
-              value={this.props.value[1]}
-              onEnter={this.props.onEnter}
-              onChange={evt => {
-                if (this.onChange) this.onChange([this.props.value[0], evt.target.value]);
-              }}
-            />
+            {(!this.props.children && (
+              <Input
+                size={'large'}
+                style={{ paddingLeft: 15 }}
+                autoFocus
+                refInput={obj => (this.input = obj)}
+                type="text"
+                placeholder={this.props.placeholder}
+                value={this.props.value[1]}
+                onEnter={this.props.onEnter}
+                onChange={evt => {
+                  if (this.onChange) this.onChange([this.props.value[0], evt.target.value]);
+                }}
+              />
+            )) ||
+              this.props.children}
           </Col>
         </Row>
       </Input.Group>

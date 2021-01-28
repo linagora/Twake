@@ -302,9 +302,6 @@ class Drive extends Observable {
       options = {};
     }
 
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Create File');
-
     var file = Collections.get('drive').editCopy();
 
     file.name = name;

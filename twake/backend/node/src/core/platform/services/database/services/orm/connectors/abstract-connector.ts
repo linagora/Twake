@@ -6,7 +6,7 @@ import { ListResult } from "../../../../../framework/api/crud-service";
 
 export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseClient>
   implements Connector {
-  constructor(protected type: DatabaseType, protected options: T) {}
+  constructor(protected type: DatabaseType, protected options: T, protected secret: string) {}
 
   abstract connect(): Promise<this>;
 
@@ -35,5 +35,9 @@ export abstract class AbstractConnector<T extends ConnectionOptions, DatabaseCli
 
   getType(): DatabaseType {
     return this.type;
+  }
+
+  getSecret(): string {
+    return this.secret;
   }
 }

@@ -38,6 +38,21 @@ class Collections {
 
     this.collections[entity].manager.updatedOptions();
   }
+
+  printUsage() {
+    Object.keys(this.collections).forEach(key => {
+      console.log(
+        '-',
+        key,
+        'observable size:',
+        this.collections[key].manager.observableListenersList.length,
+      );
+    });
+  }
+
+  watchUsage(ms = 2000) {
+    return setInterval(() => this.printUsage(), ms);
+  }
 }
 
 Globals.services.collectionsService = Globals.services.collectionsService || new Collections();

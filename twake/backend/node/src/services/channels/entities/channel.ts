@@ -44,6 +44,13 @@ export class Channel {
   static isPublicChannel(channel: Channel): boolean {
     return channel.visibility === ChannelVisibility.PUBLIC;
   }
+
+  static isDirectChannel(channel: Channel): boolean {
+    return (
+      channel.visibility === ChannelVisibility.DIRECT ||
+      channel.workspace_id === ChannelVisibility.DIRECT
+    );
+  }
 }
 
 export class UserChannel extends Channel {

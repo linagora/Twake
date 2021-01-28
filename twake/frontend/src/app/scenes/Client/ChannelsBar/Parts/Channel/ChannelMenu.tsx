@@ -40,6 +40,7 @@ export default (props: Props): JSX.Element => {
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
   );
+  const isDirectChannel = props.channel.data.visibility === 'direct';
 
   Languages.useListener(useState);
 
@@ -129,20 +130,19 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
-      hide: props.channel.data.visibility === 'direct', //TODO remove when #714 fixed
       type: 'separator',
     },
     {
       type: 'menu',
-      hide: props.channel.data.visibility === 'direct', //TODO remove when #714 fixed
       text: Languages.t(
-        props.channel.data.visibility === 'direct'
-          ? 'scenes.app.channelsbar.hide_discussion_leaving'
-          : 'scenes.app.channelsbar.channel_leaving',
+        isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.menu' : 'scenes.app.channelsbar.channel_leaving',
       ),
       className: 'danger',
       onClick: () => {
-        AlertManager.confirm(() => leaveChannel());
+        AlertManager.confirm(() => leaveChannel(), undefined, {
+          title: Languages.t(isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.title' : 'components.alert.confirm'),
+          text: Languages.t(isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.content' : 'components.alert.confirm'),
+        });
       },
     },
   ];

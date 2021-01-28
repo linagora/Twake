@@ -10,9 +10,11 @@ import Notifications from 'services/user/notifications';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals.js';
+import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
+import Environment from 'environment/environment';
 
 class Login extends Observable {
   constructor() {
@@ -131,7 +133,6 @@ class Login extends Observable {
       console.error(err);
       external_login_result = false;
     }
-    console.log(external_login_result);
     if (external_login_result) {
       if (external_login_result.token && external_login_result.message === 'success') {
         //Login with token
@@ -151,7 +152,13 @@ class Login extends Observable {
       this.notify();
     }
 
-    this.updateUser();
+    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+      //Check I am connected with external sign-in provider
+      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    } else {
+      //We can thrust the JWT
+      this.updateUser();
+    }
   }
 
   updateUser(callback) {
@@ -181,7 +188,12 @@ class Login extends Observable {
               ((that.server_infos.auth || {}).console || {}).use) &&
             !that.external_login_error
           ) {
-            document.location = Api.route('users/console/openid');
+            let developerSuffix = '';
+            if (Environment.env_dev) {
+              developerSuffix = '?localhost=1&port=' + window.location.port;
+            }
+
+            document.location = Api.route('users/console/openid' + developerSuffix);
             return;
           } else if (
             (res.errors.indexOf('redirect_to_cas') >= 0 ||
@@ -250,9 +262,9 @@ class Login extends Observable {
       Api.post(
         'users/login',
         {
-          _username: username,
-          _password: password,
-          _remember_me: rememberme,
+          username: username,
+          password: password,
+          remember_me: rememberme,
           device: device,
         },
         function (res) {
@@ -313,22 +325,6 @@ class Login extends Observable {
   }
 
   startApp(user) {
-    if (!window.mixpanel) {
-      Globals.window.mixpanel_enabled = false;
-    }
-    if (Globals.window.mixpanel_enabled) {
-      window.mixpanel.identify(user.id);
-      window.mixpanel.people.set({
-        $email: ((user.mails || []).filter(mail => mail.main)[0] || {}).email,
-        $first_name: user.firstname,
-        $last_name: user.lastname,
-        object: JSON.stringify(user),
-      });
-    }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
-
     this.currentUserId = user.id;
     DepreciatedCollections.get('users').updateObject(user);
 
@@ -553,7 +549,6 @@ class Login extends Observable {
       if (res.data.status === 'success') {
         callback(th, 0);
       } else {
-        //console.log(res.errors);
         if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;

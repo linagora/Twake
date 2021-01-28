@@ -141,7 +141,6 @@ export default class AddUser extends Component<Props, State> {
   }
 
   closeInput(index: number) {
-    console.log(this.state.input_values[index]);
   }
 
   setInputs() {

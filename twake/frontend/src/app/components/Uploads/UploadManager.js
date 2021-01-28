@@ -348,8 +348,6 @@ class UploadManager extends Observable {
   }
 
   uploadFile(element, drive_parent, upload_options, driveCollectionKey, callback, timeout_count) {
-    console.log('try to upload', element);
-
     this.currentWaitingFilesNumber++;
 
     if (!timeout_count) {

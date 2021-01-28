@@ -33,10 +33,6 @@ export default class VersionDetails extends React.Component {
     DriveService.removeListener(this);
     Collections.get('drive').removeListener(this);
   }
-  componentWillMount() {}
-  componentDidUpdate(prevProps, prevState) {
-    console.log('update', this.props.file);
-  }
   render() {
     var countVersion = (this.props.file.versions || []).length;
     return (
@@ -48,11 +44,8 @@ export default class VersionDetails extends React.Component {
               <div
                 className="addVersionButton"
                 onClick={() => {
-                  console.log('hi');
                   if (this.upload_zone) {
                     this.upload_zone.open();
-                  } else {
-                    console.log('nop');
                   }
                 }}
               >
@@ -122,7 +115,6 @@ export default class VersionDetails extends React.Component {
                           ),
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
-                            console.log(link);
                             window.open(link);
                           },
                         },

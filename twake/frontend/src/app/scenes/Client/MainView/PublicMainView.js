@@ -6,6 +6,10 @@ import Drive from 'scenes/Apps/Drive/Drive.js';
 import Globals from 'services/Globals.js';
 import Api from 'services/Api';
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
+import RouterService from 'services/RouterService';
+import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
+import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
+import './MainView.scss';
 
 export default class MainView extends Component {
   constructor() {
@@ -29,24 +33,25 @@ export default class MainView extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return true;
   }
+  routeState = RouterService.getStateFromRoute();
   componentDidMount() {
-    Api.post(
-      'workspace/get_public_data',
-      { workspace_id: Globals.store_public_access_get_data.workspace_id },
-      res => {
-        if (res && res.data) {
-          console.log(res.data);
-          this.state.group = {
-            name: res.data.group_name,
-            logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),
-          };
-          this.setState({});
-        }
-      },
-    );
+    Api.post('workspace/get_public_data', { workspace_id: this.routeState.workspaceId }, res => {
+      if (res && res.data) {
+        this.state.group = {
+          name: res.data.group_name,
+          logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),
+        };
+        this.setState({});
+      }
+    });
   }
   render() {
-    var noapp = (
+    const options = {
+      public_access_token: this.routeState.token,
+      workspace_id: this.routeState.workspaceId,
+      element_id: this.routeState.documentId,
+    };
+    const noapp = (
       <div>
         <div className="no-channel-text">
           {Languages.t(
@@ -57,11 +62,7 @@ export default class MainView extends Component {
         </div>
       </div>
     );
-
-    var found = false;
-    var view = (Globals.store_public_access_get_data || {}).view;
-
-    var group = this.state.group;
+    const group = this.state.group;
 
     return [
       <div className="public_header">
@@ -83,11 +84,13 @@ export default class MainView extends Component {
         </div>
       </div>,
       <div className="main-view public">
-        {!this.state.loading && view == 'drive_public_access' && (found = true) && (
-          <Drive key={'public_drive'} />
-        )}
-        {!found && !this.state.loading && noapp}
+        {(this.routeState.appName === 'drive' && (
+          <Drive key={this.routeState.appName} channel={null} tab={null} options={options} />
+        )) ||
+          noapp}
       </div>,
+      <MenusBodyLayer />,
+      <Viewer />,
     ];
   }
 }

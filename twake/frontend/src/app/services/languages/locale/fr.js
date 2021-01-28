@@ -1090,7 +1090,7 @@ export default {
     "Vos mots de passe ne correspondent pas ou sont trop petits, veuillez saisir un mot de passe d'au moins 8 caractères.",
   'scenes.login.home.title': 'Connectez-vous à Twake',
   'scenes.login.home.subtitle': 'Heureux de vous revoir',
-  'scenes.login.home.email': "Nom d'utilisateur ou email",
+  'scenes.login.home.email': 'Email',
   'scenes.login.home.unable_to_connect': "Informations d'identification invalides",
   'scenes.login.home.password': 'Mot de passe',
   'scenes.login.home.login_btn': "S'identifier",
@@ -1933,10 +1933,23 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
     "Il n'y a pas de membres dans cette chaîne, vous pouvez les inviter en cliquant sur Ajouter des utilisateurs.",
-  'scenes.app.channelsbar.hide_discussion_leaving': 'Masquer la discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Masquer la discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Masquer la discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    "Vous pouvez masquer cette discussion. Vos messages ne sont pas perdus et vous pouvez l'ouvrir à nouveau si besoin.",
   'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
     '$1 utilisateur(s) seront ajoutés',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'Vous utilisez une version obsolète de Twake',
+  'components.newversion.new_version_component.row.part_2':
+    "nous vous suggérons de recharger l'application et de profiter de nos nouvelles fonctionnalités!",
+  'components.newversion.new_version_component.link': 'Cliquez ici pour recharger',
+  'components.newversion.new_version_modal.title': 'Nouvelle mise à jour disponible !',
+  'scenes.apps.drive.download_all_button': 'Tout télécharger',
+  'components.inputs.input_with_select.input.placeholder': 'Ma chaîne',
+  'components.inputs.input_with_select.select.placeholder': 'Mon groupe',
+  'components.inputs.input_with_select.button.tooltip': 'Définir un groupe de chaînes',
 };

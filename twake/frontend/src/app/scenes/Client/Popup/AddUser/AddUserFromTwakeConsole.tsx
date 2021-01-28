@@ -16,6 +16,7 @@ type PropsType = {
 
 const AddUserFromTwakeConsole = (props: PropsType) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [disabled, setDisabled] = useState(false);
 
   const onClickBtn = () => {
     let emails: string[] = [];
@@ -28,17 +29,20 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
   };
 
   const finish = (emails: string[]) => {
-    if (props.standalone) {
-      workspacesUsersService.addUser(
-        emails,
-        () => {
-          close();
-        },
-        null,
-      );
-    } else if (props.finish) {
-      props.finish();
-      close();
+    if (!disabled) {
+      setDisabled(true);
+      if (props.standalone) {
+        workspacesUsersService.addUser(
+          emails,
+          () => {
+            close();
+          },
+          null,
+        );
+      } else if (props.finish) {
+        props.finish();
+        close();
+      }
     }
   };
 
@@ -90,7 +94,7 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
         </div>
       </div>
       <div className="add-user-button-container">
-        <Button type="primary" onClick={onClickBtn}>
+        <Button type="primary" onClick={onClickBtn} disabled={disabled}>
           {selectedUsers.length === 0
             ? Languages.t('scenes.app.workspaces.components.skip')
             : Languages.t('general.add')}

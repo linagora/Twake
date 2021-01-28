@@ -51,7 +51,7 @@ export default class WorkspacePartner extends Component {
     this.state.workspaceLogo = false;
   }
   componentWillUnmount() {
-    Collections.get('workspaces').addListener(this);
+    Collections.get('workspaces').removeListener(this);
     workspaceService.removeListener(this);
     workspacesUsers.removeListener(this);
     workspaceUserRightsService.removeListener(this);

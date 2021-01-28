@@ -36,7 +36,8 @@ class Console extends BaseController
         }catch(\Exception $err){
           $message = "success";
         }
-        return $this->closeIframe($message);
+
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login");
     }
 
     function logout(Request $request, $message = null)
@@ -75,6 +76,20 @@ class Console extends BaseController
 
         $this->get("app.user")->logout($request);
 
+        //We store the mobile session
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
+
+        if($request->query->get("mobile", "")){
+            $_SESSION["mobile"] = true;
+        }
+
+        if($request->query->get("localhost", "")){
+            $_SESSION["localhost"] = true;
+            $_SESSION["localhost_port"] = $request->query->get("port", "3000");
+        }
+
         try {
             $oidc = new OpenIDConnectClient(
                 $this->getParameter("defaults.auth.console.openid.provider_uri"),
@@ -112,7 +127,8 @@ class Console extends BaseController
                 }
 
                 if ($userTokens) {
-                    return $this->closeIframe("success", $userTokens);
+                    return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
+                    . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
                 }else{
                     return $this->logout($request, ["error" => "No user profile created"]);
                 }
@@ -130,9 +146,28 @@ class Console extends BaseController
 
     }
 
+    function redirectToApp(Request $request){
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
+        if($_SESSION["mobile"]){
+            return new Response("", 200);
+        }else{
+            return $this->closeIframe("success", [
+                "token" => $request->query->get("token"),
+                "username" => $request->query->get("username")
+            ]);
+        }
+    }
+
     private function closeIframe($message, $userTokens=null)
     {
-        $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
+        $server = rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/");
+        if($_SESSION["localhost"]){
+            $server = "http://localhost:" . $_SESSION["localhost_port"];
+        }
+        $this->redirect($server
+            . "/?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
     }
 
     private function isServiceEnabled(){

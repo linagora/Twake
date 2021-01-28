@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
+import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 
 export type RouteType = {
   path: string;
@@ -58,10 +59,22 @@ class RouterServices {
   // Define your route here
   pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
+    SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
     LOGIN: '/login',
     SETUP: '/setup',
     ERROR: '/error',
   };
+
+  UUIDsToTranslate: string[] = [
+    'companyId',
+    'workspaceId',
+    'channelId',
+    'messageId',
+    'threadId',
+    'tabId',
+    'directoryId',
+    'documentId',
+  ];
 
   // Setup your route here
   routes: Readonly<RouteType[]> = [
@@ -94,6 +107,15 @@ class RouterServices {
       },
     },
     {
+      path: this.pathnames.SHARED,
+      key: 'shared',
+      exact: true,
+      component: PublicMainView,
+      options: {
+        withErrorBoundary: false,
+      },
+    },
+    {
       path: this.pathnames.ERROR,
       exact: true,
       component: Error,
@@ -109,6 +131,7 @@ class RouterServices {
   getStateFromRoute(): ClientStateType {
     let match: any = null;
     this.clientSubPathnames
+      .concat(this.pathnames.SHARED)
       .sort((a, b) => b.length - a.length)
       .forEach(route => {
         if (!match) {
@@ -123,19 +146,26 @@ class RouterServices {
       threadId: match?.params?.threadId || '',
       tabId: match?.params?.tabId || '',
       directoryId: match?.params?.directoryId || '',
+      documentId: match?.params?.documentId || '',
+      token: match?.params?.token || '',
+      appName: match?.params?.appName || '',
+      shared: !!this.match(this.pathnames.SHARED),
     };
 
     const state: any = {};
     Object.keys(reducedState).forEach(key => {
       try {
-        state[key] = reducedState[key] ? this.translator.toUUID(reducedState[key]) : '';
+        state[key] =
+          reducedState[key] && this.UUIDsToTranslate.includes(key)
+            ? this.translator.toUUID(reducedState[key])
+            : reducedState[key];
       } catch (err) {
         state[key] = reducedState[key];
       }
     });
 
     //Retrocompatibility with old code
-    state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id;
+    state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id || '';
     Workspaces.updateCurrentWorkspaceId(state.workspaceId);
     Workspaces.currentGroupId = state.companyId;
     Groups.currentGroupId = state.companyId;
@@ -154,13 +184,25 @@ class RouterServices {
     const state: any = {};
     Object.keys(expandedState).forEach(key => {
       try {
-        state[key] = expandedState[key] ? this.translator.fromUUID(expandedState[key]) : '';
+        state[key] =
+          expandedState[key] && this.UUIDsToTranslate.includes(key)
+            ? this.translator.fromUUID(expandedState[key])
+            : expandedState[key];
       } catch (err) {
         state[key] = expandedState[key];
       }
     });
 
     const search = options?.keepSearch ? '?' + this.history.location.search.substr(1) : '';
+
+    if (state.shared) {
+      return (
+        `/shared/${state.workspaceId}` +
+        (state.documentId ? `/${state.appName}/${state.documentId}` : '') +
+        (state.token ? `/t/${state.token}` : '') +
+        search
+      );
+    }
 
     if (state.tabId) {
       return (

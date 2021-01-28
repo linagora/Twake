@@ -194,9 +194,6 @@ class WorkspacesApps extends Observable {
       ][id].app;
     }
 
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Activate App', { id: id });
-
     Api.post('workspace/apps/enable', data, function (res) {});
 
     this.notify();
@@ -217,9 +214,6 @@ class WorkspacesApps extends Observable {
 
       this.loadGroupApps();
     }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Remove App', { id: id });
 
     Api.post('workspace/apps/disable', data, function (res) {});
 
@@ -292,10 +286,7 @@ class WorkspacesApps extends Observable {
     this.notify();
   }
 
-  openAppPopup(app_id) {
-    //TODO
-    console.log('Open App Popup loader waiting for content');
-  }
+  openAppPopup(app_id) {}
 
   getAppIcon(app, feather = false) {
     if (app && app.simple_name) {

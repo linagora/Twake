@@ -1,3 +1,4 @@
+import Logger from 'services/Logger';
 import Collections from '../Collections';
 import Transport from './Transport';
 import io from 'socket.io-client';
@@ -15,6 +16,8 @@ export enum WebsocketEvents {
   Resource = 'realtime:resource',
   Event = 'realtime:event',
 }
+
+const logger = Logger.getLogger("Collections/Transport/Websocket");
 export default class TransportSocket {
   private socket: SocketIOClient.Socket | null = null;
   private listeners: {
@@ -41,8 +44,10 @@ export default class TransportSocket {
     if (!socketEndpoint) {
       return;
     }
+    logger.debug("Connecting to websocket", socketEndpoint);
 
     if (this.socket) {
+      logger.debug("Already connected to", socketEndpoint);
       //Already connected
       return;
     }
@@ -53,6 +58,7 @@ export default class TransportSocket {
     });
     const socket = this.socket;
     this.socket.on('disconnect', () => {
+      logger.debug("Disconnected from websocket");
       Object.keys(this.listeners).forEach(key => {
         Object.keys(this.listeners[key]).forEach(tag => {
           if (this.listeners[key][tag]) {
@@ -64,9 +70,11 @@ export default class TransportSocket {
     });
 
     this.socket.on('connect', () => {
+      logger.debug("Connected to websocket, authenticating...");
       socket
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {
+          logger.debug("Authenticated");
           Object.keys(this.listeners).forEach(key => {
             Object.keys(this.listeners[key]).forEach(tag => {
               if (this.listeners[key][tag]) {
@@ -77,19 +85,23 @@ export default class TransportSocket {
           });
         })
         .on('unauthorized', (err: any) => {
-          console.log('Websocket unauthorized', err);
+          logger.warn('Websocket is not authorized', err);
         });
 
       socket.on(WebsocketEvents.JoinSuccess, (event: any) => {
+        logger.debug("Websocket join success", event.name);
         if (event.name) this.notify(event.name, WebsocketEvents.JoinSuccess, event);
       });
       socket.on(WebsocketEvents.JoinError, (event: any) => {
+        logger.debug("Websocket join error", event.name);
         if (event.name) this.notify(event.name, WebsocketEvents.JoinError, event);
       });
       socket.on(WebsocketEvents.Resource, (event: any) => {
+        logger.debug("Received resource on room", event.room);
         if (event.room) this.notify(event.room, WebsocketEvents.Resource, event);
       });
       socket.on(WebsocketEvents.Event, (event: any) => {
+        logger.debug("New Websocket event", event.name);
         if (event.name) this.notify(event.name, WebsocketEvents.Event, event);
       });
     });
@@ -102,6 +114,8 @@ export default class TransportSocket {
   join(path: string, tag: string, callback: (type: WebsocketEvents, event: any) => void) {
     path = path.replace(/\/$/, '');
 
+    logger.debug(`Join room with name ${path} and tag: ${tag}`);
+
     if (this.socket) {
       this.socket.emit(WebsocketActions.Join, { name: path, token: 'twake' });
     }
@@ -112,6 +126,7 @@ export default class TransportSocket {
 
   leave(path: string, tag: string) {
     path = path.replace(/\/$/, '');
+    logger.debug(`Leave room with name ${path} and tag: ${tag}`);
     if (this.socket) {
       this.socket.emit(WebsocketActions.Leave, { name: path });
     }
@@ -123,6 +138,7 @@ export default class TransportSocket {
 
   emit(path: string, data: any) {
     path = path.replace(/\/$/, '');
+    logger.debug(`Emit realtime:event with name ${path}`);
     if (this.socket) {
       this.socket.emit('realtime:event', { name: path, data: data });
     }

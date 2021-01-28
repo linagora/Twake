@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Twacode from 'components/Twacode/Twacode';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import 'moment-timezone';
@@ -7,7 +7,6 @@ import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
@@ -24,7 +23,7 @@ export default (props: Props) => {
   const [loadingAction, setLoadingAction] = useState(false);
   let loading_interaction_timeout: any = 0;
 
-  Collections.get('messages').useListener(useState, [
+  const listener = Collections.get('messages').useListener(useState, [
     props.message?.id,
     props.message?.front_id,
     'msgcontent',

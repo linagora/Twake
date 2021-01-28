@@ -36,6 +36,7 @@ export default class SearchPopup extends React.Component {
   componentWillUnmount() {
     document.removeEventListener('keydown', this.eventKey);
     Search.removeListener(this);
+    Collections.get('users').removeListener(this);
   }
   eventKey(evt) {
     if (Search.isOpen()) {

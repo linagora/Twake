@@ -281,8 +281,6 @@ class Workspaces extends Observable {
     var data = new FormData();
     if (logo !== false) {
       data.append('logo', logo);
-    } else {
-      console.log('no logo');
     }
     data.append('workspaceId', this.currentWorkspaceId);
     var that = this;

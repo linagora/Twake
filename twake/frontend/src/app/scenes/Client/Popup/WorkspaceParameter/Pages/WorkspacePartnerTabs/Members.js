@@ -105,7 +105,7 @@ export default class Members extends React.Component {
                       }}
                     />
                     <div className="fix_text_padding_medium text-complete-width">
-                      {UserService.getFullName(col.user)} (@{col.user.username}) {col.user.email}
+                      {UserService.getFullName(col.user)} {col.user.email}
                     </div>
 
                     <div className="fix_text_padding_medium">{tags}</div>

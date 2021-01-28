@@ -31,20 +31,18 @@ export function buildSelectQuery<Entity>(
         }
         const inClause: string[] = filter.map(
           value =>
-            `${transformValueToDbString(
-              value,
-              columnsDefinition[key].type,
-              columnsDefinition[key].options,
-            )}`,
+            `${transformValueToDbString(value, columnsDefinition[key].type, {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+            })}`,
         );
 
         result = `${key} IN (${inClause.join(",")})`;
       } else {
-        result = `${key} = ${transformValueToDbString(
-          filter,
-          columnsDefinition[key].type,
-          columnsDefinition[key].options,
-        )}`;
+        result = `${key} = ${transformValueToDbString(filter, columnsDefinition[key].type, {
+          columns: columnsDefinition[key].options,
+          secret: this.secret,
+        })}`;
       }
 
       return result;

@@ -19,9 +19,10 @@ export type ColumnOptions = {
 };
 
 export type ColumnType =
-  | "json"
-  | "plainstring"
+  | "encoded_string"
+  | "encoded_json"
   | "string"
+  | "json"
   | "number"
   | "timeuuid"
   | "uuid"

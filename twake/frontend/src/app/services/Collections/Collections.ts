@@ -1,7 +1,8 @@
+import { assign } from 'lodash';
+import Logger from "services/Logger";
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
-import _ from 'lodash';
 
 export { default as Collection } from './Collection';
 export { default as Resource } from './Resource';
@@ -19,17 +20,16 @@ type Options = {
     };
   };
 };
+
+const logger = Logger.getLogger("Collections");
+
 class Collections {
   private collections: { [key: string]: Collection<Resource<any>> } = {};
   private options: Options = { transport: {} };
   protected transport: Transport = new Transport();
 
-  constructor() {
-    (window as any).Collections = this;
-  }
-
   public setOptions(options: Options) {
-    this.options = _.assign(this.options, options);
+    this.options = assign(this.options, options);
   }
 
   public getOptions(): Options {
@@ -45,12 +45,13 @@ class Collections {
     return this.transport;
   }
 
-  public get<G extends Resource<any>, C extends Collection<G>>(
+  public get<R extends Resource<any>, C extends Collection<R>>(
     path: string,
-    type?: new (data: any) => G,
+    type?: new (data: any) => R,
     existingCollectionCreator?: () => C,
     options?: CollectionOptions,
-  ): Collection<G> {
+  ): Collection<R> {
+    logger.debug(`Get collection ${path}`);
     options = options || {};
 
     const parts = path.split('::');
@@ -59,22 +60,23 @@ class Collections {
 
     let formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
     if (formattedPath !== path) {
-      console.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
+      logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
-    let creation = false;
     let key = formattedPath + '::' + options.tag;
 
     if (!this.collections[key]) {
-      creation = true;
       this.collections[key] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);
       this.collections[key].setOptions(options);
     }
 
-    return this.collections[key] as Collection<G>;
+    return this.collections[key] as Collection<R>;
   }
 }
 
-export default new Collections();
+const collections = new Collections();
+(window as any).Collections = collections;
+
+export default collections;

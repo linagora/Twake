@@ -1,6 +1,6 @@
 import Collection, { GeneralOptions } from '../Collection';
 import Resource from '../Resource';
-import Storage, { MongoItemType } from '../Storage';
+import { MongoItemType } from '../Storage';
 
 /**
  * Autocomplete local collection repository with backend components
@@ -54,7 +54,8 @@ export default class FindCompletion<G extends Resource<any>> {
 
       if (items?.resources?.length !== undefined) {
         if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
-          Storage.clear(this.collection.getPath());
+          const storage = await this.collection.getStorage();
+          await storage.clear(this.collection.getPath());
         }
 
         if (items?.resources && items?.resources?.length) {
@@ -63,7 +64,8 @@ export default class FindCompletion<G extends Resource<any>> {
           for (let i = 0; i < list.length; i++) {
             const resource = new type(list[i]);
             resource.setShared(true);
-            const mongoItem = await Storage.upsert(
+            const storage = await this.collection.getStorage();
+            const mongoItem = await storage.upsert(
               this.collection.getPath(),
               resource.getDataForStorage(),
             );
@@ -112,8 +114,10 @@ export default class FindCompletion<G extends Resource<any>> {
       const type = this.collection.getType();
       const data = item?.resource;
       const resource = new type(data);
+      const storage = await this.collection.getStorage();
+
       resource.setShared(true);
-      mongoItem = await Storage.upsert(this.collection.getPath(), resource.getDataForStorage());
+      mongoItem = await storage.upsert(this.collection.getPath(), resource.getDataForStorage());
     }
 
     return mongoItem;

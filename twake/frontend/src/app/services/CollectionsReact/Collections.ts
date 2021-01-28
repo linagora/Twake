@@ -19,6 +19,27 @@ class ObservableAdapter extends Observable {
 }
 
 export class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
+
+  /**
+   * Get a collection instance from path and type.
+   *
+   * @param path
+   * @param type
+   * @param options
+   */
+  public static get<T extends OriginalResource<any>>(
+    path: string,
+    type: new (data: any) => T,
+    options?: CollectionOptions,
+  ): Collection<T> {
+    return OriginalCollections.get(
+      path,
+      type,
+      () => new Collection<T>(path, type, options),
+      options
+    ) as Collection<T>;
+  }
+
   protected observable: ObservableAdapter;
   protected eventEmitter: CollectionsEventEmitter<G>;
   useWatcher: (filter?: any, options?: any) => G[];
@@ -46,8 +67,12 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   };
   removeEventListener: (callback: (transform: any) => void) => void;
 
-  constructor(path: string = '', type: new (data: any) => G) {
-    super(path, type);
+  constructor(
+    path: string = '',
+    type: new (data: any) => G,
+    options?: CollectionOptions,
+  ) {
+    super(path, type, options);
     this.observable = ObservableAdapter.getObservableForKey(path);
     this.eventEmitter = new CollectionsEventEmitter(this, this.observable);
 
@@ -60,15 +85,6 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     this.removeWatcher = this.observable.removeWatcher.bind(this.observable);
     this.addEventListener = this.observable.addWatcher.bind(this.observable);
     this.removeEventListener = this.observable.removeWatcher.bind(this.observable);
-  }
-
-  public static get<T extends OriginalResource<any>>(
-    path: string,
-    type: new (data: any) => T,
-    options?: CollectionOptions,
-  ): Collection<T> {
-    const creator = () => new Collection<T>(path, type);
-    return OriginalCollections.get(path, type, creator, options) as Collection<T>;
   }
 
   private observedChangesReactOptionsAdapter = (observedFields: string[]) => {

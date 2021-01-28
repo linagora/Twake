@@ -8,13 +8,11 @@ class Autocomplete extends Observable {
   }
 
   open() {
-    console.log('open');
     this.isOpen = true;
     this.notify();
   }
 
   close() {
-    console.log('close');
     this.isOpen = false;
     this.notify();
   }

@@ -17,6 +17,10 @@ export type MentionNotification = {
     users: uuid[];
     specials?: specialMention[];
   };
+
+  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  text: string;
 };
 
 export type MentionNotificationResult = MentionNotification;
@@ -24,12 +28,18 @@ export type MentionNotificationResult = MentionNotification;
 export type ChannelReadMessage = { member: ChannelMember; channel: Channel };
 export type ChannelUnreadMessage = ChannelReadMessage;
 
-export type CounterUpdateMessage = {
+export type PushNotificationMessage = {
   company_id: uuid;
   workspace_id: uuid | "direct";
   channel_id: uuid;
-  value: number;
+  message_id: uuid;
+  thread_id: uuid;
+  badge_value: number;
   user: string;
+
+  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  text: string;
 };
 
 export interface NotificationListQueryParameters extends PaginationQueryParameters {

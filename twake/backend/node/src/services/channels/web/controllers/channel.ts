@@ -14,7 +14,7 @@ import {
   ReadChannelBody,
   UpdateChannelBody,
 } from "../types";
-import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
 import { handleError } from ".";
 import {
   ResourceCreateResponse,
@@ -46,20 +46,30 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Channel>> {
-    const resource = await this.service.get(
+    const channel = await this.service.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
 
-    if (!resource) {
+    if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
 
       return;
     }
 
+    if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
+      const isMember = await this.membersService.isChannelMember(request.currentUser, channel);
+
+      if (!isMember) {
+        reply.badRequest("User does not have enough rights to get channel");
+
+        return;
+      }
+    }
+
     return {
-      websocket: getWebsocketInformation(resource),
-      resource,
+      websocket: getWebsocketInformation(channel),
+      resource: channel,
     };
   }
 

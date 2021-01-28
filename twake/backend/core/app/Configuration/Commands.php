@@ -15,6 +15,7 @@ class Commands
         "twake:mapping" => "Twake\Core\Command\MappingCommand",
         "twake:calendar_check" => "Twake\Calendar\Command\ReminderCheckerCommand",
         "twake:notifications_queue" => "Twake\Notifications\Command\NotificationQueueCommand",
+        "twake:node:push_mobile" => "Twake\Notifications\Command\NodePushNotifications",
         "twake:message_dispatch_queue" => "Twake\Discussion\Command\MessageToDispatchQueueCommand",
         "twake:mails_queue" => "Twake\Core\Command\MailsQueueCommand",
         "twake:notifications_mail" => "Twake\Notifications\Command\NotificationMailCommand",

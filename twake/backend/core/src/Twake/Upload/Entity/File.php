@@ -72,6 +72,11 @@ class File
     private $weight;
 
     /**
+     * @ORM\Column(name="provider", type="string")
+     */
+    private $provider;
+
+    /**
      *
      * @ORM\Column(name="aws_public_link", type="twake_text")
      */
@@ -100,6 +105,16 @@ class File
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+    }
+
+    public function getProvider()
+    {
+        return $this->provider;
     }
 
     /**

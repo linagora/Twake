@@ -1041,7 +1041,7 @@ export default {
     "Your passwords don't match or they are too short. Please type a password with at least 8 characters.",
   'scenes.login.home.title': 'Sign in to Twake',
   'scenes.login.home.subtitle': 'Happy to see you',
-  'scenes.login.home.email': 'Username or e-mail',
+  'scenes.login.home.email': 'E-mail',
   'scenes.login.home.unable_to_connect': 'Invalid credentials',
   'scenes.login.home.password': 'Password',
   'scenes.login.home.login_btn': 'Log in',
@@ -1858,9 +1858,22 @@ export default {
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
     'There is no members in this channel, you can invite them by clicking on Add users.',
-  'scenes.app.channelsbar.hide_discussion_leaving': 'Hide discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Hide discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Hide discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    'You can hide this discussion. Your messages are not lost and we can reopen it again when needed.',
   'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 user(s) will be added',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Add users to your company before inviting them to this workspace.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Go to Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'You are running an outdated Twake version',
+  'components.newversion.new_version_component.row.part_2':
+    'we suggest you to reload the app and enjoy our new features!',
+  'components.newversion.new_version_component.link': 'Click here to reload',
+  'components.newversion.new_version_modal.title': 'New update available !',
+  'scenes.apps.drive.download_all_button': 'Download all',
+  'components.inputs.input_with_select.input.placeholder': 'My channel',
+  'components.inputs.input_with_select.select.placeholder': 'My group',
+  'components.inputs.input_with_select.button.tooltip': 'Set a channel group',
 };
