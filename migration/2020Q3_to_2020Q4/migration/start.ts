@@ -47,7 +47,9 @@ const init = async () => {
         }
       }
       channels_counter += channels.rows.length;
-      console.log("Imported: ", channels_counter);
+
+      client.shutdown();
+      break;
     } else {
       client.shutdown();
       break;
@@ -68,6 +70,8 @@ const init = async () => {
     pageState = channels.pageState;
   }
   console.log("> Ended with ", channels_counter, " channels migrated.");
+
+  return "ok";
 };
 
-init();
+init().then(console.log).catch(console.error);

@@ -329,12 +329,12 @@ export class CassandraConnector extends AbstractConnector<
         }
 
         promises.push(
-          new Promise((resolve) => {
+          new Promise(async (resolve) => {
             try {
-              this.getClient().execute(query);
+              await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
-              console.log(query);
+              console.log("Error with CQL query: ", query, err);
               resolve(false);
             }
           })
@@ -369,12 +369,12 @@ export class CassandraConnector extends AbstractConnector<
           entityDefinition.name
         } WHERE ${where.join(" AND ")}`;
         promises.push(
-          new Promise((resolve) => {
+          new Promise(async (resolve) => {
             try {
-              this.getClient().execute(query);
+              await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
-              console.log(query);
+              console.log("Error with CQL query: ", query, err);
               resolve(false);
             }
           })
@@ -417,11 +417,16 @@ export class CassandraConnector extends AbstractConnector<
       }
     );
 
-    const results = await this.getClient().execute(query, [], {
-      fetchSize: parseInt(options.pagination.limitStr),
-      pageState: options.pagination.page_token || undefined,
-      prepare: true,
-    });
+    let results = null;
+    try {
+      results = await this.getClient().execute(query, [], {
+        fetchSize: parseInt(options.pagination.limitStr),
+        pageState: options.pagination.page_token || undefined,
+        prepare: true,
+      });
+    } catch (err) {
+      console.log(query);
+    }
 
     const entities: Table[] = [];
     results.rows.forEach((row) => {
