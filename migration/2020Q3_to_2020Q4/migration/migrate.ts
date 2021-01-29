@@ -322,9 +322,11 @@ export const importChannel = async (channel: any) => {
   );
 
   if (
-    workspaceId === "direct" &&
-    new Date().getTime() - new Date(decryptedChannel.last_activity).getTime() >
-      1000 * 60 * 60 * 24 * 30
+    workspaceId !== "direct" ||
+    (decryptedChannel.last_activity &&
+      new Date().getTime() -
+        new Date(decryptedChannel.last_activity || 0).getTime() <
+        1000 * 60 * 60 * 24 * 20)
   ) {
     await addChannelMembersEntities(
       channel.id,
