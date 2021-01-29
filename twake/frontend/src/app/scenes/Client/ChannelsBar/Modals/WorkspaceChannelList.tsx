@@ -68,6 +68,7 @@ export default () => {
         <div style={{ height: '240px' }}>
           {autoChannels
             .filter(filterMineAutoChannels)
+            .sort((a, b) => a.name.localeCompare(b.name))
             .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
             .map(autoChannel => {
               return (
