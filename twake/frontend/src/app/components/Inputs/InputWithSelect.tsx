@@ -59,6 +59,7 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
               placeholder={Languages.t('components.inputs.input_with_select.select.placeholder')}
               onChange={(value: string) => setGroup(value)}
               onSearch={(value: string) => setSearchedGroup(value)}
+              searchValue={searchedGroup.substr(0, 20)}
             >
               {searchedGroup.length > 0 && group !== searchedGroup && (
                 <Option value={searchedGroup}>
@@ -82,6 +83,7 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
         <Col flex="auto">
           <Input
             size={'large'}
+            maxLength={30}
             placeholder={Languages.t('components.inputs.input_with_select.input.placeholder')}
             value={channelName}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setChannelName(e.target.value)}
