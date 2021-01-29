@@ -15,6 +15,10 @@ import { ChannelMemberNotificationPreference } from "./entities/channel-member-n
 
 let removedDirectChannels = 0;
 
+const convertToUUIDv4 = (id: string) => {
+  return id.toString().substring(0, 14) + "4" + id.toString().substring(14 + 1);
+};
+
 const configuration: any = {
   db: config.get("db"),
   encryption: config.get("encryption"),
@@ -103,7 +107,7 @@ const addChannelTabEntity = async (
       _.assign(newChannelTab, {
         company_id: channelCompanyId,
         workspace_id: workspaceId,
-        channel_id: decryptedTab.channel_id,
+        channel_id: convertToUUIDv4(decryptedTab.channel_id),
         id: decryptedTab.id,
         application_id: decryptedTab.app_id,
         col_order: "",
@@ -128,7 +132,7 @@ const addChannelEntity = async (
       ? direct_channel_company_id
       : channel.original_group_id,
     workspace_id: channel.direct ? "direct" : channel.original_workspace_id,
-    id: channel.id,
+    id: convertToUUIDv4(channel.id),
     archived: false,
     channel_group: channel.direct ? "" : channel.channel_group_name,
     connectors: JSON.parse(channel.connectors),
@@ -153,7 +157,7 @@ const addChannelEntity = async (
     _.assign(newDirectChannel, {
       company_id: direct_channel_company_id,
       users: channel.identifier.split("+").sort().join(","),
-      channel_id: channel.id,
+      channel_id: convertToUUIDv4(channel.id),
     });
     await (
       await Store.getOrmClient().getRepository("direct_channels", DirectChannel)
@@ -180,7 +184,7 @@ const addChannelMembersEntities = async (
       _.assign(newChannelMember, {
         company_id: directChannelCompanyId,
         workspace_id: workspaceId,
-        channel_id: channelId,
+        channel_id: convertToUUIDv4(channelId),
         user_id: channelMember.user_id,
         type: "member",
       });
@@ -197,7 +201,7 @@ const addChannelMembersEntities = async (
         company_id: directChannelCompanyId,
         workspace_id: workspaceId,
         user_id: channelMember.user_id,
-        channel_id: channelId,
+        channel_id: convertToUUIDv4(channelId),
         expiration: 0,
         favorite: false,
         last_access: 0,
@@ -216,7 +220,7 @@ const addChannelMembersEntities = async (
       const newChannelMemberNotificationPreferences = new ChannelMemberNotificationPreference();
       _.assign(newChannelMemberNotificationPreferences, {
         company_id: directChannelCompanyId,
-        channel_id: channelId,
+        channel_id: convertToUUIDv4(channelId),
         user_id: channelMember.user_id,
         last_read: 0,
         preferences:
