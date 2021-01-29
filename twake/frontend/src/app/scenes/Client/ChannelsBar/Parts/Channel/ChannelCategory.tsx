@@ -27,7 +27,7 @@ const ChannelCategory: FC<PropsType> = (props): JSX.Element => {
       )}
       {props.onAdd && (
         <div ref={props.refAdd} className="add" onClick={props.onAdd}>
-          <Icon type="plus-circle" />
+          <Icon type="plus" />
         </div>
       )}
       {props.suffix && props.suffix}

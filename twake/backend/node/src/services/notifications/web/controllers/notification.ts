@@ -2,7 +2,7 @@ import { FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 import { NotificationServiceAPI } from "../../api";
-import { NotificationListQueryParameters } from "../../types";
+import { NotificationListQueryParameters, NotificationListUrlParameters } from "../../types";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
@@ -23,14 +23,17 @@ export class NotificationController
   constructor(protected service: NotificationServiceAPI) {}
 
   async list(
-    request: FastifyRequest<{ Querystring: NotificationListQueryParameters }>,
+    request: FastifyRequest<{
+      Querystring: NotificationListQueryParameters;
+      Params: NotificationListUrlParameters;
+    }>,
   ): Promise<ResourceListResponse<UserNotificationBadge>> {
-    if (!request.query.company_id) {
-      throw CrudExeption.badRequest("?company_id is required");
+    if (!request.params.company_id) {
+      throw CrudExeption.badRequest("company_id is required");
     }
 
     const list = await this.service.badges.listForUser(
-      request.query.company_id,
+      request.params.company_id,
       request.currentUser.id,
       { ...request.query },
     );

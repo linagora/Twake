@@ -444,25 +444,6 @@ export class Service implements ChannelService {
         } as DirectChannel;
 
         await this.createDirectChannel(directChannel);
-
-        const members = options.members.map(user_id => {
-          return {
-            user_id,
-            channel_id: savedChannel.id,
-            workspace_id: savedChannel.workspace_id,
-            company_id: savedChannel.company_id,
-          } as ChannelMember;
-        });
-
-        await Promise.all(
-          members.map(member =>
-            this.channelService.members.save(
-              member,
-              {},
-              { channel: savedChannel, user: context.user },
-            ),
-          ),
-        );
       }
     }
 

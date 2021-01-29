@@ -36,6 +36,7 @@ const channelSchema = {
     icon: { type: "string" },
     is_default: { type: "boolean" },
     direct_channel_members: { type: ["array", "null"] },
+    members: { type: ["array", "null"] },
     owner: { type: "string" },
     visibility: { type: "string" },
     user_member: channelMemberSchema,

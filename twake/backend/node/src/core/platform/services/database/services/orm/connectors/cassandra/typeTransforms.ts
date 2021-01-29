@@ -32,8 +32,8 @@ export const transformValueToDbString = (
     return `${v}`;
   }
   if (type === "uuid" || type === "timeuuid") {
-    v = ((v || "") + "").replace(/[^a-zA-Z0-9-]/g, "");
-    return `${v || "00000000-0000-4000-0000-000000000000"}`;
+    v = (v || "").toString().replace(/[^a-zA-Z0-9-]/g, "");
+    return `${v}`;
   }
   if (type === "boolean") {
     if (!isBoolean(v)) {

@@ -6,7 +6,7 @@ import ObjectModal from 'components/ObjectModal/ObjectModal';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
+import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
 
@@ -60,19 +60,10 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       });
 
       if (resource) {
-        return ModalManager.open(
-          <ChannelMembersEditor
-            companyId={resource.data.company_id || ''}
-            workspaceId={resource.data.workspace_id || ''}
-            channelId={resource.data.id || ''}
-            channelName={resource.data.name}
-            onClose={() => ModalManager.closeAll()}
-          />,
-          {
-            position: 'center',
-            size: { width: '600px', minHeight: '329px' },
-          },
-        );
+        return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
+          position: 'center',
+          size: { width: '600px', minHeight: '329px' },
+        });
       }
     }
   };

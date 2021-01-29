@@ -32,11 +32,10 @@ export default (props: Props): JSX.Element => {
   );
 
   const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
+    '/notifications/v1/badges/' + props.channel.company_id,
     NotificationResource,
     {
-      tag: props.channel.company_id + '_thus_tag_should_no_be_needed', //TODO remove this
-      queryParameters: { company_id: props.channel.company_id },
+      tag: 'thus_tag_should_no_be_needed', //TODO remove this
     },
   );
   const notifications = notificationsCollection.useWatcher(
@@ -69,7 +68,7 @@ export default (props: Props): JSX.Element => {
       favorite={channel.data.user_member?.favorite || false}
       unreadMessages={unreadMessages && channel.data.user_member.notification_level != 'none'}
       visibility={channel.data.visibility || 'public'}
-      notifications={isDirectChannel && unreadMessages ? 1 : notifications.length || 0}
+      notifications={notifications.length || 0}
       menu={menu(channel)}
       id={channel.data.id}
     />

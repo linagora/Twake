@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Col, Row, Typography, Input } from 'antd';
+import { Col, Row, Typography, Input } from 'antd';
 import { Search } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -10,12 +10,11 @@ import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages.js';
 import UsersService from 'services/user/user.js';
 import Collections from 'services/CollectionsReact/Collections';
-import ModalManager from 'app/components/Modal/ModalManager';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
 import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
 
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import { useUsersListener } from 'app/components/Member/UserParts';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 
 type Props = {
   closable?: boolean;
@@ -39,6 +38,36 @@ const ChannelMembersList: FC<Props> = props => {
 
   useUsersListener(channelMembersUid || []);
 
+  const filterSearch = (res: UserType[]) => {
+    const addedUsers: string[] = res
+      .filter(user => filterUsers(user, channelMembersUid.includes(user.id || '')))
+      .sort(compareFullname)
+      .map(user => user.id || '');
+
+    const notAddedUsers: string[] = res
+      .filter(user => filterUsers(user, !channelMembersUid.includes(user.id || '')))
+      .sort(compareFullname)
+      .map(user => user.id || '');
+
+    return setSearchedUsers([...addedUsers, ...notAddedUsers]);
+  };
+
+  const filterUsers = (user: UserType, filter: boolean) => (filter ? user : false);
+
+  const compareFullname = (
+    a: UserType | ChannelMemberResource,
+    b: UserType | ChannelMemberResource,
+    isMemberResource?: boolean,
+  ) => {
+    let userA = a;
+    let userB = b;
+    if (isMemberResource) {
+      userA = DepreciatedCollections.get('users').find(a.id);
+      userB = DepreciatedCollections.get('users').find(b.id);
+    }
+    return UsersService.getFullName(userA).localeCompare(UsersService.getFullName(userB));
+  };
+
   const onSearchMembers = (text: string) => {
     setSearch(text);
     return UsersService.search(
@@ -47,11 +76,7 @@ const ChannelMembersList: FC<Props> = props => {
         scope: 'workspace',
         workspace_id: workspace_id,
       },
-      (res: UserType[]) => {
-        setSearchedUsers(
-          res.filter(user => channelMembersUid.includes(user.id || '')).map(user => user.id || ''),
-        );
-      },
+      filterSearch,
     );
   };
 
@@ -65,7 +90,7 @@ const ChannelMembersList: FC<Props> = props => {
     >
       <div className="x-margin">
         <Row align="middle" gutter={[28, 0]} style={{ marginBottom: '24px' }}>
-          <Col flex={14}>
+          <Col flex="auto">
             <Input
               size={'large'}
               suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
@@ -73,29 +98,6 @@ const ChannelMembersList: FC<Props> = props => {
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchMembers(e.target.value)}
             />
-          </Col>
-          <Col>
-            <Button
-              style={{ width: '84px', height: '32px', padding: '0' }}
-              type="primary"
-              onClick={() => {
-                return ModalManager.open(
-                  <ChannelMembersEditor
-                    companyId={props.channel.data.company_id || ''}
-                    workspaceId={props.channel.data.workspace_id || ''}
-                    channelId={props.channel.data.id || ''}
-                    channelName={props.channel.data.name}
-                    onClose={() => ModalManager.closeAll()}
-                  />,
-                  {
-                    position: 'center',
-                    size: { width: '600px', minHeight: '329px' },
-                  },
-                );
-              }}
-            >
-              {Languages.t('scenes.client.channelbar.channelmemberslist.invitebtn')}
-            </Button>
           </Col>
         </Row>
       </div>
@@ -106,16 +108,18 @@ const ChannelMembersList: FC<Props> = props => {
       >
         {!search.length &&
           channelMembers.length > 0 &&
-          channelMembers.map(user => (
-            <div key={user.id} className="x-margin">
-              <MemberChannelRow
-                key={user.id}
-                userId={user.data.user_id || ''}
-                collection={channelMembersCollection}
-                channelMemberResource={user}
-              />
-            </div>
-          ))}
+          channelMembers
+            .sort((a, b) => compareFullname(a, b, true))
+            .map(user => (
+              <div key={user.id} className="x-margin">
+                <MemberChannelRow
+                  key={user.id}
+                  userId={user.data.user_id || ''}
+                  collection={channelMembersCollection}
+                  channelMemberResource={user}
+                />
+              </div>
+            ))}
         {!search.length && !channelMembers.length && (
           <Row
             align="middle"
@@ -129,7 +133,12 @@ const ChannelMembersList: FC<Props> = props => {
         {!!search.length &&
           searchedUsers.map(userId => (
             <div key={userId} className="x-margin">
-              <MemberChannelRow key={userId} userId={userId} />
+              <MemberChannelRow
+                key={userId}
+                userId={userId}
+                collection={channelMembersCollection}
+                inAddition={!channelMembersUid.includes(userId || '') ? true : false}
+              />
             </div>
           ))}
 
