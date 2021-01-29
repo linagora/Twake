@@ -290,6 +290,7 @@ class Login extends Observable {
   clearLogin() {
     this.currentUserId = null;
     Globals.localStorageClear();
+    Collections.clear();
     JWTStorage.clear();
   }
 

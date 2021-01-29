@@ -3,6 +3,7 @@ import Logger from "services/Logger";
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
+import { clearCurrentDatabase } from './Storage';
 
 export { default as Collection } from './Collection';
 export { default as Resource } from './Resource';
@@ -44,6 +45,11 @@ class Collections {
 
   public getTransport() {
     return this.transport;
+  }
+
+  public clear(): void {
+    logger.debug("Clearing collections");
+    clearCurrentDatabase();
   }
 
   public get<R extends Resource<any>, C extends Collection<R>>(
