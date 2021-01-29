@@ -320,9 +320,16 @@ export const importChannel = async (channel: any) => {
     directChannelCompanyId || decryptedChannel.original_group_id,
     workspaceId
   );
-  await addChannelMembersEntities(
-    channel.id,
-    directChannelCompanyId,
-    workspaceId
-  );
+
+  if (
+    workspaceId === "direct" &&
+    new Date().getTime() - new Date(decryptedChannel.last_activity).getTime() >
+      1000 * 60 * 60 * 24 * 30
+  ) {
+    await addChannelMembersEntities(
+      channel.id,
+      directChannelCompanyId,
+      workspaceId
+    );
+  }
 };
