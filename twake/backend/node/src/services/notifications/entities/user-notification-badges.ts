@@ -52,6 +52,10 @@ export class UserNotificationBadge {
   @Column("thread_id", "string") //It can be null
   thread_id: string;
 
+  @Type(() => String)
+  @Column("message_id", "string") //It can be null
+  message_id: string;
+
   /**
    * UUIDv4
    * Only used because crud entities must always have an id

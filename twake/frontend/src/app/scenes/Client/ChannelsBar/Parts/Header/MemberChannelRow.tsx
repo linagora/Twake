@@ -96,11 +96,15 @@ export default (props: Props) => {
     );
   }
 
+  if (!users[0]) {
+    return <></>;
+  }
+
   return (
     <Row key={`key_${props.userId}`} align="middle" gutter={[0, 16]}>
       <Col className="small-right-margin">{avatar}</Col>
       <Col flex={4}>
-        <Text strong>{name}</Text> @{users[0].username}
+        <Text strong>{name}</Text> @{users[0]?.username}
       </Col>
       {userEvents}
     </Row>

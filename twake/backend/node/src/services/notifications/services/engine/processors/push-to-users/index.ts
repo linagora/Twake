@@ -77,6 +77,7 @@ export class PushNotificationToUsersMessageProcessor
         company_id: message.company_id,
         workspace_id: message.workspace_id,
         thread_id: message.thread_id || message.message_id,
+        message_id: message.message_id,
       },
       usersToUpdate,
     );
@@ -132,8 +133,8 @@ export class PushNotificationToUsersMessageProcessor
 
   async addNewMessageBadgesForUsers(
     badge: Pick<
-      UserNotificationBadgePrimaryKey,
-      "channel_id" | "company_id" | "thread_id" | "workspace_id"
+      UserNotificationBadge,
+      "channel_id" | "company_id" | "thread_id" | "workspace_id" | "message_id"
     >,
     users: string[] = [],
   ): Promise<Array<UserNotificationBadge>> {
@@ -148,6 +149,7 @@ export class PushNotificationToUsersMessageProcessor
             company_id: badge.company_id,
             workspace_id: badge.workspace_id,
             thread_id: badge.thread_id,
+            message_id: badge.message_id,
             user_id: user,
           });
           return this.saveBadge(badgeEntity);
