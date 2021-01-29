@@ -154,7 +154,7 @@ export class CassandraChannelService implements ChannelService {
 
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
     const mergeChannel = { ...channel, ...pk };
-    const updatableChannel = pick(mergeChannel, ...ENTITY_KEYS);
+    const updatableChannel: any = pick(mergeChannel, ...ENTITY_KEYS);
     const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
     const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
@@ -168,9 +168,11 @@ export class CassandraChannelService implements ChannelService {
   }
 
   async create(
-    channel: Channel,
+    _channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
+    let channel: any = _channel;
+
     channel.id = String(cassandra.types.Uuid.random());
     channel.workspace_id = context.workspace.workspace_id;
     channel.company_id = context.workspace.company_id;

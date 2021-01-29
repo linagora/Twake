@@ -33,9 +33,9 @@ export class Channel {
   @Type(() => String)
   owner: string;
 
-  members: string[] | string = [];
+  members: string[] = [];
 
-  connectors: string[] | string = []; //list of app-ids
+  connectors: string[] = []; //list of app-ids
 
   static isPrivateChannel(channel: Channel): boolean {
     return channel.visibility === ChannelVisibility.PRIVATE;

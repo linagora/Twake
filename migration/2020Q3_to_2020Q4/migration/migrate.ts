@@ -13,6 +13,8 @@ import { ChannelMember } from "./entities/channel-member";
 import { UserChannel } from "./entities/user-channels";
 import { ChannelMemberNotificationPreference } from "./entities/channel-member-notification-preferences";
 
+let removedDirectChannels = 0;
+
 const configuration: any = {
   db: config.get("db"),
   encryption: config.get("encryption"),
@@ -26,7 +28,9 @@ const getUserCompanies = (userId: string) => {
     client.execute(query, (err: any, result: any) => {
       if (err || !result) reject(err);
 
-      resolve(result.rows);
+      resolve(
+        result.rows.map((g: any) => g?.group_id + "").filter((a: any) => a)
+      );
     });
   });
 };
@@ -82,7 +86,7 @@ const getChannelTab = (channelId: string) => {
 
 const addChannelTabEntity = async (
   channelId: any,
-  directChannelCompanyId: string,
+  channelCompanyId: string,
   workspaceId: string
 ) => {
   const channelTabs: any = await getChannelTab(channelId);
@@ -97,7 +101,7 @@ const addChannelTabEntity = async (
 
       const newChannelTab = new ChannelTab();
       _.assign(newChannelTab, {
-        company_id: directChannelCompanyId,
+        company_id: channelCompanyId,
         workspace_id: workspaceId,
         channel_id: decryptedTab.channel_id,
         id: decryptedTab.id,
@@ -120,17 +124,17 @@ const addChannelEntity = async (
 ) => {
   const newChannel = new Channel();
   _.assign(newChannel, {
-    company_id: channel.original_group_id,
+    company_id: channel.direct
+      ? direct_channel_company_id
+      : channel.original_group_id,
     workspace_id: channel.direct ? "direct" : channel.original_workspace_id,
     id: channel.id,
     archived: false,
-    channel_group: channel.direct
-      ? direct_channel_company_id
-      : channel.channel_group_name,
+    channel_group: channel.direct ? "" : channel.channel_group_name,
     connectors: JSON.parse(channel.connectors),
     description: channel.description,
     icon: channel.icon,
-    is_default: true,
+    is_default: false,
     name: channel.name,
     owner: "",
     visibility: channel.direct
@@ -232,11 +236,16 @@ const addChannelMembersEntities = async (
 };
 
 const getCompanyWithBigestNumberOfUsers = async (matchedCompanies: any) => {
-  const companies = await Promise.all(
-    matchedCompanies.map(({ group_id }: { group_id: any }) =>
-      getNumberOfUsersInCompany(group_id)
-    )
-  );
+  let companies = [];
+  for (let group_id of matchedCompanies) {
+    companies.push(await getNumberOfUsersInCompany(group_id));
+  }
+  companies = companies.map((c: any) => {
+    c.numberOfUsers = c.numberOfUsers?.toNumber
+      ? c.numberOfUsers?.toNumber()
+      : 0;
+    return c;
+  });
 
   return companies.reduce((prev: any, current: any) =>
     prev.numberOfUsers > current.numberOfUsers ? prev : current
@@ -247,21 +256,6 @@ const determinareCompanyId = async (channel: any) => {
   let directChannelCompanyId = "";
   let userCompanies: any = [];
 
-  const _fillCompanyId = async (matchedCompanies: any) => {
-    switch (true) {
-      //Ignore if there's no matched companies
-      case matchedCompanies.length === 1:
-        directChannelCompanyId = matchedCompanies[0].group_id;
-        break;
-      case matchedCompanies.length > 1:
-        const companyWithBigestNumberOfUsers: any = await getCompanyWithBigestNumberOfUsers(
-          matchedCompanies
-        );
-        directChannelCompanyId = companyWithBigestNumberOfUsers.id;
-        break;
-    }
-  };
-
   const channelMembers = Array.isArray(JSON.parse(channel.members))
     ? JSON.parse(channel.members)
     : Object.values(JSON.parse(channel.members) || {});
@@ -271,13 +265,26 @@ const determinareCompanyId = async (channel: any) => {
       channelMembers.map((userId: string) => getUserCompanies(userId))
     );
 
-    const matchedCompanies = userCompanies.shift().filter((v: any) => {
-      return userCompanies.every((company: any) => {
-        return company.indexOf(v) !== -1;
-      });
-    });
+    const matchedCompanies = userCompanies.reduce((p: any, c: any) =>
+      p.filter((e: any) => c.includes(e))
+    );
 
-    await _fillCompanyId(matchedCompanies);
+    switch (true) {
+      //Ignore if there's no matched companies
+      case matchedCompanies.length === 1:
+        directChannelCompanyId = matchedCompanies[0];
+        break;
+      case matchedCompanies.length > 1:
+        const companyWithBigestNumberOfUsers: any = await getCompanyWithBigestNumberOfUsers(
+          matchedCompanies
+        );
+        directChannelCompanyId = companyWithBigestNumberOfUsers.id;
+        break;
+    }
+  }
+
+  if (!directChannelCompanyId) {
+    removedDirectChannels++;
   }
 
   return directChannelCompanyId;
@@ -299,8 +306,22 @@ export const importChannel = async (channel: any) => {
     ? "direct"
     : decryptedChannel.original_workspace_id;
 
+  if ((!channel.name || !channel.icon) && workspaceId !== "direct") {
+    return;
+  }
+
+  if (workspaceId === "direct" && !directChannelCompanyId) {
+    return;
+  }
+
+  console.log(removedDirectChannels);
+
   await addChannelEntity(decryptedChannel, directChannelCompanyId);
-  await addChannelTabEntity(channel.id, directChannelCompanyId, workspaceId);
+  await addChannelTabEntity(
+    channel.id,
+    directChannelCompanyId || decryptedChannel.original_group_id,
+    workspaceId
+  );
   await addChannelMembersEntities(
     channel.id,
     directChannelCompanyId,
