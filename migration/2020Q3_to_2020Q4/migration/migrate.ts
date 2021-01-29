@@ -107,7 +107,7 @@ const addChannelTabEntity = async (
         id: decryptedTab.id,
         application_id: decryptedTab.app_id,
         col_order: "",
-        configuration: decryptedTab.configuration,
+        configuration: JSON.parse(decryptedTab.configuration),
         name: decryptedTab.name,
         owner: "",
       });
