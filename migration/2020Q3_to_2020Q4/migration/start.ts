@@ -6,7 +6,7 @@ import Store from "./store";
  */
 
 const getChannels = async (pageState: any = undefined) => {
-  const query = "SELECT * FROM channel WHERE direct=1 ";
+  const query = "SELECT * FROM channel where direct = 0";
 
   return new Promise((resolve, reject) => {
     const client = Store.getCassandraClient();
@@ -63,7 +63,7 @@ const init = async () => {
     await new Promise((resolve) =>
       setTimeout(() => {
         resolve("");
-      }, 5000)
+      }, 500)
     );
 
     pageState = channels.pageState;

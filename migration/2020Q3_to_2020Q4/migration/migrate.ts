@@ -314,8 +314,6 @@ export const importChannel = async (channel: any) => {
     return;
   }
 
-  console.log(removedDirectChannels);
-
   await addChannelEntity(decryptedChannel, directChannelCompanyId);
   await addChannelTabEntity(
     channel.id,
