@@ -32,7 +32,7 @@ export const transformValueToDbString = (
     return `${v}`;
   }
   if (type === "uuid" || type === "timeuuid") {
-    v = (v || "").replace(/[^a-zA-Z0-9-]/g, "");
+    v = (v.toString() || "").replace(/[^a-zA-Z0-9-]/g, "");
     return `${v}`;
   }
   if (type === "boolean") {

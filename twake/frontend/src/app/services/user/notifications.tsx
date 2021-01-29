@@ -11,12 +11,26 @@ import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import RouterService from '../RouterService';
-import Numbers from 'services/utils/Numbers.js';
 import ChannelsService from 'services/channels/channels.js';
 import emojione from 'emojione';
 
+type DesktopNotification = {
+  channel_id: string;
+  company_id: string;
+  message_id: string;
+  thread_id: string;
+  user: string;
+  workspace_id: string;
+  title: string;
+  text: string;
+};
+
+let inAppNotificationKey = 0;
 const openNotification = (n: any, callback: any) => {
+  notification.close(inAppNotificationKey.toString());
+  inAppNotificationKey++;
   notification.open({
+    key: inAppNotificationKey.toString(),
     message: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(n.title),
     ),
@@ -59,6 +73,10 @@ class Notifications extends Observable {
       }
     }
 
+    this.triggerUnreadMessagesPushNotification = this.triggerUnreadMessagesPushNotification.bind(
+      this,
+    );
+
     this.subscribeToCompaniesNotifications();
   }
 
@@ -67,17 +85,22 @@ class Notifications extends Observable {
       const company = (WorkspacesService.user_workspaces as any)[id].group;
       if (!this.subscribedCompanies[company.id]) {
         const notificationsCollection = Collection.get(
-          '/notifications/v1/badges/',
+          '/notifications/v1/badges/' + company.id,
           NotificationResource,
-          {
-            tag: company.id,
-            queryParameters: { company_id: company.id },
-          },
         );
         notificationsCollection.setOptions({
           reloadStrategy: 'ontime',
         });
         notificationsCollection.getTransport().start();
+
+        notificationsCollection.removeEventListener(
+          'notification:desktop',
+          this.triggerUnreadMessagesPushNotification,
+        );
+        notificationsCollection.addEventListener(
+          'notification:desktop',
+          this.triggerUnreadMessagesPushNotification,
+        );
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 }).then(() => {
@@ -99,15 +122,6 @@ class Notifications extends Observable {
 
   getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
     collection.find({}).then(async notifications => {
-      if (websockets && this.notificationCount < notifications.length) {
-        const lastNotification = notifications.sort((a, b) => {
-          return Numbers.compareTimeuuid(b.data.thread_id, a.data.thread_id);
-        })[0];
-
-        this.triggerUnreadMessagesPushNotification(lastNotification || null); //TODO pass new notification as parameter
-      }
-      this.notificationCount = notifications.length;
-
       // Count notifications:
       // - other group notifications are not counted
       // - other workspace notifications count as one
@@ -171,34 +185,31 @@ class Notifications extends Observable {
     });
   }
 
-  triggerUnreadMessagesPushNotification(newNotification: NotificationResource | null = null) {
-    if (this.ignoreNextNotification) {
-      this.ignoreNextNotification = false;
-      return;
-    }
-    if (this.youHaveNewMessagesDelay) {
-      clearTimeout(this.youHaveNewMessagesDelay);
-    }
-    this.youHaveNewMessagesDelay = setTimeout(async () => {
-      let title = 'New messages';
-      let message = '💬 You have new unread notifications on Twake';
+  async triggerUnreadMessagesPushNotification(newNotification: DesktopNotification | null = null) {
+    if (newNotification) {
+      let title = '';
+      let message = '';
 
-      // Build more detailed message and title
-      if (newNotification) {
-        const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-          newNotification.data.company_id,
-          newNotification.data.workspace_id,
-        );
-        const channel = await collection.findOne({ id: newNotification.data.channel_id });
+      const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+        newNotification.company_id,
+        newNotification.workspace_id,
+      );
+      const channel = await collection.findOne({ id: newNotification.channel_id });
 
-        if (channel && channel?.data?.name) {
-          let icon = '💬';
-          if (channel?.data?.icon) {
-            icon = emojione.shortnameToUnicode(channel?.data?.icon) || icon;
-          }
-          title = icon + ' ' + channel.data.name;
-          message = 'You have a new message';
+      if (channel && channel?.data?.name) {
+        let icon = '💬';
+        if (channel?.data?.icon) {
+          icon = emojione.shortnameToUnicode(channel?.data?.icon) || icon;
         }
+        title = icon + ' ' + channel.data.name;
+        message = 'You have a new message';
+      }
+
+      title = newNotification.title || title;
+      message = newNotification.text || message;
+
+      if (!title) {
+        return;
       }
 
       if (this.newNotificationAudio) {
@@ -210,9 +221,9 @@ class Notifications extends Observable {
         if (newNotification) {
           RouterService.history.push(
             RouterService.generateRouteFromState({
-              companyId: newNotification.data.company_id,
-              workspaceId: newNotification.data.workspace_id,
-              channelId: newNotification.data.channel_id,
+              companyId: newNotification.company_id,
+              workspaceId: newNotification.workspace_id,
+              channelId: newNotification.channel_id,
             }),
           );
         }
@@ -236,7 +247,7 @@ class Notifications extends Observable {
           n.close();
         };
       }
-    }, 500);
+    }
   }
 
   updateAppBadge(notifications = 0) {

@@ -24,6 +24,10 @@ export default class RealtimeEntityManager {
     eventBus.subscribe(RealtimeEntityActionType.Saved, event => {
       this.pushResourceEvent(event, RealtimeEntityActionType.Saved);
     });
+
+    eventBus.subscribe(RealtimeEntityActionType.Event, event => {
+      this.pushResourceEvent(event, RealtimeEntityActionType.Event);
+    });
   }
 
   private pushResourceEvent(

@@ -65,7 +65,7 @@ export class NewChannelMessageProcessor
 
         //Temp: should not be used like this when migrating messages to node
         text: message.text,
-        sender_name: message.sender_name,
+        title: message.title,
       } as MentionNotification;
     } catch (err) {
       logger.error(
@@ -138,17 +138,19 @@ export class NewChannelMessageProcessor
   ): ChannelMemberNotificationPreference[] {
     logger.debug(`${this.name} - Filter members ${JSON.stringify(membersPreferences)}`);
     const isAllOrHere = this.isAllOrHereMention(message);
+    const isDirect = isDirectChannel({ workspace_id: message.workspace_id });
     return (
       membersPreferences
         // 1. Remove the ones which does not want any notification (preference === NONE)
         .filter(preference => preference.preferences !== ChannelMemberNotificationLevel.NONE)
-        //2. Remove the sender
+        // 2. Remove the sender
         .filter(preference => String(preference.user_id) !== String(message.sender))
         // 3. Filter based on truth table based on user preferences and current message
         .filter(memberPreference => {
           const userIsMentionned = this.userIsMentionned(memberPreference.user_id, message);
 
           const truthTable = [
+            isDirect,
             // all
             memberPreference.preferences === ChannelMemberNotificationLevel.ALL,
             // mentions

@@ -45,12 +45,8 @@ export default (props: Props): JSX.Element => {
   Languages.useListener(useState);
 
   const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
+    '/notifications/v1/badges/' + props.channel.data.company_id,
     NotificationResource,
-    {
-      tag: props.channel.data.company_id,
-      queryParameters: { company_id: props.channel.data.company_id },
-    },
   );
   const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
   const hasNotification = notifications.length > 0;
@@ -81,7 +77,10 @@ export default (props: Props): JSX.Element => {
   const leaveChannel = async () => {
     if (props.channel.data.user_member) {
       //Fixme, this is not pretty, we should find a way to do this in one line
-      const channelMember = new ChannelMemberResource(props.channel.data.user_member);
+      const channelMember = new ChannelMemberResource({
+        id: props.channel.data.user_member.user_id, //Here id is always user_id for route
+        ...props.channel.data.user_member,
+      });
       channelMember.setPersisted();
       await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
       Notifications.read(props.channel);
@@ -135,13 +134,23 @@ export default (props: Props): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t(
-        isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.menu' : 'scenes.app.channelsbar.channel_leaving',
+        isDirectChannel
+          ? 'scenes.app.channelsbar.hide_discussion_leaving.menu'
+          : 'scenes.app.channelsbar.channel_leaving',
       ),
       className: 'danger',
       onClick: () => {
         AlertManager.confirm(() => leaveChannel(), undefined, {
-          title: Languages.t(isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.title' : 'components.alert.confirm'),
-          text: Languages.t(isDirectChannel ? 'scenes.app.channelsbar.hide_discussion_leaving.content' : 'components.alert.confirm'),
+          title: Languages.t(
+            isDirectChannel
+              ? 'scenes.app.channelsbar.hide_discussion_leaving.title'
+              : 'components.alert.confirm',
+          ),
+          text: Languages.t(
+            isDirectChannel
+              ? 'scenes.app.channelsbar.hide_discussion_leaving.content'
+              : 'components.alert.confirm',
+          ),
         });
       },
     },

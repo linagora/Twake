@@ -5,6 +5,7 @@ export enum RealtimeEntityActionType {
   Saved = "saved",
   Updated = "updated",
   Deleted = "deleted",
+  Event = "event",
 }
 
 export class ResourcePath {
@@ -24,11 +25,11 @@ export class RealtimeEntityEvent<Entity> {
   // the room to push the resource to
   room: ResourcePath;
   // the unique full path of the resource, ie where we can get it
-  resourcePath: string;
+  resourcePath: string | null;
   // the input resource
   entity: Entity;
   // the action result which fired this event
-  result: EntityOperationResult<Entity>;
+  result: EntityOperationResult<Entity> | null;
 }
 
 export class JoinRoomEvent {

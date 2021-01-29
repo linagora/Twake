@@ -64,7 +64,7 @@ test('Test Observable linked to Collection', async () => {
   const collection = Collection.get(`/channels/${channelId}/messages/`, Message);
 
   //To be able to wait for collection changes
-  collection.addEventListener(
+  collection.addWatcher(
     () => {
       setTimeout(() => setImmediate(), 10);
     },

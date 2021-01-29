@@ -13,6 +13,12 @@ import {
   UserNotificationBadgePrimaryKey,
 } from "../../../../../../services/notifications/entities/user-notification-badges";
 import _ from "lodash";
+import { eventBus } from "../../../../../../core/platform/services/realtime/bus";
+import {
+  RealtimeEntityActionType,
+  ResourcePath,
+} from "../../../../../../core/platform/services/realtime/types";
+import { getNotificationRoomName } from "../../../realtime";
 
 /**
  * Push new message notification to a set of users
@@ -75,21 +81,35 @@ export class PushNotificationToUsersMessageProcessor
       usersToUpdate,
     );
 
-    badges.forEach(badge =>
-      this.sendPushNotification(badge.user_id, {
+    badges.forEach(badge => {
+      const badgeLocation = {
         company_id: message.company_id,
         workspace_id: message.workspace_id,
         channel_id: message.channel_id,
         user: badge.user_id.toString(),
         thread_id: message.thread_id || message.message_id,
         message_id: message.message_id,
-        badge_value: 1,
+      };
 
-        //Temp fix, should not be used like this by node except for push notification
-        sender_name: message.sender_name,
+      eventBus.publish(RealtimeEntityActionType.Event, {
+        type: "notification:desktop",
+        room: ResourcePath.get(getNotificationRoomName(badge.user_id)),
+        entity: {
+          ...badgeLocation,
+          title: message.title,
+          text: message.text,
+        },
+        resourcePath: null,
+        result: null,
+      });
+
+      this.sendPushNotification(badge.user_id, {
+        ...badgeLocation,
+        badge_value: 1,
+        title: message.title,
         text: message.text,
-      }),
-    );
+      });
+    });
   }
 
   async filterUsersOnLastReadChannelTime(
