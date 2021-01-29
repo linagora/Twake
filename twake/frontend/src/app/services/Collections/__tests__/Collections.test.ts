@@ -1,4 +1,7 @@
+import Login from 'services/login/login';
 import Collections, { Resource } from '../Collections';
+
+Login.userIsSet = true;
 
 type TaskType = {
   id?: string;

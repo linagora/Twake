@@ -1,4 +1,3 @@
-import React from 'react';
 import Login from 'services/login/login.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
