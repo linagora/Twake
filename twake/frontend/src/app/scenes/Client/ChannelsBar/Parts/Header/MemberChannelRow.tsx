@@ -32,14 +32,16 @@ export default (props: Props) => {
   });
 
   const addUser = async (userId: string) => {
-    await props.collection.upsert(
-      new ChannelMemberResource({
-        user_id: userId,
-        type: 'member', // "member" | "guest" | "bot",
-      }),
-    );
+    if (userId) {
+      await props.collection.upsert(
+        new ChannelMemberResource({
+          user_id: userId,
+          type: 'member', // "member" | "guest" | "bot",
+        }),
+      );
 
-    return setIsAlreadyMember(true);
+      return setIsAlreadyMember(true);
+    }
   };
 
   const leaveChannel = async () => {
