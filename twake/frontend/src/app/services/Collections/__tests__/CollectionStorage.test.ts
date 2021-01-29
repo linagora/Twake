@@ -1,11 +1,12 @@
-import getStore, { CollectionStore } from '../Storage';
+import { getDB, CollectionStorage } from '../Storage';
 
 describe("The Collections storage", () => {
-  let storage: CollectionStore;
+  let storage: CollectionStorage;
 
   beforeEach(() => {
     return new Promise<void>(async (resolve) => {
-      storage = await getStore({ namespace: "test" });
+      const db = await getDB({ namespace: "test" });
+      storage = new CollectionStorage(db);
 
       resolve();
     });

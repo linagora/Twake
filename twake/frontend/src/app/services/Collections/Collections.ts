@@ -3,6 +3,7 @@ import Logger from "services/Logger";
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
+import { clearCurrentDatabase } from './Storage';
 
 export { default as Collection } from './Collection';
 export { default as Resource } from './Resource';
@@ -37,12 +38,18 @@ class Collections {
   }
 
   public connect(options?: Options) {
-    if (options) this.setOptions(options);
+    options && this.setOptions(options);
+
     this.transport.connect();
   }
 
   public getTransport() {
     return this.transport;
+  }
+
+  public clear(): void {
+    logger.debug("Clearing collections");
+    clearCurrentDatabase();
   }
 
   public get<R extends Resource<any>, C extends Collection<R>>(
@@ -63,7 +70,7 @@ class Collections {
       logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
-    let key = formattedPath + '::' + options.tag;
+    const key = formattedPath + '::' + options.tag;
 
     if (!this.collections[key]) {
       this.collections[key] = existingCollectionCreator

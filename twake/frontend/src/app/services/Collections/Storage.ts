@@ -2,6 +2,7 @@ import _ from 'lodash';
 import minimongo from 'minimongo';
 import semaphore from 'semaphore';
 import Logger from '../Logger';
+import Login from 'services/login/login';
 
 export type MongoItemType = {
   _state: any;
@@ -27,7 +28,7 @@ export interface CollectionStore {
  * - It choose the right db to use
  * - It abstract the minimongo internal _id and try to not duplicates objects with same id
  */
-class CollectionStorage implements CollectionStore {
+export class CollectionStorage implements CollectionStore {
   static miniMongoInstance: minimongo.MinimongoDb;
 
   private semaphores: { [path: string]: semaphore.Semaphore } = {};
@@ -201,22 +202,13 @@ class CollectionStorage implements CollectionStore {
   }
 }
 
-async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
+export async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
   if (CollectionStorage.miniMongoInstance) {
     return CollectionStorage.miniMongoInstance;
   }
 
   return new Promise<minimongo.MinimongoDb>(resolve => {
-    if (
-      //@ts-ignore
-      window.indexedDB ||
-      //@ts-ignore
-      window.mozIndexedDB ||
-      //@ts-ignore
-      window.webkitIndexedDB ||
-      //@ts-ignore
-      window.msIndexedDB
-    ) {
+    if (isIndexedDBSupported()) {
       const mongo = new minimongo.IndexedDb(
         //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
         { namespace: options.namespace },
@@ -237,8 +229,69 @@ async function getDB(options: { namespace: string } = { namespace: "twake"}): Pr
   });
 }
 
-export default async function getStore(options: { namespace: string } = { namespace: "twake"}): Promise<CollectionStore> {
-  // TODO: Save storages in Map based on options. If not created, create it...
-  const mongoDb = await getDB(options);
+export default async function getStore(): Promise<CollectionStore> {
+  if (!Login) {
+    throw new Error("Service is not ready");
+  }
+
+  const userId = await Login.userIsSet;
+
+  if (!userId) {
+    throw new Error("User is not set");
+  }
+
+  cleanupOldDatabase(userId);
+
+  const mongoDb = await getDB({ namespace: userId });
+
   return new CollectionStorage(mongoDb);
+}
+
+export function clearCurrentDatabase(): void {
+  const database = getExistingDatabase();
+  removeDatabase(database);
+}
+
+function cleanupOldDatabase(userId: string): void {
+  const database = getDBName(userId);
+  const oldDatabase = getExistingDatabase();
+
+  if (oldDatabase === database) {
+    return;
+  }
+
+  saveDatabaseName(database);
+  removeDatabase(oldDatabase);
+}
+
+function removeDatabase(name: string): void {
+  if (!name || !isIndexedDBSupported()) {
+    return;
+  }
+
+  if (window.indexedDB.deleteDatabase) {
+    const req = window.indexedDB.deleteDatabase(name);
+
+    req.onerror = () => logger.debug("Error while removing the DB", name);
+    req.onblocked = () => logger.debug("DB removal is blocked", name);
+    req.onsuccess = () => logger.debug("DB has been removed", name);
+    req.onupgradeneeded = () => logger.debug("DB upgrade needed", name);
+  }
+}
+
+function isIndexedDBSupported(): boolean {
+  return ('indexedDB' in window);
+}
+
+function getExistingDatabase(): string {
+  const database = window.localStorage.getItem("twake-collection-db");
+  return database ? JSON.parse(database) : "";
+}
+
+function saveDatabaseName(name: string) {
+  window.localStorage.setItem("twake-collection-db", JSON.stringify(name));
+}
+
+function getDBName(userId: string): string {
+  return `IDBWrapper-minimongo_${userId}`;
 }

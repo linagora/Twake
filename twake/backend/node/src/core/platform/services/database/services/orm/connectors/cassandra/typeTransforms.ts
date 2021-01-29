@@ -32,7 +32,7 @@ export const transformValueToDbString = (
     return `${v}`;
   }
   if (type === "uuid" || type === "timeuuid") {
-    v = (v.toString() || "").replace(/[^a-zA-Z0-9-]/g, "");
+    v = (v || "").toString().replace(/[^a-zA-Z0-9-]/g, "");
     return `${v}`;
   }
   if (type === "boolean") {
@@ -50,7 +50,7 @@ export const transformValueToDbString = (
       }
     }
     v = encrypt(v, options.secret);
-    return `'${v || ""}'`;
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
   if (type === "blob") {
     return "''"; //Not implemented yet
@@ -63,9 +63,9 @@ export const transformValueToDbString = (
         v = null;
       }
     }
-    return `'${v}'`; //Not implemented yet
+    return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
-  return `'${v || ""}'`;
+  return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
 export const transformValueFromDbString = (

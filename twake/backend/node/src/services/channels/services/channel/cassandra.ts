@@ -87,8 +87,8 @@ export class CassandraChannelService implements ChannelService {
           name text,
           owner uuid,
           visibility text,
-          members frozen<set<text>>,
-          connectors frozen<set<text>>,
+          members text,
+          connectors text,
           PRIMARY KEY ((company_id, workspace_id), id)
         );`;
 
@@ -154,10 +154,13 @@ export class CassandraChannelService implements ChannelService {
 
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
     const mergeChannel = { ...channel, ...pk };
-    const updatableChannel = pick(mergeChannel, ...ENTITY_KEYS);
+    const updatableChannel: any = pick(mergeChannel, ...ENTITY_KEYS);
     const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
     const columnValues = "?".repeat(ENTITY_KEYS.length).split("").join(",");
     const query = `INSERT INTO ${this.options.keyspace}.${this.table} (${columnList}) VALUES (${columnValues})`;
+
+    updatableChannel.connectors = JSON.stringify(updatableChannel.connectors);
+    updatableChannel.members = JSON.stringify(updatableChannel.members);
 
     await this.client.execute(query, pick(updatableChannel, ...ENTITY_KEYS), { prepare: true });
 
@@ -165,13 +168,18 @@ export class CassandraChannelService implements ChannelService {
   }
 
   async create(
-    channel: Channel,
+    _channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
+    let channel: any = _channel;
+
     channel.id = String(cassandra.types.Uuid.random());
     channel.workspace_id = context.workspace.workspace_id;
     channel.company_id = context.workspace.company_id;
     channel.owner = context.user.id;
+
+    channel.connectors = JSON.stringify(channel.connectors);
+    channel.members = JSON.stringify(channel.members);
 
     const saveChannel = pick(channel, ...ENTITY_KEYS);
     const columnList = ENTITY_KEYS.map(key => `"${key}"`).join(",");
@@ -240,6 +248,14 @@ export class CassandraChannelService implements ChannelService {
 
     (row.keys() || []).forEach(key => (channel[key] = row.get(key)));
 
+    try {
+      channel.connectors = JSON.parse(channel.connectors);
+      channel.members = JSON.parse(channel.members);
+    } catch (e) {
+      channel.connectors = [];
+      channel.members = [];
+    }
+
     return plainToClass(Channel, channel);
   }
 
@@ -248,6 +264,14 @@ export class CassandraChannelService implements ChannelService {
     const channel: { [column: string]: any } = {};
 
     (row.keys() || []).forEach(key => (channel[key] = row.get(key)));
+
+    try {
+      channel.connectors = JSON.parse(channel.connectors);
+      channel.members = JSON.parse(channel.members);
+    } catch (e) {
+      channel.connectors = [];
+      channel.members = [];
+    }
 
     return plainToClass(DirectChannel, channel);
   }

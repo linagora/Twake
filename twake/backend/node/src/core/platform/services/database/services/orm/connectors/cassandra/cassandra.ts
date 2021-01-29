@@ -314,11 +314,12 @@ export class CassandraConnector extends AbstractConnector<
         logger.debug(`service.database.orm.upsert - Query: "${query}"`);
 
         promises.push(
-          new Promise(resolve => {
+          new Promise(async resolve => {
             try {
-              this.getClient().execute(query);
+              await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
+              logger.error("Error with CQL query: ", query, err);
               resolve(false);
             }
           }),
@@ -351,11 +352,12 @@ export class CassandraConnector extends AbstractConnector<
           entityDefinition.name
         } WHERE ${where.join(" AND ")}`;
         promises.push(
-          new Promise(resolve => {
+          new Promise(async resolve => {
             try {
-              this.getClient().execute(query);
+              await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
+              logger.error("Error with CQL query: ", query, err);
               resolve(false);
             }
           }),

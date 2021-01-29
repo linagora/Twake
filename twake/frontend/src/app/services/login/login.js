@@ -1,3 +1,4 @@
+import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
@@ -17,16 +18,17 @@ import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 
 class Login extends Observable {
+  // Promise resolved when user is defined
+  userIsSet;
+
   constructor() {
     super();
     this.reset();
     this.setObservableName('login');
+    this.logger = Logger.getLogger('Login');
     this.firstInit = false;
-
     this.currentUserId = null;
-
     this.emailInit = '';
-
     this.server_infos_loaded = false;
     this.server_infos = {
       branding: {},
@@ -45,7 +47,7 @@ class Login extends Observable {
     this.state = '';
     this.login_loading = false;
     this.login_error = false;
-    this.currentUserId = null;
+    this.resetCurrentUser();
   }
 
   changeState(state) {
@@ -219,9 +221,7 @@ class Login extends Observable {
           that.startApp(res.data);
         }
 
-        if (callback) {
-          callback();
-        }
+        callback && callback();
       },
       false,
       { disableJWTAuthentication: true },
@@ -290,6 +290,7 @@ class Login extends Observable {
   clearLogin() {
     this.currentUserId = null;
     Globals.localStorageClear();
+    Collections.clear();
     JWTStorage.clear();
   }
 
@@ -324,8 +325,21 @@ class Login extends Observable {
     });
   }
 
-  startApp(user) {
+  setCurrentUser(user) {
     this.currentUserId = user.id;
+    this.resolveUser(this.currentUserId);
+  }
+
+  resetCurrentUser() {
+    this.currentUserId = null;
+    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
+  }
+
+  startApp(user) {
+    this.logger.info('Starting application for user', user.id);
+    this.setCurrentUser(user);
+    this.configureCollections();
+
     DepreciatedCollections.get('users').updateObject(user);
 
     AccessRightsService.resetLevels();
@@ -347,18 +361,17 @@ class Login extends Observable {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
     });
+
     Notifications.start();
     CurrentUser.start();
     Languages.setLanguage(user.language);
-
-    this.configurateCollections();
 
     this.state = 'app';
     this.notify();
     RouterServices.history.push(RouterServices.generateRouteFromState({}));
   }
 
-  configurateCollections() {
+  configureCollections() {
     Collections.setOptions({
       transport: {
         socket: {

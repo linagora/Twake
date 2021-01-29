@@ -6,7 +6,7 @@ import ObjectModal from 'components/ObjectModal/ObjectModal';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import { Typography, Button } from 'antd';
-import ChannelMembersEditor from 'scenes/Client/ChannelsBar/Modals/ChannelMembersEditor';
+import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
 
@@ -16,8 +16,6 @@ type Props = {
   isCurrentUserAdmin?: boolean;
   currentUserId?: string;
 };
-
-const { Title } = Typography;
 
 const ChannelWorkspaceEditor: FC<Props> = ({
   title,
@@ -52,6 +50,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
         visibility: newChannel.visibility || channel.data.visibility,
+        channel_group: newChannel.channel_group || channel.data.channel_group,
       });
       await ChannelsCollections.upsert(insertedChannel);
       ModalManager.close();
@@ -61,19 +60,10 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       });
 
       if (resource) {
-        return ModalManager.open(
-          <ChannelMembersEditor
-            companyId={resource.data.company_id || ''}
-            workspaceId={resource.data.workspace_id || ''}
-            channelId={resource.data.id || ''}
-            channelName={resource.data.name}
-            onClose={() => ModalManager.closeAll()}
-          />,
-          {
-            position: 'center',
-            size: { width: '600px', minHeight: '329px' },
-          },
-        );
+        return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
+          position: 'center',
+          size: { width: '600px', minHeight: '329px' },
+        });
       }
     }
   };
