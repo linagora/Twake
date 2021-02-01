@@ -266,7 +266,7 @@ export default class Collection<R extends Resource<any>> {
         this.find({}, { refresh: true });
       }, 1000 + 15000 * Math.random());
     } else if (this.options.reloadStrategy === 'ontime') {
-      await this.find({}, { refresh: true });
+      this.find({}, { refresh: true });
     }
   }
 

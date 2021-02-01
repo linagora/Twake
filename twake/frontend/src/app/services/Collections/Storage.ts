@@ -56,7 +56,14 @@ export class CollectionStorage implements CollectionStore {
       this.frontIdToIdTransform[item._frontId] &&
       this.frontIdToIdTransform[item._frontId] !== item.id
     ) {
-      collection[item.id] = collection[this.frontIdToIdTransform[item._frontId]];
+      const currentOne = collection[this.frontIdToIdTransform[item._frontId]];
+
+      if (currentOne) {
+        const paths = _.uniq([...(currentOne._paths || []), ...(collection[item.id]._paths || [])]);
+        collection[item.id] = _.assign(collection[item.id], currentOne);
+        collection[item.id]._paths = paths;
+      }
+
       delete collection[this.frontIdToIdTransform[item._frontId]];
     }
 
@@ -66,14 +73,18 @@ export class CollectionStorage implements CollectionStore {
 
     collection[item.id] = collection[item.id] || {};
 
-    collection[item.id] = _.assign(collection[item.id] || {}, item);
+    collection[item.id] = _.cloneDeep(
+      _.assign(collection[item.id] || {}, {
+        ...item,
+        _paths: collection[item.id]?._paths || [],
+      }),
+    );
 
-    !collection[item.id]._paths && (collection[item.id]._paths = []);
     collection[item.id]._paths.indexOf(path) < 0 && collection[item.id]._paths.push(path);
 
     this.frontIdToIdTransform[item._frontId] = item.id;
 
-    return collection[item.id];
+    return _.cloneDeep(collection[item.id]);
   }
 
   remove(type: string, path: string, item: any = {}): any {
@@ -85,7 +96,7 @@ export class CollectionStorage implements CollectionStore {
         item.id && collection[item.id] && delete collection[item.id];
       }
     }
-    return item;
+    return true;
   }
 
   clear(type: string, path: string) {
@@ -98,14 +109,16 @@ export class CollectionStorage implements CollectionStore {
   find(type: string, path: string, filters: any = {}, options: any = {}): any[] {
     const collection = this.addCollection(type);
     if (filters.id) {
-      return collection[filters.id] ? [collection[filters.id]] : [];
+      return collection[filters.id] ? [_.cloneDeep(collection[filters.id])] : [];
     }
 
-    return Object.values(collection).filter(
-      item =>
-        Object.keys(filters).every(filter => item[filter] === filters[filter]) &&
-        (!path || item._paths.indexOf(path) >= 0),
-    );
+    return Object.values(collection)
+      .filter(
+        item =>
+          Object.keys(filters).every(filter => item[filter] === filters[filter]) &&
+          (!path || item._paths.indexOf(path) >= 0),
+      )
+      .map(e => _.cloneDeep(e));
   }
 
   findOne(type: string, path: string, filters: any = {}, options: any = {}): any {

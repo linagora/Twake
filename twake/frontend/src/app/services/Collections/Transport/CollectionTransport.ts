@@ -21,6 +21,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is visible, transport must start
    */
   start() {
+    this.collection.reload();
     this.socketTransport.start();
   }
 
