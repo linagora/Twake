@@ -165,6 +165,7 @@ class Console extends BaseController
         $server = rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/");
         if($_SESSION["localhost"]){
             $server = "http://localhost:" . $_SESSION["localhost_port"];
+            $_SESSION["localhost"] = false;
         }
         $this->redirect($server
             . "/?external_login=".str_replace('+', '%20', urlencode(json_encode(["provider"=>"console", "message" => $message, "token" => json_encode($userTokens)]))));
