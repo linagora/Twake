@@ -57,9 +57,6 @@ export function Workspace() {
       }
     });
 
-  (window as any).channelsCollection = channelsCollection;
-  console.log(channels);
-
   let groupsName: string[] = [];
   let groups: { name: string; channels: ChannelResource[] }[] = [];
 
