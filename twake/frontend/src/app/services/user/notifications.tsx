@@ -165,16 +165,6 @@ class Notifications extends Observable {
 
           if (channelExists) {
             badgeCount++;
-          } else {
-            const path = `/channels/v1/companies/${notification.data.company_id}/workspaces/${notification.data.workspace_id}/channels/::mine`;
-            const collection = Collections.get(path, ChannelResource);
-            const resource = new ChannelResource({
-              id: notification.data.channel_id,
-              company_id: notification.data.company_id,
-              workspace_id: notification.data.workspace_id,
-            });
-            resource.setCollection(collection);
-            this.read(resource);
           }
         })();
       }

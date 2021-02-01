@@ -59,7 +59,10 @@ export class CollectionStorage implements CollectionStore {
       const currentOne = collection[this.frontIdToIdTransform[item._frontId]];
 
       if (currentOne) {
-        const paths = _.uniq([...(currentOne._paths || []), ...(collection[item.id]._paths || [])]);
+        const paths = _.uniq([
+          ...(currentOne?._paths || []),
+          ...(collection[item.id]?._paths || []),
+        ]);
         collection[item.id] = _.assign(collection[item.id], currentOne);
         collection[item.id]._paths = paths;
       }
