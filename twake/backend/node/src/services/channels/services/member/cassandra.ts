@@ -219,7 +219,7 @@ export class CassandraMemberService implements MemberService {
     });
 
     return new UpdateResult<ChannelMember>(TYPE, {
-      id: updatableChannel.user_id,
+      id: updatableChannel.user_id + "+" + updatableChannel.channel_id,
       ...updatableChannel,
     });
   }
@@ -326,6 +326,6 @@ export class CassandraMemberService implements MemberService {
 
     (row.keys() || []).forEach(key => (member[key] = row.get(key)));
 
-    return plainToClass(ChannelMember, { id: member.user_id, ...member });
+    return plainToClass(ChannelMember, { id: member.user_id + "+" + member.channel_id, ...member });
   }
 }

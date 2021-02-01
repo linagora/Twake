@@ -66,10 +66,10 @@ export class CollectionStorage implements CollectionStore {
 
     collection[item.id] = collection[item.id] || {};
 
+    collection[item.id] = _.assign(collection[item.id] || {}, item);
+
     !collection[item.id]._paths && (collection[item.id]._paths = []);
     collection[item.id]._paths.indexOf(path) < 0 && collection[item.id]._paths.push(path);
-
-    collection[item.id] = _.assign(collection[item.id] || {}, item);
 
     this.frontIdToIdTransform[item._frontId] = item.id;
 
