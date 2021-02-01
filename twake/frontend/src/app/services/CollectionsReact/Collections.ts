@@ -97,9 +97,9 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     };
   };
 
-  private getWatcherArgs = (filter?: any, options?: any): [() => Promise<G[]>, any] => {
+  private getWatcherArgs = (filter?: any, options?: any): [() => G[], any] => {
     return [
-      async () => await this.find(filter || {}, options || {}),
+      () => this.find(filter || {}, options || {}),
       {
         observedChanges:
           options?.observedChanges ||

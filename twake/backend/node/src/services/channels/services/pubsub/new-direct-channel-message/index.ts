@@ -57,7 +57,7 @@ export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNo
             const memberSaved = await this.service.members.save(
               member,
               {},
-              { channel, user: { id: member.user_id + "+" + member.channel_id } },
+              { channel, user: { id: member.user_id } },
             );
             logger.info(
               `${this.name} - Member added to channel ${message.channel_id} - ${JSON.stringify(

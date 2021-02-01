@@ -65,7 +65,6 @@ class Collections {
       throw `Try to init ${path} collection before Collections started!`;
     }
 
-    logger.debug(`Get collection ${path}`);
     options = options || {};
 
     const parts = path.split('::');
@@ -82,6 +81,7 @@ class Collections {
     options.storageKey = this.options.storageKey || '';
 
     if (!this.collections[key]) {
+      logger.debug(`Create collection ${path}`);
       this.collections[key] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);

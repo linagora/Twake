@@ -80,8 +80,8 @@ export class CollectionStorage implements CollectionStore {
     const collection = this.addCollection(type);
     const items = this.find(type, path, item);
     for (let item of items) {
-      item._paths = item._paths.filter((p: string) => p !== path);
-      if (!path || item._paths.length == 0) {
+      collection[item.id]._paths = item._paths.filter((p: string) => p !== path);
+      if (!path || collection[item.id]._paths.length == 0) {
         item.id && collection[item.id] && delete collection[item.id];
       }
     }
