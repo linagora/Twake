@@ -99,7 +99,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
       this.transport.collection.getEventEmitter().emit(type, resource);
     }
     if (action === 'created' || action === 'updated' || action === 'saved') {
-      let localResource = await this.transport.collection.findOne(resource.id);
+      let localResource = this.transport.collection.findOne(resource.id);
       if (!localResource) {
         localResource = new (this.transport.collection.getType())(resource);
       }
@@ -110,7 +110,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
       });
     }
     if (action === 'deleted') {
-      let localResource = await this.transport.collection.findOne({ id: resource.id });
+      let localResource = this.transport.collection.findOne({ id: resource.id });
       this.transport.collection.remove(localResource, {
         withoutBackend: true,
         alwaysNotify: true, //Because the localDB can already have deleted the item from an other tab

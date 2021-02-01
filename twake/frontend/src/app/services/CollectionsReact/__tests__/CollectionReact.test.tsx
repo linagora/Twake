@@ -1,6 +1,7 @@
 import React from 'react';
 import Login from 'services/login/login';
 import { Resource, Collection } from '../Collections';
+import OriginalCollections from '../../Collections/Collections';
 import { shallow } from 'enzyme';
 
 Login.userIsSet = true;
@@ -58,6 +59,8 @@ const flushPromises = () => {
 };
 
 test('Test Observable linked to Collection', async () => {
+  OriginalCollections.connect();
+
   const channelId = '1';
 
   let component;

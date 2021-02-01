@@ -384,10 +384,9 @@ export class MessagesListServerUtils extends Observable {
     this.readChannelTimeout = setTimeout(() => {
       const path = `/channels/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/channels/::mine`;
       const collection = Collections.get(path, ChannelResource);
-      collection.findOne({ id: this.channelId }).then(channel => {
-        this.lastReadMessage = this.lastLoadedMessageId;
-        Notifications.read(channel);
-      });
+      const channel = collection.findOne({ id: this.channelId });
+      this.lastReadMessage = this.lastLoadedMessageId;
+      Notifications.read(channel);
     }, 500);
   }
 }

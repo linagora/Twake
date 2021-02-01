@@ -103,17 +103,16 @@ class Notifications extends Observable {
         );
 
         //Load if there is at least one notification in group
-        notificationsCollection.findOne({}, { limit: 1 }).then(() => {
-          this.getNotifications(notificationsCollection);
+        notificationsCollection.findOne({}, { limit: 1 });
+        this.getNotifications(notificationsCollection);
 
-          //Listen websockets
-          notificationsCollection.addWatcher(
-            () => {
-              this.getNotifications(notificationsCollection, true);
-            },
-            { company_id: company.id },
-          );
-        });
+        //Listen websockets
+        notificationsCollection.addWatcher(
+          () => {
+            this.getNotifications(notificationsCollection, true);
+          },
+          { company_id: company.id },
+        );
 
         this.subscribedCompanies[company.id] = true;
       }
@@ -121,68 +120,67 @@ class Notifications extends Observable {
   }
 
   getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
-    collection.find({}).then(async notifications => {
-      // Count notifications:
-      // - other group notifications are not counted
-      // - other workspace notifications count as one
-      // - if I don't know a channel, don't count it + mark it as read => /!\ need to be very sure we are not in the channel
-      let badgeCount = 0;
-      const state = RouterService.getStateFromRoute();
-      const ignore: any = [];
-      this.store.unreadCompanies = {};
-      this.store.unreadWorkspaces = {};
-      for (let i = 0; i < notifications.length; i++) {
-        const notification = notifications[i];
-        if (
-          ignore.indexOf(notification.data.company_id) >= 0 ||
-          ignore.indexOf(notification.data.workspace_id) >= 0
-        ) {
-          return;
-        }
-        this.store.unreadCompanies[notification.data.company_id] = true;
-        this.store.unreadWorkspaces[notification.data.workspace_id] = true;
-
-        if (
-          notification.data.company_id !== state.companyId ||
-          (notification.data.workspace_id !== state.workspaceId &&
-            notification.data.workspace_id != 'direct')
-        ) {
-          badgeCount++;
-          ignore.push(notification.data.company_id);
-          ignore.push(notification.data.workspace_id);
-        } else {
-          //Detect if we don't know the channel and mark as read in this case (caution here!)
-          (async () => {
-            const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-              notification.data.company_id,
-              notification.data.workspace_id,
-            );
-            const channel = await collection.findOne({ id: notification.data.channel_id });
-
-            let channelExists = true;
-            if (!channel || !channel.data?.user_member?.id) {
-              channelExists = false;
-            }
-
-            if (channelExists) {
-              badgeCount++;
-            } else {
-              const path = `/channels/v1/companies/${notification.data.company_id}/workspaces/${notification.data.workspace_id}/channels/::mine`;
-              const collection = Collections.get(path, ChannelResource);
-              const resource = new ChannelResource({
-                id: notification.data.channel_id,
-                company_id: notification.data.company_id,
-                workspace_id: notification.data.workspace_id,
-              });
-              resource.setCollection(collection);
-              this.read(resource);
-            }
-          })();
-        }
+    const notifications = collection.find({});
+    // Count notifications:
+    // - other group notifications are not counted
+    // - other workspace notifications count as one
+    // - if I don't know a channel, don't count it + mark it as read => /!\ need to be very sure we are not in the channel
+    let badgeCount = 0;
+    const state = RouterService.getStateFromRoute();
+    const ignore: any = [];
+    this.store.unreadCompanies = {};
+    this.store.unreadWorkspaces = {};
+    for (let i = 0; i < notifications.length; i++) {
+      const notification = notifications[i];
+      if (
+        ignore.indexOf(notification.data.company_id) >= 0 ||
+        ignore.indexOf(notification.data.workspace_id) >= 0
+      ) {
+        return;
       }
-      this.updateAppBadge(badgeCount);
-      this.notify();
-    });
+      this.store.unreadCompanies[notification.data.company_id] = true;
+      this.store.unreadWorkspaces[notification.data.workspace_id] = true;
+
+      if (
+        notification.data.company_id !== state.companyId ||
+        (notification.data.workspace_id !== state.workspaceId &&
+          notification.data.workspace_id != 'direct')
+      ) {
+        badgeCount++;
+        ignore.push(notification.data.company_id);
+        ignore.push(notification.data.workspace_id);
+      } else {
+        //Detect if we don't know the channel and mark as read in this case (caution here!)
+        (async () => {
+          const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+            notification.data.company_id,
+            notification.data.workspace_id,
+          );
+          const channel = collection.findOne({ id: notification.data.channel_id });
+
+          let channelExists = true;
+          if (!channel || !channel.data?.user_member?.id) {
+            channelExists = false;
+          }
+
+          if (channelExists) {
+            badgeCount++;
+          } else {
+            const path = `/channels/v1/companies/${notification.data.company_id}/workspaces/${notification.data.workspace_id}/channels/::mine`;
+            const collection = Collections.get(path, ChannelResource);
+            const resource = new ChannelResource({
+              id: notification.data.channel_id,
+              company_id: notification.data.company_id,
+              workspace_id: notification.data.workspace_id,
+            });
+            resource.setCollection(collection);
+            this.read(resource);
+          }
+        })();
+      }
+    }
+    this.updateAppBadge(badgeCount);
+    this.notify();
   }
 
   async triggerUnreadMessagesPushNotification(newNotification: DesktopNotification | null = null) {
@@ -194,7 +192,7 @@ class Notifications extends Observable {
         newNotification.company_id,
         newNotification.workspace_id,
       );
-      const channel = await collection.findOne({ id: newNotification.channel_id });
+      const channel = collection.findOne({ id: newNotification.channel_id });
 
       if (channel && channel?.data?.name) {
         let icon = '💬';

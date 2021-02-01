@@ -54,8 +54,8 @@ export default class FindCompletion<G extends Resource<any>> {
 
       if (items?.resources?.length !== undefined) {
         if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
-          const storage = await this.collection.getStorage();
-          await storage.clear(this.collection.getPath());
+          const storage = this.collection.getStorage();
+          storage.clear(this.collection.getTypeName(), this.collection.getPath());
         }
 
         if (items?.resources && items?.resources?.length) {
@@ -64,8 +64,9 @@ export default class FindCompletion<G extends Resource<any>> {
           for (let i = 0; i < list.length; i++) {
             const resource = new type(list[i]);
             resource.setShared(true);
-            const storage = await this.collection.getStorage();
-            const mongoItem = await storage.upsert(
+            const storage = this.collection.getStorage();
+            const mongoItem = storage.upsert(
+              this.collection.getTypeName(),
               this.collection.getPath(),
               resource.getDataForStorage(),
             );
@@ -114,10 +115,14 @@ export default class FindCompletion<G extends Resource<any>> {
       const type = this.collection.getType();
       const data = item?.resource;
       const resource = new type(data);
-      const storage = await this.collection.getStorage();
+      const storage = this.collection.getStorage();
 
       resource.setShared(true);
-      mongoItem = await storage.upsert(this.collection.getPath(), resource.getDataForStorage());
+      mongoItem = storage.upsert(
+        this.collection.getTypeName(),
+        this.collection.getPath(),
+        resource.getDataForStorage(),
+      );
     }
 
     return mongoItem;

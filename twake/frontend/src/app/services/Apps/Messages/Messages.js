@@ -501,7 +501,7 @@ class Messages extends Observable {
   }
 
   async findChannel(channelId, companyId = null, workspaceId = null) {
-    return await this.getCollection(channelId, companyId, workspaceId).findOne({ id: channelId });
+    return this.getCollection(channelId, companyId, workspaceId).findOne({ id: channelId });
   }
 
   getCollection(channelId, companyId = null, workspaceId = null) {

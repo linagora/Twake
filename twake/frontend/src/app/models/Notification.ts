@@ -10,4 +10,6 @@ export type NotificationType = {
   count: number;
 };
 
-export class NotificationResource extends Resource<NotificationType> {}
+export class NotificationResource extends Resource<NotificationType> {
+  _type = 'notification';
+}

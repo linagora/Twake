@@ -21,4 +21,6 @@ export type ConfigurationType = {
   };
 };
 
-export class ConfigurationResource extends Resource<ConfigurationType> {}
+export class ConfigurationResource extends Resource<ConfigurationType> {
+  _type = 'configuration';
+}

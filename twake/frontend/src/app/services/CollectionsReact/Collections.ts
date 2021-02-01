@@ -19,7 +19,6 @@ class ObservableAdapter extends Observable {
 }
 
 export class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
-
   /**
    * Get a collection instance from path and type.
    *
@@ -30,13 +29,14 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   public static get<T extends OriginalResource<any>>(
     path: string,
     type: new (data: any) => T,
-    options?: CollectionOptions,
+    options: CollectionOptions = {},
   ): Collection<T> {
+    options.storageKey = OriginalCollections.getOptions().storageKey;
     return OriginalCollections.get(
       path,
       type,
       () => new Collection<T>(path, type, options),
-      options
+      options,
     ) as Collection<T>;
   }
 
@@ -64,11 +64,7 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     listener: (...args: any[]) => void,
   ) => ObservableAdapter;
 
-  constructor(
-    path: string = '',
-    type: new (data: any) => G,
-    options?: CollectionOptions,
-  ) {
+  constructor(path: string = '', type: new (data: any) => G, options?: CollectionOptions) {
     super(path, type, options);
     this.observable = ObservableAdapter.getObservableForKey(path);
     this.eventEmitter = new CollectionsEventEmitter(this, this.observable);
