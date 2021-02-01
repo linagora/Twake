@@ -17,6 +17,7 @@ export default class Resource<T> {
   private _state: ResourceState;
   private _key: string = 'key:' + uuidv4();
   private _collection: any;
+  protected _type: string = '';
 
   constructor(data: T & { id?: string }) {
     this._data = { id: this.genId(), ...data };
@@ -29,6 +30,10 @@ export default class Resource<T> {
 
   private genId() {
     return 'tmp:' + uuidv4();
+  }
+
+  public get type(): string {
+    return this._type || '';
   }
 
   public get id(): string {

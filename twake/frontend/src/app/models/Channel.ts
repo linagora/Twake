@@ -34,6 +34,10 @@ export type ChannelMemberType = {
   notification_level?: 'all' | 'none' | 'mentions' | 'me';
 };
 
-export class ChannelResource extends Resource<ChannelType> {}
+export class ChannelResource extends Resource<ChannelType> {
+  _type = 'channel';
+}
 
-export class ChannelMemberResource extends Resource<ChannelMemberType> {}
+export class ChannelMemberResource extends Resource<ChannelMemberType> {
+  _type = 'channel_member';
+}

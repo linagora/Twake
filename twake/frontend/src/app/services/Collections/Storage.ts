@@ -1,26 +1,25 @@
 import _ from 'lodash';
 import minimongo from 'minimongo';
-import semaphore from 'semaphore';
 import Logger from '../Logger';
-import Login from 'services/login/login';
+import { v4 as uuidv4 } from 'uuid';
 
 export type MongoItemType = {
   _state: any;
   [key: string]: any;
 };
 
-const logger = Logger.getLogger("Collections/Storage");
+const logger = Logger.getLogger('Collections/Storage');
 
 /**
  * Collection store API
  */
 export interface CollectionStore {
-  addCollection(path: string): Promise<void>;
-  upsert(path: string, item: any): Promise<any>;
-  remove(path: string, item: any): Promise<any>;
-  clear(path: string): Promise<void>;
-  find(path: string, filters?: any, options?: any): Promise<any[]>;
-  findOne(path: string, filters?: any, options?: any): Promise<any>;
+  addCollection(type: string): { [id: string]: any };
+  upsert(type: string, path: string, item: any): any;
+  remove(type: string, path: string, item: any): any;
+  clear(type: string, path: string): void;
+  find(type: string, path: string, filters?: any, options?: any): any[];
+  findOne(type: string, path: string, filters?: any, options?: any): any;
 }
 
 /**
@@ -29,180 +28,131 @@ export interface CollectionStore {
  * - It abstract the minimongo internal _id and try to not duplicates objects with same id
  */
 export class CollectionStorage implements CollectionStore {
+  private database: { [type: string]: { [id: string]: any } } = {};
+  private frontIdToIdTransform: { [frontId: string]: string } = {};
+
   static miniMongoInstance: minimongo.MinimongoDb;
+  public mongoDb: minimongo.MinimongoDb | null = null;
 
-  private semaphores: { [path: string]: semaphore.Semaphore } = {};
+  constructor() {
+    (window as any).storage = this;
+  }
 
-  //Ensure unicity of objects in mongo and frontend
-  private idKeeper: { [path: string]: { [id: string]: string | true } } = {};
+  addCollection(type: string) {
+    this.database[type] = this.database[type] || {};
+    return this.database[type];
+  }
 
-  constructor(readonly mongoDb: minimongo.MinimongoDb) {}
+  upsert(type: string, path: string, item: any): any {
+    if (!item.id) {
+      logger.log('upsert: ', 'Every resources must contain an id', path, item);
+      throw 'Every resources must contain an id';
+    }
 
-  async addCollection(path: string) {
-    this.idKeeper[path] = this.idKeeper[path] || {};
-    if (!await this.mongoDb.collections[path]) {
-      await this.mongoDb.addCollection(path);
+    const collection = this.addCollection(type);
+
+    if (
+      item._frontId &&
+      this.frontIdToIdTransform[item._frontId] &&
+      this.frontIdToIdTransform[item._frontId] !== item.id
+    ) {
+      const currentOne = collection[this.frontIdToIdTransform[item._frontId]];
+
+      if (currentOne) {
+        const paths = _.uniq([
+          ...(currentOne?._paths || []),
+          ...(collection[item.id]?._paths || []),
+        ]);
+        collection[item.id] = _.assign(collection[item.id], currentOne);
+        collection[item.id]._paths = paths;
+      }
+
+      delete collection[this.frontIdToIdTransform[item._frontId]];
+    }
+
+    if (!item._frontId) {
+      item._frontId = uuidv4();
+    }
+
+    collection[item.id] = collection[item.id] || {};
+
+    collection[item.id] = _.cloneDeep(
+      _.assign(collection[item.id] || {}, {
+        ...item,
+        _paths: collection[item.id]?._paths || [],
+      }),
+    );
+
+    collection[item.id]._paths.indexOf(path) < 0 && collection[item.id]._paths.push(path);
+
+    this.frontIdToIdTransform[item._frontId] = item.id;
+
+    return _.cloneDeep(collection[item.id]);
+  }
+
+  remove(type: string, path: string, item: any = {}): any {
+    const collection = this.addCollection(type);
+    const items = this.find(type, path, item);
+    for (let item of items) {
+      collection[item.id]._paths = item._paths.filter((p: string) => p !== path);
+      if (!path || collection[item.id]._paths.length == 0) {
+        item.id && collection[item.id] && delete collection[item.id];
+      }
+    }
+    return true;
+  }
+
+  clear(type: string, path: string) {
+    this.remove(type, path);
+    if (!path) {
+      delete this.database[type];
     }
   }
 
-  upsert(path: string, item: any): Promise<any> {
-    this.semaphores[path] = this.semaphores[path] || semaphore(1);
-    return new Promise((resolve, reject) => {
-      this.semaphores[path].take(async () => {
-        new Promise(async (resolve, reject) => {
-          if (!item.id) {
-            reject('Every resources must contain an id');
-            return;
-          }
-          await this.addCollection(path);
-
-          let exists = false;
-          if (
-            item.id &&
-            this.idKeeper[path] &&
-            this.idKeeper[path][item.id]
-          ) {
-            exists = true;
-          }
-          this.idKeeper[path][item.id] = true;
-
-          const mongoItems = await this.find(path, { id: item.id });
-          if (!mongoItems && exists) {
-            //Should have find it in mongo, so this is an error
-            resolve();
-            return;
-          }
-          try {
-            if (mongoItems && mongoItems[0]?._id && mongoItems[0]?._id != item._id) {
-              if (item._id) {
-                await new Promise(async resolve => {
-                  await this.mongoDb.collections[path].remove(
-                    item._id,
-                    resolve,
-                    resolve,
-                  );
-                });
-              }
-              item._id = mongoItems[0]?._id;
-              item = _.assign(mongoItems[0] || {}, item);
-            }
-            await this.mongoDb.collections[path].upsert(
-              item,
-              null,
-              resolve,
-              reject,
-            );
-          } catch (err) {
-            reject(err);
-          }
-        })
-          .then(resolve)
-          .catch(reject)
-          .finally(() => {
-            this.semaphores[path].leave();
-          });
-      });
-    });
-  }
-
-  remove(path: string, item: any): Promise<any> {
-    this.semaphores[path] = this.semaphores[path] || semaphore(1);
-    return new Promise((resolve, reject) => {
-      this.semaphores[path].take(async () => {
-        new Promise(async (resolve, reject) => {
-          await this.addCollection(path);
-
-          delete this.idKeeper[path][item.id];
-
-          this.find(path, item)
-            .then(async mongoItems => {
-              if (mongoItems.length === 1) {
-                const mongoItem = mongoItems[0];
-                let mongoId = '';
-                if (mongoItem) {
-                  mongoId = mongoItem._id;
-                }
-                await this.mongoDb.collections[path].remove(
-                  mongoId,
-                  resolve,
-                  reject,
-                );
-              } else if (mongoItems.length === 0) {
-                resolve();
-              } else {
-                reject(
-                  'The remove filter was not precise enough, cannot remove multiple elements at once.',
-                );
-              }
-            })
-            .catch(reject);
-        })
-          .then(resolve)
-          .catch(reject)
-          .finally(() => {
-            this.semaphores[path].leave();
-          });
-      });
-    });
-  }
-
-  async clear(path: string) {
-    await this.mongoDb.removeCollection(path);
-    await this.addCollection(path);
-  }
-
-  find(path: string, filters: any = {}, options: any = {}): Promise<any[]> {
-    //Fixme: we need to keep only string / number parameters
-    //This hack is when whe search using the resource itself as filter, some field make the find not work
+  find(type: string, path: string, filters: any = {}, options: any = {}): any[] {
+    const collection = this.addCollection(type);
     if (filters.id) {
-      filters = { id: filters.id };
+      return collection[filters.id] ? [_.cloneDeep(collection[filters.id])] : [];
     }
 
-    return new Promise(async (resolve, reject) => {
-      await this.addCollection(path);
-      await this.mongoDb.collections[path]
-        .find(filters, options)
-        .fetch(results => {
-          //Tofix right now we need this to avoid some duplications...
-          results
-            .filter((e, index) => index !== results.map(e => e.id).indexOf(e.id))
-            .forEach(async e => {
-              await this.mongoDb.collections[path].remove(
-                e._id,
-                resolve,
-                reject,
-              );
-            });
-          results = results.filter((e, index) => index === results.map(e => e.id).indexOf(e.id));
-
-          results.forEach(item => {
-            this.idKeeper[path][item.id] = true;
-          });
-          resolve(results);
-        }, reject);
-    });
+    return Object.values(collection)
+      .filter(
+        item =>
+          Object.keys(filters).every(filter => item[filter] === filters[filter]) &&
+          (!path || item._paths.indexOf(path) >= 0),
+      )
+      .map(e => _.cloneDeep(e));
   }
 
-  findOne(path: string, filters: any = {}, options: any = {}): Promise<any> {
-    //Fixme: we need to keep only string / number parameters
-    //This hack is when whe search using the resource itself as filter, some field make the find not work
-    if (filters.id) {
-      filters = { id: filters.id };
-    }
-
-    return new Promise(async (resolve, reject) => {
-      await this.addCollection(path);
-      this.find(path, filters, options)
-        .then((items: any[]) => {
-          if (items[0]) this.idKeeper[path][items[0].id] = true;
-          resolve(items[0]);
-        })
-        .catch(reject);
-    });
+  findOne(type: string, path: string, filters: any = {}, options: any = {}): any {
+    return this.find(type, path, filters, options)[0];
   }
 }
 
-export async function getDB(options: { namespace: string } = { namespace: "twake"}): Promise<minimongo.MinimongoDb> {
+const storages: { [key: string]: CollectionStorage } = {};
+
+export default function getStore(key: string): CollectionStore {
+  if (!key) {
+    throw new Error('Storage key is not set');
+  }
+
+  if (storages[key]) {
+    return storages[key];
+  }
+
+  cleanupOldDatabase(key);
+
+  storages[key] = new CollectionStorage();
+  getDB({ namespace: key }).then(mongoDb => {
+    storages[key].mongoDb = mongoDb;
+  });
+
+  return storages[key];
+}
+
+export async function getDB(
+  options: { namespace: string } = { namespace: 'twake' },
+): Promise<minimongo.MinimongoDb> {
   if (CollectionStorage.miniMongoInstance) {
     return CollectionStorage.miniMongoInstance;
   }
@@ -213,38 +163,19 @@ export async function getDB(options: { namespace: string } = { namespace: "twake
         //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
         { namespace: options.namespace },
         () => {
-          logger.debug("Mini Mongo is ready");
+          logger.debug('Mini Mongo is ready');
           resolve(mongo);
         },
-        () => resolve(new minimongo.MemoryDb())
+        () => resolve(new minimongo.MemoryDb()),
       );
     } else {
       resolve(new minimongo.MemoryDb());
     }
-  })
-  .then((db: minimongo.MinimongoDb) => {
+  }).then((db: minimongo.MinimongoDb) => {
     CollectionStorage.miniMongoInstance = db;
 
     return CollectionStorage.miniMongoInstance;
   });
-}
-
-export default async function getStore(): Promise<CollectionStore> {
-  if (!Login) {
-    throw new Error("Service is not ready");
-  }
-
-  const userId = await Login.userIsSet;
-
-  if (!userId) {
-    throw new Error("User is not set");
-  }
-
-  cleanupOldDatabase(userId);
-
-  const mongoDb = await getDB({ namespace: userId });
-
-  return new CollectionStorage(mongoDb);
 }
 
 export function clearCurrentDatabase(): void {
@@ -265,31 +196,31 @@ function cleanupOldDatabase(userId: string): void {
 }
 
 function removeDatabase(name: string): void {
-  if (!name || !isIndexedDBSupported()) {
+  if (!name || !isIndexedDBSupported()) {
     return;
   }
 
   if (window.indexedDB.deleteDatabase) {
     const req = window.indexedDB.deleteDatabase(name);
 
-    req.onerror = () => logger.debug("Error while removing the DB", name);
-    req.onblocked = () => logger.debug("DB removal is blocked", name);
-    req.onsuccess = () => logger.debug("DB has been removed", name);
-    req.onupgradeneeded = () => logger.debug("DB upgrade needed", name);
+    req.onerror = () => logger.debug('Error while removing the DB', name);
+    req.onblocked = () => logger.debug('DB removal is blocked', name);
+    req.onsuccess = () => logger.debug('DB has been removed', name);
+    req.onupgradeneeded = () => logger.debug('DB upgrade needed', name);
   }
 }
 
 function isIndexedDBSupported(): boolean {
-  return ('indexedDB' in window);
+  return 'indexedDB' in window;
 }
 
 function getExistingDatabase(): string {
-  const database = window.localStorage.getItem("twake-collection-db");
-  return database ? JSON.parse(database) : "";
+  const database = window.localStorage.getItem('twake-collection-db');
+  return database ? JSON.parse(database) : '';
 }
 
 function saveDatabaseName(name: string) {
-  window.localStorage.setItem("twake-collection-db", JSON.stringify(name));
+  window.localStorage.setItem('twake-collection-db', JSON.stringify(name));
 }
 
 function getDBName(userId: string): string {

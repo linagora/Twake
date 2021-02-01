@@ -33,22 +33,24 @@ export type CollectionOptions = {
   idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
   reloadStrategy?: 'ontime' | 'delayed' | 'none';
+  storageKey?: string;
 };
 
 export default class Collection<R extends Resource<any>> {
-  protected eventEmitter: EventEmitter<R> = new EventEmitter(this, null);
-  protected transport: CollectionTransport<R> = new CollectionTransport(this);
-  protected completion: FindCompletion<R> = new FindCompletion(this);
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
     reloadStrategy: 'delayed',
     queryParameters: {},
   };
 
+  protected eventEmitter: EventEmitter<R> = new EventEmitter(this, null);
+  protected transport: CollectionTransport<R> = new CollectionTransport(this);
+  protected completion: FindCompletion<R> = new FindCompletion(this);
+
   //App state
   private reloadRegistered = 0;
   private resources: { [id: string]: R } = {};
-  private storage: Promise<CollectionStore>;
+  private storage: CollectionStore;
 
   constructor(
     private readonly path: string = '',
@@ -57,7 +59,7 @@ export default class Collection<R extends Resource<any>> {
   ) {
     if (options?.tag) this.path = path + '::' + options.tag;
     this.setOptions(options || {});
-    this.storage = getStore();
+    this.storage = getStore(options?.storageKey || '');
   }
 
   public getPath() {
@@ -68,7 +70,7 @@ export default class Collection<R extends Resource<any>> {
     return this.options;
   }
 
-  public getStorage(): Promise<CollectionStore> {
+  public getStorage(): CollectionStore {
     return this.storage;
   }
 
@@ -94,6 +96,10 @@ export default class Collection<R extends Resource<any>> {
 
   public getType() {
     return this.type;
+  }
+
+  public getTypeName(): string {
+    return new this.type({}).type;
   }
 
   /**
@@ -124,8 +130,12 @@ export default class Collection<R extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: R, options?: GeneralOptions & ServerRequestOptions): Promise<R> {
-    const storage = await this.getStorage();
-    const mongoItem = await storage.upsert(this.getPath(), item.getDataForStorage());
+    const storage = this.getStorage();
+    const mongoItem = storage.upsert(
+      new this.type({}).type,
+      this.getPath(),
+      item.getDataForStorage(),
+    );
     this.updateLocalResource(mongoItem, item);
     this.eventEmitter.notify();
 
@@ -158,10 +168,10 @@ export default class Collection<R extends Resource<any>> {
       filter = filter.data || filter;
     }
     if (filter) {
-      const resource = await this.findOne(filter);
+      const resource = this.findOne(filter);
       if (resource) {
-        const storage = await this.getStorage();
-        await storage.remove(this.getPath(), filter);
+        const storage = this.getStorage();
+        storage.remove(this.getTypeName(), this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
         if (!options?.withoutBackend && resource.state.persisted) {
@@ -179,28 +189,29 @@ export default class Collection<R extends Resource<any>> {
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
    */
-  public async find(
-    filter?: any,
-    options: GeneralOptions & ServerRequestOptions = {},
-  ): Promise<R[]> {
+  public find(filter?: any, options: GeneralOptions & ServerRequestOptions = {}): R[] {
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
-    const storage = await this.getStorage();
-    let mongoItems = await storage.find(this.getPath(), filter, options);
+    const storage = this.getStorage();
+    let mongoItems = storage.find(this.getTypeName(), this.getPath(), filter, options);
 
     if (typeof filter === 'string' || filter?.id) {
-      return [await this.findOne(filter, options)];
+      return [this.findOne(filter, options)];
     }
 
-    await this.completion.wait();
-    this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
-      if (mongoItems.length > 0) {
-        mongoItems.forEach(mongoItem => {
-          this.updateLocalResource(mongoItem);
-        });
-        this.eventEmitter.notify();
-      }
-      await this.completion.unlock();
-    });
+    if (!this.completion.isLocked) {
+      this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
+        if (mongoItems.length > 0) {
+          mongoItems.forEach(mongoItem => {
+            this.updateLocalResource(mongoItem);
+          });
+          this.eventEmitter.notify();
+        }
+      });
+    } else {
+      setTimeout(() => {
+        this.find(filter, options);
+      }, 1000);
+    }
 
     mongoItems.forEach(mongoItem => {
       this.updateLocalResource(mongoItem);
@@ -213,28 +224,27 @@ export default class Collection<R extends Resource<any>> {
    * Find a specific document
    * This will call backend if we don't find this document in frontend.
    */
-  public async findOne(
-    filter?: any,
-    options: GeneralOptions & ServerRequestOptions = {},
-  ): Promise<R> {
+  public findOne(filter?: any, options: GeneralOptions & ServerRequestOptions = {}): R {
     if (typeof filter === 'string') {
       filter = { id: filter };
     }
 
-    await this.completion.wait();
-
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
-    const storage = await this.getStorage();
-    let mongoItem = await storage.findOne(this.getPath(), filter, options);
+    const storage = this.getStorage();
+    let mongoItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
 
-    if (!mongoItem) {
-      await this.completion.wait();
-      this.completion.completeFindOne(filter, options).then(async mongoItem => {
-        if (mongoItem) {
-          this.eventEmitter.notify();
-        }
-        await this.completion.unlock();
-      });
+    if (!mongoItem && (filter.id || '').indexOf('tmp:') < 0) {
+      if (!this.completion.isLocked) {
+        this.completion.completeFindOne(filter, options).then(async mongoItem => {
+          if (mongoItem) {
+            this.eventEmitter.notify();
+          }
+        });
+      } else {
+        setTimeout(() => {
+          this.findOne(filter, options);
+        }, 1000);
+      }
     }
 
     if (mongoItem) {
@@ -256,7 +266,7 @@ export default class Collection<R extends Resource<any>> {
         this.find({}, { refresh: true });
       }, 1000 + 15000 * Math.random());
     } else if (this.options.reloadStrategy === 'ontime') {
-      await this.find({}, { refresh: true });
+      this.find({}, { refresh: true });
     }
   }
 

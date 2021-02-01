@@ -19,7 +19,6 @@ class ObservableAdapter extends Observable {
 }
 
 export class Collection<G extends OriginalResource<any>> extends OriginalCollection<G> {
-
   /**
    * Get a collection instance from path and type.
    *
@@ -30,13 +29,15 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
   public static get<T extends OriginalResource<any>>(
     path: string,
     type: new (data: any) => T,
-    options?: CollectionOptions,
+    options: CollectionOptions = {},
   ): Collection<T> {
+    options.tag = path.split('::')[1] || undefined;
+    options.storageKey = OriginalCollections.getOptions().storageKey;
     return OriginalCollections.get(
       path,
       type,
-      () => new Collection<T>(path, type, options),
-      options
+      () => new Collection<T>(path.split('::')[0], type, options),
+      options,
     ) as Collection<T>;
   }
 
@@ -64,11 +65,7 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     listener: (...args: any[]) => void,
   ) => ObservableAdapter;
 
-  constructor(
-    path: string = '',
-    type: new (data: any) => G,
-    options?: CollectionOptions,
-  ) {
+  constructor(path: string = '', type: new (data: any) => G, options?: CollectionOptions) {
     super(path, type, options);
     this.observable = ObservableAdapter.getObservableForKey(path);
     this.eventEmitter = new CollectionsEventEmitter(this, this.observable);
@@ -100,9 +97,9 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     };
   };
 
-  private getWatcherArgs = (filter?: any, options?: any): [() => Promise<G[]>, any] => {
+  private getWatcherArgs = (filter?: any, options?: any): [() => G[], any] => {
     return [
-      async () => await this.find(filter || {}, options || {}),
+      () => this.find(filter || {}, options || {}),
       {
         observedChanges:
           options?.observedChanges ||

@@ -14,6 +14,8 @@ class Task extends Resource<TaskType> {
 }
 
 test('Create a collection', async () => {
+  Collections.connect();
+
   const listId = 10;
   const tasks = Collections.get('/lists/' + listId + '/tasks/', Task);
 
@@ -26,13 +28,20 @@ test('Create a collection', async () => {
   await tasks.insert(new Resource({ id: 'ab1', content: 'message ab1', votes: 0 }));
   //@ts-ignore
   tasks.removeLocalResource('ab1');
-  expect((await tasks.findOne('ab1'))?.data.content).toBe('message ab1');
+  expect(tasks.findOne('ab1')?.data.content).toBe('message ab1');
 
   //Test that all objects are of type Task
-  expect((await tasks.find()).map(i => i.constructor.name).filter(i => i != 'Task').length).toBe(0);
+  expect(
+    tasks
+      .find()
+      .map(i => i.constructor.name)
+      .filter(i => i != 'Task').length,
+  ).toBe(0);
 });
 
 test('Test Resource state values', async () => {
+  Collections.connect();
+
   const listId = 20;
   const tasks = Collections.get('/lists/' + listId + '/tasks/', Task);
 
@@ -44,21 +53,21 @@ test('Test Resource state values', async () => {
   task.id = 'ab1';
   await tasks.update(task, { withoutBackend: true });
 
-  expect((await tasks.findOne('ab1'))?.state.upToDate).toBe(true); //Should be up to date because was persisted from backend http
-  expect((await tasks.findOne('ab1'))?.state.persisted).toBe(true);
+  expect(tasks.findOne('ab1')?.state.upToDate).toBe(true); //Should be up to date because was persisted from backend http
+  expect(tasks.findOne('ab1')?.state.persisted).toBe(true);
 
   //Websocket received simulation
   task.setShared(true);
   await tasks.update(task, { withoutBackend: true });
 
-  expect((await tasks.findOne('ab1'))?.state.upToDate).toBe(true); //Should be up to date because was persisted from websocket
-  expect((await tasks.findOne('ab1'))?.state.shared).toBe(true);
+  expect(tasks.findOne('ab1')?.state.upToDate).toBe(true); //Should be up to date because was persisted from websocket
+  expect(tasks.findOne('ab1')?.state.shared).toBe(true);
 
   /** Emulate what happen when getting object from cache */
   //@ts-ignore
   tasks.removeLocalResource('ab1');
 
-  expect((await tasks.findOne('ab1'))?.state.upToDate).toBe(false); //Should be false because was only got from cache
-  expect((await tasks.findOne('ab1'))?.state.persisted).toBe(true); //Should be true because was persisted before (it shouldnt change)
-  expect((await tasks.findOne('ab1'))?.state.shared).toBe(true); //Should be true because was shared before (it shoulnd change)
+  expect(tasks.findOne('ab1')?.state.upToDate).toBe(false); //Should be false because was only got from cache
+  expect(tasks.findOne('ab1')?.state.persisted).toBe(true); //Should be true because was persisted before (it shouldnt change)
+  expect(tasks.findOne('ab1')?.state.shared).toBe(true); //Should be true because was shared before (it shoulnd change)
 });

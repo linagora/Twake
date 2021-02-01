@@ -10,4 +10,6 @@ export type TabType = {
   configuration?: object;
 };
 
-export class TabResource extends Resource<TabType> {}
+export class TabResource extends Resource<TabType> {
+  _type = 'tab';
+}

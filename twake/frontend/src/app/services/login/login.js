@@ -191,7 +191,7 @@ class Login extends Observable {
             !that.external_login_error
           ) {
             let developerSuffix = '';
-            if (Environment.env_dev) {
+            if (Environment.env_dev || true) {
               developerSuffix = '?localhost=1&port=' + window.location.port;
             }
 
@@ -243,7 +243,11 @@ class Login extends Observable {
     } else if (service === 'cas') {
       url = Api.route('users/cas');
     } else if (service === 'console') {
-      url = Api.route('users/console/openid');
+      let developerSuffix = '';
+      if (Environment.env_dev || true) {
+        developerSuffix = '?localhost=1&port=' + window.location.port;
+      }
+      url = Api.route('users/console/openid' + developerSuffix);
     }
 
     Globals.window.location = url;
@@ -372,23 +376,26 @@ class Login extends Observable {
   }
 
   configureCollections() {
-    Collections.setOptions({
-      transport: {
-        socket: {
-          url: Globals.window.websocket_url,
-          authenticate: {
-            token: JWTStorage.getJWT(),
+    if (this.currentUserId) {
+      Collections.setOptions({
+        storageKey: this.currentUserId,
+        transport: {
+          socket: {
+            url: Globals.window.websocket_url,
+            authenticate: {
+              token: JWTStorage.getJWT(),
+            },
+          },
+          rest: {
+            url: Globals.window.api_root_url + '/internal/services',
+            headers: {
+              Authorization: JWTStorage.getAutorizationHeader(),
+            },
           },
         },
-        rest: {
-          url: Globals.window.api_root_url + '/internal/services',
-          headers: {
-            Authorization: JWTStorage.getAutorizationHeader(),
-          },
-        },
-      },
-    });
-    Collections.connect();
+      });
+      Collections.connect();
+    }
   }
 
   /**

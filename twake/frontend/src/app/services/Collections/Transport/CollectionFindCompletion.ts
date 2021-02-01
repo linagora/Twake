@@ -10,8 +10,7 @@ export default class FindCompletion<G extends Resource<any>> {
   private nextPageToken: null | string = null;
   private hasMore: boolean = true;
   private perPage: number = 0;
-  private isLocked: boolean = false;
-  private lockWaitCallbacks: Function[] = [];
+  public isLocked: boolean = false;
 
   constructor(readonly collection: Collection<G>) {}
 
@@ -26,64 +25,72 @@ export default class FindCompletion<G extends Resource<any>> {
     filter?: any,
     options?: GeneralOptions,
   ): Promise<MongoItemType[]> {
-    options = options || {};
-    options.query = {
-      ...options.query,
-    };
-    if (options.limit) options.query.limit = options.limit || 100;
-    if (options.page_token) options.query.page_token = options.page_token;
-    if (options.search_query) options.query.search_query = options.search_query;
+    this.isLocked = true;
 
-    const newItems = [];
+    try {
+      options = options || {};
+      options.query = {
+        ...options.query,
+      };
+      if (options.limit) options.query.limit = options.limit || 100;
+      if (options.page_token) options.query.page_token = options.page_token;
+      if (options.search_query) options.query.search_query = options.search_query;
 
-    //Not taking cache replacement into account if network
-    if (
-      options.refresh ||
-      !this.didLoadOnce ||
-      (this.hasMore && options.limit > mongoItems.length)
-    ) {
-      this.lock();
+      const newItems = [];
 
-      this.perPage = this.perPage || options.limit;
-      options.query.limit = this.perPage;
-      if (this.nextPageToken) {
-        options.query.page_token = this.nextPageToken;
-      }
-
-      const items = await this.collection.getTransport().get(filter, options?.query);
-
-      if (items?.resources?.length !== undefined) {
-        if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
-          const storage = await this.collection.getStorage();
-          await storage.clear(this.collection.getPath());
+      //Not taking cache replacement into account if network
+      if (
+        options.refresh ||
+        !this.didLoadOnce ||
+        (this.hasMore && options.limit > mongoItems.length)
+      ) {
+        this.perPage = this.perPage || options.limit;
+        options.query.limit = this.perPage;
+        if (this.nextPageToken) {
+          options.query.page_token = this.nextPageToken;
         }
 
-        if (items?.resources && items?.resources?.length) {
-          const type = this.collection.getType();
-          const list = items?.resources as any[];
-          for (let i = 0; i < list.length; i++) {
-            const resource = new type(list[i]);
-            resource.setShared(true);
-            const storage = await this.collection.getStorage();
-            const mongoItem = await storage.upsert(
-              this.collection.getPath(),
-              resource.getDataForStorage(),
-            );
-            newItems.push(mongoItem);
+        const items = await this.collection.getTransport().get(filter, options?.query);
+
+        if (items?.resources?.length !== undefined) {
+          if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {
+            const storage = this.collection.getStorage();
+            storage.clear(this.collection.getTypeName(), this.collection.getPath());
           }
-        }
 
-        if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
-          this.hasMore = false;
+          if (items?.resources && items?.resources?.length) {
+            const type = this.collection.getType();
+            const list = items?.resources as any[];
+            for (let i = 0; i < list.length; i++) {
+              const resource = new type(list[i]);
+              resource.setShared(true);
+              const storage = this.collection.getStorage();
+              const mongoItem = storage.upsert(
+                this.collection.getTypeName(),
+                this.collection.getPath(),
+                resource.getDataForStorage(),
+              );
+              newItems.push(mongoItem);
+            }
+          }
+
+          if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
+            this.hasMore = false;
+          }
+          this.nextPageToken = items?.next_page_token;
+          this.didLoadOnce = true;
+        } else {
+          this.isLocked = false;
+          return [];
         }
-        this.nextPageToken = items?.next_page_token;
-        this.didLoadOnce = true;
-      } else {
-        return [];
       }
-    }
 
-    return newItems;
+      this.isLocked = false;
+      return newItems;
+    } catch (err) {
+      this.isLocked = false;
+      return [];
+    }
   }
 
   /**
@@ -95,47 +102,44 @@ export default class FindCompletion<G extends Resource<any>> {
     filter?: any,
     options?: GeneralOptions,
   ): Promise<MongoItemType | null> {
-    options = options || {};
-    options.query = {
-      ...options.query,
-    };
-    if (options.limit) options.query.limit = options.limit || 100;
-    if (options.page_token) options.query.page_token = options.page_token;
-    if (options.search_query) options.query.search_query = options.search_query;
+    this.isLocked = true;
+    try {
+      options = options || {};
+      options.query = {
+        ...options.query,
+      };
+      if (options.limit) options.query.limit = options.limit || 100;
+      if (options.page_token) options.query.page_token = options.page_token;
+      if (options.search_query) options.query.search_query = options.search_query;
 
-    filter = filter || {};
-    if (!filter.id) {
+      filter = filter || {};
+      if (!filter.id) {
+        this.isLocked = false;
+        return null;
+      }
+
+      let mongoItem: MongoItemType | null = null;
+      const item = await this.collection.getTransport().get(filter, options?.query);
+      if (item?.resource) {
+        const type = this.collection.getType();
+        const data = item?.resource;
+        const resource = new type(data);
+        const storage = this.collection.getStorage();
+
+        resource.setShared(true);
+        mongoItem = storage.upsert(
+          this.collection.getTypeName(),
+          this.collection.getPath(),
+          resource.getDataForStorage(),
+        );
+      }
+
+      this.isLocked = false;
+
+      return mongoItem;
+    } catch (err) {
+      this.isLocked = false;
       return null;
     }
-
-    let mongoItem: MongoItemType | null = null;
-    const item = await this.collection.getTransport().get(filter, options?.query);
-    if (item?.resource) {
-      const type = this.collection.getType();
-      const data = item?.resource;
-      const resource = new type(data);
-      const storage = await this.collection.getStorage();
-
-      resource.setShared(true);
-      mongoItem = await storage.upsert(this.collection.getPath(), resource.getDataForStorage());
-    }
-
-    return mongoItem;
-  }
-
-  public async wait() {
-    if (this.isLocked) {
-      await new Promise(resolve => this.lockWaitCallbacks.push(resolve));
-    }
-  }
-
-  public async lock() {
-    this.isLocked = true;
-  }
-
-  public async unlock() {
-    this.isLocked = false;
-    this.lockWaitCallbacks.forEach(resolve => resolve());
-    this.lockWaitCallbacks = [];
   }
 }

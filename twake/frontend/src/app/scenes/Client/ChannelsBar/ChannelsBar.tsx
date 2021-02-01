@@ -5,7 +5,6 @@ import CurrentUser from './Parts/CurrentUser/CurrentUser.js';
 import ChannelsApps from './ChannelsApps/ChannelsApps';
 import { Workspace } from './Workspace/workspace';
 import { ChannelsUser } from './ChannelsUser/ChannelsUser';
-import Tutorial from './Parts/Tutorial.js';
 import Footer from './Parts/Footer.js';
 import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';

@@ -1,5 +1,5 @@
 import { assign } from 'lodash';
-import Logger from "services/Logger";
+import Logger from 'services/Logger';
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
@@ -10,6 +10,7 @@ export { default as Resource } from './Resource';
 export { default as EventEmitter } from './EventEmitter';
 
 type Options = {
+  storageKey?: string;
   transport?: {
     rest?: {
       url?: string; //Rest API prefix, like http://localhost:8000/internal
@@ -22,12 +23,13 @@ type Options = {
   };
 };
 
-const logger = Logger.getLogger("Collections");
+const logger = Logger.getLogger('Collections');
 
 class Collections {
   private collections: { [key: string]: Collection<Resource<any>> } = {};
-  private options: Options = { transport: {} };
+  private options: Options = { transport: {}, storageKey: 'none' };
   protected transport: Transport = new Transport();
+  private started: boolean = false;
 
   public setOptions(options: Options) {
     this.options = assign(this.options, options);
@@ -39,8 +41,8 @@ class Collections {
 
   public connect(options?: Options) {
     options && this.setOptions(options);
-
     this.transport.connect();
+    this.started = true;
   }
 
   public getTransport() {
@@ -48,7 +50,7 @@ class Collections {
   }
 
   public clear(): void {
-    logger.debug("Clearing collections");
+    logger.debug('Clearing collections');
     clearCurrentDatabase();
   }
 
@@ -58,7 +60,11 @@ class Collections {
     existingCollectionCreator?: () => C,
     options?: CollectionOptions,
   ): Collection<R> {
-    logger.debug(`Get collection ${path}`);
+    if (!this.started) {
+      logger.error(`Try to init ${path} collection before Collections started!`);
+      throw `Try to init ${path} collection before Collections started!`;
+    }
+
     options = options || {};
 
     const parts = path.split('::');
@@ -72,7 +78,10 @@ class Collections {
 
     const key = formattedPath + '::' + options.tag;
 
+    options.storageKey = this.options.storageKey || '';
+
     if (!this.collections[key]) {
+      logger.debug(`Create collection ${path}`);
       this.collections[key] = existingCollectionCreator
         ? existingCollectionCreator()
         : new Collection(formattedPath, type || Resource, options);
