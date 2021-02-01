@@ -31,11 +31,12 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     type: new (data: any) => T,
     options: CollectionOptions = {},
   ): Collection<T> {
+    options.tag = path.split('::')[1] || undefined;
     options.storageKey = OriginalCollections.getOptions().storageKey;
     return OriginalCollections.get(
       path,
       type,
-      () => new Collection<T>(path, type, options),
+      () => new Collection<T>(path.split('::')[0], type, options),
       options,
     ) as Collection<T>;
   }
