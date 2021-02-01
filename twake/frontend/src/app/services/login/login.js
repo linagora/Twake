@@ -191,7 +191,7 @@ class Login extends Observable {
             !that.external_login_error
           ) {
             let developerSuffix = '';
-            if (Environment.env_dev || true) {
+            if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
               developerSuffix = '?localhost=1&port=' + window.location.port;
             }
 
@@ -244,7 +244,7 @@ class Login extends Observable {
       url = Api.route('users/cas');
     } else if (service === 'console') {
       let developerSuffix = '';
-      if (Environment.env_dev || true) {
+      if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
         developerSuffix = '?localhost=1&port=' + window.location.port;
       }
       url = Api.route('users/console/openid' + developerSuffix);
