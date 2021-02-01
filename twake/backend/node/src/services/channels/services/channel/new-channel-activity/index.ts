@@ -1,9 +1,5 @@
 import { logger } from "../../../../../core/platform/framework";
-import {
-  ChannelActivityNotification,
-  WorkspaceExecutionContext,
-  ChannelSystemExecutionContext,
-} from "../../../types";
+import { ChannelActivityNotification, ChannelSystemExecutionContext } from "../../../types";
 import { ChannelPrimaryKey, ChannelService } from "../../../provider";
 import { Service } from "../service";
 

@@ -324,6 +324,10 @@ export class CassandraMemberService implements MemberService {
     throw new Error("Not implemented");
   }
 
+  addUserToChannels(): Promise<ListResult<ChannelMember>> {
+    throw new Error("Not implemented");
+  }
+
   mapRowToChannelMember(row: cassandra.types.Row): ChannelMember {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const member: { [column: string]: any } = {};

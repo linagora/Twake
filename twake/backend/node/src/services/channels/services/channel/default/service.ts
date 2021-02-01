@@ -114,4 +114,13 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
       return [];
     }
   }
+
+  async getDefaultChannels(
+    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+  ): Promise<DefaultChannel[]> {
+    // TODO: Manage pagination based on this.list
+    const result = await this.repository.find(workspace);
+
+    return result.getEntities();
+  }
 }

@@ -17,7 +17,13 @@ import {
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
-import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
+import {
+  Channel,
+  ChannelMember,
+  DefaultChannel,
+  UserChannel,
+  UserDirectChannel,
+} from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import {
   ChannelType,
@@ -419,6 +425,12 @@ export class Service implements ChannelService {
     this.onUnread(channel, member);
 
     return true;
+  }
+
+  async getDefaultChannels(
+    workspace: Pick<Channel, "workspace_id" | "company_id">,
+  ): Promise<DefaultChannel[]> {
+    return this.defaultChannelService.getDefaultChannels(workspace);
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
