@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { merge } from "lodash";
 import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
 
 /**
@@ -69,3 +70,7 @@ export type ChannelMemberPrimaryKey = Pick<
   ChannelMember,
   "channel_id" | "company_id" | "user_id" | "workspace_id"
 >;
+
+export function getInstance(member: ChannelMember): ChannelMember {
+  return merge(new ChannelMember(), member);
+}

@@ -42,10 +42,12 @@ import {
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import _ from "lodash";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import DefaultChannelServiceImpl from "./default/service";
 
 export class Service implements ChannelService {
   version: "1";
   activityRepository: Repository<ChannelActivity>;
+  defaultChannelService: DefaultChannelServiceImpl;
 
   constructor(
     private service: ChannelService,
@@ -54,6 +56,7 @@ export class Service implements ChannelService {
   ) {}
 
   async init(): Promise<this> {
+    this.defaultChannelService = new DefaultChannelServiceImpl(this.database, this.channelService);
     this.activityRepository = await this.database.getRepository(
       "channel_activity",
       ChannelActivity,
@@ -62,7 +65,13 @@ export class Service implements ChannelService {
     try {
       this.service.init && (await this.service.init());
     } catch (err) {
-      console.error("Can not initialize database service", err);
+      logger.error({ err }, "Can not initialize channel db service");
+    }
+
+    try {
+      await this.defaultChannelService.init();
+    } catch (err) {
+      logger.warn("Can not initialize default channel service", err);
     }
 
     return this;

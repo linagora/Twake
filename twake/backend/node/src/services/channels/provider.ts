@@ -10,6 +10,8 @@ import {
   Channel,
   ChannelMember,
   ChannelMemberPrimaryKey,
+  DefaultChannel,
+  DefaultChannelPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
@@ -88,6 +90,15 @@ export interface MemberService
   ): Promise<ListResult<ChannelMember>>;
 
   /**
+   * Add a list of users to channel.
+   * This never rejects: If the user is not added, it will not be in the result list
+   *
+   * @param users Users to add
+   * @param channel Channel to add users to
+   */
+  addUsersToChannel(users: User[], channel: ChannelPrimaryKey): Promise<ListResult<ChannelMember>>;
+
+  /**
    * Check if user is channel member
    */
   isChannelMember(user: User, channel: Channel): Promise<ChannelMember>;
@@ -103,3 +114,11 @@ export default interface ChannelServiceAPI extends TwakeServiceProvider, Initial
   members: MemberService;
   tabs: TabService;
 }
+
+/**
+ * Manage default channels entities
+ */
+export interface DefaultChannelService
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<DefaultChannel, DefaultChannelPrimaryKey, ChannelExecutionContext> {}
