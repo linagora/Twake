@@ -14,6 +14,7 @@ export default class CollectionTransport<G extends Resource<any>> {
   private socketTransport: CollectionTransportSockets<G> = new CollectionTransportSockets<G>(this);
   private buffer: ServerAction[] = [];
   httpUsed: number = 0;
+  private didFirstStart: boolean = false;
 
   constructor(readonly collection: Collection<G>) {}
 
@@ -21,7 +22,9 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is visible, transport must start
    */
   start() {
-    this.collection.reload();
+    if (this.didFirstStart) {
+      this.collection.reload();
+    }
     this.socketTransport.start();
   }
 
@@ -29,6 +32,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is not visible / used anymore, transport can stop
    */
   stop() {
+    this.didFirstStart = true;
     this.socketTransport.stop();
   }
 
