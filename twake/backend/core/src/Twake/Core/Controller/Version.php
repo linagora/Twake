@@ -47,6 +47,13 @@ class Version extends BaseController
             "ready" => $ready,
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
+            "version" => [
+                "current" => "2020.Q4.135",
+                "minimal" => [
+                    "web" => "2020.Q4.135",
+                    "mobile" => "2020.Q4.135",
+                ]
+            ],
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
             "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161"
         );
