@@ -1,6 +1,6 @@
 import * as mongo from "mongodb";
 import { v4 as uuidv4 } from "uuid";
-import { Channel } from "../../entities";
+import { Channel, DefaultChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import {
   MongoConnector,
@@ -140,6 +140,10 @@ export class MongoChannelService implements ChannelService {
   }
 
   listDirectChannels(): Promise<DirectChannel[]> {
+    throw new Error("Not implemented");
+  }
+
+  getDefaultChannels(): Promise<DefaultChannel[]> {
     throw new Error("Not implemented");
   }
 }

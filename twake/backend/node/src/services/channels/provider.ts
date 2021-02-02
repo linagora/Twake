@@ -78,7 +78,16 @@ export interface ChannelService
     user: User,
     context: WorkspaceExecutionContext,
   ): Promise<boolean>;
+
+  /**
+   * Get the list default channels
+   * @param workspace
+   */
+  getDefaultChannels(
+    workspace: Pick<Channel, "company_id" | "workspace_id">,
+  ): Promise<DefaultChannel[]>;
 }
+
 export interface MemberService
   extends TwakeServiceProvider,
     Initializable,
@@ -97,6 +106,15 @@ export interface MemberService
    * @param channel Channel to add users to
    */
   addUsersToChannel(users: User[], channel: ChannelPrimaryKey): Promise<ListResult<ChannelMember>>;
+
+  /**
+   * Add the user to a list of channels.
+   * This never rejects: If the user is not added, it will not be in the result list
+   *
+   * @param user the user to add
+   * @param channels the channels to add the user to
+   */
+  addUserToChannels(user: User, channels: ChannelPrimaryKey[]): Promise<ListResult<ChannelMember>>;
 
   /**
    * Check if user is channel member
@@ -121,4 +139,13 @@ export default interface ChannelServiceAPI extends TwakeServiceProvider, Initial
 export interface DefaultChannelService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<DefaultChannel, DefaultChannelPrimaryKey, ChannelExecutionContext> {}
+    CRUDService<DefaultChannel, DefaultChannelPrimaryKey, ChannelExecutionContext> {
+  /**
+   * Get all the default channels in the given workspace
+   *
+   * @param workspace the workspace to get default channels from
+   */
+  getDefaultChannels(
+    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+  ): Promise<DefaultChannel[]>;
+}

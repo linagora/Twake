@@ -1,6 +1,6 @@
 import cassandra from "cassandra-driver";
 import { plainToClass } from "class-transformer";
-import { Channel } from "../../entities";
+import { Channel, DefaultChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey } from "../../provider";
 import {
   CassandraConnectionOptions,
@@ -171,7 +171,7 @@ export class CassandraChannelService implements ChannelService {
     _channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
-    let channel: any = _channel;
+    const channel: any = _channel;
 
     channel.id = String(cassandra.types.Uuid.random());
     channel.workspace_id = context.workspace.workspace_id;
@@ -334,6 +334,10 @@ export class CassandraChannelService implements ChannelService {
   }
 
   markAsUnread(): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+
+  getDefaultChannels(): Promise<DefaultChannel[]> {
     throw new Error("Not implemented");
   }
 }
