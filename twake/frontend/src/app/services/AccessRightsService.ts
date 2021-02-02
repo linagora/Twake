@@ -27,7 +27,6 @@ class _AccessRightsService extends Observable {
   }
 
   public updateLevel(workspaceId: string, right: 'none' | Rights) {
-    console.log('update level to', workspaceId, right);
     delete this.workspaceLevels[workspaceId];
     if (right !== 'none') this.workspaceLevels[workspaceId] = right;
     this.notify();
