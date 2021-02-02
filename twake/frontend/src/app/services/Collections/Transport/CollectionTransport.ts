@@ -158,7 +158,6 @@ export default class CollectionTransport<G extends Resource<any>> {
   async callUpsert(resource: G, options: any) {
     this.lockHttp();
     try {
-      console.log('try op persist', resource);
       let resourceCreated = null;
       const result = await Collections.getTransport()
         .getHttp()

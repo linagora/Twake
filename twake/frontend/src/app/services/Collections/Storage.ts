@@ -44,6 +44,8 @@ export class CollectionStorage implements CollectionStore {
   }
 
   upsert(type: string, path: string, item: any): any {
+    item._primaryKey = item._primaryKey || item.id;
+
     if (!item._primaryKey) {
       logger.log('upsert: ', 'Every resources must contain an id', path, item);
       throw 'Every resources must contain an id';
