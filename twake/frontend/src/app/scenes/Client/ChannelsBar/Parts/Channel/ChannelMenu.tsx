@@ -22,6 +22,7 @@ import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/Channel
 import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { NotificationResource } from 'app/models/Notification';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   channel: ChannelResource;
@@ -30,10 +31,13 @@ type Props = {
 export default (props: Props): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
   const companyId = props.channel.data.company_id;
-  const workspaceId = props.channel.data.workspace_id;
+  const channelWorkspaceId = props.channel.data.workspace_id;
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
 
-  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.data.id}/members/`;
+  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/::mine`;
+  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/${props.channel.data.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
@@ -124,6 +128,7 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
+      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
       type: 'separator',
     },
     {

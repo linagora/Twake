@@ -24,7 +24,9 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
   const [visibility, setVisibility] = useState<string>(channel?.visibility || 'public');
   const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
 
   useEffect(() => {
     onChange({

@@ -15,7 +15,11 @@ import MainViewService from 'app/services/AppView/MainViewService';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter(app => (app.display || {}).channel);
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
+    ({ companyId, workspaceId, channelId }) => {
+      return { companyId, workspaceId, channelId };
+    },
+  );
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollections = Collections.get(collectionPath, ChannelResource);

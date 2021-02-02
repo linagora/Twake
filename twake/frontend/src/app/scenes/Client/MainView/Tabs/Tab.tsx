@@ -28,7 +28,9 @@ export default ({
   deleteTab,
   currentUserId,
 }: PropsType): JSX.Element => {
-  const { workspaceId, tabId } = RouterServices.useStateFromRoute();
+  const { workspaceId, tabId } = RouterServices.useRouteState(({ workspaceId, tabId }) => {
+    return { workspaceId, tabId };
+  });
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId || '', 'administrator'),

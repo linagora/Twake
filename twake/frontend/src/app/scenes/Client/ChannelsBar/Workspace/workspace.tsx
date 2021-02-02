@@ -22,7 +22,9 @@ export function Workspace() {
     direct: [],
   };
 
-  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
+    return { workspaceId, companyId };
+  });
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource);
   channelsCollection.setOptions({ reloadStrategy: 'delayed' });

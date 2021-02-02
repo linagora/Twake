@@ -16,7 +16,11 @@ type PropsType = {
 };
 
 export default ({ channel }: PropsType) => {
-  const { companyId, workspaceId }: ClientStateType = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId }: ClientStateType = RouterServices.useRouteState(
+    ({ companyId, workspaceId }) => {
+      return { companyId, workspaceId };
+    },
+  );
   const userId: string = UsersService.getCurrentUserId();
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel?.id}/members/`;
   const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(

@@ -17,7 +17,9 @@ type Props = {
 };
 
 const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
-  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
+    return { workspaceId, companyId };
+  });
 
   const [disabled, setDisabled] = useState<boolean>(true);
   let newChannel: ChannelType = {

@@ -13,7 +13,9 @@ import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import { NotificationResource } from 'app/models/Notification';
 
 export function ChannelsUser() {
-  const { companyId } = RouterServices.useStateFromRoute();
+  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
+    return { companyId };
+  });
   const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource, {
     tag: 'mine',

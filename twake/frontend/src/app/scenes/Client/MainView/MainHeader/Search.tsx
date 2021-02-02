@@ -6,7 +6,9 @@ import RouterServices from 'services/RouterService';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
-  const { workspaceId } = RouterServices.useStateFromRoute();
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
 
   if (!AccessRightsService.hasLevel(workspaceId || '', 'member')) {
     return <></>;

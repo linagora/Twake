@@ -12,7 +12,9 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import RouterServices from 'app/services/RouterService';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
 
   Workspaces.useListener();
   Groups.useListener();

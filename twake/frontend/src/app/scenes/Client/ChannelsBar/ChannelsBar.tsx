@@ -16,7 +16,9 @@ import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/Hid
 import AccessRightsService from 'app/services/AccessRightsService';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
 
   const openWorkspaceChannelList: ShortcutType = {
     shortcut: defaultShortcutsMap.SEARCH_CHANNEL,

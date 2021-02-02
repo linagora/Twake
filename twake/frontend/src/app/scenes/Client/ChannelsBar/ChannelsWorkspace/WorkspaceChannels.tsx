@@ -27,7 +27,9 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { workspaceId } = RouterServices.useStateFromRoute();
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
 
   const addChannel = () => {
     return ModalManager.open(
