@@ -83,7 +83,7 @@ const ChannelMembersList: FC<Props> = props => {
   return (
     <ObjectModal
       title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [
-        channelMembers.length, // Not true with the limit
+        channelMembers.length + (channelMembers.length >= limit ? '+' : ''),
         props.channel.data.name,
       ])}
       closable={props.closable ? props.closable : false}
@@ -114,6 +114,7 @@ const ChannelMembersList: FC<Props> = props => {
               <div key={user.id} className="x-margin">
                 <MemberChannelRow
                   key={user.id}
+                  channelId={props.channel.id}
                   userId={user.data.user_id || ''}
                   collection={channelMembersCollection}
                   channelMemberResource={user}
@@ -136,6 +137,7 @@ const ChannelMembersList: FC<Props> = props => {
               <MemberChannelRow
                 key={userId}
                 userId={userId}
+                channelId={props.channel.id}
                 collection={channelMembersCollection}
                 inAddition={!channelMembersUid.includes(userId || '') ? true : false}
               />

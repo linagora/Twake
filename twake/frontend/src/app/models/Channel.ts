@@ -25,8 +25,8 @@ export type ChannelType = {
 };
 
 export type ChannelMemberType = {
-  id?: string; //Equals to user-id (needed for collections)
   user_id?: string;
+  channel_id?: string;
   type?: 'member' | 'guest' | 'bot';
   last_access?: number; //Timestamp in seconds
   last_increment?: number; //Number
@@ -40,4 +40,6 @@ export class ChannelResource extends Resource<ChannelType> {
 
 export class ChannelMemberResource extends Resource<ChannelMemberType> {
   _type = 'channel_member';
+  _resourcePrimaryKey = ['channel_id', 'user_id'];
+  _resourceIdKey = 'user_id';
 }

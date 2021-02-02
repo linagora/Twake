@@ -57,6 +57,7 @@ export default (props: Props): JSX.Element => {
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.notification_level = 'all';
     channelMember.notification_level = preference;
+    channelMember.channel_id = props.channel.id;
 
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
@@ -65,6 +66,7 @@ export default (props: Props): JSX.Element => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.favorite = state;
+    channelMember.channel_id = props.channel.id;
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
 
@@ -79,7 +81,6 @@ export default (props: Props): JSX.Element => {
     if (props.channel.data.user_member) {
       //Fixme, this is not pretty, we should find a way to do this in one line
       const channelMember = new ChannelMemberResource({
-        id: props.channel.data.user_member.user_id, //Here id is always user_id for route
         ...props.channel.data.user_member,
       });
       channelMember.setPersisted();

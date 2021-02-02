@@ -162,7 +162,7 @@ class Notifications extends Observable {
           );
 
           let channelExists = true;
-          if (!channel || !channel.data?.user_member?.id) {
+          if (!channel || !channel.data?.user_member?.user_id) {
             channelExists = false;
           }
 

@@ -38,6 +38,7 @@ export default ({ channel }: PropsType) => {
     const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
     channelMembersCollection.insert(
       new ChannelMemberResource({
+        channel_id: channel.data.id,
         user_id: userId,
         type: 'member',
       }),

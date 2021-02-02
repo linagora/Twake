@@ -30,7 +30,6 @@ export type ActionOptions = {
 export type CollectionOptions = {
   tag?: string;
   queryParameters?: any;
-  idGenerator?: (data: any) => string;
   cacheReplaceMode?: 'always' | 'never';
   reloadStrategy?: 'ontime' | 'delayed' | 'none';
   storageKey?: string;
@@ -130,6 +129,10 @@ export default class Collection<R extends Resource<any>> {
    * Upsert document (this will call backend)
    */
   public async upsert(item: R, options?: GeneralOptions & ServerRequestOptions): Promise<R> {
+    if (!item) {
+      return item;
+    }
+
     const storage = this.getStorage();
     const mongoItem = storage.upsert(
       new this.type({}).type,
@@ -226,7 +229,9 @@ export default class Collection<R extends Resource<any>> {
    */
   public findOne(filter?: any, options: GeneralOptions & ServerRequestOptions = {}): R {
     if (typeof filter === 'string') {
-      filter = { id: filter };
+      let _filter: any = {};
+      _filter[new this.type({}).getIdKey()] = filter;
+      filter = _filter;
     }
 
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
