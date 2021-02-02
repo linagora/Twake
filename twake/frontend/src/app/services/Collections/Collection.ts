@@ -198,7 +198,7 @@ export default class Collection<R extends Resource<any>> {
       return [this.findOne(filter, options)];
     }
 
-    if (!this.completion.isLocked) {
+    if (!this.completion.isLocked && !options?.withoutBackend) {
       this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
         if (mongoItems.length > 0) {
           mongoItems.forEach(mongoItem => {
@@ -233,7 +233,7 @@ export default class Collection<R extends Resource<any>> {
     const storage = this.getStorage();
     let mongoItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
 
-    if (!mongoItem && (filter.id || '').indexOf('tmp:') < 0) {
+    if (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) {
       if (!this.completion.isLocked) {
         this.completion.completeFindOne(filter, options).then(async mongoItem => {
           if (mongoItem) {

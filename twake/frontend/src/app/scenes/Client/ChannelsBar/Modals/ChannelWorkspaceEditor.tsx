@@ -40,7 +40,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
     const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
     if (channel?.id) {
-      const insertedChannel = ChannelsCollections.findOne(channel.id);
+      const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
       insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,

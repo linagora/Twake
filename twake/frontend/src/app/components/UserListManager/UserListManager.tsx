@@ -148,7 +148,7 @@ const UserListManager = (props: PropsType) => {
       {usersIds.length > 0 && (
         <div className={'users-list no-background'}>
           {usersIds.map((item: string) => (
-            <div style={props.collapsed ? { display: 'inline-block' } : {}}>
+            <div key={item} style={props.collapsed ? { display: 'inline-block' } : {}}>
               <Row align="middle" gutter={[8, 8]}>
                 {renderLine(item, true)}
               </Row>
