@@ -6,23 +6,18 @@ import { Select, Typography, Divider, Checkbox, Input, Button, Row, Col } from '
 import InputWithSelect from 'app/components/Inputs/InputWithSelect';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
   channel: ChannelType | undefined;
   onChange: (channelEntries: any) => void;
-  isCurrentUserAdmin?: boolean;
   currentUserId?: string;
 };
 
 const { TextArea } = Input;
 const { Option } = Select;
 const { Title } = Typography;
-const ChannelTemplateEditor: FC<Props> = ({
-  channel,
-  onChange,
-  isCurrentUserAdmin,
-  currentUserId,
-}) => {
+const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
@@ -30,9 +25,6 @@ const ChannelTemplateEditor: FC<Props> = ({
   const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
   const { companyId, workspaceId } = RouterServices.useStateFromRoute();
-  const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-  const channelsCollection = Collection.get(url, ChannelResource);
-  const channels = channelsCollection.useWatcher({});
 
   useEffect(() => {
     onChange({
@@ -45,7 +37,11 @@ const ChannelTemplateEditor: FC<Props> = ({
     });
   });
 
-  const getGroups = (channels: ChannelResource[]) => {
+  const getGroups = () => {
+    const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+    const channelsCollection = Collection.get(url, ChannelResource);
+    const channels = channelsCollection.find({}, { withoutBackend: true });
+
     const groupsNames: string[] = [];
     channels
       .sort((a, b) => (a.data.channel_group || '').localeCompare(b.data.channel_group || ''))
@@ -59,7 +55,10 @@ const ChannelTemplateEditor: FC<Props> = ({
   const isAbleToEditVisibility = () => {
     const isNewChannel = !channel;
     const editable =
-      (channel && channel.id && (isCurrentUserAdmin === true || currentUserId === channel.owner)) ||
+      (channel &&
+        channel.id &&
+        (AccessRightsService.hasLevel(workspaceId || '', 'administrator') ||
+          currentUserId === channel.owner)) ||
       false;
     return isNewChannel || editable ? true : false;
   };
@@ -78,9 +77,9 @@ const ChannelTemplateEditor: FC<Props> = ({
         >
           <InputWithSelect
             channel={channel}
-            groups={getGroups(channels)}
+            groups={getGroups()}
             onChange={(values: string[]) => {
-              setGroup(values[0]);
+              setGroup((values[0] || '').toLocaleUpperCase().trim());
               setName(values[1]);
             }}
           />

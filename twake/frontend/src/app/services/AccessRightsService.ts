@@ -2,6 +2,13 @@ import Observable from './Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'administrator';
 
+const rightLevels = {
+  none: 0,
+  guest: 1,
+  member: 10,
+  administrator: 50,
+};
+
 class _AccessRightsService extends Observable {
   workspaceLevels: { [workspaceId: string]: Rights } = {};
   companyLevels: { [companyId: string]: Rights } = {};
@@ -12,7 +19,7 @@ class _AccessRightsService extends Observable {
   }
 
   public hasLevel(workspaceId: string, right: 'none' | Rights) {
-    return (this.workspaceLevels[workspaceId] || 'none') === right;
+    return rightLevels[this.workspaceLevels[workspaceId] || 'none'] >= rightLevels[right];
   }
 
   public getLevel(workspaceId: string): 'none' | Rights {
@@ -20,6 +27,7 @@ class _AccessRightsService extends Observable {
   }
 
   public updateLevel(workspaceId: string, right: 'none' | Rights) {
+    console.log('update level to', workspaceId, right);
     delete this.workspaceLevels[workspaceId];
     if (right !== 'none') this.workspaceLevels[workspaceId] = right;
     this.notify();
@@ -38,7 +46,7 @@ class _AccessRightsService extends Observable {
   }
 
   public hasCompanyLevel(companyId: string, right: 'none' | Rights) {
-    return (this.companyLevels[companyId] || 'none') === right;
+    return rightLevels[this.companyLevels[companyId] || 'none'] >= rightLevels[right];
   }
 
   public getCompanyLevel(companyId: string): 'none' | Rights {

@@ -13,16 +13,10 @@ import _ from 'lodash';
 type Props = {
   title: string;
   channel?: ChannelResource;
-  isCurrentUserAdmin?: boolean;
   currentUserId?: string;
 };
 
-const ChannelWorkspaceEditor: FC<Props> = ({
-  title,
-  channel,
-  isCurrentUserAdmin,
-  currentUserId,
-}) => {
+const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
   const { workspaceId, companyId } = RouterServices.useStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -93,7 +87,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       <ChannelTemplateEditor
         channel={channel?.data}
         onChange={onChange}
-        isCurrentUserAdmin={isCurrentUserAdmin}
         currentUserId={currentUserId}
       />
     </ObjectModal>

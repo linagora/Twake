@@ -37,9 +37,6 @@ export default (props: Props): JSX.Element => {
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
-  const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
-    AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
-  );
   const isDirectChannel = props.channel.data.visibility === 'direct';
 
   Languages.useListener(useState);
@@ -92,7 +89,6 @@ export default (props: Props): JSX.Element => {
       <ChannelWorkspaceEditor
         title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
         channel={props.channel || {}}
-        isCurrentUserAdmin={isCurrentUserAdmin}
         currentUserId={currentUser.id}
       />,
       {
@@ -132,6 +128,7 @@ export default (props: Props): JSX.Element => {
     },
     {
       type: 'menu',
+      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
       text: Languages.t(
         isDirectChannel
           ? 'scenes.app.channelsbar.hide_discussion_leaving.menu'
@@ -201,6 +198,7 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
+        hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => {
           editChannel();
@@ -216,11 +214,12 @@ export default (props: Props): JSX.Element => {
     );
   }
 
-  //To do: Add the necessery admin rights
-  if (true && props.channel.data.visibility !== 'direct') {
+  if (props.channel.data.visibility !== 'direct') {
     menu.push({
       type: 'menu',
-      hide: currentUser.id !== props.channel.data.owner && isCurrentUserAdmin === false,
+      hide:
+        currentUser.id !== props.channel.data.owner &&
+        !AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {

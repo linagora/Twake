@@ -9,7 +9,8 @@ import Languages from 'services/languages/languages.js';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/Menus/Menu';
 import Icon from 'app/components/Icon/Icon';
-// import { useUsersListener } from 'app/components/Member/UserParts';
+import AccessRightsService from 'app/services/AccessRightsService';
+import RouterServices from 'services/RouterService';
 
 const { Text } = Typography;
 
@@ -23,7 +24,7 @@ type Props = {
 export default (props: Props) => {
   let userEvents: JSX.Element;
   const [isAlreadyMember, setIsAlreadyMember] = useState<boolean>(false);
-  // useUsersListener([props.userId] || []);
+  const { workspaceId } = RouterServices.useStateFromRoute();
 
   const { avatar, name, users } = getUserParts({
     usersIds: [props.userId] || [],
@@ -106,7 +107,7 @@ export default (props: Props) => {
       <Col flex={4}>
         <Text strong>{name}</Text> @{users[0]?.username}
       </Col>
-      {userEvents}
+      {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
   );
 };

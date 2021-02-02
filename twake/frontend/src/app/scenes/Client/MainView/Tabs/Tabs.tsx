@@ -10,6 +10,7 @@ import { Plus } from 'react-feather';
 import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/user.js';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 import './Tabs.scss';
 
@@ -59,23 +60,25 @@ export default (): JSX.Element => {
           })}
         </Tabs>
       )}
-      <Button
-        className="add-tab-button"
-        type="text"
-        onClick={() => {
-          return ModalManager.open(
-            <TabsTemplateEditor
-              currentUserId={currentUser.id}
-              onChangeTabs={(item: TabResource) => upsertTab(item)}
-            />,
-            {
-              position: 'center',
-              size: { width: '500px', minHeight: '329px' },
-            },
-          );
-        }}
-        icon={<Plus size={14} />}
-      />
+      {AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+        <Button
+          className="add-tab-button"
+          type="text"
+          onClick={() => {
+            return ModalManager.open(
+              <TabsTemplateEditor
+                currentUserId={currentUser.id}
+                onChangeTabs={(item: TabResource) => upsertTab(item)}
+              />,
+              {
+                position: 'center',
+                size: { width: '500px', minHeight: '329px' },
+              },
+            );
+          }}
+          icon={<Plus size={14} />}
+        />
+      )}
     </Row>
   );
 };

@@ -313,11 +313,9 @@ export default class CurrentUser extends Component {
     this.notifications_state = NotificationParameters.getNotificationsStatus(current_user);
 
     this.notifications_menu = [
-      /*      {type:"menu", text:"Afficher mes dernières notifications"},
-      {type:"menu", text:"Supprimer toutes mes notifications", onClick:()=>{ NotificationsService.readAll(); }},
-      {type:"separator"},*/
       {
         type: 'menu',
+        hide: true, //Disabled until refactor
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.user_parameter',
           [],

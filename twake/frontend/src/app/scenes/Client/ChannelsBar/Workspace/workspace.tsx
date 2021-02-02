@@ -5,6 +5,7 @@ import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/ChannelsWorkspace/WorkspaceChannels';
+import Languages from 'services/languages/languages.js';
 
 type channelCategoryType = {
   favorite: ChannelResource[];
@@ -90,7 +91,9 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'favoriteChannels'}
-          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
+          sectionTitle={Languages.t(
+            'scenes.app.channelsbar.channelsworkspace.channel_title.favorite',
+          )}
           channels={channelCategory.favorite}
           favorite
         />
@@ -100,7 +103,7 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'channels'}
-          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
+          sectionTitle={Languages.t('scenes.app.channelsbar.channelsworkspace.channel_title')}
           channels={channelCategory.workspace}
         />
       )}
@@ -109,8 +112,9 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={index}
-          workspaceTitle={group.name}
+          sectionTitle={group.name}
           channels={group.channels}
+          subgroup
         />
       ))}
     </div>

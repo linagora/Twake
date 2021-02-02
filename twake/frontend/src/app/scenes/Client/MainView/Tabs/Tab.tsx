@@ -68,7 +68,7 @@ export default ({
       >
         {capitalize(tabResource.data.name)}
       </Typography.Paragraph>
-      {tabResource.data.id === tabId && (
+      {tabResource.data.id === tabId && AccessRightsService.hasLevel(workspaceId || '', 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[
