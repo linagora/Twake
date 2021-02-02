@@ -1852,7 +1852,7 @@ export default {
   'components.searchpopup.mentions': 'Mentions',
   'components.searchpopup.only_pinned': 'Seulement les messages épinglés',
   'components.alert.confirm': 'Confirmez votre action',
-  'components.alert.confirm_click': 'Confirmez votre action en cliquant sur Confirmer.',
+  'components.alert.confirm_click': 'Confirmez votre action en cliquant sur OK.',
   'components.searchpopup.tasks': 'Tâches',
   'scenes.app.mainview.advanced_search_placeholder': 'Recherche avancée',
   'components.searchpopup.hide_filters': 'réduire',

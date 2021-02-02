@@ -151,7 +151,7 @@ export default (props: Props): JSX.Element => {
           text: Languages.t(
             isDirectChannel
               ? 'scenes.app.channelsbar.hide_discussion_leaving.content'
-              : 'components.alert.confirm',
+              : 'components.alert.confirm_click',
           ),
         });
       },
