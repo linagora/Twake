@@ -41,7 +41,7 @@ const ChannelTemplateEditor: FC<Props> = ({
       description,
       visibility,
       channel_group: group,
-      default: defaultChannel,
+      is_default: defaultChannel,
     });
   });
 
@@ -125,7 +125,7 @@ const ChannelTemplateEditor: FC<Props> = ({
           </div>
         </>
       )}
-      {false && (
+      {(
         <div style={{ height: '32px' }} className="top-margin left-margin">
           {visibility === 'public' && (
             <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>

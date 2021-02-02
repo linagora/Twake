@@ -10,7 +10,7 @@ export type ChannelType = {
   description?: string;
   channel_group?: string;
   visibility?: string;
-  default?: boolean;
+  is_default?: boolean;
   direct_channel_members?: string[];
   members?: string[]; //Todo should not be used if backend is stable
   owner?: string;
