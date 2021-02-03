@@ -4,6 +4,7 @@ import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import socketIO from "socket.io";
 import SocketIORedis from "socket.io-redis";
 import { User } from "../../../../services/types";
+import { JwtType } from "../types";
 
 export interface AdaptersConfiguration {
   types: Array<string>;
@@ -35,7 +36,4 @@ export interface WebsocketUserEvent {
   user: WebSocketUser;
 }
 
-interface DecodedToken {
-  _id: string;
-  id: string;
-}
+type DecodedToken = JwtType;
