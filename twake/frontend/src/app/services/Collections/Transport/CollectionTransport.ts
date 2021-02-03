@@ -25,8 +25,9 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is visible, transport must start
    */
   start() {
+    logger.log('Start looking for changes on ', this.collection.getPath());
     if (this.didFirstStart) {
-      this.collection.reload();
+      this.collection.reload('ontime');
     }
     this.socketTransport.start();
   }
@@ -35,6 +36,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is not visible / used anymore, transport can stop
    */
   stop() {
+    logger.log('Stop looking for changes on ', this.collection.getPath());
     this.didFirstStart = true;
     this.socketTransport.stop();
   }

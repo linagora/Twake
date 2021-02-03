@@ -261,16 +261,17 @@ export default class Collection<R extends Resource<any>> {
   /**
    * Reload collection after socket was disconnected
    */
-  public async reload() {
+  public async reload(strategy: string = '') {
     if (new Date().getTime() - this.reloadRegistered < 1000) {
       return;
     }
     this.reloadRegistered = new Date().getTime();
-    if (this.options.reloadStrategy === 'delayed') {
+    strategy = strategy || this.options.reloadStrategy || 'never';
+    if (strategy === 'delayed') {
       setTimeout(() => {
         this.find({}, { refresh: true });
       }, 1000 + 15000 * Math.random());
-    } else if (this.options.reloadStrategy === 'ontime') {
+    } else if (strategy === 'ontime') {
       this.find({}, { refresh: true });
     }
   }

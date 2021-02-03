@@ -32,13 +32,13 @@ class WorkspaceUserRights extends Observable {
 
   isInvite(userId = false) {
     if (!userId) {
-      return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'guest');
+      return !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member');
     }
     return true;
   }
 
   isGroupInvite() {
-    return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'guest');
+    return !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member');
   }
 
   hasGroupPrivilege(privilege) {
