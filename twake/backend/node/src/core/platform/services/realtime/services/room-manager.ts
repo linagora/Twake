@@ -131,6 +131,6 @@ export default class RoomManager implements RealtimeRoomManager {
   }
 
   sendEvent(path: string, data: any): void {
-    this.ws.getIo().to(path).emit(`realtime:event`, { name: path, data: data });
+    this.ws.getIo().to(path).emit("realtime:event", { name: path, data: data });
   }
 }

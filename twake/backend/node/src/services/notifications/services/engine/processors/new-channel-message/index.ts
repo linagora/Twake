@@ -163,7 +163,7 @@ export class NewChannelMessageProcessor
           logger.debug(
             `${this.name} - ${
               memberPreference.user_id
-            } truth table [all, mentions, me] : ${JSON.stringify(truthTable)}`,
+            } truth table [direct, all, mentions, me] : ${JSON.stringify(truthTable)}`,
           );
 
           return truthTable.includes(true);

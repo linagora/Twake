@@ -119,7 +119,6 @@ export class CassandraChannelService implements ChannelService {
         { err },
         `service.channel.createTable creation error for table ${tableName} : ${err.message}`,
       );
-      console.log(err);
       result = false;
     }
 
@@ -171,7 +170,7 @@ export class CassandraChannelService implements ChannelService {
     _channel: Channel,
     context: WorkspaceExecutionContext,
   ): Promise<CreateResult<Channel>> {
-    let channel: any = _channel;
+    const channel: any = { ..._channel };
 
     channel.id = String(cassandra.types.Uuid.random());
     channel.workspace_id = context.workspace.workspace_id;
@@ -189,6 +188,9 @@ export class CassandraChannelService implements ChannelService {
     logger.info("service.channel.create - %s - %o", query, saveChannel);
 
     await this.client.execute(query, saveChannel, { prepare: true });
+
+    saveChannel.connectors = _channel.connectors;
+    saveChannel.members = _channel.connectors;
 
     return new CreateResult<Channel>(TYPE, saveChannel as Channel);
   }
