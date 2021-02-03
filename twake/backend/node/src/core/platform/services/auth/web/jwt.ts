@@ -2,23 +2,7 @@ import { FastifyPluginCallback, FastifyRequest } from "fastify";
 import fastifyJwt from "fastify-jwt";
 import fp from "fastify-plugin";
 import config from "../../../../config";
-
-type JwtType = {
-  sub: string;
-  nbf: number;
-  refresh_nbf: number;
-  iat: number;
-  org: {
-    [companyId: string]: {
-      role: string; //Not implemented
-      wks: {
-        [workspaceId: string]: {
-          adm: boolean;
-        };
-      };
-    };
-  };
-};
+import { JwtType } from "../../types";
 
 const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
   fastify.register(fastifyJwt, {

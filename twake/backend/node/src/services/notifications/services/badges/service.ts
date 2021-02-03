@@ -11,6 +11,7 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
 import {
+  getUserNotificationBadgeInstance,
   UserNotificationBadge,
   UserNotificationBadgePrimaryKey,
   UserNotificationBadgeType,
@@ -53,9 +54,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     options: SaveOptions,
     context: NotificationExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
-    const badgeEntity = new UserNotificationBadge();
-    _.assign(badgeEntity, badge);
-    await this.repository.save(badgeEntity);
+    await this.repository.save(getUserNotificationBadgeInstance(badge));
 
     return new SaveResult(UserNotificationBadgeType, badge, OperationType.CREATE);
   }

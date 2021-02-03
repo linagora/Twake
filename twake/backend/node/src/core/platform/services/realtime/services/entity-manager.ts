@@ -37,14 +37,18 @@ export default class RealtimeEntityManager {
   ): void {
     event.room.path.forEach(path => {
       logger.info(`Pushing ${action} entity to room ${path}`);
-
-      this.ws.getIo().to(path).emit(REALTIME_RESOURCE, {
+      const message: unknown = {
         action,
         room: path,
         type: event.type,
         path: event.resourcePath,
         resource: event.entity,
-      });
+      };
+      if (logger.isLevelEnabled("debug")) {
+        logger.debug(`Entity to push to room ${path}: %o`, message);
+      }
+
+      this.ws.getIo().to(path).emit(REALTIME_RESOURCE, message);
     });
   }
 }

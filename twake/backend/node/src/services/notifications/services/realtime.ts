@@ -1,5 +1,4 @@
 import { User, WebsocketMetadata } from "../../../services/types";
-import { UserNotificationBadge } from "../entities";
 
 export function getWebsocketInformation(user: User): WebsocketMetadata {
   return {

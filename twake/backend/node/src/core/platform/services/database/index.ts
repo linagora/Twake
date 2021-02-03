@@ -24,7 +24,7 @@ export default class Database extends TwakeService<DatabaseServiceAPI> {
     const dbConnector = this.service.getConnector();
 
     try {
-      logger.info("Connecting to database");
+      logger.info("Connecting to database %o", configuration);
       await dbConnector.connect();
       await dbConnector.init();
       logger.info("Connected to database");
