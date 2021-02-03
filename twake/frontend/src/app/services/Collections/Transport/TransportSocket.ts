@@ -101,7 +101,7 @@ export default class TransportSocket {
         if (event.name) this.notify(event.name, WebsocketEvents.JoinError, event);
       });
       socket.on(WebsocketEvents.Resource, (event: any) => {
-        logger.debug('Received resource on room', event.room);
+        logger.debug('Received resource on room', event.room, event);
         if (event.room) this.notify(event.room, WebsocketEvents.Resource, event);
       });
       socket.on(WebsocketEvents.Event, (event: any) => {

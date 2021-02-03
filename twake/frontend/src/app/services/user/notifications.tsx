@@ -156,10 +156,13 @@ class Notifications extends Observable {
             notification.data.company_id,
             notification.data.workspace_id,
           );
-          const channel = collection.findOne({ id: notification.data.channel_id });
+          const channel = collection.findOne(
+            { id: notification.data.channel_id },
+            { withoutBackend: true },
+          );
 
           let channelExists = true;
-          if (!channel || !channel.data?.user_member?.id) {
+          if (!channel || !channel.data?.user_member?.user_id) {
             channelExists = false;
           }
 

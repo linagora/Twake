@@ -13,7 +13,7 @@ describe('The Collections storage', () => {
     });
   });
 
-  test('Mongo collection upsert', async () => {
+  test('Collections Storage upsert', async () => {
     const listId = 10;
     expect(storage.find('task', 'lists/' + listId + '/tasks').length).toBe(0);
 
@@ -22,7 +22,7 @@ describe('The Collections storage', () => {
     expect(storage.findOne('task', 'lists/' + listId + '/tasks').id).toBe('1');
   });
 
-  test('Mongo collection remove', async () => {
+  test('Collections Storage remove', async () => {
     const listId = 11;
     storage.upsert('task', 'lists/' + listId + '/tasks', { id: '1', content: 'Hello' });
     storage.upsert('task', 'lists/' + listId + '/tasks', { id: '2', content: 'Hello2' });
@@ -31,7 +31,7 @@ describe('The Collections storage', () => {
     expect(storage.find('task', 'lists/' + listId + '/tasks').length).toBe(1);
   });
 
-  test('Mongo collection update the id field', async () => {
+  test('Collections Storage update the id field', async () => {
     const listId = 20;
     const task = storage.upsert('task', 'lists/' + listId + '/tasks', {
       id: '1',
@@ -76,7 +76,7 @@ describe('The Collections storage', () => {
     ).toThrow();
   });
 
-  test('Mongo collection finds', async () => {
+  test('Collections Storage finds', async () => {
     const listIdA = 30;
     const listIdB = 40;
     storage.upsert('task', 'lists/' + listIdA + '/tasks', {
@@ -119,7 +119,7 @@ describe('The Collections storage', () => {
     );
     expect(storage.find('task', 'lists/' + listIdB + '/tasks').length).toBe(3);
     expect(
-      storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'work', id: '2' }).length,
+      storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'work', id: '5' }).length,
     ).toBe(1);
     expect(
       storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'work', time: 10 }).length,
@@ -127,14 +127,12 @@ describe('The Collections storage', () => {
     expect(
       storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'work', time: 9 }).length,
     ).toBe(0);
-
-    //Length will be 1 because we ignore all filters if id is provided
     expect(
-      storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'work', id: '1' }).length,
-    ).toBe(1);
+      storage.find('task', 'lists/' + listIdB + '/tasks', { category: 'sport', id: '5' }).length,
+    ).toBe(0);
   });
 
-  test('Mongo collection findOne', async () => {
+  test('Collections Storage findOne', async () => {
     const listId = 50;
     storage.upsert('task', 'lists/' + listId + '/tasks', {
       id: '1',
@@ -166,7 +164,7 @@ describe('The Collections storage', () => {
 
     //We ignore all filters if id is provided
     expect(
-      storage.findOne('task', 'lists/' + listId + '/tasks', { category: 'work', id: '1' })
+      storage.findOne('task', 'lists/' + listId + '/tasks', { category: 'sport', id: '1' })
         ?.category,
     ).toBe('sport');
   });

@@ -14,6 +14,7 @@ import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
+import Observable from './Observable/Observable';
 
 export type RouteType = {
   path: string;
@@ -40,7 +41,7 @@ export type Pathnames = {
   [key: string]: string;
 };
 
-class RouterServices {
+class RouterServices extends Observable {
   public translator: Translator = short();
   public history: History<unknown> = createBrowserHistory();
   public match = (pathSchema: string): match<object> | null =>
@@ -122,9 +123,18 @@ class RouterServices {
     },
   ];
 
-  useStateFromRoute(): ClientStateType {
-    useParams();
-    return this.getStateFromRoute();
+  constructor() {
+    super();
+    this.history.listen(() => {
+      this.notify();
+    });
+  }
+
+  useRouteState(filter: (state: any) => any): ClientStateType {
+    return this.useWatcher(() => {
+      const state = this.getStateFromRoute();
+      return filter(state);
+    });
   }
 
   // Generate state from routing

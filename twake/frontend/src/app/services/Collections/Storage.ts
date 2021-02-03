@@ -44,7 +44,9 @@ export class CollectionStorage implements CollectionStore {
   }
 
   upsert(type: string, path: string, item: any): any {
-    if (!item.id) {
+    item._primaryKey = item._primaryKey || item.id;
+
+    if (!item._primaryKey) {
       logger.log('upsert: ', 'Every resources must contain an id', path, item);
       throw 'Every resources must contain an id';
     }
@@ -54,17 +56,17 @@ export class CollectionStorage implements CollectionStore {
     if (
       item._frontId &&
       this.frontIdToIdTransform[item._frontId] &&
-      this.frontIdToIdTransform[item._frontId] !== item.id
+      this.frontIdToIdTransform[item._frontId] !== item._primaryKey
     ) {
       const currentOne = collection[this.frontIdToIdTransform[item._frontId]];
 
       if (currentOne) {
         const paths = _.uniq([
           ...(currentOne?._paths || []),
-          ...(collection[item.id]?._paths || []),
+          ...(collection[item._primaryKey]?._paths || []),
         ]);
-        collection[item.id] = _.assign(collection[item.id], currentOne);
-        collection[item.id]._paths = paths;
+        collection[item._primaryKey] = _.assign(collection[item._primaryKey], currentOne);
+        collection[item._primaryKey]._paths = paths;
       }
 
       delete collection[this.frontIdToIdTransform[item._frontId]];
@@ -74,29 +76,30 @@ export class CollectionStorage implements CollectionStore {
       item._frontId = uuidv4();
     }
 
-    collection[item.id] = collection[item.id] || {};
+    collection[item._primaryKey] = collection[item._primaryKey] || {};
 
-    collection[item.id] = _.cloneDeep(
-      _.assign(collection[item.id] || {}, {
+    collection[item._primaryKey] = _.cloneDeep(
+      _.assign(collection[item._primaryKey] || {}, {
         ...item,
-        _paths: collection[item.id]?._paths || [],
+        _paths: collection[item._primaryKey]?._paths || [],
       }),
     );
 
-    collection[item.id]._paths.indexOf(path) < 0 && collection[item.id]._paths.push(path);
+    collection[item._primaryKey]._paths.indexOf(path) < 0 &&
+      collection[item._primaryKey]._paths.push(path);
 
-    this.frontIdToIdTransform[item._frontId] = item.id;
+    this.frontIdToIdTransform[item._frontId] = item._primaryKey;
 
-    return _.cloneDeep(collection[item.id]);
+    return _.cloneDeep(collection[item._primaryKey]);
   }
 
   remove(type: string, path: string, item: any = {}): any {
     const collection = this.addCollection(type);
     const items = this.find(type, path, item);
     for (let item of items) {
-      collection[item.id]._paths = item._paths.filter((p: string) => p !== path);
-      if (!path || collection[item.id]._paths.length == 0) {
-        item.id && collection[item.id] && delete collection[item.id];
+      collection[item._primaryKey]._paths = item._paths.filter((p: string) => p !== path);
+      if (!path || collection[item._primaryKey]._paths.length == 0) {
+        item._primaryKey && collection[item._primaryKey] && delete collection[item._primaryKey];
       }
     }
     return true;
@@ -111,8 +114,8 @@ export class CollectionStorage implements CollectionStore {
 
   find(type: string, path: string, filters: any = {}, options: any = {}): any[] {
     const collection = this.addCollection(type);
-    if (filters.id) {
-      return collection[filters.id] ? [_.cloneDeep(collection[filters.id])] : [];
+    if (filters._primaryKey) {
+      return collection[filters._primaryKey] ? [_.cloneDeep(collection[filters._primaryKey])] : [];
     }
 
     return Object.values(collection)

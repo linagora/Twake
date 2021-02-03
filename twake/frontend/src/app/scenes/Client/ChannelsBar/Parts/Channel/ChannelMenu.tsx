@@ -22,6 +22,7 @@ import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/Channel
 import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { NotificationResource } from 'app/models/Notification';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   channel: ChannelResource;
@@ -30,16 +31,16 @@ type Props = {
 export default (props: Props): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
   const companyId = props.channel.data.company_id;
-  const workspaceId = props.channel.data.workspace_id;
+  const channelWorkspaceId = props.channel.data.workspace_id;
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
 
-  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${props.channel.data.id}/members/`;
+  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/::mine`;
+  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/${props.channel.data.id}/members/`;
   const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
   const channelsCollection = Collection.get(channelPath, ChannelResource);
 
-  const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
-    AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
-  );
   const isDirectChannel = props.channel.data.visibility === 'direct';
 
   Languages.useListener(useState);
@@ -56,6 +57,7 @@ export default (props: Props): JSX.Element => {
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.notification_level = 'all';
     channelMember.notification_level = preference;
+    channelMember.channel_id = props.channel.id;
 
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
@@ -64,6 +66,7 @@ export default (props: Props): JSX.Element => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
     channelMember.user_id = channelMember.user_id || currentUser.id;
     channelMember.favorite = state;
+    channelMember.channel_id = props.channel.id;
     await channelMembersCollection.upsert(new ChannelMemberResource(channelMember));
   };
 
@@ -78,7 +81,6 @@ export default (props: Props): JSX.Element => {
     if (props.channel.data.user_member) {
       //Fixme, this is not pretty, we should find a way to do this in one line
       const channelMember = new ChannelMemberResource({
-        id: props.channel.data.user_member.user_id, //Here id is always user_id for route
         ...props.channel.data.user_member,
       });
       channelMember.setPersisted();
@@ -92,7 +94,6 @@ export default (props: Props): JSX.Element => {
       <ChannelWorkspaceEditor
         title={Languages.t('scenes.app.channelsbar.modify_channel_menu')}
         channel={props.channel || {}}
-        isCurrentUserAdmin={isCurrentUserAdmin}
         currentUserId={currentUser.id}
       />,
       {
@@ -128,10 +129,12 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
+      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
       type: 'separator',
     },
     {
       type: 'menu',
+      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
       text: Languages.t(
         isDirectChannel
           ? 'scenes.app.channelsbar.hide_discussion_leaving.menu'
@@ -148,7 +151,7 @@ export default (props: Props): JSX.Element => {
           text: Languages.t(
             isDirectChannel
               ? 'scenes.app.channelsbar.hide_discussion_leaving.content'
-              : 'components.alert.confirm',
+              : 'components.alert.confirm_click',
           ),
         });
       },
@@ -201,6 +204,7 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
+        hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => {
           editChannel();
@@ -216,11 +220,12 @@ export default (props: Props): JSX.Element => {
     );
   }
 
-  //To do: Add the necessery admin rights
-  if (true && props.channel.data.visibility !== 'direct') {
+  if (props.channel.data.visibility !== 'direct') {
     menu.push({
       type: 'menu',
-      hide: currentUser.id !== props.channel.data.owner && isCurrentUserAdmin === false,
+      hide:
+        currentUser.id !== props.channel.data.owner &&
+        !AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {

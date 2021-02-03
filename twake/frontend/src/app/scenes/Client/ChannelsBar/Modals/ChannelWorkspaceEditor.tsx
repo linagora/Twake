@@ -13,17 +13,13 @@ import _ from 'lodash';
 type Props = {
   title: string;
   channel?: ChannelResource;
-  isCurrentUserAdmin?: boolean;
   currentUserId?: string;
 };
 
-const ChannelWorkspaceEditor: FC<Props> = ({
-  title,
-  channel,
-  isCurrentUserAdmin,
-  currentUserId,
-}) => {
-  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
+  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
+    return { workspaceId, companyId };
+  });
 
   const [disabled, setDisabled] = useState<boolean>(true);
   let newChannel: ChannelType = {
@@ -44,7 +40,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
     const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
     if (channel?.id) {
-      const insertedChannel = ChannelsCollections.findOne(channel.id);
+      const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
       insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,
@@ -93,7 +89,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       <ChannelTemplateEditor
         channel={channel?.data}
         onChange={onChange}
-        isCurrentUserAdmin={isCurrentUserAdmin}
         currentUserId={currentUserId}
       />
     </ObjectModal>

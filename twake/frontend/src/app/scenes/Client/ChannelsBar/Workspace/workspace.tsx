@@ -5,6 +5,7 @@ import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/ChannelsWorkspace/WorkspaceChannels';
+import Languages from 'services/languages/languages.js';
 
 type channelCategoryType = {
   favorite: ChannelResource[];
@@ -21,7 +22,9 @@ export function Workspace() {
     direct: [],
   };
 
-  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
+    return { workspaceId, companyId };
+  });
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource);
   channelsCollection.setOptions({ reloadStrategy: 'delayed' });
@@ -57,9 +60,6 @@ export function Workspace() {
       }
     });
 
-  (window as any).channelsCollection = channelsCollection;
-  console.log(channels);
-
   let groupsName: string[] = [];
   let groups: { name: string; channels: ChannelResource[] }[] = [];
 
@@ -93,7 +93,9 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'favoriteChannels'}
-          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title.favorite"
+          sectionTitle={Languages.t(
+            'scenes.app.channelsbar.channelsworkspace.channel_title.favorite',
+          )}
           channels={channelCategory.favorite}
           favorite
         />
@@ -103,7 +105,7 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={'channels'}
-          workspaceTitle="scenes.app.channelsbar.channelsworkspace.channel_title"
+          sectionTitle={Languages.t('scenes.app.channelsbar.channelsworkspace.channel_title')}
           channels={channelCategory.workspace}
         />
       )}
@@ -112,8 +114,9 @@ export function Workspace() {
           directCollection={directChannelsCollection}
           collection={channelsCollection}
           key={index}
-          workspaceTitle={group.name}
+          sectionTitle={group.name}
           channels={group.channels}
+          subgroup
         />
       ))}
     </div>

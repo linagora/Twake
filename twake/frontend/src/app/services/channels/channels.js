@@ -117,7 +117,7 @@ class Channels extends Observable {
   async saveTab(companyId, workspaceId, channelId, tabId, configuration) {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
     const TabsCollection = Collections.get(collectionPath, TabResource);
-    const tab = TabsCollection.findOne(tabId);
+    const tab = TabsCollection.findOne(tabId, { withoutBackend: true });
     tab.data.configuration = configuration;
     await TabsCollection.upsert(tab);
   }

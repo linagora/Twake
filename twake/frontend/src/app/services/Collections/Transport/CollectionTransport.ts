@@ -43,7 +43,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     for (let i = 0; i < buffer.length; i++) {
       try {
         if (buffer[i].action === 'create' || buffer[i].action === 'update') {
-          const resource = this.collection.findOne({ id: buffer[i].resourceId });
+          const resource = this.collection.findOne(buffer[i].resourceId);
           if (resource) {
             const [httpResult, resourceSaved] = await this.callUpsert(resource, buffer[i].options);
             buffer[i].resolve(resourceSaved);

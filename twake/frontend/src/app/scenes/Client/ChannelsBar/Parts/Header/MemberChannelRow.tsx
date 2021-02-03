@@ -9,21 +9,26 @@ import Languages from 'services/languages/languages.js';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/Menus/Menu';
 import Icon from 'app/components/Icon/Icon';
-// import { useUsersListener } from 'app/components/Member/UserParts';
+import AccessRightsService from 'app/services/AccessRightsService';
+import RouterServices from 'services/RouterService';
+import Collection from 'app/services/Collections/Collection';
 
 const { Text } = Typography;
 
 type Props = {
+  channelId: string;
   userId: string;
   channelMemberResource?: ChannelMemberResource;
   inAddition?: boolean;
-  collection?: any;
+  collection: Collection<ChannelMemberResource>;
 };
 
 export default (props: Props) => {
   let userEvents: JSX.Element;
-  const [isAlreadyMember, setIsAlreadyMember] = useState<boolean>(false);
-  // useUsersListener([props.userId] || []);
+  const [isMember, setIsMember] = useState<boolean>(false);
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
 
   const { avatar, name, users } = getUserParts({
     usersIds: [props.userId] || [],
@@ -36,19 +41,22 @@ export default (props: Props) => {
       await props.collection.upsert(
         new ChannelMemberResource({
           user_id: userId,
+          channel_id: props.channelId,
           type: 'member', // "member" | "guest" | "bot",
         }),
       );
-
-      return setIsAlreadyMember(true);
+      return setIsMember(true);
     }
   };
 
   const leaveChannel = async () => {
-    //Fixme, this is not pretty, we should find a way to do this in one line
-    props.channelMemberResource?.setPersisted();
-    await props.collection.upsert(props.channelMemberResource, { withoutBackend: true });
-    return await props.collection.remove(props.channelMemberResource);
+    if (props.channelMemberResource) {
+      //Fixme, this is not pretty, we should find a way to do this in one line
+      props.channelMemberResource?.setPersisted();
+      await props.collection.upsert(props.channelMemberResource, { withoutBackend: true });
+      await props.collection.remove(props.channelMemberResource);
+      return setIsMember(false);
+    }
   };
 
   if (props.inAddition) {
@@ -58,15 +66,15 @@ export default (props: Props) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: isAlreadyMember ? 'var(--grey-dark)' : '',
-      backgroundColor: isAlreadyMember ? 'var(--grey-background)' : 'var(--primary)',
+      color: isMember ? 'var(--grey-dark)' : '',
+      backgroundColor: isMember ? 'var(--grey-background)' : 'var(--primary)',
     };
     userEvents = (
       <Col>
         <Button
           type="primary"
           style={buttonStyle}
-          disabled={isAlreadyMember}
+          disabled={isMember}
           onClick={() => addUser(props.userId)}
         >
           {Languages.t('general.add')}
@@ -106,7 +114,7 @@ export default (props: Props) => {
       <Col flex={4}>
         <Text strong>{name}</Text> @{users[0]?.username}
       </Col>
-      {userEvents}
+      {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
   );
 };

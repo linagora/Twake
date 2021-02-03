@@ -1778,7 +1778,7 @@ export default {
   'components.searchpopup.mentions': 'Mentions',
   'components.searchpopup.only_pinned': 'Only pinned messages',
   'components.alert.confirm': 'Confirm your action',
-  'components.alert.confirm_click': 'Confirm your action by clicking on Confirm.',
+  'components.alert.confirm_click': 'Confirm your action by clicking on OK.',
   'components.searchpopup.tasks': 'Tasks',
   'scenes.app.mainview.advanced_search_placeholder': 'Advanced search',
   'components.searchpopup.hide_filters': 'hide filters',

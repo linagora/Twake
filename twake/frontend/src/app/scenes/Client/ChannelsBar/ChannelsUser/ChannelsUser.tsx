@@ -13,7 +13,9 @@ import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import { NotificationResource } from 'app/models/Notification';
 
 export function ChannelsUser() {
-  const { companyId } = RouterServices.useStateFromRoute();
+  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
+    return { companyId };
+  });
   const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource, {
     tag: 'mine',
@@ -23,7 +25,7 @@ export function ChannelsUser() {
 
   const directChannels = channelsCollection
     .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
-    .filter(c => c.data.visibility === 'direct');
+    .filter(c => c.data.visibility === 'direct' && c.data.user_member?.user_id);
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

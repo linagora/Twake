@@ -13,7 +13,9 @@ import RouterServices from 'app/services/RouterService';
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
 
-  const { workspaceId, companyId } = RouterServices.useStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
+    return { workspaceId, companyId };
+  });
   const company_id = companyId;
 
   const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/::mine`;

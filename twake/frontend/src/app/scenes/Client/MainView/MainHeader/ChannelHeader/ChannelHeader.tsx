@@ -22,7 +22,11 @@ import SearchService from 'services/search/search.js';
 
 export default (): JSX.Element => {
   const [hideSearchInput, setHideSearchInput] = useState<boolean>(true);
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
+    ({ companyId, workspaceId, channelId }) => {
+      return { companyId, workspaceId, channelId };
+    },
+  );
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
     channelId || channelId
@@ -117,22 +121,7 @@ export default (): JSX.Element => {
         </Row>
       </Col>
 
-      <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
-        <Row justify="center">
-          <SearchInput />
-        </Row>
-      </Col>
-
-      <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}>
-        <Button
-          type="default"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
-          icon={<Search size={16} />}
-          onClick={() => {
-            SearchService.open();
-          }}
-        />
-      </Col>
+      <SearchInput />
     </Row>
   );
 };

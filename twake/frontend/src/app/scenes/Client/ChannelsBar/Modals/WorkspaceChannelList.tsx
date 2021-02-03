@@ -19,7 +19,9 @@ type AutoChannelType = {
 };
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(100);

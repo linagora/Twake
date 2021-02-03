@@ -17,7 +17,10 @@ export default class Resource<T> {
   private _state: ResourceState;
   private _key: string = 'key:' + uuidv4();
   private _collection: any;
+
   protected _type: string = '';
+  protected _resourcePrimaryKey: string[] = ['id'];
+  protected _resourceIdKey: string = 'id';
 
   constructor(data: T & { id?: string }) {
     this._data = { id: this.genId(), ...data };
@@ -37,11 +40,11 @@ export default class Resource<T> {
   }
 
   public get id(): string {
-    return this._data.id || '';
+    return (this._data as any)[this._resourceIdKey] || this._data.id;
   }
 
   public set id(id: string) {
-    this._data.id = id;
+    (this._data as any)[this._resourceIdKey] = id;
   }
 
   public get key(): string {
@@ -68,6 +71,7 @@ export default class Resource<T> {
     return {
       ...this.data,
       _id: undefined,
+      _frontId: undefined,
       _state: undefined,
       id: this.state.persisted ? this.id : undefined,
     };
@@ -76,8 +80,17 @@ export default class Resource<T> {
   public getDataForStorage() {
     return {
       ...this.data,
+      _primaryKey: this.getPrimaryKey(),
       _state: this.state,
     };
+  }
+
+  public getPrimaryKey(): string {
+    return this._resourcePrimaryKey.map(k => (this._data as any)[k]).join('+');
+  }
+
+  public getIdKey(): string {
+    return this._resourceIdKey;
   }
 
   public setShared(state: boolean = true) {

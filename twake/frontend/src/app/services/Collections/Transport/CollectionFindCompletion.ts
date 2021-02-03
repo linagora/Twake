@@ -120,11 +120,11 @@ export default class FindCompletion<G extends Resource<any>> {
 
       let mongoItem: MongoItemType | null = null;
       const item = await this.collection.getTransport().get(filter, options?.query);
+      const storage = this.collection.getStorage();
       if (item?.resource) {
         const type = this.collection.getType();
         const data = item?.resource;
         const resource = new type(data);
-        const storage = this.collection.getStorage();
 
         resource.setShared(true);
         mongoItem = storage.upsert(

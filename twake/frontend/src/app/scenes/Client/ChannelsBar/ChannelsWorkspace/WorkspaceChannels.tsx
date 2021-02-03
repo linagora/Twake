@@ -14,16 +14,23 @@ import WorkspaceChannelList from 'scenes/Client/ChannelsBar/Modals/WorkspaceChan
 
 import Menu from 'components/Menus/Menu.js';
 import Icon from 'components/Icon/Icon';
+import AccessRightsService from 'app/services/AccessRightsService';
+import RouterServices from 'services/RouterService';
 
 type Props = {
   collection: Collection<ChannelResource>;
   directCollection: Collection<ChannelResource>;
-  workspaceTitle: string;
+  sectionTitle: string;
   channels: ChannelResource[];
   favorite?: boolean;
+  subgroup?: boolean;
 };
 
 export default (props: Props) => {
+  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
+    return { workspaceId };
+  });
+
   const addChannel = () => {
     return ModalManager.open(
       <ChannelWorkspaceEditor title={'scenes.app.channelsbar.channelsworkspace.create_channel'} />,
@@ -44,9 +51,11 @@ export default (props: Props) => {
   return (
     <>
       <ChannelCategory
-        text={Languages.t(props.workspaceTitle)}
+        text={props.sectionTitle}
         suffix={
-          !props.favorite && (
+          !props.favorite &&
+          !props.subgroup &&
+          AccessRightsService.hasLevel(workspaceId || '', 'member') && (
             <Menu
               className="add"
               menu={[

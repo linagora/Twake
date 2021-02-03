@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Channel.scss';
 
-import RouterService from 'app/services/RouterService';
+import RouterServices from 'app/services/RouterService';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon.js';
 import MainViewService from 'app/services/AppView/MainViewService';
@@ -29,7 +29,9 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { channelId } = RouterService.useStateFromRoute();
+  const { channelId } = RouterServices.useRouteState(({ channelId }) => {
+    return { channelId };
+  });
 
   const selected = channelId === props.id;
 

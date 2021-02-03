@@ -13,9 +13,12 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
 
   const openWorkspaceChannelList: ShortcutType = {
     shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
@@ -50,7 +53,9 @@ export default () => {
         scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
-          <ChannelsApps key={workspaceId} />
+          {AccessRightsService.hasLevel(workspaceId, 'member') && (
+            <ChannelsApps key={workspaceId} />
+          )}
           <Workspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>

@@ -9,7 +9,11 @@ import './MainView.scss';
 import NoApp from './NoApp';
 
 const MainView: FC = () => {
-  const { companyId, workspaceId, channelId } = RouterServices.useStateFromRoute();
+  const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
+    ({ companyId, workspaceId, channelId }) => {
+      return { companyId, workspaceId, channelId };
+    },
+  );
 
   return (
     <Layout className="global-view-layout">
