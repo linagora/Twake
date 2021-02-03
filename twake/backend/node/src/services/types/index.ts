@@ -30,7 +30,7 @@ export type uuid = string;
  */
 export interface User {
   // unique user id
-  id: string;
+  id: uuid;
   // Organisation properties
   org?: {
     [companyId: string]: {
