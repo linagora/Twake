@@ -22,7 +22,7 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
   );
 
   useEffect(() => {
-    onChange([group, channelName]);
+    onChange([group || '', channelName]);
   });
 
   return (
@@ -46,12 +46,19 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
           <Col>
             <Select
               onBlur={() => ((group || '').length === 0 ? setDisplaySelector(false) : undefined)}
-              notFoundContent={<></>}
+              notFoundContent={
+                <span className="info" style={{ color: 'var(--grey-dark)' }}>
+                  {Languages.t('components.inputs.input_with_select.select.no_sections')}
+                </span>
+              }
               dropdownMatchSelectWidth={false}
               className={displaySelector ? 'border-radius-left' : ''}
               allowClear
               clearIcon={<X size={14} color="var(--grey-dark)" />}
-              onClear={() => setDisplaySelector(false)}
+              onClear={() => {
+                setDisplaySelector(false);
+                setGroup('');
+              }}
               size={'large'}
               defaultValue={group || undefined}
               showSearch

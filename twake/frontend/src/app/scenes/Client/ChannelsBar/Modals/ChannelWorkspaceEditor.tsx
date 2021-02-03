@@ -45,8 +45,12 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
-        visibility: newChannel.visibility || channel.data.visibility,
-        channel_group: newChannel.channel_group || channel.data.channel_group,
+        visibility:
+          newChannel.visibility !== undefined ? newChannel.visibility : channel.data.visibility,
+        channel_group:
+          newChannel.channel_group !== undefined
+            ? newChannel.channel_group
+            : channel.data.channel_group,
       });
       await ChannelsCollections.upsert(insertedChannel);
       ModalManager.close();

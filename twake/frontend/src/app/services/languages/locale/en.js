@@ -1873,7 +1873,9 @@ export default {
   'components.newversion.new_version_component.link': 'Click here to reload',
   'components.newversion.new_version_modal.title': 'New update available !',
   'scenes.apps.drive.download_all_button': 'Download all',
-  'components.inputs.input_with_select.input.placeholder': 'My channel',
-  'components.inputs.input_with_select.select.placeholder': 'My group',
-  'components.inputs.input_with_select.button.tooltip': 'Set a channel group',
+  'components.inputs.input_with_select.input.placeholder': 'Channel name',
+  'components.inputs.input_with_select.select.placeholder': 'Section name',
+  'components.inputs.input_with_select.select.no_sections':
+    'Start writing the name of your first channel section.',
+  'components.inputs.input_with_select.button.tooltip': 'Set a channel section',
 };
