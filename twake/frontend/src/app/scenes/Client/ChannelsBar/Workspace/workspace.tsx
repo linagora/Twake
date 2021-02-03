@@ -34,7 +34,7 @@ export function Workspace() {
 
   const channels = channelsCollection.useWatcher(
     {},
-    { observedFields: ['id', 'user_member.favorite'], query: { mine: true } },
+    { observedFields: ['id', 'channel_group', 'user_member.favorite'], query: { mine: true } },
   );
   const directChannels = directChannelsCollection.useWatcher(
     {},

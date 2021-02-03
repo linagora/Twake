@@ -1,4 +1,4 @@
-import { cloneDeep, find, pickBy } from "lodash";
+import { cloneDeep, find } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import {
   RealtimeSaved,
@@ -110,7 +110,7 @@ export class Service implements ChannelService {
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
-      const channelDiff = pickBy(updatedDiff(channelToUpdate, channel));
+      const channelDiff = updatedDiff(channelToUpdate, channel);
       const fields = Object.keys(channelDiff) as Array<Partial<keyof Channel>>;
 
       if (!fields.length) {

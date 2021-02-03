@@ -1,3 +1,4 @@
+import Logger from 'app/services/Logger';
 import { ActionOptions } from '../Collection';
 import Collections, { Collection, Resource } from '../Collections';
 import CollectionTransportSockets from './CollectionTransportSockets';
@@ -9,6 +10,8 @@ type ServerAction = {
   resolve: (resource: Resource<any> | string | null) => void;
   reject: (err: any) => void;
 };
+
+const logger = Logger.getLogger('Collections/Transport');
 
 export default class CollectionTransport<G extends Resource<any>> {
   private socketTransport: CollectionTransportSockets<G> = new CollectionTransportSockets<G>(this);
@@ -22,8 +25,9 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is visible, transport must start
    */
   start() {
+    logger.log('Start looking for changes on ', this.collection.getPath());
     if (this.didFirstStart) {
-      this.collection.reload();
+      this.collection.reload('ontime');
     }
     this.socketTransport.start();
   }
@@ -32,6 +36,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is not visible / used anymore, transport can stop
    */
   stop() {
+    logger.log('Stop looking for changes on ', this.collection.getPath());
     this.didFirstStart = true;
     this.socketTransport.stop();
   }
@@ -123,9 +128,13 @@ export default class CollectionTransport<G extends Resource<any>> {
     return new Promise((resolve, reject) => {
       this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
+      if (!resource.data[resource.getIdKey()]) {
+        logger.error('upsert: Id key not found for resource', resource);
+      }
+
       this.buffer.push({
         action: resource.state.persisted ? 'update' : 'create',
-        resourceId: resource.id,
+        resourceId: resource.data[resource.getIdKey()],
         options: options || {},
         resolve: resolve,
         reject: reject,
@@ -139,10 +148,14 @@ export default class CollectionTransport<G extends Resource<any>> {
     return new Promise((resolve, reject) => {
       this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
+      if (!resource.data[resource.getIdKey()]) {
+        logger.error('remove: Id key not found for resource', resource);
+      }
+
       if (resource.state.persisted) {
         this.buffer.push({
           action: 'delete',
-          resourceId: resource.id,
+          resourceId: resource.data[resource.getIdKey()],
           options: options || {},
           resolve: resolve,
           reject: reject,
@@ -150,7 +163,7 @@ export default class CollectionTransport<G extends Resource<any>> {
 
         this.flushBuffer();
       } else {
-        resolve();
+        resolve(null);
       }
     });
   }

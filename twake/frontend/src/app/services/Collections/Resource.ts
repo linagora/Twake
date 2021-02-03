@@ -73,6 +73,7 @@ export default class Resource<T> {
       _id: undefined,
       _frontId: undefined,
       _state: undefined,
+      _paths: undefined,
       id: this.state.persisted ? this.id : undefined,
     };
   }

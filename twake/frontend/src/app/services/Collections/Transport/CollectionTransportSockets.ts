@@ -99,7 +99,10 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
       this.transport.collection.getEventEmitter().emit(type, resource);
     }
     if (action === 'created' || action === 'updated' || action === 'saved') {
-      let localResource = this.transport.collection.findOne(resource.id, { withoutBackend: true });
+      let localResource = this.transport.collection.findOne(
+        resource[new (this.transport.collection.getType())({}).getIdKey()],
+        { withoutBackend: true },
+      );
       if (!localResource) {
         localResource = new (this.transport.collection.getType())(resource);
       }
@@ -111,7 +114,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
     }
     if (action === 'deleted') {
       let localResource = this.transport.collection.findOne(
-        { id: resource.id },
+        resource[new (this.transport.collection.getType())({}).getIdKey()],
         { withoutBackend: true },
       );
       this.transport.collection.remove(localResource, {
