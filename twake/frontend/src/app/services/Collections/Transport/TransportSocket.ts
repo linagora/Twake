@@ -130,14 +130,16 @@ export default class TransportSocket {
 
   leave(path: string, tag: string) {
     path = path.replace(/\/$/, '');
-    logger.debug(`Leave room with name ${path} and tag: ${tag}`);
-    if (this.socket) {
-      this.socket.emit(WebsocketActions.Leave, { name: path });
-    }
 
     this.listeners[path] = this.listeners[path] || {};
     delete this.listeners[path][tag];
-    if (Object.keys(this.listeners[path]).length === 0) delete this.listeners[path];
+    if (Object.keys(this.listeners[path]).length === 0) {
+      if (this.socket) {
+        logger.debug(`Leave room with name ${path} and tag: ${tag}`);
+        this.socket.emit(WebsocketActions.Leave, { name: path });
+      }
+      delete this.listeners[path];
+    }
   }
 
   emit(path: string, data: any) {

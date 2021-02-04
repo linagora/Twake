@@ -38,6 +38,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is not visible / used anymore, transport can stop
    */
   stop() {
+    logger.log('Will stop looking for changes in 60 seconds on ', this.collection.getPath());
     this.didFirstStart = true;
     this.stopTimeout = setTimeout(() => {
       logger.log('Stop looking for changes on ', this.collection.getPath());
