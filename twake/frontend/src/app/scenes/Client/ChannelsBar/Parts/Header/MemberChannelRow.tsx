@@ -12,6 +12,7 @@ import Icon from 'app/components/Icon/Icon';
 import AccessRightsService from 'app/services/AccessRightsService';
 import RouterServices from 'services/RouterService';
 import Collection from 'app/services/Collections/Collection';
+import UsersService from 'services/user/user.js';
 
 const { Text } = Typography;
 
@@ -29,6 +30,7 @@ export default (props: Props) => {
   const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
     return { workspaceId };
   });
+  const userId: string = UsersService.getCurrentUserId();
 
   const { avatar, name, users } = getUserParts({
     usersIds: [props.userId] || [],
@@ -114,7 +116,9 @@ export default (props: Props) => {
       <Col flex={4}>
         <Text strong>{name}</Text> @{users[0]?.username}
       </Col>
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+      {AccessRightsService.hasLevel(workspaceId || '', 'member') &&
+        props.userId !== userId &&
+        userEvents}
     </Row>
   );
 };

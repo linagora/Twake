@@ -31,9 +31,7 @@ const openNotification = (n: any, callback: any) => {
   inAppNotificationKey++;
   notification.open({
     key: inAppNotificationKey.toString(),
-    message: PseudoMarkdownCompiler.compileToSimpleHTML(
-      PseudoMarkdownCompiler.compileToJSON(n.title),
-    ),
+    message: emojione.shortnameToUnicode(n.title),
     description: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(
         (n.text || '').substr(0, 120) + ((n.text || '').length > 120 ? '...' : ''),
@@ -253,6 +251,11 @@ class Notifications extends Observable {
 
   read(channel: ChannelResource) {
     channel.action('read', { value: true });
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/' + channel.data.company_id,
+      NotificationResource,
+    );
+    notificationsCollection.remove({ channel_id: channel.id }, { withoutBackend: true });
   }
 
   unread(channel: ChannelResource) {

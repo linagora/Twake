@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
 import { startCase } from 'lodash';
@@ -9,19 +9,16 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { Lock } from 'react-feather';
 import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
-import { StarFilled } from '@ant-design/icons';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
 import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
-import { Search } from 'react-feather';
 import Languages from 'services/languages/languages.js';
-import SearchService from 'services/search/search.js';
+import ChannelsService from 'services/channels/channels.js';
 
 export default (): JSX.Element => {
-  const [hideSearchInput, setHideSearchInput] = useState<boolean>(true);
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
     ({ companyId, workspaceId, channelId }) => {
       return { companyId, workspaceId, channelId };
@@ -37,7 +34,6 @@ export default (): JSX.Element => {
     .useWatcher({}, { limit: 10 })
     .map(i => i.data.user_id || '');
   useUsersListener(members);
-  const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 10 });
 
   MainViewService.useWatcher(() => !!MainViewService.getViewCollection());
   const channelCollection = MainViewService.getViewCollection();

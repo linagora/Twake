@@ -34,9 +34,6 @@ export default (props: Props): JSX.Element => {
   const notificationsCollection = Collection.get(
     '/notifications/v1/badges/' + props.channel.company_id,
     NotificationResource,
-    {
-      tag: 'thus_tag_should_no_be_needed', //TODO remove this
-    },
   );
   const notifications = notificationsCollection.useWatcher(
     { channel_id: props.channel.id },

@@ -466,15 +466,19 @@ class MessageSystem
         } else {
 
             $channel = $this->em->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
-            $this->sendToNode($channel, $message, $did_create);
+            if($channel){
+                
+                $this->sendToNode($channel, $message, $did_create);
 
-            try {
-                $this->indexMessage($message, $channel->getData()["workspace_id"], $channel_id);
-            } catch (\Exception $e) {
-                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
+                try {
+                    $this->indexMessage($message, $channel->getData()["workspace_id"], $channel_id);
+                } catch (\Exception $e) {
+                    error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
+                }
+
+                $this->em->flush();
+
             }
-
-            $this->em->flush();
 
             if($channel){
                 //Notify connectors

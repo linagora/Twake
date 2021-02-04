@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider, Input, Row } from 'antd';
 
 import Languages from 'services/languages/languages.js';
@@ -29,6 +29,10 @@ export default () => {
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
   const channels = channelsCollection.useWatcher({}, { limit: limit });
+
+  useEffect(() => {
+    channelsCollection.reload();
+  });
 
   const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const mineCollection = Collection.get(minePath, ChannelResource);
@@ -69,13 +73,15 @@ export default () => {
       >
         <div style={{ height: '240px' }}>
           {autoChannels
-            .filter(filterMineAutoChannels)
             .sort((a, b) => a.name.localeCompare(b.name))
             .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
             .map(autoChannel => {
               return (
                 <div key={`${autoChannel.channelResource.key}`}>
-                  <WorkspaceChannelRow channel={autoChannel.channelResource} />
+                  <WorkspaceChannelRow
+                    channel={autoChannel.channelResource}
+                    joined={filterMineAutoChannels(autoChannel)}
+                  />
                   <Divider style={{ margin: 0 }} />
                 </div>
               );

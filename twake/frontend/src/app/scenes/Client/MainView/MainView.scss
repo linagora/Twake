@@ -78,12 +78,6 @@
   }
 }
 
-.main-view {
-  border-radius: var(--default-border-radius-large) var(--default-border-radius-large) 0 0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  height: 100%;
-}
-
 .main-view,
 .main-view-content {
   flex: 1;

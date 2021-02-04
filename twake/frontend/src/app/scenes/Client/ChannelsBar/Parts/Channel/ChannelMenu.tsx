@@ -49,8 +49,6 @@ export default (props: Props): JSX.Element => {
     '/notifications/v1/badges/' + props.channel.data.company_id,
     NotificationResource,
   );
-  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
-  const hasNotification = notifications.length > 0;
 
   const changeNotificationPreference = async (preference: 'all' | 'none' | 'mentions' | 'me') => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
@@ -111,10 +109,14 @@ export default (props: Props): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t(
-        hasNotification ? 'scenes.app.channelsbar.read_sign' : 'scenes.app.channelsbar.unread_sign',
+        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
+          ? 'scenes.app.channelsbar.read_sign'
+          : 'scenes.app.channelsbar.unread_sign',
       ),
       onClick: () => {
-        hasNotification ? Notifications.read(props.channel) : Notifications.unread(props.channel);
+        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
+          ? Notifications.read(props.channel)
+          : Notifications.unread(props.channel);
       },
     },
     {
