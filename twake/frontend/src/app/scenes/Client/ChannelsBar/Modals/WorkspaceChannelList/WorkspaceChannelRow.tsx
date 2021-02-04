@@ -13,9 +13,10 @@ import ModalManager from 'app/components/Modal/ModalManager';
 
 type PropsType = {
   channel: ChannelResource;
+  joined: boolean;
 };
 
-export default ({ channel }: PropsType) => {
+export default ({ channel, joined }: PropsType) => {
   const { companyId, workspaceId }: ClientStateType = RouterServices.useRouteState(
     ({ companyId, workspaceId }) => {
       return { companyId, workspaceId };
@@ -28,10 +29,11 @@ export default ({ channel }: PropsType) => {
     ChannelMemberResource,
   );
 
-  const member: ChannelMemberResource[] = channelMembersCollection.useWatcher({ user_id: userId });
-  const [isChannelMember, setIsChannelMember] = useState<boolean>(
-    member[0] !== undefined && member[0].data.id === userId ? true : false,
-  );
+  const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+  const mineCollection = Collection.get(minePath, ChannelResource);
+  const mine = mineCollection.useWatcher({ id: channel.id }).length > 0;
+
+  const isChannelMember = mine || channelMembersCollection.findOne({ user_id: userId });
 
   const joinChannel = (): void => {
     const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
@@ -43,8 +45,6 @@ export default ({ channel }: PropsType) => {
         type: 'member',
       }),
     );
-
-    return setIsChannelMember(true);
   };
 
   const buttonStyle: { [key: string]: string } = {
