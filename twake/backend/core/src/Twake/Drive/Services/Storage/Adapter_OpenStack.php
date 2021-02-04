@@ -149,7 +149,7 @@ class Adapter_OpenStack implements AdapterInterface
 
                         } else {
                             $res = false;
-                            error_log("FILE NOT GENERATED !" . $e->getMessage());
+                            error_log("PREVIEW NOT GENERATED !");
                         }
 
                     } catch (\Exception $e) {
