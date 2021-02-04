@@ -72,7 +72,7 @@ export class MongoMemberService implements MemberService {
 
   async get(pk: ChannelMemberPrimaryKey): Promise<ChannelMember> {
     // TODO: Assert required fields are set
-    return await this.collection.findOne<ChannelMember>(pk);
+    return this.collection.findOne<ChannelMember>(pk, null);
   }
 
   async delete(pk: ChannelMemberPrimaryKey): Promise<DeleteResult<ChannelMember>> {

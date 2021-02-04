@@ -86,7 +86,7 @@ export class MongoChannelService implements ChannelService {
   }
 
   async get(pk: ChannelPrimaryKey): Promise<Channel> {
-    return await this.collection.findOne<Channel>({ id: pk.id });
+    return await this.collection.findOne<Channel>({ id: pk.id }, null);
   }
 
   async delete(pk: ChannelPrimaryKey): Promise<DeleteResult<Channel>> {
