@@ -62,6 +62,9 @@ export function Workspace() {
 
   let groupsName: string[] = [];
   let groups: { name: string; channels: ChannelResource[] }[] = [];
+  let hasNonGroupWorkspaceChannels = !(
+    channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
+  );
 
   channelCategory.inGroup.map(channel => {
     if (channel.data.channel_group && channel.data.channel_group.length > 1) {
@@ -100,7 +103,7 @@ export function Workspace() {
           favorite
         />
       )}
-      {!(channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0) && (
+      {hasNonGroupWorkspaceChannels && (
         <WorkspaceChannels
           directCollection={directChannelsCollection}
           collection={channelsCollection}
@@ -116,7 +119,7 @@ export function Workspace() {
           key={index}
           sectionTitle={group.name}
           channels={group.channels}
-          subgroup
+          subgroup={hasNonGroupWorkspaceChannels}
         />
       ))}
     </div>

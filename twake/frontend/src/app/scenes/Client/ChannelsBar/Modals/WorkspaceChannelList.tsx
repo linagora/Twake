@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider, Input, Row } from 'antd';
 
 import Languages from 'services/languages/languages.js';
@@ -29,6 +29,10 @@ export default () => {
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
   const channels = channelsCollection.useWatcher({}, { limit: limit });
+
+  useEffect(() => {
+    channelsCollection.reload();
+  });
 
   const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const mineCollection = Collection.get(minePath, ChannelResource);
