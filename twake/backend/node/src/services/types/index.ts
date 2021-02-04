@@ -8,6 +8,15 @@ import { MessageNotification } from "../messages/types";
 
 export type uuid = string;
 
+export const webSocketSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    room: { type: "string" },
+    encryption_key: { type: "string" },
+  },
+};
+
 /**
  * User in platform:
  *

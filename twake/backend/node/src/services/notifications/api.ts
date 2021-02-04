@@ -15,12 +15,14 @@ import {
 import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 import { NotificationEngine } from "./services/engine";
+import { NotificationPreferencesService } from "./services/preferences/service";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
   channelPreferences: ChannelMemberPreferencesServiceAPI;
   channelThreads: ChannelThreadUsersServiceAPI;
   engine: NotificationEngine;
+  notificationPreferences: NotificationPreferencesService;
 }
 
 export interface UserNotificationBadgeServiceAPI

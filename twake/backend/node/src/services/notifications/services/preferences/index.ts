@@ -1,9 +1,6 @@
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import { ChannelMemberPreferencesServiceAPI } from "../../api";
-import { ChannelMemberPreferencesService } from "./service";
+import { NotificationPreferencesService } from "./service";
 
-export function getService(
-  databaseService: DatabaseServiceAPI,
-): ChannelMemberPreferencesServiceAPI {
-  return new ChannelMemberPreferencesService(databaseService);
+export function getService(databaseService: DatabaseServiceAPI): NotificationPreferencesService {
+  return new NotificationPreferencesService(databaseService);
 }
