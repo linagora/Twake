@@ -9,7 +9,7 @@
     "build:copy-assets": "npm run build:copy-config",
     "build:copy-config": "cp -R config dist",
     "dev": "tsc-watch --project . --outDir ./dist --onSuccess \"nodemon ./dist/server.js\"",
-    "dev:debug": "tsc-watch --project . --outDir ./dist --onSuccess \"nodemon --inspect ./dist/server.js\"",
+    "dev:debug": "tsc-watch --project . --outDir ./dist --onSuccess \"nodemon --inspect=0.0.0.0 ./dist/server.js\"",
     "lint": "eslint . --ext .ts --quiet --fix",
     "lint:no-fix": "eslint . --ext .ts",
     "lint:prettier": "prettier --config .prettierrc 'src/**/*.ts'",
