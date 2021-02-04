@@ -19,6 +19,8 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
   node:
     image: twaketech/twake-node
+    ports:
+      - 9229:9229
     environment:
       - DEV=dev
       - DB_DRIVER=cassandra
