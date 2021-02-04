@@ -18,6 +18,7 @@ export default class CollectionTransport<G extends Resource<any>> {
   private buffer: ServerAction[] = [];
   httpUsed: number = 0;
   private didFirstStart: boolean = false;
+  private stopTimeout: any = null;
 
   constructor(readonly collection: Collection<G>) {}
 
@@ -26,6 +27,7 @@ export default class CollectionTransport<G extends Resource<any>> {
    */
   start() {
     logger.log('Start looking for changes on ', this.collection.getPath());
+    if (this.stopTimeout) clearTimeout(this.stopTimeout);
     if (this.didFirstStart) {
       this.collection.reload('ontime');
     }
@@ -36,9 +38,11 @@ export default class CollectionTransport<G extends Resource<any>> {
    * This collection is not visible / used anymore, transport can stop
    */
   stop() {
-    logger.log('Stop looking for changes on ', this.collection.getPath());
     this.didFirstStart = true;
-    this.socketTransport.stop();
+    this.stopTimeout = setTimeout(() => {
+      logger.log('Stop looking for changes on ', this.collection.getPath());
+      this.socketTransport.stop();
+    }, 60 * 1000); //Keep socket for some time
   }
 
   async flushBuffer() {
