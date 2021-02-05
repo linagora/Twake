@@ -203,7 +203,7 @@
     "socket.io-client": "^2.3.1",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "2.3.6",
-    "ts-pnp": "1.1.5",
+    "ts-pnp": "1.2.0",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
     "uuid": "^8.3.1",
