@@ -157,25 +157,33 @@ class User {
     );
   }
 
+  nextUsersGetBulk = [];
+
   asyncGet(id, callback = undefined) {
     if (this.users_repository.known_objects_by_id[id]) {
       return;
     }
 
-    if (this.waiting_async_get[id] || this.stop_async_get[id]) {
-      return;
+    if (this.nextUsersGetBulk.length === 0) {
+      setTimeout(() => {
+        const ids = this.nextUsersGetBulk.map(e => e.id);
+        const callbacks = {};
+        this.nextUsersGetBulk.forEach(e => (callbacks[e.id] = e.callback));
+        this.nextUsersGetBulk = [];
+        Api.post('users/all/get', { id: ids }, res => {
+          if (res.data && res.data.id) {
+            res.data.forEach(user => {
+              this.users_repository.updateObject(user);
+              callbacks[user.id] && callbacks[user.id]();
+            });
+          }
+        });
+      }, 500);
     }
 
-    this.waiting_async_get[id] = true;
-    Api.post('users/all/get', { id: id }, res => {
-      this.waiting_async_get[id] = false;
-      if (res.data && res.data.id) {
-        this.users_repository.updateObject(res.data);
-        if (callback) callback();
-      } else {
-        this.stop_async_get[id] = true;
-      }
-    });
+    if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0) {
+      this.nextUsersGetBulk.push({ id, callback });
+    }
   }
 }
 
