@@ -170,8 +170,9 @@ class User {
         const callbacks = {};
         this.nextUsersGetBulk.forEach(e => (callbacks[e.id] = e.callback));
         this.nextUsersGetBulk = [];
+
         Api.post('users/all/get', { id: ids }, res => {
-          if (res.data && res.data.id) {
+          if (res.data) {
             res.data.forEach(user => {
               this.users_repository.updateObject(user);
               callbacks[user.id] && callbacks[user.id]();
