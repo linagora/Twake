@@ -202,7 +202,7 @@
     "shortcuts": "^1.6.1",
     "socket.io-client": "^2.3.1",
     "style-loader": "0.23.1",
-    "terser-webpack-plugin": "2.3.6",
+    "terser-webpack-plugin": "2.3.8",
     "ts-pnp": "1.1.5",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
