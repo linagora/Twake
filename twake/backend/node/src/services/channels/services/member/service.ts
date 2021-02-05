@@ -192,7 +192,7 @@ export class Service implements MemberService {
 
     const result = await this.service.delete(pk, context);
 
-    this.onDeleted(context.channel, memberToDelete);
+    this.onDeleted(memberToDelete, context.user);
 
     return result;
   }
@@ -249,21 +249,29 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
+    // Not sure about this, we use him on Tracker + Activities
     localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
       member,
+      actor: user,
+      resourcesAfter: [member],
     });
   }
 
   @PubsubPublish("channel:member:deleted")
   onDeleted(
-    @PubsubParameter("channel")
-    channel: Channel,
     @PubsubParameter("member")
     member: ChannelMember,
+    @PubsubParameter("user")
+    user: User,
   ): void {
     logger.debug("Member deleted %o", member);
+
+    localEventBus.publish<ResourceEventsPayload>("channel:member:deleted", {
+      actor: user,
+      resourcesBefore: [member],
+    });
   }
 
   isCurrentUser(member: ChannelMember, user: User): boolean {
