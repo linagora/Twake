@@ -31,7 +31,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
   };
 
   const onChange = (channelEntries: ChannelType): ChannelType => {
-    setDisabled(channelEntries.name?.length ? true : false);
+    setDisabled((channelEntries.name || '').trim().length ? true : false);
     return (newChannel = channelEntries);
   };
 

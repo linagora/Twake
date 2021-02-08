@@ -64,8 +64,7 @@ export default () => {
       <CurrentUser />
 
       {!ready && (
-        <>
-          &nbsp;
+        <div style={{ paddingTop: 8 }}>
           <div className="channel" />
           <div className="channel" />
           <div className="channel" />
@@ -81,7 +80,7 @@ export default () => {
           <div className="channel" />
           <div className="channel" />
           <div className="channel" />
-        </>
+        </div>
       )}
 
       <ScrollWithHiddenComponents
