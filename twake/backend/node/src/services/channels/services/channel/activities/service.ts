@@ -4,8 +4,15 @@ import { Channel as ChannelEntity } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../types";
 import { GenericObjectType } from "./types";
 import _, { sortBy } from "lodash";
+import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";
 
 export default class Activities implements Initializable {
+  pubsub: PubsubServiceAPI;
+
+  constructor(pubsub: PubsubServiceAPI) {
+    this.pubsub = pubsub;
+  }
+
   async init(): Promise<this> {
     const channelConnectorCreatedEvent = "channel:connector:created";
     const channelConnectorDeletedEvent = "channel:connector:deleted";
@@ -16,7 +23,7 @@ export default class Activities implements Initializable {
     const channelUpdatedEvent = "channel:updated";
 
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data =>
-      this.logGenericData(channelMemberCreatedEvent, {
+      this.notify(channelMemberCreatedEvent, {
         type: "channel:activity:member:created",
         actor: {
           type: "user",
@@ -33,7 +40,7 @@ export default class Activities implements Initializable {
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberDeletedEvent, data =>
-      this.logGenericData(channelMemberDeletedEvent, {
+      this.notify(channelMemberDeletedEvent, {
         type: "channel:activity:member:deleted",
         actor: {
           type: "user",
@@ -77,7 +84,7 @@ export default class Activities implements Initializable {
       }
 
       if (channelChanged) {
-        return this.logGenericData(channelUpdatedEvent, {
+        return this.notify(channelUpdatedEvent, {
           type: "channel:activity:updated",
           actor: {
             type: "user",
@@ -93,7 +100,7 @@ export default class Activities implements Initializable {
     });
 
     localEventBus.subscribe<ResourceEventsPayload>(channelTabCreatedEvent, data =>
-      this.logGenericData(channelTabCreatedEvent, {
+      this.notify(channelTabCreatedEvent, {
         type: "channel:activity:tab:created",
         actor: {
           type: "user",
@@ -107,7 +114,7 @@ export default class Activities implements Initializable {
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelTabDeletedEvent, data =>
-      this.logGenericData(channelTabDeletedEvent, {
+      this.notify(channelTabDeletedEvent, {
         type: "channel:activity:tab:deleted",
         actor: {
           type: "user",
@@ -121,7 +128,7 @@ export default class Activities implements Initializable {
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorCreatedEvent, data => {
-      return this.logGenericData(channelConnectorCreatedEvent, {
+      return this.notify(channelConnectorCreatedEvent, {
         type: "channel:activity:connector:created",
         actor: {
           type: "user",
@@ -135,7 +142,7 @@ export default class Activities implements Initializable {
     });
 
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorDeletedEvent, data => {
-      this.logGenericData(channelConnectorDeletedEvent, {
+      this.notify(channelConnectorDeletedEvent, {
         type: "channel:activity:connector:deleted",
         actor: {
           type: "user",
@@ -151,9 +158,14 @@ export default class Activities implements Initializable {
     return this;
   }
 
-  // Log your generic data object
-  logGenericData(event: string, data: GenericObjectType): void {
+  async notify(event: string, data: GenericObjectType): Promise<void> {
     const child = logger.child(data);
     child.debug(`Activities - New ${event} event`);
+
+    try {
+      await this.pubsub.publish<GenericObjectType>(event, { data });
+    } catch (err) {
+      logger.warn({ err }, `Activities - Error while publishing to ${event}`);
+    }
   }
 }

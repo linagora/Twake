@@ -37,16 +37,16 @@ class Service implements ChannelServiceAPI {
     this.members = getMemberService(databaseService, this);
     this.channels = getChannelService(databaseService, this);
     this.tabs = getTabService(databaseService);
-    this.activities = getActivitiesService();
+    this.activities = getActivitiesService(pubsub);
     this.pubsubListener = new PubsubListener(this, pubsub);
   }
 
   async init(): Promise<this> {
     this.pubsub.processor.addHandler(new NewChannelActivityProcessor(this.channels));
-    this.activities.init();
 
     try {
       await Promise.all([
+        this.activities.init(),
         this.channels.init(),
         this.members.init(),
         this.tabs.init(),
