@@ -41,18 +41,6 @@ class Message extends BaseController
             $front_id = $object["front_id"];
         }
 
-        if ($result) {
-
-            $event = Array(
-                "client_id" => "system",
-                "action" => "remove",
-                "object_type" => "",
-                "front_id" => $front_id
-            );
-            $this->get("app.websockets")->push("messages/" . $chan_id, $event);
-
-        }
-
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
         return new Response(Array("result" => $object));
@@ -95,22 +83,6 @@ class Message extends BaseController
                 $object["content"]["last_change"] = date("U");
             }
         }
-
-        $event = Array(
-            "client_id" => "bot",
-            "action" => "save",
-            "object_type" => "",
-            "object" => $object
-        );
-        $this->get("app.websockets")->push("messages/" . $chan_id, $event);
-
-        $event = Array(
-            "client_id" => "system",
-            "action" => "update",
-            "message_id" => $object["id"],
-            "thread_id" => $object["parent_message_id"]
-        );
-        $this->get("app.pusher")->push($event, "channels/" . $object["channel_id"] . "/messages/updates");
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
