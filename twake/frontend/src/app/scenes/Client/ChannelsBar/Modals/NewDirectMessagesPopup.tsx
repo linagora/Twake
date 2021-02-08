@@ -1,42 +1,24 @@
 import React, { FC, useState } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Button from 'components/Buttons/Button.js';
 import MediumPopupComponent from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import UserListManager from 'components/UserListManager/UserListManager';
-import { ChannelType, ChannelResource } from 'app/models/Channel';
-import Collections from 'app/services/CollectionsReact/Collections';
-import UsersService from 'services/user/user.js';
 import RouterServices from 'app/services/RouterService';
+import ChannelsService from 'services/channels/channels.js';
+import { Button } from 'antd';
 
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
-    return { workspaceId, companyId };
+  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
+    return { companyId };
   });
-  const company_id = companyId;
-
-  const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/direct/channels/::mine`;
-  const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
 
   const upsertDirectMessage = async (): Promise<any> => {
-    let membersIds = newUserDiscussion;
-    membersIds.push(UsersService.getCurrentUserId());
-    membersIds = membersIds.filter((e, index) => newUserDiscussion.indexOf(e) === index);
-
-    const newDirectMessage: ChannelType = {
-      company_id: company_id,
-      workspace_id: workspaceId,
-      visibility: 'direct',
-      direct_channel_members: membersIds,
-    };
-
-    await ChannelsCollections.upsert(new ChannelResource(newDirectMessage), {
-      query: { members: membersIds },
-    });
-
+    setLoading(true);
+    await ChannelsService.openDiscussion(newUserDiscussion, companyId);
     return MediumPopupComponent.closeAll();
   };
 
@@ -46,6 +28,9 @@ const NewDirectMessagesPopup: FC = () => {
       closable
       footer={
         <Button
+          loading={loading}
+          block={true}
+          type="primary"
           className="small primary"
           style={{ width: 'auto', float: 'right' }}
           disabled={newUserDiscussion.length === 0}

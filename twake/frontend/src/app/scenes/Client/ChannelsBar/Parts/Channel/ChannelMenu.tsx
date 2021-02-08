@@ -46,7 +46,7 @@ export default (props: Props): JSX.Element => {
   Languages.useListener(useState);
 
   const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/' + props.channel.data.company_id,
+    '/notifications/v1/badges/' + props.channel.data.company_id + '/',
     NotificationResource,
   );
 

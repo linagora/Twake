@@ -22,6 +22,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
   });
 
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   let newChannel: ChannelType = {
     name: '',
     icon: '',
@@ -31,13 +32,15 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
   };
 
   const onChange = (channelEntries: ChannelType): ChannelType => {
-    setDisabled(channelEntries.name?.length ? true : false);
+    setDisabled((channelEntries.name || '').trim().length ? true : false);
     return (newChannel = channelEntries);
   };
 
   const upsertChannel = async (): Promise<any> => {
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
     const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
+
+    setLoading(true);
 
     if (channel?.id) {
       const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
@@ -74,6 +77,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
       closable
       footer={
         <Button
+          loading={loading}
           className="small"
           block={true}
           type="primary"

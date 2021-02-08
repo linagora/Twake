@@ -23,17 +23,6 @@ export default ({ channel, joined }: PropsType) => {
     },
   );
   const userId: string = UsersService.getCurrentUserId();
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel?.id}/members/`;
-  const channelMembersCollection: Collection<ChannelMemberResource> = Collection.get(
-    collectionPath,
-    ChannelMemberResource,
-  );
-
-  const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const mineCollection = Collection.get(minePath, ChannelResource);
-  const mine = mineCollection.useWatcher({ id: channel.id }).length > 0;
-
-  const isChannelMember = mine || channelMembersCollection.findOne({ user_id: userId });
 
   const joinChannel = (): void => {
     const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
@@ -53,8 +42,8 @@ export default ({ channel, joined }: PropsType) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: isChannelMember ? 'var(--grey-dark)' : '',
-    backgroundColor: isChannelMember ? 'var(--grey-background)' : 'var(--primary)',
+    color: joined ? 'var(--grey-dark)' : '',
+    backgroundColor: joined ? 'var(--grey-background)' : 'var(--primary)',
   };
 
   return (
@@ -68,7 +57,7 @@ export default ({ channel, joined }: PropsType) => {
       <Col
         style={{ display: 'flex', alignItems: 'center' }}
         onClick={() => {
-          if (isChannelMember) {
+          if (joined) {
             ModalManager.closeAll();
             return RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`);
           }
@@ -82,13 +71,13 @@ export default ({ channel, joined }: PropsType) => {
       </Col>
       <Col>
         <Button
-          disabled={isChannelMember ? true : false}
-          type={isChannelMember ? 'default' : 'primary'}
+          disabled={joined ? true : false}
+          type={joined ? 'default' : 'primary'}
           style={buttonStyle}
           onClick={joinChannel}
         >
           {Languages.t(
-            isChannelMember
+            joined
               ? 'components.channelworkspacelist.button_joined'
               : 'components.channelworkspacelist.button_join',
           )}

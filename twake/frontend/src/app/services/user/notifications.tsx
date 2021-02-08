@@ -6,7 +6,7 @@ import { notification } from 'antd';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { X } from 'react-feather';
 import { ChannelResource } from 'app/models/Channel';
-import Collections, { Collection } from '../CollectionsReact/Collections';
+import { Collection } from '../CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -47,9 +47,7 @@ const openNotification = (n: any, callback: any) => {
 class Notifications extends Observable {
   private newNotificationAudio: any;
   private subscribedCompanies: { [companyId: string]: boolean } = {};
-  private notificationCount = 0;
-  private youHaveNewMessagesDelay: any;
-  private ignoreNextNotification: boolean = false;
+
   public store: {
     unreadCompanies: { [key: string]: boolean };
     unreadWorkspaces: { [key: string]: boolean };
@@ -75,30 +73,44 @@ class Notifications extends Observable {
       this,
     );
 
-    this.subscribeToCompaniesNotifications();
+    if (WorkspacesService.currentGroupId) {
+      this.subscribeToCompaniesNotifications(WorkspacesService.currentGroupId);
+
+      //Fixme, we need to subscribe fast to current company, and we can wait for others
+      setTimeout(() => {
+        this.subscribeToCompaniesNotifications();
+      }, 5000);
+    }
   }
 
-  subscribeToCompaniesNotifications() {
+  subscribeToCompaniesNotifications(companyId?: string) {
+    let subscribedToFirst = false;
+
     Object.keys(WorkspacesService.user_workspaces).forEach((id: string) => {
       const company = (WorkspacesService.user_workspaces as any)[id].group;
-      if (!this.subscribedCompanies[company.id]) {
+      if (!this.subscribedCompanies[company.id] && (!companyId || company.id === companyId)) {
         const notificationsCollection = Collection.get(
-          '/notifications/v1/badges/' + company.id,
+          '/notifications/v1/badges/' + company.id + '/',
           NotificationResource,
         );
         notificationsCollection.setOptions({
           reloadStrategy: 'ontime',
         });
-        notificationsCollection.getTransport().start();
 
-        notificationsCollection.removeEventListener(
-          'notification:desktop',
-          this.triggerUnreadMessagesPushNotification,
-        );
-        notificationsCollection.addEventListener(
-          'notification:desktop',
-          this.triggerUnreadMessagesPushNotification,
-        );
+        //We only need to subscribe to notifications once
+        if (!subscribedToFirst) {
+          subscribedToFirst = true;
+
+          notificationsCollection.getTransport().start();
+          notificationsCollection.removeEventListener(
+            'notification:desktop',
+            this.triggerUnreadMessagesPushNotification,
+          );
+          notificationsCollection.addEventListener(
+            'notification:desktop',
+            this.triggerUnreadMessagesPushNotification,
+          );
+        }
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 });
@@ -136,6 +148,7 @@ class Notifications extends Observable {
       ) {
         return;
       }
+
       this.store.unreadCompanies[notification.data.company_id] = true;
       this.store.unreadWorkspaces[notification.data.workspace_id] = true;
 
@@ -149,25 +162,25 @@ class Notifications extends Observable {
         ignore.push(notification.data.workspace_id);
       } else {
         //Detect if we don't know the channel and mark as read in this case (caution here!)
-        (async () => {
-          const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-            notification.data.company_id,
-            notification.data.workspace_id,
-          );
-          const channel = collection.findOne(
-            { id: notification.data.channel_id },
-            { withoutBackend: true },
-          );
+        const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+          notification.data.company_id,
+          notification.data.workspace_id,
+        );
+        const channel = collection.findOne(
+          { id: notification.data.channel_id },
+          { withoutBackend: true },
+        );
 
-          let channelExists = true;
-          if (!channel || !channel.data?.user_member?.user_id) {
-            channelExists = false;
-          }
+        let channelExists = true;
+        if (!channel || !channel.data?.user_member?.user_id) {
+          channelExists = false;
+        }
 
-          if (channelExists) {
-            badgeCount++;
-          }
-        })();
+        if (channelExists) {
+          badgeCount++;
+        } else {
+          continue;
+        }
       }
     }
     this.updateAppBadge(badgeCount);
@@ -252,14 +265,13 @@ class Notifications extends Observable {
   read(channel: ChannelResource) {
     channel.action('read', { value: true });
     const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/' + channel.data.company_id,
+      '/notifications/v1/badges/' + channel.data.company_id + '/',
       NotificationResource,
     );
     notificationsCollection.remove({ channel_id: channel.id }, { withoutBackend: true });
   }
 
   unread(channel: ChannelResource) {
-    this.ignoreNextNotification = true;
     channel.action('read', { value: false });
   }
 }

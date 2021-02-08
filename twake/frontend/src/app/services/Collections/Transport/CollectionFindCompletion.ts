@@ -50,6 +50,8 @@ export default class FindCompletion<G extends Resource<any>> {
           options.query.page_token = this.nextPageToken;
         }
 
+        this.collection.getEventEmitter().emit('http:loading', true);
+
         const items = await this.collection.getTransport().get(filter, options?.query);
 
         if (items?.resources?.length !== undefined) {
@@ -79,6 +81,8 @@ export default class FindCompletion<G extends Resource<any>> {
           }
           this.nextPageToken = items?.next_page_token;
           this.didLoadOnce = true;
+
+          this.collection.getEventEmitter().emit('http:loading', false);
         } else {
           this.isLocked = false;
           return [];
@@ -118,6 +122,8 @@ export default class FindCompletion<G extends Resource<any>> {
         return null;
       }
 
+      this.collection.getEventEmitter().emit('http:loading', true);
+
       let mongoItem: MongoItemType | null = null;
       const item = await this.collection.getTransport().get(filter, options?.query);
       const storage = this.collection.getStorage();
@@ -133,6 +139,8 @@ export default class FindCompletion<G extends Resource<any>> {
           resource.getDataForStorage(),
         );
       }
+
+      this.collection.getEventEmitter().emit('http:loading', false);
 
       this.isLocked = false;
 

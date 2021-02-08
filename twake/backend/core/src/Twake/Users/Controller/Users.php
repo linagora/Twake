@@ -42,7 +42,14 @@ class Users extends BaseController
         );
 
         $id = $request->request->get("id");
-        $user = $this->get("app.users")->getById($id);
+        if(!\is_array($id)){
+            $user = $this->get("app.users")->getById($id);
+        }else{
+            $user = [];
+            foreach($id as $singleId){
+                $user[] = $this->get("app.users")->getById($singleId);
+            }
+        }
 
         if ($user) {
             $data["data"] = $user;

@@ -1233,7 +1233,8 @@ export default {
   'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Избранное',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Создать канал',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Название группы',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Нет каналов в этом рабочем пространстве!',
+  'scenes.app.channelsbar.channelsworkspace.no_channel':
+    'Вы еще не присоединились ни к одному каналу',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Удалить группу',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Добавить сотрудников',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':

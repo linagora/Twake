@@ -1,19 +1,16 @@
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'services/user/current_user.js';
-import UserService from 'services/user/user.js';
-import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'services/localStorage.js';
 import WindowService from 'services/utils/window.js';
-import emojione from 'emojione';
-import Number from 'services/utils/Numbers.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Globals from 'services/Globals.js';
-import RouterServices from 'app/services/RouterService';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/models/Channel';
+import UsersService from 'services/user/user.js';
+import RouterService from 'app/services/RouterService';
+import _ from 'lodash';
 
 class Channels extends Observable {
   constructor() {
@@ -51,6 +48,46 @@ class Channels extends Observable {
   }
 
   readChannelIfNeeded(channel) {}
+
+  async openDiscussion(membersIds, companyId = null) {
+    companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;
+    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
+    const channelsCollections = Collections.get(collectionPath, ChannelResource);
+
+    membersIds.push(UsersService.getCurrentUserId());
+    membersIds = membersIds.filter((e, index) => membersIds.indexOf(e) === index);
+
+    const newDirectMessage = {
+      company_id: companyId,
+      workspace_id: 'direct',
+      visibility: 'direct',
+      direct_channel_members: membersIds,
+    };
+
+    let res = channelsCollections
+      .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
+      .filter(channel =>
+        _.isEqual(channel.data.direct_channel_members.sort(), membersIds.sort()),
+      )[0];
+
+    if (!res) {
+      res = await channelsCollections.upsert(new ChannelResource(newDirectMessage), {
+        query: { members: membersIds },
+        waitServerReply: true,
+      });
+    }
+
+    if (res) {
+      RouterService.history.push(
+        RouterService.generateRouteFromState({
+          channelId: res.id,
+          companyId: res.data.company_id,
+        }),
+      );
+    }
+
+    MenusManager.closeMenu();
+  }
 
   select(channel, side = false, sideOptions = {}) {
     if (side) {
@@ -99,7 +136,7 @@ class Channels extends Observable {
       this.currentChannelFrontId = channel.front_id;
       this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
 
-      RouterServices.history.push(RouterServices.generateRouteFromState({ channelId: channel.id }));
+      RouterService.history.push(RouterService.generateRouteFromState({ channelId: channel.id }));
 
       this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
 

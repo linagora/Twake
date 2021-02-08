@@ -1190,7 +1190,7 @@ export default {
   'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Favoriten',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Erstelle einen Kanal',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name der Gruppe',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Keine Kanäle in diesem Arbeitsbereich !',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Du bist noch keinem Kanal beigetreten',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Entfernen Sie die Gruppe',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Sie können diese Kanäle in Ihr Unternehmen importieren, um die Übersicht zu behalten, indem Sie auf diesen Rahmen klicken.',

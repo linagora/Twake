@@ -7,6 +7,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import UserService from 'services/user/user.js';
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
+import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default class ChannelsApps extends Component {
   constructor(props: any) {
@@ -26,14 +27,6 @@ export default class ChannelsApps extends Component {
           {
             uri: 'channels/workspace/' + Workspaces.currentWorkspaceId,
             options: { type: 'channels/workspace' },
-          },
-          {
-            uri:
-              'channels/workspace_private/' +
-              Workspaces.currentWorkspaceId +
-              '/' +
-              UserService.getCurrentUserId(),
-            options: { type: 'channels/workspace_private' },
           },
         ],
       },
@@ -77,39 +70,43 @@ export default class ChannelsApps extends Component {
       workspace_channels_by_app_id[ch.app_id] = ch;
     });
 
-    return (
-      <div style={{ marginTop: -8 }}>
-        <ChannelCategory text={Languages.t('scenes.app.channelsbar.channelsapps.apps')} />
-        <div>
-          {Object.keys(workspace_channels_by_app_id).map(id => {
-            const channel = workspace_channels_by_app_id[id];
-            const app = Collections.get('applications').find(channel.app_id);
-            if (channel && !(!app || !(app.display || {}).app)) {
-              const name = Languages.t('app.name.' + app.simple_name, [], app.name);
-              let icon = WorkspacesApps.getAppIcon(app);
-              if ((icon || '').indexOf('http') === 0) {
-                icon = '';
-              }
+    if (Collections.get('channels').did_load_first_time) {
+      ChannelsBarService.collectionIsReady(
+        Workspaces.currentGroupId,
+        Workspaces.currentWorkspaceId + '+applications',
+      );
+    }
 
-              return (
-                <ChannelUI
-                  key={id}
-                  collection={Collections.get('channels')}
-                  app={app}
-                  name={name}
-                  icon={icon}
-                  id={channel.id}
-                  muted={false}
-                  favorite={false}
-                  visibility={'public'}
-                  unreadMessages={false}
-                  notifications={0}
-                />
-              );
+    return (
+      <div className="applications_channels" style={{ marginTop: 8 }}>
+        {Object.keys(workspace_channels_by_app_id).map(id => {
+          const channel = workspace_channels_by_app_id[id];
+          const app = Collections.get('applications').find(channel.app_id);
+          if (channel && !(!app || !(app.display || {}).app)) {
+            const name = Languages.t('app.name.' + app.simple_name, [], app.name);
+            let icon = WorkspacesApps.getAppIcon(app);
+            if ((icon || '').indexOf('http') === 0) {
+              icon = '';
             }
-            return '';
-          })}
-        </div>
+
+            return (
+              <ChannelUI
+                key={id}
+                collection={Collections.get('channels')}
+                app={app}
+                name={name}
+                icon={icon}
+                id={channel.id}
+                muted={false}
+                favorite={false}
+                visibility={'public'}
+                unreadMessages={false}
+                notifications={0}
+              />
+            );
+          }
+          return '';
+        })}
       </div>
     );
   }

@@ -366,13 +366,13 @@ class Login extends Observable {
       Groups.addToUser(workspace.group);
     });
 
-    Notifications.start();
-    CurrentUser.start();
-    Languages.setLanguage(user.language);
-
     this.state = 'app';
     this.notify();
     RouterServices.history.push(RouterServices.generateRouteFromState({}));
+
+    Notifications.start();
+    CurrentUser.start();
+    Languages.setLanguage(user.language);
   }
 
   configureCollections() {

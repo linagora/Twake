@@ -1244,8 +1244,7 @@ export default {
   'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORIS',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Créer une chaîne',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Nom du groupe',
-  'scenes.app.channelsbar.channelsworkspace.no_channel':
-    'Aucune chaîne dans cet espace de travail !',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': "Vous n'avez encore rejoint aucune chaîne",
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Retirer le groupe',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Ajouter des collaborateurs',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
