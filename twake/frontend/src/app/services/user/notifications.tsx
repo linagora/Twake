@@ -6,7 +6,7 @@ import { notification } from 'antd';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { X } from 'react-feather';
 import { ChannelResource } from 'app/models/Channel';
-import Collections, { Collection } from '../CollectionsReact/Collections';
+import { Collection } from '../CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -77,26 +77,33 @@ class Notifications extends Observable {
   }
 
   subscribeToCompaniesNotifications() {
+    let subscribedToFirst = false;
+
     Object.keys(WorkspacesService.user_workspaces).forEach((id: string) => {
       const company = (WorkspacesService.user_workspaces as any)[id].group;
       if (!this.subscribedCompanies[company.id]) {
         const notificationsCollection = Collection.get(
-          '/notifications/v1/badges/' + company.id,
+          '/notifications/v1/badges/' + company.id + '/',
           NotificationResource,
         );
         notificationsCollection.setOptions({
           reloadStrategy: 'ontime',
         });
-        notificationsCollection.getTransport().start();
 
-        notificationsCollection.removeEventListener(
-          'notification:desktop',
-          this.triggerUnreadMessagesPushNotification,
-        );
-        notificationsCollection.addEventListener(
-          'notification:desktop',
-          this.triggerUnreadMessagesPushNotification,
-        );
+        //We only need to subscribe to notifications once
+        if (!subscribedToFirst) {
+          subscribedToFirst = true;
+
+          notificationsCollection.getTransport().start();
+          notificationsCollection.removeEventListener(
+            'notification:desktop',
+            this.triggerUnreadMessagesPushNotification,
+          );
+          notificationsCollection.addEventListener(
+            'notification:desktop',
+            this.triggerUnreadMessagesPushNotification,
+          );
+        }
 
         //Load if there is at least one notification in group
         notificationsCollection.findOne({}, { limit: 1 });
@@ -251,7 +258,7 @@ class Notifications extends Observable {
   read(channel: ChannelResource) {
     channel.action('read', { value: true });
     const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/' + channel.data.company_id,
+      '/notifications/v1/badges/' + channel.data.company_id + '/',
       NotificationResource,
     );
     notificationsCollection.remove({ channel_id: channel.id }, { withoutBackend: true });

@@ -35,7 +35,7 @@ class NodePushNotifications extends ContainerAwareCommand
         $em = $services->get('app.twake_doctrine');
         /** @var QueueManager $queues */
         $queues = $services->get('app.queues')->getAdapter();
-        $messagesRepo = $em->getRepository("Twake\Discussions:Message");
+        $messagesRepo = $em->getRepository("Twake\Discussion:Message");
         $devicesRepo = $em->getRepository("Twake\Users:Device");
         $this->emojione_client = new Client(new Ruleset());
 

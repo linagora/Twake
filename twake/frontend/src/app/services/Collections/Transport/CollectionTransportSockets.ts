@@ -39,7 +39,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
           .getSocket()
           .join(
             definition.room,
-            this.transport.collection.getTag(),
+            this.transport.collection.getPath(),
             async (type: WebsocketEvents, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
               switch (type) {
                 case WebsocketEvents.Disconnected:

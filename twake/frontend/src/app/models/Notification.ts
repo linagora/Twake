@@ -12,4 +12,6 @@ export type NotificationType = {
 
 export class NotificationResource extends Resource<NotificationType> {
   _type = 'notification';
+  _resourcePrimaryKey = ['channel_id', 'thread_id'];
+  _resourceIdKey = 'id';
 }
