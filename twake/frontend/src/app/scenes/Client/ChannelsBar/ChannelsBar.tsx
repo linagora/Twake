@@ -14,10 +14,20 @@ import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
 import AccessRightsService from 'app/services/AccessRightsService';
+import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import Channel from './Parts/Channel/Channel';
 
 export default () => {
   const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
     return { companyId, workspaceId };
+  });
+
+  const ready = ChannelsBarService.useWatcher(() => {
+    return (
+      ChannelsBarService.ready[companyId + '+' + workspaceId] &&
+      ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
+      ChannelsBarService.ready[companyId + '+direct']
+    );
   });
 
   const openWorkspaceChannelList: ShortcutType = {
@@ -45,8 +55,35 @@ export default () => {
   }
 
   return (
-    <Layout.Sider theme="light" width={220} className="channels_view" style={{ height: '100%' }}>
+    <Layout.Sider
+      theme="light"
+      width={220}
+      className={'channels_view ' + (ready ? '' : 'loading loading_render')}
+      style={{ height: '100%' }}
+    >
       <CurrentUser />
+
+      {!ready && (
+        <>
+          &nbsp;
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel_category" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel_category" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel_category" />
+          <div className="channel" />
+          <div className="channel" />
+          <div className="channel" />
+        </>
+      )}
+
       <ScrollWithHiddenComponents
         tag="channel_bar_component"
         scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}

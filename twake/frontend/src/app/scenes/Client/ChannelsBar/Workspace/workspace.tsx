@@ -6,6 +6,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/ChannelsWorkspace/WorkspaceChannels';
 import Languages from 'services/languages/languages.js';
+import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 type channelCategoryType = {
   favorite: ChannelResource[];
@@ -40,6 +41,8 @@ export function Workspace() {
     {},
     { observedFields: ['id', 'user_member.favorite'] },
   );
+
+  ChannelsBarService.wait(companyId || '', workspaceId || '', channelsCollection);
 
   channels
     .concat(directChannels)

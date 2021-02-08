@@ -740,8 +740,8 @@ class WorkspaceMembers
                     "ishidden" => $workspaceMember->getisHidden(),
                     "isfavorite" => $workspaceMember->getisFavorite(),
                     "_user_is_admin" => $isAdmin,
-                    "_user_is_guest" => $groupUser->getExterne(),
-                    "_user_is_organization_administrator" => $groupUser->getLevel() === 3,
+                    "_user_is_guest" => $groupUser ? $groupUser->getExterne() : true,
+                    "_user_is_organization_administrator" => $groupUser ? $groupUser->getLevel() === 3 : false,
                     "hasnotifications" => $workspaceMember->getHasNotifications(),
                     "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getisArchived()
                 );

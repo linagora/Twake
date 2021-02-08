@@ -11,6 +11,7 @@ import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import { NotificationResource } from 'app/models/Notification';
+import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export function ChannelsUser() {
   const { companyId } = RouterServices.useRouteState(({ companyId }) => {
@@ -26,6 +27,8 @@ export function ChannelsUser() {
   const directChannels = channelsCollection
     .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
     .filter(c => c.data.visibility === 'direct' && c.data.user_member?.user_id);
+
+  ChannelsBarService.wait(companyId || '', 'direct', channelsCollection);
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

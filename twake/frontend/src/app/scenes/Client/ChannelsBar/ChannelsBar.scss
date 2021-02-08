@@ -11,6 +11,14 @@
   width: 220px;
   padding-top: 16px;
 
+  &.loading {
+    .applications_channels,
+    .workspace_channels,
+    .users_channels {
+      display: none;
+    }
+  }
+
   & > div {
     display: flex;
     flex-direction: column;
