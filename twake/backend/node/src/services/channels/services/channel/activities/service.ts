@@ -7,7 +7,14 @@ import _ from "lodash";
 
 export default class Activities implements Initializable {
   async init(): Promise<this> {
+    const channelConnectorCreatedEvent = "channel:connector:created";
+    const channelConnectorDeletedEvent = "channel:connector:deleted";
     const channelMemberCreatedEvent = "channel:member:created";
+    const channelMemberDeletedEvent = "channel:member:deleted";
+    const channelTabCreatedEvent = "channel:tab:created";
+    const channelTabDeletedEvent = "channel:tab:deleted";
+    const channelUpdatedEvent = "channel:updated";
+
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data =>
       this.logGenericData(channelMemberCreatedEvent, {
         type: "channel:activity:member:created",
@@ -25,7 +32,6 @@ export default class Activities implements Initializable {
       }),
     );
 
-    const channelMemberDeletedEvent = "channel:member:deleted";
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberDeletedEvent, data =>
       this.logGenericData(channelMemberDeletedEvent, {
         type: "channel:activity:member:deleted",
@@ -40,7 +46,6 @@ export default class Activities implements Initializable {
       }),
     );
 
-    const channelUpdatedEvent = "channel:updated";
     localEventBus.subscribe<ResourceEventsPayload>(channelUpdatedEvent, data => {
       const interestedChanges = ["channel_group", "name", "description", "visibility", "icon"];
       const channelChanged = !_.isEqual(
@@ -82,7 +87,6 @@ export default class Activities implements Initializable {
       }
     });
 
-    const channelTabCreatedEvent = "channel:tab:created";
     localEventBus.subscribe<ResourceEventsPayload>(channelTabCreatedEvent, data =>
       this.logGenericData(channelTabCreatedEvent, {
         type: "channel:activity:tab:created",
@@ -97,7 +101,6 @@ export default class Activities implements Initializable {
       }),
     );
 
-    const channelTabDeletedEvent = "channel:tab:deleted";
     localEventBus.subscribe<ResourceEventsPayload>(channelTabDeletedEvent, data =>
       this.logGenericData(channelTabDeletedEvent, {
         type: "channel:activity:tab:deleted",
@@ -112,7 +115,6 @@ export default class Activities implements Initializable {
       }),
     );
 
-    const channelConnectorCreatedEvent = "channel:connector:created";
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorCreatedEvent, data => {
       return this.logGenericData(channelConnectorCreatedEvent, {
         type: "channel:activity:connector:created",
@@ -127,7 +129,6 @@ export default class Activities implements Initializable {
       });
     });
 
-    const channelConnectorDeletedEvent = "channel:connector:deleted";
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorDeletedEvent, data => {
       this.logGenericData(channelConnectorDeletedEvent, {
         type: "channel:activity:connector:deleted",
