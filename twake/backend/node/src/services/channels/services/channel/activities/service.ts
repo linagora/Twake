@@ -61,14 +61,16 @@ export default class Activities implements Initializable {
         "connectors",
       ]);
 
+      const isConnectorCreated: boolean =
+        connectorsBefore?.connectors.length < connectorsAfter?.connectors.length;
+
       const channelConnectorsChanged = !_.isEqual(connectorsBefore, connectorsAfter);
 
       if (channelConnectorsChanged) {
-        if (connectorsBefore?.connectors.length < connectorsAfter?.connectors.length) {
-          return localEventBus.publish("channel:connector:created", data);
-        } else {
-          return localEventBus.publish("channel:connector:deleted", data);
-        }
+        return localEventBus.publish(
+          isConnectorCreated ? "channel:connector:created" : "channel:connector:deleted",
+          data,
+        );
       }
 
       if (channelChanged) {
