@@ -3,7 +3,7 @@ import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { Channel as ChannelEntity } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../types";
 import { GenericObjectType } from "./types";
-import _ from "lodash";
+import _, { sortBy } from "lodash";
 
 export default class Activities implements Initializable {
   async init(): Promise<this> {
@@ -64,7 +64,10 @@ export default class Activities implements Initializable {
       const isConnectorCreated: boolean =
         connectorsBefore?.connectors.length < connectorsAfter?.connectors.length;
 
-      const channelConnectorsChanged = !_.isEqual(connectorsBefore, connectorsAfter);
+      const channelConnectorsChanged = !_.isEqual(
+        { connectors: sortBy(connectorsBefore.connectors) },
+        { connectors: sortBy(connectorsAfter.connectors) },
+      );
 
       if (channelConnectorsChanged) {
         return localEventBus.publish(
