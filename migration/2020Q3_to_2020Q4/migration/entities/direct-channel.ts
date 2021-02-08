@@ -6,7 +6,7 @@ import { Column, Entity } from "../services/db/orm/decorators";
  * A direct channel is a channel in a company composed of a defined set of users.
  */
 @Entity("direct_channels", {
-  primaryKey: [["company_id", "channel_id"], "users"],
+  primaryKey: [["company_id", "users"], "channel_id"],
   type: "direct_channels",
 })
 export class DirectChannel {
@@ -19,18 +19,18 @@ export class DirectChannel {
   company_id: string;
 
   /**
+   * CSV list of ordered user ids
+   */
+  @Column("users", "plainstring")
+  users: string;
+
+  /**
    * The link to Channel.id
    * uuid-v4
    */
   @Type(() => String)
   @Column("channel_id", "plainstring")
   channel_id: string;
-
-  /**
-   * CSV list of ordered user ids
-   */
-  @Column("users", "plainstring")
-  users: string;
 
   static getUsersAsString(users: string[] = []): string {
     return users.sort().join(",");

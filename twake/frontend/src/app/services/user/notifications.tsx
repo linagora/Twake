@@ -47,9 +47,7 @@ const openNotification = (n: any, callback: any) => {
 class Notifications extends Observable {
   private newNotificationAudio: any;
   private subscribedCompanies: { [companyId: string]: boolean } = {};
-  private notificationCount = 0;
-  private youHaveNewMessagesDelay: any;
-  private ignoreNextNotification: boolean = false;
+
   public store: {
     unreadCompanies: { [key: string]: boolean };
     unreadWorkspaces: { [key: string]: boolean };
@@ -136,6 +134,7 @@ class Notifications extends Observable {
       ) {
         return;
       }
+
       this.store.unreadCompanies[notification.data.company_id] = true;
       this.store.unreadWorkspaces[notification.data.workspace_id] = true;
 
@@ -149,25 +148,25 @@ class Notifications extends Observable {
         ignore.push(notification.data.workspace_id);
       } else {
         //Detect if we don't know the channel and mark as read in this case (caution here!)
-        (async () => {
-          const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-            notification.data.company_id,
-            notification.data.workspace_id,
-          );
-          const channel = collection.findOne(
-            { id: notification.data.channel_id },
-            { withoutBackend: true },
-          );
+        const collection: Collection<ChannelResource> = ChannelsService.getCollection(
+          notification.data.company_id,
+          notification.data.workspace_id,
+        );
+        const channel = collection.findOne(
+          { id: notification.data.channel_id },
+          { withoutBackend: true },
+        );
 
-          let channelExists = true;
-          if (!channel || !channel.data?.user_member?.user_id) {
-            channelExists = false;
-          }
+        let channelExists = true;
+        if (!channel || !channel.data?.user_member?.user_id) {
+          channelExists = false;
+        }
 
-          if (channelExists) {
-            badgeCount++;
-          }
-        })();
+        if (channelExists) {
+          badgeCount++;
+        } else {
+          continue;
+        }
       }
     }
     this.updateAppBadge(badgeCount);
@@ -259,7 +258,6 @@ class Notifications extends Observable {
   }
 
   unread(channel: ChannelResource) {
-    this.ignoreNextNotification = true;
     channel.action('read', { value: false });
   }
 }
