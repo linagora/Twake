@@ -135,6 +135,7 @@ export class Service implements ChannelService {
         actor: context.user,
         resourcesBefore: [channelToUpdate],
         resourcesAfter: [channel],
+        channel: channel,
       });
     }
 

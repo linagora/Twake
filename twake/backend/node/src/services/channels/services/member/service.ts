@@ -192,7 +192,7 @@ export class Service implements MemberService {
 
     const result = await this.service.delete(pk, context);
 
-    this.onDeleted(memberToDelete, context.user);
+    this.onDeleted(memberToDelete, context.user, channel);
 
     return result;
   }
@@ -265,12 +265,15 @@ export class Service implements MemberService {
     member: ChannelMember,
     @PubsubParameter("user")
     user: User,
+    @PubsubParameter("channel")
+    channel: ChannelEntity,
   ): void {
     logger.debug("Member deleted %o", member);
 
     localEventBus.publish<ResourceEventsPayload>("channel:member:deleted", {
       actor: user,
       resourcesBefore: [member],
+      channel: channel,
     });
   }
 

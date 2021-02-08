@@ -85,6 +85,7 @@ export class ChannelTabCrudController
           tab: result.entity,
           actor: getExecutionContext(request).user,
           resourcesAfter: [result.entity],
+          channelParameters: request.params,
         });
         reply.code(201);
       }
@@ -136,6 +137,7 @@ export class ChannelTabCrudController
           tab: deleteResult.entity,
           actor: getExecutionContext(request).user,
           resourcesAfter: [deleteResult.entity],
+          channelParameters: request.params,
         });
         reply.code(204);
 

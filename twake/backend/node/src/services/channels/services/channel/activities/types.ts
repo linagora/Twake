@@ -16,8 +16,15 @@ export type ContextType = {
   next?: ResourceObjectType;
 };
 
-export type GenericObjectType = {
+export type ActivityObjectType = {
   type: string;
   actor: ActorType;
   context: ContextType;
+};
+
+export type ActivityPublishedType = {
+  channel_id: Channel["id"];
+  workspace_id: Channel["workspace_id"];
+  company_id: Channel["company_id"];
+  activity: ActivityObjectType;
 };

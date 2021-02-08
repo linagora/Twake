@@ -2,9 +2,10 @@ import { logger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { Channel as ChannelEntity } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../types";
-import { GenericObjectType } from "./types";
+import { ActivityObjectType, ActivityPublishedType } from "./types";
 import _, { sortBy } from "lodash";
 import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";
+import { ChannelParameters } from "../../../web/types";
 
 export default class Activities implements Initializable {
   pubsub: PubsubServiceAPI;
@@ -23,34 +24,42 @@ export default class Activities implements Initializable {
     const channelUpdatedEvent = "channel:updated";
 
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data =>
-      this.notify(channelMemberCreatedEvent, {
-        type: "channel:activity:member:created",
-        actor: {
-          type: "user",
-          id: data.actor.id,
+      this.notify(
+        channelMemberCreatedEvent,
+        {
+          type: "channel:activity:member:created",
+          actor: {
+            type: "user",
+            id: data.actor.id,
+          },
+          context: {
+            type: "add",
+            array: [
+              // data.actor.id !== data.member.user_id ? "invite" : "join"
+              { type: "member", resource: data.resourcesAfter[0] },
+            ],
+          },
         },
-        context: {
-          type: "add",
-          array: [
-            // data.actor.id !== data.member.user_id ? "invite" : "join"
-            { type: "member", resource: data.resourcesAfter[0] },
-          ],
-        },
-      }),
+        data.channel,
+      ),
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberDeletedEvent, data =>
-      this.notify(channelMemberDeletedEvent, {
-        type: "channel:activity:member:deleted",
-        actor: {
-          type: "user",
-          id: data.actor.id,
+      this.notify(
+        channelMemberDeletedEvent,
+        {
+          type: "channel:activity:member:deleted",
+          actor: {
+            type: "user",
+            id: data.actor.id,
+          },
+          context: {
+            type: "remove",
+            array: [{ type: "member", resource: data.resourcesBefore[0] }],
+          },
         },
-        context: {
-          type: "remove",
-          array: [{ type: "member", resource: data.resourcesBefore[0] }],
-        },
-      }),
+        data.channel,
+      ),
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelUpdatedEvent, data => {
@@ -84,86 +93,115 @@ export default class Activities implements Initializable {
       }
 
       if (channelChanged) {
-        return this.notify(channelUpdatedEvent, {
-          type: "channel:activity:updated",
+        return this.notify(
+          channelUpdatedEvent,
+          {
+            type: "channel:activity:updated",
+            actor: {
+              type: "user",
+              id: data.actor.id,
+            },
+            context: {
+              type: "diff",
+              previous: { type: "channel", resource: data.resourcesBefore[0] },
+              next: { type: "channel", resource: data.resourcesAfter[0] },
+            },
+          },
+          data.channel,
+        );
+      }
+    });
+
+    localEventBus.subscribe<ResourceEventsPayload>(channelTabCreatedEvent, data =>
+      this.notify(
+        channelTabCreatedEvent,
+        {
+          type: "channel:activity:tab:created",
           actor: {
             type: "user",
             id: data.actor.id,
           },
           context: {
-            type: "diff",
-            previous: { type: "channel", resource: data.resourcesBefore[0] },
-            next: { type: "channel", resource: data.resourcesAfter[0] },
+            type: "add",
+            array: [{ type: "tab", resource: data.resourcesAfter[0] }],
           },
-        });
-      }
-    });
-
-    localEventBus.subscribe<ResourceEventsPayload>(channelTabCreatedEvent, data =>
-      this.notify(channelTabCreatedEvent, {
-        type: "channel:activity:tab:created",
-        actor: {
-          type: "user",
-          id: data.actor.id,
         },
-        context: {
-          type: "add",
-          array: [{ type: "tab", resource: data.resourcesAfter[0] }],
-        },
-      }),
+        data.channelParameters,
+      ),
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelTabDeletedEvent, data =>
-      this.notify(channelTabDeletedEvent, {
-        type: "channel:activity:tab:deleted",
-        actor: {
-          type: "user",
-          id: data.actor.id,
+      this.notify(
+        channelTabDeletedEvent,
+        {
+          type: "channel:activity:tab:deleted",
+          actor: {
+            type: "user",
+            id: data.actor.id,
+          },
+          context: {
+            type: "remove",
+            array: [{ type: "tab", resource: data.resourcesAfter[0] }],
+          },
         },
-        context: {
-          type: "remove",
-          array: [{ type: "tab", resource: data.resourcesAfter[0] }],
-        },
-      }),
+        data.channelParameters,
+      ),
     );
 
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorCreatedEvent, data => {
-      return this.notify(channelConnectorCreatedEvent, {
-        type: "channel:activity:connector:created",
-        actor: {
-          type: "user",
-          id: data.actor.id,
+      return this.notify(
+        channelConnectorCreatedEvent,
+        {
+          type: "channel:activity:connector:created",
+          actor: {
+            type: "user",
+            id: data.actor.id,
+          },
+          context: {
+            type: "add",
+            array: [{ type: "connector", resource: data.resourcesAfter[0] }],
+          },
         },
-        context: {
-          type: "add",
-          array: [{ type: "connector", resource: data.resourcesAfter[0] }],
-        },
-      });
+        data.channel,
+      );
     });
 
     localEventBus.subscribe<ResourceEventsPayload>(channelConnectorDeletedEvent, data => {
-      this.notify(channelConnectorDeletedEvent, {
-        type: "channel:activity:connector:deleted",
-        actor: {
-          type: "user",
-          id: data.actor.id,
+      this.notify(
+        channelConnectorDeletedEvent,
+        {
+          type: "channel:activity:connector:deleted",
+          actor: {
+            type: "user",
+            id: data.actor.id,
+          },
+          context: {
+            type: "remove",
+            array: [{ type: "connector", resource: data.resourcesBefore[0] }],
+          },
         },
-        context: {
-          type: "remove",
-          array: [{ type: "connector", resource: data.resourcesBefore[0] }],
-        },
-      });
+        data.channel,
+      );
     });
 
     return this;
   }
 
-  async notify(event: string, data: GenericObjectType): Promise<void> {
-    const child = logger.child(data);
-    child.debug(`Activities - New ${event} event`);
-
+  async notify(
+    event: string,
+    data: ActivityObjectType,
+    channel: ChannelEntity | ChannelParameters,
+  ): Promise<void> {
+    logger.debug(`Activities - New ${event} event %o`, data);
     try {
-      await this.pubsub.publish<GenericObjectType>(event, { data });
+      await this.pubsub.publish<ActivityPublishedType>("channel:activity", {
+        data: {
+          channel_id: channel.id,
+          workspace_id: channel.workspace_id,
+          company_id: channel.company_id,
+          activity: data,
+        },
+      });
     } catch (err) {
       logger.warn({ err }, `Activities - Error while publishing to ${event}`);
     }

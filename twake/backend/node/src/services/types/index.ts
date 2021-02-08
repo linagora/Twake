@@ -3,7 +3,7 @@
  */
 
 import { ChannelMember, Channel as ChannelEntity, ChannelTab } from "../channels/entities";
-import { PaginationQueryParameters } from "../channels/web/types";
+import { ChannelParameters, PaginationQueryParameters } from "../channels/web/types";
 import { MessageNotification } from "../messages/types";
 
 export type uuid = string;
@@ -100,6 +100,7 @@ export interface ResourceWebsocket {
 export interface ResourceEventsPayload {
   user?: User;
   channel?: ChannelEntity;
+  channelParameters?: ChannelParameters;
   member?: ChannelMember;
   message?: MessageNotification;
   actor?: User;
