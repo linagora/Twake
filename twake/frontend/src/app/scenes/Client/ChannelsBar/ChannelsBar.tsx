@@ -15,7 +15,6 @@ import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/Sc
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
 import AccessRightsService from 'app/services/AccessRightsService';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
-import Channel from './Parts/Channel/Channel';
 
 export default () => {
   const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {

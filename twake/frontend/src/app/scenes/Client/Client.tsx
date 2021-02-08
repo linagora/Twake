@@ -10,8 +10,6 @@ import { Layout } from 'antd';
 import './Client.scss';
 
 import MainView from './MainView/MainView';
-import ChannelsBar from './ChannelsBar/ChannelsBar';
-import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
@@ -25,6 +23,7 @@ import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import LoginService from 'services/login/login';
 import { Menu } from 'react-feather';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
+import SideBars from './SideBars';
 
 export default (): JSX.Element => {
   popupService.useListener(useState);
@@ -55,10 +54,7 @@ export default (): JSX.Element => {
               theme="light"
               width={290}
             >
-              <Layout style={{ height: '100%' }}>
-                <WorkspacesBar />
-                <ChannelsBar />
-              </Layout>
+              <SideBars />
             </Layout.Sider>
             <MainView />
           </Layout>
