@@ -36,6 +36,7 @@ class StorageManager
 
     public function getProviderConfiguration($provider = null){
         $defaultProvider = $this->getOneProvider();
+        $provider = $provider === null ? $defaultProvider : $provider;
         $configuration = "";
         foreach($this->storage["providers"] as $providerConfiguration){
             if((!$configuration && $providerConfiguration["label"] == $defaultProvider)
