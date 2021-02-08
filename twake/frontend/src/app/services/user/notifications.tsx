@@ -73,15 +73,22 @@ class Notifications extends Observable {
       this,
     );
 
-    this.subscribeToCompaniesNotifications();
+    if (WorkspacesService.currentGroupId) {
+      this.subscribeToCompaniesNotifications(WorkspacesService.currentGroupId);
+
+      //Fixme, we need to subscribe fast to current company, and we can wait for others
+      setTimeout(() => {
+        this.subscribeToCompaniesNotifications();
+      }, 5000);
+    }
   }
 
-  subscribeToCompaniesNotifications() {
+  subscribeToCompaniesNotifications(companyId?: string) {
     let subscribedToFirst = false;
 
     Object.keys(WorkspacesService.user_workspaces).forEach((id: string) => {
       const company = (WorkspacesService.user_workspaces as any)[id].group;
-      if (!this.subscribedCompanies[company.id]) {
+      if (!this.subscribedCompanies[company.id] && (!companyId || company.id === companyId)) {
         const notificationsCollection = Collection.get(
           '/notifications/v1/badges/' + company.id + '/',
           NotificationResource,
