@@ -11,7 +11,7 @@ import { ChannelResource } from 'app/models/Channel';
 import WorkspaceChannelRow from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList/WorkspaceChannelRow';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-type AutoChannelType = {
+type WorkspaceChannel = {
   id: string;
   name: string;
   type: string;
@@ -25,7 +25,7 @@ export default () => {
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(100);
-  const autoChannels: AutoChannelType[] = [];
+  const workspaceChannels: WorkspaceChannel[] = [];
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
   const channelsCollection = Collection.get(collectionPath, ChannelResource);
   const channels = channelsCollection.useWatcher({}, { limit: limit });
@@ -39,7 +39,7 @@ export default () => {
   const mine = mineCollection.useWatcher({});
 
   channels.map((channel: ChannelResource) => {
-    autoChannels.push({
+    workspaceChannels.push({
       id: channel.data.id || '',
       name: channel.data.name || '',
       type: 'workspace',
@@ -47,9 +47,10 @@ export default () => {
     });
   });
 
-  const filterMineAutoChannels = (autoChannel: AutoChannelType) => {
-    return !mine.some(
-      channel => autoChannel.channelResource.id === channel.id && channel.data.user_member?.user_id,
+  const isJoined = (workspaceChannel: WorkspaceChannel) => {
+    return mine.some(
+      channel =>
+        workspaceChannel.channelResource.id === channel.id && channel.data.user_member?.user_id,
     );
   };
 
@@ -72,24 +73,25 @@ export default () => {
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
         <div style={{ height: '240px' }}>
-          {autoChannels
+          {workspaceChannels
             .sort((a, b) => a.name.localeCompare(b.name))
             .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
-            .map(autoChannel => {
+            .map(workspaceChannel => {
               return (
-                <div key={`${autoChannel.channelResource.key}`}>
+                <div key={`${workspaceChannel.channelResource.key}`}>
                   <WorkspaceChannelRow
-                    channel={autoChannel.channelResource}
-                    joined={filterMineAutoChannels(autoChannel)}
+                    channel={workspaceChannel.channelResource}
+                    joined={isJoined(workspaceChannel)}
                   />
                   <Divider style={{ margin: 0 }} />
                 </div>
               );
             })}
-          {!autoChannels.filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
-            .length &&
-            limit < autoChannels.length + 100 &&
-            setLimit(autoChannels.length + 100)}
+          {!workspaceChannels.filter(
+            ({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1,
+          ).length &&
+            limit < workspaceChannels.length + 100 &&
+            setLimit(workspaceChannels.length + 100)}
         </div>
       </PerfectScrollbar>
     </ObjectModal>
