@@ -43,6 +43,7 @@ class Service implements ChannelServiceAPI {
 
   async init(): Promise<this> {
     this.pubsub.processor.addHandler(new NewChannelActivityProcessor(this.channels));
+    this.activities.init();
 
     try {
       await Promise.all([

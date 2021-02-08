@@ -1,14 +1,12 @@
-import { logger } from "../../../../../core/platform/framework";
+import { logger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { Channel as ChannelEntity } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../types";
 import { GenericObjectType } from "./types";
 import _ from "lodash";
 
-export default class Activities {
-  version = "1";
-
-  init(): Activities {
+export default class Activities implements Initializable {
+  async init(): Promise<this> {
     const channelMemberCreatedEvent = "channel:member:created";
     localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data =>
       this.logGenericData(channelMemberCreatedEvent, {
