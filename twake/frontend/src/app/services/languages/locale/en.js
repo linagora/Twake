@@ -1188,7 +1188,7 @@ export default {
   'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORITES',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Create a channel',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name of the group',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'No channels in this worspace!',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': 'You did not join any channel yet',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Remove the group',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Add collaborators',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
