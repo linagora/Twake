@@ -1,24 +1,13 @@
 <?php
 
-namespace Twake\Notifications\Command;
+namespace Twake\Discussion\Command;
 
 use Common\Commands\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twake\Core\Services\Queues\Adapters\QueueManager;
 
-// Configuration
-use Pusher\Adapter\AdapterInterface;
-use Pusher\Adapter\Apns;
-use Pusher\Collection\DeviceCollection;
-use Pusher\Model\Device;
-use Pusher\Model\Push;
-use Pusher\Pusher;
-
-use Emojione\Client;
-use Emojione\Ruleset;
-
-class NodePushNotifications extends ContainerAwareCommand
+class NodePushChannelActivity extends ContainerAwareCommand
 {
 
     var $parameters = [];
