@@ -1,7 +1,7 @@
 import { logger } from "../../framework";
 import { PubsubHandler, PubsubServiceAPI, PubsubServiceProcessor } from "./api";
 
-const LOG_PREFIX = "service.pubsub.processor";
+const LOG_PREFIX = "service.pubsub.Processor";
 
 export class Processor {
   // TODO: Add state
@@ -20,6 +20,7 @@ export class Processor {
       Array.from(this.registry.processors.keys()).map(async name => {
         logger.info(`${LOG_PREFIX} - Starting notification processor ${name}`);
         await this.registry.processors.get(name)?.init();
+        logger.info(`${LOG_PREFIX} - notification processor ${name} is started`);
       }),
     );
   }

@@ -2,6 +2,8 @@ import { logger } from "../../../framework/logger";
 import { constants as CONSTANTS } from "./constants";
 import { ConfirmChannel, Replies, Message, Options, ConsumeMessage } from "amqplib";
 
+const LOG_PREFIX = "service.pubsub.amqp.AmqpClient -";
+
 export type AmqpCallbackType = (
   err: Error,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,17 +11,29 @@ export type AmqpCallbackType = (
   originalMessage: ConsumeMessage,
 ) => void;
 
-// see http://www.squaremobius.net/amqp.node/ for the amqp documentation
+/**
+ * Low level AMQP client using AMQP channel the right way.
+ *
+ * see http://www.squaremobius.net/amqp.node/ for the amqp documentation
+ */
 export class AmqpClient {
   protected _subscribeCallbackToConsumerTags: Map<AmqpCallbackType, string[]>;
+  protected _connected = false;
 
   constructor(protected channel: ConfirmChannel) {
     this._subscribeCallbackToConsumerTags = new Map();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  get connected(): boolean {
+    return this._connected;
+  }
+
+  set connected(value: boolean) {
+    this._connected = value;
+  }
+
   dispose(): Promise<void> {
-    logger.info("AMQP: closing the connection");
+    logger.info(`${LOG_PREFIX} Closing the connection`);
 
     return this.channel.close();
   }
@@ -50,26 +64,32 @@ export class AmqpClient {
   consume(queue: string, options: Options.Consume, callback: AmqpCallbackType): Promise<void> {
     return this.channel
       .consume(queue, onMessage, options)
-      .then(res => this._registerNewConsumerTag(callback, res.consumerTag));
+      .then(res => this._registerNewConsumerTag(callback, res.consumerTag, queue));
 
     function onMessage(originalMessage: ConsumeMessage) {
       try {
         const message = JSON.parse(originalMessage.content.toString());
         callback(null, message, originalMessage);
       } catch (err) {
-        logger.warn({ err }, "Can not parse the incoming message");
+        logger.warn({ err }, `${LOG_PREFIX} Can not parse the incoming message`);
         callback(err, null, originalMessage);
       }
     }
   }
 
-  _registerNewConsumerTag(callback: AmqpCallbackType, consumerTag: string): void {
+  _registerNewConsumerTag(
+    callback: AmqpCallbackType,
+    consumerTag: string,
+    queueName: string,
+  ): void {
     const sameCallbackTags = this._subscribeCallbackToConsumerTags.get(callback) || [];
 
     sameCallbackTags.push(consumerTag);
     this._subscribeCallbackToConsumerTags.set(callback, sameCallbackTags);
 
-    logger.info(`AMQP: A new consumer has been created: ${consumerTag}`);
+    logger.info(
+      `${LOG_PREFIX} A new consumer has been created for queue ${queueName}: ${consumerTag}`,
+    );
   }
 }
 

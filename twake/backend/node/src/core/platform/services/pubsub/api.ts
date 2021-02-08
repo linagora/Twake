@@ -1,3 +1,4 @@
+import { Subject } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { Initializable, logger, TwakeServiceProvider } from "../../framework";
 import { Processor } from "./processor";
@@ -30,7 +31,49 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
   processor: Processor;
 }
 
-export type PubsubLayer = Pick<PubsubServiceAPI, "publish" | "subscribe" | "version">;
+export type PubsubClient = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
+  /**
+   * Close the client
+   */
+  close(): Promise<void>;
+};
+
+/**
+ * The client manager allows to get notified when a client is available and then becomes unavailable.
+ */
+export interface PubsubClientManager {
+  /**
+   * Ask for a new client to be created
+   */
+  createClient(config: string[]): Promise<Subject<PubsubClient>>;
+
+  /**
+   * Subject when a client is available
+   */
+  getClientAvailable(): Subject<PubsubClient>;
+
+  /**
+   * Subject when a client becomes unavailable
+   */
+  getClientUnavailable(): Subject<Error>;
+}
+
+/**
+ * Manages the pubsub client adding mechanisms to cache subscriptions and messages to publish.
+ */
+export interface PubsubProxy extends PubsubClient {
+  /**
+   * Set a new client to use replacing any existing one.
+   * The new client will reuse all the subscriptions automatically.
+   * @param client
+   */
+  setClient(client: PubsubClient): Promise<void>;
+
+  /**
+   * Remove the client. This will close any underlying connection but will not remove any subscription.
+   */
+  unsetClient(): Promise<void>;
+}
 
 export interface PubsubEventBus {
   /**
