@@ -1,6 +1,22 @@
 {
   "version": "0.2.0",
   "configurations": [
+  {
+    "name": "Debug Node Backend",
+    "request": "launch",
+    "cwd": "${workspaceFolder}/twake/backend/node/",
+    "runtimeArgs": [
+      "run",
+      "dev:debug"
+    ],
+    "runtimeExecutable": "npm",
+    "port": 9229,
+    "outputCapture": "std",
+    "skipFiles": [
+      "<node_internals>/**"
+    ],
+    "type": "node"
+  },
     {
       "name": "Debug Node Backend in Docker",
       "port": 9229,

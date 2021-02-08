@@ -1,8 +1,18 @@
 import { TwakeService, ServiceName, logger } from "../../framework";
-import { RabbitPubSub } from "./amqp";
-import { PubsubLayer, PubsubListener, PubsubMessage, PubsubServiceAPI } from "./api";
+import {
+  PubsubClient,
+  PubsubClientManager,
+  PubsubListener,
+  PubsubMessage,
+  PubsubServiceAPI,
+} from "./api";
 import { eventBus } from "./bus";
 import { Processor } from "./processor";
+import PubsubProxy from "./proxy";
+import pubsubManager from "./amqp";
+import { Subscription } from "rxjs";
+
+const LOG_PREFIX = "service.pubsub -";
 
 @ServiceName("pubsub")
 export default class Pubsub extends TwakeService<PubsubServiceAPI> {
@@ -20,13 +30,11 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
       urls = (urls as string).split(",");
     }
 
-    const rabbit = await RabbitPubSub.get(urls);
-
-    this.service = new PubsubService(rabbit);
+    this.service = new PubsubService(pubsubManager, urls);
     await this.service.init();
 
     eventBus.subscribe(message => {
-      logger.info(`service.pubsub - Publishing message to ${message.topic}`);
+      logger.info(`${LOG_PREFIX} - Event bus bublishing message to ${message.topic}`);
       this.service.publish(message.topic, { data: message.data });
     });
 
@@ -45,14 +53,41 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
 }
 
 class PubsubService implements PubsubServiceAPI {
-  processor: Processor;
   version: "1";
+  processor: Processor;
+  clientProxy: PubsubProxy;
+  availableSubscription: Subscription;
+  unavailableSubscription: Subscription;
 
-  constructor(protected layer: PubsubLayer) {
+  constructor(private manager: PubsubClientManager, private urls: string[]) {
     this.processor = new Processor(this);
+    this.clientProxy = new PubsubProxy();
   }
 
   async init(): Promise<this> {
+    logger.info(`${LOG_PREFIX} Initializing pubsub service implementation`);
+    await this.manager.createClient(this.urls);
+
+    this.availableSubscription = this.manager.getClientAvailable().subscribe({
+      next: (client: PubsubClient) => {
+        logger.info(`${LOG_PREFIX} A new pubsub client is available`);
+        this.clientProxy.setClient(client);
+      },
+      error: () => {
+        logger.error(`${LOG_PREFIX} Error while listening to pubsub client availability`);
+      },
+    });
+
+    this.unavailableSubscription = this.manager.getClientUnavailable().subscribe({
+      next: (err: Error) => {
+        logger.warn({ err }, `${LOG_PREFIX} Client is not available anymore`);
+        this.clientProxy.unsetClient();
+      },
+      error: () => {
+        logger.error(`${LOG_PREFIX} Error while listening to pubsub client unavailability`);
+      },
+    });
+
     return this;
   }
 
@@ -63,10 +98,10 @@ class PubsubService implements PubsubServiceAPI {
   }
 
   publish<T>(topic: string, message: PubsubMessage<T>): Promise<void> {
-    return this.layer.publish(topic, message);
+    return this.clientProxy.publish(topic, message);
   }
 
   subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void> {
-    return this.layer.subscribe(topic, listener);
+    return this.clientProxy.subscribe(topic, listener);
   }
 }
