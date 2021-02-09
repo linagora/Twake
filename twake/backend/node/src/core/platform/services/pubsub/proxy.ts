@@ -1,7 +1,18 @@
 import { logger } from "../../framework";
-import { PubsubClient, PubsubListener, PubsubMessage, PubsubProxy } from "./api";
+import {
+  PubsubClient,
+  PubsubListener,
+  PubsubMessage,
+  PubsubProxy,
+  PubsubSubscriptionOptions,
+} from "./api";
 
 const LOG_PREFIX = "service.pubsub.PubsubProxyService -";
+
+type ListenerCache = {
+  listener: PubsubListener<unknown>;
+  options?: PubsubSubscriptionOptions;
+};
 
 /**
  * The pubsub implementation managing underlaying pubsub layer mainly used to cache messages and subscriptions when layer is not ready.
@@ -12,13 +23,14 @@ export default class PubsubProxyService implements PubsubProxy {
    * Cache messages to be published to topic when layer is not ready
    * TODO: We may explode if we can not publish it accumulating messages, add a FIFO with limited size, or cache eviction system...
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected publicationsBuffer: Array<{ topic: string; message: PubsubMessage<any> }> = [];
   /**
    * Cache subscriptions to be created until a new client is set
    */
-  protected subscriptionsCache: Map<string, Set<PubsubListener<any>>> = new Map<
+  protected subscriptionsCache: Map<string, Set<ListenerCache>> = new Map<
     string,
-    Set<PubsubListener<any>>
+    Set<ListenerCache>
   >();
 
   /**
@@ -48,7 +60,7 @@ export default class PubsubProxyService implements PubsubProxy {
         return Array.from(listeners).map(async listener => {
           logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic} from cache`);
           try {
-            await this.subscribe(topic, listener);
+            await this.subscribe(topic, listener.listener, listener.options);
           } catch (err) {
             logger.warn(
               { err },
@@ -102,34 +114,48 @@ export default class PubsubProxyService implements PubsubProxy {
     return this.client.publish(topic, message);
   }
 
-  subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void> {
-    this.addSubscriptionToCache(topic, listener);
+  subscribe<T>(
+    topic: string,
+    listener: PubsubListener<T>,
+    options?: PubsubSubscriptionOptions,
+  ): Promise<void> {
+    this.addSubscriptionToCache(topic, listener, options);
 
     if (!this.client) {
       return;
     }
 
-    return this.subscribeToClient(topic, listener);
+    return this.subscribeToClient(topic, listener, options);
   }
 
-  private addSubscriptionToCache(topic: string, listener: PubsubListener<unknown>): void {
+  private addSubscriptionToCache(
+    topic: string,
+    listener: PubsubListener<unknown>,
+    options: PubsubSubscriptionOptions,
+  ): void {
     logger.debug(`${LOG_PREFIX} Caching subscription to ${topic} topic`);
     if (!this.subscriptionsCache.get(topic)) {
-      this.subscriptionsCache.set(topic, new Set<PubsubListener<unknown>>());
+      this.subscriptionsCache.set(topic, new Set<ListenerCache>());
     }
 
-    if (!this.subscriptionsCache.get(topic).has(listener)) {
-      this.subscriptionsCache.get(topic).add(listener);
+    if (!this.subscriptionsCache.get(topic).has({ listener, options })) {
+      this.subscriptionsCache.get(topic).add({ listener, options });
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private addPublishCache(topic: string, message: any): void {
     logger.debug(`${LOG_PREFIX} Caching publication to ${topic} topic`);
     this.publicationsBuffer.push({ topic, message });
   }
 
-  private subscribeToClient(topic: string, listener: PubsubListener<any>): Promise<void> {
-    logger.debug(`${LOG_PREFIX} Trying to subscribe to ${topic} topic`);
-    return this.client?.subscribe(topic, listener);
+  private subscribeToClient(
+    topic: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    listener: PubsubListener<any>,
+    options?: PubsubSubscriptionOptions,
+  ): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Trying to subscribe to ${topic} topic with options %o`, options);
+    return this.client?.subscribe(topic, listener, options);
   }
 }

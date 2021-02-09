@@ -8,10 +8,7 @@ import {
   MentionNotificationResult,
 } from "../../../../types";
 import { ChannelMemberNotificationPreference } from "../../../../../../services/notifications/entities/channel-member-notification-preferences";
-import {
-  UserNotificationBadge,
-  UserNotificationBadgePrimaryKey,
-} from "../../../../../../services/notifications/entities/user-notification-badges";
+import { UserNotificationBadge } from "../../../../../../services/notifications/entities/user-notification-badges";
 import _ from "lodash";
 import { eventBus } from "../../../../../../core/platform/services/realtime/bus";
 import {
@@ -29,6 +26,11 @@ export class PushNotificationToUsersMessageProcessor
 
   readonly topics = {
     in: "notification:mentions",
+  };
+
+  readonly options = {
+    unique: true,
+    ack: true,
   };
 
   name = "PushNotificationToUsersMessageProcessor";

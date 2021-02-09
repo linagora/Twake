@@ -40,6 +40,7 @@ export class AmqpPubsubClient extends AmqpClient {
     queueName: string,
     callback: AmqpCallbackType,
   ): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Subscribing to durable queue ${queueName}`);
     return this.assertExchange(exchangeName, CONSTANTS.PUBSUB_EXCHANGE.type)
       .then(() => this.assertQueue(queueName, CONSTANTS.SUBSCRIBER.durableQueueOptions))
       .then(() => this.assertBinding(queueName, exchangeName))

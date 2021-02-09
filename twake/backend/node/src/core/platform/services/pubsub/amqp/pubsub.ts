@@ -1,6 +1,7 @@
 import { logger } from "../../../framework/logger";
 import { AmqpPubsubClient } from "./pubsubclient";
-import { PubsubMessage, PubsubListener, PubsubClient } from "../api";
+import { PubsubMessage, PubsubListener, PubsubClient, PubsubSubscriptionOptions } from "../api";
+import { AmqpCallbackType } from "./client";
 
 const LOG_PREFIX = "service.pubsub.amqp.AMQPPubSub -";
 
@@ -20,10 +21,15 @@ export class AMQPPubSub implements PubsubClient {
     await this.client.publish(topic, message.data);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  subscribe(topic: string, listener: PubsubListener<any>): Promise<void> {
-    logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic}`);
-    return this.client.subscribe(topic, (err, message, originalMessage) => {
+  subscribe(
+    topic: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    listener: PubsubListener<any>,
+    options: PubsubSubscriptionOptions = { unique: false },
+  ): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic} with options %o`, options);
+
+    const callback: AmqpCallbackType = (err, message, originalMessage) => {
       const data = err ? originalMessage : message;
 
       if (err) {
@@ -33,9 +39,14 @@ export class AMQPPubSub implements PubsubClient {
       listener({
         data,
         ack: (): void => {
+          logger.debug(`${LOG_PREFIX} Ack message on topic ${topic}`);
           this.client.ack(originalMessage);
         },
       });
-    });
+    };
+
+    return options?.unique
+      ? this.client.subscribeToDurableQueue(topic, topic, callback)
+      : this.client.subscribe(topic, callback);
   }
 }

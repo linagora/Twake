@@ -14,6 +14,11 @@ export class LeaveChannelMessageProcessor
     in: "channel:member:deleted",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "LeaveChannelMessageProcessor";
 
   validate(message: LeaveChannelMessage): boolean {

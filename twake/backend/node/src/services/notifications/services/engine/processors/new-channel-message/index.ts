@@ -21,6 +21,11 @@ export class NewChannelMessageProcessor
     out: "notification:mentions",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "NewChannelMessageProcessor";
 
   validate(message: MessageNotification): boolean {

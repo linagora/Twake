@@ -23,11 +23,44 @@ export interface IncomingPubsubMessage<T> extends PubsubMessage<T> {
   ack: () => void;
 }
 
+export type PubsubSubscriptionOptions = {
+  /**
+   * A unique subscription guaranties that there will be only one listener consuming the message on the subscription topic even if many are subscribing to the same topic from several places (not only from the current instance/host).
+   * Also, it will guaranties that messages which were published before any subscriber subscribes will be consumed.
+   */
+  unique?: boolean;
+
+  /**
+   * Automatically acknowledge the incoming message when the processing is complete
+   */
+  ack?: boolean;
+};
+
 export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;
 
 export interface PubsubServiceAPI extends TwakeServiceProvider {
+  /**
+   * Publish a message to a given topic
+   * @param topic The topic to publish the message to
+   * @param message The message to publish to the topic
+   */
   publish<T>(topic: string, message: PubsubMessage<T>): Promise<void>;
-  subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void>;
+
+  /**
+   * Subscribe the a topic. The listener will be called when a new message is published in the topic (this may not be true based on the options parameters).
+   * @param topic The topic to subsribe to
+   * @param listener The function which will process the message published in the topic
+   * @param options The subscription options. If not defined, the subscriber will be called for all messages available in the topic.
+   */
+  subscribe<T>(
+    topic: string,
+    listener: PubsubListener<T>,
+    options?: PubsubSubscriptionOptions,
+  ): Promise<void>;
+
+  /**
+   * The messages processor instance
+   */
   processor: Processor;
 }
 
@@ -137,9 +170,14 @@ export class PubsubServiceProcessor<In, Out>
   async doSubscribe(): Promise<void> {
     if (this.handler.topics && this.handler.topics.in) {
       logger.info(
-        `PubsubServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in}`,
+        `PubsubServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in} with options %o`,
+        this.handler.options,
       );
-      await this.pubsub.subscribe(this.handler.topics.in, this.processMessage.bind(this));
+      await this.pubsub.subscribe(
+        this.handler.topics.in,
+        this.processMessage.bind(this),
+        this.handler.options,
+      );
     }
   }
 
@@ -162,6 +200,13 @@ export class PubsubServiceProcessor<In, Out>
 
     try {
       const result = await this.process(message);
+      if (this.handler?.options?.ack) {
+        logger.debug(
+          `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Acknowledging message %o`,
+          message,
+        );
+        message?.ack();
+      }
 
       if (result) {
         await this.sendResult(message, result);
@@ -219,6 +264,11 @@ export interface PubsubHandler<InputMessage, OutputMessage> extends Initializabl
     // The topic to push error to. When topic is undefined, do not push the error
     error?: string;
   };
+
+  /**
+   * Options subscriber options
+   */
+  readonly options?: PubsubSubscriptionOptions;
 
   /**
    * The handler name

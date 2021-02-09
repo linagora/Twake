@@ -12,6 +12,11 @@ export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNo
     in: "message:created",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "Channel::NewDirectChannelMessageProcessor";
 
   validate(message: MessageNotification): boolean {
