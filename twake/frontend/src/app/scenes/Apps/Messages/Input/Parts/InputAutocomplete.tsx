@@ -10,6 +10,7 @@ import User from 'components/User/User.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import { ChannelResource } from 'app/models/Channel';
 
 type Props = {
   onResize?: (evt: any) => void;
@@ -118,7 +119,7 @@ export default (props: Props) => {
           WorkspacesUser.searchUserInWorkspace(text, cb);
         },
         (text: string, cb: any) => {
-          ChannelsService.search(text, cb);
+          ChannelsService.search(text, (data: ChannelResource[]) => cb(data.map(c => c.data)));
         },
         (text: string, cb: any) => {
           EmojiService.search(text, cb);

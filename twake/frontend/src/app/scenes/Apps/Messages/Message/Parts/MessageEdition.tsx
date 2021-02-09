@@ -29,11 +29,15 @@ export default (props: Props) => {
 
   const save = async (content: string) => {
     if (!content) {
-      AlertManager.confirm(() => {
-        MessagesService.deleteMessage(props.message, props.collectionKey);
-      }, ()=>{}, {
-        title: Languages.t("scenes.apps.messages.chatbox.chat.delete_message_btn");
-      });
+      AlertManager.confirm(
+        () => {
+          MessagesService.deleteMessage(props.message, props.collectionKey);
+        },
+        () => {},
+        {
+          title: Languages.t('scenes.apps.messages.chatbox.chat.delete_message_btn'),
+        },
+      );
     } else {
       MessagesService.editMessage(props.message.id, content, props.collectionKey);
     }

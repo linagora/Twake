@@ -3,6 +3,10 @@
 /* PseudoMarkdownCompiler */
 
 .markdown {
+  & > span {
+    vertical-align: middle;
+  }
+
   &.loading_interaction {
     .interactive_element {
       opacity: 0.5;
@@ -12,7 +16,7 @@
 
   .emoji-container {
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: middle;
     .emoji-mart-emoji {
       transform: translateY(20%);
     }
@@ -28,30 +32,36 @@
   }
 
   a {
+    vertical-align: middle;
     overflow: hidden;
     max-width: 100%;
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: middle;
     overflow-wrap: break-word;
   }
   .bold {
+    vertical-align: middle;
     display: inline;
     font-weight: bold;
   }
   .italic {
+    vertical-align: middle;
     display: inline;
     font-style: italic;
   }
   .underline {
+    vertical-align: middle;
     display: inline;
     text-decoration: underline;
   }
   .strikethrough {
+    vertical-align: middle;
     display: inline;
     text-decoration: line-through;
   }
   .inline-code,
   .multiline-code {
+    vertical-align: middle;
     color: #e6e1dc;
     background: #535353;
     font-family: monospace;
@@ -105,8 +115,9 @@
   }
   .user_twacode {
     display: inline-flex;
-    line-height: 16px;
+    line-height: 18px;
     transform: translateY(-1px);
+    margin-bottom: -1px;
 
     &.highlighted,
     &.with_user.highlighted {
@@ -127,7 +138,7 @@
       display: inline-block;
       padding-right: 5px;
       margin-right: -2px;
-      vertical-align: bottom;
+      vertical-align: middle;
       background: $primary_background;
       cursor: pointer;
 
@@ -140,9 +151,10 @@
         height: 16px;
         border-radius: var(--default-border-radius);
         display: inline-block;
-        vertical-align: bottom;
+        vertical-align: middle;
         background: $grey_light;
         margin: 1px;
+        vertical-align: top;
         margin-right: 3px;
         background-size: cover;
         background-position: center;
@@ -154,6 +166,7 @@
     box-sizing: border-box;
     color: $black;
     height: 18px;
+    line-height: 18px;
     text-transform: capitalize;
     border-radius: var(--default-border-radius);
     text-overflow: ellipsis;
@@ -161,7 +174,7 @@
     display: inline-block;
     padding-right: 5px;
     margin-right: -2px;
-    vertical-align: bottom;
+    vertical-align: middle;
     background: $primary_background;
     font-weight: 500;
     cursor: pointer;
@@ -171,17 +184,19 @@
     }
 
     .emoji-container {
+      vertical-align: top;
       margin-right: 3px;
+      margin-left: 2px;
+      margin-top: -2px;
       img.emojione {
         width: 14px;
         margin-left: 4px;
-        bottom: 1px;
       }
     }
   }
 
   .user_bloc {
-    vertical-align: bottom;
+    vertical-align: middle;
     margin-top: -10px;
     transform: translateY(6px);
     padding: 4px 5px;
@@ -264,7 +279,7 @@
     padding: 0px;
     display: inline;
     cursor: pointer;
-    vertical-align: bottom;
+    vertical-align: middle;
     background: transparent !important;
     color: #888;
 
