@@ -12,6 +12,11 @@ export class MarkChannelAsReadMessageProcessor
     in: "channel:read",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "MarkChannelAsReadMessageProcessor";
 
   validate(message: ChannelReadMessage): boolean {

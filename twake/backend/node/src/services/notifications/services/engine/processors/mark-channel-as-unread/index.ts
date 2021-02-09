@@ -12,6 +12,11 @@ export class MarkChannelAsUnreadMessageProcessor
     in: "channel:unread",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "MarkChannelAsUnreadMessageProcessor";
 
   validate(message: ChannelUnreadMessage): boolean {

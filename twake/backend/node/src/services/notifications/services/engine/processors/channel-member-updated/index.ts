@@ -14,6 +14,11 @@ export class UpdateChannelMemberMessageProcessor
     in: "channel:member:updated",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "UpdateChannelMemberMessageProcessor";
 
   validate(message: UpdateChannelMessage): boolean {

@@ -16,6 +16,11 @@ export class JoinChannelMessageProcessor
     in: "channel:member:created",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+  };
+
   readonly name = "JoinChannelMessageProcessor";
 
   validate(message: JoinChannelMessage): boolean {
