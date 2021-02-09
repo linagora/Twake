@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, Badge } from 'antd';
+import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
 
 import { UserType } from 'app/models/User';
@@ -11,7 +12,7 @@ import UsersService from 'services/user/user.js';
 export const useUsersListener = (usersIds: string[]) => {
   const channelMembers = (usersIds || []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
-    );
+  );
   OldCollections.get('users').useListener(useState, channelMembers);
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export const getUserParts = (props: {
   } else if (channelMembers?.length || 0 > 1) {
     avatar = (
       <Avatar.Group
-        maxCount={props.max || 3}
+        maxCount={(props.max || 3) + 1}
         maxStyle={{
           color: '#FFFFFF',
           backgroundColor: `var(--grey-dark)`,
@@ -71,18 +72,27 @@ export const getUserParts = (props: {
           alignItems: 'center',
         }}
       >
-        {users.map(member => {
-          channelName.push(UserService.getFullName(member));
-          return (
-            member && (
-              <Avatar
-                key={member.id}
-                size={props.size || 20}
-                src={UserService.getThumbnail(member)}
-              />
-            )
-          );
-        })}
+        {users
+          .filter((_, i) => i < (props.max || 3))
+          .map(member => {
+            channelName.push(UserService.getFullName(member));
+            return (
+              member && (
+                <Avatar
+                  key={member.id}
+                  size={props.size || 20}
+                  src={UserService.getThumbnail(member)}
+                />
+              )
+            );
+          })}
+        {users.length > (props.max || 3) && (
+          <Avatar
+            size={props.size || 20}
+            style={{ backgroundColor: 'var(--grey-dark)' }}
+            icon={<DashOutlined />}
+          />
+        )}
       </Avatar.Group>
     );
   }

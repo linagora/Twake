@@ -1839,7 +1839,7 @@ export default {
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
     'Automatically invite all workspace members to this channel',
   'scenes.client.channelbar.channelmemberseditor.title': 'Add members in $1',
-  'scenes.client.channelbar.channelmemberslist.title': '$1 members in $2',
+  'scenes.client.channelbar.channelmemberslist.title': 'Members in $1',
   'scenes.client.channelbar.channelmemberslist.loader': 'Load more',
   'scenes.client.channelbar.channelmemberslist.autocomplete': 'Search users',
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',

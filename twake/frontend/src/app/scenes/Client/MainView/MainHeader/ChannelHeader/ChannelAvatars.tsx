@@ -15,7 +15,7 @@ export default (props: { workspaceId: string }): JSX.Element => {
     .useWatcher({}, { limit: 10 })
     .map(i => i.data.user_id || '');
   useUsersListener(members);
-  const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 10 });
+  const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 7 });
 
   return avatar;
 };

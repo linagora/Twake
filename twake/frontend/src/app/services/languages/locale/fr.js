@@ -1912,7 +1912,7 @@ export default {
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
     "Inviter automatiquement tous les membres de l'espace de travail sur cette chaîne",
   'scenes.client.channelbar.channelmemberseditor.title': 'Ajouter des membres dans $1',
-  'scenes.client.channelbar.channelmemberslist.title': '$1 membres dans $2',
+  'scenes.client.channelbar.channelmemberslist.title': 'Membres de $1',
   'scenes.client.channelbar.channelmemberslist.loader': 'Charger plus',
   'scenes.client.channelbar.channelmemberslist.autocomplete': 'Rechercher des utilisateurs',
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Ajouter',
