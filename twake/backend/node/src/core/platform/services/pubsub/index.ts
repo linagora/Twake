@@ -5,6 +5,7 @@ import {
   PubsubListener,
   PubsubMessage,
   PubsubServiceAPI,
+  PubsubSubscriptionOptions,
 } from "./api";
 import { eventBus } from "./bus";
 import { Processor } from "./processor";
@@ -101,7 +102,11 @@ class PubsubService implements PubsubServiceAPI {
     return this.clientProxy.publish(topic, message);
   }
 
-  subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void> {
-    return this.clientProxy.subscribe(topic, listener);
+  subscribe<T>(
+    topic: string,
+    listener: PubsubListener<T>,
+    options?: PubsubSubscriptionOptions,
+  ): Promise<void> {
+    return this.clientProxy.subscribe(topic, listener, options);
   }
 }
