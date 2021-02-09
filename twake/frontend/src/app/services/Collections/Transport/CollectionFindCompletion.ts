@@ -44,7 +44,7 @@ export default class FindCompletion<G extends Resource<any>> {
         !this.didLoadOnce ||
         (this.hasMore && options.limit > mongoItems.length)
       ) {
-        this.perPage = this.perPage || options.limit;
+        this.perPage = options.query.page_token ? this.perPage : options.query.limit;
         options.query.limit = this.perPage;
         if (this.nextPageToken) {
           options.query.page_token = this.nextPageToken;
@@ -52,6 +52,7 @@ export default class FindCompletion<G extends Resource<any>> {
 
         this.collection.getEventEmitter().emit('http:loading', true);
 
+        console.log(options, options?.query);
         const items = await this.collection.getTransport().get(filter, options?.query);
 
         if (items?.resources?.length !== undefined) {

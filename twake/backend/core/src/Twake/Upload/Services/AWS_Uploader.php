@@ -13,10 +13,9 @@ class AWS_Uploader extends Uploader
     public function __construct(App $app)
     {
         parent::__construct($app);
-        $this->configure($app, $app->getContainer()->getParameter("storage.S3"));
     }
 
-    public function configure(App $app, $config){
+    public function configure($config){
         $s3_config = $config;
 
         $this->aws_version = $s3_config["version"];

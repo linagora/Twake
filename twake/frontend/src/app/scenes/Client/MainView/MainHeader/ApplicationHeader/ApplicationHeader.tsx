@@ -7,7 +7,7 @@ import RouterServices from 'app/services/RouterService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import Search from '../Search';
+import SearchInput from '../Search';
 
 export default (): JSX.Element => {
   const { channelId } = RouterServices.useRouteState(({ channelId }) => {
@@ -45,11 +45,7 @@ export default (): JSX.Element => {
         </span>
       </Col>
 
-      <Col>
-        <Row align="middle" gutter={[8, 0]} style={{ flexWrap: 'nowrap' }}>
-          <Search />
-        </Row>
-      </Col>
+      <SearchInput />
     </Row>
   );
 };

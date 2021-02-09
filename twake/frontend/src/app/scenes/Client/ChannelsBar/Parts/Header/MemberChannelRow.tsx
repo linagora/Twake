@@ -19,7 +19,6 @@ const { Text } = Typography;
 type Props = {
   channelId: string;
   userId: string;
-  channelMemberResource?: ChannelMemberResource;
   inAddition?: boolean;
   collection: Collection<ChannelMemberResource>;
 };
@@ -52,13 +51,16 @@ export default (props: Props) => {
   };
 
   const leaveChannel = async () => {
-    if (props.channelMemberResource) {
-      //Fixme, this is not pretty, we should find a way to do this in one line
-      props.channelMemberResource?.setPersisted();
-      await props.collection.upsert(props.channelMemberResource, { withoutBackend: true });
-      await props.collection.remove(props.channelMemberResource);
-      return setIsMember(false);
-    }
+    //Fixme, this is not pretty, we should find a way to do this in one line
+    const channelMemberResource = new ChannelMemberResource({
+      user_id: userId,
+      channel_id: props.channelId,
+      type: 'member', // "member" | "guest" | "bot",
+    });
+    channelMemberResource.setPersisted();
+    await props.collection.upsert(channelMemberResource, { withoutBackend: true });
+    await props.collection.remove(channelMemberResource);
+    return setIsMember(false);
   };
 
   if (props.inAddition) {

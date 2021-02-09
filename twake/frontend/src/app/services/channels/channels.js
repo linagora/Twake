@@ -89,6 +89,21 @@ class Channels extends Observable {
     MenusManager.closeMenu();
   }
 
+  search(query, callback) {
+    if (query.length == 0) {
+      callback([]);
+      return;
+    }
+
+    const { companyId, workspaceId } = RouterService.getStateFromRoute();
+    const collection = this.getCollection(companyId, workspaceId);
+    callback(
+      collection.find({}).filter(channel => {
+        return channel.data.name.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) >= 0;
+      }),
+    );
+  }
+
   select(channel, side = false, sideOptions = {}) {
     if (side) {
       if (
@@ -121,11 +136,6 @@ class Channels extends Observable {
 
       if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
         this.readChannelIfNeeded(channel);
-      }
-
-      if (this.currentChannelFrontId != channel.front_id) {
-        //Change url
-        this.updateURL(channel);
       }
 
       (channel.tabs || []).forEach(tab => {
