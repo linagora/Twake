@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button, Col, Row } from 'antd';
+import { Button, Col, Row, Tooltip } from 'antd';
 import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
@@ -70,18 +70,28 @@ export default ({ channel, joined }: PropsType) => {
         {channel.data.visibility === 'private' && <Icon type="lock" />}
       </Col>
       <Col>
-        <Button
-          disabled={joined ? true : false}
-          type={joined ? 'default' : 'primary'}
-          style={buttonStyle}
-          onClick={joinChannel}
-        >
-          {Languages.t(
+        <Tooltip
+          title={
             joined
-              ? 'components.channelworkspacelist.button_joined'
-              : 'components.channelworkspacelist.button_join',
-          )}
-        </Button>
+              ? 'You are member of this channel'
+              : channel.data.visibility !== 'public'
+              ? 'You see this channel because you are an administrator'
+              : 'You can join this channel'
+          }
+        >
+          <Button
+            disabled={joined || channel.data.visibility !== 'public' ? true : false}
+            type={joined ? 'default' : 'primary'}
+            style={buttonStyle}
+            onClick={joinChannel}
+          >
+            {Languages.t(
+              joined
+                ? 'components.channelworkspacelist.button_joined'
+                : 'components.channelworkspacelist.button_join',
+            )}
+          </Button>
+        </Tooltip>
       </Col>
     </Row>
   );
