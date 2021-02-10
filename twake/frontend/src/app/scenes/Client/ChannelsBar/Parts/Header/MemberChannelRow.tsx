@@ -29,7 +29,7 @@ export default (props: Props) => {
   const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
     return { workspaceId };
   });
-  const userId: string = UsersService.getCurrentUserId();
+  const currentUserId: string = UsersService.getCurrentUserId();
 
   const { avatar, name, users } = getUserParts({
     usersIds: [props.userId] || [],
@@ -37,23 +37,21 @@ export default (props: Props) => {
     size: 24,
   });
 
-  const addUser = async (userId: string) => {
-    if (userId) {
-      await props.collection.upsert(
-        new ChannelMemberResource({
-          user_id: userId,
-          channel_id: props.channelId,
-          type: 'member', // "member" | "guest" | "bot",
-        }),
-      );
-      return setIsMember(true);
-    }
+  const addUser = async () => {
+    await props.collection.upsert(
+      new ChannelMemberResource({
+        user_id: props.userId,
+        channel_id: props.channelId,
+        type: 'member', // "member" | "guest" | "bot",
+      }),
+    );
+    return setIsMember(true);
   };
 
   const leaveChannel = async () => {
     //Fixme, this is not pretty, we should find a way to do this in one line
     const channelMemberResource = new ChannelMemberResource({
-      user_id: userId,
+      user_id: props.userId,
       channel_id: props.channelId,
       type: 'member', // "member" | "guest" | "bot",
     });
@@ -75,12 +73,7 @@ export default (props: Props) => {
     };
     userEvents = (
       <Col>
-        <Button
-          type="primary"
-          style={buttonStyle}
-          disabled={isMember}
-          onClick={() => addUser(props.userId)}
-        >
+        <Button type="primary" style={buttonStyle} disabled={isMember} onClick={() => addUser()}>
           {Languages.t('general.add')}
         </Button>
       </Col>
@@ -119,7 +112,7 @@ export default (props: Props) => {
         <Text strong>{name}</Text> @{users[0]?.username}
       </Col>
       {AccessRightsService.hasLevel(workspaceId || '', 'member') &&
-        props.userId !== userId &&
+        props.userId !== currentUserId &&
         userEvents}
     </Row>
   );
