@@ -92,7 +92,7 @@ class RabbitMQ implements QueueManager
 
         try {
           while ($channel->is_consuming() && !$this->stop_consume) {
-                  $channel->wait(null, false, 5);
+                  $channel->wait(null, false, 1);
           }
         } catch (\Exception $err) {
           error_log($err->getMessage());
