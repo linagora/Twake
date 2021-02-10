@@ -89,11 +89,8 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     for (const company_id of companies_ids) {
       const find = await this.repository.find(
         {
-          ...{
-            company_id,
-            user_id,
-          },
-          filter: {},
+          company_id,
+          user_id,
         },
         {
           pagination: new Pagination("", "1"),
