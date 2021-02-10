@@ -11,6 +11,8 @@ import {
   ChannelThreadUsersPrimaryKey,
   UserNotificationBadge,
   UserNotificationBadgePrimaryKey,
+  UserNotificationPreferences,
+  UserNotificationPreferencesPrimaryKey,
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
@@ -120,6 +122,39 @@ export interface ChannelThreadUsersServiceAPI
    * @param pk The thread to get users from
    */
   getUsersInThread(pk: ChannelThreadUsersPrimaryKey): Promise<ListResult<ChannelThreadUsers>>;
+}
+
+export interface UserNotificationPreferencesAPI
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<
+      UserNotificationPreferences,
+      UserNotificationPreferencesPrimaryKey,
+      NotificationExecutionContext
+    > {
+  /**
+   * Get the user notification preferences
+   *
+   * @param workspace_id
+   * @param company_id
+   * @param user_id
+   * @param filter
+   */
+  listPreferences(
+    workspace_id: string | "all",
+    company_id: string | "all",
+    user_id: string,
+    filter: Pick<UserNotificationPreferencesPrimaryKey, "user_id">,
+  ): Promise<ListResult<UserNotificationPreferences>>;
+
+  /**
+   * Save the user notification preferences
+   *
+   * @param notificationPreferences The preference entity to save
+   */
+  savePreferences(
+    notificationPreferences: UserNotificationPreferences,
+  ): Promise<SaveResult<UserNotificationPreferences>>;
 }
 
 /**

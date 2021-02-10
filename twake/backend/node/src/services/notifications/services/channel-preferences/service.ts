@@ -90,9 +90,7 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
     const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
 
     if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
-      result.filterEntities(entity => {
-        return entity.last_read < lastRead.lessThan;
-      });
+      result.filterEntities(entity => entity.last_read < lastRead.lessThan);
     }
 
     logger.debug(
@@ -115,9 +113,7 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
     const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
 
     if (result.getEntities().length > 0 && lastRead) {
-      result.filterEntities(entity => {
-        return entity.last_read < lastRead;
-      });
+      result.filterEntities(entity => entity.last_read < lastRead);
     }
 
     return result;

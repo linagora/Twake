@@ -1,9 +1,11 @@
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import { UserNotificationPreferencesAPI } from "../../api";
 import {
   CrudExeption,
   ListResult,
   SaveResult,
   OperationType,
+  DeleteResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import {
   UserNotificationPreferences,
@@ -13,7 +15,7 @@ import {
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { pick, assign } from "lodash";
 
-export class NotificationPreferencesService /*implements ChannelMemberPreferencesServiceAPI*/ {
+export class NotificationPreferencesService implements UserNotificationPreferencesAPI {
   version: "1";
   repository: Repository<UserNotificationPreferences>;
 
@@ -26,6 +28,26 @@ export class NotificationPreferencesService /*implements ChannelMemberPreference
     );
 
     return this;
+  }
+
+  async list(): Promise<ListResult<UserNotificationPreferences>> {
+    throw new Error("Not implemented");
+  }
+
+  async get(pk: UserNotificationPreferencesPrimaryKey): Promise<UserNotificationPreferences> {
+    return await this.repository.findOne(pk);
+  }
+
+  async delete(
+    pk: UserNotificationPreferencesPrimaryKey,
+  ): Promise<DeleteResult<UserNotificationPreferences>> {
+    await this.repository.remove(pk as UserNotificationPreferences);
+
+    return new DeleteResult(
+      UserNotificationPreferencesType,
+      pk as UserNotificationPreferences,
+      true,
+    );
   }
 
   async listPreferences(
