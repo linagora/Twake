@@ -13,7 +13,7 @@ const routes: FastifyPluginCallback<{ service: NotificationServiceAPI }> = (
 
   fastify.route({
     method: "GET",
-    url: badgesUrl + "/:company_id",
+    url: badgesUrl,
     preValidation: [fastify.authenticate],
     handler: notificationController.list.bind(notificationController),
   });

@@ -39,11 +39,8 @@ export type PushNotificationMessage = {
 };
 
 export interface NotificationListQueryParameters extends PaginationQueryParameters {
+  company_id: uuid;
   workspace_id: uuid | "direct";
   channel_id: uuid;
   thread_id: uuid;
-}
-
-export interface NotificationListUrlParameters {
-  company_id: uuid;
 }
