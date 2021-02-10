@@ -116,8 +116,6 @@
   .user_twacode {
     display: inline-flex;
     line-height: 18px;
-    transform: translateY(-1px);
-    margin-bottom: -1px;
 
     &.highlighted,
     &.with_user.highlighted {

@@ -107,9 +107,8 @@ class NodePushNotifications extends ContainerAwareCommand
 
                     }
 
+                    $queues->ack("notification:push:mobile", $queue_message, ["exchange_type" => "fanout"]);
                 }
-
-                $queues->ack("notification:push:mobile", $queue_message, ["exchange_type" => "fanout"]);
 
             }
 
@@ -120,6 +119,10 @@ class NodePushNotifications extends ContainerAwareCommand
     function sendAPNS($deviceId, $title, $message, $_data, $badge)
     {
         $apns_certificate = $this->parameters["apns_certificate"];
+
+        if(!$apns_certificate){
+            return;
+        }
 
         $data = Array(
             "aps" => Array(
