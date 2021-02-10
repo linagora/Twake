@@ -1951,4 +1951,20 @@ export default {
   'components.inputs.input_with_select.input.placeholder': 'Ma chaîne',
   'components.inputs.input_with_select.select.placeholder': 'Mon groupe',
   'components.inputs.input_with_select.button.tooltip': 'Définir un groupe de chaînes',
+  'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel':
+    '$1 a ajouté $2 à la chaîne',
+  'scenes.apps.messages.message.activity_message.a_join_the_channel': '$1 a rejoint la chaîne',
+  'scenes.apps.messages.message.activity_message.a_left_the_channel': '$1 a quitté la chaîne',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_description':
+    '$1 a changer la description',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_name':
+    '$1 a renommé la chaîne en $2',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
+    '$1 a ajouté un nouveau onglet $2: "$3"',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab':
+    '$1 a supprimé l\'onglet $2: "$3"',
+  'scenes.apps.messages.message.activity_message.a_created_channel_connector':
+    '$1 a ajouté un nouveau connecteur: "$2"',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
+    '$1 a supprimé le connecteur: "$2"',
 };

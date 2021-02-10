@@ -30,7 +30,7 @@ class NodePushChannelActivity extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("channel:activity", true, 10, 60, ["exchange_type" => "fanout"]);
+            $messages = $queues->consume("channel:activity_message", true, 10, 60, ["exchange_type" => "fanout"]);
 
             if (count($messages) == 0) {
                 sleep(1);
@@ -50,12 +50,9 @@ class NodePushChannelActivity extends ContainerAwareCommand
                     ];
 
                     $messagesService->save($object, []);
+                    $queues->ack("channel:activity_message", $queue_message, ["exchange_type" => "fanout"]);
                 }
-
-                $queues->ack("channel:activity", $queue_message, ["exchange_type" => "fanout"]);
-
             }
-
         }
 
     }

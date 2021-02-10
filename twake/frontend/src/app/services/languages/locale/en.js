@@ -1878,4 +1878,21 @@ export default {
   'components.inputs.input_with_select.select.no_sections':
     'Start writing the name of your first channel section.',
   'components.inputs.input_with_select.button.tooltip': 'Set a channel section',
+  'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel':
+    '$1 added $2 to the channel',
+  'scenes.apps.messages.message.activity_message.a_join_the_channel': '$1 joined the channel',
+  'scenes.apps.messages.message.activity_message.a_left_the_channel': '$1 left the channel',
+  'scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel':
+    '$1 removed $2 from the channel',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_description':
+    '$1 changed the description',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_name':
+    '$1 renamed the channel to $2',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
+    '$1 added $2 to the channel',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
+    '$1 added a new $2 tab: "$3"',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab': '$1 removed $2 tab: "$3"',
+  'scenes.apps.messages.message.activity_message.a_created_channel_connector': '$1 added a new connector: "$2"',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector': '$1 removed a connector: "$2"'
 };

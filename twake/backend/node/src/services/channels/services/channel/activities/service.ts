@@ -194,7 +194,7 @@ export default class Activities implements Initializable {
   ): Promise<void> {
     logger.debug(`Activities - New ${event} event %o`, data);
     try {
-      await this.pubsub.publish<ActivityPublishedType>("channel:activity", {
+      await this.pubsub.publish<ActivityPublishedType>("channel:activity_message", {
         data: {
           channel_id: channel.id,
           workspace_id: channel.workspace_id,
