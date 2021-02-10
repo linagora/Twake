@@ -12,7 +12,7 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
-import { handleError } from ".";
+import { handleError } from "../../../../utils/handleError";
 import { getChannelRooms } from "../../services/member/realtime";
 import {
   ResourceCreateResponse,

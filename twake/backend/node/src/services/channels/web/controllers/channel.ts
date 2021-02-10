@@ -16,7 +16,7 @@ import {
   UpdateChannelBody,
 } from "../types";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
-import { handleError } from ".";
+import { handleError } from "../../../../utils/handleError";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,

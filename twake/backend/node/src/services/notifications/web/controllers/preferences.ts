@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { NotificationServiceAPI } from "../../api";
-import { handleError } from ".";
+import { handleError } from "../../../../utils/handleError";
 import {
   NotificationPreferenceListQueryParameters,
   CreateNotificationPreferencesBody,
