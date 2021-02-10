@@ -31,10 +31,7 @@ export default (props: Props): JSX.Element => {
     isDirectChannel ? props.channel.direct_channel_members || props.channel.members || [] : [],
   );
 
-  const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/' + props.channel.company_id + '/',
-    NotificationResource,
-  );
+  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
 
   const { avatar, name } = isDirectChannel

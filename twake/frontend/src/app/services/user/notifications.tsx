@@ -74,59 +74,56 @@ class Notifications extends Observable {
     );
 
     if (WorkspacesService.currentGroupId) {
-      this.subscribeToCompaniesNotifications(WorkspacesService.currentGroupId);
-
-      //Fixme, we need to subscribe fast to current company, and we can wait for others
-      setTimeout(() => {
-        this.subscribeToCompaniesNotifications();
-      }, 5000);
+      this.subscribeToCurrentCompanyNotifications(WorkspacesService.currentGroupId);
+      this.subscribeToCompaniesNotifications();
     }
   }
 
-  subscribeToCompaniesNotifications(companyId?: string) {
-    let subscribedToFirst = false;
-
-    Object.keys(WorkspacesService.user_workspaces).forEach((id: string) => {
-      const company = (WorkspacesService.user_workspaces as any)[id].group;
-      if (!this.subscribedCompanies[company.id] && (!companyId || company.id === companyId)) {
-        const notificationsCollection = Collection.get(
-          '/notifications/v1/badges/' + company.id + '/',
-          NotificationResource,
-        );
-        notificationsCollection.setOptions({
-          reloadStrategy: 'ontime',
-        });
-
-        //We only need to subscribe to notifications once
-        if (!subscribedToFirst) {
-          subscribedToFirst = true;
-
-          notificationsCollection.getTransport().start();
-          notificationsCollection.removeEventListener(
-            'notification:desktop',
-            this.triggerUnreadMessagesPushNotification,
-          );
-          notificationsCollection.addEventListener(
-            'notification:desktop',
-            this.triggerUnreadMessagesPushNotification,
-          );
-        }
-
-        //Load if there is at least one notification in group
-        notificationsCollection.findOne({}, { limit: 1 });
-        this.getNotifications(notificationsCollection);
-
-        //Listen websockets
-        notificationsCollection.addWatcher(
-          () => {
-            this.getNotifications(notificationsCollection, true);
-          },
-          { company_id: company.id },
-        );
-
-        this.subscribedCompanies[company.id] = true;
-      }
+  //This method is called each time we change our current company
+  subscribeToCurrentCompanyNotifications(companyId: string) {
+    console.log('CHOOSEN A COMPANY');
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+      { tag: 'current_company' },
+    );
+    notificationsCollection.setOptions({
+      reloadStrategy: 'ontime',
     });
+    notificationsCollection.find(
+      {},
+      { query: { company_id: companyId }, limit: 1000, refresh: true },
+    );
+  }
+
+  //This one is called only once on starting platform
+  subscribeToCompaniesNotifications() {
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+    );
+    notificationsCollection.setOptions({
+      reloadStrategy: 'ontime',
+    });
+
+    notificationsCollection.getTransport().start();
+    notificationsCollection.removeEventListener(
+      'notification:desktop',
+      this.triggerUnreadMessagesPushNotification,
+    );
+    notificationsCollection.addEventListener(
+      'notification:desktop',
+      this.triggerUnreadMessagesPushNotification,
+    );
+
+    //Load if there is at least one notification for user
+    notificationsCollection.findOne({}, { limit: 1 });
+    this.getNotifications(notificationsCollection);
+
+    //Listen websockets
+    notificationsCollection.addWatcher(() => {
+      this.getNotifications(notificationsCollection, true);
+    }, {});
   }
 
   getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
@@ -265,7 +262,7 @@ class Notifications extends Observable {
   read(channel: ChannelResource) {
     channel.action('read', { value: true });
     const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/' + channel.data.company_id + '/',
+      '/notifications/v1/badges/',
       NotificationResource,
     );
     notificationsCollection.remove({ channel_id: channel.id }, { withoutBackend: true });

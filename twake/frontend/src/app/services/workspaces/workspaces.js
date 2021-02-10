@@ -16,6 +16,7 @@ import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
+import Notifications from 'services/user/notifications';
 import $ from 'jquery';
 
 import Globals from 'services/Globals.js';
@@ -65,6 +66,13 @@ class Workspaces extends Observable {
           }, 10000);
         });
       }
+    }
+  }
+
+  updateCurrentCompanyId(companyId) {
+    if (this.currentGroupId != companyId && companyId) {
+      this.currentGroupId = companyId;
+      Notifications.subscribeToCurrentCompanyNotifications(companyId);
     }
   }
 
