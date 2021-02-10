@@ -45,7 +45,6 @@ class RabbitMQ implements QueueManager
 
         $msg = new AMQPMessage(json_encode($message), $amqp_options);
 
-
         $channel = $this->getChannel();
         if($options["exchange_type"]){
             $channel->queue_declare($route, false, true, false, false);
@@ -70,13 +69,19 @@ class RabbitMQ implements QueueManager
             return true;
         };
         $this->stop_consume = false;
+        
+        if($this->channel){
+            $this->channel->close();
+            $this->channel = null;
+        }
         $channel = $this->getChannel();
 
         if($options["exchange_type"]){
             $channel->queue_declare($route, false, true, false, false);
             $channel->exchange_declare($route, $options["exchange_type"], false, true, false);
+            $channel->queue_bind($route, $route);
             $channel->basic_qos(null, $max_messages, null);
-            $channel->basic_consume($route, $route, false, !$should_ack, false, false, $callback);
+            $channel->basic_consume($route, "", false, !$should_ack, false, false, $callback);
         }else{
             $channel->queue_declare($route, false, true, false, false, [
                 "x-message-ttl" => 24 * 60 * 60 * 1000
