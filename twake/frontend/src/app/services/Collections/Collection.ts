@@ -240,7 +240,10 @@ export default class Collection<R extends Resource<any>> {
     const storage = this.getStorage();
     let mongoItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
 
-    if (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) {
+    if (
+      (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) ||
+      options?.refresh
+    ) {
       if (!this.completion.isLocked) {
         this.completion.completeFindOne(filter, options).then(async mongoItem => {
           if (mongoItem) {

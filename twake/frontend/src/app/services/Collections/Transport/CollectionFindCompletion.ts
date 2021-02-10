@@ -52,10 +52,7 @@ export default class FindCompletion<G extends Resource<any>> {
 
         this.collection.getEventEmitter().emit('http:loading', true);
 
-        console.log(options, options?.query);
-        console.log('>>>a');
         const items = await this.collection.getTransport().get(filter, options?.query);
-        console.log('b');
 
         if (items?.resources?.length !== undefined) {
           if (!this.nextPageToken && this.collection.getOptions().cacheReplaceMode === 'always') {

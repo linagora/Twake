@@ -81,7 +81,6 @@ class Notifications extends Observable {
 
   //This method is called each time we change our current company
   subscribeToCurrentCompanyNotifications(companyId: string) {
-    console.log('CHOOSEN A COMPANY');
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
       NotificationResource,
