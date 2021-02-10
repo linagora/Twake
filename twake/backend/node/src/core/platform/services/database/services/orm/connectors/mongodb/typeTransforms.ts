@@ -32,7 +32,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
 };
 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
-  if ((v !== null && type === "encoded_string") || type === "encoded_json") {
+  if (v !== null && (type === "encoded_string" || type === "encoded_json")) {
     try {
       v = decrypt(v, options.secret);
     } catch (err) {

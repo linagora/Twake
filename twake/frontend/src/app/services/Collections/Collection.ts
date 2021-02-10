@@ -50,6 +50,7 @@ export default class Collection<R extends Resource<any>> {
   private reloadRegistered = 0;
   private resources: { [id: string]: R } = {};
   private storage: CollectionStore;
+  private completeTimeout: any = null;
 
   constructor(
     private readonly path: string = '',
@@ -211,7 +212,8 @@ export default class Collection<R extends Resource<any>> {
         }
       });
     } else {
-      setTimeout(() => {
+      this.completeTimeout && clearTimeout(this.completeTimeout);
+      this.completeTimeout = setTimeout(() => {
         this.find(filter, options);
       }, 1000);
     }
@@ -238,7 +240,10 @@ export default class Collection<R extends Resource<any>> {
     const storage = this.getStorage();
     let mongoItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
 
-    if (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) {
+    if (
+      (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) ||
+      options?.refresh
+    ) {
       if (!this.completion.isLocked) {
         this.completion.completeFindOne(filter, options).then(async mongoItem => {
           if (mongoItem) {
@@ -246,7 +251,8 @@ export default class Collection<R extends Resource<any>> {
           }
         });
       } else {
-        setTimeout(() => {
+        this.completeTimeout && clearTimeout(this.completeTimeout);
+        this.completeTimeout = setTimeout(() => {
           this.findOne(filter, options);
         }, 1000);
       }

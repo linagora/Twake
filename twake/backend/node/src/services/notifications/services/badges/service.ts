@@ -8,6 +8,7 @@ import {
   OperationType,
   Paginable,
   CrudExeption,
+  Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
 import {
@@ -77,6 +78,32 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
 
   list(): Promise<ListResult<UserNotificationBadge>> {
     throw new Error("Not implemented");
+  }
+
+  async listForUserPerCompanies(
+    companies_ids: string[],
+    user_id: string,
+  ): Promise<ListResult<UserNotificationBadge>> {
+    let result: UserNotificationBadge[] = [];
+    let type = "";
+    for (const company_id of companies_ids) {
+      const find = await this.repository.find(
+        {
+          ...{
+            company_id,
+            user_id,
+          },
+          filter: {},
+        },
+        {
+          pagination: new Pagination("", "1"),
+        },
+      );
+      type = find.type;
+      result = result.concat(find.getEntities());
+    }
+
+    return new ListResult(type, result);
   }
 
   listForUser(

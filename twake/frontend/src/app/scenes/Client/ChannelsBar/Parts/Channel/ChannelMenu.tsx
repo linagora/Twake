@@ -45,10 +45,7 @@ export default (props: Props): JSX.Element => {
 
   Languages.useListener(useState);
 
-  const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/' + props.channel.data.company_id + '/',
-    NotificationResource,
-  );
+  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
 
   const changeNotificationPreference = async (preference: 'all' | 'none' | 'mentions' | 'me') => {
     const channelMember: ChannelMemberType = props.channel.data.user_member || {};
