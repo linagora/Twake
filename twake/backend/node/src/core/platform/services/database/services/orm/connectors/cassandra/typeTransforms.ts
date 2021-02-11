@@ -26,10 +26,7 @@ export const transformValueToDbString = (
   options: TransformOptions = {},
 ): string => {
   if (type === "number") {
-    if (!isNumber(v)) {
-      throw new Error(`'${v}' is not a ${type}`);
-    }
-    return `${v}`;
+    return `${parseInt(v)}`;
   }
   if (type === "uuid" || type === "timeuuid") {
     v = (v || "").toString().replace(/[^a-zA-Z0-9-]/g, "");
