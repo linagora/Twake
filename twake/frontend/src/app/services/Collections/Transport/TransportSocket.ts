@@ -32,7 +32,11 @@ export default class TransportSocket {
     setInterval(() => {
       if (new Date().getTime() - this.lastConnection > 30000) {
         this.lastConnection = new Date().getTime();
-        if (!this.socket?.connected) this.connect();
+        if (!this.socket?.connected) {
+          this.connect();
+        } else {
+          this.rejoinAll();
+        }
       }
     }, 30000);
 
@@ -59,13 +63,8 @@ export default class TransportSocket {
     const socket = this.socket;
     this.socket.on('disconnect', () => {
       logger.debug('Disconnected from websocket');
-      Object.keys(this.listeners).forEach(key => {
-        Object.keys(this.listeners[key]).forEach(tag => {
-          if (this.listeners[key][tag]) {
-            this.listeners[key][tag](WebsocketEvents.Disconnected, {});
-            this.join(key, tag, this.listeners[key][tag]);
-          }
-        });
+      setTimeout(() => {
+        this.connect();
       });
     });
 
@@ -75,14 +74,7 @@ export default class TransportSocket {
         .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
         .on('authenticated', () => {
           logger.debug('Authenticated');
-          Object.keys(this.listeners).forEach(key => {
-            Object.keys(this.listeners[key]).forEach(tag => {
-              if (this.listeners[key][tag]) {
-                this.listeners[key][tag](WebsocketEvents.Connected, {});
-                this.join(key, tag, this.listeners[key][tag]);
-              }
-            });
-          });
+          this.rejoinAll(true);
         })
         .on('unauthorized', (err: any) => {
           logger.warn('Websocket is not authorized', err);
@@ -107,6 +99,17 @@ export default class TransportSocket {
       socket.on(WebsocketEvents.Event, (event: any) => {
         logger.debug('New Websocket event', event.name);
         if (event.name) this.notify(event.name, WebsocketEvents.Event, event);
+      });
+    });
+  }
+
+  rejoinAll(newlyConnected: boolean = false) {
+    Object.keys(this.listeners).forEach(key => {
+      Object.keys(this.listeners[key]).forEach(tag => {
+        if (this.listeners[key][tag]) {
+          newlyConnected && this.listeners[key][tag](WebsocketEvents.Connected, {});
+          this.join(key, tag, this.listeners[key][tag]);
+        }
       });
     });
   }

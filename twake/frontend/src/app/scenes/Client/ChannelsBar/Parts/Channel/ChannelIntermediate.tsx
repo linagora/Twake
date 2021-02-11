@@ -27,9 +27,9 @@ export default (props: Props): JSX.Element => {
     { query: { mine: true } },
   )[0];
 
-  if (!channel.data.visibility) {
-    //Fixme: find a better way
-    props.collection.findOne({ id: channel.id }, { refresh: true });
+  //Fixme: find a better way to reload channels if we have only part of it (maily when invited by other members)
+  if (!channel?.data?.visibility && channel?.data?.user_member?.user_id) {
+    props.collection.reload('ontime');
   }
 
   useUsersListener(

@@ -11,8 +11,8 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <WorkspacesBar key={companyId} />
-      <ChannelsBar key={workspaceId} />
+      <WorkspacesBar key={'workspacebar-' + companyId} />
+      <ChannelsBar key={'channelbar-' + workspaceId} />
     </Layout>
   );
 };
