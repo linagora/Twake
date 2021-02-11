@@ -20,7 +20,7 @@ import MessagesListServiceManager from 'app/services/Apps/Messages/MessagesListU
 import Input from '../Input/Input';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import ActivityMessage from './ActivityMessage';
+import ActivityMessage, { ActivityType } from './ActivityMessage';
 
 type Props = {
   fake?: boolean;
@@ -145,8 +145,8 @@ export default class MessageComponent extends Component<Props, { render: boolean
     }
 
     if (message?.hidden_data?.type === 'activity') {
-      const activity = message.hidden_data.activity;
-      return <ActivityMessage refDom={this.setDomElement} message={message} activity={activity} />;
+      const activity = message.hidden_data.activity as ActivityType;
+      return <ActivityMessage refDom={this.setDomElement} activity={activity} />;
     }
 
     const max_responses = 3;

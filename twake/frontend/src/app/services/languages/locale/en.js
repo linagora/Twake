@@ -1890,9 +1890,10 @@ export default {
     '$1 renamed the channel to $2',
   'scenes.apps.messages.message.activity_message.a_created_channel_tab':
     '$1 added $2 to the channel',
-  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
-    '$1 added a new $2 tab: "$3"',
-  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab': '$1 removed $2 tab: "$3"',
-  'scenes.apps.messages.message.activity_message.a_created_channel_connector': '$1 added a new connector: "$2"',
-  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector': '$1 removed a connector: "$2"'
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab': '$1 added a new $2 tab $3',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab': '$1 removed $2 tab $3',
+  'scenes.apps.messages.message.activity_message.a_created_channel_connector':
+    '$1 added a new connector $2',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
+    '$1 removed a connector $2',
 };

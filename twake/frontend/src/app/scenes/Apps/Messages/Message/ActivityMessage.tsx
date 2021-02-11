@@ -18,7 +18,7 @@ enum ChannelActivityEnum {
   CHANNEL_CONNECTOR_DELETED = 'channel:activity:connector:deleted',
 }
 
-type ActivityType = {
+export type ActivityType = {
   type: ChannelActivityEnum;
   actor: {
     type: 'user';
@@ -45,7 +45,6 @@ type ActivityType = {
 
 type PropsType = {
   refDom?: ((node: any) => any) | undefined;
-  message: Message;
   activity: ActivityType;
 };
 
@@ -59,16 +58,16 @@ const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
   let list: any[] = [];
   replacements.forEach((replacement, i) => {
     let split = temp.split(`{${i}}`);
-    list.push(split[0]);
+    list.push(<Typography.Text type="secondary">{split[0]}</Typography.Text>);
     list.push(replacement);
     temp = split[1];
   });
-  list.push(temp);
+  list.push(<Typography.Text type="secondary">{temp}</Typography.Text>);
   return list;
 };
 
 export default (props: PropsType): JSX.Element => {
-  const generateTypographyName = (id: string) => <User id={id} username="Unknown" />;
+  const generateTypographyName = (id: string) => <User id={id} username="Unknown" hideUserImage />;
 
   const memberJoinedOrInvited = (activity: ActivityType) => {
     if (activity.context.array) {
@@ -78,7 +77,7 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_join_the_channel',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
           ],
@@ -89,10 +88,10 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <span style={{ margin: '0 8px', lineHeight: 0 }}>
+            <span style={{ margin: '0 5px', lineHeight: 0 }}>
               {generateTypographyName(resource.user_id || '')}
             </span>,
           ],
@@ -108,7 +107,7 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_left_the_channel',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
           ],
@@ -119,10 +118,10 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <span style={{ margin: '0 8px', lineHeight: 0 }}>
+            <span style={{ margin: '0 5px', lineHeight: 0 }}>
               {generateTypographyName(resource.user_id || '')}
             </span>,
           ],
@@ -141,10 +140,10 @@ export default (props: PropsType): JSX.Element => {
       return translateUsingReactNode(
         'scenes.apps.messages.message.activity_message.a_updated_channel_name',
         [
-          <span style={{ marginRight: 8, lineHeight: 0 }}>
+          <span style={{ marginRight: 5, lineHeight: 0 }}>
             {generateTypographyName(activity.actor.id)}
           </span>,
-          <Typography.Text strong className="small-x-margin">
+          <Typography.Text strong style={{ margin: '0 5px' }}>
             {icon} {next?.resource.name}
           </Typography.Text>,
         ],
@@ -155,7 +154,7 @@ export default (props: PropsType): JSX.Element => {
       return translateUsingReactNode(
         'scenes.apps.messages.message.activity_message.a_updated_channel_description',
         [
-          <span style={{ marginRight: 8, lineHeight: 0 }}>
+          <span style={{ marginRight: 5, lineHeight: 0 }}>
             {generateTypographyName(activity.actor.id)}
           </span>,
         ],
@@ -173,13 +172,15 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_created_channel_tab',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <Typography.Text strong className="small-x-margin">
+            <Typography.Text strong style={{ margin: '0 5px' }}>
               {connector[0].name}
             </Typography.Text>,
-            <Typography.Text strong>{resource.name}</Typography.Text>,
+            <Typography.Text strong style={{ marginLeft: 5 }}>
+              {resource.name}
+            </Typography.Text>,
           ],
         );
       }
@@ -188,13 +189,15 @@ export default (props: PropsType): JSX.Element => {
         return translateUsingReactNode(
           'scenes.apps.messages.message.activity_message.a_deleted_channel_tab',
           [
-            <span style={{ marginRight: 8, lineHeight: 0 }}>
+            <span style={{ marginRight: 5, lineHeight: 0 }}>
               {generateTypographyName(activity.actor.id)}
             </span>,
-            <Typography.Text strong className="small-x-margin">
+            <Typography.Text strong style={{ margin: '0 5px' }}>
               {connector[0].name}
             </Typography.Text>,
-            <Typography.Text strong>{resource.name}</Typography.Text>,
+            <Typography.Text strong style={{ marginLeft: 5 }}>
+              {resource.name}
+            </Typography.Text>,
           ],
         );
       }
@@ -214,10 +217,12 @@ export default (props: PropsType): JSX.Element => {
           return translateUsingReactNode(
             'scenes.apps.messages.message.activity_message.a_created_channel_connector',
             [
-              <span style={{ marginRight: 8, lineHeight: 0 }}>
+              <span style={{ marginRight: 5, lineHeight: 0 }}>
                 {generateTypographyName(activity.actor.id)}
               </span>,
-              <Typography.Text strong>{connector[0].name}</Typography.Text>,
+              <Typography.Text strong style={{ marginLeft: 5 }}>
+                {connector[0].name}
+              </Typography.Text>,
             ],
           );
         }
@@ -226,10 +231,12 @@ export default (props: PropsType): JSX.Element => {
           return translateUsingReactNode(
             'scenes.apps.messages.message.activity_message.a_deleted_channel_connector',
             [
-              <span style={{ marginRight: 8, lineHeight: 0 }}>
+              <span style={{ marginRight: 5, lineHeight: 0 }}>
                 {generateTypographyName(activity.actor.id)}
               </span>,
-              <Typography.Text strong>{connector[0].name}</Typography.Text>,
+              <Typography.Text strong style={{ marginLeft: 5 }}>
+                {connector[0].name}
+              </Typography.Text>,
             ],
           );
         }
@@ -237,27 +244,29 @@ export default (props: PropsType): JSX.Element => {
     }
   };
 
-  const compute = () => {
-    switch (props.activity?.type) {
-      case ChannelActivityEnum.CHANNEL_MEMBER_CREATED:
-        return memberJoinedOrInvited(props.activity);
-      case ChannelActivityEnum.CHANNEL_MEMBER_DELETED:
-        return memberLeftOrRemoved(props.activity);
-      case ChannelActivityEnum.CHANNEL_UPDATED:
-        return channelNameOrDescription(props.activity);
-      case ChannelActivityEnum.CHANNEL_TAB_CREATED:
-      case ChannelActivityEnum.CHANNEL_TAB_DELETED:
-        return channelTabCreatedOrDeleted(props.activity);
-      case ChannelActivityEnum.CHANNEL_CONNECTOR_CREATED:
-      case ChannelActivityEnum.CHANNEL_CONNECTOR_DELETED:
-        return channelConnectorCreatedOrDeleted(props.activity);
-      default:
-        return 'Channel Activity not found';
-    }
+  const compute = (): string | any[] => {
+    const process = new Map<ChannelActivityEnum, (activity: ActivityType) => any[] | undefined>();
+    process
+      .set(ChannelActivityEnum.CHANNEL_MEMBER_CREATED, memberJoinedOrInvited)
+      .set(ChannelActivityEnum.CHANNEL_MEMBER_DELETED, memberLeftOrRemoved)
+      .set(ChannelActivityEnum.CHANNEL_UPDATED, channelNameOrDescription)
+      .set(ChannelActivityEnum.CHANNEL_TAB_CREATED, channelTabCreatedOrDeleted)
+      .set(ChannelActivityEnum.CHANNEL_TAB_DELETED, channelTabCreatedOrDeleted)
+      .set(ChannelActivityEnum.CHANNEL_CONNECTOR_CREATED, channelConnectorCreatedOrDeleted)
+      .set(ChannelActivityEnum.CHANNEL_CONNECTOR_DELETED, channelConnectorCreatedOrDeleted);
+
+    const method = process.get(props.activity?.type) || (() => {});
+    return method(props.activity) || '';
   };
 
   return (
-    <Row className="markdown" align="middle" justify="center" ref={props.refDom}>
+    <Row
+      className="markdown"
+      style={{ paddingBottom: 16 }}
+      align="middle"
+      justify="center"
+      ref={props.refDom}
+    >
       {compute()}
     </Row>
   );
