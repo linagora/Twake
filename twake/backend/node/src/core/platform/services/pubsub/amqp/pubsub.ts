@@ -25,7 +25,7 @@ export class AMQPPubSub implements PubsubClient {
     topic: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     listener: PubsubListener<any>,
-    options: PubsubSubscriptionOptions = { unique: false },
+    options: PubsubSubscriptionOptions = { unique: false, queue: null },
   ): Promise<void> {
     logger.debug(`${LOG_PREFIX} Subscribing to topic ${topic} with options %o`, options);
 
@@ -46,7 +46,7 @@ export class AMQPPubSub implements PubsubClient {
     };
 
     return options?.unique
-      ? this.client.subscribeToDurableQueue(topic, topic, callback)
+      ? this.client.subscribeToDurableQueue(topic, options?.queue || topic, callback)
       : this.client.subscribe(topic, callback);
   }
 }

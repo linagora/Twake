@@ -34,6 +34,11 @@ export type PubsubSubscriptionOptions = {
    * Automatically acknowledge the incoming message when the processing is complete
    */
   ack?: boolean;
+
+  /**
+   * Use custom named queue instead of using same name as exchange
+   */
+  queue?: string | null;
 };
 
 export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;
