@@ -27,6 +27,7 @@ class MessageSystem
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->queues = $app->getServices()->get('app.queues')->getAdapter();
         $this->emojione_client = new Client(new Ruleset());
+        $this->app = $app;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
@@ -200,6 +201,22 @@ class MessageSystem
         $this->em->flush();
 
         $this->deleteInBloc($message);
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "message_id" => $array_before_delete["id"],
+            "thread_id" => $array_before_delete["parent_message_id"]
+        );
+        $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $array_before_delete["channel_id"] . "/messages/updates");
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "object_type" => "",
+            "front_id" => $array_before_delete["front_id"]
+        );
+        $this->app->getServices()->get("app.websockets")->push("messages/" . $array_before_delete["channel_id"], $event);
 
         return $array_before_delete;
 
@@ -529,6 +546,23 @@ class MessageSystem
                 $array["ephemeral_message_recipients"] = $object["ephemeral_message_recipients"];
             }
         }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "update",
+            "message_id" => $array["id"],
+            "thread_id" => $array["parent_message_id"]
+        );
+        $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $array["channel_id"] . "/messages/updates");
+
+        $event = Array(
+            "client_id" => "bot",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $array
+        );
+        $this->app->getServices()->get("app.websockets")->push("messages/" . $array["channel_id"], $event);
+
         return $array;
     }
 

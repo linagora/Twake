@@ -1,5 +1,5 @@
 import { cloneDeep, find } from "lodash";
-import { updatedDiff } from "deep-object-diff";
+import { diff } from "deep-object-diff";
 import {
   RealtimeSaved,
   RealtimeUpdated,
@@ -107,10 +107,11 @@ export class Service implements ChannelService {
         is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
         visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
         archived: isWorkspaceAdmin || isChannelOwner,
+        connectors: !isDirectChannel,
       };
 
       // Diff existing channel and input one, cleanup all the undefined fields for all objects
-      const channelDiff = updatedDiff(channelToUpdate, channel);
+      const channelDiff = diff(channelToUpdate, channel);
       const fields = Object.keys(channelDiff) as Array<Partial<keyof Channel>>;
 
       if (!fields.length) {
@@ -128,6 +129,13 @@ export class Service implements ChannelService {
       updatableFields.forEach(field => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (channelToSave as any)[field] = channel[field];
+      });
+
+      localEventBus.publish<ResourceEventsPayload>("channel:updated", {
+        actor: context.user,
+        resourcesBefore: [channelToUpdate],
+        resourcesAfter: [channel],
+        channel: channel,
       });
     }
 

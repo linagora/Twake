@@ -2,8 +2,8 @@
  * Common types for business services
  */
 
-import { ChannelMember, Channel as ChannelEntity } from "../channels/entities";
-import { PaginationQueryParameters } from "../channels/web/types";
+import { ChannelMember, Channel as ChannelEntity, ChannelTab } from "../channels/entities";
+import { ChannelParameters, PaginationQueryParameters } from "../channels/web/types";
 import { MessageNotification } from "../messages/types";
 
 export type uuid = string;
@@ -100,6 +100,11 @@ export interface ResourceWebsocket {
 export interface ResourceEventsPayload {
   user?: User;
   channel?: ChannelEntity;
+  channelParameters?: ChannelParameters;
   member?: ChannelMember;
   message?: MessageNotification;
+  actor?: User;
+  resourcesBefore?: (User | ChannelEntity | ChannelTab)[];
+  resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
+  tab?: ChannelTab;
 }

@@ -17,11 +17,13 @@ import { getChannelRooms } from "../../services/member/realtime";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
+  ResourceEventsPayload,
   ResourceGetResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../types";
 import { getTabsRealtimeRoom } from "../../services/tab/service";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class ChannelTabCrudController
   implements
@@ -79,6 +81,12 @@ export class ChannelTabCrudController
       const result = await this.service.save(entity, {}, getExecutionContext(request));
 
       if (result.entity) {
+        localEventBus.publish<ResourceEventsPayload>("channel:tab:created", {
+          tab: result.entity,
+          actor: getExecutionContext(request).user,
+          resourcesAfter: [result.entity],
+          channelParameters: request.params,
+        });
         reply.code(201);
       }
 
@@ -125,6 +133,12 @@ export class ChannelTabCrudController
       );
 
       if (deleteResult.deleted) {
+        localEventBus.publish<ResourceEventsPayload>("channel:tab:deleted", {
+          tab: deleteResult.entity,
+          actor: getExecutionContext(request).user,
+          resourcesAfter: [deleteResult.entity],
+          channelParameters: request.params,
+        });
         reply.code(204);
 
         return {
