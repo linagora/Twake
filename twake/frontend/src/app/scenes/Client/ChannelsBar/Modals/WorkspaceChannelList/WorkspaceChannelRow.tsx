@@ -73,16 +73,17 @@ export default ({ channel, joined }: PropsType) => {
         <Tooltip
           title={
             joined
-              ? 'You are member of this channel'
+              ? ''
               : channel.data.visibility !== 'public'
               ? 'You see this channel because you are an administrator'
-              : 'You can join this channel'
+              : ''
           }
         >
           <Button
             disabled={joined || channel.data.visibility !== 'public' ? true : false}
-            type={joined ? 'default' : 'primary'}
-            style={buttonStyle}
+            type={joined || channel.data.visibility !== 'public' ? 'default' : 'primary'}
+            style={{}}
+            size="small"
             onClick={joinChannel}
           >
             {Languages.t(

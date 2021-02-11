@@ -305,10 +305,13 @@ export const importChannel = async (channel: any) => {
     configuration.encryption.defaultIv
   );
 
-  const directChannelCompanyId = await determinareCompanyId(decryptedChannel);
   const workspaceId = decryptedChannel.direct
     ? "direct"
     : decryptedChannel.original_workspace_id;
+  const directChannelCompanyId =
+    workspaceId === "direct"
+      ? await determinareCompanyId(decryptedChannel)
+      : decryptedChannel.original_group_id;
 
   if ((!channel.name || !channel.icon) && workspaceId !== "direct") {
     return;

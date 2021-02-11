@@ -73,10 +73,7 @@ class Notifications extends Observable {
       this,
     );
 
-    if (WorkspacesService.currentGroupId) {
-      this.subscribeToCurrentCompanyNotifications(WorkspacesService.currentGroupId);
-      this.subscribeToCompaniesNotifications();
-    }
+    this.subscribeToCompaniesNotifications();
   }
 
   //This method is called each time we change our current company
