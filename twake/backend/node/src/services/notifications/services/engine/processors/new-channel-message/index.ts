@@ -19,7 +19,7 @@ export class NewChannelMessageProcessor
   readonly topics = {
     in: "message:created",
     out: "notification:mentions",
-    queue: "message:created-newchannelmessage",
+    queue: "message:created:consumer2",
   };
 
   readonly options = {

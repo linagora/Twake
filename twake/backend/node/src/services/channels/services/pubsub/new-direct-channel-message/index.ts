@@ -15,7 +15,7 @@ export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNo
   readonly options = {
     unique: true,
     ack: true,
-    queue: "message:created-newdirectchannelmessage",
+    queue: "message:created:consumer1",
   };
 
   readonly name = "Channel::NewDirectChannelMessageProcessor";
