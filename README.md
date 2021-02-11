@@ -11,14 +11,14 @@
 [![Community](https://img.shields.io/badge/community-awesome-brightgreen?style=flat)](https://community.twake.app)
 [![Twitter](https://img.shields.io/badge/twitter-%40twake-blue?style=flat)](https://twitter.com/twake)
 
-Twake is an open source collaborative workspace. It can be self-hosted and easily integrated into your teams.
+Twake is a secure open source collaboration platform to improve organizational productivity.
 Twake offers all the features for collaboration :
 
 - Team chat
-- Storage space
+- File Storage
 - Team Calendar
-- Todo list
-- Video call
+- To-do list
+- Video call and conferencing
 
 <a href="https://twakeapp.com"><img width=800 src="https://twake.app/medias/features/chat.jpg"/></a>
 
