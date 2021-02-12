@@ -81,7 +81,7 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
   // next page token
   page_token: string;
 
-  constructor(readonly type: string, protected entities: Entity[], nextPage?: Paginable) {
+  constructor(readonly type: string, protected entities: Entity[], readonly nextPage?: Paginable) {
     super();
     this.page_token = nextPage?.page_token;
   }
