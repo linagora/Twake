@@ -249,7 +249,7 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
-    // Not sure about this, we use him on Tracker + Activities
+    // Not sure about this, we use it on Tracker + Activities
     localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
