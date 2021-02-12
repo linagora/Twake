@@ -60,7 +60,7 @@ class RabbitMQ implements QueueManager
 
     public function consume($route, $callback, $options)
     {
-        $incallback = function ($msg) use ($max_messages, &$list) {
+        $incallback = function ($msg) use ($max_messages, &$list, $callback) {
             $callback($msg);
             if (count($list) >= $options["max_messages"]) {
                 $this->stop_consume = true;
