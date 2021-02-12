@@ -62,7 +62,7 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
               size={'large'}
               defaultValue={group || undefined}
               showSearch
-              autoFocus
+              autoFocus={displaySelector}
               placeholder={Languages.t('components.inputs.input_with_select.select.placeholder')}
               onChange={(value: string) => setGroup(value)}
               onSearch={(value: string) => setSearchedGroup(value)}
@@ -89,6 +89,7 @@ const InputWithSelect = ({ groups, channel, onChange }: PropsType): JSX.Element 
         </Col>
         <Col flex="auto">
           <Input
+            autoFocus={!displaySelector}
             size={'large'}
             maxLength={30}
             placeholder={Languages.t('components.inputs.input_with_select.input.placeholder')}
