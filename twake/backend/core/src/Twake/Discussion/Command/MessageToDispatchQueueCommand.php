@@ -40,7 +40,7 @@ class MessageToDispatchQueueCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("message_dispatch_queue", true);
+            $messages = $queues->oldConsume("message_dispatch_queue", true);
 
             if (count($messages) == 0) {
                 sleep(1);

@@ -37,7 +37,7 @@ class TestQueue extends ContainerAwareCommand
 
         sleep(10);
 
-        error_log(json_encode($queues->consume("test")));
+        error_log(json_encode($queues->oldConsume("test")));
 
     }
 

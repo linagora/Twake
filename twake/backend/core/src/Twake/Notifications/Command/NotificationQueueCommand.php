@@ -43,7 +43,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("push_notification", true);
+            $messages = $queues->oldConsume("push_notification", true);
 
             if (count($messages) == 0) {
                 sleep(1);

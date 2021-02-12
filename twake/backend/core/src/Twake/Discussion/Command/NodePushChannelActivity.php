@@ -30,29 +30,25 @@ class NodePushChannelActivity extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("channel:activity_message", true, 10, 60, ["exchange_type" => "fanout"]);
+            $queues->consume("channel:activity_message", function ($queue_message) use($messagesService, $queues, $em) {
 
-            if (count($messages) == 0) {
-                sleep(1);
-            } else {
+                $push_message = $queues->getMessage($queue_message);
 
-                foreach ($messages as $queue_message) {
-                    $push_message = $queues->getMessage($queue_message);
+                $object = [
+                    "channel_id" => $push_message["channel_id"],
+                    "parent_message_id" => "",
+                    "content" => "",
+                    "hidden_data" => [
+                        "type" => "activity",
+                        "activity" => $push_message["activity"]
+                    ],
+                ];
 
-                    $object = [
-                        "channel_id" => $push_message["channel_id"],
-                        "parent_message_id" => "",
-                        "content" => "",
-                        "hidden_data" => [
-                            "type" => "activity",
-                            "activity" => $push_message["activity"]
-                        ],
-                    ];
+                $messagesService->save($object, []);
+                $queues->ack("channel:activity_message", $queue_message, ["exchange_type" => "fanout"]);
+            
+            }, ["max_messages" => 10, "should_ack" => true, "exchange_type" => "fanout"]);
 
-                    $messagesService->save($object, []);
-                    $queues->ack("channel:activity_message", $queue_message, ["exchange_type" => "fanout"]);
-                }
-            }
         }
 
     }

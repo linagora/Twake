@@ -158,7 +158,7 @@ class Scheduled
 
         $done = 0;
 
-        $shards = $this->queues->consume("scheduled_notifications", true, 1);
+        $shards = $this->queues->oldConsume("scheduled_notifications", true, 1);
 
         foreach ($shards ?: [] as $shard) {
 
@@ -235,7 +235,7 @@ class Scheduled
     /** Get RabbitMQ notifications received at exact wanted time (sent on scheduled_notifications_[route]) */
     public function consume($route, $should_ack = false, $max_messages = 10, $message_processing = 60)
     {
-        $list = $this->queues->consume("scheduled_notifications_" . $route, $should_ack, $max_messages, $message_processing);
+        $list = $this->queues->oldConsume("scheduled_notifications_" . $route, $should_ack, $max_messages, $message_processing);
         return $list;
     }
 
