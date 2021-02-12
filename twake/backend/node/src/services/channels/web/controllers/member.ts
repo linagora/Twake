@@ -73,6 +73,7 @@ export class ChannelMemberCrudController
         company_id: request.params.company_id,
         workspace_id: request.params.workspace_id,
         channel_id: request.params.id,
+        user_id: request.params.member_id,
       },
     });
 

@@ -1,5 +1,4 @@
 import { Type } from "class-transformer";
-import c from "config";
 import { Channel } from ".";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";

@@ -297,7 +297,7 @@ export class CassandraMemberService implements MemberService {
   }
 
   private async listMembers(pagination: Paginable, query: string, params: cassandra.ArrayOrObject) {
-    logger.debug(`service.channel.member.list - ${query}, ${params}`);
+    logger.debug(`service.channel.member.list - ${query}, %o`, params);
     const paginate = CassandraPagination.from(pagination);
     const result = await this.client.execute(query, params, {
       fetchSize: paginate.limit,

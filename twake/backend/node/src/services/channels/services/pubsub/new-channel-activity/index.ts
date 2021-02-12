@@ -1,9 +1,6 @@
 import { logger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
-import {
-  ChannelActivityNotification,
-  ChannelSystemExecutionContext,
-} from "../../../types";
+import { ChannelActivityNotification } from "../../../types";
 import { ChannelPrimaryKey, ChannelService } from "../../../provider";
 import { Service } from "../../channel/service";
 
@@ -34,13 +31,7 @@ export class NewChannelActivityProcessor implements PubsubHandler<ChannelActivit
         workspace_id: message.workspace_id,
         company_id: message.company_id,
       };
-      const context: ChannelSystemExecutionContext = {
-        workspace: {
-          company_id: message.company_id,
-          workspace_id: message.workspace_id,
-        },
-      };
-      (this.service as Service).updateLastActivity(pk, context);
+      (this.service as Service).updateLastActivity(pk);
     } catch (err) {
       logger.error(
         { err },
