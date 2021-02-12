@@ -1896,4 +1896,5 @@ export default {
     '$1 added a new connector $2',
   'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
     '$1 removed a connector $2',
+  'scenes.client.channelbar.channelmemberslist.tag': "It's you",
 };

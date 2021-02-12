@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button, Col, Row, Typography } from 'antd';
+import { Button, Col, Row, Tag, Typography } from 'antd';
 import { Trash } from 'react-feather';
 
 import { ChannelMemberResource } from 'app/models/Channel';
@@ -83,7 +83,11 @@ export default (props: Props) => {
       {
         text: (
           <div style={{ color: 'var(--red)' }}>
-            {Languages.t('scenes.client.channelbar.channelmemberslist.menu.option_2')}
+            {Languages.t(
+              props.userId !== currentUserId
+                ? 'scenes.client.channelbar.channelmemberslist.menu.option_2'
+                : 'scenes.app.channelsbar.channel_leaving',
+            )}
           </div>
         ),
         icon: <Trash size={16} color="var(--red)" />,
@@ -92,7 +96,7 @@ export default (props: Props) => {
     ];
     userEvents = (
       <Col>
-        <div className="more-icon">
+        <div className="add more-icon">
           <Menu menu={menu} className="options">
             <Icon type="ellipsis-h more-icon grey-icon" />
           </Menu>
@@ -109,11 +113,14 @@ export default (props: Props) => {
     <Row key={`key_${props.userId}`} align="middle" gutter={[0, 16]}>
       <Col className="small-right-margin">{avatar}</Col>
       <Col flex={4}>
-        <Text strong>{name}</Text> @{users[0]?.username}
+        <Text strong>{name}</Text> @{users[0]?.username}{' '}
+        {props.userId === currentUserId && (
+          <Tag color="var(--green)">
+            {Languages.t('scenes.client.channelbar.channelmemberslist.tag')}
+          </Tag>
+        )}
       </Col>
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') &&
-        props.userId !== currentUserId &&
-        userEvents}
+      {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
   );
 };

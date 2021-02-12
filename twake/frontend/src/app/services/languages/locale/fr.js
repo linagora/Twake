@@ -1962,9 +1962,10 @@ export default {
   'scenes.apps.messages.message.activity_message.a_created_channel_tab':
     '$1 a ajouté un nouveau onglet $2 $3',
   'scenes.apps.messages.message.activity_message.a_deleted_channel_tab':
-    '$1 a supprimé l\'onglet $2 $3',
+    "$1 a supprimé l'onglet $2 $3",
   'scenes.apps.messages.message.activity_message.a_created_channel_connector':
     '$1 a ajouté un nouveau connecteur $2',
   'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
     '$1 a supprimé le connecteur $2',
+  'scenes.client.channelbar.channelmemberslist.tag': "C'est vous",
 };
