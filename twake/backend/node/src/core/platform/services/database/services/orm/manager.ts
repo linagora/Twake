@@ -4,6 +4,7 @@ import _ from "lodash";
 import { Connector } from "./connectors";
 import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { logger } from "../../../../framework";
 
 export default class EntityManager<EntityType extends Record<string, any>> {
   private toPersist: EntityType[] = [];
@@ -13,6 +14,7 @@ export default class EntityManager<EntityType extends Record<string, any>> {
 
   public persist(entity: any): this {
     if (!entity.constructor.prototype._entity || !entity.constructor.prototype._columns) {
+      logger.error("Can not persist this object %o", entity);
       throw Error("Cannot persist this object: it is not an entity.");
     }
 

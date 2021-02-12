@@ -60,7 +60,7 @@ export class CassandraConnector extends AbstractConnector<
     try {
       await this.createKeyspace();
     } catch (err) {
-      logger.warn("Keyspace can not be created", err);
+      logger.warn("services.database.orm.cassandra - Keyspace can not be created", err);
     }
 
     if (this.options.wait) {
@@ -104,16 +104,19 @@ export class CassandraConnector extends AbstractConnector<
           errors.pipe(
             delayWhen((_, i) => timer(i * delay)),
             //delay(1000), if we want fixed delay
-            tap(() => logger.debug("Retrying...")),
+            tap(() => logger.debug("services.database.orm.cassandra - Retrying...")),
             take(retries),
             concat(throwError("Maximum number of retries reached")),
           ),
         ),
       )
       .subscribe(
-        () => logger.debug("Keyspace has been found"),
+        () => logger.debug("services.database.orm.cassandra - Keyspace has been found"),
         err => {
-          logger.error({ err }, "Error while getting keyspace information");
+          logger.error(
+            { err },
+            "services.database.orm.cassandra - Error while getting keyspace information",
+          );
           subject.error(new Error("Can not find keyspace information"));
         },
         () => subject.complete(),
@@ -126,7 +129,7 @@ export class CassandraConnector extends AbstractConnector<
     try {
       await this.client.execute(`DROP KEYSPACE IF EXISTS ${this.options.keyspace};`);
     } catch (err) {
-      logger.error({ err }, "Error while dropping keyspace");
+      logger.error({ err }, "services.database.orm.cassandra - Error while dropping keyspace");
     }
 
     return this;
@@ -185,7 +188,9 @@ export class CassandraConnector extends AbstractConnector<
     const primaryKey = entity.options.primaryKey || [];
 
     if (primaryKey.length === 0) {
-      logger.error("Primary key was not defined for table " + entity.name);
+      logger.error(
+        "services.database.orm.cassandra - Primary key was not defined for table " + entity.name,
+      );
       return false;
     }
 
@@ -195,7 +200,7 @@ export class CassandraConnector extends AbstractConnector<
     const clusteringKeys: string[] = primaryKey as string[];
     if ([...partitionKey, ...clusteringKeys].some(key => columns[key] === undefined)) {
       logger.error(
-        "One primary key item doesn't exists in entity columns for table " + entity.name,
+        `services.database.orm.cassandra - One primary key item doesn't exists in entity columns for table ${entity.name}`,
       );
       return false;
     }
@@ -230,7 +235,9 @@ export class CassandraConnector extends AbstractConnector<
     // --- Alter table if not up to date --- //
     const existingColumns = await this.getTableDefinition(entity.name);
     if (existingColumns.length > 0) {
-      logger.debug(`Existing columns for table ${entity.name}, generating altertable queries`);
+      logger.debug(
+        `services.database.orm.cassandra - Existing columns for table ${entity.name}, generating altertable queries`,
+      );
       const alterQueryColumns = Object.keys(columns)
         .filter(colName => existingColumns.indexOf(colName) < 0)
         .map(colName => `${colName} ${cassandraType[columns[colName].type]}`);
@@ -319,7 +326,10 @@ export class CassandraConnector extends AbstractConnector<
               await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
-              logger.error("Error with CQL query: ", query, err);
+              logger.error(
+                { err },
+                `services.database.orm.cassandra - Error with CQL query: ${query}`,
+              );
               resolve(false);
             }
           }),
@@ -351,13 +361,18 @@ export class CassandraConnector extends AbstractConnector<
         const query = `DELETE FROM ${this.options.keyspace}.${
           entityDefinition.name
         } WHERE ${where.join(" AND ")}`;
+        logger.debug(`services.database.orm.cassandra.remove - Query: ${query}`);
+
         promises.push(
           new Promise(async resolve => {
             try {
               await this.getClient().execute(query);
               resolve(true);
             } catch (err) {
-              logger.error("Error with CQL query: ", query, err);
+              logger.error(
+                { err },
+                `services.database.orm.cassandra.remove - Error with CQL query: ${query}`,
+              );
               resolve(false);
             }
           }),
@@ -398,7 +413,7 @@ export class CassandraConnector extends AbstractConnector<
       },
     );
 
-    logger.debug(`services.database.orm.cassandra - ${query}`);
+    logger.debug(`services.database.orm.cassandra.find - Query: ${query}`);
 
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),
@@ -423,6 +438,10 @@ export class CassandraConnector extends AbstractConnector<
       results.pageState,
       options.pagination.limitStr || "100",
     );
+    logger.debug(
+      `services.database.orm.cassandra.find - Query: ${query} -> Result: entities.length = ${entities.length}`,
+    );
+
     return new ListResult<Table>(entityDefinition.type, entities, nextPage);
   }
 }
@@ -443,16 +462,18 @@ export function waitForTable(
         errors.pipe(
           delayWhen((_, i) => timer(i * delay)),
           //delay(1000),
-          tap(() => logger.debug("Retrying to get table metadata...")),
+          tap(() =>
+            logger.debug("services.database.orm.cassandra - Retrying to get table metadata..."),
+          ),
           take(retries),
           concat(throwError("Maximum number of retries reached")),
         ),
       ),
     )
     .subscribe(
-      () => logger.debug(`Table ${table} has been found`),
+      () => logger.debug(`services.database.orm.cassandra - Table ${table} has been found`),
       err => {
-        logger.debug(`Table ${table} error: ${err.message}`);
+        logger.debug({ err }, `services.database.orm.cassandra - Table ${table} error`);
         subject.error(new Error("Can not find table"));
       },
       () => subject.complete(),
@@ -473,13 +494,19 @@ async function checkForTable(
 
     const tableMetadata = result.rows[0];
 
-    logger.debug("Table metadata %o", tableMetadata);
+    logger.debug(
+      "services.database.orm.cassandra.checkForTable - Table metadata %o",
+      tableMetadata,
+    );
 
     if (!tableMetadata) {
       throw new Error("Can not find table metadata");
     }
   } catch (err) {
-    logger.error({ err }, "Error while getting table metadata");
+    logger.error(
+      { err },
+      "services.database.orm.cassandra.checkForTable - Error while getting table metadata",
+    );
     throw new Error("Error while getting table metadata");
   }
 }

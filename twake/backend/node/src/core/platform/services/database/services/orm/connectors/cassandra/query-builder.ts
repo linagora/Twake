@@ -52,6 +52,8 @@ export function buildSelectQuery<Entity>(
   const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} WHERE ${[
     ...where,
     ...(buildComparison(findOptions) || []),
+    ...(buildIn(findOptions) || []),
+    ...(buildLike(findOptions) || []),
   ].join(" AND ")}`;
 
   return query;
@@ -85,4 +87,22 @@ export function buildComparison(options: FindOptions = {}): string[] {
     ...(greaterClause || []),
     ...(greaterEqualClause || []),
   ];
+}
+
+export function buildIn(options: FindOptions = {}): string[] {
+  let inClauses: string[];
+  if (options.$in) {
+    inClauses = options.$in.map(element => `${element[0]} IN (${element[1].join(",")})`);
+  }
+
+  return inClauses || [];
+}
+
+export function buildLike(options: FindOptions = {}): string[] {
+  let likeClauses: string[];
+  if (options.$like) {
+    likeClauses = options.$like.map(element => `${element[0]} LIKE '%${element[1]}%`);
+  }
+
+  return likeClauses || [];
 }
