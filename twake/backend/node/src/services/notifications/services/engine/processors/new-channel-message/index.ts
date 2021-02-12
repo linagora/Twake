@@ -19,12 +19,12 @@ export class NewChannelMessageProcessor
   readonly topics = {
     in: "message:created",
     out: "notification:mentions",
-    queue: "message:created:consumer2",
   };
 
   readonly options = {
     unique: true,
     ack: true,
+    queue: "message:created:consumer2",
   };
 
   readonly name = "NewChannelMessageProcessor";
