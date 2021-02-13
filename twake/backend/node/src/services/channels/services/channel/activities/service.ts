@@ -52,6 +52,10 @@ export default class Activities implements Initializable {
       if (data.channel.visibility === ChannelVisibility.DIRECT) {
         return;
       }
+      //Do not notify when user leave the channel by themselves
+      if (data.resourcesBefore[0].id === data.actor.id) {
+        return;
+      }
       this.notify(
         channelMemberDeletedEvent,
         {
