@@ -88,9 +88,7 @@ export default () => {
         scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
-          {AccessRightsService.hasLevel(workspaceId, 'member') && (
-            <ChannelsApps key={workspaceId} />
-          )}
+          <ChannelsApps key={workspaceId} />
           <Workspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>
