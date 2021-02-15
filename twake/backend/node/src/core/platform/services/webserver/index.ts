@@ -49,7 +49,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   }
 
   async doStop(): Promise<this> {
-    this.server.close();
+    await this.server.close();
 
     return this;
   }
