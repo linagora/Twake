@@ -1,6 +1,6 @@
 ![](https://twake.app/medias/Twake-long.png)
 
-# Twake - Ultimate collaborative Workspace
+# Twake - The Open Digital Workplace
 
 ![update-saas-backend](https://github.com/TwakeApp/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
 ![update-saas-frontend](https://github.com/TwakeApp/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
@@ -17,8 +17,9 @@ Twake offers all the features for collaboration :
 - Team chat
 - File Storage
 - Team Calendar
-- To-do list
+- Task Management
 - Video call and conferencing
+- Real time document collaboration
 
 <a href="https://twakeapp.com"><img width=800 src="https://twake.app/medias/features/chat.jpg"/></a>
 
