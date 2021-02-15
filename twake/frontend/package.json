@@ -1,7 +1,7 @@
 {
   "name": "twake",
   "version": "2020.3.107",
-  "repository": "https://github.com/TwakeApp/Twake",
+  "repository": "https://github.com/Twake/Twake",
   "license": "AGPL-3.0",
   "scripts": {
     "dev:start": "craco start",

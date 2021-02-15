@@ -9,7 +9,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/TwakeApp/Pusher"
+      "url": "https://github.com/Twake/Pusher"
     }
   ],
   "require": {

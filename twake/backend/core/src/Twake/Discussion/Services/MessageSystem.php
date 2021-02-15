@@ -23,7 +23,6 @@ class MessageSystem
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->websockets_service = $app->getServices()->get("app.websockets");
-        $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->queues = $app->getServices()->get('app.queues')->getAdapter();
         $this->emojione_client = new Client(new Ruleset());
@@ -638,20 +637,6 @@ class MessageSystem
             $text = substr($text, 0, 180) . "...";
         }
         return $text;
-    }
-
-    public function dispatchMessage($channel_id, $application_id, $user_id, $message_id){
-
-        $message = $this->em->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
-
-        if($message){
-            $sender_application = $application_id ? $this->em->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id)) : null;
-            $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
-            $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
-
-            $this->message_notifications_center_service->newElement($channel, $sender_application, $sender_user, $this->mdToText($message->getContent()), $message);
-        }
-
     }
 
     private function share($message)

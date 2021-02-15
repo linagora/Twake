@@ -26,14 +26,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TwakeApp/twake-backend.git"
+    "url": "git+https://github.com/Twake/twake-backend.git"
   },
   "author": "Twake",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TwakeApp/twake-backend/issues"
+    "url": "https://github.com/Twake/twake-backend/issues"
   },
-  "homepage": "https://github.com/TwakeApp/twake-backend#readme",
+  "homepage": "https://github.com/Twake/twake-backend#readme",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",

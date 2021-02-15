@@ -76,6 +76,7 @@ export default class Observable extends EventListener {
     }
 
     const snapshot = JSON.stringify(observed);
+
     if (watcher.savedChanges === snapshot) {
       return { changes: changes, didChange: false };
     }

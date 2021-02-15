@@ -26,12 +26,16 @@ export function unwrapPrimarykey(entityDefinition: EntityDefinition): string[] {
 }
 
 export function encrypt(v: any, encryptionKey: any): string {
-  const iv = randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-256-cbc", encryptionKey, iv);
-  const encrypted = Buffer.concat([cipher.update(JSON.stringify(v)), cipher.final()]).toString(
-    "hex",
-  );
-  return iv.toString("hex") + ":" + encrypted;
+  try {
+    const iv = randomBytes(16);
+    const cipher = crypto.createCipheriv("aes-256-cbc", encryptionKey, iv);
+    const encrypted = Buffer.concat([cipher.update(JSON.stringify(v)), cipher.final()]).toString(
+      "hex",
+    );
+    return iv.toString("hex") + ":" + encrypted;
+  } catch (err) {
+    return v;
+  }
 }
 
 export function decrypt(v: any, encryptionKey: any): any {
