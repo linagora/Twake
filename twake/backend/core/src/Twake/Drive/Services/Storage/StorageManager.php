@@ -22,7 +22,7 @@ class StorageManager
     /**
      * @return mixed
      */
-    public function getAdapter($provider = null)
+    public function getAdapter($provider = false)
     {
         $configuration = $this->getProviderConfiguration($provider);
 
