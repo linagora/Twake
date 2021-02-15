@@ -200,10 +200,11 @@ class AccessManager
                 //Access to workspace
                 if (!$workspace_id) {
                     return true;
-                } else
-                    if ($this->user_has_workspace_access($current_user_id, $workspace_id)) {
+                } else {
+                    if ($this->user_has_workspace_access($current_user_id, $data["workspace_id"] ?: $workspace_id)) {
                         return true;
                     }
+                }
 
             }
 
