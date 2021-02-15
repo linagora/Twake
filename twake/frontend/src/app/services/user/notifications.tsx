@@ -13,6 +13,8 @@ import popupManager from 'services/popupManager/popupManager.js';
 import RouterService from '../RouterService';
 import ChannelsService from 'services/channels/channels.js';
 import emojione from 'emojione';
+import NotificationParameters from 'services/user/notification_parameters.js';
+import UserService from 'services/user/user.js';
 
 type DesktopNotification = {
   channel_id: string;
@@ -59,6 +61,10 @@ class Notifications extends Observable {
   constructor() {
     super();
     this.newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
+
+    this.triggerUnreadMessagesPushNotification = this.triggerUnreadMessagesPushNotification.bind(
+      this,
+    );
   }
 
   start() {
@@ -68,10 +74,6 @@ class Notifications extends Observable {
         request.then(function (result) {});
       }
     }
-
-    this.triggerUnreadMessagesPushNotification = this.triggerUnreadMessagesPushNotification.bind(
-      this,
-    );
 
     this.subscribeToCompaniesNotifications();
   }
@@ -181,6 +183,14 @@ class Notifications extends Observable {
   }
 
   async triggerUnreadMessagesPushNotification(newNotification: DesktopNotification | null = null) {
+    if (
+      NotificationParameters.hasNotificationsDisabled(
+        UserService.getCurrentUser()?.notifications_preferences,
+      )
+    ) {
+      return;
+    }
+
     if (newNotification) {
       let title = '';
       let message = '';
