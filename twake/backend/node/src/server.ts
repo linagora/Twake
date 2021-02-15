@@ -37,13 +37,19 @@ process.on("unhandledRejection", error => {
   console.error(error);
 });
 
+process.on("SIGINT", stop);
+
 process.once("SIGUSR2", async () => {
+  await stop();
+  process.kill(process.pid, "SIGUSR2");
+});
+
+async function stop() {
   try {
     await platform?.stop();
   } catch (err) {
     console.error(err);
   }
-  process.kill(process.pid, "SIGUSR2");
-});
+}
 
 start();
