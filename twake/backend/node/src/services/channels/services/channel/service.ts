@@ -188,7 +188,7 @@ export class Service implements ChannelService {
   }
 
   get(pk: ChannelPrimaryKey): Promise<Channel> {
-    return this.channelRepository.findOne(pk);
+    return this.channelRepository.findOne(this.getPrimaryKey(pk));
   }
 
   @RealtimeUpdated<Channel>((channel, context) => [
@@ -444,7 +444,7 @@ export class Service implements ChannelService {
   }
 
   isChannelOwner(channel: Channel, user: User): boolean {
-    return channel.owner && channel.owner === user.id;
+    return channel.owner && String(channel.owner) === user.id;
   }
 
   /**

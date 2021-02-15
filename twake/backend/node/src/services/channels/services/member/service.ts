@@ -167,7 +167,7 @@ export class Service implements MemberService {
       const userIsDefinedInChannelUserList = (channel.members || []).includes(
         String(member.user_id),
       );
-      const isChannelCreator = context.user && channel.owner === context.user.id;
+      const isChannelCreator = context.user && String(channel.owner) === String(context.user.id);
 
       // 1. Private channel: user can not join private channel by themself when it is private
       // only member can add other users in channel
@@ -180,11 +180,9 @@ export class Service implements MemberService {
       ) {
         const memberToSave = { ...member, ...context.channel };
         const userChannel = getChannelMemberInstance(pick(memberToSave, ...USER_CHANNEL_KEYS));
-        console.log("MEMBER TO SAVE", JSON.stringify(userChannel));
         const channelMember = getMemberOfChannelInstance(
           pick(memberToSave, ...CHANNEL_MEMBERS_KEYS),
         );
-        console.log("MEMBER TO SAVE2", JSON.stringify(channelMember));
         await this.userChannelsRepository.save(userChannel);
         await this.channelMembersRepository.save(channelMember);
 
@@ -238,6 +236,12 @@ export class Service implements MemberService {
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");
     }
+    
+    if (ChannelEntity.isDirectChannel(channel)) {
+      if (!this.isCurrentUser(memberToDelete, context.user)) {
+        throw CrudExeption.badRequest("User can not remove other users from direct channel");
+      }
+    }
 
     if (ChannelEntity.isPrivateChannel(channel)) {
       const canLeave = await this.canLeavePrivateChannel(context.user, channel);
@@ -263,6 +267,24 @@ export class Service implements MemberService {
     options: ChannelListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
+    const channel = await this.channelService.channels.get({
+      company_id: context.channel.company_id,
+      workspace_id: context.channel.workspace_id,
+      id: context.channel.id,
+    });
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    if (ChannelEntity.isDirectChannel(channel) || ChannelEntity.isPrivateChannel(channel)) {
+      const isMember = await this.isChannelMember(context.user, channel);
+
+      if (!isMember) {
+        throw CrudExeption.badRequest("User does not have enough rights to get channels");
+      }
+    }
+
     const result = await this.channelMembersRepository.find(
       {
         company_id: context.channel.company_id,
@@ -368,7 +390,7 @@ export class Service implements MemberService {
     });
   }
 
-  isCurrentUser(member: ChannelMember, user: User): boolean {
+  isCurrentUser(member: ChannelMember | MemberOfChannel, user: User): boolean {
     return String(member.user_id) === String(user.id);
   }
 
