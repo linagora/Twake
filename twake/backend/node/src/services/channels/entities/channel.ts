@@ -21,19 +21,19 @@ export class Channel {
   @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
 
-  @Column("icon", "string")
+  @Column("icon", "encoded_string")
   icon: string;
 
-  @Column("description", "string")
+  @Column("description", "encoded_string")
   description: string;
 
-  @Column("channel_group", "string")
+  @Column("channel_group", "encoded_string")
   channel_group: string;
 
-  @Column("visibility", "string")
+  @Column("visibility", "encoded_string")
   visibility: ChannelVisibility;
 
   @Column("is_default", "boolean")
@@ -50,10 +50,10 @@ export class Channel {
   @Type(() => String)
   owner: string;
 
-  @Column("members", "json")
+  @Column("members", "encoded_json")
   members: string[] = [];
 
-  @Column("connectors", "json")
+  @Column("connectors", "encoded_json")
   connectors: string[] = []; //list of app-ids
 
   static isPrivateChannel(channel: Channel): boolean {
