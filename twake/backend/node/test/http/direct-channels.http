@@ -95,7 +95,7 @@ Authorization: Bearer {{authToken1}}
   }
 }
 
-### Update the direct channel name will fail
+### Update the direct channel name will do nothing since the name is useless
 POST {{directChannelsURL}}/channels/{{directId}}
 Content-Type: application/json
 Authorization: Bearer {{authToken1}}
@@ -106,7 +106,7 @@ Authorization: Bearer {{authToken1}}
   }
 }
 
-### Update the direct channel member settings
+### Update the direct channel member settings for current user
 
 POST {{directChannelsURL}}/channels/{{directId}}/members/{{userId1}}
 Content-Type: application/json
@@ -128,13 +128,25 @@ Authorization: Bearer {{authToken1}}
 {
   "resource": {
     "favorite": true,
-    "notification_level": "all"
+    "notification_level": "none"
   }
 }
 
-### Get member settings
+### Get member settings as user1
 
 GET {{directChannelsURL}}/channels/{{directId}}/members/{{userId1}}
+Content-Type: application/json
+Authorization: Bearer {{authToken1}}
+
+### Get member settings as user2
+
+GET {{directChannelsURL}}/channels/{{directId}}/members/{{userId2}}
+Content-Type: application/json
+Authorization: Bearer {{authToken2}}
+
+### Get other member settings should fail
+
+GET {{directChannelsURL}}/channels/{{directId}}/members/{{userId2}}
 Content-Type: application/json
 Authorization: Bearer {{authToken1}}
 
