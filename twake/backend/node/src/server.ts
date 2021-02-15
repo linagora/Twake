@@ -1,7 +1,6 @@
+import * as Sentry from "@sentry/node";
 import path from "path";
 import { TwakePlatform, TwakePlatformConfiguration } from "./core/platform/platform";
-import * as Sentry from "@sentry/node";
-
 import config from "./core/config";
 
 if (config.get("sentry.dsn")) {
@@ -11,13 +10,15 @@ if (config.get("sentry.dsn")) {
   });
 }
 
+let platform: TwakePlatform;
+
 const start = async (): Promise<TwakePlatform> => {
   try {
     const configuration: TwakePlatformConfiguration = {
       services: config.get("services"),
       servicesPath: path.resolve(__dirname, "./services/"),
     };
-    const platform = new TwakePlatform(configuration);
+    platform = new TwakePlatform(configuration);
     await platform.init();
     await platform.start();
 
@@ -34,6 +35,15 @@ process.on("uncaughtException", error => {
 
 process.on("unhandledRejection", error => {
   console.error(error);
+});
+
+process.once("SIGUSR2", async () => {
+  try {
+    await platform?.stop();
+  } catch (err) {
+    console.error(err);
+  }
+  process.kill(process.pid, "SIGUSR2");
 });
 
 start();
