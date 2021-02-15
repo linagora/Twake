@@ -394,13 +394,15 @@ export class CassandraConnector extends AbstractConnector<
     const pk = unwrapPrimarykey(entityDefinition);
     if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
       //Filter not in primary key
-      throw Error(
+      throw new Error(
         "All filter parameters must be defined in entity primary key, got: " +
           JSON.stringify(Object.keys(filters)) +
           " on table " +
           entityDefinition.name +
           " but pk is " +
-          JSON.stringify(pk),
+          JSON.stringify(pk) +
+          ", instance was " +
+          JSON.stringify(instance),
       );
     }
 
