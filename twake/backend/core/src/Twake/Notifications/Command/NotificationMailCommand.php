@@ -36,7 +36,7 @@ class NotificationMailCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $reminders = $scheduled->consume("mail_reminder", true);
+            $reminders = $scheduled->oldConsume("mail_reminder", true);
 
             if (count($reminders ?: []) == 0) {
                 break;

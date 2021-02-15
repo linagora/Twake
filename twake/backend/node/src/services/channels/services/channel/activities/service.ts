@@ -6,6 +6,7 @@ import { ActivityObjectType, ActivityPublishedType } from "./types";
 import _, { sortBy } from "lodash";
 import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";
 import { ChannelParameters } from "../../../web/types";
+import { ChannelVisibility } from "../../../types";
 
 export default class Activities implements Initializable {
   pubsub: PubsubServiceAPI;
@@ -23,7 +24,10 @@ export default class Activities implements Initializable {
     const channelTabDeletedEvent = "channel:tab:deleted";
     const channelUpdatedEvent = "channel:updated";
 
-    localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data =>
+    localEventBus.subscribe<ResourceEventsPayload>(channelMemberCreatedEvent, data => {
+      if (data.channel.visibility === ChannelVisibility.DIRECT) {
+        return;
+      }
       this.notify(
         channelMemberCreatedEvent,
         {
@@ -41,10 +45,17 @@ export default class Activities implements Initializable {
           },
         },
         data.channel,
-      ),
-    );
+      );
+    });
 
-    localEventBus.subscribe<ResourceEventsPayload>(channelMemberDeletedEvent, data =>
+    localEventBus.subscribe<ResourceEventsPayload>(channelMemberDeletedEvent, data => {
+      if (data.channel.visibility === ChannelVisibility.DIRECT) {
+        return;
+      }
+      //Do not notify when user leave the channel by themselves
+      if (data.resourcesBefore[0].id === data.actor.id) {
+        return;
+      }
       this.notify(
         channelMemberDeletedEvent,
         {
@@ -59,8 +70,8 @@ export default class Activities implements Initializable {
           },
         },
         data.channel,
-      ),
-    );
+      );
+    });
 
     localEventBus.subscribe<ResourceEventsPayload>(channelUpdatedEvent, data => {
       const interestedChanges = ["channel_group", "name", "description", "visibility", "icon"];

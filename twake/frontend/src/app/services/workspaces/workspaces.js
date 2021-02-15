@@ -29,7 +29,7 @@ class Workspaces extends Observable {
 
     this.setObservableName('workspaces');
 
-    this.currentWorkspaceId = () => this.getCurrentWorkspaceId();
+    this.currentWorkspaceId = '';
     this.currentWorkspaceIdByGroup = {};
     this.currentGroupId = null;
 

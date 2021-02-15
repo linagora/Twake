@@ -42,7 +42,7 @@ class MailsQueueCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("mails", true);
+            $messages = $queues->oldConsume("mails", true);
 
             if (count($messages) == 0) {
                 sleep(1);

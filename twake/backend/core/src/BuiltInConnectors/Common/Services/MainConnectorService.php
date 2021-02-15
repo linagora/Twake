@@ -55,7 +55,8 @@ class MainConnectorService {
         $restClient = $this->rest_client;
 
         $custom = array(
-            CURLOPT_CONNECTTIMEOUT => $timeout
+            CURLOPT_CONNECTTIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false
         );
 
         foreach ($custom_options as $key=>$value){
@@ -81,7 +82,8 @@ class MainConnectorService {
         $restClient = $this->rest_client;
 
         $custom = array(
-            CURLOPT_CONNECTTIMEOUT => $timeout
+            CURLOPT_CONNECTTIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false
         );
 
         foreach ($custom_options as $key=>$value){

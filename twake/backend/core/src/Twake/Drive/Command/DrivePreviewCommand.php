@@ -37,7 +37,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $todos = $this->queues->consume("drive_preview_to_generate", true);
+            $todos = $this->queues->oldConsume("drive_preview_to_generate", true);
             if (count($todos ?: []) == 0) {
                 sleep(1);
             }

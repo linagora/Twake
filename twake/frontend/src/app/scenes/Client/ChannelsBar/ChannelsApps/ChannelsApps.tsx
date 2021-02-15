@@ -8,6 +8,7 @@ import UserService from 'services/user/user.js';
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default class ChannelsApps extends Component {
   constructor(props: any) {
@@ -44,6 +45,16 @@ export default class ChannelsApps extends Component {
   }
   render() {
     if (
+      Collections.get('channels').did_load_first_time ||
+      !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member')
+    ) {
+      ChannelsBarService.collectionIsReady(
+        Workspaces.currentGroupId,
+        Workspaces.currentWorkspaceId + '+applications',
+      );
+    }
+
+    if (
       !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
     ) {
       return <div />;
@@ -69,13 +80,6 @@ export default class ChannelsApps extends Component {
     workspace_apps_channels.map((ch: any) => {
       workspace_channels_by_app_id[ch.app_id] = ch;
     });
-
-    if (Collections.get('channels').did_load_first_time) {
-      ChannelsBarService.collectionIsReady(
-        Workspaces.currentGroupId,
-        Workspaces.currentWorkspaceId + '+applications',
-      );
-    }
 
     return (
       <div className="applications_channels" style={{ marginTop: 8 }}>

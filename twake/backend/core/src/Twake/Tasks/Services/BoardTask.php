@@ -537,7 +537,7 @@ class BoardTask
     {
         $sent = 0;
 
-        $notifications = $this->queues_scheduled->consume("tasks_task", true);
+        $notifications = $this->queues_scheduled->oldConsume("tasks_task", true);
 
         foreach ($notifications ?: [] as $notification_original) {
 

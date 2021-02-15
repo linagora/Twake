@@ -42,5 +42,7 @@ fi
 mkdir /twake-core/cache
 chmod -R 777 /twake-core/cache &
 
+echo "" >> /etc/cron.d/twake-cron
+
 cron -f &
 docker-php-entrypoint php-fpm

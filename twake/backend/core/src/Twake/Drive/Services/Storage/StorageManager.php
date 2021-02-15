@@ -22,7 +22,7 @@ class StorageManager
     /**
      * @return mixed
      */
-    public function getAdapter($provider = null)
+    public function getAdapter($provider = false)
     {
         $configuration = $this->getProviderConfiguration($provider);
 
@@ -34,9 +34,9 @@ class StorageManager
         return new Adapter_Local($configuration, $this->preview, $this->doctrine);
     }
 
-    public function getProviderConfiguration($provider = null){
+    public function getProviderConfiguration($provider = false){
         $defaultProvider = $this->getOneProvider();
-        $provider = $provider === null ? $defaultProvider : $provider;
+        $provider = $provider === false ? $defaultProvider : $provider;
         $configuration = "";
         foreach($this->storage["providers"] as $providerConfiguration){
             if((!$configuration && $providerConfiguration["label"] == $defaultProvider)

@@ -666,7 +666,7 @@ class CalendarEvent
 
         $sent = 0;
 
-        $notifications = $this->queues_scheduled->consume("calendar_events", true);
+        $notifications = $this->queues_scheduled->oldConsume("calendar_events", true);
 
         foreach ($notifications ?: [] as $notification_original) {
 

@@ -41,76 +41,73 @@ class NodePushNotifications extends ContainerAwareCommand
 
         $this->parameters = $this->getApp()->getContainer()->getParameter("push_notifications");
 
+        $that = $this;
+
         $limit = date("U", date("U") + 60);
 
         while (date("U") < $limit) {
 
-            $messages = $queues->consume("notification:push:mobile", true, 10, 60, ["exchange_type" => "fanout"]);
+            $queues->consume("notification:push:mobile", function ($queue_message) use ($that, $messagesRepo, $devicesRepo, $queues, $em) {
 
-            if (count($messages) == 0) {
-                sleep(1);
-            } else {
+                $push_message = $queues->getMessage($queue_message);
 
-                foreach ($messages as $queue_message) {
-                    $push_message = $queues->getMessage($queue_message);
+                $company_id = $push_message["company_id"];
+                $workspace_id = $push_message["workspace_id"];
+                $channel_id = $push_message["channel_id"];
+                $message_id = $push_message["message_id"];
+                $thread_id = $push_message["thread_id"];
+                $user_id = $push_message["user"];
+                $badge_value = $push_message["value"];
 
-                    $company_id = $push_message["company_id"];
-                    $workspace_id = $push_message["workspace_id"];
-                    $channel_id = $push_message["channel_id"];
-                    $message_id = $push_message["message_id"];
-                    $thread_id = $push_message["thread_id"];
-                    $user_id = $push_message["user"];
-                    $badge_value = $push_message["value"];
+                //Get $title and $message from $message_id
+                $messageEntity = $messagesRepo->findOneBy(["id" => $message_id]);
+                $title = $push_message["title"];
+                $message = $push_message["text"];
+        
+                $device_data = [
+                    "company_id" => $company_id,
+                    "workspace_id" => $workspace_id,
+                    "channel_id" => $channel_id,
+                    "message_id" => $message_id,
+                    "thread_id" => $thread_id,
+                ];
 
-                    //Get $title and $message from $message_id
-                    $messageEntity = $messagesRepo->findOneBy(["id" => $message_id]);
-                    $title = $push_message["title"];
-                    $message = $push_message["text"];
-            
-                    $device_data = [
-                        "company_id" => $company_id,
-                        "workspace_id" => $workspace_id,
-                        "channel_id" => $channel_id,
-                        "message_id" => $message_id,
-                        "thread_id" => $thread_id,
-                    ];
+                $devices = $devicesRepo->findBy(Array("user_id" => $user_id));
+                
+                foreach($devices as $device){
 
-                    $devices = $devicesRepo->findBy(Array("user_id" => $user_id));
-                    
-                    foreach($devices as $device){
+                    if (strtolower($device->getType()) == "apns") {
+                        $that->sendAPNS($device->getValue(), $title, $message, $device_data, $badge_value);
+                    } else {
 
-                        if (strtolower($device->getType()) == "apns") {
-                            $this->sendAPNS($device->getValue(), $title, $message, $device_data, $badge_value);
-                        } else {
-
-                            $firebase_api_key = $this->parameters["firebase_api_key"];
-                            $adapter = new Fcm($firebase_api_key);
-                    
-                            $adapter->push([$device->getValue()], [
-                                'data' => [
-                                    "notification_data" => $device_data,
-                                    "click_action" => "FLUTTER_NOTIFICATION_CLICK"
-                                ],
-                                'notification' => [
-                                    "title" => $title,
-                                    "body" => $message,
-                                    "sound" => "default",
-                                    "badge" => $badge_value,
-                                    "click_action" => "FLUTTER_NOTIFICATION_CLICK"
-                                ],
-                                'collapse_key' => $channel_id,
-                            ]);
-                    
-                            //We could use $adapter->getFeedback(); to get invalid tokens
-                    
-                        }
-
+                        $firebase_api_key = $that->parameters["firebase_api_key"];
+                        $adapter = new Fcm($firebase_api_key);
+                
+                        $adapter->push([$device->getValue()], [
+                            'data' => [
+                                "notification_data" => $device_data,
+                                "click_action" => "FLUTTER_NOTIFICATION_CLICK"
+                            ],
+                            'notification' => [
+                                "title" => $title,
+                                "body" => $message,
+                                "sound" => "default",
+                                "badge" => $badge_value,
+                                "click_action" => "FLUTTER_NOTIFICATION_CLICK"
+                            ],
+                            'collapse_key' => $channel_id,
+                        ]);
+                
+                        //We could use $adapter->getFeedback(); to get invalid tokens
+                
                     }
 
-                    $queues->ack("notification:push:mobile", $queue_message, ["exchange_type" => "fanout"]);
                 }
 
-            }
+                $queues->ack("notification:push:mobile", $queue_message, ["exchange_type" => "fanout"]);
+                
+
+            }, ["max_messages" => 10, "should_ack" => true, "exchange_type" => "fanout"]);
 
         }
 
