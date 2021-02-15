@@ -6,9 +6,9 @@ import { Entity, Column } from "../../../core/platform/services/database/service
  * Direct Channel information.
  * A direct channel is a channel in a company composed of a defined set of users.
  */
-@Entity("direct_channel", {
+@Entity("direct_channels", {
   primaryKey: [["company_id"], "users", "channel_id"],
-  type: "direct_channel",
+  type: "direct_channels",
 })
 export class DirectChannel {
   /**

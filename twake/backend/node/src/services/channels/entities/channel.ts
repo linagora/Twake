@@ -3,9 +3,9 @@ import { Entity, Column } from "../../../core/platform/services/database/service
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
 
-@Entity("channel", {
+@Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
-  type: "channel",
+  type: "channels",
 })
 export class Channel {
   // uuid-v4

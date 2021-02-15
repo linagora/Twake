@@ -7,9 +7,9 @@ import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
  * Defines the member <-> channel link and member settings in channel
  * Table name is `user_channels`
  */
-@Entity("channel_member", {
+@Entity("user_channels", {
   primaryKey: [["company_id", "workspace_id"], "user_id", "channel_id"],
-  type: "channel_member",
+  type: "user_channels",
 })
 export class ChannelMember {
   /**
@@ -93,11 +93,12 @@ export function getChannelMemberInstance(member: Partial<ChannelMember>): Channe
 }
 
 /**
- * The channel_members table allows to get all the members of a channel
+ * The channel_members table allows to get all the members of a channel.
+ * Table name is `channel_members`
  */
-@Entity("member_of_channel", {
+@Entity("channel_members", {
   primaryKey: [["company_id", "workspace_id"], "channel_id", "user_id"],
-  type: "member_of_channel",
+  type: "channel_members",
 })
 export class MemberOfChannel {
   /**
