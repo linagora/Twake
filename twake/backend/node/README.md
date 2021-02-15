@@ -7,7 +7,7 @@
 1. Clone and install dependencies (assumes that you have Node.js 12 and npm installed. If not, we suggest to use [nvm](https://github.com/nvm-sh/nvm/)):
 
 ```sh
-git clone git@github.com:TwakeApp/Twake.git
+git clone git@github.com:Twake/Twake.git
 cd Twake/Twake/backend/node
 npm install
 ```

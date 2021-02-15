@@ -2,9 +2,9 @@
 
 # Twake - Ultimate collaborative Workspace
 
-![update-saas-backend](https://github.com/TwakeApp/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
-![update-saas-frontend](https://github.com/TwakeApp/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
-![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
+![update-saas-backend](https://github.com/Twake/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
+![update-saas-frontend](https://github.com/Twake/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
+![backend-build](https://github.com/Twake/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
 
 ![Docker](https://img.shields.io/docker/pulls/twaketech/twake-php?style=flat)
 [![Docs](https://img.shields.io/badge/docs-up--to--date-blueviolet?style=flat)](https://doc.twake.app)
@@ -57,4 +57,4 @@ Install Twake on your machine with docker-compose using the install documentatio
 
 ## License
 
-Twake is licensed under [Affero GPL v3 with additional terms](https://github.com/TwakeApp/Twake/blob/main/LICENSE.md)
+Twake is licensed under [Affero GPL v3 with additional terms](https://github.com/Twake/Twake/blob/main/LICENSE.md)

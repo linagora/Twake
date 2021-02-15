@@ -12,7 +12,7 @@ else
   b=$(echo Q$(( ($(date +%-m)-1)/3+1 )))
 fi
 
-c=$(curl -I -k "https://api.github.com/repos/TwakeApp/Twake/commits?per_page=1" | sed -n '/^[Ll]ink:/ s/.*"next".*page=\([0-9]*\).*"last".*/\1/p')
+c=$(curl -I -k "https://api.github.com/repos/Twake/Twake/commits?per_page=1" | sed -n '/^[Ll]ink:/ s/.*"next".*page=\([0-9]*\).*"last".*/\1/p')
 
 nvd="$a.$b.$c";
 nv="$a.$b";
