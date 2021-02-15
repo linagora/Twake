@@ -218,7 +218,11 @@ class Notifications extends Observable {
       }
 
       if (this.newNotificationAudio) {
-        this.newNotificationAudio.play();
+        try {
+          this.newNotificationAudio.play();
+        } catch (err) {
+          console.warn(err);
+        }
       }
 
       const callback = () => {

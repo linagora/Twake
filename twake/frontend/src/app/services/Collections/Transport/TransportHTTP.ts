@@ -1,13 +1,13 @@
-import Logger from "services/Logger";
+import Logger from 'services/Logger';
 import Collections from '../Collections';
 import Transport from './Transport';
 
-const logger = Logger.getLogger("Collections/Transport/HTTP");
+const logger = Logger.getLogger('Collections/Transport/HTTP');
 
 export default class TransportHTTP {
   constructor(private readonly transport: Transport) {}
 
-  private async request(method: string, route: string, options: any) {
+  private async request(method: 'post' | 'delete' | 'get' | 'put', route: string, options: any) {
     logger.debug(`${method.toUpperCase()} ${route}`);
     const prefix = Collections.getOptions().transport?.rest?.url;
     if (!prefix) {
@@ -15,13 +15,19 @@ export default class TransportHTTP {
     }
     route = prefix + route;
 
+    const headers = {
+      ...Collections.getOptions().transport?.rest?.headers,
+      ...this.transport.apiOptions?.headers,
+      ...options?.headers,
+    };
+
+    if (method === 'delete' || method === 'get') {
+      delete headers['Content-Type'];
+    }
+
     const response = await fetch(route, {
       method: method,
-      headers: {
-        ...Collections.getOptions().transport?.rest?.headers,
-        ...this.transport.apiOptions?.headers,
-        ...options?.headers,
-      },
+      headers: headers,
       body: options?.body,
     });
     if (response.status === 204) {
