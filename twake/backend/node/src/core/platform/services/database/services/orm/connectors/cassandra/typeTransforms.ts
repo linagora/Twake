@@ -94,5 +94,8 @@ export const transformValueFromDbString = (
       return null;
     }
   }
+  if (type === "uuid") {
+    return String(v);
+  }
   return v;
 };
