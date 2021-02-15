@@ -74,14 +74,24 @@ export default (props: Props): JSX.Element => {
 
   const leaveChannel = async () => {
     if (props.channel.data.user_member) {
-      //Fixme, this is not pretty, we should find a way to do this in one line
       const channelMember = new ChannelMemberResource({
         ...props.channel.data.user_member,
       });
-      channelMember.setPersisted();
-      await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
-      return await channelMembersCollection.remove(channelMember);
+
+      try {
+        //Fixme, this is not pretty, we should find a way to do this in one line
+        channelMember.setPersisted();
+        await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
+        await channelMembersCollection.remove(channelMember).then(redirectToWorkspace);
+      } catch (err) {
+        console.log('Error in ChannelMenu.tsx', err);
+      }
     }
+  };
+
+  const redirectToWorkspace = () => {
+    const url = RouterServices.generateRouteFromState({ workspaceId: workspaceId, channelId: '' });
+    return RouterServices.history.push(url);
   };
 
   const editChannel = () => {
@@ -98,9 +108,8 @@ export default (props: Props): JSX.Element => {
     );
   };
 
-  const removeChannel = () => {
-    return channelsCollection.remove({ id: props.channel.data.id });
-  };
+  const removeChannel = async () =>
+    await channelsCollection.remove({ id: props.channel.data.id }).then(redirectToWorkspace);
 
   let menu: object[] = [
     {
@@ -141,18 +150,12 @@ export default (props: Props): JSX.Element => {
       ),
       className: 'danger',
       onClick: () => {
-        AlertManager.confirm(() => leaveChannel(), undefined, {
-          title: Languages.t(
-            isDirectChannel
-              ? 'scenes.app.channelsbar.hide_discussion_leaving.title'
-              : 'components.alert.confirm',
-          ),
-          text: Languages.t(
-            isDirectChannel
-              ? 'scenes.app.channelsbar.hide_discussion_leaving.content'
-              : 'components.alert.confirm_click',
-          ),
-        });
+        if (props.channel.data.visibility === 'private') {
+          return AlertManager.confirm(() => leaveChannel(), undefined, {
+            title: Languages.t('components.alert.leave_private_channel.title'),
+            text: Languages.t('components.alert.leave_private_channel.description'),
+          });
+        } else return leaveChannel();
       },
     },
   ];

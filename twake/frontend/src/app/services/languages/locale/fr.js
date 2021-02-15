@@ -1968,4 +1968,7 @@ export default {
   'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
     '$1 a supprimé le connecteur $2',
   'scenes.client.channelbar.channelmemberslist.tag': "C'est vous",
+  'components.alert.leave_private_channel.title': 'Voulez-vous vraiment quitter la chaîne?',
+  'components.alert.leave_private_channel.description':
+    "Vous ne pourrez plus rejoindre cette chaîne privée à moins que quelqu'un ne vous invite.",
 };

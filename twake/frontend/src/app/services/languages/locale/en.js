@@ -1897,4 +1897,7 @@ export default {
   'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
     '$1 removed a connector $2',
   'scenes.client.channelbar.channelmemberslist.tag': "It's you",
+  'components.alert.leave_private_channel.title': 'Are you sure you want to leave the channel ?',
+  'components.alert.leave_private_channel.description':
+    'You will not be able to join this private channel again unless someone invite you.',
 };
