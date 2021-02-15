@@ -3,7 +3,8 @@
 /* PseudoMarkdownCompiler */
 
 .markdown {
-  & > span {
+  & > span,
+  span > span {
     vertical-align: middle;
   }
 
