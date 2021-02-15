@@ -22,6 +22,12 @@ class HiddenNotificationService extends Observable {
     beaconBottom: [],
   };
 
+  constructor() {
+    super();
+    this.detectHiddenBeacons = this.detectHiddenBeacons.bind(this);
+    (window as any).HiddenNotificationService = this;
+  }
+
   public addBeacon(node: NodeType) {
     this.removeBeacon(node);
 
@@ -43,45 +49,47 @@ class HiddenNotificationService extends Observable {
 
   private setBeaconsTop(scroller: ScrollerRef) {
     this.beacons.map((beacon: BeaconRef) => {
-      return (beacon.top =
+      beacon.top =
         beacon.node.current.getBoundingClientRect().y -
-        (scroller.top || 0) -
-        scroller.node.scrollTop);
+        (scroller.node.getBoundingClientRect().y || 0) +
+        scroller.node.scrollTop;
     });
   }
 
   public setScroller(node: NodeType) {
     this.scroller = { node, top: node.getBoundingClientRect().y };
 
-    node.addEventListener('scroll', this.detectHiddenBeacons.bind(this), { passive: true });
+    node.addEventListener('scroll', this.detectHiddenBeacons, { passive: true });
 
     this.setBeaconsTop(this.scroller);
     this.detectHiddenBeacons();
   }
 
-  private detectHiddenBeacons() {
+  private detectHiddenBeacons(evt: any = null) {
     if (!this.scroller.node) return;
 
-    const hidden: any = {
-      beaconTop: [],
-      beaconBottom: [],
-    };
+    setTimeout(() => {
+      const hidden: any = {
+        beaconTop: [],
+        beaconBottom: [],
+      };
 
-    const visibleHeight = this.scroller.node.getBoundingClientRect().height;
-    const scrollerTop = this.scroller.node.getBoundingClientRect().y || 0;
+      const visibleHeight = this.scroller.node.getBoundingClientRect().height;
+      const scrollerTop = this.scroller.node.getBoundingClientRect().y || 0;
 
-    this.beacons.forEach((beacon: BeaconRef) => {
-      const top = beacon.node.current.getBoundingClientRect().y - scrollerTop;
-      if (top > visibleHeight) {
-        hidden.beaconBottom.push(beacon);
-      }
-      if (top < 0) {
-        hidden.beaconTop.push(beacon);
-      }
-    });
+      this.beacons.forEach((beacon: BeaconRef) => {
+        const top = beacon.node.current.getBoundingClientRect().y - scrollerTop;
+        if (top > visibleHeight) {
+          hidden.beaconBottom.push(beacon);
+        }
+        if (top < 0) {
+          hidden.beaconTop.push(beacon);
+        }
+      });
 
-    this.notify();
-    this.state = hidden;
+      this.state = hidden;
+      this.notify();
+    }, 500);
   }
 
   public removeScroller() {
