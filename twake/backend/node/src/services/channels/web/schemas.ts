@@ -38,7 +38,7 @@ const channelSchema = {
     members: { type: ["array", "null"] },
     owner: { type: "string" },
     visibility: { type: "string" },
-    last_activity: { type: "string" },
+    last_activity: { type: "number" },
     user_member: channelMemberSchema,
   },
 };

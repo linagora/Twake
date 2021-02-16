@@ -17,6 +17,7 @@ import {
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
+import { ChannelObject } from "./types"; 
 import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
@@ -78,7 +79,7 @@ export class Service implements ChannelService {
     channel: Channel,
     options: ChannelSaveOptions,
     context: WorkspaceExecutionContext,
-  ): Promise<SaveResult<Channel>> {
+  ): Promise<SaveResult<ChannelObject>> {
     let channelToUpdate: Channel;
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
@@ -162,7 +163,9 @@ export class Service implements ChannelService {
             id: directChannel.channel_id,
           });
           if (existingChannel) {
-            return new SaveResult<Channel>("channels", existingChannel, OperationType.EXISTS);
+            const last_activity = await this.getChannelActivity(existingChannel);
+
+            return new SaveResult("channels", ChannelObject.mapTo(existingChannel, { last_activity }), OperationType.EXISTS);
           } else {
             //Fixme: remove directChannel instance
             throw CrudExeption.badRequest("table inconsistency");
@@ -180,27 +183,19 @@ export class Service implements ChannelService {
 
     logger.info("Saving channel %o", channelToSave);
     await this.channelRepository.save(channelToSave);
-    const saveResult = new SaveResult<Channel>("channel", channelToSave, mode);
+    const saveResult = new SaveResult<ChannelObject>("channel", ChannelObject.mapTo(channelToSave), mode);
 
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
     return saveResult;
   }
 
-  async get(pk: ChannelPrimaryKey): Promise<Channel> {
+  async get(pk: ChannelPrimaryKey): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
     let channel = await this.channelRepository.findOne(primaryKey);
+    const last_activity = await this.getChannelActivity(channel);
 
-    const activity = channel && await this.activityRepository.findOne({
-      company_id: pk.company_id,
-      workspace_id: pk.workspace_id,
-      channel_id: pk.id,
-    });
-
-    return ({
-      ...channel,
-      last_activity: activity?.last_activity || 0,
-    } as unknown) as Channel;
+    return ChannelObject.mapTo(channel, { last_activity });
   }
 
   @RealtimeUpdated<Channel>((channel, context) => [
@@ -209,7 +204,7 @@ export class Service implements ChannelService {
       path: getChannelPath(channel, context as WorkspaceExecutionContext),
     },
   ])
-  async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<Channel>> {
+  async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<ChannelObject>> {
     // TODO: Do the update by hand then save
     if (!pk.id) {
       throw CrudExeption.badRequest("Channel id is required for update");
@@ -219,7 +214,7 @@ export class Service implements ChannelService {
     const mergeChannel: any = { ...channel, ...pk };
     await this.channelRepository.save(mergeChannel as Channel);
 
-    return new UpdateResult<Channel>("channel", this.mapChannel(mergeChannel));
+    return new UpdateResult<ChannelObject>("channel", ChannelObject.mapTo(mergeChannel));
   }
 
   @RealtimeDeleted<Channel>((channel, context) => [
@@ -231,7 +226,7 @@ export class Service implements ChannelService {
   async delete(
     pk: ChannelPrimaryKey,
     context: WorkspaceExecutionContext,
-  ): Promise<DeleteResult<Channel>> {
+  ): Promise<DeleteResult<ChannelObject>> {
     const channelToDelete = await this.channelRepository.findOne(this.getPrimaryKey(pk));
 
     if (!channelToDelete) {
@@ -250,7 +245,7 @@ export class Service implements ChannelService {
     }
 
     await this.channelRepository.remove(channelToDelete);
-    const result = new DeleteResult<Channel>("channel", this.mapChannel(pk as Channel), true);
+    const result = new DeleteResult("channel", ChannelObject.mapTo(pk as Channel), true);
 
     this.onDeleted(channelToDelete, result);
 
@@ -288,6 +283,27 @@ export class Service implements ChannelService {
 
     await this.activityRepository.save(entity);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
+  }
+
+  private async getChannelActivity(channel: Channel): Promise<number> {
+    let result = 0;
+    
+    if (!channel) {
+      return result;
+    }
+
+    try {
+      const activity = await this.activityRepository.findOne({
+        company_id: channel.company_id,
+        workspace_id: channel.workspace_id,
+        channel_id: channel.id,
+      } as ChannelActivity);
+      
+      result = (activity?.last_activity || 0) || 0;
+    } catch (error) {
+      logger.debug(`Can not get channel last activity for channel ${channel.id}`);    
+    }
+    return result;
   }
 
   async list(
@@ -536,11 +552,5 @@ export class Service implements ChannelService {
     member: ChannelMember,
   ): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
-  }
-
-  mapChannel(channel: Channel) {
-    channel.members = channel.members || [];
-
-    return channel;
   }
 }
