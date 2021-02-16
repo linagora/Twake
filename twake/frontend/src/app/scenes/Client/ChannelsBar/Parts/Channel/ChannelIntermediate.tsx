@@ -39,16 +39,14 @@ export default (props: Props): JSX.Element => {
     props.collection.reload('ontime');
   }
 
-  useUsersListener(
-    isDirectChannel ? props.channel.direct_channel_members || props.channel.members || [] : [],
-  );
+  useUsersListener(props.channel.members || []);
 
   const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
 
   const { avatar, name } = isDirectChannel
     ? getUserParts({
-        usersIds: props.channel.direct_channel_members || props.channel.members || [],
+        usersIds: props.channel.members || [],
       })
     : { avatar: '', name: '' };
 
