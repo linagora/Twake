@@ -26,7 +26,7 @@ type Props = {
   notifications: number;
   menu?: JSX.Element;
   showTooltip?: boolean;
-  menuOpened?: boolean;
+  active?: boolean;
 };
 
 export default (props: Props) => {
@@ -50,7 +50,7 @@ export default (props: Props) => {
       <div
         className={`channel ${selected ? 'selected ' : ''} ${
           props.unreadMessages ? 'unread ' : ''
-        } ${props.menuOpened ? 'menu-open' : ''}`}
+        } ${props.active ? 'menu-open' : ''}`}
         onClick={() =>
           props.id &&
           MainViewService.select(props.id, {

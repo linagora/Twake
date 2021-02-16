@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default (props: Props): JSX.Element => {
-  const [menuOpened, setMenuOpened] = useState<boolean>(false);
+  const [isActive, setActive] = useState<boolean>(false);
   const isDirectChannel = props.channel.visibility === 'direct';
 
   const menu = (channel: ChannelResource) => {
@@ -23,8 +23,8 @@ export default (props: Props): JSX.Element => {
     return (
       <ChannelMenu
         channel={channel}
-        onClick={() => setMenuOpened(true)}
-        onClose={() => setMenuOpened(false)}
+        onClick={() => setActive(true)}
+        onClose={() => setActive(false)}
       />
     );
   };
@@ -71,7 +71,7 @@ export default (props: Props): JSX.Element => {
       visibility={channel.data.visibility || 'public'}
       notifications={notifications.length || 0}
       menu={menu(channel)}
-      menuOpened={menuOpened}
+      active={isActive}
       id={channel.data.id}
     />
   );

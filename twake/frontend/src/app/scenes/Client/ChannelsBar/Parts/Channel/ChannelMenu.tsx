@@ -26,8 +26,8 @@ import RouterServices from 'app/services/RouterService';
 
 type Props = {
   channel: ChannelResource;
-  onClick: (opened: boolean) => void;
-  onClose: (opened: boolean) => void;
+  onClick: () => void;
+  onClose: () => void;
 };
 
 export default (props: Props): JSX.Element => {

@@ -97,17 +97,16 @@
     font-weight: 700;
   }
 
-  &:hover {
+  &:hover,
+  &.menu-open {
     background: var(--grey-light);
+  }
 
+  &:hover {
     .user_head,
     .user_head .status {
       border-color: var(--grey-light);
     }
-  }
-
-  &.menu-open {
-    background: var(--grey-light);
   }
 
   &.selected {
