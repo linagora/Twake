@@ -35,10 +35,10 @@ const channelSchema = {
     connectors: { type: ["array", "null"] },
     icon: { type: "string" },
     is_default: { type: "boolean" },
-    direct_channel_members: { type: ["array", "null"] },
     members: { type: ["array", "null"] },
     owner: { type: "string" },
     visibility: { type: "string" },
+    last_activity: { type: "string" },
     user_member: channelMemberSchema,
   },
 };

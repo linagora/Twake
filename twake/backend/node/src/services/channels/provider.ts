@@ -2,6 +2,7 @@ import {
   CRUDService,
   ListResult,
   Pagination,
+  UpdateResult,
 } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import {
@@ -14,6 +15,7 @@ import {
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import User from "../user/entity/user";
 import { DirectChannel } from "./entities/direct-channel";
+import { ChannelActivity } from "./entities/channel-activity";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -76,6 +78,13 @@ export interface ChannelService
     user: User,
     context: WorkspaceExecutionContext,
   ): Promise<boolean>;
+
+  /**
+   * Update the last activity for the given channel
+   * 
+   * @param channel The channel to update the last_activity
+   */
+  updateLastActivity(channel: ChannelPrimaryKey): Promise<UpdateResult<ChannelActivity>>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

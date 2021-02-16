@@ -17,7 +17,7 @@ import {
 import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
-import { Channel, ChannelMember, UserChannel, UserDirectChannel } from "../../entities";
+import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -187,8 +187,20 @@ export class Service implements ChannelService {
     return saveResult;
   }
 
-  get(pk: ChannelPrimaryKey): Promise<Channel> {
-    return this.channelRepository.findOne(this.getPrimaryKey(pk));
+  async get(pk: ChannelPrimaryKey): Promise<Channel> {
+    const primaryKey = this.getPrimaryKey(pk);
+    let channel = await this.channelRepository.findOne(primaryKey);
+
+    const activity = channel && await this.activityRepository.findOne({
+      company_id: pk.company_id,
+      workspace_id: pk.workspace_id,
+      channel_id: pk.id,
+    });
+
+    return ({
+      ...channel,
+      last_activity: activity?.last_activity || 0,
+    } as unknown) as Channel;
   }
 
   @RealtimeUpdated<Channel>((channel, context) => [
@@ -207,7 +219,7 @@ export class Service implements ChannelService {
     const mergeChannel: any = { ...channel, ...pk };
     await this.channelRepository.save(mergeChannel as Channel);
 
-    return new UpdateResult<Channel>("channel", mergeChannel);
+    return new UpdateResult<Channel>("channel", this.mapChannel(mergeChannel));
   }
 
   @RealtimeDeleted<Channel>((channel, context) => [
@@ -238,7 +250,7 @@ export class Service implements ChannelService {
     }
 
     await this.channelRepository.remove(channelToDelete);
-    const result = new DeleteResult<Channel>("channel", pk as Channel, true);
+    const result = new DeleteResult<Channel>("channel", this.mapChannel(pk as Channel), true);
 
     this.onDeleted(channelToDelete, result);
 
@@ -282,7 +294,9 @@ export class Service implements ChannelService {
     pagination: Pagination,
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
-  ): Promise<ListResult<Channel | UserChannel | UserDirectChannel>> {
+  ): Promise<ListResult<Channel | UserChannel>> {
+    let channels: ListResult<Channel | UserChannel>;
+    let activityPerChannel: Map<string, ChannelActivity>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
     const findFilters: FindFilter = {
@@ -297,39 +311,37 @@ export class Service implements ChannelService {
         context,
       );
 
-      const channelIds = userChannels.getEntities().map(channelMember => channelMember.channel_id);
-      const result = await this.channelRepository.find(findFilters, {
+      channels = await this.channelRepository.find(findFilters, {
         pagination,
-        $in: [["id", channelIds]],
+        $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
       });
 
-      const activityPerChannel: { [channelId: string]: ChannelActivity } = {};
-      await Promise.all(
-        result.getEntities().map(async channel => {
-          activityPerChannel[channel.id] = await this.activityRepository.findOne({
-            channel_id: channel.id,
-            company_id: channel.company_id,
-            workspace_id: channel.workspace_id,
-          });
-        }),
-      );
+      if (!channels.isEmpty()) {
+        const activities = await this.activityRepository.find(findFilters, {
+          $in: [["channel_id", channels.getEntities().map(channel => `'${channel.id}'`)]],
+        });
 
-      result.mapEntities(<UserChannel>(channel: Channel) => {
+        activityPerChannel = new Map<string, ChannelActivity>(activities.getEntities().map(activity => [activity.channel_id, activity]));
+      } else {
+        activityPerChannel = new Map<string, ChannelActivity>();
+      }
+
+      channels.mapEntities(<UserChannel>(channel: Channel) => {
         const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
 
         return ({
           ...channel,
           ...{ user_member: userChannel },
-          last_activity: activityPerChannel[channel.id]?.last_activity || 0,
+          last_activity: activityPerChannel.get(channel.id)?.last_activity || 0,
         } as unknown) as UserChannel;
       });
 
       if (isDirectWorkspace) {
-        result.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
+        channels.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
           return ({
             ...channel,
             ...{
-              direct_channel_members: channel.members || [],
+              members: channel.members || [],
             },
           } as unknown) as UserDirectChannel;
         });
@@ -339,18 +351,17 @@ export class Service implements ChannelService {
         user: context.user,
       });
 
-      return result;
+      return channels;
     }
 
-    const result = await this.channelRepository.find(findFilters, { pagination });
-
-    result.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
+    channels = await this.channelRepository.find(findFilters, { pagination });
+    channels.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
 
     if (!isWorkspaceAdmin) {
-      result.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
+      channels.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
     }
 
-    return result;
+    return channels;
   }
 
   async createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel> {
@@ -525,5 +536,11 @@ export class Service implements ChannelService {
     member: ChannelMember,
   ): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
+  }
+
+  mapChannel(channel: Channel) {
+    channel.members = channel.members || [];
+
+    return channel;
   }
 }

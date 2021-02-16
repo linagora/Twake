@@ -1,3 +1,4 @@
+import { find } from "lodash";
 import User from "../../../../services/user/entity/user";
 
 export class ContextualizedTarget {
@@ -96,6 +97,10 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
 
   getEntities(): Entity[] {
     return this.entities || [];
+  }
+
+  isEmpty() {
+    return this.getEntities().length === 0;
   }
 }
 

@@ -1,8 +1,7 @@
 import { logger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import { ChannelActivityNotification } from "../../../types";
-import { ChannelPrimaryKey, ChannelService } from "../../../provider";
-import { Service } from "../../channel/service";
+import { ChannelService } from "../../../provider";
 
 export class NewChannelActivityProcessor implements PubsubHandler<ChannelActivityNotification, void> {
   constructor(readonly service: ChannelService) {}
@@ -26,12 +25,11 @@ export class NewChannelActivityProcessor implements PubsubHandler<ChannelActivit
     logger.info(`${this.name} - Processing new activity in channel ${message.channel_id}`);
 
     try {
-      const pk: ChannelPrimaryKey = {
+      this.service.updateLastActivity({
         id: message.channel_id,
         workspace_id: message.workspace_id,
         company_id: message.company_id,
-      };
-      (this.service as Service).updateLastActivity(pk);
+      });
     } catch (err) {
       logger.error(
         { err },
