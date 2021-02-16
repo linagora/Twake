@@ -26,6 +26,8 @@ import RouterServices from 'app/services/RouterService';
 
 type Props = {
   channel: ChannelResource;
+  onClick: (opened: boolean) => void;
+  onClose: (opened: boolean) => void;
 };
 
 export default (props: Props): JSX.Element => {
@@ -240,8 +242,8 @@ export default (props: Props): JSX.Element => {
     <>
       {!!menu.length && (
         <div className="more-icon">
-          <Menu menu={menu} className="options">
-            <Icon type="ellipsis-h more-icon grey-icon" />
+          <Menu menu={menu} className="options" onClose={props.onClose}>
+            <Icon type="ellipsis-h more-icon grey-icon" onClick={props.onClick} />
           </Menu>
         </div>
       )}
