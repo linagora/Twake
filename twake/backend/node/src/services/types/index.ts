@@ -32,7 +32,7 @@ export interface User {
   // unique user id
   id: uuid;
   // user email
-  email: string;
+  email?: string;
   // Organisation properties
   org?: {
     [companyId: string]: {
