@@ -17,6 +17,14 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${channelListEvent} event`);
       this.identify({
         userId: data.user.id,
+        traits: {
+          email: data.user.email || "",
+          company: {
+            id:
+              Object.keys(data.user.org).length === 1 ? Object.keys(data.user.org)[0] : "multiple",
+          },
+          companies: Object.keys(data.user.org),
+        },
       });
       this.track(
         {

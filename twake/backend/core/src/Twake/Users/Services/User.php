@@ -319,6 +319,7 @@ class User
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
+            "email" => $user->getEmail(),
             "org" => $orgs,
         ];
         $jwt = JWT::encode($payload, $key);

@@ -79,7 +79,7 @@ export class Service implements TabService {
     },
   ])
   async delete(pk: ChannelTabPrimaryKey): Promise<DeleteResult<ChannelTab>> {
-    let tabEntity = await this.repository.findOne(pk);
+    const tabEntity = await this.repository.findOne(pk);
     if (tabEntity) {
       await this.repository.remove(tabEntity);
     }
