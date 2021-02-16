@@ -22,7 +22,7 @@ class JWTStorageClass {
   };
 
   async init() {
-    this.updateJWT(await LocalStorage.getItem('jwt'));
+    this.updateJWT(await LocalStorage.getItem('jwt'), { fromLocalStorage: true });
     (window as any).JWTStorage = this;
   }
 
@@ -37,17 +37,17 @@ class JWTStorageClass {
     };
   }
 
-  updateJWT(jwtData: JWTDataType) {
+  updateJWT(jwtData: JWTDataType, options?: { fromLocalStorage: boolean }) {
     if (!jwtData) {
       return;
     }
-    LocalStorage.setItem('jwt', jwtData);
     this.jwtData = jwtData;
-    this.timeDelta = new Date().getTime() / 1000 - jwtData.time;
-    this.jwtData.expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
-    this.jwtData.refresh_expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
-    if ((window as any).AuthData){ // post message for the mobile application to the channel named AuthData
-      (window as any).AuthData.postMessage(JSON.stringify({ "token": jwtData.value, "expiration": jwtData.expiration, "refresh_token": jwtData.refresh, "refresh_expiration": jwtData.refresh_expiration }));
+    if (!options?.fromLocalStorage) {
+      this.timeDelta = new Date().getTime() / 1000 - jwtData.time;
+      this.jwtData.expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
+      this.jwtData.refresh_expiration += this.timeDelta - 5 * 60; //Force reduce expiration by 5 minutes
+
+      LocalStorage.setItem('jwt', this.jwtData);
     }
   }
 
