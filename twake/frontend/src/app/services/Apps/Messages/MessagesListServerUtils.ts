@@ -137,7 +137,7 @@ export class MessagesListServerUtils extends Observable {
         }
         if (this.destroyed) {
           this.destroyed = false;
-          resolve();
+          resolve(null);
         }
         DepreciatedCollections.get('messages').addSource(
           {
@@ -172,17 +172,17 @@ export class MessagesListServerUtils extends Observable {
 
             if (fromMessageId && fromMessageId !== true) {
               this.init(fromMessageId).then(() => {
-                resolve();
+                resolve(null);
               });
             } else {
-              resolve();
+              resolve(null);
             }
           },
         );
       }).then(() => {
         //After an init always update last and first messages
         this.onNewMessageFromWebsocketListener(null);
-        return new Promise(resolve => resolve());
+        return new Promise(resolve => resolve(null));
       });
     }
   }

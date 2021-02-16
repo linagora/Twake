@@ -3,8 +3,8 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 import CurrentUser from './Parts/CurrentUser/CurrentUser.js';
 import ChannelsApps from './ChannelsApps/ChannelsApps';
-import { Workspace } from './Workspace/workspace';
-import { ChannelsUser } from './ChannelsUser/ChannelsUser';
+import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
+import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
 import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';
@@ -13,7 +13,6 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
-import AccessRightsService from 'app/services/AccessRightsService';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default () => {
@@ -89,7 +88,7 @@ export default () => {
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
           <ChannelsApps key={workspaceId} />
-          <Workspace key={'workspace_chans_' + workspaceId} />
+          <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>

@@ -28,11 +28,12 @@ type DesktopNotification = {
 };
 
 let inAppNotificationKey = 0;
-const openNotification = (n: any, callback: any) => {
+const openNotification = (n: any, newNotification: DesktopNotification | null, callback: any) => {
   notification.close(inAppNotificationKey.toString());
   inAppNotificationKey++;
+  const notificationKey = inAppNotificationKey.toString();
   notification.open({
-    key: inAppNotificationKey.toString(),
+    key: notificationKey,
     message: emojione.shortnameToUnicode(n.title),
     description: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(
@@ -40,7 +41,7 @@ const openNotification = (n: any, callback: any) => {
       ),
     ),
     onClick: () => {
-      callback();
+      callback(newNotification, notificationKey);
     },
     closeIcon: <X size={16} />,
   });
@@ -225,17 +226,30 @@ class Notifications extends Observable {
         }
       }
 
-      const callback = () => {
+      const callback = (
+        notificationObject: DesktopNotification | null,
+        inAppNotificationKey?: string,
+      ) => {
+        inAppNotificationKey && notification.close(inAppNotificationKey);
         popupManager.closeAll();
-        if (newNotification) {
+        if (!notificationObject) {
+          return;
+        }
+        setTimeout(() => {
+          let workspaceId = notificationObject.workspace_id;
+          if (workspaceId === 'direct') {
+            workspaceId = WorkspacesService.getOrderedWorkspacesInGroup(
+              notificationObject.company_id,
+            )[0];
+          }
           RouterService.history.push(
             RouterService.generateRouteFromState({
-              companyId: newNotification.company_id,
-              workspaceId: newNotification.workspace_id,
-              channelId: newNotification.channel_id,
+              companyId: notificationObject.company_id,
+              workspaceId: workspaceId,
+              channelId: notificationObject.channel_id,
             }),
           );
-        }
+        }, 500);
       };
 
       openNotification(
@@ -243,6 +257,7 @@ class Notifications extends Observable {
           title: title,
           text: message,
         },
+        newNotification,
         callback.bind(this),
       );
 
@@ -252,7 +267,7 @@ class Notifications extends Observable {
         });
         n.onclick = () => {
           window.focus();
-          callback.bind(this)();
+          callback(newNotification);
           n.close();
         };
       }

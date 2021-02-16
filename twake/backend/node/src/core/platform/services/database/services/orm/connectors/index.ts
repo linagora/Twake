@@ -9,9 +9,9 @@ import { ListResult } from "../../../../../framework/api/crud-service";
 export * from "./mongodb/mongodb";
 export * from "./cassandra/cassandra";
 
-export type UpsertOptions = {};
+export type UpsertOptions = any;
 
-export type RemoveOptions = {};
+export type RemoveOptions = any;
 
 export interface Connector extends Initializable {
   /**

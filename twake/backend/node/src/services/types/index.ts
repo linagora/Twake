@@ -31,6 +31,8 @@ export type uuid = string;
 export interface User {
   // unique user id
   id: uuid;
+  // user email
+  email: string;
   // Organisation properties
   org?: {
     [companyId: string]: {

@@ -274,7 +274,14 @@ textarea.ant-input,
 
 .ant-notification-hook-holder,
 .ant-notification-notice {
+  cursor: pointer;
   width: 260px;
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 20%);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 20%);
+  }
 }
 
 .ant-notification-notice-close {
