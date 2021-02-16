@@ -13,7 +13,7 @@ import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import { NotificationResource } from 'app/models/Notification';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
-export function ChannelsUser() {
+export default () => {
   const { companyId } = RouterServices.useRouteState(({ companyId }) => {
     return { companyId };
   });
@@ -51,6 +51,7 @@ export function ChannelsUser() {
       />
       {directChannels
         .filter(channel => !channel.data.user_member?.favorite)
+        .sort((a, b) => (b.data.last_activity || 0) - (a.data.last_activity || 0))
         .map(channel => {
           return (
             <ChannelIntermediate
@@ -82,4 +83,4 @@ export function ChannelsUser() {
       )}
     </div>
   );
-}
+};

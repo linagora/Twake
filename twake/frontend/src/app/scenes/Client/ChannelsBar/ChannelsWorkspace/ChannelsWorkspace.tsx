@@ -4,7 +4,7 @@ import { ChannelType } from 'app/models/Channel';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-import WorkspaceChannels from 'app/scenes/Client/ChannelsBar/ChannelsWorkspace/WorkspaceChannels';
+import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages.js';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
@@ -15,7 +15,7 @@ type channelCategoryType = {
   direct: ChannelResource[];
 };
 
-export function Workspace() {
+export default () => {
   let channelCategory: channelCategoryType = {
     favorite: [],
     workspace: [],
@@ -46,6 +46,7 @@ export function Workspace() {
 
   channels
     .concat(directChannels)
+    .filter(a => a.data.user_member?.user_id)
     .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
     .map(channel => {
       switch (true) {
@@ -127,4 +128,4 @@ export function Workspace() {
       ))}
     </div>
   );
-}
+};
