@@ -12,11 +12,10 @@ import ChannelUsersHeader from './ChannelUsersHeader';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
-import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Languages from 'services/languages/languages.js';
-import ChannelsService from 'services/channels/channels.js';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
@@ -24,6 +23,14 @@ export default (): JSX.Element => {
       return { companyId, workspaceId, channelId };
     },
   );
+
+  const redirectToWorkspace = () => {
+    const url = RouterServices.generateRouteFromState({
+      workspaceId: workspaceId,
+      channelId: '',
+    });
+    return RouterServices.history.push(url);
+  };
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
     channelId || channelId
@@ -47,6 +54,10 @@ export default (): JSX.Element => {
 
   if (!channel) {
     return <Col></Col>;
+  }
+
+  if (!channel.data.user_member?.user_id) {
+    redirectToWorkspace();
   }
 
   return (
