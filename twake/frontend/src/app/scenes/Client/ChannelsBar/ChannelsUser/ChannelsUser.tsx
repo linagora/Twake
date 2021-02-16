@@ -25,7 +25,13 @@ export default () => {
   const [limit, setLimit] = useState(100);
 
   const directChannels = channelsCollection
-    .useWatcher({}, { limit: limit, observedFields: ['id', 'user_member.favorite', 'visibility'] })
+    .useWatcher(
+      {},
+      {
+        limit: limit,
+        observedFields: ['id', 'user_member.favorite', 'visibility', 'last_activity'],
+      },
+    )
     .filter(c => c.data.visibility === 'direct' && c.data.user_member?.user_id);
 
   ChannelsBarService.wait(companyId || '', 'direct', channelsCollection);

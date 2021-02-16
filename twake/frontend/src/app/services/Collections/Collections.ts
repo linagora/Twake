@@ -18,7 +18,7 @@ type Options = {
     };
     socket?: {
       url?: string; //Socket API, like http://localhost:8000/internal/sockets
-      authenticate?: any;
+      authenticate?: () => Promise<any>;
     };
   };
 };

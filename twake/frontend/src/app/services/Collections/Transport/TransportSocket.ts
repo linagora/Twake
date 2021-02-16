@@ -44,6 +44,7 @@ export default class TransportSocket {
   }
 
   connect() {
+    const authenticate = Collections.getOptions().transport?.socket?.authenticate;
     const socketEndpoint = Collections.getOptions().transport?.socket?.url;
     if (!socketEndpoint) {
       return;
@@ -53,6 +54,11 @@ export default class TransportSocket {
     if (this.socket) {
       logger.debug('Already connected to', socketEndpoint);
       //Already connected
+      return;
+    }
+
+    if (!authenticate) {
+      logger.error('Cannot start socket without an authentication method');
       return;
     }
 
@@ -68,16 +74,18 @@ export default class TransportSocket {
       });
     });
 
-    this.socket.on('connect', () => {
+    this.socket.on('connect', async () => {
       logger.debug('Connected to websocket, authenticating...');
       socket
-        .emit('authenticate', Collections.getOptions().transport?.socket?.authenticate || {})
+        .emit('authenticate', (await authenticate()) || {})
         .on('authenticated', () => {
           logger.debug('Authenticated');
           this.rejoinAll(true);
         })
         .on('unauthorized', (err: any) => {
           logger.warn('Websocket is not authorized', err);
+          this.socket?.close();
+          this.socket = null;
           //Retry and expect new jwt
           setTimeout(() => {
             this.connect();

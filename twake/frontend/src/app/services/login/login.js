@@ -382,8 +382,17 @@ class Login extends Observable {
         transport: {
           socket: {
             url: Globals.window.websocket_url,
-            authenticate: {
-              token: JWTStorage.getJWT(),
+            authenticate: async () => {
+              let token = JWTStorage.getJWT();
+              if (JWTStorage.isAccessExpired()) {
+                await new Promise(resolve => {
+                  this.updateUser(resolve);
+                });
+                token = JWTStorage.getJWT();
+              }
+              return {
+                token,
+              };
             },
           },
           rest: {
