@@ -28,7 +28,7 @@ export default () => {
   });
   const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource);
-  channelsCollection.setOptions({ reloadStrategy: 'delayed' });
+  channelsCollection.setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
   const directUrl: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
   const directChannelsCollection = Collection.get(directUrl, ChannelResource);
   directChannelsCollection.setOptions({ reloadStrategy: 'delayed' });
