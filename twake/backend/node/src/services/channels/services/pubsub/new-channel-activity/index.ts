@@ -1,17 +1,22 @@
 import { logger } from "../../../../../core/platform/framework";
+import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import {
   ChannelActivityNotification,
-  WorkspaceExecutionContext,
   ChannelSystemExecutionContext,
 } from "../../../types";
 import { ChannelPrimaryKey, ChannelService } from "../../../provider";
-import { Service } from "../service";
+import { Service } from "../../channel/service";
 
-export class NewChannelActivityProcessor {
+export class NewChannelActivityProcessor implements PubsubHandler<ChannelActivityNotification, void> {
   constructor(readonly service: ChannelService) {}
 
   readonly topics = {
     in: "channel:activity",
+  };
+
+  readonly options = {
+    unique: true,
+    ack: true,
   };
 
   readonly name = "NewChannelActivityProcessor";

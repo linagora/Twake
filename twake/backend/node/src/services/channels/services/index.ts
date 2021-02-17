@@ -4,7 +4,6 @@ import ChannelServiceAPI, { MemberService, ChannelService, TabService } from "..
 import { getService as getChannelService } from "./channel";
 import { getService as getMemberService } from "./member";
 import { getService as getTabService } from "./tab";
-import { NewChannelActivityProcessor } from "./channel/new-channel-activity";
 import { PubsubListener } from "./pubsub";
 import Activities from "./channel/activities/service";
 import { getService as getActivitiesService } from "./channel/activities";
@@ -42,8 +41,6 @@ class Service implements ChannelServiceAPI {
   }
 
   async init(): Promise<this> {
-    this.pubsub.processor.addHandler(new NewChannelActivityProcessor(this.channels));
-
     try {
       await Promise.all([
         this.activities.init(),
