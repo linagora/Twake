@@ -76,7 +76,7 @@ class Notifications extends Observable {
       }
     }
 
-    this.subscribeToCompaniesNotifications();
+    this.getCompaniesNotifications();
   }
 
   //This method is called each time we change our current company
@@ -84,25 +84,12 @@ class Notifications extends Observable {
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
       NotificationResource,
-      { tag: 'current_company' },
     );
     notificationsCollection.setOptions({
       reloadStrategy: 'ontime',
-    });
-    notificationsCollection.find(
-      {},
-      { query: { company_id: companyId }, limit: 1000, refresh: true },
-    );
-  }
-
-  //This one is called only once on starting platform
-  subscribeToCompaniesNotifications() {
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-    );
-    notificationsCollection.setOptions({
-      reloadStrategy: 'ontime',
+      queryParameters: {
+        company_id: companyId,
+      },
     });
 
     notificationsCollection.getTransport().start();
@@ -115,14 +102,23 @@ class Notifications extends Observable {
       this.triggerUnreadMessagesPushNotification,
     );
 
-    //Load if there is at least one notification for user
-    notificationsCollection.findOne({}, { limit: 1 });
-    this.getNotifications(notificationsCollection);
-
     //Listen websockets
     notificationsCollection.addWatcher(() => {
       this.getNotifications(notificationsCollection, true);
     }, {});
+  }
+
+  //This one is called only once on starting platform
+  getCompaniesNotifications() {
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+      { tag: 'others_company' },
+    );
+
+    //Load if there is at least one notification for user
+    notificationsCollection.findOne({}, { limit: 1 });
+    this.getNotifications(notificationsCollection);
   }
 
   getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
@@ -240,15 +236,17 @@ class Notifications extends Observable {
           if (workspaceId === 'direct') {
             workspaceId = WorkspacesService.getOrderedWorkspacesInGroup(
               notificationObject.company_id,
-            )[0];
+            )[0]?.id;
           }
-          RouterService.history.push(
-            RouterService.generateRouteFromState({
-              companyId: notificationObject.company_id,
-              workspaceId: workspaceId,
-              channelId: notificationObject.channel_id,
-            }),
-          );
+          if (workspaceId) {
+            RouterService.history.push(
+              RouterService.generateRouteFromState({
+                companyId: notificationObject.company_id,
+                workspaceId: workspaceId,
+                channelId: notificationObject.channel_id,
+              }),
+            );
+          }
         }, 500);
       };
 

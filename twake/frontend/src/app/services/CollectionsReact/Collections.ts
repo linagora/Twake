@@ -31,7 +31,7 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
     type: new (data: any) => T,
     options: CollectionOptions = {},
   ): Collection<T> {
-    options.tag = path.split('::')[1] || undefined;
+    options.tag = options.tag || path.split('::')[1] || undefined;
     options.storageKey = OriginalCollections.getOptions().storageKey;
     return OriginalCollections.get(
       path,

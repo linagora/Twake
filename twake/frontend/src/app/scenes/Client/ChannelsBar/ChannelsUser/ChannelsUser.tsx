@@ -57,7 +57,11 @@ export default () => {
       />
       {directChannels
         .filter(channel => !channel.data.user_member?.favorite)
-        .sort((a, b) => (b.data.last_activity || 0) - (a.data.last_activity || 0))
+        .sort(
+          (a, b) =>
+            (parseInt(b.data.last_activity?.toString() || '') || 0) -
+            (parseInt(a.data.last_activity?.toString() || '') || 0),
+        )
         .map(channel => {
           return (
             <ChannelIntermediate
