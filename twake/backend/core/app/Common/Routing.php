@@ -50,6 +50,7 @@ class Routing
     public function get($route, $callback)
     {
         SimpleRouter::get($route, function () use ($callback) {
+            error_log("[Router] - GET " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -62,6 +63,7 @@ class Routing
     public function post($route, $callback)
     {
         SimpleRouter::post($route, function () use ($callback) {
+            error_log("[Router] - POST " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -74,6 +76,7 @@ class Routing
     public function put($route, $callback)
     {
         SimpleRouter::put($route, function () use ($callback) {
+            error_log("[Router] - PUT " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -86,6 +89,7 @@ class Routing
     public function delete($route, $callback)
     {
         SimpleRouter::delete($route, function () use ($callback) {
+            error_log("[Router] - DELETE " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -98,8 +102,6 @@ class Routing
     //Allow any origin
     private function beforeRender(Response $response)
     {
-        error_log("[Router] - " . $_SERVER["REQUEST_URI"]);
-
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
         }
