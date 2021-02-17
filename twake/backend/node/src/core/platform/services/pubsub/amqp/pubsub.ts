@@ -33,7 +33,7 @@ export class AMQPPubSub implements PubsubClient {
       const data = err ? originalMessage : message;
 
       if (err) {
-        logger.error(`${LOG_PREFIX} Received a message which can not be parsed on topic ${topic}`);
+        logger.error(`${LOG_PREFIX} Received a message which can not be parsed on topic ${topic}: %o`, originalMessage?.content.toString());
       }
 
       listener({
