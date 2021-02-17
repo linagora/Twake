@@ -98,6 +98,7 @@ class Routing
     //Allow any origin
     private function beforeRender(Response $response)
     {
+        error_log("[Router] - " . $_SERVER["REQUEST_URI"]);
 
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);

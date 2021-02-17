@@ -43,7 +43,14 @@ class RabbitMQ implements QueueManager
             $data["DelaySeconds"] = $options["delay"];
         }
 
-        $msg = new AMQPMessage(json_encode($message), $amqp_options);
+        $message = json_encode($message);
+
+        if(!$message){
+            error_log("[RabbitMQ] - Unable to encode message to JSON");
+            return;
+        }
+
+        $msg = new AMQPMessage($message, $amqp_options);
 
         $channel = $this->getChannel();
         if($options["exchange_type"]){
