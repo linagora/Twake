@@ -4,6 +4,7 @@ import TrackerAPI from "./provider";
 import { localEventBus } from "../../framework/pubsub";
 import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
 import { ResourceEventsPayload } from "../../../../services/types";
+import { trace } from "console";
 
 @Consumes([])
 export default class Tracker extends TwakeService<TrackerAPI> implements TrackerAPI {
@@ -111,6 +112,11 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     tracker: TrackedEventType,
     callback?: (err: Error) => void,
   ): Promise<Analytics> {
+    if (!tracker.userId) {
+      logger.warn(`Tracker - Tried to track event without userId: ${tracker.event}`);
+      return;
+    }
+
     const analytics = await this.getAnalytics();
 
     if (analytics && tracker) {
