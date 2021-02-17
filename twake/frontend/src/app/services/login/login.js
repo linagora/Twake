@@ -349,19 +349,6 @@ class Login extends Observable {
     AccessRightsService.resetLevels();
 
     user.workspaces.forEach(workspace => {
-      AccessRightsService.updateLevel(
-        workspace.id,
-        workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
-      );
-      AccessRightsService.updateCompanyLevel(
-        workspace.group.id,
-        workspace._user_is_organization_administrator
-          ? 'administrator'
-          : workspace._user_is_guest
-          ? 'guest'
-          : 'member',
-      );
-
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
     });
