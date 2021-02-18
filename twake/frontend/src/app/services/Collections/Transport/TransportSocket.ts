@@ -34,8 +34,6 @@ export default class TransportSocket {
         this.lastConnection = new Date().getTime();
         if (!this.socket?.connected) {
           this.connect();
-        } else {
-          this.rejoinAll();
         }
       }
     }, 30000);

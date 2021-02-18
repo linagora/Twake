@@ -11,7 +11,8 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
 import InitService from 'app/services/InitService';
-import Notifications from 'services/user/notifications';
+import { Collection } from 'services/CollectionsReact/Collections';
+import { NotificationResource } from 'app/models/Notification';
 
 export default class Group extends Component {
   constructor() {
@@ -30,7 +31,12 @@ export default class Group extends Component {
     Groups.removeListener(this);
   }
   renderGroupInMenu(group) {
-    const notifications = Notifications.store.unreadCompanies[group.id] ? 1 : 0;
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+      { tag: 'others_company' },
+    );
+    const notifications = notificationsCollection.find({ company_id: group.id }).length;
 
     return {
       type: 'react-element',

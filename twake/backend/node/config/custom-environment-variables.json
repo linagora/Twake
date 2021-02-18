@@ -1,4 +1,7 @@
 {
+  "sentry": {
+    "dsn": "SENTRY_DSN"
+  },
   "phpnode": {
     "secret": "PHP_NODE_API_SECRET"
   },

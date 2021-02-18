@@ -8,9 +8,11 @@ import './Messages.scss';
 import NewThread from './Input/NewThread';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
+import Collections from 'app/services/Collections/Collections';
+import { ChannelResource } from 'app/models/Channel';
 
 type Props = {
-  channel: any;
+  channel: ChannelResource;
   tab?: any;
   options: any;
 };
@@ -30,7 +32,7 @@ export default class MainView extends Component<Props> {
     this.options = props.options || {};
     this.options.context = props.options.context || {};
     this.threadId = this.options.context.threadId || '';
-    this.collectionKey = 'messages_' + this.props.channel.data.id + '_' + this.threadId;
+    this.collectionKey = 'messages_' + this.props.channel.id + '_' + this.threadId;
   }
   componentWillUnmount() {
     Languages.removeListener(this);
@@ -39,15 +41,15 @@ export default class MainView extends Component<Props> {
   }
 
   render() {
-    const unreadAfter = ChannelsService.channel_front_read_state[this.props.channel.data.id];
+    const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
     return (
       <div
         className="messages-view"
         onClick={() => {
           //Mark channel as read
           const messagesListServerService = MessagesListServerServicesManager.get(
-            this.props.channel.company_id,
-            this.props.channel.workspace_id,
+            this.props.channel.data.company_id || '',
+            this.props.channel.data.workspace_id || '',
             this.props.channel.id,
             this.threadId,
             this.collectionKey,
@@ -67,9 +69,9 @@ export default class MainView extends Component<Props> {
           onDrop={(data: any) => MessagesService.dropMessage(data.data, null, this.collectionKey)}
         >
           <NewThread
-            useButton={!this.props.channel.data.direct && !this.threadId}
+            useButton={this.props.channel.data.visibility !== 'direct' && !this.threadId}
             collectionKey={this.collectionKey}
-            channelId={this.props.channel.data.id}
+            channelId={this.props.channel.id}
             threadId={this.threadId}
           />
         </DroppableZone>

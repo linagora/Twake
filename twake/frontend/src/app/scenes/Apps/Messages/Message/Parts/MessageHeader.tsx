@@ -169,6 +169,8 @@ export default class MessageHeader extends Component<Props, State> {
             >
               {this.props.message.creation_date * 1000}
             </Moment>
+
+            {this.props.message.edited && ' - edited'}
           </a>
         )}
       </div>

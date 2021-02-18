@@ -18,6 +18,8 @@ import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
 import Notifications from 'services/user/notifications';
 import $ from 'jquery';
+import AccessRightsService from 'services/AccessRightsService';
+import loginService from 'services/login/login.js';
 
 import Globals from 'services/Globals.js';
 import JWTStorage from 'services/JWTStorage';
@@ -139,7 +141,7 @@ class Workspaces extends Observable {
   }
 
   changeGroup(group) {
-    this.currentGroupId = group.id;
+    this.updateCurrentCompanyId(group.id);
     this.notify();
     if (this.currentWorkspaceIdByGroup[group.id]) {
       this.select(this.user_workspaces[this.currentWorkspaceIdByGroup[group.id]]);
@@ -177,6 +179,21 @@ class Workspaces extends Observable {
 
     if (workspace._user_hasnotifications) {
       workspace.group._user_hasnotifications = true;
+    }
+
+    AccessRightsService.updateLevel(
+      workspace.id,
+      workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
+    );
+    if (workspace._user_is_organization_administrator !== undefined) {
+      AccessRightsService.updateCompanyLevel(
+        workspace.group.id,
+        workspace._user_is_organization_administrator
+          ? 'administrator'
+          : workspace._user_is_guest
+          ? 'guest'
+          : 'member',
+      );
     }
   }
 
@@ -226,6 +243,9 @@ class Workspaces extends Observable {
       var group_id = undefined;
       var workspace = undefined;
       if (res.data && res.data.workspace) {
+        //Update rights and more
+        loginService.updateUser();
+
         that.addToUser(res.data.workspace);
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
