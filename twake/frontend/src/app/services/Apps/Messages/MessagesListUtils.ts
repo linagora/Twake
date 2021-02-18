@@ -1,6 +1,7 @@
 import { MessagesListServerUtils, Message } from './MessagesListServerUtils';
 import Observable from 'app/services/Depreciated/observable';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import ResizeObserver from 'resize-observer-polyfill';
 
 class MessagesListUtilsManager {
   services: { [key: string]: MessagesListUtils } = {};
@@ -62,11 +63,7 @@ export class MessagesListUtils extends Observable {
 
     this.serverService = serverService;
 
-    //@ts-ignore
-    if (window?.ResizeObserver) {
-      //@ts-ignore
-      this.messagesContainerNodeResizeObserver = new window.ResizeObserver(this.onContentChange);
-    }
+    this.messagesContainerNodeResizeObserver = new ResizeObserver(this.onContentChange);
 
     //@ts-ignore
     window.MessagesListUtils = this;
