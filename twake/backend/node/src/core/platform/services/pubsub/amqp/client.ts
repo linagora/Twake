@@ -32,10 +32,14 @@ export class AmqpClient {
     this._connected = value;
   }
 
-  dispose(): Promise<void> {
+  async dispose(): Promise<void> {
     logger.info(`${LOG_PREFIX} Closing the connection`);
 
-    return this.channel.close();
+    try {
+      this.channel.close();
+    } catch (err) {
+      logger.debug({ err }, `${LOG_PREFIX} Can not close the channel (probably already closed)`);
+    }
   }
 
   assertExchange(
