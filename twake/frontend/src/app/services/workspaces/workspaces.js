@@ -141,7 +141,7 @@ class Workspaces extends Observable {
   }
 
   changeGroup(group) {
-    this.currentGroupId = group.id;
+    this.updateCurrentCompanyId(group.id);
     this.notify();
     if (this.currentWorkspaceIdByGroup[group.id]) {
       this.select(this.user_workspaces[this.currentWorkspaceIdByGroup[group.id]]);

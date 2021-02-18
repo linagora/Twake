@@ -98,6 +98,8 @@ class Notifications extends Observable {
     notificationsCollection.addWatcher(() => {
       this.getNotifications();
     }, {});
+
+    notificationsCollection.find({}, { limit: 1000, refresh: true });
   }
 
   //This one is called only once on starting platform
