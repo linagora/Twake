@@ -28,6 +28,11 @@
         color: var(--warning);
       }
     }
+
+    .remaning-time {
+      color: grey;
+      font-style: italic;
+    }
   }
 
   .current-company {

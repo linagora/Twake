@@ -15,6 +15,7 @@ import ChannelsService from 'services/channels/channels.js';
 import emojione from 'emojione';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import UserService from 'services/user/user.js';
+import NotificationPreferences from './notificationParameters';
 
 type DesktopNotification = {
   channel_id: string;
@@ -156,6 +157,7 @@ class Notifications extends Observable {
       }
     }
     this.updateAppBadge(badgeCount);
+    NotificationPreferences.init();
     this.notify();
   }
 
