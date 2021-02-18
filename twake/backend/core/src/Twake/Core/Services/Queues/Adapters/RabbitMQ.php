@@ -5,6 +5,7 @@ namespace Twake\Core\Services\Queues\Adapters;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class RabbitMQ implements QueueManager
 {
