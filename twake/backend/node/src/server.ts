@@ -1,7 +1,15 @@
 import path from "path";
 import { TwakePlatform, TwakePlatformConfiguration } from "./core/platform/platform";
+import * as Sentry from "@sentry/node";
 
 import config from "./core/config";
+
+if (config.get("sentry.dsn")) {
+  Sentry.init({
+    dsn: config.get("sentry.dsn"),
+    tracesSampleRate: 1.0,
+  });
+}
 
 const start = async (): Promise<TwakePlatform> => {
   try {
