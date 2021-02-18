@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import { logger } from "../../framework";
 import {
   PubsubClient,
@@ -133,13 +134,21 @@ export default class PubsubProxyService implements PubsubProxy {
     listener: PubsubListener<unknown>,
     options: PubsubSubscriptionOptions,
   ): void {
-    logger.debug(`${LOG_PREFIX} Caching subscription to ${topic} topic`);
     if (!this.subscriptionsCache.get(topic)) {
       this.subscriptionsCache.set(topic, new Set<ListenerCache>());
     }
 
-    if (!this.subscriptionsCache.get(topic).has({ listener, options })) {
+    const subscriptions = this.subscriptionsCache.get(topic);
+    logger.debug(`${LOG_PREFIX} Subscriptions for topic ${topic}: ${subscriptions.size}`);
+
+    const values = [...subscriptions];
+    const cachedListener = values.find(entry => listener === entry.listener && isEqual(options, entry.options));
+
+    if (!cachedListener) {
+      logger.debug(`${LOG_PREFIX} Caching subscription to ${topic} topic: Yes`);
       this.subscriptionsCache.get(topic).add({ listener, options });
+    } else {
+      logger.debug(`${LOG_PREFIX} Caching subscription to ${topic} topic: No`);
     }
   }
 

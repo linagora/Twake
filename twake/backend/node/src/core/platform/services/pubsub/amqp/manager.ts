@@ -23,7 +23,9 @@ export class AMQPPubsubManager implements PubsubClientManager {
   }
 
   async createClient(urls: string[]): Promise<Subject<PubsubClient>> {
-    logger.info(`${LOG_PREFIX} Creating AMQP client ${urls}`);
+    logger.info(`${LOG_PREFIX} Creating AMQP client %o`, urls);
+    debugger;
+    console.log(typeof urls);
     const connection = connect(urls);
     const client = await this.create(connection);
     const pubsub = new AMQPPubSub(client);
