@@ -6,12 +6,11 @@ import Notifications from 'services/user/notifications';
 import './Workspace.scss';
 
 export default (props: { workspace: any; selected: boolean; onClick: () => {} }) => {
-  const unreadInWorkspace = Notifications.useWatcher(() => {
-    return Object.keys(Notifications.store.unreadWorkspaces).filter(id => id === props.workspace.id)
-      .length;
-  });
+  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
+  const unreadInWorkspace = notificationsCollection.useWatcher({ workspace_id: props.workspace.id })
+    .length;
+  const workspace = props.workspace || {};
 
-  var workspace = props.workspace || {};
   return (
     <div
       className={

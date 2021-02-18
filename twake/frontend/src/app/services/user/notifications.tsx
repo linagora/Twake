@@ -51,14 +51,6 @@ class Notifications extends Observable {
   private newNotificationAudio: any;
   private subscribedCompanies: { [companyId: string]: boolean } = {};
 
-  public store: {
-    unreadCompanies: { [key: string]: boolean };
-    unreadWorkspaces: { [key: string]: boolean };
-  } = {
-    unreadCompanies: {},
-    unreadWorkspaces: {},
-  };
-
   constructor() {
     super();
     this.newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
@@ -104,7 +96,7 @@ class Notifications extends Observable {
 
     //Listen websockets
     notificationsCollection.addWatcher(() => {
-      this.getNotifications(notificationsCollection, true);
+      this.getNotifications();
     }, {});
   }
 
@@ -117,12 +109,24 @@ class Notifications extends Observable {
     );
 
     //Load if there is at least one notification for user
-    notificationsCollection.findOne({}, { limit: 1 });
-    this.getNotifications(notificationsCollection);
+    notificationsCollection.findOne({}, { limit: 1, waitForBackend: true });
+    this.getNotifications();
   }
 
-  getNotifications(collection: Collection<NotificationResource>, websockets: boolean = false) {
-    const notifications = collection.find({});
+  getNotifications() {
+    const notificationsOtherCompaniesCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+      { tag: 'others_company' },
+    );
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+    );
+    const notifications = notificationsOtherCompaniesCollection
+      .find({})
+      .concat(notificationsCollection.find({}));
+
     // Count notifications:
     // - other group notifications are not counted
     // - other workspace notifications count as one
@@ -130,8 +134,6 @@ class Notifications extends Observable {
     let badgeCount = 0;
     const state = RouterService.getStateFromRoute();
     const ignore: any = [];
-    this.store.unreadCompanies = {};
-    this.store.unreadWorkspaces = {};
     for (let i = 0; i < notifications.length; i++) {
       const notification = notifications[i];
       if (
@@ -140,9 +142,6 @@ class Notifications extends Observable {
       ) {
         return;
       }
-
-      this.store.unreadCompanies[notification.data.company_id] = true;
-      this.store.unreadWorkspaces[notification.data.workspace_id] = true;
 
       if (
         notification.data.company_id !== state.companyId ||
