@@ -66,7 +66,7 @@ class PubsubService implements PubsubServiceAPI {
   }
 
   async init(): Promise<this> {
-    logger.info(`${LOG_PREFIX} Initializing pubsub service implementation`);
+    logger.info(`${LOG_PREFIX} Initializing pubsub service implementation with urls %o`, this.urls);
     await this.manager.createClient(this.urls);
 
     this.availableSubscription = this.manager.getClientAvailable().subscribe({
