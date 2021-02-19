@@ -26,32 +26,38 @@ export class NotificationController
       Querystring: NotificationListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationBadge>> {
-    //Get one badge per company
-    if (!request.query.company_id) {
+    let resources: UserNotificationBadge[] = [];
+    let page_token: string = "";
+
+    //Get one badge per company if requested
+    if (request.query.all_companies) {
       const list = await this.service.badges.listForUserPerCompanies(
-        Object.keys(request.currentUser.org),
+        //We remove all badge from current company as next block will create dupicates
+        Object.keys(request.currentUser.org).filter(id => id !== request.query.company_id),
         request.currentUser.id,
       );
-      return {
-        resources: list.getEntities(),
-      };
+      resources = resources.concat(list.getEntities());
     }
 
-    const list = await this.service.badges.listForUser(
-      request.query.company_id,
-      request.currentUser.id,
-      { ...request.query },
-    );
+    if (request.query.company_id) {
+      const list = await this.service.badges.listForUser(
+        request.query.company_id,
+        request.currentUser.id,
+        { ...request.query },
+      );
+      resources = resources.concat(list.getEntities());
+      page_token = list.page_token;
+    }
 
     return {
       ...{
-        resources: list.getEntities(),
+        resources,
       },
       ...(request.query.websockets && {
         websockets: [getWebsocketInformation(request.currentUser)],
       }),
-      ...(list.page_token && {
-        next_page_token: list.page_token,
+      ...(page_token && {
+        next_page_token: page_token,
       }),
     };
   }

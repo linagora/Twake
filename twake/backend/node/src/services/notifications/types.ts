@@ -43,4 +43,5 @@ export interface NotificationListQueryParameters extends PaginationQueryParamete
   workspace_id: uuid | "direct";
   channel_id: uuid;
   thread_id: uuid;
+  all_companies: boolean;
 }
