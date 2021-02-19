@@ -11,6 +11,10 @@ export type AmqpCallbackType = (
   originalMessage: ConsumeMessage,
 ) => void;
 
+export type PublishOptions = {
+  ttl?: number | null;
+};
+
 /**
  * Low level AMQP client using AMQP channel the right way.
  *
@@ -61,8 +65,8 @@ export class AmqpClient {
     return this.channel.bindQueue(queue, exchange, routingPattern);
   }
 
-  send(exchange: string, data: unknown, routingKey = ""): boolean {
-    return this.channel.publish(exchange, routingKey, dataAsBuffer(data));
+  send(exchange: string, data: unknown, routingKey = "", options?: Options.Publish): boolean {
+    return this.channel.publish(exchange, routingKey, dataAsBuffer(data), options);
   }
 
   consume(queue: string, options: Options.Consume, callback: AmqpCallbackType): Promise<void> {

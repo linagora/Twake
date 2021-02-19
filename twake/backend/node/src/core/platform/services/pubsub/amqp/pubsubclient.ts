@@ -1,6 +1,7 @@
 import { logger } from "../../../framework/logger";
 import { constants as CONSTANTS } from "./constants";
-import { AmqpClient, AmqpCallbackType } from "./client";
+import { AmqpClient, AmqpCallbackType, PublishOptions } from "./client";
+import { Options } from "amqplib";
 
 const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
 
@@ -8,11 +9,19 @@ const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
  * AMQP client abstracting low level channel methods to create a pubsub-like implementation
  */
 export class AmqpPubsubClient extends AmqpClient {
-  publish(topic: string, data: unknown): Promise<boolean> {
-    logger.debug(`${LOG_PREFIX} Publishing message to topic "${topic}"`);
+  publish(topic: string, data: unknown, options?: PublishOptions): Promise<boolean> {
+    let publishOptions: Options.Publish;
+
+    logger.debug(`${LOG_PREFIX} Publishing message to topic "${topic}" with options %o`, options);
+
+    if (options?.ttl) {
+      publishOptions = {
+        expiration: options.ttl
+      };
+    }
 
     return this.assertExchange(topic, CONSTANTS.PUBSUB_EXCHANGE.type).then(() =>
-      this.send(topic, data, CONSTANTS.PUBSUB_EXCHANGE.routingKey),
+      this.send(topic, data, CONSTANTS.PUBSUB_EXCHANGE.routingKey, publishOptions),
     );
   }
 

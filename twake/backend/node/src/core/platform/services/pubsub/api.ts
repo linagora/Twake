@@ -10,6 +10,11 @@ export interface PubsubMessage<T> {
   id?: string;
 
   /**
+   * The message TTL period in milliseconds
+   */
+  ttl?: number;
+
+  /**
    * The message payload to process
    */
   data: T;
