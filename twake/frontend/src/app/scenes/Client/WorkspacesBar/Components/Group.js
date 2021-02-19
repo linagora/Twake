@@ -34,7 +34,6 @@ export default class Group extends Component {
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
       NotificationResource,
-      { tag: 'others_company' },
     );
     const notifications = notificationsCollection.find({ company_id: group.id }).length;
 

@@ -102,18 +102,11 @@ class Notifications extends Observable {
   }
 
   getNotifications() {
-    const notificationsOtherCompaniesCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-      { tag: 'others_company' },
-    );
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
       NotificationResource,
     );
-    const notifications = notificationsOtherCompaniesCollection
-      .find({})
-      .concat(notificationsCollection.find({}));
+    const notifications = notificationsCollection.find({});
 
     // Count notifications:
     // - other group notifications are not counted
