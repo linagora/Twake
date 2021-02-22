@@ -73,7 +73,6 @@ export default class Repository<EntityType> {
   }
 
   async save(entity: EntityType): Promise<void> {
-    logger.info(`services.database.repository - Saving entity ${JSON.stringify(entity)}`);
     (await this.manager.persist(entity).flush()).reset();
   }
 

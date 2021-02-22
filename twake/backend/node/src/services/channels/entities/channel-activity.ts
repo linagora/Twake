@@ -5,7 +5,7 @@ import { Entity, Column } from "../../../core/platform/services/database/service
 import { ChannelType } from "../types";
 
 @Entity("channel_activity", {
-  primaryKey: [["company_id", "workspace_id"], "channel_id", "last_activity"],
+  primaryKey: [["company_id", "workspace_id"], "channel_id"],
   type: "channel_activity",
 })
 export class ChannelActivity {
