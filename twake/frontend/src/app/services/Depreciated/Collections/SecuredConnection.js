@@ -83,7 +83,6 @@ export default class SecuredConnection {
   }
 
   close() {
-    console.log('Unsubscribe from ', this.route);
     var websocket_id = this.websocket_id;
     ws.offReconnect(websocket_id);
     ws.unsubscribe(
@@ -203,6 +202,7 @@ export default class SecuredConnection {
       return false;
     }
     let res = '';
+    let str = '';
     try {
       var encrypted_data = data.encrypted;
       var key = this.keys_by_version[data.key_version];
@@ -231,9 +231,10 @@ export default class SecuredConnection {
 
       var iv = CryptoJS.enc.Hex.parse(data.iv);
       var bytes = CryptoJS.AES.decrypt(encrypted_data, prepared_key, { iv: iv });
-      res = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      str = bytes.toString(CryptoJS.enc.Utf8);
+      res = JSON.parse(str);
     } catch (err) {
-      console.log('Unable to read encrypted websocket event', data, err);
+      console.log('Unable to read encrypted websocket event', data, err, str);
     }
 
     return res;
