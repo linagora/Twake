@@ -5,3 +5,5 @@ export default class User {
     this.id = id;
   }
 }
+
+export type UserPrimaryKey = Partial<User>;

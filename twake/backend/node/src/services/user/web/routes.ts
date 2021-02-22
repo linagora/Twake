@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "f
 import { UserParams, CreateUserBody } from "./types";
 import { createUserSchema } from "./schemas";
 import * as controller from "./controller";
-import User from "../entity/user";
+import User from "../entities/user";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
   fastify.get(

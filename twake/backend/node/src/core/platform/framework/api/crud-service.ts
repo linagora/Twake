@@ -1,5 +1,4 @@
-import { find } from "lodash";
-import User from "../../../../services/user/entity/user";
+import User from "../../../../services/user/entities/user";
 
 export class ContextualizedTarget {
   context?: ExecutionContext;

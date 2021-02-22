@@ -1,5 +1,5 @@
 import { Channel } from "../../../../types";
-import User from "../../../../../services/user/entity/user";
+import User from "../../../../user/entities/user";
 import { ChannelMember } from "../../../../../services/channels/entities";
 
 export type ActorType = { type: string; id: User["id"] };

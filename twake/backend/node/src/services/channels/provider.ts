@@ -13,7 +13,7 @@ import {
   ChannelMemberPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
-import User from "../user/entity/user";
+import User from "../user/entities/user";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 
