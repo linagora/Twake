@@ -50,39 +50,41 @@ export default class UnconfiguredTab extends Component {
   }
   render() {
     return (
-      <div className="unconfigured_tab">
-        <div className="title">{this.props.tab.name}</div>
-        <div className="text" style={{ opacity: 0.5 }}>
-          {Languages.t(
-            'scenes.apps.tasks.unconfigured_tab',
-            [],
-            "Cet onglet n'est pas encore configuré.",
-          )}
-        </div>
+      <div>
+        <div className="unconfigured_tab">
+          <div className="title">{this.props.tab.name}</div>
+          <div className="text" style={{ opacity: 0.5 }}>
+            {Languages.t(
+              'scenes.apps.tasks.unconfigured_tab',
+              [],
+              "Cet onglet n'est pas encore configuré.",
+            )}
+          </div>
 
-        <br />
+          <br />
 
-        <Button
-          className="button medium right-margin"
-          style={{ width: 'auto' }}
-          onClick={() => this.createFromChannel()}
-        >
-          {Languages.t('scenes.apps.tasks.new_board.title', [], 'Nouveau board')}
-        </Button>
-
-        <Menu
-          menu={[
-            {
-              type: 'react-element',
-              reactElement: () => <BoardPicker onChoose={board => this.initInBoard(board)} />,
-            },
-          ]}
-          style={{ display: 'inline-block' }}
-        >
-          <Button className="button medium secondary-light" style={{ width: 'auto' }}>
-            {Languages.t('scenes.apps.tasks.choose_board_button', [], 'Choisir un board')}
+          <Button
+            className="button medium right-margin"
+            style={{ width: 'auto' }}
+            onClick={() => this.createFromChannel()}
+          >
+            {Languages.t('scenes.apps.tasks.new_board.title', [], 'Nouveau board')}
           </Button>
-        </Menu>
+
+          <Menu
+            menu={[
+              {
+                type: 'react-element',
+                reactElement: () => <BoardPicker onChoose={board => this.initInBoard(board)} />,
+              },
+            ]}
+            style={{ display: 'inline-block' }}
+          >
+            <Button className="button medium secondary-light" style={{ width: 'auto' }}>
+              {Languages.t('scenes.apps.tasks.choose_board_button', [], 'Choisir un board')}
+            </Button>
+          </Menu>
+        </div>
       </div>
     );
   }
