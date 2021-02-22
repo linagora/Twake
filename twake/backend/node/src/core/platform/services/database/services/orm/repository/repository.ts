@@ -73,7 +73,8 @@ export default class Repository<EntityType> {
   }
 
   async save(entity: EntityType): Promise<void> {
-    await (await this.manager.persist(entity).flush()).reset();
+    logger.info("services.database.repository - Saving entity", entity);
+    (await this.manager.persist(entity).flush()).reset();
   }
 
   async saveAll(entities: EntityType[] = []): Promise<void> {
