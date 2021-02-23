@@ -165,12 +165,12 @@ class Resumable
 
             }
 
-            $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber, "provider" => $uploadstate->getStorageProvider());
+            $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
 
             //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
             $this->driverefacto->setDriveResumable($this);
-            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
+            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("provider" => $uploadstate->getStorageProvider(), "data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
                 $this->storagemanager->getAdapter($uploadstate->getStorageProvider())->genPreview($fileordirectory, $previewDestination);

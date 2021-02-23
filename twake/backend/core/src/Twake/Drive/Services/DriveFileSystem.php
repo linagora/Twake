@@ -737,7 +737,7 @@ class DriveFileSystem
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
             $last_version = new DriveFileVersion($fileordirectory, $current_user);
-            $last_version->setProvider($this->storagemanager->getOneProvider());
+            $last_version->setProvider($upload_data["provider"] ?: $this->storagemanager->getOneProvider());
         }
 
         if($last_version && $upload_data["provider"]){
