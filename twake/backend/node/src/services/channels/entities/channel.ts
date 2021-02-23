@@ -1,40 +1,59 @@
 import { Type } from "class-transformer";
+import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
 
+@Entity("channels", {
+  primaryKey: [["company_id", "workspace_id"], "id"],
+  type: "channels",
+})
 export class Channel {
   // uuid-v4
   @Type(() => String)
+  @Column("company_id", "uuid", { generator: "uuid" })
   company_id: string;
 
   @Type(() => String)
+  @Column("workspace_id", "string", { generator: "uuid" })
   workspace_id: string | ChannelType.DIRECT;
 
   @Type(() => String)
+  @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
+  @Column("name", "encoded_string")
   name: string;
 
+  @Column("icon", "encoded_string")
   icon: string;
 
+  @Column("description", "encoded_string")
   description: string;
 
+  @Column("channel_group", "encoded_string")
   channel_group: string;
 
+  @Column("visibility", "encoded_string")
   visibility: ChannelVisibility;
 
+  @Column("is_default", "boolean")
   is_default: boolean;
 
+  @Column("archived", "boolean")
   archived: boolean;
 
+  @Column("archivation_date", "number")
   archivation_date: number;
 
   // uuid
+  @Column("owner", "uuid")
   @Type(() => String)
   owner: string;
 
+  @Column("members", "encoded_json")
   members: string[] = [];
 
+  @Column("connectors", "encoded_json")
   connectors: string[] = []; //list of app-ids
 
   static isPrivateChannel(channel: Channel): boolean {
@@ -55,8 +74,4 @@ export class Channel {
 
 export class UserChannel extends Channel {
   user_member: ChannelMember;
-}
-
-export class UserDirectChannel extends UserChannel {
-  direct_channel_members: string[];
 }

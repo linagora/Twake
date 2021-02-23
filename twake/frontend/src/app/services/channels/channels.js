@@ -61,14 +61,12 @@ class Channels extends Observable {
       company_id: companyId,
       workspace_id: 'direct',
       visibility: 'direct',
-      direct_channel_members: membersIds,
+      members: membersIds,
     };
 
     let res = channelsCollections
       .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
-      .filter(channel =>
-        _.isEqual(channel.data.direct_channel_members.sort(), membersIds.sort()),
-      )[0];
+      .filter(channel => _.isEqual(channel.data.members.sort(), membersIds.sort()))[0];
 
     if (!res) {
       res = await channelsCollections.upsert(new ChannelResource(newDirectMessage), {

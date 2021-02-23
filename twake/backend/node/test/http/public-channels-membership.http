@@ -73,18 +73,36 @@ Authorization: Bearer {{authTokenUser1}}
 
 ### User 1 lists his channels
 
-GET {{channelsURL}}/channels
+GET {{channelsURL}}/channels?mine=true
 Content-Type: application/json
 Authorization: Bearer {{authTokenUser1}}
 
 ### User 2 lists his channels
 
-GET {{channelsURL}}/channels
+GET {{channelsURL}}/channels?mine=true
 Content-Type: application/json
 Authorization: Bearer {{authTokenUser2}}
 
 ### User 2 leaves the channel
 
 DELETE {{channelsURL}}/channels/{{getId}}/members/{{currentUserId2}}
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser2}}
+
+### Get all channel members, there are now 1 member, the initial one
+
+GET {{channelsURL}}/channels/{{getId}}/members?websockets=true
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser1}}
+
+### List channels as user 2, current channel appears since it is public
+
+GET {{channelsURL}}/channels
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser2}}
+
+### User 2 list his public channels, current channel does not appear since he left it
+
+GET {{channelsURL}}/channels?mine=true
 Content-Type: application/json
 Authorization: Bearer {{authTokenUser2}}

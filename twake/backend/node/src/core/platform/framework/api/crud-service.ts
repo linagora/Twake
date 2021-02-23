@@ -1,3 +1,4 @@
+import { find } from "lodash";
 import User from "../../../../services/user/entity/user";
 
 export class ContextualizedTarget {
@@ -81,7 +82,7 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
   // next page token
   page_token: string;
 
-  constructor(readonly type: string, protected entities: Entity[], nextPage?: Paginable) {
+  constructor(readonly type: string, protected entities: Entity[], readonly nextPage?: Paginable) {
     super();
     this.page_token = nextPage?.page_token;
   }
@@ -96,6 +97,10 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
 
   getEntities(): Entity[] {
     return this.entities || [];
+  }
+
+  isEmpty() {
+    return this.getEntities().length === 0;
   }
 }
 

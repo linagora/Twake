@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { isBoolean, isNumber } from "lodash";
+import { isBoolean, isNull, isNumber } from "lodash";
 import { ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../utils";
 
@@ -26,6 +26,9 @@ export const transformValueToDbString = (
   options: TransformOptions = {},
 ): string => {
   if (type === "number") {
+    if (isNull(v)) {
+      return "null";
+    }
     return `${parseInt(v)}`;
   }
   if (type === "uuid" || type === "timeuuid") {
@@ -90,6 +93,9 @@ export const transformValueFromDbString = (
     } catch (err) {
       return null;
     }
+  }
+  if (type === "uuid") {
+    return String(v);
   }
   return v;
 };

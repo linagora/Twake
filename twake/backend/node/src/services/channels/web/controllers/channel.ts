@@ -52,8 +52,6 @@ export class ChannelCrudController
       getExecutionContext(request),
     );
 
-    console.log(channel);
-
     if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
 
