@@ -23,13 +23,14 @@ services:
     build:
       context: ./backend/node
       dockerfile: ../../docker/twake-node/Dockerfile.dev
+    environment:
+      - NODE_ENV=production
     volumes:
       - ./backend/node:/usr/src/app
       - ./configuration/backend-node/:/usr/src/app/config/
     depends_on:
       - scylladb
       - rabbitmq
-      - elasticsearch
     links:
       - scylladb
 
@@ -49,7 +50,6 @@ services:
     depends_on:
       - scylladb
       - rabbitmq
-      - elasticsearch
     links:
       - scylladb
 
