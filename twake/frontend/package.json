@@ -11,8 +11,7 @@
     "dev:linter": "eslint src/",
     "start": "craco start",
     "test": "CI=true craco test",
-    "build": "scripts/build-version.sh patch && CI=false craco --max_old_space_size=4096 build",
-    "change-version": "scripts/build-version.sh"
+    "build": "CI=false craco --max_old_space_size=4096 build"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"

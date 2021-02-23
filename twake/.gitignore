@@ -137,3 +137,4 @@ docker-compose.yml
 /tests/code_coverage/
 /web/detached/*
 /drive/*
+/configuration

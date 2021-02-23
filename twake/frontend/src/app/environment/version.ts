@@ -1,5 +1,5 @@
 export default {
-  version: '2020.Q4',
-  version_detail: '2020.Q4.',
-  version_name: 'Albatros',
+  version: /* @VERSION */ '2021.Q1',
+  version_detail: /* @VERSION_DETAIL */ '2021.Q1.137',
+  version_name: /* @VERSION_NAME */ 'Albatros',
 };

@@ -205,6 +205,7 @@ export default class SecuredConnection {
     let str = '';
     try {
       var encrypted_data = data.encrypted;
+
       var key = this.keys_by_version[data.key_version];
 
       if (!key) {
@@ -232,7 +233,12 @@ export default class SecuredConnection {
       var iv = CryptoJS.enc.Hex.parse(data.iv);
       var bytes = CryptoJS.AES.decrypt(encrypted_data, prepared_key, { iv: iv });
       str = bytes.toString(CryptoJS.enc.Utf8);
-      res = JSON.parse(str);
+
+      if (str) {
+        res = JSON.parse(str);
+      } else {
+        res = '';
+      }
     } catch (err) {
       console.log('Unable to read encrypted websocket event', str);
     }
