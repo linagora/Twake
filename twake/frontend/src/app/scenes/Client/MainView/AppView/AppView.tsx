@@ -26,7 +26,7 @@ const AppView: FC<PropsType> = props => {
   const channelCollection = configuration.collection;
   let channel = null;
   if (channelCollection.useWatcher) {
-    channel = channelCollection.find({ id: props.id }, { withoutBackend: true })[0];
+    channel = channelCollection.useWatcher({ id: props.id }, { withoutBackend: true })[0];
   } else {
     channel = channelCollection.find(props.id);
     channel = {
