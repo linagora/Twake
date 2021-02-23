@@ -72,7 +72,7 @@ class MainConnectorService {
                 $data = $resp->getContent();
             }
             return $data;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -100,7 +100,7 @@ class MainConnectorService {
                 $data = $resp->getContent();
             }
             return $data;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }

@@ -189,7 +189,7 @@ class Adapter_OpenStack implements AdapterInterface
 
             @unlink($chunkFile);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
     }
@@ -262,7 +262,7 @@ class Adapter_OpenStack implements AdapterInterface
 
             return $decodedPath;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error accessing openstack file.");
         }
 
@@ -309,7 +309,7 @@ class Adapter_OpenStack implements AdapterInterface
                 ->getObject($file_path)
                 ->delete();
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
 

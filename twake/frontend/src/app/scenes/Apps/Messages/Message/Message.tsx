@@ -20,7 +20,7 @@ import MessagesListServiceManager from 'app/services/Apps/Messages/MessagesListU
 import Input from '../Input/Input';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import ActivityMessage, { ActivityType } from './ActivityMessage';
+import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 
 type Props = {
   fake?: boolean;
