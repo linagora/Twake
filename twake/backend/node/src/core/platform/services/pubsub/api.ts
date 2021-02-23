@@ -10,6 +10,11 @@ export interface PubsubMessage<T> {
   id?: string;
 
   /**
+   * The message TTL period in milliseconds
+   */
+  ttl?: number;
+
+  /**
    * The message payload to process
    */
   data: T;
@@ -36,9 +41,18 @@ export type PubsubSubscriptionOptions = {
   ack?: boolean;
 
   /**
-   * Use custom named queue instead of using same name as exchange
+   * Use custom named queue instead of using same name as exchange. Can be useful when we have multiple subsciptions on the same topic.
    */
   queue?: string | null;
+
+  /**
+   * Configures the message TTL (in ms) in the underlying messaging system.
+   * Negative or undefined means no TTL.
+   * Notes:
+   * - If supported by the messaging system, messages will not be delivered to the application.
+   * - If not supported, this may be up to the subscriber itself to filter messages at the application level based on some timestamp if available.
+   */
+  ttl?: number | null;
 };
 
 export type PubsubListener<T> = (message: IncomingPubsubMessage<T>) => void;

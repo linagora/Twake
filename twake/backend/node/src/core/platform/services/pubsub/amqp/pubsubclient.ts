@@ -1,6 +1,7 @@
 import { logger } from "../../../framework/logger";
 import { constants as CONSTANTS } from "./constants";
-import { AmqpClient, AmqpCallbackType } from "./client";
+import { AmqpClient, AmqpCallbackType, PublishOptions, SubscribeOptions } from "./client";
+import { Options } from "amqplib";
 
 const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
 
@@ -8,18 +9,31 @@ const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
  * AMQP client abstracting low level channel methods to create a pubsub-like implementation
  */
 export class AmqpPubsubClient extends AmqpClient {
-  publish(topic: string, data: unknown): Promise<boolean> {
-    logger.debug(`${LOG_PREFIX} Publishing message to topic "${topic}"`);
+  publish(topic: string, data: unknown, options?: PublishOptions): Promise<boolean> {
+    let publishOptions: Options.Publish;
+
+    logger.debug(`${LOG_PREFIX} Publishing message to topic "${topic}" with options %o`, options);
+
+    if (options?.ttl) {
+      publishOptions = {
+        expiration: options.ttl
+      };
+    }
 
     return this.assertExchange(topic, CONSTANTS.PUBSUB_EXCHANGE.type).then(() =>
-      this.send(topic, data, CONSTANTS.PUBSUB_EXCHANGE.routingKey),
+      this.send(topic, data, CONSTANTS.PUBSUB_EXCHANGE.routingKey, publishOptions),
     );
   }
 
-  subscribe(topic: string, callback: AmqpCallbackType): Promise<void> {
+  subscribe(topic: string, options: SubscribeOptions, callback: AmqpCallbackType): Promise<void> {
+    const queueOptions: Options.AssertQueue = {
+      ...CONSTANTS.SUBSCRIBER.queueOptions,
+      ... options?.ttl ? { messageTtl: options.ttl } : {},
+    };
+
     return this.assertExchange(topic, CONSTANTS.PUBSUB_EXCHANGE.type)
       .then(() =>
-        this.assertQueue(CONSTANTS.SUBSCRIBER.queueName, CONSTANTS.SUBSCRIBER.queueOptions),
+        this.assertQueue(CONSTANTS.SUBSCRIBER.queueName, queueOptions),
       )
       .then(res => this.assertBinding(res.queue, topic).then(() => res))
       .then(res => this.consume(res.queue, CONSTANTS.SUBSCRIBER.consumeOptions, callback));
@@ -28,7 +42,7 @@ export class AmqpPubsubClient extends AmqpClient {
   /**
    * Creates a new consumer which asserts that it will listen to messages in a durable queue.
    * The durable queue goal is to be able to receive events 'from the past' ie events which has been push to the queue while subscribers were not bound.
-   * This is quite useful in case of ESN restart to not miss anything between stop and start.
+   * This is quite useful in case of restart to not miss anything between stop and start.
    * Important: If multiple consumers are connected to the same durable queue, AMQP will deliver message to one and only one consumer with a Round-robin behavior by default.
    *
    * @param {String} exchangeName - The exchange name
@@ -38,11 +52,18 @@ export class AmqpPubsubClient extends AmqpClient {
   subscribeToDurableQueue(
     exchangeName: string,
     queueName: string,
+    options: SubscribeOptions,
     callback: AmqpCallbackType,
   ): Promise<void> {
-    logger.debug(`${LOG_PREFIX} Subscribing to durable queue ${queueName}`);
+    const durableQueueOptions: Options.AssertQueue = {
+      ...CONSTANTS.SUBSCRIBER.durableQueueOptions,
+      ...options?.ttl ? { messageTtl: options.ttl } : {}
+    };
+
+    logger.debug(`${LOG_PREFIX} Subscribing to durable queue ${queueName} with options %o`, durableQueueOptions);
+    
     return this.assertExchange(exchangeName, CONSTANTS.PUBSUB_EXCHANGE.type)
-      .then(() => this.assertQueue(queueName, CONSTANTS.SUBSCRIBER.durableQueueOptions))
+      .then(() => this.assertQueue(queueName, durableQueueOptions))
       .then(() => this.assertBinding(queueName, exchangeName))
       .then(() => this.consume(queueName, CONSTANTS.SUBSCRIBER.consumeOptions, callback));
   }

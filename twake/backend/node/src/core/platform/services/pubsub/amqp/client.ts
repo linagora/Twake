@@ -11,6 +11,22 @@ export type AmqpCallbackType = (
   originalMessage: ConsumeMessage,
 ) => void;
 
+export type PublishOptions = {
+  /**
+   * Published message TTL in ms.
+   * Up to the underlying layer to deal with it (if supported) and so to not deliver the message if expired.
+   */
+  ttl?: number | null;
+};
+
+export type SubscribeOptions = {
+  /**
+   * Message TTL in ms.
+   * This value is used (if supported) by the underlying layer to not deliver message to the local subscriber if message expired.
+   */
+  ttl?: number | null;
+}
+
 /**
  * Low level AMQP client using AMQP channel the right way.
  *
@@ -46,26 +62,36 @@ export class AmqpClient {
     exchange: string,
     type = CONSTANTS.EXCHANGE_TYPES.topic,
   ): Promise<Replies.AssertExchange> {
+    logger.debug(`${LOG_PREFIX} Assert exchange ${exchange} of type ${type}`);
     return this.channel.assertExchange(exchange, type);
   }
 
   ack(message: Message, allUpTo = false): void {
+    logger.debug(`${LOG_PREFIX} Ack message`);
     this.channel.ack(message, allUpTo);
   }
 
   assertQueue(name: string, options: Options.AssertQueue): Promise<Replies.AssertQueue> {
-    return this.channel.assertQueue(name, options);
-  }
+    logger.debug(`${LOG_PREFIX} Assert queue ${name} with options %o`, options);
+    return this.channel.assertQueue(name, options).then(result => {
+      logger.debug(`${LOG_PREFIX} Queue created %o`, result);
 
+      return result;
+    });
+  }
+  
   assertBinding(queue: string, exchange: string, routingPattern?: string): Promise<Replies.Empty> {
+    logger.debug(`${LOG_PREFIX} Bind queue ${queue} on exchange ${exchange} with pattern ${routingPattern}`);
     return this.channel.bindQueue(queue, exchange, routingPattern);
   }
-
-  send(exchange: string, data: unknown, routingKey = ""): boolean {
-    return this.channel.publish(exchange, routingKey, dataAsBuffer(data));
+  
+  send(exchange: string, data: unknown, routingKey = "", options?: Options.Publish): boolean {
+    logger.debug(`${LOG_PREFIX} Publish message to exchange ${exchange} with options %o`, options);
+    return this.channel.publish(exchange, routingKey, dataAsBuffer(data), options);
   }
-
+  
   consume(queue: string, options: Options.Consume, callback: AmqpCallbackType): Promise<void> {
+    logger.debug(`${LOG_PREFIX} Consume queue ${queue} with options %o`, options);
     return this.channel
       .consume(queue, onMessage, options)
       .then(res => this._registerNewConsumerTag(callback, res.consumerTag, queue));
