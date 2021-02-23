@@ -234,7 +234,7 @@ export default class SecuredConnection {
       str = bytes.toString(CryptoJS.enc.Utf8);
       res = JSON.parse(str);
     } catch (err) {
-      console.log('Unable to read encrypted websocket event', data, err, str);
+      console.log('Unable to read encrypted websocket event', str);
     }
 
     return res;
