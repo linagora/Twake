@@ -16,11 +16,15 @@ This script will write into your database so beware!
 
 ### Step 2 - Update docker-compose and get last changes
 
+Go to twake/
+
 - Replace docker-compose.yml with new one from Q4 (note the new _node_ service!)
 
 - Pull docker images from the _latest_ tag
 
 ### Step 3 - Update configuration
+
+Go to twake/
 
 #### Create new node configuration
 
@@ -132,6 +136,8 @@ becomes
 
 ### Step 2 - Migrate database to new format
 
+Go to migration/2020Q3_to_2020Q4/
+
 ```
 cp config/default.json config/production.json
 #Edit production.json if needed to connect to scylladb database
@@ -139,6 +145,8 @@ docker build . -t migration; docker run --env NODE_ENV=production migration
 ```
 
 ### Step 3 - Test
+
+Go back to twake/
 
 Run twake with `docker-compose up -d`
 
