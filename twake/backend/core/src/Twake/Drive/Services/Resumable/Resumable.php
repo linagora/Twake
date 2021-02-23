@@ -110,7 +110,7 @@ class Resumable
 
             $do_preview = ($numOfChunks == 1 && $chunkNumber == 1 && $totalSize < 50000000);
 
-            if (!$this->storagemanager->getAdapter()->streamModeIsAvailable() || $do_preview) {
+            if (!$this->storagemanager->getAdapter($uploadstate->getStorageProvider())->streamModeIsAvailable() || $do_preview) {
 
                 if (is_string($file)) {
                     if (strpos($file, "http://") === 0 || strpos($file, "https://") === 0) {
@@ -138,7 +138,7 @@ class Resumable
             }
 
 
-            $this->storagemanager->getAdapter()->write($chunkFile, $chunkNumber, $param_bag, $uploadstate);
+            $this->storagemanager->getAdapter($uploadstate->getStorageProvider())->write($chunkFile, $chunkNumber, $param_bag, $uploadstate);
             $this->doctrine->clear();
 
             $chunktoadd = "chunk_" . $chunkNumber;
@@ -165,7 +165,7 @@ class Resumable
 
             }
 
-            $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
+            $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber, "provider" => $uploadstate->getStorageProvider());
 
             //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
@@ -173,7 +173,7 @@ class Resumable
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
-                $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
+                $this->storagemanager->getAdapter($uploadstate->getStorageProvider())->genPreview($fileordirectory, $previewDestination);
             } else {
                 $this->queues->push("drive_preview_to_generate", [
                     "file_id" => $fileordirectory->getId()
@@ -329,8 +329,10 @@ class Resumable
 
         $this->current_user_id = $user_id;
 
+        $storage_provider = $this->storagemanager->getOneProvider();
+
         $chunklist = Array();
-        $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
+        $uploadstate = new UploadState($storage_provider, $workspace_id, $identifier, $filename, $extension, $chunklist);
         $new_key = bin2hex(random_bytes(20));
         $uploadstate->setEncryptionKey($new_key);
         $uploadstate->setEncryptionSalt("");
@@ -415,7 +417,7 @@ class Resumable
             $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
 
             for ($i = 1; $i <= $chunkNumber; $i++) {
-                $this->storagemanager->getAdapter()->remove($uploadstate, $i);
+                $this->storagemanager->getAdapter($uploadstate->getStorageProvider())->remove($uploadstate, $i);
             }
 
             $this->doctrine->remove($uploadstate);

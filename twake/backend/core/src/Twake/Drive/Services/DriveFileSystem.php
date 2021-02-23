@@ -740,6 +740,10 @@ class DriveFileSystem
             $last_version->setProvider($this->storagemanager->getOneProvider());
         }
 
+        if($last_version && $upload_data["provider"]){
+            $last_version->setProvider($upload_data["provider"]);
+        }
+
         $last_version->setData(isset($upload_data["data"]) ? $upload_data["data"] : Array());
         $last_version->setSize(isset($upload_data["size"]) ? $upload_data["size"] : 0);
 
