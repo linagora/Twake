@@ -44,6 +44,7 @@ class Websockets extends BaseController
                     $final_result[] = Array("status" => "error_service_not_found_or_not_allowed");
                 }
             } catch (\Exception $e) {
+                log_exception($e);
                 $final_result[] = Array("status" => "error_service_not_found_or_not_allowed");
             }
 

@@ -129,7 +129,7 @@ class Adapter_Local implements AdapterInterface
                 return false;
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
     }
@@ -199,7 +199,7 @@ class Adapter_Local implements AdapterInterface
 
             return $decodedPath;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error accessing openstack file.");
         }
 
@@ -242,7 +242,7 @@ class Adapter_Local implements AdapterInterface
 
             @unlink($file_path);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
 

@@ -82,7 +82,12 @@ class UploadState
      */
     protected $encryption_salt;
 
-    public function __construct($workspace_id, $identifier, $filename, $extension, $chunklist)
+    /**
+     * @ORM\Column(name ="storage_provider", type="string", nullable=true)
+     */
+    protected $storage_provider;
+
+    public function __construct($storage_provider, $workspace_id, $identifier, $filename, $extension, $chunklist)
     {
         $this->workspace_id = $workspace_id;
         $this->identifier = $identifier;
@@ -92,6 +97,15 @@ class UploadState
         $this->chunklist = json_encode($chunklist);
         $this->success = false;
         $this->encryption_key = "testkey";
+        $this->storage_provider = $storage_provider;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStorageProvider()
+    {
+        return $this->storage_provider;
     }
 
     /**
