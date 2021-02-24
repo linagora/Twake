@@ -311,11 +311,6 @@ class ApplicationApi
         }
         $event_route = preg_replace("/^\/+/", "", $event_route);
 
-        $use_https = false;
-        if (strpos($event_route, "https") === 0) {
-            $use_https = true;
-        }
-
         //Hack for having same set of apps in beta and web
         $betaHack = explode("/bundle/connectors/", $event_route);
         if(count($betaHack) > 1){
@@ -324,6 +319,11 @@ class ApplicationApi
         }
         //Hack to send to connectors wich server to respond
         $event["_origin"] = $this->app->getContainer()->getParameter("env.server_name");
+
+        $use_https = false;
+        if (strpos($event_route, "https") === 0) {
+            $use_https = true;
+        }
 
         $event_route = preg_replace("/^https?+:\/\//", "", $event_route);
         $event_route = preg_replace("/\/+/", "/", $event_route);
