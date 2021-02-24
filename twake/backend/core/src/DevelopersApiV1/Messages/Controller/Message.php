@@ -33,13 +33,8 @@ class Message extends BaseController
         $object = $request->request->get("message", null);
         $chan_id = $object["channel_id"];
 
-        if (!$object["ephemeral_id"]) {
-            $result = $this->get("app.messages")->remove($object, $options);
-            $front_id = $result["front_id"];
-        } else {
-            $result = true;
-            $front_id = $object["front_id"];
-        }
+        $result = $this->get("app.messages")->remove($object, $options);
+        $front_id = $result["front_id"];
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
