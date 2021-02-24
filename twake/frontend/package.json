@@ -166,7 +166,7 @@
     "react-ace": "^9.1.1",
     "react-app-polyfill": "^1.0.6",
     "react-beautiful-dnd": "10.1.0",
-    "react-dev-utils": "^10.2.0",
+    "react-dev-utils": "^11.0.3",
     "react-dom": "^16.13.0",
     "react-emojione": "^5.0.1",
     "react-fastclick": "^3.0.2",

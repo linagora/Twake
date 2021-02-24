@@ -12,15 +12,19 @@
 
 - Ability to join and leave channels.
 - Channel activity messages.
-- Access and rights for channel edition updated (now everyone can create channels).
-- Favorite direct channels, now you can put your direct channels in favorite too.
-- Channels groups are back! Yes, you can again create groups of channels to organise your workspace.
-- Channel members list: see who is in a channel and manage members.
+- Access and rights for channel creation updated (now everyone can create channels).
+- Favorite direct channels, now you can put your direct channels in favorites too.
+- Channel groups are back! Yes, you can again create groups of channels to organize your workspace.
+- Channel members list: see who is in a channel and manage members
 
 ### Notifications
 
 - Now you only receive badge notification for threads you follow and when you are mentionned.
 - Other messages in channel will update the channel text to bold.
+
+### Drive
+
+- Ability to preview coding files and markdown files
 
 # Twake 2020.Q3.107
 

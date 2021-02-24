@@ -445,7 +445,7 @@ export default class Board extends React.Component {
             )}
 
             {this.props.mode == 'grid' && (
-              <PerfectScrollbar className="lists_scrollable">
+              <PerfectScrollbar className="lists_scrollable" options={{ suppressScrollX: false }}>
                 <Droppable
                   droppableId={'lists'}
                   direction="horizontal"
