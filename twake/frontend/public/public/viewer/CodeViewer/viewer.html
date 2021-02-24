@@ -1,0 +1,79 @@
+<html dir="ltr" mozdisallowselectionprint moznomarginboxes>
+<head>
+  <style type="text/css" media="screen">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0vw;
+        bottom: 0;
+        left: 0;
+    }
+    #preview { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0vw;
+        background: #FFF;
+        overflow: scroll;
+        box-shadow: 0 0 16px rgb(0 0 0 / 20%);
+        padding: 8px 24px;
+        display: none;
+    }
+    .with-preview #preview {
+        left: 40vw;
+        display: block;
+    }
+    .with-preview #editor {
+        right: 60vw;
+    }
+  </style>
+</head>
+<body className="">
+
+  <div id="editor"></div>
+  <div id="preview"></div>
+    
+  <script src="./ace.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./theme-dracula.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./ext-modelist.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./showdown.min.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+      };
+
+      fetch(getUrlParameter("link")).then((res)=>{
+        res.text().then((res)=>{
+          var ext = getUrlParameter("ext");
+
+          var editor = ace.edit("editor");
+          editor.setReadOnly(true);
+          editor.setValue(res);
+          editor.setTheme("ace/theme/dracula");
+          editor.setOption("wrap", true);
+          var modelist = ace.require("ace/ext/modelist");
+          var filePath = "file."+ext;
+          var mode = modelist.getModeForPath(filePath).mode;
+          editor.session.setMode(mode);
+
+          if(ext === "md"){
+            document.body.classList.add("with-preview");
+            var converter = new showdown.Converter(),
+            html = converter.makeHtml(res);
+            console.log(res, html);
+            document.getElementById("preview").innerHTML = html;
+          }
+        });
+      });      
+
+</script>
+
+</body>
