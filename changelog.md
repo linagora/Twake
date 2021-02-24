@@ -22,6 +22,10 @@
 - Now you only receive badge notification for threads you follow and when you are mentionned.
 - Other messages in channel will update the channel text to bold.
 
+### Drive
+
+- Ability to preview coding files and markdown files
+
 # Twake 2020.Q3.107
 
 ## Changelogs
