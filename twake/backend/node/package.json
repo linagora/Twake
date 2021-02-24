@@ -93,7 +93,7 @@
     "fastify-plugin": "^2.3.4",
     "fastify-sensible": "^3.0.1",
     "fastify-websocket": "^2.0.11",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mongodb": "^3.6.2",
     "pino": "^6.8.0",
     "reflect-metadata": "^0.1.13",
