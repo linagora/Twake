@@ -19,13 +19,14 @@ export default class UserService extends TwakeService<UserServiceAPI> {
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
 
+    this.service = getService(database, pubsub);
+    await this.service?.init(this.context);
+
     fastify.register((instance, _opts, next) => {
-      web(instance, { prefix: this.prefix });
+      web(instance, { prefix: this.prefix, service: this.service });
       next();
     });
 
-    this.service = getService(database, pubsub);
-    await this.service?.init(this.context);
 
     return this;
   }

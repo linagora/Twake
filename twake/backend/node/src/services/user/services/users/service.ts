@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
-import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
   SaveResult,
   DeleteResult,
   ListResult,
-  OperationType,
   Paginable,
-  CrudExeption,
-  Pagination,
+  CreateResult,
+  ExecutionContext,
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -21,10 +19,30 @@ export class UserService implements UsersServiceAPI {
 
   constructor(private database: DatabaseServiceAPI) {}
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     this.repository = await this.database.getRepository<User>("user", User);
 
     return this;
+  }
+
+  create(item: User, context?: ExecutionContext): Promise<CreateResult<User>> {
+    throw new Error("Method not implemented.");
+  }
+  
+  update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
+    throw new Error("Method not implemented.");
+  }
+  
+  save<SaveOptions>(item: User, options?: SaveOptions, context?: ExecutionContext): Promise<SaveResult<User>> {
+    throw new Error("Method not implemented.");
+  }
+  
+  delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
+    throw new Error("Method not implemented.");
+  }
+  
+  async list<ListOptions>(pagination: Paginable, options?: ListOptions, context?: ExecutionContext): Promise<ListResult<User>> {
+    throw new Error("Method not implemented.");
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {

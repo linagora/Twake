@@ -1,0 +1,18 @@
+@company_id = bcfe2f79-8e81-42a3-b551-3a32d49b2b4c
+@workspace_id = 3328552c-5ccd-4172-b84a-d876d56aa71b
+@user_id = 508c8c1a-706f-11eb-b6be-0242ac120002
+
+@baseURL = http://localhost:3000
+@usersURL = {{baseURL}}/internal/services/users/v1
+
+# @name login
+GET {{baseURL}}/api/auth/login
+
+@authToken = {{login.response.body.token}}
+@currentUserId = {{login.response.body.user.id}}
+
+### Get a single user
+
+GET {{usersURL}}/users/{{user_id}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

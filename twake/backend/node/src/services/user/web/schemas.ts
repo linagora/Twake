@@ -1,20 +1,27 @@
-export const createUserSchema = {
-  body: {
-    type: "object",
-    properties: {
-      email: {
-        type: "string",
-      },
-    },
-    required: ["email"],
-  },
+export const userSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    connected: { type: "boolean" },
+    creationdate: { type: "string" },
+    firstname: { type: "string" },
+    lastname: { type: "string" },
+    usernamecanonical: { type: "string" },
+    emailcanonical: { type: "string" },
+    phone: { type: "string" },
+    timezone: { type: "string" },
+  }
+};
+
+export const getUserSchema = {
   response: {
-    201: {
+    "2xx": {
       type: "object",
       properties: {
-        id: { type: "string" },
+        resource: userSchema,
       },
-      required: ["id"],
+      required: ["resource"],
     },
   },
 };
+
