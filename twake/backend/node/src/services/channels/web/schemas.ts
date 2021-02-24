@@ -1,11 +1,4 @@
-const webSocketSchema = {
-  type: "object",
-  properties: {
-    name: { type: "string" },
-    room: { type: "string" },
-    encryption_key: { type: "string" },
-  },
-};
+import { webSocketSchema } from "../../types";
 
 const channelMemberSchema = {
   type: "object",
