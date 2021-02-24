@@ -210,8 +210,7 @@ export default class SecuredConnection {
 
       if (!key) {
         if (
-          this.getKeyTimestamp(key) >
-          this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])
+          this.getKeyTimestamp(key) > this.getKeyTimestamp(this.keys[this.keys.length - 1].version)
         ) {
           //We have a old key, we have to update and request the message again
           this.init(this.http_options);
