@@ -1971,4 +1971,8 @@ export default {
   'components.alert.leave_private_channel.title': 'Voulez-vous vraiment quitter la chaîne?',
   'components.alert.leave_private_channel.description':
     "Vous ne pourrez plus rejoindre cette chaîne privée à moins que quelqu'un ne vous invite.",
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.tag':
+    "Vous n'êtes pas membre",
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader':
+    'Charger plus',
 };
