@@ -4,7 +4,6 @@ import TrackerAPI from "./provider";
 import { localEventBus } from "../../framework/pubsub";
 import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
 import { ResourceEventsPayload } from "../../../../services/types";
-import { trace } from "console";
 
 @Consumes([])
 export default class Tracker extends TwakeService<TrackerAPI> implements TrackerAPI {
