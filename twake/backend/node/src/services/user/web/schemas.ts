@@ -10,6 +10,7 @@ export const userSchema = {
     emailcanonical: { type: "string" },
     phone: { type: "string" },
     timezone: { type: "string" },
+    groups: { type: "array" },
   }
 };
 
