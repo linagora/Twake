@@ -1,6 +1,5 @@
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
-import User from "./entities/user";
 import UserServiceAPI from "./api";
 import web from "./web/index";
 import { getService } from "./services";

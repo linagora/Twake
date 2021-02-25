@@ -7,11 +7,13 @@ import {
   CreateResult,
   ExecutionContext,
   UpdateResult,
+  Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository, { FindFilter, FindOptions } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
+import { ListUserOptions } from "./types";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -41,8 +43,17 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
   
-  async list<ListOptions>(pagination: Paginable, options?: ListOptions, context?: ExecutionContext): Promise<ListResult<User>> {
-    throw new Error("Method not implemented.");
+  list(pagination: Pagination, options?: ListUserOptions, context?: ExecutionContext): Promise<ListResult<User>> {
+    const findFilter: FindFilter = {};
+    const findOptions: FindOptions = {
+      pagination,
+    };
+
+    if (options?.userIds) {
+      findOptions.$in = [["id", options.userIds]];
+    }
+
+    return this.repository.find(findFilter, findOptions);
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {
