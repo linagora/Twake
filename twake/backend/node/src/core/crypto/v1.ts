@@ -28,6 +28,14 @@ function encrypt(data: any, encryptionKey: any): CryptoResult {
 
 function decrypt(data: string, encryptionKey: any): CryptoResult {
   const encryptedArray = data.split(":");
+  
+  if (!encryptedArray.length || encryptedArray.length !== 2) {
+    return {
+      data,
+      done: false,
+    };
+  }
+
   const iv = Buffer.from(encryptedArray[0], "hex");
   const encrypted = Buffer.from(encryptedArray[1], "hex");
   const decipher = createDecipheriv("aes-256-cbc", encryptionKey, iv);
