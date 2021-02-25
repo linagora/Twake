@@ -12,7 +12,7 @@ export default class TimeSelector extends React.Component {
       time_ts: props.ts,
       time_string: moment(new Date(props.ts * 1000)).format(DateTimeUtils.getDefaultTimeFormat()),
     };
-
+    this.old_ts = props.ts;
     this.focus = false;
   }
 
@@ -86,14 +86,12 @@ export default class TimeSelector extends React.Component {
     } else {
       this.state.error = true;
     }
-
     this.setState({});
   }
 
   blur() {
     this.focus = false;
     this.setState({ time_string: this.state.time_string_formatted, error: false });
-
     this.props.onChangeBlur && this.props.onChangeBlur(this.state.time_ts);
     this.props.onChange && this.props.onChange(this.state.time_ts);
   }
