@@ -29,6 +29,9 @@ export default class TransportSocket {
     document.addEventListener('visibilitychange', () => {
       if (!this.socket?.connected) this.connect();
     });
+    document.addEventListener('focus', () => {
+      if (!this.socket?.connected) this.connect();
+    });
     setInterval(() => {
       if (new Date().getTime() - this.lastConnection > 30000) {
         this.lastConnection = new Date().getTime();

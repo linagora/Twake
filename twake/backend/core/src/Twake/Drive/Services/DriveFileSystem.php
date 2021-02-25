@@ -360,7 +360,7 @@ class DriveFileSystem
                 $version = $directoryOrFile->getLastVersion($this->em);
                 $adapter = $this->storagemanager->getAdapter($version->getProvider());
                 $identifier = $version->getData()["identifier"];
-                $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
+                $uploadstate = $this->em->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
                 for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
                     $adapter->remove($uploadstate, $i);
                 }

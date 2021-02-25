@@ -10,9 +10,10 @@ import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import NewVersionModal from './NewVersionModal';
 
+let lastScrape: number = 0;
+
 const NewVersionComponent: FC = ({ children }) => {
   const [displayBanner, setDisplayBanner] = useState<boolean>(false);
-  let lastScrape: number = 0;
 
   const compareVersion: (v1: string, v2: string) => number = (v1: string, v2: string) => {
     const toNumber: (v: string) => number = (v: string) => {
@@ -23,7 +24,7 @@ const NewVersionComponent: FC = ({ children }) => {
   };
 
   const getConfiguration = async () => {
-    if (new Date().getTime() - lastScrape < 60 * 1000) {
+    if (new Date().getTime() - lastScrape < 15 * 60 * 1000) {
       return;
     }
     lastScrape = new Date().getTime();
@@ -58,6 +59,9 @@ const NewVersionComponent: FC = ({ children }) => {
 
   useMemo(() => {
     document.addEventListener('visibilitychange', () => {
+      getConfiguration();
+    });
+    window.addEventListener('focus', () => {
       getConfiguration();
     });
     getConfiguration();
