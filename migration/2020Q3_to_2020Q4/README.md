@@ -10,19 +10,64 @@ Then run 'docker build . -t migration; docker run --env NODE_ENV=production migr
 
 ### Step 1 - Do a backup of your data !!!
 
-TODO
+You need to backup all your files from Twake Drive and your scylladb data before to proceed!
+
+This script will write into your database so beware!
 
 ### Step 2 - Update docker-compose and get last changes
 
-TODO
+Go to twake/
 
-- Replace docker-compose.yml with new one from Q4
+- Replace docker-compose.yml with new one from Q4 (note the new _node_ service!)
 
-- Pull images
-
-- Set the environment variables
+- Pull docker images from the _latest_ tag
 
 ### Step 3 - Update configuration
+
+Go to twake/
+
+#### Create new node configuration
+
+In configuration/backend-node/production.json
+
+```
+{
+  "phpnode": {
+    "secret": "api_supersecret (set the same in php later)"
+  },
+  "websocket": {
+    "path": "/socket/",
+    "adapters": {
+      "types": []
+    },
+    "auth": {
+      "jwt": {
+        "secret": "supersecret (use the same as in php)"
+      }
+    }
+  },
+  "auth": {
+    "jwt": {
+      "secret": "supersecret (use the same as in php)"
+    }
+  },
+  "database": {
+    "secret": "GET YOUR SECRET FROM PHP Parameters.php: db.secret",
+    "type": "cassandra",
+    "cassandra": {
+      "contactPoints": ["scylladb:9042"],
+      "localDataCenter": "datacenter1",
+      "keyspace": "twake",
+      "wait": false,
+      "retries": 10,
+      "delay": 200
+    }
+  },
+  "pubsub": {
+    "urls": ["amqp://admin:admin@rabbitmq:5672"]
+  }
+}
+```
 
 #### Add new configuration for node backend and JWT
 
@@ -91,7 +136,21 @@ becomes
 
 ### Step 2 - Migrate database to new format
 
-... Execute this script (TODO)
+Go to migration/2020Q3_to_2020Q4/
+
+```
+cp config/default.json config/production.json
+#Edit production.json if needed to connect to scylladb database
+docker build . -t migration; docker run --env NODE_ENV=production migration
+```
+
+### Step 3 - Test
+
+Go back to twake/
+
+Run twake with `docker-compose up -d`
+
+You should see your previous channels and the new features.
 
 ## Database migration developer details:
 

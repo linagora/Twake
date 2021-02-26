@@ -46,7 +46,7 @@ class UploadFile
             $extension = $object["extension"];
         }
 
-        $identifier = $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);;
+        $identifier = $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);
 
         if ($identifier) {
             $res = $this->resumable->handleChunk($file_or_url, $object["name"], 0, $identifier, 1, 1, $object, $options);

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import Api from 'services/Api';
 import Banner from 'app/components/Banner/Banner';
@@ -10,16 +10,10 @@ import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import NewVersionModal from './NewVersionModal';
 
+let lastScrape: number = 0;
+
 const NewVersionComponent: FC = ({ children }) => {
   const [displayBanner, setDisplayBanner] = useState<boolean>(false);
-  let lastScrape: number = 0;
-
-  useEffect(() => {
-    setInterval(() => {
-      getConfiguration();
-    }, 1000 * 60 * 60);
-    getConfiguration();
-  }, []);
 
   const compareVersion: (v1: string, v2: string) => number = (v1: string, v2: string) => {
     const toNumber: (v: string) => number = (v: string) => {
@@ -30,7 +24,7 @@ const NewVersionComponent: FC = ({ children }) => {
   };
 
   const getConfiguration = async () => {
-    if (new Date().getTime() - lastScrape < 30000) {
+    if (new Date().getTime() - lastScrape < 15 * 60 * 1000) {
       return;
     }
     lastScrape = new Date().getTime();
@@ -62,6 +56,16 @@ const NewVersionComponent: FC = ({ children }) => {
       return setDisplayBanner(shouldDisplayBanner);
     }
   };
+
+  useMemo(() => {
+    document.addEventListener('visibilitychange', () => {
+      getConfiguration();
+    });
+    window.addEventListener('focus', () => {
+      getConfiguration();
+    });
+    getConfiguration();
+  }, []);
 
   return (
     <Layout key="appPage" className="appPage">

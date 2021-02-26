@@ -15,11 +15,7 @@ export default (props: {
 }) => {
   var group = props.group || {};
 
-  const notificationsCollection = Collection.get(
-    '/notifications/v1/badges/',
-    NotificationResource,
-    { tag: 'others_company' },
-  );
+  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const unreadOtherCompanies = notificationsCollection
     .useWatcher({})
     .filter(e => e.data.company_id !== group.id).length;

@@ -17,7 +17,7 @@
     "cassandra-driver": "^4.6.1",
     "class-transformer": "^0.3.2",
     "config": "^3.3.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mongodb": "^3.6.3",
     "node-config": "^0.0.2",
     "reflect-metadata": "^0.1.13",

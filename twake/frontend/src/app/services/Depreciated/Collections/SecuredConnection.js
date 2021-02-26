@@ -202,14 +202,15 @@ export default class SecuredConnection {
       return false;
     }
     let res = '';
+    let str = '';
     try {
       var encrypted_data = data.encrypted;
+
       var key = this.keys_by_version[data.key_version];
 
       if (!key) {
         if (
-          this.getKeyTimestamp(key) >
-          this.getKeyTimestamp(this.keys_by_version[this.keys[this.keys.length - 1].version])
+          this.getKeyTimestamp(key) > this.getKeyTimestamp(this.keys[this.keys.length - 1].version)
         ) {
           //We have a old key, we have to update and request the message again
           this.init(this.http_options);
@@ -230,9 +231,15 @@ export default class SecuredConnection {
 
       var iv = CryptoJS.enc.Hex.parse(data.iv);
       var bytes = CryptoJS.AES.decrypt(encrypted_data, prepared_key, { iv: iv });
-      res = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      str = bytes.toString(CryptoJS.enc.Utf8);
+
+      if (str) {
+        res = JSON.parse(str);
+      } else {
+        res = '';
+      }
     } catch (err) {
-      console.log('Unable to read encrypted websocket event');
+      console.log('Unable to read encrypted websocket event', str);
     }
 
     return res;

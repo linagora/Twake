@@ -29,12 +29,13 @@ export default class TransportSocket {
     document.addEventListener('visibilitychange', () => {
       if (!this.socket?.connected) this.connect();
     });
+    document.addEventListener('focus', () => {
+      if (!this.socket?.connected) this.connect();
+    });
     setInterval(() => {
       if (new Date().getTime() - this.lastConnection > 30000) {
         this.lastConnection = new Date().getTime();
-        if (!this.socket?.connected) {
-          this.connect();
-        }
+        this.connect();
       }
     }, 30000);
 
@@ -50,9 +51,14 @@ export default class TransportSocket {
     logger.debug('Connecting to websocket', socketEndpoint);
 
     if (this.socket) {
-      logger.debug('Already connected to', socketEndpoint);
-      //Already connected
-      return;
+      if (this.socket.connected) {
+        //Already connected
+        logger.debug('Already connected to', socketEndpoint);
+        return;
+      } else {
+        this.socket?.close();
+        this.socket = null;
+      }
     }
 
     if (!authenticate) {

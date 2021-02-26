@@ -173,16 +173,20 @@ class User {
 
         Api.post('users/all/get', { id: ids }, res => {
           if (res.data) {
-            res.data.forEach(user => {
-              this.users_repository.updateObject(user);
-              callbacks[user.id] && callbacks[user.id]();
+            res.data.forEach((user, index) => {
+              if (!user) {
+                this.stop_async_get[ids[index]] = true;
+              } else {
+                this.users_repository.updateObject(user);
+                callbacks[user.id] && callbacks[user.id]();
+              }
             });
           }
         });
       }, 500);
     }
 
-    if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0) {
+    if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0 && !this.stop_async_get[id]) {
       this.nextUsersGetBulk.push({ id, callback });
     }
   }

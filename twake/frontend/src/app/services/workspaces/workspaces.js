@@ -160,7 +160,10 @@ class Workspaces extends Observable {
 
     this.updateCurrentWorkspaceId(workspace.id);
 
-    const route = RouterServices.generateRouteFromState({ workspaceId: workspace.id });
+    const route = RouterServices.generateRouteFromState({
+      workspaceId: workspace.id,
+      channelId: '',
+    });
     if (replace) {
       RouterServices.history.replace(route);
     } else {
