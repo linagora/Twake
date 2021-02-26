@@ -49,17 +49,14 @@ export function buildSelectQuery<Entity>(
     })
     .filter(Boolean);
 
-  let query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} WHERE ${[
+  const whereClause = `${[
     ...where,
     ...(buildComparison(findOptions) || []),
     ...(buildIn(findOptions) || []),
     ...(buildLike(findOptions) || []),
   ].join(" AND ")}`.trimEnd();
 
-  if (query.endsWith(" WHERE")) {
-    query = query.slice(0, -" WHERE".length)
-  }
-  return query;
+  return `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${whereClause.trim().length ? ("WHERE " + whereClause) : ""}`.trimEnd().concat(";");
 }
 
 export function buildComparison(options: FindOptions = {}): string[] {
