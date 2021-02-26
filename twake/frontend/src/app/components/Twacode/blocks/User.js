@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import UserService from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 export default class User extends React.Component {
   constructor() {
@@ -45,6 +45,8 @@ export default class User extends React.Component {
     const highlighted =
       this.props.id == UserService.getCurrentUserId() ||
       this.props.username == 'here' ||
+      this.props.username == 'everyone' ||
+      this.props.username == 'channel' ||
       this.props.username == 'all';
     if (!this.props.id) {
       return (
@@ -59,15 +61,24 @@ export default class User extends React.Component {
       return (
         <div
           ref={node => (this.user_node_details = node)}
-          className={'user_twacode with_user ' + (highlighted ? 'highlighted' : '')}
+          className={
+            'user_twacode with_user ' +
+            (highlighted && !this.props.hideUserImage ? 'highlighted' : '')
+          }
           onClick={() => {
             this.displayUserCard(user);
           }}
+          style={{
+            paddingLeft: this.props.hideUserImage ? 5 : 0,
+            backgroundColor: this.props.hideUserImage ? 'var(--grey-background)' : '',
+          }}
         >
-          <div
-            className="userimage"
-            style={{ backgroundImage: "url('" + UserService.getThumbnail(user) + "')" }}
-          />
+          {!this.props.hideUserImage && (
+            <div
+              className="userimage"
+              style={{ backgroundImage: "url('" + UserService.getThumbnail(user) + "')" }}
+            />
+          )}
           {UserService.getFullName(user)}
         </div>
       );

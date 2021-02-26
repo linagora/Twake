@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Button from 'components/Buttons/Button.js';
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import Loader from 'components/Loader/Loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
@@ -19,7 +19,6 @@ export default class TaskPicker extends Component {
 
   constructor(props) {
     super(props);
-    console.log('uri : ' + 'boards/' + Workspaces.currentWorkspaceId);
     this.tasks_collection_key = 'tasks_picker_' + Workspaces.currentWorkspaceId;
     this.collection_key = [];
 
@@ -48,7 +47,7 @@ export default class TaskPicker extends Component {
     );
   }
   componentWillUnmount() {
-    console.log('unmout');
+    Languages.removeListener(this);
     Collections.get('boards').removeSource(this.tasks_collection_key);
     Collections.get('lists').removeSource(this.tasks_collection_key);
     Collections.get('tasks').removeSource(this.tasks_collection_key);
@@ -57,7 +56,6 @@ export default class TaskPicker extends Component {
     Collections.get('tasks').removeListener();
   }
   selectBoard(board) {
-    console.log('collection_key', this.collection_key);
     if (this.collection_key.indexOf(this.tasks_collection_key + '_' + board.id) < 0) {
       this.collection_key.push(this.tasks_collection_key + '_' + board.id);
       Collections.get('lists').addSource(
@@ -125,11 +123,6 @@ export default class TaskPicker extends Component {
     );
   }
   renderListPicker() {
-    console.log(Collections.get('lists').did_load_first_time);
-    console.log(
-      Collections.get('lists').findBy({ board_id: this.state.currentBoard.id }),
-      this.state.currentBoard.id,
-    );
     var loading = !Collections.get('lists').did_load_first_time[
       this.tasks_collection_key + '_' + this.state.currentBoard.id
     ];

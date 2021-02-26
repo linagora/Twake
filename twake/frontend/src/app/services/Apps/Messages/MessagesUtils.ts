@@ -1,5 +1,5 @@
 import { Message } from './MessagesListServerUtils';
-import Collections from 'services/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
@@ -10,7 +10,7 @@ export const getSender = (message: Message | undefined) => {
 
   if (message) {
     if (message.sender) {
-      senderData = Collections.get('users').find(message.sender);
+      senderData = DepreciatedCollections.get('users').find(message.sender);
       if (!senderData) {
         User.asyncGet(message.sender);
         senderData = {
@@ -23,7 +23,7 @@ export const getSender = (message: Message | undefined) => {
     }
     if (message.message_type == 1) {
       //App message
-      var app = Collections.get('applications').find(message.application_id) || {};
+      var app = DepreciatedCollections.get('applications').find(message.application_id) || {};
       if (!app.id) {
         WorkspacesApps.getApp(message.application_id);
       } else {

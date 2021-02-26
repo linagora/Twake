@@ -21,6 +21,10 @@ class Uploader
         $this->tempFolder = $app->getContainer()->getParameter("storage.drive_tmp_folder");
     }
 
+    public function configure($configuration){
+        return;
+    }
+
     /**
      * Upload a file
      * $file = $_FILE["aa"];

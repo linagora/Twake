@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import './Menu.scss';
 
 /*
@@ -116,7 +116,7 @@ export default class MenuComponent extends React.Component {
                 >
                   {item.icon && (
                     <div className="icon">
-                      <Icon type={item.icon} />
+                      {typeof item.icon === 'string' ? <Icon type={item.icon} /> : item.icon}
                     </div>
                   )}
                   {item.emoji && (

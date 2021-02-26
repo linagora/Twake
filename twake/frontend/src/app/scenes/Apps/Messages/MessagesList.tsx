@@ -9,7 +9,7 @@ import MessageComponent from './Message/Message';
 import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import GoToBottom from './Parts/GoToBottom';
 import ScrollerParent from './Parts/ScrollerParent';
 import WritingUsers from './Input/WritingUsers';
@@ -30,6 +30,8 @@ export default class MessagesList extends Component<Props> {
   constructor(props: Props) {
     super(props);
     this.messagesListServerService = MessagesListServerServicesManager.get(
+      this.props.channel.company_id,
+      this.props.channel.workspace_id,
       this.props.channel.id,
       this.props.threadId,
       this.props.collectionKey,
@@ -136,6 +138,7 @@ export default class MessagesList extends Component<Props> {
               <div className="message_header">
                 <MessageComponent
                   noReplies
+                  threadHeader={this.props.threadId}
                   key={headerMessage?.id}
                   messageId={headerMessage?.id}
                   collectionKey={this.props.collectionKey}
@@ -150,6 +153,7 @@ export default class MessagesList extends Component<Props> {
                   delayRender
                   key={messages[index].front_id}
                   messageId={messages[index]?.id || messages[index]?.front_id}
+                  threadHeader={this.props.threadId}
                   previousMessageId={messages[index - 1]?.id}
                   unreadAfter={this.props.unreadAfter}
                   highlighted={highlighted}

@@ -1,4 +1,4 @@
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 
 import Globals from 'services/Globals.js';
 

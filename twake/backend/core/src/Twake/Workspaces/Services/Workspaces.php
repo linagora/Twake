@@ -23,24 +23,25 @@ class Workspaces
     var $workspaces_service;
     private $wls;
     private $wms;
+    private $app;
     private $gms;
     private $gas;
+    private $rest;
     private $gs;
     private $doctrine;
-    private $pricing;
     private $string_cleaner;
     private $pusher;
     private $translate;
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->wms = $app->getServices()->get("app.workspace_members");
         $this->gms = $app->getServices()->get("app.group_managers");
         $this->gas = $app->getServices()->get("app.group_apps");
         $this->gs = $app->getServices()->get("app.groups");
-        $this->pricing = $app->getServices()->get("app.pricing_plan");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->pusher = $app->getServices()->get("app.pusher");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
@@ -48,9 +49,10 @@ class Workspaces
         $this->calendarService = $app->getServices()->get("app.calendar.calendar");
         $this->calendarEventService = $app->getServices()->get("app.calendar.event");
         $this->workspaces_service = $app->getServices()->get("app.workspaces_apps");
+        $this->rest = $app->getServices()->get("app.restclient");
     }
 
-    public function create($name, $groupId = null, $userId = null)
+    public function create($name, $groupId = null, $userId = null, $default = false)
     {
 
         if ($groupId == null && $userId == null) {
@@ -87,20 +89,9 @@ class Workspaces
 
         $workspace->setUniqueName($uniquenameIncremented);
 
+        $workspace->setIsDefault($default);
+
         if ($groupId != null) {
-            $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
-
-            $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
-            $nbWorkspace = [];
-            foreach ($_nbWorkspace as $ws) {
-                if (!$ws->getis_deleted()) {
-                    $nbWorkspace[] = $ws;
-                }
-            }
-
-            if (count($nbWorkspace) >= $limit) {
-                return false;
-            }
             $workspace->setGroup($group);
         }
 
@@ -130,7 +121,6 @@ class Workspaces
         $this->doctrine->persist($levelUser);
         $this->doctrine->flush();
 
-
         //init default apps
         $this->init($workspace);
 
@@ -138,6 +128,33 @@ class Workspaces
         if ($userId != null) {
             $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
         }
+
+        //Create default channels
+        $secret = $this->app->getContainer()->getParameter("node.secret");
+        $uri = $this->app->getContainer()->getParameter("node.api") . 
+            "companies/".$groupId."/workspaces/".$workspace->getId()."/".
+            "channels/defaultchannel";
+
+        $data = [
+            "resource" => [
+                "icon" => "💬",
+                "name" => "General",
+                "description" => "",
+                "visibility" => "public",
+                "default" => true
+            ],
+            "options" => [],
+            "user_id" => $userId
+        ];
+
+        $res = $this->rest->post($uri, json_encode($data), [
+            CURLOPT_HTTPHEADER => Array(
+                "Authorization: Token ".$secret,
+                "Content-Type: application/json"
+            ),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1
+        ]);
 
         return $workspace;
 
@@ -376,6 +393,10 @@ class Workspaces
             $workspace = $workspaceRepository->find($workspaceId);
 
             $this->wms->removeAllMember($workspaceId);
+
+            if(!$workspace){
+                return true;
+            }
 
             $workspace->setis_deleted(true);
 

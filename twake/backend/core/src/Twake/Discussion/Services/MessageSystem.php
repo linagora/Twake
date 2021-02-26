@@ -11,6 +11,9 @@ use Twake\Discussion\Entity\MessageLike;
 use Twake\Discussion\Entity\MessageReaction;
 use Twake\Discussion\Model\MessagesSystemInterface;
 use Twake\GlobalSearch\Entity\Bloc;
+use Twake\Core\Entity\CachedFromNode;
+use Emojione\Client;
+use Emojione\Ruleset;
 
 class MessageSystem
 {
@@ -20,28 +23,37 @@ class MessageSystem
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->applications_api = $app->getServices()->get("app.applications_api");
         $this->websockets_service = $app->getServices()->get("app.websockets");
-        $this->message_notifications_center_service = $app->getServices()->get("app.channels.notifications");
         $this->access_manager = $app->getServices()->get("app.accessmanager");
         $this->queues = $app->getServices()->get('app.queues')->getAdapter();
+        $this->emojione_client = new Client(new Ruleset());
+        $this->app = $app;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in Core/Services/Websockets.php */
     public function init($route, $data, $current_user = null)
     {
+
         $route = explode("/", $route);
         $channel_id = isset($route[1]) ? $route[1] : null;
 
         if (!$channel_id) {
             return false;
         }
+        
+        if($data["get_options"]){
+            $data = $data["get_options"];
+        }
 
         return $this->hasAccess([
-            "channel_id" => $channel_id
+            "channel_id" => $channel_id,
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"],
         ], $current_user);
     }
 
     public function hasAccess($data, $current_user = null, $message = null)
     {
+
         if ($current_user === null) {
             return true;
         }
@@ -57,10 +69,14 @@ class MessageSystem
         }
 
         $channel_id = $data["channel_id"];
+
         return $this->access_manager->has_access($current_user, [
             "type" => "Channel",
             "edition" => false,
             "object_id" => $channel_id
+        ], [
+            "company_id" => $data["company_id"],
+            "workspace_id" => $data["workspace_id"]
         ]);
     }
 
@@ -77,17 +93,22 @@ class MessageSystem
 
         $message_repo = $this->em->getRepository("Twake\Discussion:Message");
 
+
         $offset = isset($options["offset"]) ? $options["offset"] : null;
         $limit = isset($options["limit"]) ? $options["limit"] : 60;
         $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
 
-        $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, ["parent_message_id", "id"], ["ASC", "DESC"]);
+        if($options["id"]){
+            $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id, "id" => $options["id"]));
+        }else{
+            $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, ["parent_message_id", "id"], ["ASC", "DESC"]);
+        }
 
         $messages_ent = array_reverse($messages_ent);
 
         $messages = [];
         foreach ($messages_ent as $message) {
-            if ($parent_message_id == "" && $message->getResponsesCount() > 0) {
+            if ($parent_message_id == "" && $message->getResponsesCount() > 0 && !$options["id"]) {
                 $messages_responses_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $message->getId()), Array(), 10, null, "id", "DESC");
                 if (count($messages_responses_ent) == 0) {
                     $message->setResponsesCount(0);
@@ -122,8 +143,20 @@ class MessageSystem
 
         }
 
-        $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
-        $this->message_notifications_center_service->read($channel, $current_user);
+        if(count($messages) === 0
+            && !$options["id"]
+            && !$options["id"]
+            && !$offset
+            && $limit > 0
+            && !$parent_message_id ){
+                error_log($options["channel_id"]);
+            $init_message = Array(
+                "channel_id" => $options["channel_id"],
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            return [$this->save($init_message, Array())];
+        }
 
         return $messages;
     }
@@ -139,40 +172,54 @@ class MessageSystem
             $object["parent_message_id"] = "";
         }
 
-        $message_repo = $this->em->getRepository("Twake\Discussion:Message");
-        $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
+        if(!$object["ephemeral_id"]){
+            $message_repo = $this->em->getRepository("Twake\Discussion:Message");
+            $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
 
-        if (!$message) {
-            return false;
+            if (!$message) {
+                return false;
+            }
+
+            //TODO for allow_delete == "administrators" implement user access verification
+            if (!($this->hasAccess($message->getAsArray(), $current_user, $message) || $message->getAsArray()["hidden_data"]["allow_delete"] == "everyone" || $message->getAsArray()["hidden_data"]["allow_delete"] == "administrators")) {
+                return false;
+            }
+
+            if ($message->getResponsesCount() > 0) {
+                return false;
+            }
+
+            if ($message->getParentMessageId()) {
+                $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
+                $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
+                $this->em->persist($parent_message);
+            }
+
+            $array_before_delete = $message->getAsArray();
+
+            $this->em->remove($message);
+            $this->em->flush();
+
+            $this->deleteInBloc($message);
+        }else{
+            $array_before_delete = $object;
         }
 
-        //TODO for allow_delete == "administrators" implement user access verification
-        if (!($this->hasAccess($message->getAsArray(), $current_user, $message) || $message->getAsArray()["hidden_data"]["allow_delete"] == "everyone" || $message->getAsArray()["hidden_data"]["allow_delete"] == "administrators")) {
-            return false;
-        }
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "message_id" => $array_before_delete["id"],
+            "thread_id" => $array_before_delete["parent_message_id"]
+        );
+        $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $array_before_delete["channel_id"] . "/messages/updates");
 
-        if ($message->getResponsesCount() > 0) {
-            return false;
-        }
-
-        if ($message->getParentMessageId()) {
-            $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
-            $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
-            $this->em->persist($parent_message);
-        }
-
-        $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
-        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
-        $channel->setMessagesCount($channel->getMessagesCount() - 1);
-
-        $this->em->persist($channel);
-
-        $array_before_delete = $message->getAsArray();
-
-        $this->em->remove($message);
-        $this->em->flush();
-
-        $this->deleteInBloc($message);
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "object_type" => "",
+            "front_id" => $array_before_delete["front_id"]
+        );
+        $this->app->getServices()->get("app.websockets")->push("messages/" . $array_before_delete["channel_id"], $event);
 
         return $array_before_delete;
 
@@ -181,24 +228,28 @@ class MessageSystem
     public function deleteInBloc($message)
     {
 
-        $bloc = $this->em->getRepository("Twake\GlobalSearch:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        if($message->getBlockId()){
 
-        if (!$bloc) {
-            return false;
-        }
+            $bloc = $this->em->getRepository("Twake\GlobalSearch:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
-        try {
-            $bloc->removeMessage($message->getId());
-
-            $this->em->persist($bloc);
-            $this->em->flush();
-
-            if ($bloc->getLock() == true) {
-                $this->em->es_put($bloc, $bloc->getEsType());
+            if (!$bloc) {
+                return false;
             }
 
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
+            try {
+                $bloc->removeMessage($message->getId());
+
+                $this->em->persist($bloc);
+                $this->em->flush();
+
+                if ($bloc->getLock() == true) {
+                    $this->em->es_put($bloc, $bloc->getEsType());
+                }
+
+            } catch (\Exception $e) {
+                error_log($e->getMessage());
+            }
+
         }
 
     }
@@ -228,9 +279,6 @@ class MessageSystem
         }
 
         $message_repo = $this->em->getRepository("Twake\Discussion:Message");
-
-        $channel_repo = $this->em->getRepository("Twake\Channels:Channel");
-        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
 
         $did_create = false;
 
@@ -276,6 +324,7 @@ class MessageSystem
 
             //Verify can create in channel
             if (!$this->hasAccess($object, $current_user)) {
+
                 return false;
             }
 
@@ -293,7 +342,7 @@ class MessageSystem
             }
 
             //Create a new message
-            $message = new Message($object["channel_id"], $object["parent_message_id"], $channel);
+            $message = new Message($object["channel_id"], $object["parent_message_id"]);
 
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {
@@ -380,21 +429,6 @@ class MessageSystem
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
-            /*if($current_reactions && !(is_array($current_reactions[0]))){
-                $reacttochangeformat = Array();
-                $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
-                foreach ($allreactionppl as $ppl){
-                    $reacttochangeformat[$ppl->getReaction()]["users"][]= $ppl->getUserId() ;
-                    if($reacttochangeformat[$ppl->getReaction()]["count"]){
-                        $reacttochangeformat[$ppl->getReaction()]["count"]++;
-                    }
-                    else{
-                        $reacttochangeformat[$ppl->getReaction()]["count"] = 1 ;
-                    }
-                }
-                $current_reactions = $reacttochangeformat;
-            }*/
-
             if ($message_reaction) {
                 if ($user_reaction == $message_reaction->getReaction()) {
                     //Noop
@@ -451,73 +485,58 @@ class MessageSystem
             $this->em->remove($message);
         } else {
 
-            try {
-                $this->indexMessage($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
-            } catch (\Exception $e) {
-                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
-            }
-
-            $init_channel = isset($object["hidden_data"]["type"]) && $object["hidden_data"]["type"] == "init_channel";
-            if ($channel && $did_create && !$init_channel) {
-                $channel->setLastActivity(new \DateTime());
-                $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
-                $this->em->persist($channel);
+            $channel = $this->em->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channel_id));
+            if($channel){
                 
-                //Sender autoread the channel
-                if($user){
-                    $membersRepo = $this->em->getRepository("Twake\Channels:ChannelMember");
-                    $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
-                    $member->setLastMessagesIncrement($channel->getMessagesIncrement());
-                    $this->em->persist($member);
+                $this->sendToNode($channel, $message, $did_create);
+
+                try {
+                    $this->indexMessage($message, $channel->getData()["workspace_id"], $channel_id);
+                } catch (\Exception $e) {
+                    error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
                 }
 
-                try{
-                    $this->queues->push("message_dispatch_queue", [
-                        "channel" => $channel->getId(),
-                        "message_id" => $message->getId(),
-                        "application_id" => $application ? $application->getId() : null,
-                        "user_id" => $user ? $user->getId() : null,
-                    ]);
-                }catch(\Exception $err){
-                    error_log($err->getMessage());
-                }
+                $this->em->flush();
+
             }
 
-            $this->em->flush();
-
-            //Notify connectors
-            if ($channel->getOriginalWorkspaceId()) {
-                if ($channel->getAppId()) {
-                    $apps_ids = [$channel->getAppId()];
-                } else {
-                    $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
-                    $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
-                    $apps_ids = [];
-                    foreach ($resources as $resource) {
-                        if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                            continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
-                        }
-                        if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
-                            $apps_ids[] = $resource->getApplicationId();
+            if($channel){
+                //Notify connectors
+                if ($channel->getData()["workspace_id"]) {
+                    if (false && $channel->getAppId()) {
+                        $apps_ids = [$channel->getAppId()];
+                    } else {
+                        $resources = $this->applications_api->getResources($channel->getData()["workspace_id"], "channel", $channel_id);
+                        $resources = array_merge($resources, $this->applications_api->getResources($channel->getData()["workspace_id"], "workspace", $channel->getData()["workspace_id"]));
+                        $apps_ids = [];
+                        foreach ($resources as $resource) {
+                            if ($resource->getResourceId() == $channel->getData()["workspace_id"] && !in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
+                            }
+                            if (in_array("message", $resource->getApplicationHooks()) || in_array("message_in_workspace", $resource->getApplicationHooks())) {
+                                $apps_ids[] = $resource->getApplicationId();
+                            }
                         }
                     }
-                }
-                if (count($apps_ids) > 0) {
-                    foreach ($apps_ids as $app_id) {
-                        if ($app_id) {
-                            $data = Array(
-                                "message" => $message->getAsArray(),
-                                "channel" => $channel->getAsArray()
-                            );
-                            if ($did_create) {
-                                $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
-                            } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
-                                $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                    if (count($apps_ids) > 0) {
+                        foreach ($apps_ids as $app_id) {
+                            if ($app_id) {
+                                $data = Array(
+                                    "message" => $message->getAsArray(),
+                                    "channel" => $channel->getData()
+                                );
+                                if ($did_create) {
+                                    $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
+                                } else if (false && $channel->getAppId()) { //Only private channels with app can receive edit hook
+                                    $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                                }
                             }
                         }
                     }
                 }
             }
+
+
 
         }
 
@@ -530,21 +549,98 @@ class MessageSystem
                 $array["ephemeral_message_recipients"] = $object["ephemeral_message_recipients"];
             }
         }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "update",
+            "message_id" => $array["id"],
+            "thread_id" => $array["parent_message_id"]
+        );
+        $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $array["channel_id"] . "/messages/updates");
+
+        $event = Array(
+            "client_id" => "bot",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $array
+        );
+        $this->app->getServices()->get("app.websockets")->push("messages/" . $array["channel_id"], $event);
+
         return $array;
     }
 
-    public function dispatchMessage($channel_id, $application_id, $user_id, $message_id){
+    public function sendToNode($channel, $message, $did_create){
+        $messageArray = $message->getAsArray();
 
-        $message = $this->em->getRepository("Twake\Discussion:Message")->findOneBy(Array("id" => $message_id));
-
-        if($message){
-            $sender_application = $application_id ? $this->em->getRepository("Twake\Market:Application")->findOneBy(Array("id" => $application_id)) : null;
-            $sender_user = $user_id ? $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $user_id)) : null;
-            $channel = $this->em->getRepository("Twake\Channels:Channel")->findOneBy(Array("id" => $channel_id));
-
-            $this->message_notifications_center_service->newElement($channel, $sender_application, $sender_user, $this->mdToText($message->getContent()), $message);
+        $senderName = "";
+        if($messageArray["sender"]){
+            $sender_user = $this->em->getRepository("Twake\Users:User")->findOneBy(Array("id" => $messageArray["sender"]));
+            $senderName = $sender_user ? $sender_user->getFullName() : "";
         }
 
+        $title = "";
+        $text = $this->buildShortText($message);
+        if ($channel->getData()["is_direct"]) {
+            $title = $senderName . " in " . $channel->getData()["company_name"];
+        }else{
+            $title = $channel->getData()["name"];
+            $title .= " in " . $channel->getData()["company_name"] . " • " . $channel->getData()["workspace_name"];
+            $text = $senderName . ": " . $text;
+        }
+
+        if($channel){
+
+            $md2text_options = Array("keep_mentions" => true);
+            $text_content = $this->mdToText($message->getContent(), $md2text_options);
+            preg_match_all("/@[^: ]+:([0-f-]{36})/m", $text_content, $users_output);
+            preg_match_all("/(^| )@(all|here|channel|everyone)[^a-z]/m", $text_content, $global_output);
+            $mentions = [
+                "users" => $users_output[1],
+                "specials" => $global_output[2]
+            ];
+            $rabbitData = [
+                "company_id" => $channel->getData()["company_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
+                "channel_id" => $messageArray["channel_id"],
+                "thread_id" => $messageArray["parent_message_id"],
+                "id" => $messageArray["id"],
+                "sender" => $messageArray["sender"],
+                "creation_date" => $messageArray["creation_date"] * 1000,
+                "mentions" => $mentions,
+
+                "sender_name" => $senderName,
+                "channel_name" => $channel->getData()["name"],
+                "company_name" => $channel->getData()["workspace_name"],
+                "workspace_name" => $channel->getData()["company_name"],
+
+                "title" => $title,
+                "text" => $text
+            ];
+            $rabbitChannelData = [
+                "company_id" => $channel->getData()["company_id"],
+                "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
+                "channel_id" => $messageArray["channel_id"],
+                "date" => $messageArray["creation_date"] * 1000,
+            ];
+
+            if($messageArray["message_type"] != 2){ //Ignore system messages
+                if($did_create){
+                    $this->queues->push("channel:activity", $rabbitChannelData, ["exchange_type" => "fanout"]);
+                    $this->queues->push("message:created", $rabbitData, ["exchange_type" => "fanout"]);
+                }else{
+                    $this->queues->push("message:updated", $rabbitData, ["exchange_type" => "fanout"]);
+                }
+            }
+        }
+    }
+
+    private function buildShortText($message){
+        $text = $this->mdToText($message->getContent()) ?: "No text content.";
+        $text = preg_replace("/ +/", " ", trim(html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8')));
+        if(strlen($text) > 180){
+            $text = substr($text, 0, 180) . "...";
+        }
+        return $text;
     }
 
     private function share($message)

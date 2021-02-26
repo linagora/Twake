@@ -1,5 +1,5 @@
 import UserService from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary.js';
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
@@ -345,7 +345,7 @@ class PseudoMarkdownCompiler {
     return str;
   }
 
-  compileToJSON(str, recursive) {
+  compileToJSON(str, recursive = false) {
     if (!recursive) {
       var result = [];
       var original_str = str;
@@ -499,7 +499,7 @@ class PseudoMarkdownCompiler {
     return ret;
   }
 
-  compileToHTML(json, is_app, event_container, text_transform = undefined) {
+  compileToHTML(json, is_app = false, event_container = undefined, text_transform = undefined) {
     if (!text_transform) {
       text_transform = {};
     }

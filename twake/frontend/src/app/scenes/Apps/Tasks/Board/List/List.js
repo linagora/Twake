@@ -4,14 +4,15 @@ import Languages from 'services/languages/languages.js';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../Task/Task.js';
 import Icon from 'components/Icon/Icon.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import ListEditor from './ListEditor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
-import Collections from 'services/Collections/Collections.js';
+import AlertManager from 'services/AlertManager/AlertManager';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import AddTask from './AddTask.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import './List.scss';
 
 import '../Task/Task.scss';
@@ -239,7 +240,7 @@ export default class List extends React.Component {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      <div className="scrollable_task_list">
+                      <PerfectScrollbar className="scrollable_task_list">
                         {(tasks || [])
                           .sort(
                             (a, b) =>
@@ -263,7 +264,7 @@ export default class List extends React.Component {
                         )}
 
                         {(tasks || []).length > 0 && provided.placeholder}
-                      </div>
+                      </PerfectScrollbar>
                     </div>
                   )}
                 </Droppable>

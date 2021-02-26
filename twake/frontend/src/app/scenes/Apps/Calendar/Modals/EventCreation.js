@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import EventModification from './EventModification.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Input from 'components/Inputs/Input.js';
@@ -9,7 +9,7 @@ import InputIcon from 'components/Inputs/InputIcon.js';
 import Participants from './Part/Participants.js';
 import DateSelector from './Part/DateSelector.js';
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
 import Select from 'components/Select/Select.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
@@ -61,7 +61,7 @@ export default class EventCreation extends Component {
     });
 
     return (
-      <div className="eventModal event_creation">
+      <div className="eventModal event_creation" style={{ padding: '16px' }}>
         <Input
           autoFocus
           value={event.title || ''}
@@ -116,7 +116,11 @@ export default class EventCreation extends Component {
             onClick={() => {
               this.change(
                 'location',
-                'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' + event.front_id,
+                window.location.protocol +
+                  '//' +
+                  window.location.host +
+                  '/bundle/connectors/jitsi/call/twake_event_' +
+                  event.front_id,
               );
             }}
           >
@@ -152,11 +156,13 @@ export default class EventCreation extends Component {
 
         <div className="separator" />
 
-        <Participants
-          participants={event.participants}
-          owner={event.owner}
-          onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
-        />
+        <div className="small-bottom-margin">
+          <Participants
+            participants={event.participants}
+            owner={event.owner}
+            onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
+          />
+        </div>
 
         <div className="separator" />
 

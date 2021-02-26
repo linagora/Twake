@@ -1,11 +1,11 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import ws from 'services/websocket.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import Login from 'services/login/login.js';
-import Collections from 'services/Collections/Collections.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 import Globals from 'services/Globals.js';
 

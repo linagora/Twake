@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Search from 'services/search/search.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/user.js';
 import './SearchPopup.scss';
 import InputIcon from 'components/Inputs/InputIcon.js';
@@ -9,12 +9,12 @@ import FilesFilter from './Parts/FilesFilter.js';
 import EventsFilter from './Parts/EventsFilter.js';
 import TasksFilter from './Parts/TasksFilter.js';
 import MessagesFilter from './Parts/MessagesFilter.js';
-import LoginService from 'services/login/login.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
 import Languages from 'services/languages/languages.js';
+import InitService from 'services/InitService';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -29,23 +29,14 @@ export default class SearchPopup extends React.Component {
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
     };
-
-    this.search_enabled = (LoginService.server_infos || {}).elastic_search_available !== false;
   }
   componentDidMount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.addEventListener('keydown', this.eventKey);
   }
   componentWillUnmount() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     document.removeEventListener('keydown', this.eventKey);
     Search.removeListener(this);
+    Collections.get('users').removeListener(this);
   }
   eventKey(evt) {
     if (Search.isOpen()) {
@@ -72,12 +63,6 @@ export default class SearchPopup extends React.Component {
         if (this.current_selection) {
           Search.select(this.current_selection);
         }
-      }
-    } else {
-      if ((evt.key == 'k' && evt.ctrlKey) || (evt.key == 'k' && evt.metaKey)) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        Search.open();
       }
     }
   }
@@ -119,10 +104,6 @@ export default class SearchPopup extends React.Component {
   }
 
   render() {
-    if (!this.search_enabled) {
-      return '';
-    }
-
     if (!Search.isOpen()) {
       this.state.selected = 0;
       this.state.total = 0;
@@ -135,27 +116,15 @@ export default class SearchPopup extends React.Component {
 
     var tabs = [
       {
-        filterType: false,
-        searchPopupStyle: 'small',
-        title: Languages.t('components.searchpopup.all', [], 'All'),
-        render: '',
-      },
-      {
-        filterType: 'channel',
-        searchPopupStyle: 'small',
-        title: Languages.t('scenes.apps.messages.left_bar.channels', [], 'Channels'),
+        filterType: 'message',
+        hasFilters: true,
+        title: Languages.t('components.application.messages', [], 'Messages'),
         render: '',
       },
       {
         filterType: 'file',
         hasFilters: true,
         title: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Files'),
-        render: '',
-      },
-      {
-        filterType: 'message',
-        hasFilters: true,
-        title: Languages.t('components.application.messages', [], 'Messages'),
         render: '',
       },
       {
@@ -353,7 +322,8 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix += ' • ' + item.channel.name;
                       }
 
-                      workspace_suffix += ' - ' + moment(item.message.creation_date).format('L LT');
+                      workspace_suffix +=
+                        ' - ' + moment(item.message.creation_date * 1000).format('L LT');
                     }
                   } catch (e) {
                     console.log(e);

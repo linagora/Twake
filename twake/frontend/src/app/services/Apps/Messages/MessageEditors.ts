@@ -1,4 +1,4 @@
-import Observable from 'services/observable';
+import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'services/localStorage.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 
@@ -39,9 +39,9 @@ export class MessageEditors extends Observable {
 
   setInputNode(threadId: string, messageId: string, context: string, node: any) {}
 
-  setContent(threadId: string, messageId: string, content: string) {
+  async setContent(threadId: string, messageId: string, content: string) {
     if (!messageId) {
-      const all = LocalStorage.getItem('m_input') || {};
+      const all = (await LocalStorage.getItem('m_input')) || {};
       all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
         content,
         new Date().getTime(),
@@ -51,9 +51,9 @@ export class MessageEditors extends Observable {
     this.editorsContents[threadId + '_' + messageId] = content;
   }
 
-  getContent(threadId: string, messageId: string) {
+  async getContent(threadId: string, messageId: string) {
     if (!messageId) {
-      const all = this.cleanSavedInputContents(LocalStorage.getItem('m_input') || {});
+      const all = this.cleanSavedInputContents((await LocalStorage.getItem('m_input')) || {});
       const res = (all[this.channelId + (threadId ? '_thread=' + threadId : '')] || {})[0];
       if (res) {
         this.editorsContents[threadId + '_' + messageId] = res;

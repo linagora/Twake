@@ -30,7 +30,7 @@ class AESCryptFileLib
 
         try {
             $this->aes_impl->checkDependencies();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new AESCryptMissingDependencyException($e->getMessage());
         }
     }

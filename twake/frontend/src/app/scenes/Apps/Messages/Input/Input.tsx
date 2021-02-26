@@ -39,8 +39,8 @@ export default (props: Props) => {
   const onChange = (text: string) => {
     setContent(text);
   };
-  const onSend = () => {
-    const content = messageEditorService.getContent(props.threadId, props.messageId || '');
+  const onSend = async () => {
+    const content = await messageEditorService.getContent(props.threadId, props.messageId || '');
     if (props.onSend) {
       props.onSend(content);
       return;

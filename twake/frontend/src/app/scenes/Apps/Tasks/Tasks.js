@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import User from 'components/User/User.js';
 import Loader from 'components/Loader/Loader.js';
@@ -14,18 +14,18 @@ import Rounded from 'components/Inputs/Rounded.js';
 import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import Board from './Board/Board.js';
 
 import './Tasks.scss';
-import UserListManager from 'app/components/UserListManager/UserListManager.js';
+import UserListManager from 'app/components/UserListManager/UserListManager';
 
 export default class Tasks extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ export default class Tasks extends Component {
     TasksService.addListener(this);
     WorkspacesUsers.addListener(this);
 
-    this.boards_collection_key = 'boards_' + this.props.channel.original_workspace;
+    this.boards_collection_key = 'boards_' + this.props.channel.data.workspace_id;
 
     Collections.get('boards').addListener(this);
     Collections.get('boards').addSource(
@@ -46,10 +46,10 @@ export default class Tasks extends Component {
         http_base_url: 'tasks/board',
         http_options: {
           channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.original_workspace,
+          workspace_id: this.props.channel.data.workspace_id,
         },
         websockets: [
-          { uri: 'boards/' + this.props.channel.original_workspace, options: { type: 'board' } },
+          { uri: 'boards/' + this.props.channel.data.workspace_id, options: { type: 'board' } },
         ],
       },
       this.boards_collection_key,
@@ -104,7 +104,9 @@ export default class Tasks extends Component {
 
     if (
       this.props.tab != null &&
-      (this.props.tab.configuration.board_id === undefined || (!loading && !current_board))
+      (!this.props.tab.configuration || this.props.tab.configuration.board_id === undefined) &&
+      !loading &&
+      !current_board
     ) {
       return (
         <UnconfiguredTab
@@ -122,7 +124,7 @@ export default class Tasks extends Component {
     }
 
     return (
-      <div className="app">
+      <>
         {loading && (
           <div className="loading">
             <Loader color="#CCC" className="app_loader" />
@@ -358,7 +360,7 @@ export default class Tasks extends Component {
             />
           </div>
         )}
-      </div>
+      </>
     );
   }
 }

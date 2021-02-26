@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import List from './List/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -16,7 +16,7 @@ import Tabs from 'components/Tabs/Tabs.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/User/User.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 
 export default class Board extends React.Component {
   constructor(props) {
@@ -445,7 +445,7 @@ export default class Board extends React.Component {
             )}
 
             {this.props.mode == 'grid' && (
-              <PerfectScrollbar className="lists_scrollable">
+              <PerfectScrollbar className="lists_scrollable" options={{ suppressScrollX: false }}>
                 <Droppable
                   droppableId={'lists'}
                   direction="horizontal"

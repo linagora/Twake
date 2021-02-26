@@ -4,16 +4,18 @@ namespace Twake\Market\Services;
 
 use Twake\Market\Entity\AccessToken;
 use Twake\Market\Entity\Application;
-use Twake\Market\Entity\ApplicationResource;
+use Twake\Market\Entity\ApplicationResourceNode;
 use App\App;
 
 class ApplicationApi
 {
+    private $app;
     private $doctrine;
     private $rest_client;
 
     public function __construct(App $app)
     {
+        $this->app = $app;
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->rest_client = $app->getServices()->get("app.restclient");
     }
@@ -215,7 +217,7 @@ class ApplicationApi
 
     public function getResources($workspace_id, $resource_type, $resource_id)
     {
-        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResource");
+        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResourceNode");
         $list = $repo->findBy(Array("resource_id" => $resource_id));
         $final_list = [];
         foreach ($list as $el) {
@@ -249,7 +251,7 @@ class ApplicationApi
         }
 
         //Verify we do not have this resource
-        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResource");
+        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResourceNode");
         $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
 
         foreach ($candidates as $candidate) {
@@ -258,7 +260,7 @@ class ApplicationApi
             }
         }
 
-        $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
+        $resource = new ApplicationResourceNode($workspace_id, $app_id, $resource_type, $resource_id);
         $resource->setApplicationHooks($app->getHooks());
         $this->doctrine->persist($resource);
         $this->doctrine->flush();
@@ -287,6 +289,9 @@ class ApplicationApi
 
         if (!$this->curl_rcx) {
             $this->curl_rcx = new RollingCurlX(10);
+            $this->curl_rcx->setOptions([
+                CURLOPT_SSL_VERIFYPEER => false
+            ]);
             $this->curl_rcx->setTimeout(3000);
             $this->curl_rcx->setHeaders(['Content-Type: application/json']);
         }
@@ -305,6 +310,15 @@ class ApplicationApi
             return false;
         }
         $event_route = preg_replace("/^\/+/", "", $event_route);
+
+        //Hack for having same set of apps in beta and web
+        $betaHack = explode("/bundle/connectors/", $event_route);
+        if(count($betaHack) > 1){
+            $server_route = rtrim($this->app->getContainer()->getParameter("env.internal_server_name")?:$this->app->getContainer()->getParameter("env.server_name"), "/");
+            $event_route = $server_route . "/bundle/connectors/" . $betaHack[1];
+        }
+        //Hack to send to connectors wich server to respond
+        $event["_origin"] = $this->app->getContainer()->getParameter("env.server_name");
 
         $use_https = false;
         if (strpos($event_route, "https") === 0) {
@@ -366,7 +380,7 @@ class ApplicationApi
         }
 
         //Verify we have this resource
-        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResource");
+        $repo = $this->doctrine->getRepository("Twake\Market:ApplicationResourceNode");
         $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
 
         $choosen = null;

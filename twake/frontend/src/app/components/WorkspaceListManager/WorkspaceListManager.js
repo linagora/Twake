@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Workspaces from 'services/workspaces/workspaces.js';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
@@ -92,10 +92,7 @@ export default class WorkspaceListManager extends React.Component {
       return '';
     }
 
-    console.log(item);
-
     var id = item.id;
-
     var group = Collections.get('groups').find(id);
     var workspace = null;
     var type = '(company)';

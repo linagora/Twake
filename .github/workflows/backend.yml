@@ -5,8 +5,21 @@ on:
     branches: [main, "feature/*"]
     paths:
       - "twake/backend/core/**"
+      - "twake/backend/node/**"
 
 jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: unit-test
+        run: cd twake && docker-compose -f docker-compose.yml.dist.tests run node npm run test:unit
+      #- name: e2e-mongo-test
+      #  if: always()
+      #  run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e DB_DRIVER=mongodb node npm run test:e2e
+      #- name: e2e-cassandra-test
+      #  if: always()
+      #  run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e DB_DRIVER=cassandra node npm run test:e2e
   build:
     runs-on: ubuntu-20.04
     steps:

@@ -25,9 +25,6 @@ class Websockets
 
         //Register services to call for init websocekts and verify user has access
         $this->services_for_type = Array(
-            "channels/direct_messages" => "app.channels.direct_messages_system",
-            "channels/workspace" => "app.channels.channels_system",
-            "channels/workspace_private" => "app.channels.channels_system",
             "notifications" => "app.notifications",
             "messages" => "app.messages",
             "drive" => "app.drive",
@@ -66,7 +63,7 @@ class Websockets
 
         $route_endpoint = $route_entity->getRouteRandomEndpoint();
 
-        if ($new || (new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60) {
+        if ($new || (new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60*60*24) {
 
             $new_key_part = bin2hex(random_bytes(30));
             $new_key = hash('sha256', $route_entity->getKey() . $new_key_part);

@@ -1,12 +1,12 @@
 import React from 'react';
-import Observable from 'services/observable.js';
-import Api from 'services/api.js';
+import Observable from 'app/services/Depreciated/observable.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
-import Notifications from 'services/user/notifications.js';
 import $ from 'jquery';
+import JWTStorage from 'services/JWTStorage';
 
 import Globals from 'services/Globals.js';
 
@@ -49,8 +49,6 @@ class Groups extends Observable {
     var id = group.id;
     Collections.get('groups').updateObject(group);
     this.user_groups[id] = Collections.get('groups').known_objects_by_id[id];
-
-    Notifications.updateBadge('group', group.id, group._user_hasnotifications ? 1 : 0);
   }
 
   getOrderedGroups() {
@@ -66,7 +64,6 @@ class Groups extends Observable {
     Api.post('workspace/group/data/name', { groupId: this.currentGroupId, name: name }, res => {
       if (res.errors.length == 0) {
         var group = { id: that.currentGroupId, name: name };
-        console.log(Collections.get('groups'));
         Collections.get('groups').updateObject(group);
         ws.publish('group/' + group.id, { data: { group: group } });
       }
@@ -82,46 +79,42 @@ class Groups extends Observable {
     var data = new FormData();
     if (logo !== false) {
       data.append('logo', logo);
-    } else {
-      console.log('no logo');
     }
     data.append('groupId', this.currentGroupId);
     var that = this;
 
-    Globals.getAllCookies(cookies => {
-      $.ajax({
-        url: route,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
+    $.ajax({
+      url: route,
+      type: 'POST',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
 
-        headers: {
-          'All-Cookies': JSON.stringify(cookies),
-        },
-        xhrFields: {
-          withCredentials: true,
-        },
-        xhr: function () {
-          var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function () {
-            if (myXhr.readyState == XMLHttpRequest.DONE) {
-              that.loading = false;
-              var resp = JSON.parse(myXhr.responseText);
-              if (resp.errors.indexOf('badimage') > -1) {
-                that.error_identity_badimage = true;
-              } else {
-                var group = resp.data;
-                Collections.get('groups').updateObject(group);
-                ws.publish('group/' + group.id, { data: { group: group } });
-              }
-              that.notify();
+      headers: {
+        Authorization: JWTStorage.getAutorizationHeader(),
+      },
+      xhrFields: {
+        withCredentials: true,
+      },
+      xhr: function () {
+        var myXhr = $.ajaxSettings.xhr();
+        myXhr.onreadystatechange = function () {
+          if (myXhr.readyState == XMLHttpRequest.DONE) {
+            that.loading = false;
+            var resp = JSON.parse(myXhr.responseText);
+            if (resp.errors.indexOf('badimage') > -1) {
+              that.error_identity_badimage = true;
+            } else {
+              var group = resp.data;
+              Collections.get('groups').updateObject(group);
+              ws.publish('group/' + group.id, { data: { group: group } });
             }
-          };
-          return myXhr;
-        },
-      });
+            that.notify();
+          }
+        };
+        return myXhr;
+      },
     });
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
 class ListenGroups {
   constructor() {
@@ -25,8 +25,6 @@ class ListenGroups {
         if (data.group) {
           data.group.id = idGroup;
           that.groups_repository.updateObject(data.group);
-          console.log(that.groups_repository);
-          console.log(that.groups_repository.find(data.group.id));
         }
       });
     }

@@ -38,6 +38,10 @@ class Routing
             $this->get($route, $callback);
         } else if ($method == "post") {
             $this->post($route, $callback);
+        } else if ($method == "put") {
+            $this->put($route, $callback);
+        } else if ($method == "delete") {
+            $this->delete($route, $callback);
         } else {
             error_log("Unable to register route " . $route . ": method " . $method . " is not implemented.");
         }
@@ -46,6 +50,7 @@ class Routing
     public function get($route, $callback)
     {
         SimpleRouter::get($route, function () use ($callback) {
+            error_log("[Router] - GET " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -58,6 +63,7 @@ class Routing
     public function post($route, $callback)
     {
         SimpleRouter::post($route, function () use ($callback) {
+            error_log("[Router] - POST " . $_SERVER["REQUEST_URI"]);
             try {
                 $response = $this->beforeRender($callback($this->request));
                 $response->send();
@@ -67,14 +73,39 @@ class Routing
         });
     }
 
-    //Allow any origin and set cookies in json response
+    public function put($route, $callback)
+    {
+        SimpleRouter::put($route, function () use ($callback) {
+            error_log("[Router] - PUT " . $_SERVER["REQUEST_URI"]);
+            try {
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
+            } catch (\Exception $e) {
+                error_log($e);
+            }
+        });
+    }
+
+    public function delete($route, $callback)
+    {
+        SimpleRouter::delete($route, function () use ($callback) {
+            error_log("[Router] - DELETE " . $_SERVER["REQUEST_URI"]);
+            try {
+                $response = $this->beforeRender($callback($this->request));
+                $response->send();
+            } catch (\Exception $e) {
+                error_log($e);
+            }
+        });
+    }
+
+    //Allow any origin
     private function beforeRender(Response $response)
     {
-
         if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $response->setHeader('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN'], true);
         }
-        $response->setHeader('Access-Control-Allow-Headers: ' . 'All-Cookies, Authorization, Content-Type, *', true);
+        $response->setHeader('Access-Control-Allow-Headers: ' . 'authorization, Content-Type, *', true);
         $response->setHeader('Access-Control-Allow-Credentials: ' . 'true', true);
         $response->setHeader('Access-Control-Allow-Methods: ' . 'GET, POST', true);
         $response->setHeader('Access-Control-Max-Age: ' . '600', true);
@@ -82,22 +113,6 @@ class Routing
         $response->setHeader('x-decompressed-content-length: ' . $length, true);
 
         $content = $response->getContent();
-
-        if (is_array($content)) {
-            $cookies = [];
-            foreach ($response->headers->all() as $header) {
-                if (strpos("Set-Cookie: ", $header) == 0) {
-                    $ex = explode("Set-Cookie: ", $header);
-                    if (count($ex) == 2) {
-                        $cookies[] = $ex[1];
-                    }
-                }
-            }
-            $content["_cookies"] = $cookies;
-            $response->setContent($content);
-        }
-
-        $this->app->getServices()->get("app.session_handler")->setCookiesInResponse($response);
 
         return $response;
     }

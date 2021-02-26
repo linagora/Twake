@@ -1,12 +1,12 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Workspace from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ChannelsService from 'services/channels/channels.js';
 import UserService from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
-import Api from 'services/api.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Api from 'services/Api';
 import Strings from 'services/utils/strings.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
@@ -15,14 +15,15 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 
 import Globals from 'services/Globals.js';
 
-class search extends Observable {
+class SearchService extends Observable {
   constructor() {
     super();
     this.setObservableName('SearchService');
     Globals.window.searchPopupService = this;
     this.row = [];
     this.value = '';
-    this.type = '';
+    this.hasFilters = true;
+    this.type = 'message';
     this.options = {};
     this.scroll_id = false;
     this.results = [];
@@ -60,15 +61,7 @@ class search extends Observable {
     ChannelsService.select(item.channel);
 
     if (ChannelsService.currentChannelFrontId == item.channel.front_id) {
-      console.log(item);
-
       if (!item.message.parent_message_id) {
-        console.log(
-          'search Ea',
-          item.channel.id || '',
-          item.message.parent_message_id || '',
-          item.message.id || '',
-        );
         MessagesService.scrollToMessage(
           item.channel.id,
           item.message.parent_message_id,
@@ -203,10 +196,8 @@ class search extends Observable {
       }
     }
     if (item.type == 'message') {
-      if (!item.workspace && (item.channel || {}).original_workspace) {
-        item.workspace = Collections.get('workspaces').find(
-          (item.channel || {}).original_workspace,
-        );
+      if (!item.workspace && (item.channel || {}).workspace_id) {
+        item.workspace = Collections.get('workspaces').find((item.channel || {}).workspace_id);
       }
       if (item.workspace && item.channel) {
         Workspace.select(item.workspace);
@@ -359,7 +350,7 @@ class search extends Observable {
             res.push({
               type: 'channel',
               channel: item,
-              workspace: Collections.get('workspaces').find(item.original_workspace),
+              workspace: Collections.get('workspaces').find(item.workspace_id),
             });
           }
         }
@@ -422,5 +413,5 @@ class search extends Observable {
   }
 }
 
-search = new search();
+const search = new SearchService();
 export default search;

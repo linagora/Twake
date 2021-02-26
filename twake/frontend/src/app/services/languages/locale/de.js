@@ -321,7 +321,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Ende',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Beschreibung',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Ort',
-  'scenes.apps.calendar.event_edition.title_participants': 'Teilnehmer',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Teilnehmer',
   'scenes.apps.calendar.event_edition.title_reminder': 'Erinnerung',
   'scenes.apps.calendar.event_edition.title_details': 'Details',
   'scenes.apps.calendar.event_edition.participant': 'Teilnehmer',
@@ -1054,7 +1054,7 @@ export default {
   'scenes.login.forgot_password.password_dont_match':
     'Ihre Passwörter stimmen nicht überein oder sind zu kurz; bitte geben Sie ein Passwort mit mindestens 8 Zeichen ein.',
   'scenes.login.home.title': 'Auf Twake anmelden',
-  'scenes.login.home.email': 'Benutzername oder E-Mail-Adresse',
+  'scenes.login.home.email': 'E-Mail-Adresse',
   'scenes.login.home.unable_to_connect': 'ID-Angaben ungültig',
   'scenes.login.home.password': 'Passwort',
   'scenes.login.home.login_btn': 'Anmelden',
@@ -1113,7 +1113,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Sie wurden möglicherweise mit einer anderen E-Mail-Adresse eingeladen?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'Hum... Niemand hat Sie zu irgendeiner Firma eingeladen.',
+    'Hum... Niemand hat Sie zu irgendeiner Arbeitsplatz eingeladen.',
   'scenes.app.workspaces.welcome_page.ready_to_work': 'Sie können jetzt arbeiten.',
   'scenes.app.workspaces.welcome_page.see_you_soon': 'Wir sehen uns!',
   'scenes.app.workspaces.welcome_page.try_again': 'Versuchen Sie es nochmal',
@@ -1177,6 +1177,7 @@ export default {
     'Verwalten Sie den Zugriff auf den privaten Kanal',
   'scenes.app.channelsbar.access_private_channel_title': 'Zugang zum privaten Kanal',
   'scenes.app.channelsbar.add_channel_button': 'Hinzufügen',
+  'scenes.app.channelsbar.channel_leaving': 'Kanal verlassen',
   'scenes.app.channelsbar.channel_removing': 'Kanal löschen',
   'scenes.app.channelsbar.channel_removing_confirmation': 'Kanal löschen',
   'scenes.app.channelsbar.channelsapps.apps': 'ANWENDUNGEN',
@@ -1186,9 +1187,10 @@ export default {
     'Keine private Nachricht, laden Sie Ihre Mitarbeiter ein !',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Private Nachrichten',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'KANÄLE',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Favoriten',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Erstelle einen Kanal',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name der Gruppe',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Keine Kanäle in diesem Arbeitsbereich !',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Du bist noch keinem Kanal beigetreten',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Entfernen Sie die Gruppe',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Sie können diese Kanäle in Ihr Unternehmen importieren, um die Übersicht zu behalten, indem Sie auf diesen Rahmen klicken.',
@@ -1631,7 +1633,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Minimale Fensterkennung:',
   'scenes.apps.messages.messageslist.no_message_alert': 'Kann diese Nachricht nicht finden.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Anzahl sichtbarer Nachrichten:',
-  'scenes.error_on_twake': 'Sie haben einen Fehler auf der Twake-Plattform gefunden !',
+  'scenes.error_on_twake': '"Houston, wir haben ein Problem"',
   'scenes.help_us':
     'Wenn Sie uns jedoch bei der Behebung dieses Fehlers helfen möchten, senden Sie uns die folgende Nachricht :',
   'scenes.login.loginview.beta_warning':

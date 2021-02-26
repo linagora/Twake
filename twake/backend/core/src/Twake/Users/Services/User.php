@@ -12,6 +12,7 @@ use Twake\Users\Entity\Device;
 use Twake\Users\Entity\ExternalUserRepository;
 use Twake\Users\Entity\Mail;
 use Twake\Users\Entity\VerificationNumberMail;
+use \Firebase\JWT\JWT;
 
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
@@ -27,13 +28,11 @@ class User
     /** @var ManagerAdapter */
     private $em;
     private $pusher;
-    private $core_remember_me_manager;
     private $twake_mailer;
     private $string_cleaner;
     private $workspace_members_service;
     private $group_service;
     private $workspace_service;
-    private $pricing_plan;
     private $restClient;
     private $standalone;
     private $licenceKey;
@@ -45,13 +44,11 @@ class User
         $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
         $this->pusher = $app->getServices()->get("app.pusher");
-        $this->core_remember_me_manager = $app->getServices()->get("app.core_remember_me_manager");
         $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->workspace_members_service = $app->getServices()->get("app.workspace_members");
         $this->group_service = $app->getServices()->get("app.groups");
         $this->workspace_service = $app->getServices()->get("app.workspaces");
-        $this->pricing_plan = $app->getServices()->get("app.pricing_plan");
         $this->restClient = $app->getServices()->get("app.restclient");
         $this->translate = $app->getServices()->get("app.translate");
         $this->standalone = $app->getContainer()->getParameter("env.standalone");
@@ -123,20 +120,29 @@ class User
             //Find allowed username / email
             $counter = 1;
             $original_username = $username;
+            $ok = false;
+            $mailUsedError = false;
             do {
                 $res = $this->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
-                        return false;
+                        $mailUsedError = true;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                    }else{
+                        $ok = true;
                     }
+                }else{
+                    $ok = true;
                 }
                 $counter++;
-            } while (!$res);
+            } while (!$ok);
+            if($mailUsedError){
+                return false;
+            }
 
             $user = new \Twake\Users\Entity\User();
             $user->setSalt(bin2hex(random_bytes(40)));
@@ -179,6 +185,36 @@ class User
         $this->em->flush();
 
         return $this->loginWithUsernameOnlyWithToken($user->getusernameCanonical());
+    }
+
+    public function loginWithIdOnlyWithToken($userId, Response $response = null)
+    {
+
+        $userRepository = $this->em->getRepository("Twake\Users:User");
+        $user = $userRepository->findOneBy(Array("id" => $userId));
+
+        if ($user == null) {
+            return false;
+        }
+
+        if ($user->getBanned()) {
+            return false;
+        }
+
+        $token = bin2hex(random_bytes(64));
+
+        $user->setTokenLogin(
+          [
+            "expiration" => date("U") + 120,
+            "token" => $token
+          ]
+        );
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return ["token" => $token, "username" => $user->getUsername()];
+
     }
 
     public function loginWithUsernameOnlyWithToken($usernameOrMail, Response $response = null)
@@ -237,7 +273,7 @@ class User
 
         if(isset($tokenLogin["expiration"]) && $tokenLogin["expiration"] > date("U")){
           if(isset($tokenLogin["token"]) && $tokenLogin["token"] == $passwordOrToken){
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
           }
         }
@@ -247,12 +283,65 @@ class User
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
-            $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, $rememberMe, $response);
+            $this->app->getServices()->get("app.session_handler")->setUser($user);
             return $user;
 
         }
 
         return false;
+
+    }
+
+    public function generateJWT($user, $workspaces = []){
+
+        $key = $this->app->getContainer()->getParameter("jwt.secret");
+
+        $orgs = [];
+        if($workspaces){
+            foreach($workspaces as $workspace){
+                $gid = $workspace["group"]["id"];
+                $wid = $workspace["id"];
+                if(!isset($orgs[$gid])){
+                    $orgs[$gid] = [
+                        "role" => $workspace["_user_is_organization_administrator"] ? "organization_administrator" : ($workspace["_user_is_guest"] ? "guest" : "member"),
+                        "wks" => []
+                    ];
+                }
+                $orgs[$gid]["wks"][$wid] = [
+                    "adm" => $workspace["_user_is_admin"]
+                ];
+            }
+        }
+        $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
+        $payload = [
+            "exp" => $expiration,
+            "type" => "access",
+            "iat" => intval(date("U")) - 60*10,
+            "nbf" => intval(date("U")) - 60*10,
+            "sub" => $user->getId(),
+            "email" => $user->getEmail(),
+            "org" => $orgs,
+        ];
+        $jwt = JWT::encode($payload, $key);
+
+        $refreshExpiration = date("U") + $this->app->getContainer()->getParameter("jwt.refresh_expiration");
+        $payload = [
+            "exp" => $refreshExpiration,
+            "type" => "refresh",
+            "iat" => intval(date("U")) - 60*10,
+            "nbf" => intval(date("U")) - 60*10,
+            "sub" => $user->getId()
+        ];
+        $jwt_refresh = JWT::encode($payload, $key);
+
+        return [
+            "time" => date("U"),
+            "expiration" => $expiration,
+            "refresh_expiration" => $refreshExpiration,
+            "value" => $jwt,
+            "refresh" => $jwt_refresh,
+            "type" => "Bearer"
+        ];
 
     }
 
@@ -366,13 +455,13 @@ class User
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
         $retour = Array();
-
+        
         if (!$this->string_cleaner->verifyMail($mail)) {
             $retour[] = -1;
         } else {
 
             if(in_array($pseudo, ["all", "here", "null", "undefined"]) || strlen($pseudo) <= 4){
-                $retour[] = -1;
+                $retour[] = -2;
             }
 
             //Check user doesn't exists
@@ -448,7 +537,7 @@ class User
 
         if(!$auto_validate_mail){
 
-          $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+          $magic_link = "/login?verifyMail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
           if (!defined("TESTENV")) {
               error_log("sign in code: " . $magic_link);
@@ -580,7 +669,7 @@ class User
 
 
                 // User auto log in
-                if($login) $this->app->getServices()->get("app.session_handler")->saveLoginToCookie($user, true, $response);
+                if($login) $this->app->getServices()->get("app.session_handler")->setUser($user);
 
             }
 
@@ -690,6 +779,12 @@ class User
             $device = $devicesRepository->findOneBy(Array("value" => $value));
             if (!$device) {
                 $newDevice = new Device($user->getId(), $type, $value, $version);
+
+                $userDevices = $devicesRepository->findBy(Array("user_id" => $userId));
+                foreach($userDevices as $userDevice){
+                    $this->em->remove($userDevice);
+                }
+                
             } else if ($device->getUserId() != $user->getId()) {
                 $this->em->remove($device);
                 $newDevice = new Device($user->getId(), $type, $value, $version);
@@ -1140,5 +1235,7 @@ class User
             $this->em->remove($r);
         }
     }
+
+    
 
 }

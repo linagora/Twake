@@ -28,7 +28,6 @@ export default class RepetitionSelector extends React.Component {
       colorFont: '#837dff',
     };
     this.days = [];
-    console.log('LA DATE ', this.props.date);
     Languages.addListener(this);
     this.rule = new RRule();
     moment.updateLocale({
@@ -36,6 +35,10 @@ export default class RepetitionSelector extends React.Component {
         dow: 1,
       },
     });
+  }
+
+  componentWillUnmount() {
+    Languages.removeListener(this);
   }
 
   render() {
@@ -106,7 +109,6 @@ export default class RepetitionSelector extends React.Component {
                     this.setState({ selected: list });
                     this.days.push(index);
                   }
-                  console.log('le contenu', this.days);
                 }}
               >
                 {moment.weekdays(true)[index][0].toUpperCase()}
@@ -209,8 +211,6 @@ export default class RepetitionSelector extends React.Component {
           <Button
             className="small margin"
             onClick={() => {
-              // console.log("ICI",moment(this.state.ts * 1000).format());
-
               if (this.days.length >= 0) {
                 var byweekday = [];
                 for (var i = 0; i < this.days.length; i++) {
@@ -266,8 +266,6 @@ export default class RepetitionSelector extends React.Component {
                       ]
                     : byweekday,
               });
-
-              console.log(this.rule.toText());
             }}
           >
             {Languages.t('general.save')}

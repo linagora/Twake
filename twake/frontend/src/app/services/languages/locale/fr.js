@@ -331,7 +331,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Heure de fin',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Description',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Lieu',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participants',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Participants',
   'scenes.apps.calendar.event_edition.title_reminder': 'Rappel',
   'scenes.apps.calendar.event_edition.title_details': 'Détails',
   'scenes.apps.calendar.event_edition.participant': 'Participant(s)',
@@ -538,8 +538,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Supprimer',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     "Cette action n'est pas réversible",
-  'scenes.apps.messages.left_bar.stream.star': 'Mettre en favori',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Retirer des favoris',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Ajouter aux favoris',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Retirer des favoris',
   'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
   'scenes.apps.messages.left_bar.stream.notifications.title': 'Activer les notifications pour',
   'scenes.apps.messages.left_bar.stream.notifications.all': 'Tous les messages',
@@ -1090,7 +1090,7 @@ export default {
     "Vos mots de passe ne correspondent pas ou sont trop petits, veuillez saisir un mot de passe d'au moins 8 caractères.",
   'scenes.login.home.title': 'Connectez-vous à Twake',
   'scenes.login.home.subtitle': 'Heureux de vous revoir',
-  'scenes.login.home.email': "Nom d'utilisateur ou email",
+  'scenes.login.home.email': 'Email',
   'scenes.login.home.unable_to_connect': "Informations d'identification invalides",
   'scenes.login.home.password': 'Mot de passe',
   'scenes.login.home.login_btn': "S'identifier",
@@ -1144,7 +1144,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Vous avez peut-être été invité à l’aide d’une autre adresse e-mail ?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'Ha, mince… Il semblerait que personne ne vous ait invité dans une entreprise pour le moment.',
+    'Ha, mince… Il semblerait que personne ne vous ait invité dans un espace de travail pour le moment.',
   'scenes.app.workspaces.welcome_page.ready_to_work': 'Vous êtes prêt à travailler maintenant.',
   'scenes.app.workspaces.welcome_page.see_you_soon': 'À très bientôt !',
   'scenes.app.workspaces.welcome_page.try_again': 'Réessayer',
@@ -1241,10 +1241,10 @@ export default {
     'Aucun message privé, invitez vos collaborateurs !',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Messages directs',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'CHAÎNES',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORIS',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Créer une chaîne',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Nom du groupe',
-  'scenes.app.channelsbar.channelsworkspace.no_channel':
-    'Aucune chaîne dans cet espace de travail !',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': "Vous n'avez encore rejoint aucune chaîne",
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Retirer le groupe',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Ajouter des collaborateurs',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
@@ -1263,6 +1263,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'Vous pouvez modifier les utilisateurs ayant accès à cette chaîne privée.',
   'scenes.app.channelsbar.add_channel_button': 'Ajouter',
+  'scenes.app.channelsbar.channel_leaving': 'Quitter la chaîne',
   'scenes.app.channelsbar.channel_removing': 'Supprimer la chaîne',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
@@ -1488,7 +1489,8 @@ export default {
     "Préférences d'affichage",
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
     "Un administrateur peut configurer l'espace de travail (identité de l'espace, applications, membres de l'espace).",
-  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text':
+    "Un utilisateur gérant d'entreprise peut accéder à l'administration complète de l'entreprise (paiements, membres de l'entreprise, identité de l'entreprise).",
   'scenes.app.popup.workspaceparameter.pages.extern': 'Externe',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Utilisateur invité',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': "Forcer dans toute l'entreprise",
@@ -1666,7 +1668,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Identifiant de fenêtre minimum : ',
   'scenes.apps.messages.messageslist.no_message_alert': 'Impossible de trouver ce message.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Nombre de messages visibles : ',
-  'scenes.error_on_twake': 'Vous avez trouvé une erreur sur la plateforme Twake !',
+  'scenes.error_on_twake': '“Houston nous avons un problème“',
   'scenes.help_us':
     'Cependant, si vous souhaitez nous aider à réparer cette erreur, envoyez nous le message ci-dessous :',
   'scenes.login.loginview.beta_warning':
@@ -1836,6 +1838,8 @@ export default {
   'components.searchpopup.all': 'Défaut',
   'components.workspace.calendar.invalid': 'Invalide',
   'components.searchpopup.enter_text': 'Entrez du texte à chercher dans Twake.',
+  'components.searchpopup.enter_member_name':
+    "Entrez le nom d'utilisateur que vous voulez ajouter.",
   'components.searchpopup.loading': 'Chargement de plus de résultats',
   'components.searchpopup.filter_ws': 'Filtrer les espaces de travail',
   'components.searchpopup.tags': 'Tags',
@@ -1847,7 +1851,7 @@ export default {
   'components.searchpopup.mentions': 'Mentions',
   'components.searchpopup.only_pinned': 'Seulement les messages épinglés',
   'components.alert.confirm': 'Confirmez votre action',
-  'components.alert.confirm_click': 'Confirmez votre action en cliquant sur Confirmer.',
+  'components.alert.confirm_click': 'Confirmez votre action en cliquant sur OK.',
   'components.searchpopup.tasks': 'Tâches',
   'scenes.app.mainview.advanced_search_placeholder': 'Recherche avancée',
   'components.searchpopup.hide_filters': 'réduire',
@@ -1905,4 +1909,66 @@ export default {
   'scenes.app.mainview.channel_description': 'Description de la chaîne',
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) seront ajoutés',
   'scenes.app.popup.adduser.add_another_mail': 'Ajouter un autre email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    "Inviter automatiquement tous les membres de l'espace de travail sur cette chaîne",
+  'scenes.client.channelbar.channelmemberseditor.title': 'Ajouter des membres dans $1',
+  'scenes.client.channelbar.channelmemberslist.title': 'Membres de $1',
+  'scenes.client.channelbar.channelmemberslist.loader': 'Charger plus',
+  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Rechercher des utilisateurs',
+  'scenes.client.channelbar.channelmemberslist.invitebtn': 'Ajouter',
+  'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Envoyez un message privé',
+  'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Supprimer de la chaîne',
+  'components.leftbar.channel.workspaceschannels.menu.option_1': 'Créer une chaîne',
+  'components.leftbar.channel.workspaceschannels.menu.option_2': 'Rejoindre une chaîne',
+  'components.channelworkspacelist.title': 'Chaînes',
+  'components.channelworkspacelist.button_join': 'Rejoindre',
+  'components.channelworkspacelist.button_joined': 'Rejoint',
+  'scenes.client.channelbar.workspacechannellist.autocomplete':
+    'Rechercher une chaîne de discussion',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Créer un onglet',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Renommer $1',
+  'components.connectorslistmanager.add_connectors': 'Ajouter des connecteurs',
+  'components.notifications.hidden_notifications_button.children': 'Nouveaux messages',
+  'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
+  'scenes.client.channelbar.channelmemberslist.no_members':
+    "Il n'y a pas de membres dans cette chaîne, vous pouvez les inviter en cliquant sur Ajouter des utilisateurs.",
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Masquer la discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Masquer la discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    "Vous pouvez masquer cette discussion. Vos messages ne sont pas perdus et vous pouvez l'ouvrir à nouveau si besoin.",
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
+    '$1 utilisateur(s) seront ajoutés',
+  'scenes.app.popup.adduserfromtwakeconsole.description':
+    'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
+  'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'Vous utilisez une version obsolète de Twake',
+  'components.newversion.new_version_component.row.part_2':
+    "nous vous suggérons de recharger l'application et de profiter de nos nouvelles fonctionnalités!",
+  'components.newversion.new_version_component.link': 'Cliquez ici pour recharger',
+  'components.newversion.new_version_modal.title': 'Nouvelle mise à jour disponible !',
+  'scenes.apps.drive.download_all_button': 'Tout télécharger',
+  'components.inputs.input_with_select.input.placeholder': 'Ma chaîne',
+  'components.inputs.input_with_select.select.placeholder': 'Mon groupe',
+  'components.inputs.input_with_select.button.tooltip': 'Définir un groupe de chaînes',
+  'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel':
+    '$1 a ajouté $2 à la chaîne',
+  'scenes.apps.messages.message.activity_message.a_join_the_channel': '$1 a rejoint la chaîne',
+  'scenes.apps.messages.message.activity_message.a_left_the_channel': '$1 a quitté la chaîne',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_description':
+    '$1 a changer la description',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_name':
+    '$1 a renommé la chaîne en $2',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
+    '$1 a ajouté un nouveau onglet $2 $3',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab':
+    "$1 a supprimé l'onglet $2 $3",
+  'scenes.apps.messages.message.activity_message.a_created_channel_connector':
+    '$1 a ajouté un nouveau connecteur $2',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
+    '$1 a supprimé le connecteur $2',
+  'scenes.client.channelbar.channelmemberslist.tag': "C'est vous",
+  'components.alert.leave_private_channel.title': 'Voulez-vous vraiment quitter la chaîne?',
+  'components.alert.leave_private_channel.description':
+    "Vous ne pourrez plus rejoindre cette chaîne privée à moins que quelqu'un ne vous invite.",
 };

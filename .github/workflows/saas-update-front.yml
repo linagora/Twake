@@ -32,10 +32,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g yarn
       - run: cd twake/frontend/ && yarn install
-      - run: cd twake/frontend/ && cp src/app/environment/environment.ts.dist src/app/environment/environment.ts
       - run: cp twake/frontend/src/app/environment/environment.ts.dist twake/frontend/src/app/environment/environment.ts
       - if: ${{env.FRONTEND_ENV}}
         run: echo ${{ secrets.FRONTEND_ENV }} > twake/frontend/src/app/environment/environment.ts
+      - run: cd twake/frontend/ && yarn test
       - run: cd twake/frontend/ && yarn build
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v1
@@ -64,38 +64,3 @@ jobs:
           workdir: twake
           buildoptions: "-t twaketech/twake-nginx -f docker/twake-nginx/Dockerfile"
           tags: "${{ env.DOCKERTAG }}"
-
-  #TODO tests frontend
-
-  # The nexts parts will work only on main push
-
-  deploy-saas:
-    needs: deploy-nginx
-    runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download frontend-build artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: frontend-build
-
-      - uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "eu-west-3" # optional: defaults to us-east-1
-          SOURCE_DIR: "frontend-build" # optional: defaults to entire repository
-
-      - uses: awact/cloudfront-action@0.1.2
-        env:
-          SOURCE_PATH: "/*"
-          AWS_REGION: "us-east-1"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}

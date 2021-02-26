@@ -36,14 +36,24 @@ class UsersConnections extends BaseController
             "data" => Array()
         );
 
-        $usernameOrMail = $request->request->get("_username", "");
-        $password = $request->request->get("_password", "");
-        $rememberMe = $request->request->get("_remember_me", true);
+        $usernameOrMail = $request->request->get("username", "");
+        $password = $request->request->get("token", $request->request->get("password", ""));
+        $rememberMe = $request->request->get("remember_me", true);
+
+        //Retro compatibility
+        if(!$usernameOrMail && !$password){
+            $usernameOrMail = $request->request->get("_username", "");
+            $password = $request->request->get("_token", $request->request->get("_password", ""));
+            $rememberMe = $request->request->get("_remember_me", true);
+        }
 
         $response = new Response();
-        $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        $logged = $this->getUser() && !is_string($this->getUser());
+        if(!$logged){
+            $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        }
 
-        if ($loginResult) {
+        if ($loginResult || $logged) {
 
             $device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
@@ -51,17 +61,7 @@ class UsersConnections extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
-            $all_cookies = [];
-            foreach ($response->getCookies() as $cookie) {
-                $all_cookies[] = $cookie->asArray();
-            }
-            $data["access_token"] = [
-                "time" => date("U")+0,
-                "expiration" => date("U")+60*60*24*365,
-                "refresh_exiration" => date("U")+60*60*24*365,
-                "value" => json_encode($all_cookies),
-                "type" => "Bearer"
-            ];
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
 
             $data["data"]["status"] = "connected";
 
@@ -94,7 +94,7 @@ class UsersConnections extends BaseController
             $forename = $request->query->get("forename", "");
             $mail = $request->query->get("mail", "");
             $username = $request->query->get("username", "");
-            $url = "https://app.twakeapp.com/?subscribe=1&origin=" . $origin;
+            $url = "https://app.twakeapp.com/login?subscribe=1&origin=" . $origin;
             if ($username && $username != "") {
                 $url = $url . "&username=" . $username;
             }
@@ -134,7 +134,7 @@ class UsersConnections extends BaseController
         );
 
         $ok = $this->getUser() && !is_string($this->getUser());
-        if (!$this->getUser()) {
+        if (!$ok) {
             $data["errors"][] = "disconnected";
         } else {
 
@@ -168,6 +168,9 @@ class UsersConnections extends BaseController
                 $value = $workspace_obj["workspace"]->getAsArray();
                 $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
+                $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
+                $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
+                $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
 
                 $workspaces[] = $value;
 
@@ -190,6 +193,8 @@ class UsersConnections extends BaseController
                     "email" => $mail->getMail()
                 );
             }
+
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
 
             $data["data"]["workspaces"] = $workspaces;
 

@@ -1,0 +1,11 @@
+{
+  "encryption": {
+    "key": "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+    "defaultIv": "twake_constantiv"
+  },
+  "db": {
+    "contactPoints": ["localhost"],
+    "localDataCenter": "datacenter1",
+    "keyspace": "twake"
+  }
+}

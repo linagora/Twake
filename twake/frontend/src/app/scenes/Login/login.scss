@@ -77,22 +77,19 @@
     left: 0;
     bottom: 0;
     right: 0;
-    margin: auto;
-    width: 0px;
-    height: 0px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 100;
+    overflow: auto;
 
     .center_box {
-      transform: translateX(-50%) translateY(-50%);
-      position: relative;
-      height: auto;
-      max-height: 80vh;
-      z-index: 1;
+      width: 325px;
 
-      min-width: 325px;
+      z-index: 1;
       padding: 32px;
       text-align: center;
-
       .title {
         font-size: 24px;
       }
@@ -140,6 +137,7 @@
   .big_emoji {
     img.emojione {
       width: 64px;
+      height: 64px;
     }
   }
 }
@@ -166,5 +164,25 @@
     position: absolute;
     left: 6px;
     top: 6px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .center_box_container {
+    background: #fff;
+    .center_box {
+      box-shadow: none;
+      max-height: 100%;
+      min-width: 100% !important;
+    }
+  }
+}
+
+@media screen and (max-width: 823px) and (orientation: landscape) {
+  .center_box_container {
+    .center_box {
+      min-height: 100%;
+      min-width: 100% !important;
+    }
   }
 }

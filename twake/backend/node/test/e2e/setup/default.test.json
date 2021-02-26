@@ -1,0 +1,24 @@
+{
+  "services": ["auth", "user", "channels", "webserver", "websocket"],
+  "webserver": {
+    "port": 3000,
+    "logger": {
+      "level": "info"
+    }
+  },
+  "websocket": {
+    "path": "/socket",
+    "adapters": {
+      "types": ["redis"],
+      "redis": {
+        "host": "localhost",
+        "port": 6379
+      }
+    }
+  },
+  "auth": {
+    "jwt": {
+      "secret": "supersecret"
+    }
+  }
+}

@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}  , {"group_id":"ASC", "id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
@@ -35,7 +35,6 @@ class Workspace extends SearchableObject
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
      */
     private $uniquename;
-
 
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
@@ -108,6 +107,11 @@ class Workspace extends SearchableObject
     private $total_activity = 0;
 
     /**
+     * @ORM\Column(name="isdefault", type="twake_boolean")
+     */
+    private $default = false;
+
+    /**
      * Workspace constructor.
      * @param $name
      */
@@ -122,7 +126,7 @@ class Workspace extends SearchableObject
         $return = Array(
             "id" => $this->getId() . "",
             "name" => $this->getName(),
-            "group_id" => $this->getGroup()->getId() . "",
+            "group_id" => $this->getGroup() ? $this->getGroup()->getId() . "" : "",
             "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;
@@ -377,6 +381,22 @@ class Workspace extends SearchableObject
     public function setIsNew($isnew)
     {
         $this->isnew = $isnew;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $isnew
+     */
+    public function setIsDefault($default)
+    {
+        $this->default = $default;
     }
 
     /**

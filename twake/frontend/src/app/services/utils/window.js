@@ -1,17 +1,16 @@
 import React from 'react';
-
 import Globals from 'services/Globals.js';
 
-class WindowState {
+export default class WindowState {
   constructor() {
     if (!Globals.isReactNative) {
-      this.original = document.title;
+      WindowState.original = document.title;
     }
-    this.focused = true;
+    WindowState.focused = true;
     Globals.window.windowService = this;
   }
 
-  allGetParameter() {
+  static allGetParameter() {
     if (Globals.isReactNative) {
       return;
     }
@@ -28,7 +27,7 @@ class WindowState {
     return result;
   }
 
-  findGetParameter(parameterName) {
+  static findGetParameter(parameterName) {
     if (Globals.isReactNative) {
       return;
     }
@@ -40,12 +39,17 @@ class WindowState {
       .split('&')
       .forEach(function (item) {
         tmp = item.split('=');
-        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        if (tmp[0] === parameterName) {
+          result = decodeURIComponent(tmp[1]);
+          if (tmp[1] === undefined) {
+            result = true;
+          }
+        }
       });
     return result;
   }
 
-  setNotificationsInTitle(count) {
+  static setNotificationsInTitle(count) {
     if (Globals.isReactNative) {
       return;
     }
@@ -54,7 +58,7 @@ class WindowState {
       (count > 0 ? ' (' + count + ') ' : '') + document.title.replace(/^\([0-9\-]+\) */, '');
   }
 
-  setTitle(text, icon) {
+  static setTitle(text, icon) {
     if (Globals.isReactNative) {
       return;
     }
@@ -82,13 +86,13 @@ class WindowState {
     })();
   }
 
-  setUrl(url, removeParameters) {
+  static setUrl(url, removeParameters) {
     if (Globals.isReactNative) {
       return;
     }
 
     if (!removeParameters) {
-      var parameters = this.allGetParameter();
+      var parameters = WindowState.allGetParameter();
 
       if (Object.keys(parameters || {}).length > 0) {
         url =
@@ -99,11 +103,10 @@ class WindowState {
             .join('&');
       }
     }
-
     Globals.window.history.pushState({ pageTitle: document.title }, '', url);
   }
 
-  nameToUrl(str) {
+  static nameToUrl(str) {
     if (Globals.isReactNative) {
       return str;
     }
@@ -115,7 +118,7 @@ class WindowState {
     return str;
   }
 
-  reduceUUID4(id) {
+  static reduceUUID4(id) {
     if (!id) {
       return undefined;
     }
@@ -124,7 +127,7 @@ class WindowState {
     return id.replace(/-/g, 'g');
   }
 
-  expandUUID4(id) {
+  static expandUUID4(id) {
     if (!id) {
       return undefined;
     }
@@ -134,19 +137,19 @@ class WindowState {
     return id.replace(/g/g, '-') || undefined;
   }
 
-  getInfoFromUrl() {
+  static getInfoFromUrl() {
     if (Globals.isReactNative) {
       return;
     }
 
     var result = {};
-    var url = document.location.pathname;
+    var url = document.location.pathname.replace(/^\/client/, '');
     if (url) {
       if (url.indexOf('/private/') == 0) {
         url = url.split('/').pop();
         var list = url.split('-');
-        result.channel_id = this.expandUUID4(list[1]);
-        result.message = list[2] ? this.expandUUID4(list[2]) : false;
+        result.channel_id = WindowState.expandUUID4(list[1]);
+        result.message = list[2] ? WindowState.expandUUID4(list[2]) : false;
         if (!result.channel_id) {
           result = {};
         }
@@ -155,9 +158,9 @@ class WindowState {
         var list = url.split('-');
         var channel_id = list[2];
         var workspace_id = list[1];
-        result.message = list[3] ? this.expandUUID4(list[3]) : false;
-        result.channel_id = this.expandUUID4(channel_id);
-        result.workspace_id = this.expandUUID4(workspace_id);
+        result.message = list[3] ? WindowState.expandUUID4(list[3]) : false;
+        result.channel_id = WindowState.expandUUID4(channel_id);
+        result.workspace_id = WindowState.expandUUID4(workspace_id);
         if (!result.workspace_id || !result.channel_id) {
           result = {};
         }
@@ -166,6 +169,3 @@ class WindowState {
     return result;
   }
 }
-
-var windowState = new WindowState();
-export default windowState;

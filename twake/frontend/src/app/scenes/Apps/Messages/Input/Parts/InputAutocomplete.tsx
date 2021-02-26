@@ -10,6 +10,7 @@ import User from 'components/User/User.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import { ChannelResource } from 'app/models/Channel';
 
 type Props = {
   onResize?: (evt: any) => void;
@@ -33,8 +34,10 @@ export default (props: Props) => {
   messageEditorService.useListener(useState);
   useEffect(() => {
     focus();
-    const val = messageEditorService.getContent(props.threadId, props.messageId || '');
-    if (val) change(val);
+    (async () => {
+      const val = await messageEditorService.getContent(props.threadId, props.messageId || '');
+      if (val) change(val);
+    })();
   }, []);
   let autocomplete: any = null;
   let disable_enter: boolean = false;
@@ -54,10 +57,10 @@ export default (props: Props) => {
     autocomplete.focus();
   };
 
-  const onKeyUp = (event: any) => {
+  const onKeyUp = async (event: any) => {
     if (
       event.key == 'ArrowUp' &&
-      !messageEditorService.getContent(props.threadId, props.messageId || '')
+      !(await messageEditorService.getContent(props.threadId, props.messageId || ''))
     ) {
       //Edit last message from ourselve
       props.onEditLastMessage && props.onEditLastMessage();
@@ -116,7 +119,7 @@ export default (props: Props) => {
           WorkspacesUser.searchUserInWorkspace(text, cb);
         },
         (text: string, cb: any) => {
-          ChannelsService.search(text, cb);
+          ChannelsService.search(text, (data: ChannelResource[]) => cb(data.map(c => c.data)));
         },
         (text: string, cb: any) => {
           EmojiService.search(text, cb);

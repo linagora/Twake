@@ -1,5 +1,5 @@
-import Observable from 'services/observable.js';
-import Api from 'services/api.js';
+import Observable from 'app/services/Depreciated/observable.js';
+import Api from 'services/Api';
 
 class WorkspacePicker extends Observable {
   constructor() {

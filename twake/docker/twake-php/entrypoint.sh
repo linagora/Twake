@@ -27,6 +27,8 @@ then
   else
     cp /twake-core/app/Configuration/Parameters.php.dist /twake-core/app/Configuration/Parameters.php
   fi
+
+  php composer.phar install
 else
   if test -f "/configuration/Parameters.php"; then
     cp /configuration/Parameters.php /twake-core/app/Configuration/Parameters.php
@@ -39,6 +41,8 @@ fi
 
 mkdir /twake-core/cache
 chmod -R 777 /twake-core/cache &
+
+echo "" >> /etc/cron.d/twake-cron
 
 cron -f &
 docker-php-entrypoint php-fpm

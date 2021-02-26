@@ -9,7 +9,6 @@ use Twake\Core\Services\Queues\Adapters\QueueManager;
 use Twake\Core\Services\Queues\Queues;
 use Twake\Market\Entity\Application;
 use Twake\Workspaces\Entity\Group;
-use Twake\Workspaces\Entity\GroupPeriod;
 
 
 class TestQueue extends ContainerAwareCommand
@@ -38,7 +37,7 @@ class TestQueue extends ContainerAwareCommand
 
         sleep(10);
 
-        error_log(json_encode($queues->consume("test")));
+        error_log(json_encode($queues->oldConsume("test")));
 
     }
 

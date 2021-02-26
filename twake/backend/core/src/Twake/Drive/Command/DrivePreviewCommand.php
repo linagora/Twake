@@ -37,7 +37,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
 
         while (date("U") < $limit) {
 
-            $todos = $this->queues->consume("drive_preview_to_generate", true);
+            $todos = $this->queues->oldConsume("drive_preview_to_generate", true);
             if (count($todos ?: []) == 0) {
                 sleep(1);
             }
@@ -64,7 +64,7 @@ class DrivePreviewCommand extends ContainerAwareCommand
                 $tmppath = $this->checkLocalFileForPreview($file);
 
                 if (!$tmppath || !file_exists($tmppath)) {
-                    //TODO Unimplemented $tmppath = $this->oldFileSystem->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+                    //TODO Unimplemented $tmppath = $this->oldFileSystem->decode($path, $file->getLastVersion($this->em)->getKey(), $file->getLastVersion($this->em)->getMode());
                 }
 
                 $res = $this->storagemanager->getAdapter()->genPreview($file, $tmppath);
@@ -80,7 +80,6 @@ class DrivePreviewCommand extends ContainerAwareCommand
             $this->pusher->push(Array("action" => "update_file", "file" => $file->getAsArray()), "drive/file/" . $file->getWorkspaceId() . "/" . $file->getParentId());
 
         }
-
 
         return true;
     }

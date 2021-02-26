@@ -1,6 +1,9 @@
-import Collections from 'services/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Numbers from 'services/utils/Numbers.js';
-import Observable from 'services/observable';
+import Observable from 'app/services/Depreciated/observable';
+import Notifications from 'services/user/notifications';
+import { ChannelResource } from 'app/models/Channel';
+import Collections from 'app/services/CollectionsReact/Collections';
 
 export type Message = {
   application_id?: string | null;
@@ -27,15 +30,40 @@ export type Message = {
 
 class MessagesListServerUtilsManager {
   services: { [key: string]: MessagesListServerUtils } = {};
+  channelsContextById: { [channelId: string]: { companyId: string; workspaceId: string } } = {};
+
   constructor() {}
-  get(channelId: string, threadId: string, collectionKey: string) {
+  getByChannelId(channelId: string, threadId: string, collectionKey: string) {
+    const key = channelId + '_' + collectionKey;
+    if (this.services[key]) {
+      return this.services[key];
+    }
+  }
+
+  get(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    threadId: string,
+    collectionKey: string,
+  ) {
     const key = channelId + '_' + collectionKey;
     if (this.services[key]) {
       //@ts-ignore
       window.MessagesListServerUtils = this.services[key];
       return this.services[key];
     }
-    this.services[key] = new MessagesListServerUtils(channelId, threadId, collectionKey);
+    this.channelsContextById[channelId] = {
+      companyId: companyId,
+      workspaceId: workspaceId,
+    };
+    this.services[key] = new MessagesListServerUtils(
+      companyId,
+      workspaceId,
+      channelId,
+      threadId,
+      collectionKey,
+    );
     return this.services[key];
   }
 }
@@ -50,6 +78,8 @@ export class MessagesListServerUtils extends Observable {
   numberOfLoadedMessages: number = 20;
 
   //Contructor
+  companyId: string = '';
+  workspaceId: string = '';
   channelId: string = '';
   threadId: string = '';
   collectionKey: string = '';
@@ -65,9 +95,17 @@ export class MessagesListServerUtils extends Observable {
 
   httpLoading: boolean = false;
 
-  constructor(channelId: string, threadId: string, collectionKey: string) {
+  constructor(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    threadId: string,
+    collectionKey: string,
+  ) {
     super();
 
+    this.companyId = companyId;
+    this.workspaceId = workspaceId;
     this.channelId = channelId;
     this.threadId = threadId;
     this.collectionKey = collectionKey;
@@ -79,7 +117,7 @@ export class MessagesListServerUtils extends Observable {
   // Option 1: no parameters or true = init at the end of the conversation
   // Option 2: from parameters = init next to a defined message
   async init(fromMessageId: string | boolean = false) {
-    Collections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
+    DepreciatedCollections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
     if (this.httpLoading) {
       return;
@@ -99,13 +137,15 @@ export class MessagesListServerUtils extends Observable {
         }
         if (this.destroyed) {
           this.destroyed = false;
-          resolve();
+          resolve(null);
         }
-        Collections.get('messages').addSource(
+        DepreciatedCollections.get('messages').addSource(
           {
             http_base_url: 'discussion',
             http_options: {
               channel_id: this.channelId,
+              company_id: this.companyId,
+              workspace_id: this.workspaceId,
               parent_message_id: this.threadId,
               limit: 20,
               offset: false,
@@ -132,17 +172,17 @@ export class MessagesListServerUtils extends Observable {
 
             if (fromMessageId && fromMessageId !== true) {
               this.init(fromMessageId).then(() => {
-                resolve();
+                resolve(null);
               });
             } else {
-              resolve();
+              resolve(null);
             }
           },
         );
       }).then(() => {
         //After an init always update last and first messages
         this.onNewMessageFromWebsocketListener(null);
-        return new Promise(resolve => resolve());
+        return new Promise(resolve => resolve(null));
       });
     }
   }
@@ -172,7 +212,7 @@ export class MessagesListServerUtils extends Observable {
       }
 
       this.httpLoading = true;
-      Collections.get('messages').sourceLoad(
+      DepreciatedCollections.get('messages').sourceLoad(
         this.collectionKey,
         {
           offset: offset,
@@ -206,7 +246,7 @@ export class MessagesListServerUtils extends Observable {
     if (this.threadId) {
       filter.parent_message_id = this.threadId;
     }
-    let messages = Collections.get('messages').findBy(filter);
+    let messages = DepreciatedCollections.get('messages').findBy(filter);
 
     this.detectNewWebsocketsMessages(messages);
 
@@ -237,6 +277,10 @@ export class MessagesListServerUtils extends Observable {
         }
         return true;
       });
+    }
+
+    if (this.hasLastMessage() && document.hasFocus()) {
+      this.readChannelOrThread();
     }
 
     return messages;
@@ -272,7 +316,7 @@ export class MessagesListServerUtils extends Observable {
 
   onNewMessageFromWebsocketListener(_event: any) {
     this.detectNewWebsocketsMessages(
-      Collections.get('messages').findBy({
+      DepreciatedCollections.get('messages').findBy({
         channel_id: this.channelId,
       }),
     );
@@ -324,7 +368,26 @@ export class MessagesListServerUtils extends Observable {
   destroy() {
     this.destroyed = true;
     this.httpLoading = false;
-    Collections.get('messages').removeSource(this.collectionKey);
-    Collections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
+
+    DepreciatedCollections.get('messages').removeSource(this.collectionKey);
+    DepreciatedCollections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
+  }
+
+  private readChannelTimeout: any;
+  private lastReadMessage: string = '';
+  readChannelOrThread() {
+    if (this.readChannelTimeout) {
+      clearTimeout(this.readChannelTimeout);
+    }
+    if (this.lastReadMessage === this.lastLoadedMessageId) {
+      return;
+    }
+    this.readChannelTimeout = setTimeout(() => {
+      const path = `/channels/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/channels/::mine`;
+      const collection = Collections.get(path, ChannelResource);
+      const channel = collection.findOne({ id: this.channelId }, { withoutBackend: true });
+      this.lastReadMessage = this.lastLoadedMessageId;
+      Notifications.read(channel);
+    }, 500);
   }
 }

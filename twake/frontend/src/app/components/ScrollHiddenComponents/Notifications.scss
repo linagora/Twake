@@ -1,0 +1,100 @@
+.scroll-top-component,
+.scroll-bottom-component {
+  background-color: transparent;
+  max-width: 100%;
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 1;
+
+  display: flex;
+  justify-content: center;
+  transition: transform 0.2s;
+
+  &.hide {
+    &.scroll-top-component {
+      transform: translateY(-100%);
+    }
+    &.scroll-bottom-component {
+      transform: translateY(100%);
+    }
+  }
+}
+
+.scroll-top-component {
+  top: 0;
+}
+.scroll-bottom-component {
+  bottom: 0;
+}
+
+.scroll-children-component {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.hidden-notifications-button {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &.ant-btn {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      color: var(--white);
+    }
+    padding: 0px 12px;
+    display: flex;
+    margin: 4px;
+    width: 70%;
+    height: 24px;
+    border-radius: 12px;
+
+    span {
+      flex: 1;
+    }
+  }
+
+  &.primary {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--primary);
+    }
+  }
+
+  &.secondary {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+
+  &.warning {
+    &,
+    &:focus,
+    &:active,
+    &:hover {
+      background-color: var(--warning);
+    }
+  }
+
+  &.important {
+    &,
+    &:focus,
+    &:active {
+      background-color: var(--red);
+    }
+    &:hover {
+      background-color: var(--red);
+    }
+  }
+}

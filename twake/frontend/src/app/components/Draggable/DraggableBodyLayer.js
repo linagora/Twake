@@ -14,6 +14,9 @@ export default class DraggableBodyLayer extends React.Component {
   componentDidMount() {
     DraggableManager.registerContainer(this.draggable_body_dom);
   }
+  componentWillUnmount() {
+    DraggableManager.removeListener(this);
+  }
   render() {
     return <div ref={node => (this.draggable_body_dom = node)} />;
   }

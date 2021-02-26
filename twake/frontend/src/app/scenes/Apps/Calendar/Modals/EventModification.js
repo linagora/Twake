@@ -4,17 +4,17 @@ import Languages from 'services/languages/languages.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Input from 'components/Inputs/Input.js';
 import InputIcon from 'components/Inputs/InputIcon.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';
 import Participants from './Part/Participants.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import DateSelector from './Part/DateSelector.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
 import Button from 'components/Buttons/Button.js';
 import Select from 'components/Select/Select.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Modals.scss';
@@ -75,16 +75,12 @@ export default class EventModification extends Component {
     });
 
     return (
-      <PerfectScrollbar options={{ suppressScrollX: true }}>
+      <PerfectScrollbar options={{ suppressScrollX: true }} style={{ padding: '16px' }}>
         <div className="eventModal event_modification">
           <Input
             autoFocus
             value={event.title || ''}
-            placeholder={Languages.t(
-              'scenes.apps.calendar.modals.event_title_placeholder',
-              [],
-              'Titre',
-            )}
+            placeholder={Languages.t('scenes.apps.calendar.modals.event_title_placeholder')}
             onChange={evt => {
               this.change('title', evt.target.value);
             }}
@@ -119,11 +115,7 @@ export default class EventModification extends Component {
                 icon={(event.location || '').slice(0, 4) == 'http' ? 'link' : 'location-point'}
                 medium
                 value={event.location || ''}
-                placeholder={Languages.t(
-                  'scenes.apps.calendar.modals.event_adresse_placeholder',
-                  [],
-                  'Adresse',
-                )}
+                placeholder={Languages.t('scenes.apps.calendar.modals.event_adresse_placeholder')}
                 onChange={evt => {
                   this.change('location', evt.target.value);
                 }}
@@ -135,7 +127,10 @@ export default class EventModification extends Component {
               onClick={() => {
                 this.change(
                   'location',
-                  'https://connectors.albatros.twakeapp.com/jitsi/call/twake-event-' +
+                  window.location.protocol +
+                    '//' +
+                    window.location.host +
+                    '/bundle/connectors/jitsi/call/twake_event_' +
                     event.front_id,
                 );
               }}
@@ -181,12 +176,17 @@ export default class EventModification extends Component {
           <div className="separator" />
 
           <Participants
+            style={{ margin: 0 }}
             participants={event.participants}
             owner={event.owner}
             onChange={user_id_or_mail => this.change('participants', user_id_or_mail)}
           />
 
           <div className="separator" />
+
+          <div className="bottom-margin">
+            <b>{Languages.t('scenes.apps.tasks.modals.attachments')}</b>
+          </div>
 
           <AttachmentPicker
             attachments={event.attachments}
@@ -196,7 +196,7 @@ export default class EventModification extends Component {
           <div className="separator" />
 
           <div className="bottom-margin">
-            <b>{Languages.t('scenes.apps.calendar.modals.reminders', [], 'Rappels')}</b>
+            <b>{Languages.t('scenes.apps.calendar.modals.reminders')}</b>
           </div>
 
           <ReminderSelector
@@ -213,11 +213,7 @@ export default class EventModification extends Component {
               this.remove();
             }}
           >
-            {Languages.t(
-              'scenes.apps.calendar.modals.remove_event_button',
-              [],
-              "Supprimer l'événement",
-            )}
+            {Languages.t('scenes.apps.calendar.modals.remove_event_button')}
           </Button>
 
           <Button
@@ -227,7 +223,7 @@ export default class EventModification extends Component {
               this.save();
             }}
           >
-            {Languages.t('general.save', [], 'Enregistrer')}
+            {Languages.t('general.save')}
           </Button>
         </div>
       </PerfectScrollbar>

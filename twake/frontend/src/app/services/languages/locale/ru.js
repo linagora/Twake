@@ -334,7 +334,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Время окончания',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Описание',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Место',
-  'scenes.apps.calendar.event_edition.title_participants': 'Участники',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Участники',
   'scenes.apps.calendar.event_edition.title_reminder': 'Напоминание',
   'scenes.apps.calendar.event_edition.title_details': 'Подробности',
   'scenes.apps.calendar.event_edition.participant': 'Участник(и)',
@@ -540,8 +540,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.private_btn': 'Private',
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Удалить',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting': 'Это действие не обратимо',
-  'scenes.apps.messages.left_bar.stream.star': 'Добавить канал в избранное',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Удалить из Избранного',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Добавить канал в избранное',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Удалить из Избранного',
   'scenes.apps.messages.left_bar.stream.mute': 'Отключить канал',
   'scenes.apps.messages.left_bar.stream.unmute': 'Включить канал',
   'scenes.apps.messages.left_bar.stream.notifications': 'Уведмления...',
@@ -1083,7 +1083,7 @@ export default {
     'Ваши пароли не совпадают или слишком малы, пожалуйста, введите пароль, состоящий не менее чем из 8 символов.',
   'scenes.login.home.title': 'Вход в Twake',
   'scenes.login.home.subtitle': 'Рад вас видеть',
-  'scenes.login.home.email': 'Имя пользователя или эл. почта',
+  'scenes.login.home.email': 'Почта',
   'scenes.login.home.unable_to_connect': 'Недействительные идентификационные данные',
   'scenes.login.home.password': 'Пароль',
   'scenes.login.home.login_btn': 'Войти',
@@ -1135,7 +1135,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Возможно, вас пригласили по другому электронному адресу?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'О,... Похоже, вас еще никто не приглашал в компанию.',
+    'О ... Похоже, вас еще не пригласили на рабочее место.',
   'scenes.app.workspaces.welcome_page.ready_to_work': 'Вы готовы работать сейчас.',
   'scenes.app.workspaces.welcome_page.see_you_soon': 'До скорого.!',
   'scenes.app.workspaces.welcome_page.try_again': 'Попробуйте еще раз',
@@ -1230,9 +1230,11 @@ export default {
     'Никаких личных сообщений, приглашайте своих сотрудников!',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Личные сообщения',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'КАНАЛЫ',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'Избранное',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Создать канал',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Название группы',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'Нет каналов в этом рабочем пространстве!',
+  'scenes.app.channelsbar.channelsworkspace.no_channel':
+    'Вы еще не присоединились ни к одному каналу',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Удалить группу',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Добавить сотрудников',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
@@ -1251,6 +1253,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'Вы можете редактировать пользователей, у которых есть доступ к этому личному каналу.',
   'scenes.app.channelsbar.add_channel_button': 'Добавить',
+  'scenes.app.channelsbar.channel_leaving': 'покинуть канал',
   'scenes.app.channelsbar.channel_removing': 'Удалить канал',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'Вы можете импортировать эти каналы в свой бизнес, чтобы остаться организованным, нажав на этот кадр.',
@@ -1646,7 +1649,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Минимальный идентификатор окна :',
   'scenes.apps.messages.messageslist.no_message_alert': 'Не могу найти это сообщение.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Число видимых сообщений:',
-  'scenes.error_on_twake': 'Вы нашли ошибку на платформе Twake !',
+  'scenes.error_on_twake': '“Хьюстон у нас проблема“',
   'scenes.help_us':
     'Однако, если вы хотите помочь нам исправить эту ошибку, отправьте нам сообщение ниже:',
   'scenes.login.loginview.beta_warning':

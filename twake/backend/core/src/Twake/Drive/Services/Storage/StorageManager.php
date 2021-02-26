@@ -7,17 +7,13 @@ use App\App;
 class StorageManager
 {
 
-    private $aws;
-    private $openstack;
+    private $storage;
     private $root;
-    private $adapter;
     private $doctrine;
 
     public function __construct(App $app)
     {
-        $this->aws = $app->getContainer()->getParameter("storage.S3");
-        $this->openstack = $app->getContainer()->getParameter("storage.openstack");
-        $this->local = $app->getContainer()->getParameter("storage.local");
+        $this->storage = $app->getContainer()->getParameter("storage");
         $this->root = $app->getAppRootDir();
         $this->preview = $app->getServices()->get("app.drive.preview");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
@@ -26,49 +22,46 @@ class StorageManager
     /**
      * @return mixed
      */
-    public function getMode()
+    public function getAdapter($provider = false)
     {
-        return $this->mode;
-    }
+        $configuration = $this->getProviderConfiguration($provider);
 
-    /**
-     * @param mixed $mode
-     */
-    public function setMode($mode)
-    {
-        $this->mode = $mode;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdapter()
-    {
-        if (!$this->adapter) {
-            $this->adapter = $this->BindAdapter();
+        if ($configuration["type"] === "S3") {
+            return new Adapter_AWS($configuration, $this->preview, $this->doctrine);
+        } elseif ($configuration["type"] === "openstack") {
+            return new Adapter_OpenStack($configuration, $this->preview, $this->doctrine);
         }
-        return $this->adapter;
+        return new Adapter_Local($configuration, $this->preview, $this->doctrine);
+    }
+
+    public function getProviderConfiguration($provider = false){
+        $defaultProvider = $this->getOneProvider();
+        $provider = $provider === false ? $defaultProvider : $provider;
+        $configuration = "";
+        foreach($this->storage["providers"] as $providerConfiguration){
+            if((!$configuration && $providerConfiguration["label"] == $defaultProvider)
+                || ($providerConfiguration["label"] == $provider)){
+                $configuration = $providerConfiguration;
+            }
+        }
+        return $configuration;
     }
 
     /**
-     * @param mixed $adapter
+     * Choose a provider in the available providers
      */
-    public function setAdapter($adapter)
-    {
-        $this->adapter = $adapter;
-    }
+    public function getOneProvider(){
+        $candidates = [];
 
-    public function BindAdapter()
-    {
-
-        if (isset($this->aws["use"]) && $this->aws["use"]) {
-            return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
-        } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
-            return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
+        foreach($this->storage["providers"] as $provider){
+            if($provider["use"]){
+                $candidates[] = $provider["label"];
+            }
         }
-        return new Adapter_Local($this->local, $this->preview, $this->doctrine);
 
+        shuffle($candidates);
+
+        return $candidates[0] ?: null;
     }
-
 
 }

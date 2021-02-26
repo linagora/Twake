@@ -12,7 +12,6 @@ use Twake\Discussion\Entity\Channel;
 use Twake\Market\Entity\Application;
 use Twake\Market\Entity\LinkAppWorkspace;
 use Twake\Workspaces\Entity\Level;
-use Twake\Workspaces\Entity\PricingPlan;
 
 class GetRoutesCommand extends ContainerAwareCommand
 {

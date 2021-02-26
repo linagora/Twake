@@ -1,22 +1,18 @@
-@import '~components/constants.scss';
+.modal-layout {
+  padding: 0px;
+  border-radius: 3px;
 
-.object_modal {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-
-  & > .title {
-    min-height: 24px;
-    padding-right: 56px;
+  .modal-layout-row {
+    line-height: 24px;
   }
 
-  & > .top_right_buttons {
-    position: absolute;
-    top: 0;
-    right: 0;
-    text-align: right;
+  .modal-layout-header {
+    height: 24px;
+    padding: 0;
+    margin: 16px 16px 20px 16px;
+    background: var(--white);
 
-    .square_button {
+    .square-button {
       vertical-align: top;
       display: inline-block;
       width: 24px;
@@ -24,41 +20,16 @@
       line-height: 24px;
       border-radius: var(--default-border-radius);
       margin-left: 8px;
-      background: $grey_background;
+      background: var(--grey-background);
       cursor: pointer;
 
       &:hover {
-        background: $grey_light;
+        background: var(--grey-light);
       }
     }
   }
 
-  & > .body {
-    margin: 0 -16px;
-    .scrollbar-container,
-    .child-with-margin {
-      padding: 0 16px;
-      max-height: calc(80vh - 200px);
-    }
-  }
-
-  .modal_title {
-    font-size: 24px;
-    color: $black;
-  }
-}
-
-.section_title {
-  color: $grey_dark;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  margin-top: 24px;
-
-  i {
-    margin-right: 4px;
-    &:before {
-      margin-left: 0px;
-    }
+  .modal-layout-footer {
+    padding: 0;
   }
 }

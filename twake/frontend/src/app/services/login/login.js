@@ -1,52 +1,53 @@
-import React from 'react';
-import Observable from 'services/observable.js';
-import Websocket from 'services/websocket.js';
-import Api from 'services/api.js';
+import Logger from 'app/services/Logger';
+import Observable from 'app/services/Depreciated/observable.js';
+import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
 import WindowState from 'services/utils/window.js';
-import Collections from 'services/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
-import Notifications from 'services/user/notifications.js';
+import Notifications from 'services/user/notifications';
 import CurrentUser from 'services/user/current_user.js';
 import ws from 'services/websocket.js';
-
 import Globals from 'services/Globals.js';
+import InitService from 'services/InitService';
+import RouterServices from '../RouterService';
+import JWTStorage from 'services/JWTStorage';
+import AccessRightsService from 'services/AccessRightsService';
+import Environment from 'environment/environment';
 
 class Login extends Observable {
+  // Promise resolved when user is defined
+  userIsSet;
+
   constructor() {
     super();
     this.reset();
     this.setObservableName('login');
+    this.logger = Logger.getLogger('Login');
     this.firstInit = false;
-
     this.currentUserId = null;
-
     this.emailInit = '';
-
     this.server_infos_loaded = false;
     this.server_infos = {
       branding: {},
       ready: {},
+      auth: {},
+      help_link: false,
     };
 
     Globals.window.login = this;
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
-
-    ws.onReconnect('login', () => {
-      if (this.firstInit && this.currentUserId) {
-        this.updateUser();
-      }
-    });
   }
 
   reset() {
     this.state = '';
     this.login_loading = false;
     this.login_error = false;
-    this.currentUserId = null;
+    this.resetCurrentUser();
   }
 
   changeState(state) {
@@ -54,102 +55,115 @@ class Login extends Observable {
     this.notify();
   }
 
-  init(did_wait) {
+  async init(did_wait = false) {
     if (!did_wait) {
       Globals.localStorageGetItem('api_root_url', res => {
         this.init(true);
       });
       return;
     }
-
+    const cancelAutoLogin =
+      !this.firstInit &&
+      RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
     this.reset();
+    await JWTStorage.init();
 
-    Api.get('core/version', res => {
-      if (!res.data) {
-        res.data = {};
-      }
-      this.server_infos = res.data;
-      this.server_infos.branding = this.server_infos.branding ? this.server_infos.branding : {};
-      this.server_infos_loaded = true;
-      Websocket.useOldMode(false);
-      Websocket.setPublicKey(this.server_infos.websocket_public_key);
-
-      if (this.server_infos.ready !== true && this.server_infos.ready !== undefined) {
-        this.state = 'logged_out';
-        this.notify();
-        setTimeout(() => {
-          this.init();
-        }, 1000);
-      } else {
-        var logout =
-          WindowState.findGetParameter('logout') !== undefined
-            ? WindowState.findGetParameter('logout') === '1'
-            : false;
-        if (logout) {
-          this.logout(true);
-          WindowState.setUrl('/', true);
-          return;
-        }
-
-        var subscribe =
-          WindowState.findGetParameter('subscribe') !== undefined
-            ? WindowState.findGetParameter('subscribe') === '1'
-            : false;
-        if (subscribe) {
-          this.firstInit = true;
-          this.setPage('signin');
-          this.emailInit = WindowState.findGetParameter('mail') || '';
-          this.notify();
-          return;
-        }
-
-        var verifymail =
-          WindowState.findGetParameter('verify_mail') !== undefined
-            ? WindowState.findGetParameter('verify_mail') === '1'
-            : false;
-        if (verifymail) {
-          this.firstInit = true;
-          this.setPage('verify_mail');
-          this.notify();
-          return;
-        }
-
-        var external_login_result =
-          WindowState.findGetParameter('external_login') !== undefined
-            ? WindowState.findGetParameter('external_login')
-            : false;
-        try {
-          external_login_result = JSON.parse(external_login_result);
-        } catch (err) {
-          console.error(err);
-          external_login_result = false;
-        }
-        if (external_login_result) {
-          if (external_login_result.token && external_login_result.message == 'success') {
-            //Login with token
-            try {
-              const token = JSON.parse(external_login_result.token);
-              this.login(token.username, token.token, true, true);
-              this.firstInit = true;
-              return;
-            } catch (err) {
-              console.error(err);
-              this.external_login_error = 'Unknown error';
-            }
-          } else {
-            this.external_login_error =
-              (external_login_result.message || {}).error || 'Unknown error';
-          }
-          this.firstInit = true;
-          this.notify();
-        }
-
+    ws.onReconnect('login', () => {
+      if (this.firstInit && this.currentUserId) {
         this.updateUser();
       }
     });
+
+    var subscribe =
+      WindowState.findGetParameter('subscribe') !== undefined
+        ? WindowState.findGetParameter('subscribe') === true
+        : false;
+    if (subscribe) {
+      this.firstInit = true;
+      this.setPage('signin');
+      this.emailInit = WindowState.findGetParameter('mail') || '';
+      this.notify();
+      return;
+    }
+    var verifymail =
+      WindowState.findGetParameter('verifyMail') !== undefined
+        ? WindowState.findGetParameter('verifyMail') === true
+        : false;
+    if (verifymail) {
+      this.firstInit = true;
+      this.setPage('verify_mail');
+      this.notify();
+      return;
+    }
+    var forgotPassword =
+      WindowState.findGetParameter('forgotPassword') !== undefined
+        ? WindowState.findGetParameter('forgotPassword') === true
+        : false;
+    if (forgotPassword) {
+      this.firstInit = true;
+      this.setPage('forgot_password');
+      this.notify();
+      return;
+    }
+    var logoutNow =
+      WindowState.findGetParameter('logout') !== undefined
+        ? WindowState.findGetParameter('logout') === true
+        : false;
+    if (logoutNow) {
+      this.firstInit = true;
+      this.logout();
+    }
+
+    var autologin =
+      WindowState.findGetParameter('auto') !== undefined
+        ? WindowState.findGetParameter('auto') === true
+        : false;
+    if (cancelAutoLogin && !autologin) {
+      this.firstInit = true;
+      this.clearLogin();
+      this.setPage('logged_out');
+      return;
+    }
+
+    var external_login_result =
+      WindowState.findGetParameter('external_login') !== undefined
+        ? WindowState.findGetParameter('external_login')
+        : false;
+    try {
+      external_login_result = JSON.parse(external_login_result);
+    } catch (err) {
+      console.error(err);
+      external_login_result = false;
+    }
+    if (external_login_result) {
+      if (external_login_result.token && external_login_result.message === 'success') {
+        //Login with token
+        try {
+          const token = JSON.parse(external_login_result.token);
+          this.login(token.username, token.token, true, true);
+          this.firstInit = true;
+          return;
+        } catch (err) {
+          console.error(err);
+          this.external_login_error = 'Unknown error';
+        }
+      } else {
+        this.external_login_error = (external_login_result.message || {}).error || 'Unknown error';
+      }
+      this.firstInit = true;
+      this.notify();
+    }
+
+    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+      //Check I am connected with external sign-in provider
+      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+    } else {
+      //We can thrust the JWT
+      this.updateUser();
+    }
   }
 
-  updateUser() {
+  updateUser(callback) {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
       this.state = 'logged_out';
@@ -158,34 +172,60 @@ class Login extends Observable {
     }
 
     var that = this;
-    Api.post('users/current/get', { timezone: new Date().getTimezoneOffset() }, function (res) {
-      that.firstInit = true;
-      if (res.errors.length > 0) {
-        if (
-          (res.errors.indexOf('redirect_to_openid') >= 0 ||
-            ((that.server_infos.auth || {}).openid || {}).use) &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/openid');
-          return;
-        } else if (
-          (res.errors.indexOf('redirect_to_cas') >= 0 ||
-            ((that.server_infos.auth || {}).cas || {}).use) &&
-          !that.external_login_error
-        ) {
-          document.location = Api.route('users/cas/login');
-          return;
+    Api.post(
+      'users/current/get',
+      { timezone: new Date().getTimezoneOffset() },
+      function (res) {
+        that.firstInit = true;
+        if (res.errors.length > 0) {
+          if (
+            (res.errors.indexOf('redirect_to_openid') >= 0 ||
+              ((that.server_infos.auth || {}).openid || {}).use) &&
+            !that.external_login_error
+          ) {
+            document.location = Api.route('users/openid');
+            return;
+          } else if (
+            (res.errors.indexOf('redirect_to_openid') >= 0 ||
+              ((that.server_infos.auth || {}).console || {}).use) &&
+            !that.external_login_error
+          ) {
+            let developerSuffix = '';
+            if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
+              developerSuffix = '?localhost=1&port=' + window.location.port;
+            }
+
+            document.location = Api.route('users/console/openid' + developerSuffix);
+            return;
+          } else if (
+            (res.errors.indexOf('redirect_to_cas') >= 0 ||
+              ((that.server_infos.auth || {}).cas || {}).use) &&
+            !that.external_login_error
+          ) {
+            document.location = Api.route('users/cas/login');
+            return;
+          }
+
+          that.state = 'logged_out';
+          that.notify();
+
+          WindowState.setTitle();
+          RouterServices.history.push(
+            RouterServices.addRedirection(
+              RouterServices.pathnames.LOGIN +
+                '?' +
+                RouterServices.history.location.search.substr(1),
+            ),
+          );
+        } else {
+          that.startApp(res.data);
         }
 
-        that.state = 'logged_out';
-        that.notify();
-
-        WindowState.setTitle();
-        WindowState.setUrl('/', true);
-      } else {
-        that.startApp(res.data);
-      }
-    });
+        callback && callback();
+      },
+      false,
+      { disableJWTAuthentication: true },
+    );
   }
 
   setPage(page) {
@@ -198,10 +238,16 @@ class Login extends Observable {
 
     var url = '';
 
-    if (service == 'openid') {
+    if (service === 'openid') {
       url = Api.route('users/openid');
-    } else if (service == 'cas') {
+    } else if (service === 'cas') {
       url = Api.route('users/cas');
+    } else if (service === 'console') {
+      let developerSuffix = '';
+      if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
+        developerSuffix = '?localhost=1&port=' + window.location.port;
+      }
+      url = Api.route('users/console/openid' + developerSuffix);
     }
 
     Globals.window.location = url;
@@ -214,118 +260,138 @@ class Login extends Observable {
     this.login_error = false;
     this.notify();
 
-    var that = this;
+    const that = this;
 
     Globals.getDevice(device => {
       Api.post(
         'users/login',
         {
-          _username: username,
-          _password: password,
-          _remember_me: rememberme,
+          username: username,
+          password: password,
+          remember_me: rememberme,
           device: device,
         },
         function (res) {
-          if (res.data.status == 'connected') {
+          if (res && res.data && res.data.status === 'connected') {
             if (that.waitForVerificationTimeout) {
               clearTimeout(that.waitForVerificationTimeout);
             }
-
-            WindowState.setUrl('/', true);
             that.login_loading = false;
             that.init();
+            return RouterServices.history.replace(RouterServices.pathnames.LOGIN);
           } else {
             that.login_error = true;
             that.login_loading = false;
             that.notify();
           }
         },
+        false,
+        { disableJWTAuthentication: true },
       );
     });
   }
 
-  logout(no_reload) {
+  clearLogin() {
+    this.currentUserId = null;
+    Globals.localStorageClear();
+    Collections.clear();
+    JWTStorage.clear();
+  }
+
+  logout(no_reload = false) {
     var identity_provider = CurrentUser.get()
       ? (CurrentUser.get() || {}).identity_provider
       : 'internal';
 
-    this.currentUserId = null;
+    this.clearLogin();
 
-    Globals.localStorageClear();
+    document.body.classList.add('fade_out');
 
-    if (Globals.isReactNative) {
-      Globals.clearCookies();
-      Collections.clearAll();
-      this.state = '';
-      this.notify();
-    } else {
-      document.body.classList.add('fade_out');
-    }
-
-    Globals.getDevice(device => {
-      console.log(device);
-      var that = this;
-      Api.post(
-        'users/logout',
-        {
-          device: device,
-        },
-        function () {
-          if (Globals.isReactNative) {
-            that.reset();
-            that.state = 'logged_out';
-            that.notify();
-          } else {
-            if (identity_provider == 'openid') {
-              var location = Api.route('users/openid/logout');
-              Globals.window.location = location;
-            } else if (identity_provider == 'cas') {
-              var location = Api.route('users/cas/logout');
-              Globals.window.location = location;
-            } else {
-              if (!no_reload) {
-                Globals.window.location.reload();
-              }
-            }
-          }
-        },
-      );
+    Api.post('users/logout', {}, function () {
+      if (identity_provider === 'console') {
+        var location = Api.route('users/console/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'openid') {
+        var location = Api.route('users/openid/logout');
+        Globals.window.location = location;
+      } else if (identity_provider === 'cas') {
+        var location = Api.route('users/cas/logout');
+        Globals.window.location = location;
+      } else {
+        if (!no_reload) {
+          Globals.window.location.reload();
+        } else {
+          RouterServices.history.push(
+            RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
+          );
+        }
+      }
     });
   }
 
-  startApp(user) {
-    if (!window.mixpanel) {
-      Globals.window.mixpanel_enabled = false;
-    }
-    if (Globals.window.mixpanel_enabled) {
-      window.mixpanel.identify(user.id);
-      window.mixpanel.people.set({
-        $email: ((user.mails || []).filter(mail => mail.main)[0] || {}).email,
-        $first_name: user.firstname,
-        $last_name: user.lastname,
-        object: JSON.stringify(user),
-      });
-    }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Start App');
-
+  setCurrentUser(user) {
     this.currentUserId = user.id;
+    this.resolveUser(this.currentUserId);
+  }
 
-    Collections.get('users').updateObject(user);
+  resetCurrentUser() {
+    this.currentUserId = null;
+    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
+  }
+
+  startApp(user) {
+    this.logger.info('Starting application for user', user.id);
+    this.setCurrentUser(user);
+    this.configureCollections();
+
+    DepreciatedCollections.get('users').updateObject(user);
+
+    AccessRightsService.resetLevels();
+
     user.workspaces.forEach(workspace => {
       Workspaces.addToUser(workspace);
       Groups.addToUser(workspace.group);
     });
-    if(!Workspaces.currentWorkspaceId){
-      Workspaces.initSelection();
-    }
-    Notifications.start();
-    CurrentUser.start();
-    Languages.setLanguage(user.language);
 
     this.state = 'app';
     this.notify();
+    RouterServices.history.push(RouterServices.generateRouteFromState({}));
+
+    Notifications.start();
+    CurrentUser.start();
+    Languages.setLanguage(user.language);
+  }
+
+  configureCollections() {
+    if (this.currentUserId) {
+      Collections.setOptions({
+        storageKey: this.currentUserId,
+        transport: {
+          socket: {
+            url: Globals.window.websocket_url,
+            authenticate: async () => {
+              let token = JWTStorage.getJWT();
+              if (JWTStorage.isAccessExpired()) {
+                await new Promise(resolve => {
+                  this.updateUser(resolve);
+                });
+                token = JWTStorage.getJWT();
+              }
+              return {
+                token,
+              };
+            },
+          },
+          rest: {
+            url: Globals.window.api_root_url + '/internal/services',
+            headers: {
+              Authorization: JWTStorage.getAutorizationHeader(),
+            },
+          },
+        },
+      });
+      Collections.connect();
+    }
   }
 
   /**
@@ -343,7 +409,6 @@ class Login extends Observable {
     Api.post('users/recover/mail', data, function (res) {
       if (res.data.token) {
         that.recover_token = res.data.token;
-        //that.changeState("RecoverPasswordCode");
 
         that.login_loading = false;
         that.notify();
@@ -368,9 +433,8 @@ class Login extends Observable {
     this.login_loading = true;
     this.notify();
     Api.post('users/recover/verify', data, function (res) {
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         that.recover_code = code;
-        //                that.changeState("RecoverPasswordNewPassword");
 
         that.login_loading = false;
         that.notify();
@@ -380,7 +444,6 @@ class Login extends Observable {
         that.login_loading = false;
 
         that.notify();
-        //appel de function error
       }
     });
   }
@@ -389,7 +452,7 @@ class Login extends Observable {
     this.login_loading = true;
     this.notify();
 
-    if (password != password2 || password.length < 8) {
+    if (password !== password2 || password.length < 8) {
       this.error_recover_badpasswords = true;
       this.login_loading = false;
       this.notify();
@@ -406,7 +469,7 @@ class Login extends Observable {
     that.error_recover_unknown = false;
     this.notify();
     Api.post('users/recover/password', data, function (res) {
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         funct(th);
 
         that.login_loading = false;
@@ -476,7 +539,7 @@ class Login extends Observable {
           device: device,
         },
         function (res) {
-          if (res.data.status == 'success') {
+          if (res.data.status === 'success') {
             success();
           } else {
             fail();
@@ -499,14 +562,13 @@ class Login extends Observable {
     that.notify();
     Api.post('users/subscribe/availability', data, function (res) {
       that.login_loading = false;
-      if (res.data.status == 'success') {
+      if (res.data.status === 'success') {
         callback(th, 0);
       } else {
-        //console.log(res.errors);
-        if (res.errors == 'mailalreadytaken') {
+        if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
           callback(th, 1);
           that.error_subscribe_mailalreadyused = true;
-        } else if (res.errors == 'usernamealreadytaken') {
+        } else if (res.errors.length === 1 && res.errors[0] === 'usernamealreadytaken') {
           callback(th, 2);
           that.error_subscribe_username = true;
         } else {
@@ -518,6 +580,7 @@ class Login extends Observable {
       that.notify();
     });
   }
+
   addNewMail(mail, cb, thot) {
     var that = this;
     that.loading = true;
@@ -537,28 +600,31 @@ class Login extends Observable {
       }
     });
   }
+
   verifySecondMail(mail, code, cb, thot) {
     var that = this;
     that.loading = true;
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-    Api.post('users/account/addmailverify', { code: code, token: this.addmail_token }, function (
-      res,
-    ) {
-      that.loading = false;
-      if (res.errors.length > 0) {
-        that.error_code = true;
-        that.notify();
-      } else {
-        var user = Collections.get('users').find(that.currentUserId);
-        user.mails.push({ email: mail, main: false, id: res.data.idMail });
-        Collections.get('users').updateObject(user);
-        that.error_code = false;
-        cb(thot);
-        that.notify();
-      }
-    });
+    Api.post(
+      'users/account/addmailverify',
+      { code: code, token: this.addmail_token },
+      function (res) {
+        that.loading = false;
+        if (res.errors.length > 0) {
+          that.error_code = true;
+          that.notify();
+        } else {
+          var user = DepreciatedCollections.get('users').find(that.currentUserId);
+          user.mails.push({ email: mail, main: false, id: res.data.idMail });
+          DepreciatedCollections.get('users').updateObject(user);
+          that.error_code = false;
+          cb(thot);
+          that.notify();
+        }
+      },
+    );
   }
 }
 

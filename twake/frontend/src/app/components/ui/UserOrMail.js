@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './elements.scss';
+import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'services/user/user.js';
-import User from 'components/User/User.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
+const { Text } = Typography;
 export default class UserOrMail extends React.Component {
   constructor(props) {
     super();
@@ -34,12 +35,13 @@ export default class UserOrMail extends React.Component {
       } else {
         Collections.get('users').listenOnly(this, [item.front_id]);
         text = [
-          <div className="icon">
-            <User user={item} small />
-          </div>,
-          <div className="text">
-            <b>{UsersService.getFullName(item)}</b> @{item.username}
-          </div>,
+          <Col className="icon">
+            <Avatar size={20} src={UsersService.getThumbnail(item)} />
+          </Col>,
+          <Col className="text" flex="auto">
+            <Text strong>{UsersService.getFullName(item)}</Text>
+            <Text>{item.email ? ', ' + item.email : ''}</Text>
+          </Col>,
         ];
       }
     }

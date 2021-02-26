@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import moment from 'moment';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import EventModification from './EventModification.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Participants from './Part/Participants.js';
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import DateTimeUtils from 'services/utils/datetime.js';
 import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
@@ -92,7 +92,7 @@ export default class EventDetails extends Component {
     var readonly = CalendarService.getIsReadonly(this.props.event);
 
     return (
-      <div className="eventModal event_details">
+      <div className="eventModal event_details" style={{ padding: '16px' }}>
         <div className="title">
           {event.title || Languages.t('scenes.apps.calendar.modals.untitled', [], 'Sans titre')}
         </div>
@@ -198,7 +198,7 @@ export default class EventDetails extends Component {
                   'Participants',
                 ),
                 render: (
-                  <div>
+                  <div className="small-x-margin small-bottom-margin">
                     <Participants readOnly participants={event.participants} owner={event.owner} />
                   </div>
                 ),

@@ -25,8 +25,6 @@ class Workspace extends BaseController
 
         $workspaceId = $request->request->get("workspaceId");
 
-        $this->get("app.channels.notifications")->checkReadWorkspace($workspaceId, $this->getUser());
-
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if (!$ws) {
             $response["errors"][] = "notallowed";
@@ -129,9 +127,7 @@ class Workspace extends BaseController
 
             $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
 
-            $plan = $this->get("app.pricing_plan")->getMinimalPricing();
-            $planId = $plan->getId();
-            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
+            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, null, $group_creation_data);
             $groupId = $group->getId();
 
             $this->get("administration.counter")->incrementCounter("total_groups", 1);
@@ -150,12 +146,7 @@ class Workspace extends BaseController
             $channels = $request->request->get("channels", false);
             if ($channels && is_array($channels)) {
                 foreach ($channels as $channel) {
-                    $this->get("app.channels.channels_system")->save(Array(
-                        "original_workspace" => $ws_id,
-                        "original_group" => $ws->getGroup()->getId(),
-                        "name" => $channel["name"],
-                        "icon" => $channel["icon"]
-                    ), Array("workspace_id" => $ws_id), $this->getUser());
+                    error_log("TODO automatic channel creation");
                 }
             }
 

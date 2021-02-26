@@ -7,30 +7,31 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Stream;
 use OpenStack\Common\Transport\Utils as TransportUtils;
-use OpenStack\Identity\v2\Service;
+use OpenStack\Identity\v3\Service;
 use OpenStack\OpenStack;
 use App\App;
 
 class OpenStack_Uploader extends Uploader
 {
 
-
     public function __construct(App $app)
     {
-
-        $openstack_config = $app->getContainer()->getParameter("storage.openstack");
-
         parent::__construct($app);
+    }
 
-        $this->openstack_buckets = $openstack_config["buckets"];
-        $this->openstack_buckets_prefix = $openstack_config["buckets_prefix"];
-        $this->openstack_credentials_key = $openstack_config["user"]["id"];
-        $this->openstack_credentials_secret = $openstack_config["user"]["password"];
-        $this->openstack_project_id = $openstack_config["project_id"];
-        $this->openstack_auth_url = $openstack_config["auth_url"];
+    public function configure($openstack){
+        
+        $this->openstack_buckets = $openstack["buckets"];
+        $this->openstack_buckets_prefix = $openstack["buckets_prefix"];
+        $this->openstack_credentials_key = $openstack["user"]["id"];
+        $this->openstack_credentials_secret = $openstack["user"]["password"];
+        $this->openstack_domain_name = $openstack["user"]["domain_name"];
+        $this->openstack_project_id = $openstack["project_id"];
+        $this->openstack_auth_url = $openstack["auth_url"];
+        $this->disable_encryption = $openstack["disable_encryption"];
 
         $httpClient = new Client([
-            'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url),
+            'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url ? $this->openstack_auth_url : ""),
             'handler' => HandlerStack::create(),
         ]);
 
@@ -54,11 +55,19 @@ class OpenStack_Uploader extends Uploader
         $this->openstack = new OpenStack([
             'authUrl' => $this->openstack_auth_url,
             'region' => $this->openstack_region_id,
-            'tenantId' => $this->openstack_project_id,
-            'username' => $this->openstack_credentials_key,
-            'password' => $this->openstack_credentials_secret,
+            'user' => [
+                'name' => $this->openstack_credentials_key,
+                'password' => $this->openstack_credentials_secret,
+                'domain'   => [ 'id' => $this->openstack_domain_name ]
+            ],
+            'scope'   => [
+                'project' => [
+                    'id' => $this->openstack_project_id
+                ]
+            ],
             'identityService' => Service::factory($httpClient)
         ]);
+
 
     }
 
@@ -91,7 +100,7 @@ class OpenStack_Uploader extends Uploader
                     "filesize" => $file_size
                 );
 
-            } catch (S3Exception $e) {
+            } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
 
@@ -113,7 +122,7 @@ class OpenStack_Uploader extends Uploader
                 ->getObject("public/uploads/" . $file->getType() . "/" . $file->getName())
                 ->delete();
 
-        } catch (S3Exception $e) {
+        } catch (\Exception $e) {
             $error = $e->getMessage();
         }
 

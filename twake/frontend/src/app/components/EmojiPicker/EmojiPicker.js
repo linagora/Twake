@@ -4,6 +4,15 @@ import './EmojiPicker.scss';
 import Languages from 'services/languages/languages.js';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart';
+import Globals from 'services/Globals.js';
+
+Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {
+  sheetSize = 20;
+  return (
+    (Globals.window.front_root_url || '') +
+    '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(sheetSize, '.png')
+  );
+};
 export default class EmojiPicker extends React.Component {
   /*
         props = {

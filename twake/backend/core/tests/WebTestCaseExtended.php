@@ -151,8 +151,6 @@ class WebTestCaseExtended extends \PHPUnit\Framework\TestCase
     {
         $group = new Group($name);
         $this->get("app.twake_doctrine")->persist($group);
-        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
-        $group->setPricingPlan($plan);
         $this->get("app.twake_doctrine")->flush();
         return $group;
     }

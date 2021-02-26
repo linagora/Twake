@@ -321,7 +321,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'End time',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Description',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Location',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participants',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Confidentiality',
   'scenes.apps.calendar.event_edition.title_reminder': 'Reminder',
   'scenes.apps.calendar.event_edition.title_details': 'Details',
   'scenes.apps.calendar.event_edition.participant': 'Participant(s)',
@@ -522,8 +522,8 @@ export default {
   'scenes.apps.messages.left_bar.stream_modal.remove': 'Remove',
   'scenes.apps.messages.left_bar.stream_modal.message_before_deleting':
     'This action is not reversible',
-  'scenes.apps.messages.left_bar.stream.star': 'Star channel',
-  'scenes.apps.messages.left_bar.stream.unstar': 'Unstar channel',
+  'scenes.apps.messages.left_bar.stream.add_to_favorites': 'Add to favorites',
+  'scenes.apps.messages.left_bar.stream.remove_from_favorites': 'Remove from favorites',
   'scenes.apps.messages.left_bar.stream.mute': 'Mute channel',
   'scenes.apps.messages.left_bar.stream.unmute': 'Unmute channel',
   'scenes.apps.messages.left_bar.stream.notifications': 'Notifications...',
@@ -1041,7 +1041,7 @@ export default {
     "Your passwords don't match or they are too short. Please type a password with at least 8 characters.",
   'scenes.login.home.title': 'Sign in to Twake',
   'scenes.login.home.subtitle': 'Happy to see you',
-  'scenes.login.home.email': 'Username or e-mail',
+  'scenes.login.home.email': 'E-mail',
   'scenes.login.home.unable_to_connect': 'Invalid credentials',
   'scenes.login.home.password': 'Password',
   'scenes.login.home.login_btn': 'Log in',
@@ -1091,7 +1091,7 @@ export default {
   'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails':
     'Were you invited using another email address?',
   'scenes.app.workspaces.welcome_page.no_company_subtitle':
-    'Oh, well... It looks like no one has invited you to a company yet.',
+    'Oh, well... It looks like no one has invited you to a workspace yet.',
   'scenes.app.workspaces.welcome_page.ready_to_work': "You're ready to work now.",
   'scenes.app.workspaces.welcome_page.see_you_soon': 'See you soon!',
   'scenes.app.workspaces.welcome_page.try_again': 'Try again',
@@ -1185,9 +1185,10 @@ export default {
     'No private messages. Invite your collaborators!',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Direct messages',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'CHANNELS',
+  'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORITES',
   'scenes.app.channelsbar.channelsworkspace.create_channel': 'Create a channel',
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name of the group',
-  'scenes.app.channelsbar.channelsworkspace.no_channel': 'No channels in this worspace!',
+  'scenes.app.channelsbar.channelsworkspace.no_channel': 'You did not join any channel yet',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Remove the group',
   'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Add collaborators',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
@@ -1205,6 +1206,7 @@ export default {
   'scenes.app.channelsbar.user_management_private_channel':
     'You can edit the users who have access to this private channel.',
   'scenes.app.channelsbar.add_channel_button': 'Add',
+  'scenes.app.channelsbar.channel_leaving': 'Leave channel',
   'scenes.app.channelsbar.channel_removing': 'Delete channel',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
     'You can import these channels into your business to stay organized by clicking on this frame.',
@@ -1214,8 +1216,8 @@ export default {
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Install the desktop application',
   'scenes.app.channelsbar.invitation_collaboraors_tutorial':
     'Invite your collaborators into your workspace.',
-  'scenes.app.channelsbar.public_channel_label': 'Public channel',
-  'scenes.app.channelsbar.private_channel_label': 'Private channel',
+  'scenes.app.channelsbar.public_channel_label': 'Public',
+  'scenes.app.channelsbar.private_channel_label': 'Private',
   'scenes.app.channelsbar.private_channel_message':
     'This is a public channel. The whole workspace will be invited!',
   'scenes.app.channelsbar.save_channel_button': 'Save',
@@ -1423,7 +1425,8 @@ export default {
     'Display preferences',
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
     'An admin can configure the workspace (name, apps, members of the workspace).',
-  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text': '',
+  'scenes.app.popup.workspaceparameter.pages.edit_level_user_text':
+    'A company manager user can access the full administration of the company (payments, company members, company identity).',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Extern',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Guest user',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': 'Force throughout the company',
@@ -1595,7 +1598,7 @@ export default {
   'scenes.apps.messages.messageslist.min_window_id': 'Minimum window identifier:',
   'scenes.apps.messages.messageslist.no_message_alert': 'Can not find this message.',
   'scenes.apps.messages.messageslist.number_visibled_messages': 'Number of visible messages:',
-  'scenes.error_on_twake': 'You found an error on the Twake platform!',
+  'scenes.error_on_twake': '“Houston we have a problem“',
   'scenes.help_us':
     'However, if you would like to help us fix this error, send us a message below: ',
   'scenes.login.loginview.beta_warning':
@@ -1605,7 +1608,7 @@ export default {
   'scenes.login.verifymail.signin_button': 'Log in',
   'scenes.login.verifymail.success': 'Your e-mail was successfully verified!',
   'scenes.login.verifymail.verification_waiting': 'Waiting for verification...',
-  'scenes.no_panic': "Don't panic! Simply reload this page to find Twake.",
+  'scenes.no_panic': "Don't panic! Just reload this page to fix Twake.",
   'services.apps.calendar.deadline_icon': 'Deadline',
   'services.apps.calendar.event_icon': 'Event',
   'services.apps.calendar.move_icon': 'Move',
@@ -1763,6 +1766,7 @@ export default {
   'components.searchpopup.all': 'Default',
   'components.workspace.calendar.invalid': 'Invalid',
   'components.searchpopup.enter_text': 'Enter some text to search Twake.',
+  'components.searchpopup.enter_member_name': 'Enter the username of the contact you want to add.',
   'components.searchpopup.loading': 'Loading more results',
   'components.searchpopup.filter_ws': 'Filter workspaces',
   'components.searchpopup.tags': 'Tags',
@@ -1774,7 +1778,7 @@ export default {
   'components.searchpopup.mentions': 'Mentions',
   'components.searchpopup.only_pinned': 'Only pinned messages',
   'components.alert.confirm': 'Confirm your action',
-  'components.alert.confirm_click': 'Confirm your action by clicking on Confirm.',
+  'components.alert.confirm_click': 'Confirm your action by clicking on OK.',
   'components.searchpopup.tasks': 'Tasks',
   'scenes.app.mainview.advanced_search_placeholder': 'Advanced search',
   'components.searchpopup.hide_filters': 'hide filters',
@@ -1832,4 +1836,68 @@ export default {
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
   'scenes.app.popup.adduser.add_another_mail': 'Add another email',
   'scenes.app.popup.adduser.placeholder_input': 'Collaborator email',
+  'scenes.client.channelbar.channeltemplateeditor.checkbox':
+    'Automatically invite all workspace members to this channel',
+  'scenes.client.channelbar.channelmemberseditor.title': 'Add members in $1',
+  'scenes.client.channelbar.channelmemberslist.title': 'Members in $1',
+  'scenes.client.channelbar.channelmemberslist.loader': 'Load more',
+  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Search users',
+  'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',
+  'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Send a direct message',
+  'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
+  'components.leftbar.channel.workspaceschannels.menu.option_1': 'Create a channel',
+  'components.leftbar.channel.workspaceschannels.menu.option_2': 'Join a channel',
+  'components.channelworkspacelist.title': 'Channels',
+  'components.channelworkspacelist.button_join': 'Join',
+  'components.channelworkspacelist.button_joined': 'Joined',
+  'scenes.client.channelbar.workspacechannellist.autocomplete': 'Search channel',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Create a new tab',
+  'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Rename $1',
+  'components.connectorslistmanager.add_connectors': 'Add connectors',
+  'components.notifications.hidden_notifications_button.children': 'New messages',
+  'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
+  'scenes.client.channelbar.channelmemberslist.no_members':
+    'There is no members in this channel, you can invite them by clicking on Add users.',
+  'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Hide discussion',
+  'scenes.app.channelsbar.hide_discussion_leaving.title': 'Hide discussion?',
+  'scenes.app.channelsbar.hide_discussion_leaving.content':
+    'You can hide this discussion. Your messages are not lost and we can reopen it again when needed.',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 user(s) will be added',
+  'scenes.app.popup.adduserfromtwakeconsole.description':
+    'Add users to your company before inviting them to this workspace.',
+  'general.app.popup.adduserfromtwakeconsole.description_link': 'Go to Twake Console',
+  'components.newversion.new_version_component.row.part_1':
+    'You are running an outdated Twake version',
+  'components.newversion.new_version_component.row.part_2':
+    'we suggest you to reload the app and enjoy our new features!',
+  'components.newversion.new_version_component.link': 'Click here to reload',
+  'components.newversion.new_version_modal.title': 'New update available !',
+  'scenes.apps.drive.download_all_button': 'Download all',
+  'components.inputs.input_with_select.input.placeholder': 'Channel name',
+  'components.inputs.input_with_select.select.placeholder': 'Section name',
+  'components.inputs.input_with_select.select.no_sections':
+    'Start writing the name of your first channel section.',
+  'components.inputs.input_with_select.button.tooltip': 'Set a channel section',
+  'scenes.apps.messages.message.activity_message.a_added_b_to_the_channel':
+    '$1 added $2 to the channel',
+  'scenes.apps.messages.message.activity_message.a_join_the_channel': '$1 joined the channel',
+  'scenes.apps.messages.message.activity_message.a_left_the_channel': '$1 left the channel',
+  'scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel':
+    '$1 removed $2 from the channel',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_description':
+    '$1 changed the description',
+  'scenes.apps.messages.message.activity_message.a_updated_channel_name':
+    '$1 renamed the channel to $2',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab':
+    '$1 added $2 to the channel',
+  'scenes.apps.messages.message.activity_message.a_created_channel_tab': '$1 added a new $2 tab $3',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_tab': '$1 removed $2 tab $3',
+  'scenes.apps.messages.message.activity_message.a_created_channel_connector':
+    '$1 added a new connector $2',
+  'scenes.apps.messages.message.activity_message.a_deleted_channel_connector':
+    '$1 removed a connector $2',
+  'scenes.client.channelbar.channelmemberslist.tag': "It's you",
+  'components.alert.leave_private_channel.title': 'Are you sure you want to leave the channel ?',
+  'components.alert.leave_private_channel.description':
+    'You will not be able to join this private channel again unless someone invite you.',
 };

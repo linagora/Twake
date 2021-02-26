@@ -1,0 +1,75 @@
+@import '~components/constants.scss';
+
+.tutorial {
+  z-index: 5;
+  box-sizing: border-box;
+  width: 300px;
+  height: auto;
+  position: absolute;
+  left: 16px;
+  bottom: 4px;
+  background: $secondary;
+  color: #fff;
+  border-radius: var(--default-border-radius);
+  padding: 16px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 0 20px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+
+  .close {
+    background: $grey_dark;
+    color: #fff;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    padding: 2px 1px;
+    box-sizing: border-box;
+    border-radius: var(--default-border-radius-large);
+    line-height: 10px;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .body {
+    font-size: 12px;
+    font-weight: 500;
+    color: $white;
+
+    .block {
+      margin-top: 16px;
+      display: flex;
+      .icon {
+        display: flex;
+        align-items: center;
+        padding-right: 8px;
+        .emojione {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      &.done .text {
+        text-decoration: line-through;
+      }
+      &.hoverable:not(.done) {
+        cursor: pointer;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+.loading_render {
+  .tutorial {
+    display: none;
+  }
+}

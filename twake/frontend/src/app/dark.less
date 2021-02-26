@@ -1,0 +1,239 @@
+/*! ==UserStyle==
+ * @name        Twake Dark Mode
+ * @namespace   github.com/chamerling/userstyles
+ * @version     0.0.6
+ * @homepageURL https://github.com/chamerling/userstyles/
+ * @updateURL   https://github.com/chamerling/userstyles/raw/main/themes/web.twake.app/dark.user.css
+ * @license     MIT
+ * @author      chamerling
+ * ==/UserStyle== */
+
+@black: #eceff4;
+@error: #ff5154;
+@primary: #9590e9;
+@primary-hover: #726eb6;
+@success: #18af2c;
+@warning: #faad14;
+@white: #fff;
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Use Nord Theme, https://www.nordtheme.com/docs/colors-and-palettes */
+    --nord0: #2e3440;
+    --nord1: #3b4252;
+    --nord2: #434c5e;
+    --nord3: #4c566a;
+    --nord4: #d8dee9;
+    --nord5: #e5e9f0;
+    --nord6: #eceff4;
+    --nord9: @primary;
+    --nord10: @primary-hover;
+    --nord11: #bf616a;
+    --nord12: #d08770;
+    --nord13: #ebcb8b;
+    --nord14: #a3be8c;
+    --nord15: #b48ead;
+
+    /* Twake variables */
+    --primary: @primary;
+    --primary-hover: var(--nord10);
+    --secondary: var(--nord0);
+    --primary-background: var(--nord0);
+    --black: var(--nord6);
+    --black-alpha-1: #ebeef588;
+    --black-alpha-2: #ebeef555;
+    --grey-light: #464646;
+    --grey-dark: #92929c;
+    --grey-background: var(--nord0);
+    --white: var(--nord1);
+    --pale-grey: #5d58d7;
+    --default-border-radius: 3px;
+    --default-border-radius-large: 5px;
+    --green: var(--nord14);
+    --red: var(--nord11);
+
+    /* Extension variables */
+    --avatar-size: 40px;
+    --avatar-size-small: 25px;
+    --avatar-size-big: 60px;
+  }
+
+  body {
+    color: var(--nord6);
+  }
+
+  .workspace .image {
+    background-color: var(--nord10);
+  }
+
+  .workspace .name {
+    color: var(--nord4);
+  }
+
+  .workspace.is_selected .image,
+  .workspace:hover .image {
+    background-color: var(--nord9);
+  }
+
+  .workspace.is_selected .name,
+  .workspace:hover .name {
+    color: var(--nord5);
+  }
+
+  .dragged .thread-section.gradient,
+  .thread-container .thread-section.gradient {
+    background: linear-gradient(180deg, var(--nord1) 40%, #0000);
+  }
+
+  .messages-view .messages-scroller-parent.scrolled-up:after {
+    box-shadow: none;
+  }
+
+  .message-input {
+    background: var(--nord1);
+  }
+
+  .input {
+    color: var(--grey-background);
+  }
+
+  .channel_category {
+    color: var(--black);
+  }
+
+  .channel:hover {
+    background: var(--nord3);
+  }
+
+  .user_head.border {
+    border: none;
+  }
+
+  .new-thread-button .message {
+    color: var(--black);
+  }
+
+  .dragged .thread.with-block,
+  .thread-container .thread.with-block {
+    border: 1px solid #343434;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  /* This fixes the border radius from the element above*/
+  .dragged .thread-section .message,
+  .thread-container .thread-section .message {
+    background: none;
+  }
+
+  .file {
+    background: var(--primary-background);
+  }
+
+  .message .sender-space {
+    width: var(--avatar-size);
+  }
+
+  .message .sender-space .app_icon,
+  .message .sender-space .sender-head {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+  }
+
+  .thread-container .thread-section.small-section .message .sender-space .sender-head {
+    width: var(--avatar-size-small);
+    height: var(--avatar-size-small);
+  }
+
+  .current-company-header .current-company .user-info {
+    color: var(--black);
+  }
+
+  .current-company-header .current-company .name .text {
+    color: var(--black);
+  }
+
+  .channels_view {
+    background: var(--nord0);
+  }
+
+  .markdown .inline-code {
+    background: var(--nord0);
+  }
+
+  .main_view .app_views .app_side .side_header {
+    background: var(--nord1);
+    color: var(--nord4);
+  }
+
+  .main_view .app_views .app_side .side_header .close {
+    color: var(--nord4);
+  }
+
+  .group_switch .company_name {
+    color: var(--nord4);
+  }
+
+  .mediumPopupComponent .componentContainer .component {
+    background: var(--nord3);
+  }
+
+  .bottom_input > .new-thread .message .message-input {
+    background: var(--nord0);
+  }
+
+  .bottom_input > .new-thread .thread {
+    background: var(--nord0);
+  }
+
+  .message-input .autocomplete div.input,
+  .message-input .autocomplete div.input textarea.input {
+    background: var(--nord6);
+  }
+
+  .markdown .user_twacode.highlighted,
+  .markdown .user_twacode.with_user.highlighted {
+    background: var(--nord9);
+  }
+
+  .markdown .user_twacode.with_user:hover {
+    color: var(--nord6);
+  }
+
+  .channel .group_count {
+    background: var(--nord10);
+  }
+
+  .channel.selected:hover {
+    background: var(--nord9);
+  }
+  .channel.selected {
+    color: var(--nord6);
+  }
+
+  .main_view .channel_header .title .user_image {
+    border: none;
+  }
+
+  .workspace.is_selected:after {
+    background: var(--nord6);
+  }
+
+  .loginPage .center_box_container .center_box {
+    background: var(--nord2);
+  }
+
+  .popupComponent {
+    background: var(--nord2);
+  }
+
+  .user-card .content-popup .avatar {
+    width: unset;
+  }
+
+  .user-card .content-popup .avatar .user_head {
+    border-radius: 0;
+    width: var(--avatar-size-big);
+    height: var(--avatar-size-big);
+  }
+}

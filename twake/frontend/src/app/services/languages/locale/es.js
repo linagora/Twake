@@ -189,7 +189,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': 'Hora de finalización',
   'scenes.apps.calendar.event_edition.placeholder_description': 'Descripción',
   'scenes.apps.calendar.event_edition.placeholder_location': 'Ubicación',
-  'scenes.apps.calendar.event_edition.title_participants': 'Participantes',
+  'scenes.apps.calendar.event_edition.title_confidentiality': 'Participantes',
   'scenes.apps.calendar.event_edition.title_reminder': 'Recordatorio',
   'scenes.apps.calendar.event_edition.title_details': 'Detalles',
   //--EventView
@@ -866,7 +866,7 @@ export default {
   //-End ForgotPassword
   //-Home
   'scenes.login.home.title': 'Iniciar sesión en Twake',
-  'scenes.login.home.email': 'Nombre de usuario o correo electrónico',
+  'scenes.login.home.email': 'Correo electrónico',
   'scenes.login.home.unable_to_connect': 'Credenciales no válidas',
   'scenes.login.home.password': 'Contraseña',
   'scenes.login.home.login_btn': 'Iniciar sesión',

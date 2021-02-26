@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';
 import Input from 'components/Inputs/Input.js';
 import './ConnectorsListManager.scss';
 import Languages from 'services/languages/languages.js';
+import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
 export default class ConnectorsListManager extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ export default class ConnectorsListManager extends React.Component {
   componentDidMount() {
     this.filter('');
   }
+
   renderLine(item, added) {
     var id = item.id || item;
 
@@ -39,8 +41,8 @@ export default class ConnectorsListManager extends React.Component {
     var button = '';
 
     text = (
-      <div className="text">
-        <div className="menu-app-icon" style={{ backgroundImage: 'url(' + item.icon_url + ')' }} />
+      <div className="text" style={{ display: 'flex', alignItems: 'center' }}>
+        {WorkspacesApps.getAppIconComponent(item)}
         {item.name}
       </div>
     );
@@ -107,9 +109,10 @@ export default class ConnectorsListManager extends React.Component {
         {this.state.connectors_ids.map(id => {
           return this.renderLine(id, true);
         })}
-
         <div className="menu-title no-separator">
-          <div className="text">Ajouter des connecteurs</div>
+          <div className="text">
+            {Languages.t('components.connectorslistmanager.add_connectors')}
+          </div>
         </div>
 
         <div className="menu-buttons" style={{ paddingTop: 2, paddingBottom: 2 }}>

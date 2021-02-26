@@ -1,5 +1,5 @@
-import Observable from 'services/observable.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import Observable from 'app/services/Depreciated/observable.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 
@@ -8,20 +8,19 @@ import Globals from 'services/Globals.js';
 class PopupService extends Observable {
   constructor() {
     super();
-    console.log('PopupService constructor !');
     this.setObservableName('popupService');
     Globals.window.popupService = this;
     this.component = []; // element as {component,canClose}
     this.popupStates = {};
   }
-  open(component, canClose, clearState) {
+  open(component, canClose, key = 'no-key') {
+    if (this.component[this.component.length - 1]?.key === key) {
+      return;
+    }
     WindowService.setTitle();
     MenusManager.closeMenu();
-    if (clearState) {
-      delete this.popupStates[clearState];
-    }
-    this.component.push({ component: component, canClose: canClose !== false });
-    console.log('did open and will notify');
+
+    this.component.push({ component: component, key: key, canClose: canClose !== false });
     this.notify();
   }
   isOpen() {
@@ -31,9 +30,6 @@ class PopupService extends Observable {
     if (this.isOpen()) {
       this.component.splice(-1, 1);
       this.notify();
-    }
-    if (this.component.length == 0) {
-      ChannelsService.updateTitle();
     }
   }
   closeAll() {

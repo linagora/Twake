@@ -51,10 +51,8 @@ export default class Picker extends React.Component {
     return true;
   }
   onSelect(item) {
-    console.log(item);
     this.alreadyBackspace = true;
     if (item && (item.id === undefined || item.id < 0) && item.front_id === undefined) {
-      console.log('on create');
       this.onCreate(item.textSearched);
       return;
     }

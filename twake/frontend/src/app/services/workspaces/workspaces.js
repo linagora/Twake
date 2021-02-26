@@ -1,22 +1,28 @@
 import React from 'react';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import PopupManager from 'services/popupManager/popupManager.js';
 import User from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/CollectionsReact/Collections';
+import { ChannelResource } from 'app/models/Channel';
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'services/localStorage.js';
 import workspacesUsers from './workspaces_users.js';
-import WorkspaceUserRights from './workspace_user_rights.js';
-import Notifications from 'services/user/notifications.js';
 import WindowService from 'services/utils/window.js';
 import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
+import RouterServices from 'app/services/RouterService';
+import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
+import Notifications from 'services/user/notifications';
 import $ from 'jquery';
+import AccessRightsService from 'services/AccessRightsService';
+import loginService from 'services/login/login.js';
 
 import Globals from 'services/Globals.js';
+import JWTStorage from 'services/JWTStorage';
 
 class Workspaces extends Observable {
   constructor() {
@@ -24,7 +30,8 @@ class Workspaces extends Observable {
     Globals.window.workspaceService = this;
 
     this.setObservableName('workspaces');
-    this.currentWorkspaceId = null;
+
+    this.currentWorkspaceId = '';
     this.currentWorkspaceIdByGroup = {};
     this.currentGroupId = null;
 
@@ -33,75 +40,85 @@ class Workspaces extends Observable {
     this.showWelcomePage = false;
     this.loading = false;
 
-    this.welcomePage = '';
-
     this.url_values = WindowService.getInfoFromUrl() || {};
 
     this.didFirstSelection = false;
   }
 
-  setWelcomePage(page) {
-    this.welcomePage = page;
+  updateCurrentWorkspaceId(workspaceId) {
+    if (this.currentWorkspaceId != workspaceId && workspaceId) {
+      this.currentWorkspaceId = workspaceId;
+      const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
+      if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
+
+      if (!this.getting_details[workspaceId]) {
+        this.getting_details[workspaceId] = true;
+
+        workspacesApps.unload(this.currentWorkspaceId);
+        Api.post('workspace/get', { workspaceId: workspaceId }, res => {
+          if (res && res.data) {
+            DepreciatedCollections.get('workspaces').updateObject(res.data);
+            DepreciatedCollections.get('groups').updateObject(res.data.group);
+            workspacesApps.load(workspaceId, false, { apps: res.data.apps });
+          } else {
+            this.removeFromUser(workspaceId);
+          }
+          setTimeout(() => {
+            this.getting_details[workspaceId] = false;
+          }, 10000);
+        });
+      }
+    }
   }
 
-  initSelection(group_id) {
+  updateCurrentCompanyId(companyId) {
+    if (this.currentGroupId != companyId && companyId) {
+      this.currentGroupId = companyId;
+      Notifications.subscribeToCurrentCompanyNotifications(companyId);
+    }
+  }
+
+  async initSelection() {
     if ((Globals.store_public_access_get_data || {}).public_access_token) {
       return;
     }
 
-    if (!Object.keys(this.user_workspaces).length) {
-      this.openWelcomePage(this.welcomePage);
-      return;
+    let { workspaceId } = RouterServices.getStateFromRoute();
+    const routerWorkspaceId = workspaceId;
+
+    const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
+
+    workspaceId = workspaceId || autoload_workspaces.id || '';
+
+    let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
+    if (!workspace) {
+      workspace = DepreciatedCollections.get('workspaces').findBy({})[0];
+      workspaceId = workspace?.id;
     }
 
-    LocalStorage.getItem('autoload_workspaces', autoload_workspaces => {
-      this.didFirstSelection = true;
-
-      var workspace =
-        (this.url_values.workspace_id ? { id: this.url_values.workspace_id } : null) ||
-        autoload_workspaces ||
-        {};
-
+    if (!routerWorkspaceId || !workspace) {
       if (
-        workspace.id &&
-        this.user_workspaces[workspace.id] &&
-        (!group_id || (workspace.group && workspace.group.id == group_id))
+        !workspace ||
+        DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
       ) {
-        this.select(this.user_workspaces[workspace.id]);
-      } else {
-        //Search best workspace for user
-        var firstWorkspace = this.getOrderedWorkspacesInGroup(group_id);
-
-        if (firstWorkspace.length == 0) {
-          firstWorkspace = this.getOrderedWorkspacesInGroup();
-        }
-
-        if (firstWorkspace.length == 0) {
-          //No workspaces for current user or new user
-          this.openWelcomePage(this.welcomePage);
-          return;
-        }
-
-        firstWorkspace = firstWorkspace[0];
-        this.select(firstWorkspace);
+        this.openWelcomePage();
+      } else if (workspaceId !== this.currentWorkspaceId) {
+        this.select(workspace, true);
       }
-
-      if (Collections.get('users').known_objects_by_id[User.getCurrentUserId()].is_new) {
-        this.openWelcomePage(this.welcomePage);
-      }
-    });
+    }
+    return;
   }
 
   openWelcomePage(page) {
     this.showWelcomePage = true;
     this.notify();
-    popupManager.open(page, false, 'workspace_parameters');
+    popupManager.open(<WelcomePage />, false, 'workspace_parameters');
   }
 
   closeWelcomePage(forever) {
     if (forever) {
       Api.post('users/set/isNew', { value: false }, function (res) {});
-      Collections.get('users').updateObject({
+      DepreciatedCollections.get('users').updateObject({
         id: User.getCurrentUserId(),
         isNew: false,
       });
@@ -124,89 +141,63 @@ class Workspaces extends Observable {
   }
 
   changeGroup(group) {
-    this.currentGroupId = group.id;
+    this.updateCurrentCompanyId(group.id);
     this.notify();
     if (this.currentWorkspaceIdByGroup[group.id]) {
       this.select(this.user_workspaces[this.currentWorkspaceIdByGroup[group.id]]);
       return;
     }
-    this.initSelection(group.id);
+    this.select(this.getOrderedWorkspacesInGroup(group.id)[0]);
   }
 
-  select(workspace) {
-    if (!this.didFirstSelection) {
+  select(workspace, replace = false) {
+    if (!workspace) {
+      return;
+    }
+    if (workspace.id === this.currentWorkspaceId) {
       return;
     }
 
-    if (this.currentWorkspaceId == workspace.id) {
-      return;
+    this.updateCurrentWorkspaceId(workspace.id);
+
+    const route = RouterServices.generateRouteFromState({
+      workspaceId: workspace.id,
+      channelId: '',
+    });
+    if (replace) {
+      RouterServices.history.replace(route);
+    } else {
+      RouterServices.history.push(route);
     }
-
-    if (workspace.id && !Collections.get('workspaces').find(workspace.id)) {
-      setTimeout(() => {
-        this.initSelection();
-      }, 1000);
-      return;
-    }
-
-    workspacesUsers.unload(this.currentWorkspaceId);
-    workspacesApps.unload(this.currentWorkspaceId);
-
-    if (!this.getting_details[workspace.id]) {
-      this.getting_details[workspace.id] = true;
-
-      Api.post('workspace/get', { workspaceId: workspace.id }, res => {
-        if (res && res.data) {
-          Collections.get('workspaces').updateObject(res.data);
-          Collections.get('groups').updateObject(res.data.group);
-
-          WorkspaceUserRights.currentUserRightsByWorkspace[res.data.id] = res.data.user_level || {};
-          WorkspaceUserRights.currentUserRightsByGroup[res.data.group.id] =
-            res.data.group.level || [];
-          WorkspaceUserRights.notify();
-          workspacesUsers.load(workspace.id, false, { members: res.data.members || [] });
-          workspacesApps.load(workspace.id, false, { apps: res.data.apps });
-        } else {
-          this.removeFromUser(workspace);
-        }
-        setTimeout(() => {
-          this.getting_details[workspace.id] = false;
-        }, 10000);
-      });
-    }
-
-    this.currentWorkspaceId = workspace.id;
-    this.currentWorkspaceIdByGroup[workspace.group.id] = workspace.id;
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
-
-    Groups.select(Collections.get('groups').known_objects_by_id[workspace.group.id]);
 
     this.notify();
   }
 
   addToUser(workspace) {
     var id = workspace.id;
-    Collections.get('workspaces').updateObject(workspace);
-    this.user_workspaces[id] = Collections.get('workspaces').known_objects_by_id[id];
+    DepreciatedCollections.get('workspaces').updateObject(workspace);
+    this.user_workspaces[id] = DepreciatedCollections.get('workspaces').known_objects_by_id[id];
 
     if (workspace._user_hasnotifications) {
       workspace.group._user_hasnotifications = true;
     }
 
-    Groups.addToUser(workspace.group);
-    if (
-      (this.showWelcomePage && this.loading) ||
-      !this.currentGroupId ||
-      !this.currentWorkspaceId
-    ) {
-      this.loading = false;
-      this.showWelcomePage = false;
-      this.notify();
-      this.select(workspace);
+    AccessRightsService.updateLevel(
+      workspace.id,
+      workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
+    );
+    if (workspace._user_is_organization_administrator !== undefined) {
+      AccessRightsService.updateCompanyLevel(
+        workspace.group.id,
+        workspace._user_is_organization_administrator
+          ? 'administrator'
+          : workspace._user_is_guest
+          ? 'guest'
+          : 'member',
+      );
     }
-
-    Notifications.updateBadge('workspace', workspace.id, workspace._user_hasnotifications ? 1 : 0);
   }
 
   removeFromUser(workspace) {
@@ -214,7 +205,7 @@ class Workspaces extends Observable {
       return;
     }
 
-    var id = workspace.id;
+    var id = workspace.id || workspace;
     delete this.user_workspaces[id];
 
     if (id == this.currentWorkspaceId) {
@@ -222,42 +213,20 @@ class Workspaces extends Observable {
     }
   }
 
-  getOrderedWorkspacesInGroup(group_id, no_filter) {
+  getOrderedWorkspacesInGroup(group_id) {
     var object = [];
-    var that = this;
-    Object.keys(this.user_workspaces).forEach(function (e) {
-      if (no_filter) {
-        object.push(e);
-        return;
-      }
-      var favoris = 0;
-      var e = that.user_workspaces[e];
-      if (!group_id || e.group.id == group_id) {
-        if (
-          (!that.searchQuery &&
-            (that.currentWorkspaceId == e.id ||
-              !e.isHidden)) /* || Notifications.notifications[e.id] && Notifications.notifications[e.id].total > 0 */ ||
-          (that.searchQuery && that.testSearch(e))
-        ) {
+    Object.keys(this.user_workspaces)
+      .sort((_a, _b) => {
+        var a = this.user_workspaces[_a] || {};
+        var b = this.user_workspaces[_b] || {};
+        return (a.name || '').localeCompare(b.name || '');
+      })
+      .forEach(e => {
+        var e = this.user_workspaces[e];
+        if (!group_id || e?.group?.id == group_id) {
           object.push(e);
         }
-        if (e.isFavorite) {
-          favoris = 1;
-        }
-      }
-      e['favoris'] = favoris;
-    });
-    object = object.sort(function (a, b) {
-      if (a.favoris != b.favoris) {
-        return b.favoris - a.favoris;
-      }
-      return String(a.name).localeCompare(String(b.name));
-    });
-
-    if (object.length == 0 && !no_filter) {
-      return this.getOrderedWorkspacesInGroup(group_id, true);
-    }
-
+      });
     return object;
   }
 
@@ -268,13 +237,7 @@ class Workspaces extends Observable {
       groupId: groupId,
       group_name: groupName,
       group_creation_data: groupCreationData,
-      channels: [
-        {
-          name: Languages.t('scenes.apps.calendar.event_edition.general_title', [], 'General'),
-          icon: ':mailbox:',
-        },
-        { name: 'Random', icon: ':beach_umbrella:' },
-      ],
+      channels: [],
     };
     that.loading = true;
     that.notify();
@@ -283,6 +246,9 @@ class Workspaces extends Observable {
       var group_id = undefined;
       var workspace = undefined;
       if (res.data && res.data.workspace) {
+        //Update rights and more
+        loginService.updateUser();
+
         that.addToUser(res.data.workspace);
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
@@ -293,6 +259,7 @@ class Workspaces extends Observable {
             list: wsMembers.join(','),
             asExterne: false,
           };
+
           Api.post('workspace/members/addlist', data, () => {
             that.loading = false;
             popupManager.close();
@@ -320,20 +287,22 @@ class Workspaces extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
-    Api.post('workspace/data/name', { workspaceId: this.currentWorkspaceId, name: name }, function (
-      res,
-    ) {
-      if (res.errors.length == 0) {
-        var update = {
-          id: that.currentWorkspaceId,
-          name: name,
-        };
-        Collections.get('workspaces').updateObject(update);
-        ws.publish('workspace/' + update.id, { workspace: update });
-      }
-      that.loading = false;
-      that.notify();
-    });
+    Api.post(
+      'workspace/data/name',
+      { workspaceId: this.currentWorkspaceId, name: name },
+      function (res) {
+        if (res.errors.length == 0) {
+          var update = {
+            id: that.currentWorkspaceId,
+            name: name,
+          };
+          DepreciatedCollections.get('workspaces').updateObject(update);
+          ws.publish('workspace/' + update.id, { workspace: update });
+        }
+        that.loading = false;
+        that.notify();
+      },
+    );
   }
   updateWorkspaceLogo(logo) {
     this.loading = true;
@@ -343,47 +312,43 @@ class Workspaces extends Observable {
     var data = new FormData();
     if (logo !== false) {
       data.append('logo', logo);
-    } else {
-      console.log('no logo');
     }
     data.append('workspaceId', this.currentWorkspaceId);
     var that = this;
 
-    Globals.getAllCookies(cookies => {
-      $.ajax({
-        url: route,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
+    $.ajax({
+      url: route,
+      type: 'POST',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
 
-        headers: {
-          'All-Cookies': JSON.stringify(cookies),
-        },
-        xhrFields: {
-          withCredentials: true,
-        },
-        xhr: function () {
-          var myXhr = $.ajaxSettings.xhr();
-          myXhr.onreadystatechange = function () {
-            if (myXhr.readyState == XMLHttpRequest.DONE) {
-              that.loading = false;
-              var resp = JSON.parse(myXhr.responseText);
-              if (resp.errors.indexOf('badimage') > -1) {
-                that.error_identity_badimage = true;
-                that.notify();
-              } else {
-                var update = resp.data;
-                Collections.get('workspaces').updateObject(update);
-                ws.publish('workspace/' + update.id, { workspace: update });
-                that.notify();
-              }
+      headers: {
+        Authorization: JWTStorage.getAutorizationHeader(),
+      },
+      xhrFields: {
+        withCredentials: true,
+      },
+      xhr: function () {
+        var myXhr = $.ajaxSettings.xhr();
+        myXhr.onreadystatechange = function () {
+          if (myXhr.readyState == XMLHttpRequest.DONE) {
+            that.loading = false;
+            var resp = JSON.parse(myXhr.responseText);
+            if (resp.errors.indexOf('badimage') > -1) {
+              that.error_identity_badimage = true;
+              that.notify();
+            } else {
+              var update = resp.data;
+              DepreciatedCollections.get('workspaces').updateObject(update);
+              ws.publish('workspace/' + update.id, { workspace: update });
+              that.notify();
             }
-          };
-          return myXhr;
-        },
-      });
+          }
+        };
+        return myXhr;
+      },
     });
   }
   deleteWorkspace() {
@@ -404,7 +369,7 @@ class Workspaces extends Observable {
   }
 
   getCurrentWorkspace() {
-    return Collections.get('workspaces').find(this.currentWorkspaceId) || {};
+    return DepreciatedCollections.get('workspaces').find(this.currentWorkspaceId) || {};
   }
 }
 

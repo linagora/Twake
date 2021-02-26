@@ -199,14 +199,21 @@ class UsersAccount extends BaseController
 
     public function getUploader()
     {
-        $storage = $this->getParameter('storage');
-        if (isset($storage["S3"]["use"]) && $storage["S3"]["use"]) {
-            return $this->get("app.aws_uploader");
+        $storagemanager = $this->get("driveupload.storemanager");
+        if(!$provider){
+            $provider = $storagemanager->getOneProvider();
         }
-        if (isset($storage["use"]) && $storage["use"]) {
-            return $this->get("app.openstack_uploader");
+        $configuration = $storagemanager->getProviderConfiguration($provider);
+
+        if ($configuration["type"] === "S3") {
+            $uploader = $this->get("app.aws_uploader");
+        }else if ($configuration["type"] === "openstack") {
+            $uploader =$this->get("app.openstack_uploader");
+        }else{
+            $uploader = $this->get("app.uploader");
         }
-        return $this->get("app.uploader");
+        $uploader->configure($configuration);
+        return $uploader;
     }
 
     public function setUsername(Request $request)

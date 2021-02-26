@@ -43,15 +43,10 @@ class Group extends SearchableObject
     protected $logo;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\PricingPlan")
+     * @ORM\Column(name="plan", type="twake_text")
      */
-    protected $pricingplan;
-
-    /**
-     * @ORM\Column(name="free_offer_end", type="integer", nullable=true)
-     */
-    protected $free_offer_end = null;
-
+    protected $plan;
+    
     /**
      * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\Workspace", mappedBy="group")
      */
@@ -175,17 +170,17 @@ class Group extends SearchableObject
     /**
      * @return mixed
      */
-    public function getPricingPlan()
+    public function getPlan()
     {
-        return $this->pricingplan;
+        return json_decode($this->plan, 1);
     }
 
     /**
      * @param mixed $pricing_plan
      */
-    public function setPricingPlan($pricing_plan)
+    public function setPlan($plan)
     {
-        $this->pricingplan = $pricing_plan;
+        $this->plan = json_encode($plan);
     }
 
     /**
@@ -271,22 +266,6 @@ class Group extends SearchableObject
     /**
      * @return mixed
      */
-    public function getFreeOfferEnd()
-    {
-        return $this->free_offer_end;
-    }
-
-    /**
-     * @param mixed $free_offer_end
-     */
-    public function setFreeOfferEnd($free_offer_end)
-    {
-        $this->free_offer_end = $free_offer_end;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getOnCreationData()
     {
         @$v = json_decode($this->on_creation_data, 1);
@@ -334,10 +313,9 @@ class Group extends SearchableObject
             "id" => $this->getId(),
             "unique_name" => $this->getName(),
             "name" => $this->getDisplayName(),
-            "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
+            "plan" => $this->getPlan(),
             "logo" => (($this->getLogo() != null) ? $this->getLogo()->getPublicURL(2) : ""),
             "isBlocked" => $this->getIsBlocked(),
-            "free_offer_end" => $this->getFreeOfferEnd(),
             "total_members" => $this->member_count
         );
     }

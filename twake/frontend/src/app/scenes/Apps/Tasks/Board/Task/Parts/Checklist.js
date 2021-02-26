@@ -68,7 +68,6 @@ export default class Checklist extends React.Component {
                           this.setState({});
                         }}
                         onEnter={() => {
-                          console.log('hello close input');
                           this.state.checklist_edit = -1;
                           this.onChange(checklist);
                         }}

@@ -16,15 +16,18 @@ class Parameters extends \Common\Configuration
               "admin_api_token" => "",
               "licence_key" => "",
               "standalone" => true,
+              //"frontend_server_name" => "http://localhost:8000/", // define only if needed
               "server_name" => "http://localhost:8000/",
-              "internal_server_name" => "http://nginx/",
-              "secret" => "",
+              "internal_server_name" => "http://nginx/"
             ],
-            "websocket" => [
-                "host" => "websockets",
-                "port" => "8080",
-                "pusher_public" => "-----BEGIN PUBLIC KEY-----\nMIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgG65NWZFnj+9op68VRBN/WtG9eRp\nMVyQiVAWSsShxIK0xLUDac4B9wADvnqZqyylFZpRsVLeXEo5FJMmmPG9OYRed5un\n0ulXWTEBBi5ON2ku91EFx1+02sd0Cbkc0hwy2A3mTPU5ykF2MqH9mUf2SQ5yhhGh\np3UZN60QZtJwmWDbAgMBAAE=\n-----END PUBLIC KEY-----",
-                "pusher_private" => "-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgG65NWZFnj+9op68VRBN/WtG9eRpMVyQiVAWSsShxIK0xLUDac4B\n9wADvnqZqyylFZpRsVLeXEo5FJMmmPG9OYRed5un0ulXWTEBBi5ON2ku91EFx1+0\n2sd0Cbkc0hwy2A3mTPU5ykF2MqH9mUf2SQ5yhhGhp3UZN60QZtJwmWDbAgMBAAEC\ngYBWCyWdOYK1w/eI5ZAxIHpMEJPrkXejmEqs6vXlglTEwhePF3z0c4BwCXjPq3Vj\nN1LnXo6veE89+serZrY6PbNgw9KIH8HuSRnYAEHVlv0KmLQvC40GWi7iGdCoN3NK\n0ZEcFnekpMx2XYGmxWTy7/n2PT1f+dlzLG8EUK0B768vmQJBAN0xS+RE8nHu4RWo\nRlRV0kYwwOvfETYLSKzC7jXgcnV4dI65xnjQjuxil0oH7YQewhmGjEtTANMXetG9\nW0JV5tUCQQCAJa8kbAeUTOA5AjOXm58IlxKiKIRYJlQS6wlploOmGcGMCLBkjPdR\nSdR9QG7vTZbFQ1qTI78Llwla2XyV+2DvAkAVbodZ8MxE+c5ZWNqnpUEgh+zJbe2u\n/Nzn0GNgWQT+GNPCWIHAhwSyJsNd6vK6kHhiHMVPLxWvXmEKHXzQKp6ZAkB1YA74\nEWsvzuphzT5sU0Jrn9SVav8tro27dkT8zbxv24+IMD1BHE07y6AxyV7TGgJLVNIV\ni9xlRUZwTFztE39JAkEAh1mQwoMuBaKwSftCooUHHHxUel1J9e99quJtES0Al6bu\nQp6BEGio7qt0MNDLr0WPxNQMmPcSazWOsoOCQBvEMg==\n-----END RSA PRIVATE KEY-----",
+            "jwt" => [
+              "secret" => "supersecret",
+              "expiration" => 60*60, //1 hour
+              "refresh_expiration" => 60*60*24*31 //1 month
+            ],
+            "node" => [
+                "api" => "http://node:3000/private/",
+                "secret" => "api_supersecret"
             ],
             "db" => [
                 "driver" => "pdo_cassandra",
@@ -33,70 +36,73 @@ class Parameters extends \Common\Configuration
                 "dbname" => "twake",
                 "user" => "root",
                 "password" => "root",
-                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0"
+                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}"
             ],
             "es" => [
               "host" => "elasticsearch:9200"
             ],
             "queues" => [
-                "sqs" => [
-                    "use" => false,
-                    "profile" => "default",
-                    "version" => "2012-11-05",
-                    'region' => 'us-west-2',
-                    "credentials" => [
-                        "key" => "",
-                        "secret" => ""
-                    ]
-
-                ],
                 "rabbitmq" => [
                     "use" => true,
                     "host" => "rabbitmq",
                     "port" => 5672,
                     "username" => "admin",
-                    "password" => "admin"
+                    "password" => "admin",
+                    "vhost" => false
                 ]
             ],
             "storage" => [
               "drive_previews_tmp_folder" => "/tmp/",
               "drive_tmp_folder" => "/tmp/",
               "drive_salt" => "SecretPassword",
-              "openstack" => [
-                  "use" => false,
-                  "project_id" => "",
-                  "auth_url" => "https//auth.cloud.ovh.net/v2.0",
-                  "buckets_prefix" => "",
-                  "buckets" => [
-                      "fr" => [
-                          "public" => "",
-                          "private" => "",
-                          "region" => "SBG5"
-                      ],
-                      "user" => [
-                          "id" => "",
-                          "password" => ""
-                      ]
-                  ],
-              ],
-              "S3" => [
-                  "base_url" => "http//127.0.0.1:9000",
-                  "use" => false,
-                  "version" => "latest",
-                  "buckets_prefix" => "dev.",
-                  "buckets" => [
-                      "fr" => "eu-west-3"
-                  ],
-                  "credentials" => [
-                      "key" => "",
-                      "secret" => ""
-                  ]
-              ],
-              "local" => [
-                  "use" => true,
-                  "location" => "../drive/",
-                  "preview_location" => "../web/medias/",
-                  "preview_public_path" => "/medias/"
+              "providers" => [
+                [
+                    "label" => "someOpenStack",
+                    "type" => "openstack",
+                    "use" => false,
+                    "project_id" => "",
+                    "auth_url" => "https//auth.cloud.ovh.net/v3",
+                    "buckets_prefix" => "",
+                    "disable_encryption" => false,
+                    "buckets" => [
+                        "fr" => [
+                            "public" => "",
+                            "private" => "",
+                            "region" => "SBG5"
+                        ]
+                    ],
+                    "user" => [
+                        "id" => "",
+                        "password" => "",
+                        "domain_name" => "default"
+                    ]
+                ],
+                [
+                    "label" => "someS3",
+                    "type" => "S3",
+                    "base_url" => "http://127.0.0.1:9000",
+                    "use" => false,
+                    "version" => "latest",
+                    "disable_encryption" => false,
+                    "buckets_prefix" => "dev.",
+                    "buckets" => [
+                        "fr" => "eu-west-3"
+                    ],
+                    "credentials" => [
+                        "key" => "",
+                        "secret" => ""
+                    ]
+                ],
+                [
+                    "label" => "someLocal",
+                    "type" => "local",
+                    "use" => true,
+                    "disable_encryption" => false,
+                    "location" => "../drive/",
+                    "preview_location" => "../web/medias/",
+                    "preview_public_path" => "/medias/"
+                ],
               ],
             ],
             "mail" => [
@@ -202,6 +208,39 @@ class Parameters extends \Common\Configuration
                       "email_key" => '',
                       "lastname_key" => '',
                       "firstname_key" => ''
+                  ],
+                  "console" => [
+                    "use" => true,
+                    "provider" => "http://account-twakeconsole.linagora.vn/api/",
+                    "public_key" => "",
+                    "secret" => "secret",
+                    "credentials" => [
+                      "key" => "twake",
+                      "secret" => "secret"
+                    ],
+                    "redirections" => [
+                      "account_management_url" => "http://web-twakeconsole.linagora.vn/profile",
+                      "company_management_url" => "http://web-twakeconsole.linagora.vn/company",
+                      "collaborators_management_url" => "http://web-twakeconsole.linagora.vn/company/users",
+                    ],
+                    //"None" signature is not supported
+                    //PKCE not tested but implemented in our lib
+                    "openid" => [
+                      "provider_uri" => 'http://auth-twakeconsole.linagora.vn',
+                      "client_id" => 'twake',
+                      "client_secret" => 'twakesecret',
+                      "ignore_mail_verified" => true,
+                      "ignore_id_token_verification" => true,
+                      "logout_suffix" => "/oauth2/logout",
+                      //"disable_logout_redirect" => false
+                      "provider_config" => [
+                        "code_challenge_methods_supported" => "",
+                        "token_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/token", //token_endpoint
+                        "userinfo_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/userinfo",//userinfo_endpoint
+                        "end_session_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/logout",//end_session_endpoint
+                        "authorization_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/authorize",//authorization_endpoint                  
+                      ]
+                    ]
                   ]
               ]
             ],

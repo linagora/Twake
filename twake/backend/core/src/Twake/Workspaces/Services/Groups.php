@@ -15,7 +15,6 @@ class Groups
     private $gms;
     private $market;
     private $string_cleaner;
-    private $gps;
     private $wms;
     private $pusher;
 
@@ -25,7 +24,6 @@ class Groups
         $this->gms = $app->getServices()->get("app.group_managers");
         $this->market = $app->getServices()->get("app.applications");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
-        $this->gps = $app->getServices()->get("app.group_period");
         $this->wms = $app->getServices()->get("app.workspace_members");
         $this->pusher = $app->getServices()->get("app.pusher");
     }
@@ -34,10 +32,8 @@ class Groups
     {
         $userRepository = $this->doctrine->getRepository("Twake\Users:User");
         $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-        $planRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
 
         $user = $userRepository->find($userId);
-        $plan = $planRepository->find($planId);
 
         //Find a name
         $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquename));
@@ -54,7 +50,6 @@ class Groups
 
         $group = new Group($uniquenameIncremented);
         $group->setDisplayName($name);
-        $group->setPricingPlan($plan);
         $group->setOnCreationData($group_data_on_create);
 
         $this->doctrine->persist($group);
@@ -63,7 +58,6 @@ class Groups
         $this->gms->addManager($group->getId(), $userId, 3, true);
 
         $this->init($group);
-        $this->gps->init($group, $plan);
 
         return $group;
 
@@ -122,28 +116,6 @@ class Groups
             return true;
         } else {
             error_log("NOT ALLOWED");
-        }
-
-        return false;
-    }
-
-    public function changePlan($groupId, $planId, $currentUserId = null)
-    {
-        if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_PRICINGS")) {
-
-            $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
-            $group = $groupRepository->find($groupId);
-
-            $pricingPlanRepository = $this->doctrine->getRepository("Twake\Workspaces:PricingPlan");
-            $pricingPlan = $pricingPlanRepository->find($planId);
-
-            $group->setPricingPlan($pricingPlan);
-            $group->setFreeOfferEnd(null);
-
-            $this->doctrine->persist($group);
-            $this->doctrine->flush();
-
-            return true;
         }
 
         return false;
@@ -260,14 +232,8 @@ class Groups
             $groupUserdRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupUser");
             $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
 
-            $groupPeriodRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupPeriod");
-            $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
-
             $groupPricingRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupPricingInstance");
             $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
-
-            $closedGroupPeriodRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:closedGroupPeriod");
-            $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
         }
 
         //TODO DOCTRINE REMOVE USERS FROM WORKSPACE
@@ -296,13 +262,6 @@ class Groups
             }
             if ($groupPricing != null) {
                 $this->get("app.twake_doctrine")->remove($groupPricing);
-            }
-            if ($closedGroupPeriods != null) {
-                if (is_array($closedGroupPeriods)) {
-                    foreach ($closedGroupPeriods as $closedGroupPeriod) {
-                        $this->get("app.twake_doctrine")->remove($closedGroupPeriod);
-                    }
-                }
             }
             if ($workspacelevels != null) {
                 if (is_array($workspacelevels)) {

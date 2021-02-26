@@ -15,13 +15,12 @@ import UserService from 'services/user/user.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import TimeSeparator from './TimeSeparator';
-import MessagesListServiceManager, {
-  MessagesListUtils as MessagesListService,
-} from 'app/services/Apps/Messages/MessagesListUtils';
+import MessagesListServiceManager from 'app/services/Apps/Messages/MessagesListUtils';
 
 import Input from '../Input/Input';
 
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 
 type Props = {
   fake?: boolean;
@@ -34,6 +33,7 @@ type Props = {
   noBlock?: boolean;
   repliesAsLink?: boolean;
   unreadAfter?: number;
+  threadHeader?: string;
 };
 
 export default class MessageComponent extends Component<Props, { render: boolean }> {
@@ -115,13 +115,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
   }
 
   dropMessage(message: any) {
-    //@ts-ignore
-    if (Globals.window.mixpanel_enabled) {
-      //@ts-ignore
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send respond Event');
-      //@ts-ignore
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Drop message Event');
-    }
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 
@@ -148,10 +141,12 @@ export default class MessageComponent extends Component<Props, { render: boolean
     const message = this.message;
 
     if (message?.hidden_data?.type === 'init_channel') {
-      if (!this.state.render) {
-        return <div ref={this.setDomElement} />;
-      }
       return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
+    }
+
+    if (message?.hidden_data?.type === 'activity') {
+      const activity = message.hidden_data.activity as ActivityType;
+      return <ActivityMessage refDom={this.setDomElement} activity={activity} />;
     }
 
     const max_responses = 3;
@@ -190,6 +185,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
           >
             <MessageContent
               key={message?._last_modified || message?.front_id}
+              threadHeader={this.props.threadHeader}
               linkToThread={linkToThread}
               message={message}
               collectionKey={this.props.collectionKey}
@@ -271,5 +267,10 @@ export default class MessageComponent extends Component<Props, { render: boolean
         </Thread>
       </DroppableZone>
     );
+  }
+
+  componentWillUnmount() {
+    Collections.get('messages').removeListener(this);
+    this.messageEditorService.removeListener(this);
   }
 }

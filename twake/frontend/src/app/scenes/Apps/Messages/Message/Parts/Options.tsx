@@ -5,22 +5,25 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import User from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   message: Message;
   collectionKey: string;
   onOpen?: () => void;
   onClose?: () => void;
+  threadHeader?: string;
 };
 
 export default (props: Props) => {
@@ -66,12 +69,13 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
+            const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
             const url =
               document.location.origin +
-              ChannelsService.getURL(
-                props.message.channel_id,
-                props.message.parent_message_id || props.message.id,
-              );
+              RouterServices.generateRouteFromState({
+                workspaceId: workspace.id,
+                channelId: props.message.channel_id,
+              });
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);
@@ -183,11 +187,13 @@ export default (props: Props) => {
 
   return (
     <div>
-      <div className="message-options drag" key="drag">
-        <div className="option js-drag-handler-message">
-          <DragIndicator style={{ width: '18px' }} />
+      {!props.threadHeader && (
+        <div className="message-options drag" key="drag">
+          <div className="option js-drag-handler-message">
+            <DragIndicator style={{ width: '18px' }} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="message-options right" key="options">
         <Menu
           className="option"
@@ -214,14 +220,16 @@ export default (props: Props) => {
         >
           <Smile size={16} />
         </Menu>
-        <div
-          className="option"
-          onClick={() => {
-            MessagesService.showMessage(props.message.parent_message_id || props.message.id);
-          }}
-        >
-          <ArrowUpRight size={16} />
-        </div>
+        {!props.threadHeader && (
+          <div
+            className="option"
+            onClick={() => {
+              MessagesService.showMessage(props.message.parent_message_id || props.message.id);
+            }}
+          >
+            <ArrowUpRight size={16} />
+          </div>
+        )}
         {menu.length > 0 && (
           <Menu
             className="option"

@@ -21,7 +21,6 @@ class WorkspaceMembers
     private $twake_mailer;
     private $doctrine;
     private $pusher;
-    private $pricing;
     private $calendar;
 
     public function __construct(App $app)
@@ -32,7 +31,6 @@ class WorkspaceMembers
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->pusher = $app->getServices()->get("app.pusher");
-        $this->pricing = $app->getServices()->get("app.pricing_plan");
         $this->calendar = $app->getServices()->get("app.calendar.calendar");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
         $this->groupManager = $app->getServices()->get("app.group_managers");
@@ -121,11 +119,6 @@ class WorkspaceMembers
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup()));
-                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
-
-                if (count($nbuserGroup) >= $limit) { // Margin of 1 to be sure we do not count twakebot
-                    return false;
-                }
             }
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
@@ -718,6 +711,7 @@ class WorkspaceMembers
 
     public function getWorkspaces($userId)
     {
+        $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
         $userRepository = $this->doctrine->getRepository("Twake\Users:User");
         $user = $userRepository->find($userId);
@@ -726,15 +720,30 @@ class WorkspaceMembers
         }
         $link = $workspaceUserRepository->findBy(Array("user_id" => $user->getId()));
         $workspaces = Array();
-        foreach ($link as $workspace) {
-            if ($workspace->getWorkspace($this->doctrine)->getUser() == null && $workspace->getWorkspace($this->doctrine)->getGroup() != null && !$workspace->getWorkspace($this->doctrine)->getis_deleted()) {
+        foreach ($link as $workspaceMember) {
+            $workspace = $workspaceMember->getWorkspace($this->doctrine);
+            if ($workspace && $workspace->getUser() == null && $workspace->getGroup() != null && !$workspace->getis_deleted()) {
+
+                $levels = $this->wls->getLevels($workspace->getId(), $userId);
+                $isAdmin = false;
+                foreach ($levels as $level) {
+                    if($level->getId() === $workspaceMember->getLevelId() && $level->getIsAdmin()){
+                        $isAdmin = true;
+                    }
+                }
+
+                $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
+
                 $workspaces[] = Array(
-                    "last_access" => $workspace->getLastAccess(),
-                    "workspace" => $workspace->getWorkspace($this->doctrine),
-                    "ishidden" => $workspace->getisHidden(),
-                    "isfavorite" => $workspace->getisFavorite(),
-                    "hasnotifications" => $workspace->getHasNotifications(),
-                    "isArchived" => $workspace->getWorkspace($this->doctrine)->getisArchived()
+                    "last_access" => $workspaceMember->getLastAccess(),
+                    "workspace" => $workspace,
+                    "ishidden" => $workspaceMember->getisHidden(),
+                    "isfavorite" => $workspaceMember->getisFavorite(),
+                    "_user_is_admin" => $isAdmin,
+                    "_user_is_guest" => $workspaceMember->getExterne() || ($groupUser ? $groupUser->getExterne() : true),
+                    "_user_is_organization_administrator" => $groupUser ? $groupUser->getLevel() === 3 : false,
+                    "hasnotifications" => $workspaceMember->getHasNotifications(),
+                    "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getisArchived()
                 );
             }
         }

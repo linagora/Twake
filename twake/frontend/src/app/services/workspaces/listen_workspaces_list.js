@@ -3,13 +3,15 @@ import ws from 'services/websocket.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import User from 'services/user/user.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import LoginService from 'services/login/login';
 
 class ListenWorkspacesList {
   constructor() {}
 
   startListen() {
     ws.subscribe('workspaces_of_user/' + User.getCurrentUserId(), function (uri, data) {
-      console.log('recieve from ' + uri, data);
+      LoginService.updateUser();
+
       if (data.workspace) {
         if (data.type == 'remove') {
           Workspaces.removeFromUser(data.workspace);

@@ -18,3 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: cd twake && docker build -t twaketech/twake-php -f docker/twake-php/Dockerfile .
+
+  build-node:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd twake/backend/node && docker build --target production -t twaketech/twake-node -f ../../docker/twake-node/Dockerfile .

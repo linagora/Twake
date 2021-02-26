@@ -1,0 +1,78 @@
+{
+  "services": [
+    "auth",
+    "user",
+    "channels",
+    "notifications",
+    "webserver",
+    "websocket",
+    "database",
+    "pubsub",
+    "realtime",
+    "phpnode",
+    "tracker"
+  ],
+  "sentry": {
+    "dsn": ""
+  },
+  "logger": {
+    "level": "debug"
+  },
+  "tracker": {
+    "type": "segment",
+    "segment": {
+      "key": ""
+    }
+  },
+  "webserver": {
+    "port": 3000,
+    "logger": {
+      "level": "info"
+    },
+    "cors": {
+      "origin": "*"
+    }
+  },
+  "phpnode": {
+    "secret": "api_supersecret"
+  },
+  "websocket": {
+    "path": "/socket/",
+    "adapters": {
+      "types": [],
+      "redis": {
+        "host": "redis",
+        "port": 6379
+      }
+    },
+    "auth": {
+      "jwt": {
+        "secret": "supersecret"
+      }
+    }
+  },
+  "auth": {
+    "jwt": {
+      "secret": "supersecret"
+    }
+  },
+  "database": {
+    "secret": "01234567890123456789012345678901",
+    "type": "mongodb",
+    "mongodb": {
+      "uri": "mongodb://localhost:27017",
+      "database": "twake"
+    },
+    "cassandra": {
+      "contactPoints": ["scylladb:9042"],
+      "localDataCenter": "datacenter1",
+      "keyspace": "twake",
+      "wait": false,
+      "retries": 10,
+      "delay": 200
+    }
+  },
+  "pubsub": {
+    "urls": ["amqp://guest:guest@localhost:5672"]
+  }
+}

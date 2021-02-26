@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import Select from 'components/Select/Select.js';
 import Languages from 'services/languages/languages.js';
 import moment from 'moment';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Repetitionpopup from 'components/Calendar/RepetitionSelector/RepetitionPopup.js';
 
 export default class RepetitionSelector extends React.Component {
   constructor(props) {
     super();
     this.props = props;
-    console.log(this.props.rrule);
 
     this.state = {
       value: this.props.value,
@@ -78,7 +77,6 @@ export default class RepetitionSelector extends React.Component {
           '\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
       },
     ];
-    console.log('LAAAAAA');
 
     if (this.props.rrule !== undefined) {
       this.options.push({
@@ -92,8 +90,8 @@ export default class RepetitionSelector extends React.Component {
       });
     }
   }
+
   render() {
-    console.log(this.state.value, this.state.date);
     return (
       <div>
         <Select
@@ -101,9 +99,7 @@ export default class RepetitionSelector extends React.Component {
           options={this.options}
           value={this.state.value}
           onChange={v => {
-            console.log(v);
             if (v.includes('customSelect')) {
-              console.log('Avant', this.state.date);
               MediumPopupManager.open(
                 <Repetitionpopup date={this.state.date} value={'RRule.DAILY'} />,
                 {
@@ -119,5 +115,9 @@ export default class RepetitionSelector extends React.Component {
         />
       </div>
     );
+  }
+
+  componentWillUnmount() {
+    Languages.removeListener(this);
   }
 }

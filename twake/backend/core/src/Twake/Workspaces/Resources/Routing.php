@@ -40,7 +40,6 @@ class Routing extends BaseRouting
         "group/data/name" => ["handler" => "Group:changeName", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "group/data/logo" => ["handler" => "Group:setLogo", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "group/getWorkspaces" => ["handler" => "Group:getWorkspaces", "methods" => ["POST"], "security" => ["user_connected_security"]],
-        "group/freeOffer" => ["handler" => "Group:runFreeOffer", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "group/app/use" => ["handler" => "GroupApps:useApp", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "group/apps/get" => ["handler" => "GroupApps:getApps", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "group/workspacedefault/set" => ["handler" => "GroupApps:setWorkspaceDefault", "methods" => ["POST"], "security" => ["user_connected_security"]],

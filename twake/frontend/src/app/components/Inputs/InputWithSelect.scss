@@ -1,0 +1,47 @@
+.group-container {
+  .ant-btn-icon-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: var(--grey-background);
+    border-radius: 3px 0px 0px 3px;
+    padding: 0;
+
+    &:hover {
+      background-color: var(--grey-background);
+    }
+  }
+
+  .ant-select {
+    max-width: 120px;
+
+    .ant-select-selector {
+      border-radius: 0 !important;
+    }
+
+    .ant-select-selector,
+    .border-radius-left {
+      border-radius: 3px 0 0 3px !important;
+    }
+  }
+
+  .group-divider {
+    height: 100%;
+    margin: 0;
+    top: 0;
+    background-color: var(--black-alpha-2);
+    opacity: 0.28;
+  }
+
+  .ant-btn .small-margin-left {
+    color: var(--grey-dark);
+    &:hover {
+      color: var(--primary);
+    }
+  }
+
+  .ant-input {
+    border-radius: 0 3px 3px 0;
+  }
+}

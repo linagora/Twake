@@ -1,20 +1,23 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'services/user/current_user.js';
 import UserService from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
-
+import MessagesListServerUtilsManager from './MessagesListServerUtils';
 import Globals from 'services/Globals.js';
 import MessageEditors from './MessageEditors';
+import { ChannelResource } from 'app/models/Channel';
+import SideViewService from 'app/services/AppView/SideViewService';
 
 class Messages extends Observable {
   constructor() {
@@ -30,7 +33,7 @@ class Messages extends Observable {
     Globals.window.msgService = this;
 
     this.onWebsocketMessage = this.onWebsocketMessage.bind(this);
-    Collections.get('messages').addWebsocketListener(this.onWebsocketMessage);
+    DepreciatedCollections.get('messages').addWebsocketListener(this.onWebsocketMessage);
 
     this.writing_status = {};
     this.my_writing_status = {};
@@ -63,7 +66,7 @@ class Messages extends Observable {
       return;
     }
     this.my_writing_status[channel + '_' + parentId] = state;
-    Collections.get('messages').publishWebsocket({
+    DepreciatedCollections.get('messages').publishWebsocket({
       type: 'writing',
       status: state,
       parent_message: parentId,
@@ -110,12 +113,9 @@ class Messages extends Observable {
   }
 
   async sendMessage(value, options, collectionKey) {
-    return new Promise(resolve => {
-      if (Globals.window.mixpanel_enabled)
-        Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Send Message');
-
+    return new Promise(async resolve => {
       value = PseudoMarkdownCompiler.transformChannelsUsers(value);
-      var channel = Collections.get('channels').find(options.channel_id);
+      var channel = await this.findChannel(options.channel_id);
 
       if (value[0] == '/') {
         var app = null;
@@ -144,9 +144,9 @@ class Messages extends Observable {
         }
         var data = {
           command: value.split(' ').slice(1).join(' '),
-          channel: channel,
+          channel: channel.data,
           parent_message: options.parent_message_id
-            ? Collections.get('messages').find(options.parent_message_id) || null
+            ? DepreciatedCollections.get('messages').find(options.parent_message_id) || null
             : null,
         };
 
@@ -158,7 +158,7 @@ class Messages extends Observable {
 
       options = options || {};
 
-      var message = Collections.get('messages').edit();
+      var message = DepreciatedCollections.get('messages').edit();
       var val = PseudoMarkdownCompiler.compileToJSON(value);
 
       const editorManager = MessageEditorsManager.get(options.channel_id);
@@ -190,19 +190,19 @@ class Messages extends Observable {
       message.sender = CurrentUser.get().id;
 
       if (message.parent_message_id) {
-        var parent = Collections.get('messages').find(message.parent_message_id);
-        Collections.get('messages').completeObject(
+        var parent = DepreciatedCollections.get('messages').find(message.parent_message_id);
+        DepreciatedCollections.get('messages').completeObject(
           { responses_count: parent.responses_count + 1 },
           parent.front_id,
         );
-        Collections.get('messages').share(parent);
+        DepreciatedCollections.get('messages').share(parent);
       }
 
       message.hidden_data = {};
       message.pinned = false;
       message.responses_count = 0;
 
-      const max_message_time = Collections.get('messages')
+      const max_message_time = DepreciatedCollections.get('messages')
         .findBy({ channel_id: options.channel_id })
         .map(i => i.creation_date)
         .reduce((a, b) => a + b, 0);
@@ -211,7 +211,7 @@ class Messages extends Observable {
 
       ChannelsService.markFrontAsRead(channel.id, message.creation_date);
 
-      Collections.get('messages').save(message, collectionKey, message => {
+      DepreciatedCollections.get('messages').save(message, collectionKey, message => {
         ChannelsService.markFrontAsRead(channel.id);
         ChannelsService.incrementChannel(channel);
         resolve(message);
@@ -221,7 +221,7 @@ class Messages extends Observable {
     });
   }
 
-  triggerApp(channelId, threadId, app, from_icon, evt) {
+  async triggerApp(channelId, threadId, app, from_icon, evt) {
     if (app.simple_name == 'twake_drive') {
       var menu = [];
       var has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
@@ -246,8 +246,9 @@ class Messages extends Observable {
     }
 
     var data = {
-      channel: Collections.get('channels').find(channelId),
-      parent_message: (threadId ? Collections.get('messages').find(threadId) : null) || null,
+      channel: (await this.findChannel(channelId)).data,
+      parent_message:
+        (threadId ? DepreciatedCollections.get('messages').find(threadId) : null) || null,
       from_icon: from_icon,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
@@ -261,7 +262,7 @@ class Messages extends Observable {
     if (options.parent_message_id !== undefined) {
       filter.parent_message_id = options.parent_message_id;
     }
-    const last_message = Collections.get('messages')
+    const last_message = DepreciatedCollections.get('messages')
       .findBy(filter)
       .filter(a => a.message_type == 0 || a.message_type == null)
       .sort((a, b) => b.creation_date - a.creation_date)[0];
@@ -294,10 +295,10 @@ class Messages extends Observable {
     var old_count = message.responses_count || 0;
     if (message.responses_count > 0) {
       //Move all children in new parent
-      Collections.get('messages')
+      DepreciatedCollections.get('messages')
         .findBy({ channel_id: message.channel_id, parent_message_id: message.id })
         .forEach(message => {
-          Collections.get('messages').completeObject(
+          DepreciatedCollections.get('messages').completeObject(
             { parent_message_id: message_container.id },
             message.front_id,
           );
@@ -309,9 +310,9 @@ class Messages extends Observable {
 
     var old_parent = null;
     if (message.parent_message_id) {
-      old_parent = Collections.get('messages').find(message.parent_message_id);
+      old_parent = DepreciatedCollections.get('messages').find(message.parent_message_id);
       if (old_parent) {
-        Collections.get('messages').completeObject(
+        DepreciatedCollections.get('messages').completeObject(
           { responses_count: old_parent.responses_count - 1 },
           old_parent.front_id,
         );
@@ -320,8 +321,8 @@ class Messages extends Observable {
 
     var new_parent = null;
     if (message_container) {
-      new_parent = Collections.get('messages').find(message_container.id);
-      Collections.get('messages').completeObject(
+      new_parent = DepreciatedCollections.get('messages').find(message_container.id);
+      DepreciatedCollections.get('messages').completeObject(
         { responses_count: new_parent.responses_count + 1 + Math.max(old_count, moved.length) },
         new_parent.front_id,
       );
@@ -332,21 +333,21 @@ class Messages extends Observable {
 
     message.parent_message_id = message_container ? message_container.id : '';
 
-    Collections.get('messages').completeObject(message, message.front_id);
-    Collections.get('messages').save(message, collectionKey, () => {
-      var parent = Collections.get('messages').find(message.parent_message_id);
+    DepreciatedCollections.get('messages').completeObject(message, message.front_id);
+    DepreciatedCollections.get('messages').save(message, collectionKey, () => {
+      var parent = DepreciatedCollections.get('messages').find(message.parent_message_id);
       if (parent && parent.parent_message_id != '') {
-        Collections.get('messages').updateObject(
+        DepreciatedCollections.get('messages').updateObject(
           { parent_message_id: parent.parent_message_id },
           message.front_id,
         );
       }
 
-      if (old_parent) Collections.get('messages').share(old_parent);
-      if (new_parent) Collections.get('messages').share(new_parent);
+      if (old_parent) DepreciatedCollections.get('messages').share(old_parent);
+      if (new_parent) DepreciatedCollections.get('messages').share(new_parent);
 
       moved.forEach(message => {
-        Collections.get('messages').share(message);
+        DepreciatedCollections.get('messages').share(message);
       });
     }); //Call a notify
   }
@@ -366,31 +367,34 @@ class Messages extends Observable {
         ((message.reactions[reaction] || {}).count || 0) + 1;
     }
 
-    Collections.get('messages').completeObject({ _user_reaction: reaction }, message.front_id);
-    Collections.get('messages').save(message, messagesCollectionKey);
+    DepreciatedCollections.get('messages').completeObject(
+      { _user_reaction: reaction },
+      message.front_id,
+    );
+    DepreciatedCollections.get('messages').save(message, messagesCollectionKey);
     MessageEditors.get(message.channel_id).closeEditor();
   }
 
   pinMessage(message, value, messagesCollectionKey) {
-    Collections.get('messages').completeObject({ pinned: value }, message.front_id);
-    Collections.get('messages').save(message, messagesCollectionKey);
+    DepreciatedCollections.get('messages').completeObject({ pinned: value }, message.front_id);
+    DepreciatedCollections.get('messages').save(message, messagesCollectionKey);
   }
 
   deleteMessage(message, messagesCollectionKey) {
     if (message.parent_message_id) {
-      var parent = Collections.get('messages').find(message.parent_message_id);
-      Collections.get('messages').completeObject(
+      var parent = DepreciatedCollections.get('messages').find(message.parent_message_id);
+      DepreciatedCollections.get('messages').completeObject(
         { responses_count: parent.responses_count - 1 },
         parent.front_id,
       );
-      Collections.get('messages').share(parent);
+      DepreciatedCollections.get('messages').share(parent);
     }
 
-    Collections.get('messages').remove(message, messagesCollectionKey);
+    DepreciatedCollections.get('messages').remove(message, messagesCollectionKey);
   }
 
   editMessage(messageId, value, messagesCollectionKey) {
-    this.editedMessage = Collections.get('messages').find(messageId);
+    this.editedMessage = DepreciatedCollections.get('messages').find(messageId);
     let content = PseudoMarkdownCompiler.compileToJSON(value);
 
     let preparedFiles = this.editedMessage.content.files;
@@ -399,8 +403,11 @@ class Messages extends Observable {
     }
 
     this.editedMessage.content = Object.assign(this.editedMessage.content, content);
-    Collections.get('messages').completeObject(this.editedMessage, this.editedMessage.front_id);
-    Collections.get('messages').save(this.editedMessage, messagesCollectionKey);
+    DepreciatedCollections.get('messages').completeObject(
+      this.editedMessage,
+      this.editedMessage.front_id,
+    );
+    DepreciatedCollections.get('messages').save(this.editedMessage, messagesCollectionKey);
   }
 
   prepareContent(_content, user_specific_content) {
@@ -470,10 +477,18 @@ class Messages extends Observable {
     this.current_ephemeral[app.id] = [message, messagesCollectionKey];
   }
 
-  showMessage(id) {
-    const message = Collections.get('messages').find(id);
-    const channel = Collections.get('channels').find(message.channel_id);
-    ChannelsService.select(channel, true, { threadId: id });
+  async showMessage(id) {
+    const message = DepreciatedCollections.get('messages').find(id);
+    const channel = await this.findChannel(message.channel_id);
+
+    SideViewService.select(channel.id, {
+      collection: this.getCollection(message.channel_id),
+      app: 'messages',
+      context: {
+        viewType: 'channel_thread',
+        threadId: id,
+      },
+    });
   }
 
   scrollToMessage(channel, parent_id, id) {
@@ -483,6 +498,23 @@ class Messages extends Observable {
     } else {
       this.futureScrollToMessage[channel + '_' + parent_id] = { id: id, date: new Date() };
     }
+  }
+
+  async findChannel(channelId, companyId = null, workspaceId = null) {
+    return this.getCollection(channelId, companyId, workspaceId).findOne(
+      { id: channelId },
+      { withoutBackend: true },
+    );
+  }
+
+  getCollection(channelId, companyId = null, workspaceId = null) {
+    if (!companyId || !workspaceId) {
+      const context = MessagesListServerUtilsManager.channelsContextById[channelId];
+      companyId = context.companyId;
+      workspaceId = context.workspaceId;
+    }
+    const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+    return Collections.get(path, ChannelResource);
   }
 }
 

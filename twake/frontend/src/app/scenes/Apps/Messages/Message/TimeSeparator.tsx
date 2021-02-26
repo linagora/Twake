@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Message.scss';
 import moment from 'moment';
 import 'moment-timezone';
 import Languages from 'services/languages/languages.js';
 import CurrentUser from 'services/user/current_user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
 type Props = {
   messageId: string;

@@ -1,11 +1,11 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import Globals from 'services/Globals.js';
-import Collections from 'services/Collections/Collections.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import UserService from 'services/user/user.js';
 
 class Calendar extends Observable {
@@ -146,8 +146,6 @@ class Calendar extends Observable {
     if (!event.front_id) {
       return;
     }
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Update Event');
     event = Collections.get('events').completeObject(event, event.front_id);
 
     if (event.workspaces_calendars && event.workspaces_calendars.length > 0) {

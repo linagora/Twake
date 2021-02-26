@@ -33,25 +33,8 @@ class Message extends BaseController
         $object = $request->request->get("message", null);
         $chan_id = $object["channel_id"];
 
-        if (!$object["ephemeral_id"]) {
-            $result = $this->get("app.messages")->remove($object, $options);
-            $front_id = $result["front_id"];
-        } else {
-            $result = true;
-            $front_id = $object["front_id"];
-        }
-
-        if ($result) {
-
-            $event = Array(
-                "client_id" => "system",
-                "action" => "remove",
-                "object_type" => "",
-                "front_id" => $front_id
-            );
-            $this->get("app.websockets")->push("messages/" . $chan_id, $event);
-
-        }
+        $result = $this->get("app.messages")->remove($object, $options);
+        $front_id = $result["front_id"];
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
@@ -95,14 +78,6 @@ class Message extends BaseController
                 $object["content"]["last_change"] = date("U");
             }
         }
-
-        $event = Array(
-            "client_id" => "bot",
-            "action" => "save",
-            "object_type" => "",
-            "object" => $object
-        );
-        $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
         $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 

@@ -2,6 +2,7 @@
 
 img.emojione {
   width: 18px;
+  height: 18px;
   bottom: 0px;
   display: inline-block;
   position: relative;
@@ -25,24 +26,7 @@ i.emojione.emoji-image {
   top: 1px;
 }
 
-/*
-
-.title img.emojione {
-  width: 26px;
-  bottom: 3px;
+.emoji-container {
+  vertical-align: middle;
+  display: inline-flex;
 }
-
-.subtitle img.emojione {
-  width: 22px;
-  bottom: 2px;
-}
-
-img.emojione, .text img.emojione {
-  width: 18px;
-  bottom: 2px;
-}
-
-.smalltext img.emojione {
-  width: 16px;
-  bottom: 2px;
-}*/

@@ -5,7 +5,7 @@ import DateTimeUtils from 'services/utils/datetime.js';
 import UserService from 'services/user/user.js';
 import Globals from 'services/Globals.js';
 import DayPicker from './DayPicker/DayPicker.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import Input from 'components/Inputs/Input.js';
 import Icon from 'components/Icon/Icon.js';
 import './DatePicker.scss';

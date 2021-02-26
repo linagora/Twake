@@ -222,7 +222,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 $mapping = Array();
                 if (!$entity->hasAssociation($identifier)) {
                     $mapping = $entity->getFieldMapping($identifier);
-                    if (!in_array($mapping["type"], Array("twake_timeuuid", "string", "blob", "twake_string", "twake_bigint"))) {
+                    if (!in_array($mapping["type"], Array("twake_timeuuid", "twake_uuid", "string", "blob", "twake_string", "twake_bigint"))) {
                         error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string, or twake_string or blob or twake_bigint ! (in " . $entity->getName() . ")");
                         continue;
                     }
@@ -376,6 +376,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             "twake_no_salt_text" => "text",
             "twake_string" => "text",
             "twake_timeuuid" => "timeuuid",
+            "twake_uuid" => "timeuuid",
             "array" => "text",
             "twake_boolean" => "tinyint",
             "tinyint" => "tinyint",

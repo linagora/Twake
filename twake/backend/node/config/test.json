@@ -1,0 +1,20 @@
+{
+  "database": {
+    "mongodb": {
+      "uri": "mongodb://mongo:27017"
+    },
+    "cassandra": {
+      "contactPoints": [
+        "scylladb:9042"
+      ],
+      "wait": true,
+      "retries": 10,
+      "delay": 200
+    }
+  },
+  "pubsub": {
+    "urls": [
+      "amqp://admin:admin@rabbitmq:5672"
+    ]
+  }
+}

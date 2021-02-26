@@ -1,4 +1,4 @@
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 
 class Autocomplete extends Observable {
   constructor() {
@@ -8,13 +8,11 @@ class Autocomplete extends Observable {
   }
 
   open() {
-    console.log('open');
     this.isOpen = true;
     this.notify();
   }
 
   close() {
-    console.log('close');
     this.isOpen = false;
     this.notify();
   }

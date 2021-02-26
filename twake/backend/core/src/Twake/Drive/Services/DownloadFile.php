@@ -26,7 +26,7 @@ class DownloadFile
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->storagemanager = $app->getServices()->get("driveupload.storemanager");
         $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
-        $this->oldFileSystem = $app->getServices()->get("app.drive.old.adapter_selector")->getFileSystem();
+        $this->oldFileSystem = $app->getServices()->get("app.drive.old.adapter_selector");
     }
 
     public function download($workspace_id, $files_ids, $download, $versionId)
@@ -155,8 +155,17 @@ class DownloadFile
 
                         header('Content-Description: File Transfer');
                         if ($download) {
-                            header('Content-Type: application/octet-stream');
-                            header("Content-type: application/force-download");
+
+                            if (in_array($ext, ["gif", "svg", "jpeg", "jpg", "tiff", "png"])) {
+                                header('Content-Type: image; filename="' . $final_download_name . '"');
+                            }else
+                            if ($ext == "pdf") {
+                                header("Content-type: application/pdf");
+                            }else{
+                                header('Content-Type: application/octet-stream');
+                                header("Content-type: application/force-download");    
+                            }
+                            
                             header('Content-Disposition: attachment; filename="' . $final_download_name . '"');
                         } else {
                             header('Content-Disposition: inline; filename="' . $final_download_name . '"');
@@ -208,7 +217,6 @@ class DownloadFile
 
     public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
     {
-        $oldFileSystem = $this->oldFileSystem;
         if (!$version && !$file->getUrl()) {
             error_log("no version found");
             return false;
@@ -222,10 +230,13 @@ class DownloadFile
             return true;
         }
         if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $this->downloadFile($version->getData()["identifier"], $file->getName(), $zip, $zip_prefix);
+            $this->downloadFile($version, $version->getData()["identifier"], $file->getName(), $zip, $zip_prefix);
             return true;
         } else {
-            if ($oldFileSystem) {
+            if ($this->oldFileSystem) {
+
+                $oldFileSystem = $this->oldFileSystem->getFileSystem($version->getProvider());
+
                 $completePath = $oldFileSystem->getRoot() . $file->getPath();
 
                 //START - Woodpecker files import !
@@ -257,7 +268,7 @@ class DownloadFile
         return false;
     }
 
-    public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
+    public function downloadFile($version, $identifier, $name, &$zip = null, $zip_prefix = null)
     {
         $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
         if ($uploadstate->getEncryptionMode() == "OpenSSL-2") {
@@ -268,11 +279,11 @@ class DownloadFile
         }
         if (isset($uploadstate)) {
             if (isset($zip_prefix) && isset($zip)) {
-                $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
+                $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter($version->getProvider()), $param_bag, $uploadstate);
                 $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
             } else {
                 for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-                    $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+                    $this->storagemanager->getAdapter($version->getProvider())->read("stream", $i, $param_bag, $uploadstate);
                 }
             }
         } else {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import User from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
@@ -26,11 +26,18 @@ type Props = {
 
 export default class ThreadSection extends Component<Props> {
   node: any;
+  listener: any;
+
+  componentWillUnmount() {
+    if (this.listener) {
+      Collections.get('users').removeListener(this.listener);
+    }
+  }
 
   render() {
     let senderData: any = getSender(this.props.message);
     if (senderData.type === 'user') {
-      Collections.get('users').addListener(this);
+      this.listener = Collections.get('users').addListener(this);
       Collections.get('users').listenOnly(this, [senderData.id]);
     }
     if (!senderData.type || senderData.type === 'unknown') {

@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
 import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Menu from 'components/Menus/Menu.js';
 import Input from 'components/Inputs/Input.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import TimeSelector from 'components/Calendar/TimeSelector.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/ObjectModal.js';
+import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 
@@ -46,7 +46,6 @@ export default class TaskEditor extends React.Component {
     TasksService.unarchive(this.props.task, this.props.collectionKey);
   }
   change(key, value, notify) {
-    console.log('change ' + key, value);
     this.props.task[key] = value;
     Collections.get('tasks').notify();
   }

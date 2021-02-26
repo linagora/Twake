@@ -10,13 +10,13 @@ use Aws\S3\S3Client;
 class AWS_Uploader extends Uploader
 {
 
-
     public function __construct(App $app)
     {
-
-        $s3_config = $app->getContainer()->getParameter("storage.S3");
-
         parent::__construct($app);
+    }
+
+    public function configure($config){
+        $s3_config = $config;
 
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
@@ -30,12 +30,13 @@ class AWS_Uploader extends Uploader
                 $region = $aws_region;
             }
         }
-        $this->aws_bucket_name = $this->aws_buckets_prefix . 'twake.' . $region;
+        $this->aws_bucket_name = isset($s3_config["bucket_name"]) ? $s3_config["bucket_name"] : ($this->aws_buckets_prefix . 'twake.' . $region);
         $this->aws_bucket_region = $region;
 
         $options = [
             'version' => $this->aws_version,
-            'region' => $this->aws_bucket_region,
+            'region' => $this->aws_bucket_region,           
+            'use_path_style_endpoint' => isset($s3_config["use_path_style_endpoint"]) ? $s3_config["use_path_style_endpoint"] : false,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
                 'secret' => $this->aws_credentials_secret

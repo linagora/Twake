@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import ColorPicker from 'components/ColorPicker/ColorPicker.js';
 import Input from 'components/Inputs/Input.js';
 import './Inputs.scss';

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import User from 'services/user/user.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import Moment from 'react-moment';
 import moment from 'moment';
 import ChannelsService from 'services/channels/channels.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
@@ -18,6 +18,8 @@ import MessagesListServerServicesManager, {
 } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
+import Workspaces from 'services/workspaces/workspaces.js';
+import RouterServices from 'app/services/RouterService';
 
 type Props = {
   message: Message;
@@ -30,8 +32,8 @@ type State = {
 };
 
 export default class MessageHeader extends Component<Props, State> {
-  messagesListService: MessagesListService;
-  messagesListServerService: MessagesListServerUtils;
+  messagesListService: MessagesListService | null = null;
+  messagesListServerService: MessagesListServerUtils | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -39,15 +41,18 @@ export default class MessageHeader extends Component<Props, State> {
       messageLink: '',
     };
 
-    this.messagesListServerService = MessagesListServerServicesManager.get(
-      this.props.message?.channel_id || '',
-      '',
-      this.props.collectionKey,
-    );
-    this.messagesListService = MessagesListServiceManager.get(
-      this.props.collectionKey,
-      this.messagesListServerService,
-    );
+    this.messagesListServerService =
+      MessagesListServerServicesManager.getByChannelId(
+        this.props.message?.channel_id || '',
+        '',
+        this.props.collectionKey,
+      ) || null;
+    if (this.messagesListServerService) {
+      this.messagesListService = MessagesListServiceManager.get(
+        this.props.collectionKey,
+        this.messagesListServerService,
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -55,30 +60,37 @@ export default class MessageHeader extends Component<Props, State> {
     if (senderData.type === 'user') {
       ListenUsers.cancelListenUser(senderData.id);
     }
+    Collections.get('users').removeListener(this);
   }
 
   render() {
     let user_name_node: any = null;
 
+    if (this.messagesListService === null) {
+      return <></>;
+    }
+
     const scrollToMessage = () => {
       const messageId = this.props.message.parent_message_id || '';
-      const found = this.messagesListService.scrollToMessage({
+      const found = (this.messagesListService as MessagesListService).scrollToMessage({
         id: messageId,
       });
       if (!found) {
-        this.messagesListServerService.init(messageId).then(() => {
-          this.messagesListService.scrollToMessage({ id: messageId });
-          this.messagesListServerService.notify();
-          this.messagesListServerService.loadMore();
+        (this.messagesListServerService as MessagesListServerUtils).init(messageId).then(() => {
+          (this.messagesListService as MessagesListService).scrollToMessage({ id: messageId });
+          (this.messagesListServerService as MessagesListServerUtils).notify();
+          (this.messagesListServerService as MessagesListServerUtils).loadMore();
         });
       }
     };
 
     const updateMessageLink = () => {
-      const url = ChannelsService.getURL(
-        this.props.message.channel_id,
-        this.props.message.parent_message_id || this.props.message.id,
-      );
+      const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
+      const url = RouterServices.generateRouteFromState({
+        workspaceId: workspace.id,
+        channelId: this.props.message.channel_id,
+        messageId: this.props.message.parent_message_id || this.props.message.id,
+      });
       this.setState({ messageLink: url });
     };
 
@@ -157,6 +169,8 @@ export default class MessageHeader extends Component<Props, State> {
             >
               {this.props.message.creation_date * 1000}
             </Moment>
+
+            {this.props.message.edited && ' - edited'}
           </a>
         )}
       </div>

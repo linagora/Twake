@@ -17,9 +17,7 @@ class Queues
     public function __construct(App $app)
     {
         $this->adapter = new EmptyManager();
-        if ($app->getContainer()->getParameter("queues.sqs.use")) {
-            $this->adapter = new SQS($app->getContainer()->getParameter("queues.sqs"));
-        } else if ($app->getContainer()->getParameter("queues.rabbitmq.use")) {
+        if ($app->getContainer()->getParameter("queues.rabbitmq.use")) {
             $this->adapter = new RabbitMQ($app->getContainer()->getParameter("queues.rabbitmq"));
         }
     }

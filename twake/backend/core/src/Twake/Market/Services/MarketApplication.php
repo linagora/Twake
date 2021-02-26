@@ -10,13 +10,11 @@ class MarketApplication
 {
     private $doctrine;
     private $gms;
-    private $pricingPlan;
 
     public function __construct(App $app)
     {
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->gms = $app->getServices()->get("app.group_managers");
-        $this->pricingPlan = $app->getServices()->get("app.pricing_plan");
     }
 
     public function findBySimpleName($name, $entity = false)
@@ -275,7 +273,7 @@ class MarketApplication
 
                 if (!$application->getisAvailableToPublic()) {
 
-                    $this->doctrine->getRepository("Twake\Market:ApplicationResource")->removeBy(Array("application_id" => $application->getId()));
+                    $this->doctrine->getRepository("Twake\Market:ApplicationResourceNode")->removeBy(Array("application_id" => $application->getId()));
                     //TODO REMOVE EVERYWHERE
 
                     $this->doctrine->remove($application);

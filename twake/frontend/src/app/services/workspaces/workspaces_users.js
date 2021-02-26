@@ -1,18 +1,19 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import User from 'services/user/user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import groupService from 'services/workspaces/groups.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import Numbers from 'services/utils/Numbers.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import CurrentUser from 'services/user/current_user.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
+import LoginService from 'services/login/login';
 
 import Globals from 'services/Globals.js';
 
@@ -185,13 +186,10 @@ class WorkspacesUsers extends Observable {
   }
   canShowUserInWorkspaceList(member) {
     // if user is interne or wexterne => no restriction
-    if (!WorkspaceUserRights.isInvite() || !WorkspaceUserRights.isInviteChannelOnly()) {
+    if (!WorkspaceUserRights.isInvite()) {
       return true;
     } else {
-      if (
-        !WorkspaceUserRights.isInvite(member) ||
-        !WorkspaceUserRights.isInviteChannelOnly(member)
-      ) {
+      if (!WorkspaceUserRights.isInvite(member)) {
         // if other user is interne or wexterne
         return true;
       }
@@ -222,6 +220,10 @@ class WorkspacesUsers extends Observable {
   }
   removeUserFromWorkspaceList(user) {}
   recieveWS(res) {
+    if (res.workspace_user.user.id === User.getCurrentUserId()) {
+      LoginService.updateUser();
+    }
+
     if (res.type == 'add' || res.type == 'update_workspace_level') {
       var userlink = {
         externe: res.workspace_user.externe,
@@ -300,19 +302,7 @@ class WorkspacesUsers extends Observable {
             CurrentUser.updateTutorialStatus('did_invite_collaborators');
           }
 
-          ((res.data.added || {}).user || []).forEach(() => {
-            if (Globals.window.mixpanel_enabled)
-              Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Add Collaborator', {
-                workspace_id: workspaceService.currentWorkspaceId,
-              });
-          });
-
           res.data.added.pending.forEach(mail => {
-            if (Globals.window.mixpanel_enabled)
-              Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Add Collaborator', {
-                workspace_id: workspaceService.currentWorkspaceId,
-              });
-
             WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, {
               mail: mail,
             });
@@ -474,7 +464,6 @@ class WorkspacesUsers extends Observable {
         },
         res => {
           if (res.errors.length > 0 || res.data.updated == 0) {
-            console.log('error, going to previous state' + previousState);
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }

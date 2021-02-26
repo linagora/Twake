@@ -12,12 +12,7 @@ use Twake\Discussion\Entity\Channel;
 use Twake\Market\Entity\Application;
 use Twake\Market\Entity\LinkAppWorkspace;
 use Twake\Workspaces\Entity\Level;
-use Twake\Workspaces\Entity\PricingPlan;
 
-/**
- * Date: 20/06/2017
- * Time: 09:45
- */
 class InitCommand extends ContainerAwareCommand
 {
     var $leveladmin;
@@ -47,28 +42,6 @@ class InitCommand extends ContainerAwareCommand
          */
 
         $services = $this->getApp()->getServices();
-
-        // Création d'un pricing minimum gratuit
-        error_log("> Creating basic pricings");
-        $plan = $services->get("app.pricing_plan")->getMinimalPricing();
-        if (!$plan) {
-            $plan = new PricingPlan("standard");
-            $plan->setLimitation(Array("drive" => "0"));
-            $plan->setMonthPrice(0);
-            $plan->setYearPrice(0);
-            $manager->persist($plan);
-        }
-        $plan = $manager->getRepository("Twake\Workspaces:PricingPlan")->findOneBy(Array("label" => "private"));
-        if (!$plan) {
-            $plan = new PricingPlan("private");
-            $plan->setLimitation(Array("drive" => "0"));
-            $plan->setMonthPrice(0);
-            $plan->setYearPrice(0);
-            $manager->persist($plan);
-        }
-
-        $manager->flush();
-
 
         // Création des applications    de base
         error_log("> Creating basic apps");

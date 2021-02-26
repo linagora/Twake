@@ -1,6 +1,5 @@
-import React from 'react';
-import Observable from 'services/observable.js';
-import Api from 'services/api.js';
+import Observable from 'app/services/Depreciated/observable.js';
+import Api from 'services/Api';
 import locale_en from './locale/en.js';
 import locale_fr from './locale/fr.js';
 import locale_de from './locale/de.js';
@@ -44,7 +43,7 @@ class Languages extends Observable {
       }
     });
 
-    this.testMode = WindowState.findGetParameter('test_mode') || LocalStorage.getItem('test_mode');
+    this.testMode = WindowState.findGetParameter('test_mode');
   }
 
   getNavigatorLanguage() {

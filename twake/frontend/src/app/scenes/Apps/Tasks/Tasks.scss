@@ -41,14 +41,12 @@
 }
 
 .tasks_app {
-  position: absolute;
   height: 100%;
   width: 100%;
   left: 0;
   right: 0;
   flex-direction: column;
-  padding: 32px;
-  padding-bottom: 15px !important;
+  padding: 16px 24px;
   box-sizing: border-box;
   overflow-y: auto;
   display: flex;
@@ -178,4 +176,5 @@
   max-width: 400px;
   text-align: center;
   margin: auto;
+  margin-top: 10vh;
 }

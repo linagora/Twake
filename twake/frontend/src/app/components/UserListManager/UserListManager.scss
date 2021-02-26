@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .userListManager {
   & > .no-users {
     line-height: 32px;
@@ -7,18 +5,18 @@
   }
 
   &.collapsed {
-    & > .menu .text,
-    .menu .more {
+    & > .users-list .text,
+    .users-list .more {
       display: none;
     }
-    & > .menu .icon {
+    & > .users-list .icon {
       margin-right: 0px;
     }
-    & > .menu .icon .user_head {
+    & > .users-list .icon .user_head {
       width: 25px;
       height: 25px;
       border-radius: 14px;
-      border: 2px solid $white;
+      border: 2px solid var(--white);
       box-sizing: border-box;
 
       &.email {
@@ -28,14 +26,14 @@
         font-weight: bold;
       }
     }
-    & > .menu {
+    & > .users-list {
       height: 24px;
       padding: 0px;
       display: inline-block;
       margin-bottom: 0px;
       vertical-align: top;
     }
-    & > .menu:not(:first-child) {
+    & > .users-list > div:not(:first-child) {
       margin-left: -12px;
     }
   }
@@ -62,12 +60,16 @@
     }
   }*/
 
-  & > .menu {
+  & > .users-list .ant-row {
     display: flex;
-    height: 32px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    box-sizing: border-box;
+    flex-flow: nowrap;
+
+    & > * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
 
     .icon {
       margin-right: 8px;
@@ -99,29 +101,29 @@
       top: 1px;
       position: relative;
     }
-    .more {
-      height: 24px;
-      .m-icon-small {
-        margin: 3px;
-        color: $black;
-        cursor: pointer;
-      }
+  }
 
-      &:hover {
-        .m-icon-small {
-          &.remove {
-            color: $red;
-          }
-          &.add {
-            color: $primary;
-          }
+  .more {
+    height: 24px;
+    .m-icon-small {
+      margin: 3px;
+      color: var(--black);
+      cursor: pointer;
+    }
+
+    &:hover {
+      .m-icon-small {
+        &.remove {
+          color: var(--red);
+        }
+        &.add {
+          color: var(--primary);
         }
       }
     }
   }
-
-  .menu-text.add-user-input {
+  .add-user-input {
     margin-top: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 }

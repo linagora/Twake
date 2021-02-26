@@ -1,12 +1,15 @@
 import React from 'react';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'services/user/current_user.js';
-import Api from 'services/api.js';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
 import Globals from 'services/Globals.js';
+import Icon from 'app/components/Icon/Icon';
+import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 
 class WorkspacesApps extends Observable {
   constructor() {
@@ -49,7 +52,7 @@ class WorkspacesApps extends Observable {
       if (res.data) {
         Collections.get('applications').updateObject(res.data);
         this.findingApp[id] = false;
-        if (callback) callback();
+        if (callback) callback(res.data);
       }
     });
   }
@@ -77,6 +80,9 @@ class WorkspacesApps extends Observable {
   }
 
   load(workspace_id, reset_offset, options) {
+    if (!workspace_id) {
+      return;
+    }
     if (!options) {
       options = {};
     }
@@ -188,9 +194,6 @@ class WorkspacesApps extends Observable {
       ][id].app;
     }
 
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Activate App', { id: id });
-
     Api.post('workspace/apps/enable', data, function (res) {});
 
     this.notify();
@@ -211,9 +214,6 @@ class WorkspacesApps extends Observable {
 
       this.loadGroupApps();
     }
-
-    if (Globals.window.mixpanel_enabled)
-      Globals.window.mixpanel.track(Globals.window.mixpanel_prefix + 'Remove App', { id: id });
 
     Api.post('workspace/apps/disable', data, function (res) {});
 
@@ -286,22 +286,50 @@ class WorkspacesApps extends Observable {
     this.notify();
   }
 
-  openAppPopup(app_id) {
-    //TODO
-    console.log('Open App Popup loader waiting for content');
+  openAppPopup(app_id) {}
+
+  getAppIcon(app, feather = false) {
+    if (app && app.simple_name) {
+      switch (app.simple_name.toLocaleLowerCase()) {
+        case 'twake_calendar':
+          return feather ? Calendar : 'calendar-alt';
+        case 'twake_drive':
+          return feather ? Folder : 'folder';
+        case 'twake_tasks':
+          return feather ? CheckSquare : 'check-square';
+        default:
+          return app.icon_url || (feather ? Hexagon : 'puzzle-piece');
+      }
+    }
+    return feather ? Hexagon : 'puzzle-piece';
   }
 
-  getAppIcon(app) {
-    if (app.simple_name.toLocaleLowerCase() == 'twake_calendar') {
-      return 'calendar-alt';
+  getAppIconComponent(item, options = {}) {
+    const application = DepreciatedCollections.get('applications').find(
+      item.application_id ? item.application_id : item.id,
+    );
+    const IconType = this.getAppIcon(application, true);
+
+    if (item.simple_name === 'jitsi') {
+      return (
+        <div
+          className="menu-app-icon"
+          style={item.icon_url ? { backgroundImage: 'url(' + item.icon_url + ')' } : {}}
+        />
+      );
+    } else {
+      if (typeof IconType === 'string') {
+        return (
+          <Icon
+            type={IconType}
+            style={{ width: options.size || 18, height: options.size || 18 }}
+            className="small-right-margin"
+          />
+        );
+      } else {
+        return <IconType size={options.size || 18} className="small-right-margin" />;
+      }
     }
-    if (app.simple_name.toLocaleLowerCase() == 'twake_drive') {
-      return 'folder';
-    }
-    if (app.simple_name.toLocaleLowerCase() == 'twake_tasks') {
-      return 'check-square';
-    }
-    return app.icon_url || 'puzzle-piece';
   }
 }
 

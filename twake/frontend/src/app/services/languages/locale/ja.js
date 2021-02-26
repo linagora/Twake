@@ -187,7 +187,7 @@ export default {
   'scenes.apps.calendar.event_edition.placeholder_end_time': '終了時間',
   'scenes.apps.calendar.event_edition.placeholder_description': '説明',
   'scenes.apps.calendar.event_edition.placeholder_location': 'ロケーション',
-  'scenes.apps.calendar.event_edition.title_participants': '参加者',
+  'scenes.apps.calendar.event_edition.title_confidentiality': '参加者',
   'scenes.apps.calendar.event_edition.title_reminder': 'リマインダ',
   'scenes.apps.calendar.event_edition.title_details': '詳細',
   //--EventView
@@ -844,7 +844,7 @@ export default {
   //-End ForgotPassword
   //-Home
   'scenes.login.home.title': 'Twakeにサインインする',
-  'scenes.login.home.email': 'ユーザー名または電子メール',
+  'scenes.login.home.email': '電子メイル',
   'scenes.login.home.unable_to_connect': '無効な資格情報',
   'scenes.login.home.password': 'パスワード',
   'scenes.login.home.login_btn': 'ログイン',

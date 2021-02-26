@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
-import Collections from 'services/Collections/Collections.js';
-import MenuManager from 'services/Menus/MenusManager.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import MenuManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
@@ -23,7 +23,6 @@ export default class BoardEditor extends React.Component {
       if (board) {
         this.state.name = board.title;
         this.state.emoji = board.emoji;
-        console.log(this.state);
       }
     }
   }

@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import Twacode from 'components/Twacode/Twacode';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import 'moment-timezone';
 import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
-import Reactions from './Reactions';
-import Options from './Options';
-import MessageHeader from './MessageHeader';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
 import Input from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import AlertManager from 'app/services/AlertManager/AlertManager';
+import Languages from 'services/languages/languages.js';
 
 type Props = {
   message: Message;
@@ -30,14 +27,17 @@ export default (props: Props) => {
     ),
   );
 
-  const save = () => {
-    const content = messageEditorService.getContent(
-      props.message?.parent_message_id || '',
-      props.message?.id || '',
-    );
-
+  const save = async (content: string) => {
     if (!content) {
-      MessagesService.deleteMessage(props.message, props.collectionKey);
+      AlertManager.confirm(
+        () => {
+          MessagesService.deleteMessage(props.message, props.collectionKey);
+        },
+        () => {},
+        {
+          title: Languages.t('scenes.apps.messages.chatbox.chat.delete_message_btn'),
+        },
+      );
     } else {
       MessagesService.editMessage(props.message.id, content, props.collectionKey);
     }
@@ -60,16 +60,21 @@ export default (props: Props) => {
         messageId={props.message?.id || ''}
         collectionKey={props.collectionKey}
         context={'edition'}
-        onSend={() => {
-          save();
+        onSend={content => {
+          save(content);
         }}
       />
 
       <Button
         className="primary small-right-margin"
         small
-        onClick={() => {
-          save();
+        onClick={async () => {
+          save(
+            await messageEditorService.getContent(
+              props.message?.parent_message_id || '',
+              props.message?.id || '',
+            ),
+          );
         }}
       >
         Save

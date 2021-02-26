@@ -20,8 +20,78 @@ class Users
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
     }
 
-    public function search($options = Array(), $entity = false)
+    public function search($options = Array(), $entity = false){
+        $res = $this->searchWithES($options, $entity);
+        if(!isset($res["users"]) || count($res["users"]) === 0){
+                $res = $this->searchWithDB($options, $entity);
+        }
+        return $res;
+    }
+
+    public function searchWithDB($options = Array(), $entity = false)
     {
+        $name = $options["name"];
+
+        $scope = $options["scope"] ?: "all";
+     
+        $usersArray = [];
+        $usersEntities = [];
+
+        $offset = null;
+        $limit = 100;
+        $iteration = 0;
+
+        while(count($usersArray) < 5 && $iteration < 10){
+            $iteration++;
+
+            $users = [];
+            if($scope == "workspace"){
+                $workspace_id = $options["workspace_id"];
+
+                $repo = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
+                $links = $repo->findBy(["workspace_id" => $workspace_id], null, $limit, $offset);
+
+                foreach($links as $link){
+                    $users[] = $link->getUser($this->em);
+                    $offset = $link->getUserId();
+                }
+
+            }elseif($scope == "group"){
+                $group_id = $options["group_id"];
+
+                $repo = $this->em->getRepository("Twake\Workspaces:GroupUser");
+                $links = $repo->findBy(["group" => $group_id], null, $limit, $offset);
+
+                foreach($links as $link){
+                    $users[] = $link->getUser();
+                    $offset = $link->getUser()->getId();
+                }
+                
+            }
+
+            foreach($users as $user){
+                if($user){
+
+                    //TODO execute search filter
+                    
+                    $usersArray[] = [$user->getAsArray(), 0];
+                    $usersEntities[] = [$user, 0];
+                }
+            }
+
+            if(count($users) < $limit){
+                break;
+            }
+
+        }
+
+        return ["users" => $entity ? $usersEntities : $usersArray, "scroll_id" => ""];
+
+    }
+
+    public function searchWithES($options = Array(), $entity = false)
+    {
+
         $name = $options["name"];
 
         $scope = $options["scope"] ?: "all";

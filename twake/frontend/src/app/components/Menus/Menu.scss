@@ -12,7 +12,7 @@
     width: 100%;
     position: absolute;
     top: 100%;
-    z-index: 1000;
+    z-index: 1050;
 
     &.top {
       bottom: 100%;
@@ -49,8 +49,7 @@
   .menu-text {
     font-size: 12px;
     font-weight: 500;
-    margin: 8px 8px;
-    padding: 0 8px;
+    margin: 8px 16px;
     color: $grey_dark;
   }
 

@@ -34,14 +34,28 @@ class Version extends BaseController
               "use" => true,
             ];
         }
+        if ($this->getParameter("defaults.auth.console.use")) {
+            $auth["console"] = [
+              "use" => true,
+              "account_management_url" => $this->getParameter("defaults.auth.console.redirections.account_management_url"),
+              "company_management_url" => $this->getParameter("defaults.auth.console.redirections.company_management_url"),
+              "collaborators_management_url" => $this->getParameter("defaults.auth.console.redirections.collaborators_management_url"),
+            ];
+        }
 
         $data = Array(
             "ready" => $ready,
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
+            "version" => [
+                "current" => /* @VERSION_DETAIL */ "2021.Q1.385",
+                "minimal" => [
+                    "web" => /* @MIN_VERSION_WEB */ "2021.Q1.385",
+                    "mobile" => /* @MIN_VERSION_MOBILE */ "2021.Q1.385",
+                ]
+            ],
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
-            "help_link" => "https://community.twake.app",
-            "websocket_public_key" => $this->container->getParameter("websocket.pusher_public")
+            "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161"
         );
 
         if ($this->container->hasParameter("defaults.branding")) {

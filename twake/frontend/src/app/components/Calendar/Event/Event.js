@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './Event.scss';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Languages from 'services/languages/languages.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 
 import moment from 'moment';
 

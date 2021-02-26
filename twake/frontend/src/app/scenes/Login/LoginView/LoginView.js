@@ -5,7 +5,7 @@ import LoginService from 'services/login/login.js';
 import Emojione from 'components/Emojione/Emojione';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
-
+import InitService from 'services/InitService';
 export default class LoginView extends Component {
   constructor() {
     super();
@@ -19,12 +19,13 @@ export default class LoginView extends Component {
     Languages.addListener(this);
   }
   componentDidMount() {
+    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
     if (
-      ((LoginService.server_infos || {}).auth || []).length > 0 &&
-      ((LoginService.server_infos || {}).auth || []).indexOf('internal') < 0 &&
+      authModes.length > 0 &&
+      authModes.indexOf('internal') < 0 &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(((LoginService.server_infos || {}).auth || [])[0]);
+      LoginService.loginWithExternalProvider(authModes[0]);
     }
   }
   componentWillUnmount() {
@@ -34,28 +35,37 @@ export default class LoginView extends Component {
   render() {
     const login = this.state.login;
 
+    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
+    if (
+      authModes.length > 0 &&
+      authModes.indexOf('internal') < 0 &&
+      !(LoginService.external_login_error || false)
+    ) {
+      return <></>;
+    }
+
     return (
       <div className="center_box_container login_view skew_in_bottom_nobounce">
         <div className="center_box white_box_with_shadow">
           <div className="title">
-            {!((LoginService.server_infos || {}).branding || {}).logo &&
+            {!((InitService.server_infos || {}).branding || {}).logo &&
               this.state.i18n.t('scenes.login.home.title')}
           </div>
 
-          {!((LoginService.server_infos || {}).branding || {}).logo && (
+          {!((InitService.server_infos || {}).branding || {}).logo && (
             <div className="subtitle" style={{ marginBottom: 24 }}>
               {this.state.i18n.t('scenes.login.home.subtitle')} <Emojione type=":innocent:" />
             </div>
           )}
 
-          {!!((LoginService.server_infos || {}).branding || {}).logo && (
+          {!!((InitService.server_infos || {}).branding || {}).logo && (
             <img
               style={{ marginBottom: 40, marginTop: 10, width: 140 }}
-              src={((LoginService.server_infos || {}).branding || {}).logo}
+              src={((InitService.server_infos || {}).branding || {}).logo}
             />
           )}
 
-          {Object.keys((login.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
+          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -70,7 +80,7 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {Object.keys((login.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
+          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
             <div class="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
@@ -91,8 +101,8 @@ export default class LoginView extends Component {
             </div>
           )}
 
-          {(Object.keys((login.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
-            ((login.server_infos || {}).auth || []).length == 0) && (
+          {(Object.keys((InitService.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
+            ((InitService.server_infos || {}).auth || []).length == 0) && (
             <div class="internal-login">
               <Input
                 id="username"
@@ -144,7 +154,7 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
               </Button>
-              {!(((LoginService.server_infos || {}).auth || {}).internal || {})
+              {!(((InitService.server_infos || {}).auth || {}).internal || {})
                 .disable_account_creation && (
                 <a
                   onClick={() => this.state.login.changeState('signin')}

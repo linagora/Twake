@@ -277,6 +277,9 @@ export default class AutoComplete extends Component<Props, State> {
     }
   }
   focus() {
+    if (!this.input) {
+      return;
+    }
     this.input.focus();
     this.setState({ focused: true });
     this.keyUp({});

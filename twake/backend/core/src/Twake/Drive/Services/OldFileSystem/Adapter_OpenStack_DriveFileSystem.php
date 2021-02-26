@@ -15,7 +15,11 @@ class Adapter_OpenStack_DriveFileSystem
 
     public function __construct(App $app)
     {
-        $openstack_config = $app->getContainer()->getParameter("storage.openstack");
+        $this->configure($app, $app->getContainer()->getParameter("storage.openstack"));
+    }
+
+    public function configure(App $app, $config){
+        $openstack_config = $config;
         $this->root = $this->local = $app->getAppRootDir();
         $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
 
@@ -84,7 +88,7 @@ class Adapter_OpenStack_DriveFileSystem
 
             return $tmpPath;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error accessing aws file.");
         }
 

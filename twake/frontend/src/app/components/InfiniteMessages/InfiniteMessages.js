@@ -259,15 +259,7 @@ export default class InfiniteMessages extends Component {
     if (this.no_more_before && this.messages_min.id == this.no_more_before.id) {
       return;
     }
-    console.log(
-      'get previous messages before ',
-      this.messages_min.id,
-      ' min was ',
-      (this.no_more_before || {}).id,
-    );
-
     this.number_of_messages_to_load = 2 * (this.dom_infinite_messages.clientHeight / 20);
-
     this.is_getting_top_messages = true;
 
     this.props.getMessages(this.messages_min.id, parseInt(this.number_of_messages_to_load), res => {
@@ -283,7 +275,6 @@ export default class InfiniteMessages extends Component {
       top_list = res.concat(top_list);
 
       this.messages_med = res[res.length - 1];
-      console.log('set min to ', res[0]);
       this.messages_min = res[0];
       this.messages_max = top_list[top_list.length - 1];
 
@@ -310,9 +301,6 @@ export default class InfiniteMessages extends Component {
     }
 
     this.number_of_messages_to_load = 2 * (this.dom_infinite_messages.clientHeight / 20);
-
-    console.log('get previous messages after ', this.messages_max.id);
-
     this.is_getting_bottom_messages = true;
 
     this.props.getMessages(

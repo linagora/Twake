@@ -66,7 +66,6 @@ class ReactNative {
       return;
     }
     if (data.origin && data.origin == 'reactnative') {
-      console.log(data);
       if (this.callbacks[data.unid]) {
         this.callbacks[data.unid](data);
       } else if (data.method && this[data.method]) {
@@ -107,9 +106,7 @@ class ReactNative {
     });
   }
 
-  updateNotifications(total) {
-    //console.log("update reactnative badge", total);
-  }
+  updateNotifications(total) {}
 
   copy(text) {
     if (!Globals.window.reactNative) {
@@ -147,8 +144,6 @@ class ReactNative {
     };
 
     this.callReactNative('actionsheet', req, function (data) {
-      console.log(data.data, data.data.index);
-      console.log(callbacks);
       if (callbacks[data.data.index]) {
         callbacks[data.data.index]();
       }
@@ -185,10 +180,7 @@ class ReactNative {
     };
   }
 
-  didOpenPushNotification(data) {
-    var notification = data;
-    console.log(data);
-  }
+  didOpenPushNotification(data) {}
 
   resumeApp() {
     document.dispatchEvent(new Event('resume'));

@@ -1,7 +1,6 @@
 @import '~components/constants.scss';
 
 .calendar_app {
-  position: absolute;
   height: 100%;
   width: 100%;
   left: 0;
@@ -26,7 +25,7 @@
 
 .calendar_header {
   display: flex;
-  padding: 16px 32px;
+  padding: 16px;
 
   .left {
     flex: 1;
@@ -75,4 +74,5 @@
   max-width: 400px;
   text-align: center;
   margin: auto;
+  margin-top: 10vh;
 }

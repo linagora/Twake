@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Stream;
 use OpenStack\Common\Transport\Utils as TransportUtils;
-use OpenStack\Identity\v2\Service;
+use OpenStack\Identity\v3\Service;
 use OpenStack\OpenStack;
 use Twake\Drive\Entity\DriveFile;
 use Twake\Drive\Entity\UploadState;
@@ -39,8 +39,10 @@ class Adapter_OpenStack implements AdapterInterface
         $this->openstack_buckets_prefix = $openstack["buckets_prefix"];
         $this->openstack_credentials_key = $openstack["user"]["id"];
         $this->openstack_credentials_secret = $openstack["user"]["password"];
+        $this->openstack_domain_name = $openstack["user"]["domain_name"];
         $this->openstack_project_id = $openstack["project_id"];
         $this->openstack_auth_url = $openstack["auth_url"];
+        $this->disable_encryption = $openstack["disable_encryption"];
 
         $httpClient = new Client([
             'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url ? $this->openstack_auth_url : ""),
@@ -67,9 +69,16 @@ class Adapter_OpenStack implements AdapterInterface
         $this->openstack = new OpenStack([
             'authUrl' => $this->openstack_auth_url,
             'region' => $this->openstack_region_id,
-            'tenantId' => $this->openstack_project_id,
-            'username' => $this->openstack_credentials_key . "",
-            'password' => $this->openstack_credentials_secret,
+            'user' => [
+                'name' => $this->openstack_credentials_key,
+                'password' => $this->openstack_credentials_secret,
+                'domain'   => [ 'id' => $this->openstack_domain_name ]
+            ],
+            'scope'   => [
+                'project' => [
+                    'id' => $this->openstack_project_id
+                ]
+            ],
             'identityService' => Service::factory($httpClient)
         ]);
 
@@ -140,7 +149,7 @@ class Adapter_OpenStack implements AdapterInterface
 
                         } else {
                             $res = false;
-                            error_log("FILE NOT GENERATED !" . $e->getMessage());
+                            error_log("PREVIEW NOT GENERATED !");
                         }
 
                     } catch (\Exception $e) {
@@ -180,14 +189,19 @@ class Adapter_OpenStack implements AdapterInterface
 
             @unlink($chunkFile);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
     }
 
     private function encode($chunkFile, $param_bag)
     {
-        //error_log(print_r($chunkFile,true));
+
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".encrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
 
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
@@ -248,7 +262,7 @@ class Adapter_OpenStack implements AdapterInterface
 
             return $decodedPath;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error accessing openstack file.");
         }
 
@@ -257,6 +271,12 @@ class Adapter_OpenStack implements AdapterInterface
 
     protected function decode($chunkFile, $param_bag)
     {
+        if($this->disable_encryption){
+            $pathTemp = $chunkFile . ".decrypt";
+            copy($chunkFile, $pathTemp);
+            return $pathTemp;
+        }
+
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
             $mcrypt = new MCryptAES256Implementation();
@@ -289,7 +309,7 @@ class Adapter_OpenStack implements AdapterInterface
                 ->getObject($file_path)
                 ->delete();
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
 

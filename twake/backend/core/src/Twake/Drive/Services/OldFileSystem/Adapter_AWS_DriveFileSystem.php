@@ -12,12 +12,16 @@ class Adapter_AWS_DriveFileSystem
 
     public function __construct(App $app)
     {
+        $this->configure($app, $app->getContainer()->getParameter("storage.S3"));
+    }
 
-        $aws_config = $app->getContainer()->getParameter("storage.S3");
+    public function configure(App $app, $config){
+        $aws_config = $config;
+        $s3_config = $aws_config;
+
         $this->root = $this->local = $app->getAppRootDir();
         $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
 
-        $s3_config = $aws_config;
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
         $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
@@ -30,12 +34,13 @@ class Adapter_AWS_DriveFileSystem
                 $region = $aws_region;
             }
         }
-        $this->aws_bucket_name = $this->aws_buckets_prefix . 'twake.' . $region;
+        $this->aws_bucket_name = isset($s3_config["bucket_name"]) ? $s3_config["bucket_name"] : ($this->aws_buckets_prefix . 'twake.' . $region);
         $this->aws_bucket_region = $region;
 
         $options = [
             'version' => $this->aws_version,
             'region' => $this->aws_bucket_region,
+            'use_path_style_endpoint' => isset($s3_config["use_path_style_endpoint"]) ? $s3_config["use_path_style_endpoint"] : false,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
                 'secret' => $this->aws_credentials_secret

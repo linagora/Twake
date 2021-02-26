@@ -1,13 +1,13 @@
 import React, { Component, useState } from 'react';
 
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
 import UserService from 'services/user/user.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'services/localStorage.js';
 
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';
@@ -19,7 +19,7 @@ import EventModification from './Modals/EventModification.js';
 import CalendarEditor from './Modals/CalendarEditor.js';
 import Menu from 'components/Menus/Menu.js';
 import DayPicker from 'components/Calendar/DayPicker/DayPicker.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -28,7 +28,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Select from 'components/Select/Select.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import UnconfiguredTab from './UnconfiguredTab.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
@@ -82,7 +82,7 @@ export default class Calendar extends Component {
     this.props = props;
 
     this.loaded_date_range = {};
-    this.calendar_collection_key = 'calendar_' + this.props.channel.original_workspace;
+    this.calendar_collection_key = 'calendar_' + this.props.channel.data.workspace_id;
 
     this.setLoadedRange(
       'both',
@@ -97,11 +97,11 @@ export default class Calendar extends Component {
         http_base_url: 'calendar/calendar',
         http_options: {
           channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.original_workspace,
+          workspace_id: this.props.channel.data.workspace_id,
         },
         websockets: [
           {
-            uri: 'calendars/' + this.props.channel.original_workspace,
+            uri: 'calendars/' + this.props.channel.data.workspace_id,
             options: { type: 'calendar' },
           },
         ],
@@ -122,7 +122,7 @@ export default class Calendar extends Component {
   }
   onFirstLoad() {
     var calendar_list = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.original_workspace })
+      .findBy({ workspace_id: this.props.channel.data.workspace_id })
       .map(cal => {
         return {
           calendar_id: cal.id,
@@ -147,7 +147,7 @@ export default class Calendar extends Component {
         },
         websockets: [
           {
-            uri: 'calendar_events/' + this.props.channel.original_workspace,
+            uri: 'calendar_events/' + this.props.channel.data.workspace_id,
             options: { type: 'event' },
           },
           {
@@ -213,7 +213,7 @@ export default class Calendar extends Component {
       this.setLoadedRange('both', requested_min, requested_max);
 
       var calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.original_workspace })
+        .findBy({ workspace_id: this.props.channel.data.workspace_id })
         .map(cal => {
           return {
             calendar_id: cal.id,
@@ -251,7 +251,7 @@ export default class Calendar extends Component {
   }
   renderCalendarList() {
     var calendars = Collections.get('calendars').findBy({
-      workspace_id: this.props.channel.original_workspace,
+      workspace_id: this.props.channel.data.workspace_id,
     });
     if (this.props.tab != null) {
       calendars = calendars.filter(c => this.allowed_ids.indexOf(c.id) >= 0);
@@ -413,7 +413,7 @@ export default class Calendar extends Component {
 
     if (mode == 'both' || mode == 'workspace') {
       calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.original_workspace })
+        .findBy({ workspace_id: this.props.channel.data.workspace_id })
         .map(cal => {
           return {
             calendar_id: cal.id,
@@ -443,12 +443,15 @@ export default class Calendar extends Component {
     return rect;
   }
   render() {
-    if (this.props.tab != null && this.props.tab.configuration.calendars === undefined) {
+    if (
+      this.props.tab != null &&
+      (!this.props.tab.configuration || this.props.tab.configuration.calendars === undefined)
+    ) {
       return <UnconfiguredTab channel={this.props.channel} tab={this.props.tab} />;
     }
 
     var calendars = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.original_workspace })
+      .findBy({ workspace_id: this.props.channel.data.workspace_id })
       .map(cal => cal.id);
 
     if (this.props.tab != null) {
@@ -503,9 +506,7 @@ export default class Calendar extends Component {
         setTimeout(() => {
           var htmlEl = this.calendar.getDomElement(CalendarService.edited);
           if (htmlEl) {
-            MediumPopupManager.updateHighlight(
-              this.completeRect(window.getBoundingClientRect(htmlEl)),
-            );
+            ModalManager.updateHighlight(this.completeRect(window.getBoundingClientRect(htmlEl)));
           }
         }, 200);
       }
@@ -619,135 +620,177 @@ export default class Calendar extends Component {
     var list = [];
 
     list.push(
-      <div className="app">
-        <div className="calendar_app">
-          <div className="calendar_header">
-            <div className="left">
-              <Menu
-                className="select medium"
-                style={{ width: 'auto' }}
-                position="bottom"
-                menu={calendar_menu}
-              >
+      <div className="calendar_app">
+        <div className="calendar_header">
+          <div className="left">
+            <Menu
+              className="select medium"
+              style={{ width: 'auto' }}
+              position="bottom"
+              menu={calendar_menu}
+            >
+              {
                 {
-                  {
-                    mine: Languages.t('scenes.apps.calendar.my_calendar', [], 'Mon calendrier'),
-                    workspace: Languages.t(
-                      'scenes.apps.calendar.workspace',
-                      [],
-                      'Espace de travail',
-                    ),
-                  }[this.state.filter]
-                }
-              </Menu>
-            </div>
-
-            <div className="right">
-              {this.state.view != 'dayGridMonth' && (
-                <div className="week_number">
-                  {Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')}{' '}
-                  {moment(CalendarService.date).week()}
-                </div>
-              )}
-
-              <Menu
-                className={'current_date ' + moment(CalendarService.date).format('DD-MM-YYYY')}
-                position="bottom"
-                menu={[
-                  {
-                    type: 'menu',
-                    text: Languages.t('scenes.apps.calendar.today_menu', [], "Aujourd'hui"),
-                    onClick: () => this.calendar.today(),
-                  },
-                  { type: 'separator' },
-                  {
-                    type: 'react-element',
-                    reactElement: () => (
-                      <div style={{ padding: '4px 8px' }}>
-                        <DayPicker
-                          value={moment(CalendarService.date)}
-                          onChange={value => {
-                            this.calendar.setDate(value);
-                            Menu.closeAll();
-                          }}
-                        />
-                      </div>
-                    ),
-                  },
-                ]}
-              >
-                {CalendarService.date &&
-                  (this.state.view == 'dayGridMonth' ||
-                    this.state.view == 'timeGridWeek' ||
-                    this.state.view == 'listYear') &&
-                  moment(CalendarService.date).format('MMMM YYYY')}
-                {CalendarService.date &&
-                  this.state.view == 'timeGridDay' &&
-                  moment(CalendarService.date).format('LL')}
-              </Menu>
-
-              <div className="move">
-                <Icon
-                  className="m-icon-small left"
-                  type="arrow-left"
-                  onClick={() => this.calendar.previous()}
-                />
-                <Icon
-                  className="m-icon-small right"
-                  type="arrow-right"
-                  onClick={() => this.calendar.next()}
-                />
-              </div>
-
-              <div className="view_selector">
-                <Select
-                  medium
-                  style={{ width: 'auto' }}
-                  value={this.state.view}
-                  onChange={value => {
-                    this.calendar.view(value);
-                    LocalStorage.setItem('calendar_view', value);
-                    Menu.closeAll();
-                  }}
-                  options={[
-                    {
-                      value: 'dayGridMonth',
-                      text: Languages.t('scenes.apps.calendar.month_option', [], 'Mois'),
-                    },
-                    {
-                      value: 'timeGridWeek',
-                      text: Languages.t('scenes.apps.calendar.week_option', [], 'Semaine'),
-                    },
-                    {
-                      value: 'timeGridDay',
-                      text: Languages.t('scenes.apps.calendar.day_option', [], 'Jour'),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
+                  mine: Languages.t('scenes.apps.calendar.my_calendar', [], 'Mon calendrier'),
+                  workspace: Languages.t('scenes.apps.calendar.workspace', [], 'Espace de travail'),
+                }[this.state.filter]
+              }
+            </Menu>
           </div>
 
-          <FullCalendar
-            i18n={Languages.language}
-            ref={node => (this.calendar = node)}
-            onViewChange={view => this.setState({ view: view })}
-            onDateChange={date => {
-              CalendarService.date = date;
-              CalendarService.notify();
-            }}
-            date={CalendarService.date}
-            onCreate={_event => {
-              CalendarService.edit(_event);
-              CalendarService.fullSizeModal = false;
+          <div className="right">
+            {this.state.view != 'dayGridMonth' && (
+              <div className="week_number">
+                {Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')}{' '}
+                {moment(CalendarService.date).week()}
+              </div>
+            )}
 
+            <Menu
+              className={'current_date ' + moment(CalendarService.date).format('DD-MM-YYYY')}
+              position="bottom"
+              menu={[
+                {
+                  type: 'menu',
+                  text: Languages.t('scenes.apps.calendar.today_menu', [], "Aujourd'hui"),
+                  onClick: () => this.calendar.today(),
+                },
+                { type: 'separator' },
+                {
+                  type: 'react-element',
+                  reactElement: () => (
+                    <div style={{ padding: '4px 8px' }}>
+                      <DayPicker
+                        value={moment(CalendarService.date)}
+                        onChange={value => {
+                          this.calendar.setDate(value);
+                          Menu.closeAll();
+                        }}
+                      />
+                    </div>
+                  ),
+                },
+              ]}
+            >
+              {CalendarService.date &&
+                (this.state.view == 'dayGridMonth' ||
+                  this.state.view == 'timeGridWeek' ||
+                  this.state.view == 'listYear') &&
+                moment(CalendarService.date).format('MMMM YYYY')}
+              {CalendarService.date &&
+                this.state.view == 'timeGridDay' &&
+                moment(CalendarService.date).format('LL')}
+            </Menu>
+
+            <div className="move">
+              <Icon
+                className="m-icon-small left"
+                type="arrow-left"
+                onClick={() => this.calendar.previous()}
+              />
+              <Icon
+                className="m-icon-small right"
+                type="arrow-right"
+                onClick={() => this.calendar.next()}
+              />
+            </div>
+
+            <div className="view_selector">
+              <Select
+                medium
+                style={{ width: 'auto' }}
+                value={this.state.view}
+                onChange={value => {
+                  this.calendar.view(value);
+                  LocalStorage.setItem('calendar_view', value);
+                  Menu.closeAll();
+                }}
+                options={[
+                  {
+                    value: 'dayGridMonth',
+                    text: Languages.t('scenes.apps.calendar.month_option', [], 'Mois'),
+                  },
+                  {
+                    value: 'timeGridWeek',
+                    text: Languages.t('scenes.apps.calendar.week_option', [], 'Semaine'),
+                  },
+                  {
+                    value: 'timeGridDay',
+                    text: Languages.t('scenes.apps.calendar.day_option', [], 'Jour'),
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+        <FullCalendar
+          i18n={Languages.language}
+          ref={node => (this.calendar = node)}
+          onViewChange={view => this.setState({ view: view })}
+          onDateChange={date => {
+            CalendarService.date = date;
+            CalendarService.notify();
+          }}
+          date={CalendarService.date}
+          onCreate={_event => {
+            CalendarService.edit(_event);
+            CalendarService.fullSizeModal = false;
+
+            setTimeout(() => {
+              var htmlEl = this.calendar.getDomElement(CalendarService.edited);
+              ModalManager.open(
+                <EventCreation
+                  event={CalendarService.edited}
+                  collectionKey={this.calendar_collection_key}
+                />,
+                {
+                  highlight: htmlEl
+                    ? this.completeRect(window.getBoundingClientRect(htmlEl))
+                    : null,
+                  position: 'left',
+                  margin: 5,
+                  no_background: true,
+                  size: { width: 440 },
+                },
+              );
+            }, 100);
+          }}
+          onUpdate={(event, htmlEl) => {
+            //Collections.get("events").updateObject(event);
+            if (event.id) {
+              CalendarService.save(event, this.calendar_collection_key);
+            }
+            if (
+              !CalendarService.fullSizeModal &&
+              CalendarService.preview &&
+              CalendarService.preview.front_id == event.front_id
+            ) {
+              var updated = CalendarService.preview;
               setTimeout(() => {
-                var htmlEl = this.calendar.getDomElement(CalendarService.edited);
-                MediumPopupManager.open(
-                  <EventCreation
-                    event={CalendarService.edited}
-                    collectionKey={this.calendar_collection_key}
-                  />,
+                var e = this.calendar.getDomElement(updated);
+                e &&
+                  ModalManager.updateHighlight(this.completeRect(window.getBoundingClientRect(e)));
+              }, 100);
+            }
+          }}
+          onClickOut={() => {
+            CalendarService.closePopups();
+          }}
+          onClickEvent={(event, jsEvent) => {
+            jsEvent.stopPropagation();
+            jsEvent.preventDefault();
+            if (
+              !ModalManager.isOpen() ||
+              !CalendarService.preview ||
+              CalendarService.preview.front_id != event.front_id
+            ) {
+              CalendarService.fullSizeModal = false;
+              CalendarService.startPreview(event);
+              setTimeout(() => {
+                var htmlEl = this.calendar.getDomElement(CalendarService.preview);
+                ModalManager.open(
+                  <EventDetails event={event} collectionKey={this.calendar_collection_key} />,
                   {
                     highlight: htmlEl
                       ? this.completeRect(window.getBoundingClientRect(htmlEl))
@@ -759,80 +802,30 @@ export default class Calendar extends Component {
                   },
                 );
               }, 100);
-            }}
-            onUpdate={(event, htmlEl) => {
-              //Collections.get("events").updateObject(event);
-              if (event.id) {
-                CalendarService.save(event, this.calendar_collection_key);
-              }
-              if (
-                !CalendarService.fullSizeModal &&
-                CalendarService.preview &&
-                CalendarService.preview.front_id == event.front_id
-              ) {
-                var updated = CalendarService.preview;
-                setTimeout(() => {
-                  var e = this.calendar.getDomElement(updated);
-                  e &&
-                    MediumPopupManager.updateHighlight(
-                      this.completeRect(window.getBoundingClientRect(e)),
-                    );
-                }, 100);
-              }
-            }}
-            onClickOut={() => {
-              CalendarService.closePopups();
-            }}
-            onClickEvent={(event, jsEvent) => {
-              jsEvent.stopPropagation();
-              jsEvent.preventDefault();
-              if (
-                !MediumPopupManager.isOpen() ||
-                !CalendarService.preview ||
-                CalendarService.preview.front_id != event.front_id
-              ) {
-                CalendarService.fullSizeModal = false;
-                CalendarService.startPreview(event);
-                setTimeout(() => {
-                  var htmlEl = this.calendar.getDomElement(CalendarService.preview);
-                  MediumPopupManager.open(
-                    <EventDetails event={event} collectionKey={this.calendar_collection_key} />,
-                    {
-                      highlight: htmlEl
-                        ? this.completeRect(window.getBoundingClientRect(htmlEl))
-                        : null,
-                      position: 'left',
-                      margin: 5,
-                      no_background: true,
-                      size: { width: 440 },
-                    },
-                  );
-                }, 100);
-              }
-            }}
-            events={events}
-            getCalendar={id => Collections.get('calendars').find(id)}
-          />
+            }
+          }}
+          events={events}
+          getCalendar={id => Collections.get('calendars').find(id)}
+        />
 
-          <MainPlus
-            onClick={() => {
-              CalendarService.fullSizeModal = true;
-              CalendarService.edit({
-                from: new Date().getTime() / 1000,
-                to: new Date().getTime() / 1000 + 60 * 60,
-              });
-              setTimeout(() => {
-                MediumPopupManager.open(
-                  <EventModification
-                    event={CalendarService.edited}
-                    collectionKey={this.calendar_collection_key}
-                  />,
-                  { size: { width: 600 } },
-                );
-              }, 100);
-            }}
-          />
-        </div>
+        <MainPlus
+          onClick={() => {
+            CalendarService.fullSizeModal = true;
+            CalendarService.edit({
+              from: new Date().getTime() / 1000,
+              to: new Date().getTime() / 1000 + 60 * 60,
+            });
+            setTimeout(() => {
+              ModalManager.open(
+                <EventModification
+                  event={CalendarService.edited}
+                  collectionKey={this.calendar_collection_key}
+                />,
+                { size: { width: 600 } },
+              );
+            }, 100);
+          }}
+        />
       </div>,
     );
 

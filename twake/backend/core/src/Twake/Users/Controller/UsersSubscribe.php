@@ -75,6 +75,10 @@ class UsersSubscribe extends BaseController
 
             $this->get("administration.counter")->incrementCounter("total_users", 1);
 
+            if($this->isConnected()){
+                $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
+            }
+
         } else {
 
             $data["errors"][] = "error";

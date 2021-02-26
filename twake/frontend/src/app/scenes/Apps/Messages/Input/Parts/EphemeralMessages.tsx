@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
-import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'services/Menus/MenusManager.js';
 import Languages from 'services/languages/languages.js';
-import popupManager from 'services/popupManager/popupManager.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import WorkspaceParameter from 'scenes/App/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'services/user/current_user.js';
 import MessageComponent from '../../Message/Message';
 import MessagesService from 'services/Apps/Messages/Messages.js';

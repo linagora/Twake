@@ -69,7 +69,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             }
             if (isset($this->getClassMetadata()->fieldMappings)) {
                 foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
-                    if ($data["type"] == "twake_timeuuid") {
+                    if ($data["type"] == "twake_timeuuid" || $data["type"] == "twake_uuid") {
                         $mapping[] = $field;
                     }
                 }
@@ -164,6 +164,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
 
                 $mapping_timeuuid = Array();
+                $mapping_uuid = Array();
                 $mapping_twake_text = Array();
                 if (isset($this->getClassMetadata()->associationMappings)) {
                     foreach ($this->getClassMetadata()->associationMappings as $field => $data) {
@@ -177,6 +178,9 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         }
                         if ($data["type"] == "twake_timeuuid") {
                             $mapping_timeuuid[] = $field;
+                        }
+                        if ($data["type"] == "twake_uuid") {
+                            $mapping_uuid[] = $field;
                         }
                     }
                 }
@@ -192,6 +196,13 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         } else {
                             $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
                         }
+                    } else if (in_array($filter, $mapping_uuid)) {
+                        $uuidType = Type::getType('twake_uuid');
+                        if (is_object($value)) {
+                            $value = $value->getId();
+                        }
+                        $value = $uuidType->convertToDatabaseValue($value, $this->_em->getConnection()->getDatabasePlatform());
+                        $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
                     } else if (in_array($filter, $mapping_twake_text)) {
                         /** \Doctrine\DBAL\Types\Type @var $encryptedStringType */
                         $encryptedStringType = Type::getType('twake_no_salt_text');
@@ -282,7 +293,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         }
         if (isset($this->getClassMetadata()->fieldMappings)) {
             foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
-                if ($data["type"] == "twake_timeuuid") {
+                if ($data["type"] == "twake_timeuuid" || $data["type"] == "twake_uuid") {
                     $mapping[] = $field;
                 }
             }

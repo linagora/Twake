@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import Picker from 'components/Picker/Picker.js';
 import Button from 'components/Buttons/Button.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import ColorPicker from 'components/ColorPicker/ColorPicker.js';
 import Strings from 'services/utils/strings.js';
 import InputWithColor from 'components/Inputs/InputWithColor.js';
-import AlertManager from 'services/AlertManager/AlertManager.js';
+import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 
 class TagEditor extends React.Component {
   constructor(props) {

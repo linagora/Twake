@@ -1,6 +1,6 @@
 import React from 'react';
 import ws from 'services/websocket.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from './user.js';
 
 import Globals from 'services/Globals.js';

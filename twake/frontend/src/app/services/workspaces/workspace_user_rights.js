@@ -1,9 +1,10 @@
 import React from 'react';
-import Observable from 'services/observable.js';
+import Observable from 'app/services/Depreciated/observable.js';
 import WorkspacesUsers from './workspaces_users.js';
-import Workspaces from './workspaces.js';
+import Workspaces from 'services/workspaces/workspaces.js';
 import CurrentUser from 'services/user/current_user.js';
 import WindowService from 'services/utils/window.js';
+import AccessRightsService from 'services/AccessRightsService';
 
 import Globals from 'services/Globals.js';
 
@@ -26,44 +27,26 @@ class WorkspaceUserRights extends Observable {
   }
 
   isNotConnected() {
-    return (
-      !this.currentUserRightsByWorkspace[Workspaces.currentWorkspaceId] ||
-      ['drive_public_access'].indexOf(WindowService.findGetParameter('view')) >= 0
-    );
+    return AccessRightsService.getLevel(Workspaces.currentWorkspaceId) === 'none';
   }
 
   isInvite(userId = false) {
-    var user = userId || CurrentUser.get().id;
-    return ((WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})[user] || {})
-      .externe;
-  }
-
-  isInviteChannelOnly(userId = false) {
-    var user = userId || CurrentUser.get().id;
-    return (
-      this.isInvite() &&
-      !((WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})[user] || {})
-        .autoAddExterne
-    );
+    if (!userId) {
+      return !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member');
+    }
+    return true;
   }
 
   isGroupInvite() {
-    return (
-      (WorkspacesUsers.users_by_group[Workspaces.currentGroupId] || {})[CurrentUser.get().id] || {}
-    ).externe;
+    return !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member');
   }
 
   hasGroupPrivilege(privilege) {
-    var rights = this.getUserRights();
-    return (rights.group || []).indexOf(privilege) >= 0;
+    return AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'administrator');
   }
 
-  hasWorkspacePrivilege(privilege = 'all') {
-    var rights = this.getUserRights();
-    if ((rights.workspace || {}).admin) {
-      return true;
-    }
-    return ((rights.workspace || {}).rights || []).indexOf(privilege) >= 0;
+  hasWorkspacePrivilege(level = 'administrator') {
+    return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, level);
   }
 }
 

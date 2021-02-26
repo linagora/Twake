@@ -2,15 +2,15 @@ version: "2"
 
 services:
   scylladb:
-    image: scylladb/scylla
-    ports:
-      - 9180:9180
-      - 9100:9100
-      - 9160:9160
-      - 9042:9042
+    image: scylladb/scylla:4.1.0
+    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
-    command: "--experimental 1"
+  scylladb2:
+    image: scylladb/scylla:4.1.0
+    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - ./docker-data/scylladb2:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
     environment:
@@ -19,6 +19,37 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass some_password
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+  node:
+    image: twaketech/twake-node:test
+    build:
+      context: ./backend/node
+      dockerfile: ../../docker/twake-node/Dockerfile.test
+      #target is not supported in compose v2 file
+      #target: test
+    environment:
+      - NODE_ENV=test
+      - DB_DRIVER
+      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+    depends_on:
+      - mongo
+      - scylladb
+      - rabbitmq
+    links:
+      - mongo
+      - scylladb
+      - rabbitmq
   php:
     image: twaketech/twake-php
     volumes:
@@ -30,12 +61,7 @@ services:
       - rabbitmq
       - elasticsearch
     links:
-      - websockets
       - scylladb
-  websockets:
-    image: twaketech/twake-websockets
-    volumes:
-      - ./backend/websockets_server:/WebsocketsServer
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
@@ -56,7 +82,6 @@ services:
       - 8000:80
     links:
       - php
-      - websockets
     volumes_from:
       - php
     volumes:

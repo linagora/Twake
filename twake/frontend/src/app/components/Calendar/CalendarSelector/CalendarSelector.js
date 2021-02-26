@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './CalendarSelector.scss';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Select from 'components/Select/Select.js';
-import MenusManager from 'services/Menus/MenusManager.js';
+import MenusManager from 'app/components/Menus/MenusManager.js';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import Languages from 'services/languages/languages.js';
 

@@ -55,7 +55,8 @@ class MainConnectorService {
         $restClient = $this->rest_client;
 
         $custom = array(
-            CURLOPT_CONNECTTIMEOUT => $timeout
+            CURLOPT_CONNECTTIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false
         );
 
         foreach ($custom_options as $key=>$value){
@@ -71,7 +72,7 @@ class MainConnectorService {
                 $data = $resp->getContent();
             }
             return $data;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -81,7 +82,8 @@ class MainConnectorService {
         $restClient = $this->rest_client;
 
         $custom = array(
-            CURLOPT_CONNECTTIMEOUT => $timeout
+            CURLOPT_CONNECTTIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false
         );
 
         foreach ($custom_options as $key=>$value){
@@ -98,7 +100,7 @@ class MainConnectorService {
                 $data = $resp->getContent();
             }
             return $data;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }

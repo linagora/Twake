@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import {
   ObjectModalFormTitle,
   ObjectModalSectionTitle,
-} from 'components/ObjectModal/ObjectModal.js';
-import UserListManager from 'components/UserListManager/UserListManager.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
+import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Select from 'components/Select/Select.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
 import ChannelsService from 'services/channels/channels.js';
 

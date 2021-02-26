@@ -26,6 +26,7 @@ $primary_background: #f3f2ff;*/
   --default-border-radius-large: 5px;
   --green: #18af2c;
   --red: #ff5154;
+  --warning: #faad14;
 }
 
 $primary: var(--primary);
@@ -53,5 +54,5 @@ $small_box_shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 $base_box_shadow: 0 2px 15px rgba(0, 0, 0, 0.3); //0 2px 4px rgba(0, 0, 0, 0.5)
 $larger_box_shadow: 0 2px 15px rgba(0, 0, 0, 0.2); //0 2px 4px rgba(0, 0, 0, 0.5)
 
-$base_border_radius: 4px;
-$larger_border_radius: 8px;
+$base_border_radius: 3px;
+$larger_border_radius: 5px;

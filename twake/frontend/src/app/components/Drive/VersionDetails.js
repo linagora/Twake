@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon.js';
-import Collections from 'services/Collections/Collections.js';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import MediumPopupManager from 'services/mediumPopupManager/mediumPopupManager.js';
+import MediumPopupManager from 'app/components/Modal/ModalManager';
 import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/ObjectModal.js';
+} from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UIFile from './UI/File.js';
 import 'moment-timezone';
 
@@ -33,10 +33,6 @@ export default class VersionDetails extends React.Component {
     DriveService.removeListener(this);
     Collections.get('drive').removeListener(this);
   }
-  componentWillMount() {}
-  componentDidUpdate(prevProps, prevState) {
-    console.log('update', this.props.file);
-  }
   render() {
     var countVersion = (this.props.file.versions || []).length;
     return (
@@ -48,11 +44,8 @@ export default class VersionDetails extends React.Component {
               <div
                 className="addVersionButton"
                 onClick={() => {
-                  console.log('hi');
                   if (this.upload_zone) {
                     this.upload_zone.open();
-                  } else {
-                    console.log('nop');
                   }
                 }}
               >
@@ -122,7 +115,6 @@ export default class VersionDetails extends React.Component {
                           ),
                           onClick: () => {
                             var link = DriveService.getLink(this.props.file, version.id, 1);
-                            console.log(link);
                             window.open(link);
                           },
                         },

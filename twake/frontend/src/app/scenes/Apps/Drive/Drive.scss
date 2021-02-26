@@ -1,7 +1,6 @@
 @import '~components/constants.scss';
 
 .drive_app {
-  position: absolute;
   height: 100%;
   width: 100%;
   left: 0;
@@ -9,7 +8,6 @@
   display: flex;
   flex-direction: column;
   padding: 0px;
-  padding-bottom: 15px !important;
   box-sizing: border-box;
 
   .exit_trash_btn {
@@ -27,15 +25,15 @@
   }
 
   .drive_multiselector {
-    padding: 32px;
+    padding: 16px;
     padding-top: 0px;
     flex: 1;
     box-sizing: border-box;
-    padding-bottom: 35px;
+    padding-bottom: 32px;
   }
 
   .drive_trash_info {
-    padding: 0 32px;
+    padding: 0 16px;
     padding-bottom: 16px;
     color: $black;
   }
@@ -43,7 +41,7 @@
   .drive_top {
     display: flex;
     flex-direction: row;
-    padding: 32px;
+    padding: 16px;
     padding-bottom: 8px;
     margin-top: 0px;
     font-weight: 500;
@@ -109,4 +107,5 @@
   max-width: 400px;
   text-align: center;
   margin: auto;
+  margin-top: 10vh;
 }

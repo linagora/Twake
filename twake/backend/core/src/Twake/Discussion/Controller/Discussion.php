@@ -23,6 +23,7 @@ class Discussion extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         }
+
         return new Response(Array("data" => Array("object" => $res)));
     }
 
@@ -38,6 +39,7 @@ class Discussion extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_messages", 1);
             }
         }
+
         return new Response(Array("data" => Array("object" => $res)));
     }
 
