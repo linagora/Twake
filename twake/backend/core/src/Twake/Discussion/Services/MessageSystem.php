@@ -172,34 +172,38 @@ class MessageSystem
             $object["parent_message_id"] = "";
         }
 
-        $message_repo = $this->em->getRepository("Twake\Discussion:Message");
-        $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
+        if(!$object["ephemeral_id"]){
+            $message_repo = $this->em->getRepository("Twake\Discussion:Message");
+            $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
 
-        if (!$message) {
-            return false;
+            if (!$message) {
+                return false;
+            }
+
+            //TODO for allow_delete == "administrators" implement user access verification
+            if (!($this->hasAccess($message->getAsArray(), $current_user, $message) || $message->getAsArray()["hidden_data"]["allow_delete"] == "everyone" || $message->getAsArray()["hidden_data"]["allow_delete"] == "administrators")) {
+                return false;
+            }
+
+            if ($message->getResponsesCount() > 0) {
+                return false;
+            }
+
+            if ($message->getParentMessageId()) {
+                $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
+                $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
+                $this->em->persist($parent_message);
+            }
+
+            $array_before_delete = $message->getAsArray();
+
+            $this->em->remove($message);
+            $this->em->flush();
+
+            $this->deleteInBloc($message);
+        }else{
+            $array_before_delete = $object;
         }
-
-        //TODO for allow_delete == "administrators" implement user access verification
-        if (!($this->hasAccess($message->getAsArray(), $current_user, $message) || $message->getAsArray()["hidden_data"]["allow_delete"] == "everyone" || $message->getAsArray()["hidden_data"]["allow_delete"] == "administrators")) {
-            return false;
-        }
-
-        if ($message->getResponsesCount() > 0) {
-            return false;
-        }
-
-        if ($message->getParentMessageId()) {
-            $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
-            $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
-            $this->em->persist($parent_message);
-        }
-
-        $array_before_delete = $message->getAsArray();
-
-        $this->em->remove($message);
-        $this->em->flush();
-
-        $this->deleteInBloc($message);
 
         $event = Array(
             "client_id" => "system",

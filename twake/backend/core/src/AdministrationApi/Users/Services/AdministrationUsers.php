@@ -89,7 +89,7 @@ class AdministrationUsers
 
             return $user;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "Error";
         }
     }

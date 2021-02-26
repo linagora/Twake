@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import Messages from 'scenes/Apps/Messages/Messages';
+import Messages from 'app/scenes/Apps/Messages';
 import Drive from 'scenes/Apps/Drive/Drive.js';
 import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';
@@ -16,17 +16,19 @@ type PropsType = {
 
 const AppView: FC<PropsType> = props => {
   //Listen context and app_id changes
-  props.viewService.useWatcher(() => [
-    props.viewService.getConfiguration().app?.id,
-    props.viewService.getConfiguration().context,
-  ]);
+  props.viewService.useWatcher(() => {
+    return [
+      props.viewService.getConfiguration().app?.id,
+      props.viewService.getConfiguration().context,
+    ];
+  });
 
   const configuration = props.viewService.getConfiguration();
 
   const channelCollection = configuration.collection;
   let channel = null;
   if (channelCollection.useWatcher) {
-    channel = channelCollection.find({ id: props.id }, { withoutBackend: true })[0];
+    channel = channelCollection.useWatcher({ id: props.id }, { withoutBackend: true })[0];
   } else {
     channel = channelCollection.find(props.id);
     channel = {

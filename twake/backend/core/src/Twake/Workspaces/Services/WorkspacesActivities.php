@@ -115,7 +115,7 @@ class WorkspacesActivities
                                 $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
                             }
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         error_log($e);
                     }
                 }
@@ -127,7 +127,7 @@ class WorkspacesActivities
                         if ($obj && method_exists($obj, "getAsArrayFormated")) {
                             $objects[] = $obj->getAsArrayFormated();
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         error_log($e);
                     }
                 }

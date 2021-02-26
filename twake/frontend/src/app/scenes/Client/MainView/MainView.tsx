@@ -16,23 +16,30 @@ const MainView: FC = () => {
     },
   );
 
-  const ready = ChannelsBarService.useWatcher(() => {
-    return (
-      ChannelsBarService.ready[companyId + '+' + workspaceId] &&
-      ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
-      ChannelsBarService.ready[companyId + '+direct']
-    );
-  });
+  const ready =
+    ChannelsBarService.useWatcher(() => {
+      return (
+        ChannelsBarService.ready[companyId + '+' + workspaceId] &&
+        ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
+        ChannelsBarService.ready[companyId + '+direct']
+      );
+    }) &&
+    !!companyId &&
+    !!workspaceId;
+
+  if (ready && !channelId) {
+    ChannelsBarService.autoSelectChannel(companyId || '', workspaceId || '');
+  }
 
   return (
     <Layout className="global-view-layout">
-      {!!companyId && !!workspaceId && !!channelId && ready && (
+      {!!channelId && ready && (
         <>
           <MainHeader />
           <MainContent />
         </>
       )}
-      {!!companyId && !!workspaceId && !channelId && ready && <NoApp />}
+      {!channelId && ready && <NoApp />}
     </Layout>
   );
 };

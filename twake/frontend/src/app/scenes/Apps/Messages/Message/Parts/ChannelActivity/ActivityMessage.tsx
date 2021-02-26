@@ -134,7 +134,7 @@ export default (props: PropsType): JSX.Element => {
     const previous = activity.context.previous;
     const next = activity.context.next;
 
-    if (previous?.resource.name !== next?.resource.name) {
+    if (previous?.resource?.name !== next?.resource?.name) {
       const icon = <Emojione type={next?.resource.icon || ''} />;
 
       return translateUsingReactNode(
@@ -144,7 +144,7 @@ export default (props: PropsType): JSX.Element => {
             {generateTypographyName(activity.actor.id)}
           </span>,
           <Typography.Text strong style={{ margin: '0 5px' }}>
-            {icon} {next?.resource.name}
+            {icon} {next?.resource?.name}
           </Typography.Text>,
         ],
       );
@@ -176,10 +176,10 @@ export default (props: PropsType): JSX.Element => {
               {generateTypographyName(activity.actor.id)}
             </span>,
             <Typography.Text strong style={{ margin: '0 5px' }}>
-              {connector[0].name}
+              {connector[0]?.name}
             </Typography.Text>,
             <Typography.Text strong style={{ marginLeft: 5 }}>
-              {resource.name}
+              {resource?.name}
             </Typography.Text>,
           ],
         );
@@ -193,10 +193,10 @@ export default (props: PropsType): JSX.Element => {
               {generateTypographyName(activity.actor.id)}
             </span>,
             <Typography.Text strong style={{ margin: '0 5px' }}>
-              {connector[0].name}
+              {connector[0]?.name}
             </Typography.Text>,
             <Typography.Text strong style={{ marginLeft: 5 }}>
-              {resource.name}
+              {resource?.name}
             </Typography.Text>,
           ],
         );
@@ -221,7 +221,7 @@ export default (props: PropsType): JSX.Element => {
                 {generateTypographyName(activity.actor.id)}
               </span>,
               <Typography.Text strong style={{ marginLeft: 5 }}>
-                {connector[0].name}
+                {connector[0]?.name}
               </Typography.Text>,
             ],
           );
@@ -235,7 +235,7 @@ export default (props: PropsType): JSX.Element => {
                 {generateTypographyName(activity.actor.id)}
               </span>,
               <Typography.Text strong style={{ marginLeft: 5 }}>
-                {connector[0].name}
+                {connector[0]?.name}
               </Typography.Text>,
             ],
           );

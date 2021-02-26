@@ -15,6 +15,7 @@ import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
+import ChannelsBarService from './channels/ChannelsBarService';
 
 export type RouteType = {
   path: string;
@@ -180,6 +181,7 @@ class RouterServices extends Observable {
     Workspaces.updateCurrentCompanyId(state.companyId);
     Groups.currentGroupId = state.companyId;
     Channels.currentChannelFrontId = Collections.get('channels').find(state.channelId)?.front_id;
+    ChannelsBarService.updateCurrentChannelId(state.companyId, state.workspaceId, state.channelId);
 
     return state;
   }

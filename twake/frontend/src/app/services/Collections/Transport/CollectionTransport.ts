@@ -101,9 +101,11 @@ export default class CollectionTransport<G extends Resource<any>> {
   async get(filter: any, options?: any) {
     this.lockHttp();
     try {
-      const queryParameters = Object.keys(options || {}).map(
-        k => k + '=' + encodeURIComponent(options[k]),
-      );
+      const queryParameters = Object.keys(options || {}).map(k => {
+        if (options[k] === true) options[k] = 1;
+        if (options[k] === false) options[k] = 0;
+        return k + '=' + encodeURIComponent(options[k]);
+      });
 
       const getOneSuffix = filter?.id ? '/' + filter?.id : '';
       const path = this.collection.getRestPath().replace(/\/$/, '');

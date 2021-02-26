@@ -88,7 +88,7 @@ class Adapter_OpenStack_DriveFileSystem
 
             return $tmpPath;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error accessing aws file.");
         }
 

@@ -606,6 +606,15 @@ class Drive extends Observable {
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
+    if (this.getFileType(current) == 'code') {
+      preview_candidate.push({
+        url:
+          '/public/viewer/CodeViewer/viewer.html?ext=' +
+          current.extension +
+          '&link=' +
+          encodeURIComponent(this.getLink(current, null, true)),
+      });
+    }
 
     //Secondary ext
     apps.forEach(app => {
