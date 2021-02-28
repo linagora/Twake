@@ -57,6 +57,10 @@ Everyone can contribute at their own level, even if they only give a few minutes
 Install Twake on your machine with docker-compose using the install documentation here :
 [doc.twake.app/installation](https://doc.twake.app/installation)
 
+### Migration to 2021.Q1.385
+
+If you migrate to the 2021.Q1 version for a 2020.Q4 version or earlier, please follow the documentation at https://github.com/Twake/Twake/tree/main/migration/2020Q3_to_2020Q4
+
 ## License
 
 Twake is licensed under [Affero GPL v3 with additional terms](https://github.com/TwakeApp/Twake/blob/main/LICENSE.md)
