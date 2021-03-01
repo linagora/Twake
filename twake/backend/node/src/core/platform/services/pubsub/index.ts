@@ -12,6 +12,7 @@ import { Processor } from "./processor";
 import PubsubProxy from "./proxy";
 import pubsubManager from "./amqp";
 import { Subscription } from "rxjs";
+import { SkipCLI } from "../../framework/decorators/skip";
 
 const LOG_PREFIX = "service.pubsub -";
 
@@ -65,6 +66,7 @@ class PubsubService implements PubsubServiceAPI {
     this.clientProxy = new PubsubProxy();
   }
 
+  @SkipCLI()
   async init(): Promise<this> {
     logger.info(`${LOG_PREFIX} Initializing pubsub service implementation with urls %o`, this.urls);
     await this.manager.createClient(this.urls);
@@ -92,6 +94,7 @@ class PubsubService implements PubsubServiceAPI {
     return this;
   }
 
+  @SkipCLI()
   async start(): Promise<this> {
     await this.processor.start();
 
