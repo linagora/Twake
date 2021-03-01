@@ -3,7 +3,7 @@ import { Input, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import SearchListManagerService, {
+import listService, {
   GenericChannel,
 } from 'app/scenes/Client/ChannelsBar/Modals/SearchListManager';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
@@ -19,7 +19,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 export default () => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState(10);
-  const listService = SearchListManagerService.init();
   const [cursor, setCursor] = useState<number>(-1);
   const { companyId } = RouterServices.useRouteState(({ companyId }) => {
     return { companyId };
