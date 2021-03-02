@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .userParameter {
   .loading {
     pointer-events: none;
@@ -95,9 +93,9 @@
               .main_mail {
                 font-size: 13px;
                 line-height: 35px;
-                background: $grey_background;
+                background: var(--grey-background);
                 height: 34px;
-                border-radius: $base_border_radius;
+                border-radius: var(--base_border_radius);
                 padding: 0 10px;
                 margin-right: 10px;
                 display: inline-block;
@@ -107,7 +105,7 @@
               }
 
               .main_mail {
-                background: $primary;
+                background: var(--primary);
                 color: #fff;
                 width: auto !important;
                 min-width: 0;

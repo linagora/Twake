@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .filepicker {
   margin: -5px 0;
 
@@ -25,7 +23,7 @@
   }
 
   .getback {
-    background: $grey_background;
+    background: var(--grey-background);
     border-radius: var(--default-border-radius);
     width: 20px;
     height: 20px;

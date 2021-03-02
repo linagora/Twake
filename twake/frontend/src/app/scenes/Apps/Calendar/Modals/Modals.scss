@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .eventModal {
   .title {
     font-size: 22px;
@@ -9,7 +7,7 @@
   .date.subtitle,
   .location.subtitle,
   .reminders.subtitle {
-    color: $grey_dark;
+    color: var(--grey-dark);
   }
 
   .date_and_type {
@@ -39,14 +37,14 @@
     margin-bottom: 8px;
     line-height: 32px;
     vertical-align: middle;
-    background: $white;
+    background: var(--white);
     border-radius: var(--default-border-radius);
-    border: 1px solid $grey_light;
+    border: 1px solid var(--grey-light);
     box-sizing: border-box;
     font-size: 14px;
     padding-left: 4px;
     .icon-unicon {
-      color: $grey_dark;
+      color: var(--grey-dark);
     }
   }
 }

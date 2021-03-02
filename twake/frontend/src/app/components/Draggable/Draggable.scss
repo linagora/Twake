@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .draggable {
   .js-drag-handler {
     cursor: grab;
@@ -29,14 +27,14 @@
     right: -10px;
     bottom: -10px;
     background: #fff;
-    color: $primary;
+    color: var(--primary);
     font-size: 16px;
     width: 40px;
     height: 40px;
     text-align: center;
     line-height: 40px;
     border-radius: 50%;
-    box-shadow: $base_box_shadow;
+    box-shadow: var(--base-box-shadow);
   }
 }
 
@@ -47,12 +45,12 @@
 .droppable_zone {
   background: #f2f2f200;
   margin: 0px;
-  border-radius: $base_border_radius;
+  border-radius: var(--base_border_radius);
   transition: margin 0.2s, border 0.2s;
   border: 0px dashed #ffffff00;
 
   .empty {
-    border-radius: $base_border_radius;
+    border-radius: var(--base_border_radius);
     background: #ffffff;
     padding: 0px;
     text-align: center;

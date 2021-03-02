@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .calendar_selector_container {
   display: inline-block;
   vertical-align: middle;
@@ -35,7 +33,7 @@
     padding-right: 8px;
     font-size: 14px;
     display: inline-block;
-    background-color: $grey_background;
+    background-color: var(--grey-background);
     border-radius: var(--default-border-radius);
     margin-right: 8px;
     margin-bottom: 8px;
@@ -45,7 +43,7 @@
       cursor: pointer;
 
       &:hover {
-        background: $grey_light;
+        background: var(--grey-light);
       }
     }
   }
@@ -57,7 +55,7 @@
     display: inline-block;
     margin: 10px 0;
     vertical-align: top;
-    background: $green;
+    background: var(--green);
     margin-right: 8px;
   }
 }

@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .tutorial {
   z-index: 5;
   box-sizing: border-box;
@@ -8,7 +6,7 @@
   position: absolute;
   left: 16px;
   bottom: 4px;
-  background: $secondary;
+  background: var(--secondary);
   color: #fff;
   border-radius: var(--default-border-radius);
   padding: 16px;
@@ -16,7 +14,7 @@
   position: relative;
 
   .close {
-    background: $grey_dark;
+    background: var(--grey-dark);
     color: #fff;
     width: 16px;
     height: 16px;
@@ -41,7 +39,7 @@
   .body {
     font-size: 12px;
     font-weight: 500;
-    color: $white;
+    color: var(--white);
 
     .block {
       margin-top: 16px;

@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .workspaceParameter {
   .image {
     background-color: rgba(0, 0, 50, 0.25);
@@ -11,7 +9,7 @@
     width: 60px;
     height: 60px;
     line-height: 60px;
-    border-radius: $larger_border_radius;
+    border-radius: var(--larger_border_radius);
     margin: auto;
     margin-bottom: 8px;
     background-size: cover;
@@ -67,7 +65,7 @@
     margin-top: 4px;
     width: 24px;
     height: 24px;
-    background-color: $grey_light;
+    background-color: var(--grey-light);
     background-size: cover;
     background-position: center;
     border-radius: var(--default-border-radius);
@@ -101,7 +99,7 @@
       border-radius: var(--default-border-radius);
 
       &:hover {
-        background: $grey_background;
+        background: var(--grey-background);
       }
 
       .market_app_image {

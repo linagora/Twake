@@ -1,13 +1,11 @@
-@import '~components/constants.scss';
-
 .user_head {
   width: 18px;
   height: 18px;
   border-radius: var(--default-border-radius);
-  border: solid 1px $grey_background;
+  border: solid 1px var(--grey-background);
   background-position: center;
   background-size: cover;
-  background-color: $grey_light;
+  background-color: var(--grey-light);
   position: relative;
   border: 0px solid #fff;
 
@@ -22,14 +20,14 @@
     width: 8px;
     height: 8px;
     border-radius: 6px;
-    background: $green;
-    border: 1px solid $grey_background;
+    background: var(--green);
+    border: 1px solid var(--grey-background);
 
     &.grey {
-      background: $grey_dark;
+      background: var(--grey-dark);
     }
     &.red {
-      background: $red;
+      background: var(--red);
     }
   }
 

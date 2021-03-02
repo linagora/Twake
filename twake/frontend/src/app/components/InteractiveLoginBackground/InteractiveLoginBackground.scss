@@ -1,10 +1,8 @@
-@import '~components/constants.scss';
-
 .animated_background {
   width: 100%;
   height: 60vh;
   position: relative;
-  background: $primary;
+  background: var(--primary);
 
   .animated_shape {
     background: #fff;
@@ -13,7 +11,7 @@
     animation-timing-function: linear;
     animation-name: animated_background_shape_animation;
     position: absolute;
-    border-radius: $base_border_radius;
+    border-radius: var(--base_border_radius);
   }
   .animated_shape.circle {
     border-radius: 100%;

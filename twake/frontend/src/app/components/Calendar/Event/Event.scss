@@ -1,11 +1,9 @@
-@import '~components/constants.scss';
-
 .event_container {
   margin: 0px;
   width: auto;
   height: auto;
   border-radius: var(--default-border-radius);
-  color: $white;
+  color: var(--white);
   box-sizing: border-box;
   padding-left: 4px;
   padding-right: 2px;

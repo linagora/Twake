@@ -1,11 +1,9 @@
-@import '~components/constants.scss';
-
 .attachmentPicker {
   .attachment {
     display: inline-block;
     font-size: 12px;
-    color: $black;
-    border: solid 1px $grey_light;
+    color: var(--black);
+    border: solid 1px var(--grey-light);
     height: 32px;
     box-sizing: border-box;
     border-radius: var(--default-border-radius-large);

@@ -1,10 +1,8 @@
-@import '~components/constants.scss';
-
 .table {
   overflow: hidden;
-  border-radius: $base_border_radius;
+  border-radius: var(--base_border_radius);
   margin-bottom: 16px;
-  border: 1px solid $grey_background;
+  border: 1px solid var(--grey-background);
   font-weight: 500;
 
   &.unfocused {
@@ -40,12 +38,12 @@
   }
 
   .headerTable {
-    background: $grey_background;
+    background: var(--grey-background);
     font-weight: 700;
     font-size: 14px;
     display: flex;
     padding: 8px;
-    border-bottom: 1px solid $grey_background;
+    border-bottom: 1px solid var(--grey-background);
   }
 
   .footerTable {
@@ -53,18 +51,18 @@
     line-height: 32px;
     font-size: 14px;
     padding: 5px 10px;
-    border-top: 1px solid $grey_background;
-    border-bottom: 1px solid $grey_background;
+    border-top: 1px solid var(--grey-background);
+    border-bottom: 1px solid var(--grey-background);
   }
   .contentTable {
     .tr {
       display: flex;
-      border-bottom: 1px solid $grey_background;
+      border-bottom: 1px solid var(--grey-background);
       padding: 8px;
       font-size: 12px;
 
       &:hover {
-        background: $grey_background;
+        background: var(--grey-background);
       }
 
       &:last-child {

@@ -1,11 +1,9 @@
-@import '~components/constants.scss';
-
 #HW_frame_cont {
   left: 70px !important;
 }
 
 .channel_footer {
-  border-top: 1px solid $grey_light;
+  border-top: 1px solid var(--grey-light);
   flex-direction: column;
   box-sizing: border-box;
   display: flex;
@@ -22,7 +20,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    color: $grey_dark;
+    color: var(--grey-dark);
     font-size: 14px;
 
     .group_switch {
@@ -53,14 +51,14 @@
 
   .help {
     font-size: 12px;
-    color: $grey_dark;
+    color: var(--grey-dark);
     line-height: 22px;
     width: auto;
     float: left;
     cursor: pointer;
 
     &:hover {
-      color: $black;
+      color: var(--black);
     }
   }
 
@@ -72,7 +70,7 @@
     line-height: 22px;
     vertical-align: middle;
     background: #e2f4e8;
-    color: $green;
+    color: var(--green);
     padding: 0px 4px;
     font-weight: 700;
     text-transform: uppercase;

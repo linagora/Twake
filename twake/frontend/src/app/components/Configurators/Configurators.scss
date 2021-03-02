@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .config_modal {
   height: 100%;
   width: 100%;
@@ -19,8 +17,8 @@
     margin: auto;
     .component {
       background: white;
-      border-radius: $base_border_radius;
-      box-shadow: $base_box_shadow;
+      border-radius: var(--base_border_radius);
+      box-shadow: var(--base-box-shadow);
       position: relative;
       display: inline-flex;
       flex-direction: column;

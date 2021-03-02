@@ -1,12 +1,10 @@
-@import '~components/constants.scss';
-
 .has_workspaces.animated {
   .workspaces_view {
     animation: init_workspaces_view_60 ease 0.2s;
   }
 }
 .workspaces_view {
-  background: $secondary;
+  background: var(--secondary);
   width: 60px;
   min-width: 60px;
   overflow: hidden;
@@ -64,11 +62,11 @@
       top: 8px;
       margin-top: 0px !important;
       margin-left: 5px;
-      background: $red;
+      background: var(--red);
       width: 16px;
       height: 16px;
       border-radius: var(--default-border-radius-large);
-      color: $white;
+      color: var(--white);
       font-size: 12px;
       line-height: 16px;
       text-align: center;

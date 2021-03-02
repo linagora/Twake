@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .parameters_attribute {
   padding-bottom: 10px;
   opacity: 0.8;
@@ -17,7 +15,7 @@
     opacity: 1;
 
     .value {
-      border-radius: $larger_border_radius;
+      border-radius: var(--larger_border_radius);
       box-sizing: border-box;
       opacity: 1;
       overflow: visible;

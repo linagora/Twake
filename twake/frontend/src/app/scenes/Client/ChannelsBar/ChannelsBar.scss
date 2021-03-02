@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .electron {
   .channels_view {
     padding-top: 24px;
@@ -7,7 +5,7 @@
 }
 
 .channels_view {
-  background: $grey_background;
+  background: var(--grey-background);
   width: 220px;
   padding-top: 16px;
 
@@ -27,7 +25,7 @@
   .channel_small_text {
     font-size: 12px;
     margin: 0 16px;
-    color: $grey_dark;
+    color: var(--grey-dark);
     font-weight: 500;
   }
 
@@ -36,9 +34,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    color: $grey_dark;
+    color: var(--grey-dark);
     font-size: 14px;
-    background: $grey_light;
+    background: var(--grey-light);
     border-radius: var(--default-border-radius-large);
     display: flex;
     padding: 8px;
@@ -56,9 +54,9 @@
     .group_image.invite {
       margin-right: 4px;
       width: auto;
-      background: $green;
+      background: var(--green);
       border-radius: var(--default-border-radius);
-      color: $white;
+      color: var(--white);
       padding-right: 4px;
       white-space: nowrap;
       display: flex;
@@ -77,7 +75,7 @@
       .current_company_logo {
         font-size: 16px;
         line-height: 24px;
-        color: $secondary;
+        color: var(--secondary);
         width: 24px;
         height: 24px;
         border-radius: var(--default-border-radius);

@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .taskModal {
   .title {
     font-size: 22px;
@@ -8,14 +6,14 @@
       margin-top: 8px;
       font-size: 12px;
       font-weight: normal;
-      color: $grey_dark;
+      color: var(--grey-dark);
     }
   }
 
   .date.subtitle,
   .location.subtitle,
   .reminders.subtitle {
-    color: $grey_dark;
+    color: var(--grey-dark);
   }
 
   .date_and_type {
@@ -46,14 +44,14 @@
     margin-right: 8px;
     line-height: 32px;
     vertical-align: middle;
-    background: $white;
+    background: var(--white);
     border-radius: var(--default-border-radius);
-    border: 1px solid $grey_light;
+    border: 1px solid var(--grey-light);
     box-sizing: border-box;
     font-size: 14px;
     padding-left: 4px;
     .icon-unicon {
-      color: $grey_dark;
+      color: var(--grey-dark);
     }
   }
 
@@ -64,10 +62,10 @@
       span {
         width: 40px;
         font-size: 12px;
-        color: $grey_dark;
+        color: var(--grey-dark);
       }
       .progress_bar {
-        background: $grey_background;
+        background: var(--grey-background);
         border-radius: var(--default-border-radius);
         height: 8px;
         flex: 1;
@@ -75,7 +73,7 @@
         position: relative;
         top: 4px;
         .progress {
-          background: $primary;
+          background: var(--primary);
           position: absolute;
           top: 0;
           left: 0;
@@ -126,9 +124,9 @@
         line-height: 24px;
         margin-left: 8px;
         &:hover {
-          color: $primary;
+          color: var(--primary);
           &.trash {
-            color: $red;
+            color: var(--red);
           }
         }
       }

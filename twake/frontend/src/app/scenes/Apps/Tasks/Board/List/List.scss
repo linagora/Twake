@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .board .list {
   display: inline-block;
   height: 100%;
@@ -87,7 +85,7 @@
         display: none;
         float: right;
         margin: 0px;
-        color: $black;
+        color: var(--black);
         font-size: 20px;
         margin-top: 4px;
         line-height: normal;
@@ -105,10 +103,10 @@
       display: flex;
       transition: opacity 0.2s, height 0.2s;
       border-radius: var(--default-border-radius-large);
-      background: $grey_background;
+      background: var(--grey-background);
       padding-right: 4px;
       &:hover {
-        background: $grey_light;
+        background: var(--grey-light);
       }
 
       button {
@@ -122,15 +120,15 @@
 
       &.unselected {
         &:hover {
-          background: $grey_background;
-          color: $black;
+          background: var(--grey-background);
+          color: var(--black);
         }
         background: transparent;
         border-radius: var(--default-border-radius);
         font-size: 14px;
         line-height: 32px;
         padding: 0 8px;
-        color: $grey_dark;
+        color: var(--grey-dark);
         cursor: pointer;
       }
     }
@@ -149,7 +147,7 @@
         font-size: 12px;
         border-radius: 2px;
         text-align: center;
-        color: $grey_dark;
+        color: var(--grey-dark);
         display: inline-block;
         width: 100%;
         transition: all 0.2s;

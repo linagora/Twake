@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 /* PseudoMarkdownCompiler */
 
 .markdown {
@@ -112,7 +110,7 @@
   .channel_twacode.unknown {
     pointer-events: none;
     padding-right: 0px;
-    color: $grey_dark;
+    color: var(--grey-dark);
     background: rgba(0, 0, 0, 0);
   }
   .user_twacode {
@@ -129,7 +127,7 @@
     &.with_user {
       font-weight: 500;
       box-sizing: border-box;
-      color: $black;
+      color: var(--black);
       height: 18px;
       text-transform: capitalize;
       border-radius: var(--default-border-radius);
@@ -139,11 +137,11 @@
       padding-right: 5px;
       margin-right: -2px;
       vertical-align: middle;
-      background: $primary_background;
+      background: var(--primary-background);
       cursor: pointer;
 
       &:hover {
-        color: $primary;
+        color: var(--primary);
       }
 
       .userimage {
@@ -152,7 +150,7 @@
         border-radius: var(--default-border-radius);
         display: inline-block;
         vertical-align: middle;
-        background: $grey_light;
+        background: var(--grey-light);
         margin: 1px;
         vertical-align: top;
         margin-right: 3px;
@@ -164,7 +162,7 @@
   .channel_twacode {
     font-weight: 500;
     box-sizing: border-box;
-    color: $black;
+    color: var(--black);
     height: 18px;
     line-height: 18px;
     text-transform: capitalize;
@@ -175,12 +173,12 @@
     padding-right: 5px;
     margin-right: -2px;
     vertical-align: middle;
-    background: $primary_background;
+    background: var(--primary-background);
     font-weight: 500;
     cursor: pointer;
 
     &:hover {
-      color: $primary;
+      color: var(--primary);
     }
 
     .emoji-container {
@@ -221,7 +219,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      background: $primary;
+      background: var(--primary);
     }
   }
 
@@ -240,7 +238,7 @@
     & > div {
       height: 100%;
       transition: width 0.5s;
-      background: $primary;
+      background: var(--primary);
     }
   }
 
@@ -295,7 +293,7 @@
     }
 
     &.primary {
-      color: $primary;
+      color: var(--primary);
       &:hover {
         color: #007ed9;
       }

@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .component_tabs {
   position: relative;
   overflow: hidden;
@@ -18,7 +16,7 @@
   }
 
   & > .component_tabs_tabs {
-    border-bottom: 1px solid $grey_light;
+    border-bottom: 1px solid var(--grey-light);
     padding: 0 16px;
     white-space: nowrap;
     max-width: 100%;
@@ -31,19 +29,19 @@
       display: inline-block;
       padding: 8px 16px;
       font-weight: 500;
-      color: $grey_dark;
+      color: var(--grey-dark);
       font-size: 14px;
       cursor: pointer;
 
       &:hover {
         background: transparent;
-        color: $black;
+        color: var(--black);
       }
 
       &.selected {
         background: transparent;
-        border-bottom: 4px solid $primary;
-        color: $black;
+        border-bottom: 4px solid var(--primary);
+        color: var(--black);
       }
     }
   }

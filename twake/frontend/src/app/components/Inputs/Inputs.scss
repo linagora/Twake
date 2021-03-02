@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 /**
 INPUTS
 **/
@@ -35,8 +33,8 @@ INPUTS
 .input {
   border-radius: var(--default-border-radius);
   border: 0px;
-  background: $grey_background;
-  color: $black;
+  background: var(--grey-background);
+  color: var(--black);
 
   &:hover {
     background: #eee;
@@ -53,7 +51,7 @@ INPUTS
   &::placeholder,
   &:-ms-input-placeholder,
   &::-ms-input-placeholder {
-    color: $grey_dark;
+    color: var(--grey-dark);
   }
 
   &.big {
@@ -78,7 +76,7 @@ INPUTS
 .switch {
   height: 20px;
   width: 34px;
-  background: $grey_light;
+  background: var(--grey-light);
   border-radius: 10px;
   display: inline-block;
   padding: 3px;
@@ -88,17 +86,17 @@ INPUTS
 
   &.disabled {
     pointer-events: none;
-    background: $primary_background !important;
+    background: var(--primary-background) !important;
   }
 
   .state {
-    background: $white;
+    background: var(--white);
     transform: translateX(0%);
     transition: transform 0.2s;
   }
 
   &.on {
-    background: $primary;
+    background: var(--primary);
     .state {
       transform: translateX(100%);
     }
@@ -149,7 +147,7 @@ INPUTS
 }
 
 .checkbox {
-  border: 1px solid $grey_light;
+  border: 1px solid var(--grey-light);
   border-radius: var(--default-border-radius);
   display: inline-block;
   padding: 0px;
@@ -160,7 +158,7 @@ INPUTS
 
   &.disabled {
     pointer-events: none;
-    background: $primary_background !important;
+    background: var(--primary-background) !important;
   }
 
   .state {
@@ -168,14 +166,14 @@ INPUTS
     transform: scale(0);
     transition: transform 0.2s, opacity 0.2s;
     .m-icon-small {
-      color: $white;
+      color: var(--white);
       font-size: 16px !important;
     }
   }
 
   &.on {
-    background: $primary;
-    border-color: $primary;
+    background: var(--primary);
+    border-color: var(--primary);
     .state {
       transform: scale(1);
     }
@@ -228,7 +226,7 @@ INPUTS
 }
 
 .radio {
-  background: $grey_light;
+  background: var(--grey-light);
   border-radius: 50%;
   display: inline-block;
   padding: 5px;
@@ -241,7 +239,7 @@ INPUTS
 
   &.disabled {
     pointer-events: none;
-    background: $primary_background !important;
+    background: var(--primary-background) !important;
   }
 
   .state {
@@ -252,7 +250,7 @@ INPUTS
   }
 
   &.on {
-    background: $primary;
+    background: var(--primary);
     .state {
       transform: scale(1);
     }
@@ -303,7 +301,7 @@ select,
   width: 100%;
   border: solid 1px rgba(0, 0, 0, 0.3);
   height: 40px;
-  border-radius: $base_border_radius;
+  border-radius: var(--base_border_radius);
   background: white;
   font-size: 14px;
   opacity: 0.8;
@@ -341,7 +339,7 @@ select,
   width: 40px;
   height: 40px;
   display: inline-block;
-  background: $grey_background;
+  background: var(--grey-background);
   border-radius: var(--default-border-radius);
   padding: 11px;
   font-size: 18px;
@@ -350,7 +348,7 @@ select,
   cursor: pointer;
 
   &:hover {
-    background: $grey_light;
+    background: var(--grey-light);
   }
 }
 
@@ -368,7 +366,7 @@ select,
     width: 40px;
     height: 40px;
     display: inline-block;
-    background: $grey_background;
+    background: var(--grey-background);
     border-radius: var(--default-border-radius);
     margin-right: 4px;
     padding: 14px;
@@ -376,7 +374,7 @@ select,
     cursor: pointer;
 
     &:hover {
-      background: $grey_light;
+      background: var(--grey-light);
     }
 
     .acolor {
@@ -412,7 +410,7 @@ select,
       padding-top: 12px;
       padding-right: 8px;
       width: 24px;
-      color: $grey_dark;
+      color: var(--grey-dark);
       font-size: 16px;
     }
 
@@ -434,7 +432,7 @@ select,
       padding-top: 12px;
       padding-left: 8px;
       width: 24px;
-      color: $grey_dark;
+      color: var(--grey-dark);
     }
 
     input.input {
@@ -448,7 +446,7 @@ select,
       padding-top: 20px;
       padding-left: 12px;
       width: 32px;
-      color: $grey_dark;
+      color: var(--grey-dark);
       font-size: 20px;
     }
 
@@ -463,7 +461,7 @@ select,
       padding-top: 8px;
       padding-left: 8px;
       width: 24px;
-      color: $grey_dark;
+      color: var(--grey-dark);
       font-size: 14px;
     }
 
@@ -634,7 +632,7 @@ select,
   }
 
   &.on {
-    background: $primary;
+    background: var(--primary);
 
     .state {
       transform: translateX(100%);
@@ -686,7 +684,7 @@ select,
   }
 
   &.on {
-    background: $primary;
+    background: var(--primary);
 
     .state {
       transform: scale(1);
@@ -741,7 +739,7 @@ select,
   }
 
   &.on {
-    background: $primary;
+    background: var(--primary);
 
     .state {
       transform: scale(1);

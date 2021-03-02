@@ -1,11 +1,9 @@
-@import '~components/constants.scss';
-
 .date_selector_full {
   display: inline-flex;
   padding-left: 4px;
   padding-right: 4px;
   border-radius: var(--default-border-radius);
-  background: $grey_background;
+  background: var(--grey-background);
   max-width: 360px;
   width: 100%;
   box-sizing: border-box;
@@ -47,7 +45,7 @@
   }
 
   .icon_clock {
-    color: $grey_dark;
+    color: var(--grey-dark);
     margin-top: 12px;
     display: inline-block;
     margin-right: -4px;

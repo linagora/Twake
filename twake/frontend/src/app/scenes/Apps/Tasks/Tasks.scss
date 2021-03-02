@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .boardPicker {
   max-height: 250px;
   overflow: auto;
@@ -9,7 +7,7 @@
     vertical-align: top;
     width: 216px;
     height: 60px;
-    border: 1px solid $grey_light;
+    border: 1px solid var(--grey-light);
     border-radius: var(--default-border-radius);
     margin-bottom: 16px;
     margin-right: 16px;
@@ -84,7 +82,7 @@
     vertical-align: top;
     width: 216px;
     height: 90px;
-    border: 1px solid $grey_light;
+    border: 1px solid var(--grey-light);
     border-radius: var(--default-border-radius);
     margin-bottom: 16px;
     margin-right: 16px;
@@ -111,7 +109,7 @@
 
     .board_info {
       font-size: 14px;
-      color: $grey_dark;
+      color: var(--grey-dark);
     }
 
     .options {
@@ -165,7 +163,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 12px;
-        color: $grey_dark;
+        color: var(--grey-dark);
       }
     }
   }

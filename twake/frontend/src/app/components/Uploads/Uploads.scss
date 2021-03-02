@@ -1,20 +1,18 @@
-@import '~components/constants.scss';
-
 .upload_viewer {
   position: absolute;
   right: 20px;
   bottom: 20px;
   width: auto;
   height: auto;
-  box-shadow: $base_box_shadow;
-  border-radius: $base_border_radius;
+  box-shadow: var(--base-box-shadow);
+  border-radius: var(--base_border_radius);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   z-index: 100;
 
   .title {
-    background: $secondary;
+    background: var(--secondary);
     color: #eeeeee;
     font-size: 14px;
     padding: 8px;
@@ -23,8 +21,8 @@
   }
 
   .subtitle {
-    background: $grey_light;
-    color: $grey_dark;
+    background: var(--grey-light);
+    color: var(--grey-dark);
     font-size: 12px;
     padding: 4px 8px;
     margin-bottom: 0px;
@@ -58,7 +56,7 @@
       }
 
       .path {
-        background: $secondary;
+        background: var(--secondary);
         padding: 4px;
         color: #fff;
         border-radius: var(--default-border-radius);
