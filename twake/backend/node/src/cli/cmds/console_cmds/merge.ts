@@ -14,6 +14,7 @@ const logger = getLogger("cli");
 
 type MergeParams = {
   url: string;
+  concurrent: number;
 };
 
 type ConsoleCompany = {
@@ -33,10 +34,16 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       type: "string",
       description: "URL of the Twake console",
     },
+    concurrent: {
+      default: 1,
+      type: "number",
+      description: "Number of concurrent imports",
+    },
   },
   handler: async argv => {
     const companyCreated = new BehaviorSubject(0);
     const usersCreated = new BehaviorSubject(0);
+    const concurrent = argv.concurrent;
     const platform = await twake.run(services);
     const consoleClient = new ConsoleClient(argv.url);
     const userService = platform.getProvider<UserServiceAPI>("user");
@@ -110,7 +117,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     const subscription = getCompanies()
       .pipe(
         tap(company => logger.info("Creating company in the Console", company.displayName)),
-        mergeMap(company => createCompany(company), 1),
+        mergeMap(company => createCompany(company), concurrent),
         tap(company => logger.info("Company created in the Console", company.destination.code)),
         tap(() => {
           // This is RXJS anti pattern, bit let's say that we can have others subscribing to this subject...
@@ -124,7 +131,10 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
             })),
           ),
         ),
-        mergeMap(userInCompany => createUser(userInCompany.company.source, userInCompany.user), 1),
+        mergeMap(
+          userInCompany => createUser(userInCompany.company.source, userInCompany.user),
+          concurrent,
+        ),
       )
       .subscribe({
         next: userInCompany => {
