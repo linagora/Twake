@@ -25,7 +25,7 @@
 }
 .directory {
   background: #fff;
-  border: 1px solid var(--grey-light);
+  border: 1px solid var(--primary-background);
   height: 50px;
   box-sizing: border-box;
   display: inline-flex;
@@ -94,7 +94,7 @@
 
 .file {
   overflow: hidden;
-  border: 1px solid var(--grey-light);
+  border: 1px solid var(--primary-background);
   background: #fff;
   height: 180px;
   width: 216px;
@@ -285,7 +285,7 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
-      background-color: var(--grey-light);
+      background-color: var(--primary-background);
 
       &.no_preview {
         background-size: 60%;
@@ -305,8 +305,8 @@
   margin-right: 0px;
   margin-bottom: 0px;
   border: 0;
-  border-bottom: 1px solid var(--grey-light);
-  border-top: 1px solid var(--grey-light);
+  border-bottom: 1px solid var(--primary-background);
+  border-top: 1px solid var(--primary-background);
   border-radius: 2px;
   width: 100%;
   height: 64px;
@@ -449,7 +449,7 @@
   .version {
     display: flex;
     padding: 24px 0px;
-    border-bottom: solid 1px var(--grey-light);
+    border-bottom: solid 1px var(--primary-background);
     .titleVersionDetails {
       font-size: 24px;
       color: var(--black);

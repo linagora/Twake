@@ -76,7 +76,7 @@ INPUTS
 .switch {
   height: 20px;
   width: 34px;
-  background: var(--grey-light);
+  background: var(--primary-background);
   border-radius: 10px;
   display: inline-block;
   padding: 3px;
@@ -147,7 +147,7 @@ INPUTS
 }
 
 .checkbox {
-  border: 1px solid var(--grey-light);
+  border: 1px solid var(--primary-background);
   border-radius: var(--border-radius-base);
   display: inline-block;
   padding: 0px;
@@ -226,7 +226,7 @@ INPUTS
 }
 
 .radio {
-  background: var(--grey-light);
+  background: var(--primary-background);
   border-radius: 50%;
   display: inline-block;
   padding: 5px;
@@ -348,7 +348,7 @@ select,
   cursor: pointer;
 
   &:hover {
-    background: var(--grey-light);
+    background: var(--primary-background);
   }
 }
 
@@ -374,7 +374,7 @@ select,
     cursor: pointer;
 
     &:hover {
-      background: var(--grey-light);
+      background: var(--primary-background);
     }
 
     .acolor {

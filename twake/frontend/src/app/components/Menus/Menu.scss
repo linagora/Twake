@@ -106,7 +106,7 @@
     }
 
     &:hover {
-      background: var(--grey-background);
+      background: var(--primary-background);
       color: var(--primary);
       .icon {
         color: var(--primary);
@@ -160,7 +160,7 @@
         font-weight: 500;
         margin-left: 5px;
         background: var(--grey-dark);
-        color: var(--grey-light);
+        color: var(--primary-background);
       }
 
       .emojione {
@@ -212,7 +212,7 @@
   }
 
   .menu-separator {
-    border-top: 1px solid var(--grey-light);
+    border-top: 1px solid var(--primary-background);
     height: 8px;
     margin-top: 8px;
     width: auto;

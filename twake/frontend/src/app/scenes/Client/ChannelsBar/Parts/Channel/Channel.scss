@@ -97,11 +97,11 @@
 
   &:hover,
   &.menu-open {
-    background: var(--grey-light);
+    background: var(--primary-background);
 
     .user_head,
     .user_head .status {
-      border-color: var(--grey-light);
+      border-color: var(--primary-background);
     }
   }
 
@@ -121,7 +121,7 @@
       color: var(--white);
     }
     .grey-icon {
-      color: var(--grey-light) !important;
+      color: var(--primary-background) !important;
     }
     .more-icon {
       &:hover {
@@ -290,7 +290,7 @@
   margin-right: 12px;
   width: auto;
   height: 0px;
-  background: var(--grey-light);
+  background: var(--primary-background);
   border: 0px;
   border-radius: var(--border-radius-base);
   box-sizing: border-box;
@@ -361,8 +361,13 @@
     animation-iteration-count: infinite;
     animation-name: placeHolderShimmer;
     animation-timing-function: linear;
-    background: var(--grey-light);
-    background: linear-gradient(to right, var(--grey-light) 8%, #f2f2f2 18%, var(--grey-light) 33%);
+    background: var(--primary-background);
+    background: linear-gradient(
+      to right,
+      var(--primary-background) 8%,
+      #f2f2f2 18%,
+      var(--primary-background) 33%
+    );
     background-size: 800px 104px;
 
     & > * {

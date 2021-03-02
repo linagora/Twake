@@ -17,7 +17,7 @@
       height: 24px;
 
       &:hover {
-        background: var(--grey-light);
+        background: var(--primary-background);
         border-radius: var(--border-radius-base);
       }
 
@@ -119,18 +119,18 @@
     .user_head,
     .name,
     .subname {
-      background: var(--grey-light);
+      background: var(--primary-background);
       animation-duration: 1s;
       animation-fill-mode: forwards;
       animation-iteration-count: infinite;
       animation-name: placeHolderShimmer;
       animation-timing-function: linear;
-      background: var(--grey-light);
+      background: var(--primary-background);
       background: linear-gradient(
         to right,
-        var(--grey-light) 8%,
+        var(--primary-background) 8%,
         #f2f2f2 18%,
-        var(--grey-light) 33%
+        var(--primary-background) 33%
       );
       background-size: 800px 104px;
       & > * {

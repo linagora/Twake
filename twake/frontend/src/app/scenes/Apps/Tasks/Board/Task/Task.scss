@@ -9,7 +9,7 @@
 .task_draggable {
   white-space: pre-wrap;
   padding: 16px;
-  border: 1px solid var(--grey-light);
+  border: 1px solid var(--primary-background);
   border-radius: var(--border-radius-base);
   font-size: 14px;
   transition: box-shadow 0.2s, transform 0.2s;
@@ -72,7 +72,7 @@
     line-height: 24px;
     cursor: pointer;
     &:hover {
-      background: var(--grey-light);
+      background: var(--primary-background);
     }
   }
   &:hover .task_options {

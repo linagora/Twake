@@ -146,7 +146,7 @@
   text-align: left;
   color: var(--black);
   background: var(--grey-background);
-  border: 2px solid var(--grey-light);
+  border: 2px solid var(--primary-background);
   border-radius: var(--border-radius-base);
   margin-top: 16px;
   padding: 8px;
@@ -154,7 +154,7 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--grey-light);
+    background: var(--primary-background);
     border-color: var(--grey-dark);
   }
 

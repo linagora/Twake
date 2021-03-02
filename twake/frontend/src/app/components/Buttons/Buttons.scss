@@ -117,7 +117,7 @@
   }
 
   &.secondary-light {
-    background: var(--grey-light);
+    background: var(--primary-background);
     color: var(--black);
 
     &:hover {
@@ -170,7 +170,7 @@
     }
     &.disabled,
     &:disabled {
-      color: var(--grey-light);
+      color: var(--primary-background);
     }
     &:hover {
       color: var(--black);

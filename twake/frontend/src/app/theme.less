@@ -20,15 +20,14 @@
 @black-alpha-50: #18295288;
 @black-alpha-70: #18295255;
 @error: #ff5154;
-@primary: #837dff;
-@primary-background: #f3f2ff;
-@primary-hover: #5d58d7;
+@primary: #3840f7;
+@primary-background: #3842f723;
+@primary-hover: #3850f7;
 @grey-background: #f5f5f7;
-@grey-light: #eeeeee;
-@grey-dark: #92929c;
-@secondary: #182952;
-@success: #18af2c;
-@warning: #faad14;
+@grey-dark: #6a6a6a;
+@secondary: #0d0f38; //#182952;
+@success: #04aa11;
+@warning: #ff8607;
 @white: #fff;
 
 // --- Twake sizing --- //
@@ -57,7 +56,6 @@
   --box-shadow-base: @box-shadow-base;
   --box-shadow-large: @box-shadow-large;
   --green: @success;
-  --grey-light: @grey-light;
   --grey-dark: @grey-dark;
   --grey-background: @grey-background;
   --main-font: @main-font;
@@ -72,7 +70,7 @@
 }
 
 // --- ant-colors --- //
-@disabled-bg: @grey-light; // disable state background
+@disabled-bg: @primary-background; // disable state background
 @disabled-color: @white; // disable state color
 @error-color: @error; // error state color
 @heading-color: @black; // heading text color
@@ -215,7 +213,7 @@ textarea.ant-input,
 @select-background: @grey-background;
 @select-border-color: @grey-background;
 @select-dropdown-bg: @white;
-@select-item-active-bg: @grey-background;
+@select-item-active-bg: @primary-background;
 @select-item-selected-bg: @primary;
 @select-item-selected-color: @white;
 
