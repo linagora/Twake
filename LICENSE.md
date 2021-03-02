@@ -1,28 +1,26 @@
-GNU Affero General Public License version 3 – Twake
+# GNU Affero General Public License version 3
+License and Additional Terms for TWAKE software
 
-License and Additional Terms for Twake software
-
-Twake is an open-source, cloud-based and enterprise-centric SaaS
-dedicated to social and collaborative services, distributed under the GNU
-Affero GPL v3 License terms, with Additional Terms pursuant to Section 7 of
-said license.
+TWAKE is a secure, open-source, and enterprise-centric SaaS collaboration 
+platform, distributed under the GNU Affero GPL v3 License terms, with 
+Additional Terms pursuant to Section 7 of said license.
 
 These Additional Terms are not intended to be taken as a change of heart by
-Linagora over the principles of free software and open source distribution, as
-Linagora strongly believes in free software and open source distribution, since
-it warrants an easy and reasonable access to software innovation to large user
-communities, and is highly committed to supporting free software and open
-source whenever possible.
+LINAGORA over the principles of free software and open source distribution, as
+LINAGORA strongly believes in free software and open source distribution.
+Free and open source software warrants an easy and reasonable access to software
+innovation to large user communities, and LINAGORA is highly committed to supporting 
+free and open source software whenever possible.
 
-Linagora wishes its paternity over Twake to be acknowledged,
+LINAGORA wishes its paternity over TWAKE software to be acknowledged,
 regardless of its present or later use, modification, distribution and/or
-evolutions. Accordingly, these terms aim at preserving Linagora moral rights
-over Twake.
+evolutions. Accordingly, these terms aim at preserving LINAGORA moral rights
+over TWAKE.
 
 We have taken care of not affecting product copying, improvements or deploying.
 It is our conviction that the community will not be affected by these terms,
 the ultimate goal of which is to ensure the sustainability of free and open
-source software by supporting R&D and improving the visibility of Linagora as a
+source software by supporting R&D and improving the visibility of LINAGORA as a
 free and open source software publisher, while encouraging others to comply
 with our common ideals.
 
@@ -38,16 +36,16 @@ you comply with its requirements, notably:
   General Public License version 3, including its Additional Terms pursuant to
   its section 7, subsections (b), (c) and (e).
 
-Following are the applicable Additional Terms for use of Twake
+Following are the applicable Additional Terms for use of the TWAKE software
 pursuant to section 7, subsections (b), (c) and (e) of the GNU Affero General
 Public License version 3.
 
-Additional Terms applicable for Twake
+### Additional Terms applicable for TWAKE software
 
 The following additional terms are applicable to the use, modification and
-distribution of Twake:
+distribution of TWAKE software:
 
-1. Notices and Attribution:
+**1. Notices and Attribution:**
 
 The interactive user interfaces in modified source and object code versions of
 this program must display Appropriate Legal Notices, as required under Section
@@ -55,54 +53,61 @@ this program must display Appropriate Legal Notices, as required under Section
 
 In accordance with Section 7 and subsection (b) of the GNU Affero General
 Public License version 3, these Appropriate Legal Notices consist in the
-display of the Signature Notice “Twake is powered by Linagora.” for any
-and all type of outbound messages (e.g. e-mail and meeting requests).
-Retaining this Signature Notice in any and all free and Open Source versions
-of Twake is mandatory notwhistanding any other terms and conditions.
+display, in a clearly legible manner, of the Notice “Twake is powered by 
+Linagora.” in the TWAKE user interface as well as for any and all type of 
+outbound messages (e.g. e-mail and meeting requests).
 
-These Signature Notices can be freely translated and replaced by any notice of
-strictly identical meaning in another language according to localization of the
-software, provided such notice clearly displays the words “Twake” and
-“Linagora”.
+Retaining this Notice in any and all free and Open Source versions of TWAKE
+is mandatory notwithstanding any other terms and conditions.
 
-Regardless of the notice language, the Logo/words "Twake" must be a clickable
-hypertext link that leads directly to the Internet URL http://twake.app.
-The Logo/word "Linagora" must be a clickable hypertext link that leads directly
-to the Internet URL http://www.linagora.com.
+If the display of the Appropriate Legal Notices, and/or logos is not reasonably
+feasible for technical reasons, the Appropriate Legal Notices must display the 
+words "Twake is powered by Linagora."
 
-2. Use of the Twake and Linagora trademarks and logos
+These Notices can be freely translated and replaced by any notice of strictly 
+identical meaning in another language according to localization of the software, 
+provided such notice clearly displays the words “TWAKE” and “LINAGORA”.
 
-Twake™ and Linagora™ are registered trademarks of Linagora.
+Regardless of the notice language, the Logo/words "TWAKE" must be a clickable
+hypertext link that leads directly to the Internet URL https://twake.app.
+The Logo/word "LINAGORA" must be a clickable hypertext link that leads directly
+to the Internet URL https://linagora.com.
+
+**2. Use of the TWAKE and LINAGORA trademarks and logos**
+
+TWAKE™ and LINAGORA™ are registered trademarks of LINAGORA.
 
 Pursuant to Section 7, subsections (c) and (e) of the GNU Affero General Public
 License version 3, this license allows limited use of these trademarks under
 the following terms:
 
-All Linagora trademarks, including Twake™ and Linagora™ logos shall be used by
+All LINAGORA trademarks, including TWAKE™ and LINAGORA™ logos shall be used by
 the licensees and sublicensees for the sole purpose of complying with the
 present Additional Terms to the GNU Affero General Public License version 3,
-excluding any other purpose without written consent obtained from Linagora.
+excluding any other purpose without written consent obtained from LINAGORA.
 
 Using these trademarks without the (TM) trademark notice symbol, removing these
 trademarks from the software, modifying these trademarks in any manner except
 proportional scaling (under the proviso that such scaling keeps the trademark
 clearly legible), or using these trademarks to promote any products or services
 commercially, or on product packaging, websites, books, documentation or any
-other publication without a written, signed agreement with Linagora is strictly
-prohibited, and constitutes an infringement of Linagora intellectual property
-rights over these trademarks. Using these trademarks in a way harmful,
-damaging or detrimental to the value of the Twake brand or any other Linagora
-trademarks, integrity, image, reputation, and/or goodwill, as determined by
-Linagora, is also strictly prohibited, and constitutes an infringement of
-Linagora intellectual property rights over these trademarks as well.
+other publication without a written, signed agreement with LINAGORA is strictly
+prohibited, and constitutes an infringement of LINAGORA intellectual property
+rights over these trademarks. 
 
-Please report any possible violation of the GNU Affero General Public License
+Using these trademarks in a way harmful,damaging or detrimental to the value of 
+the TWAKE brand or any other LINAGORA trademarks, integrity, image, reputation, 
+and/or goodwill, as determined by LINAGORA, is also strictly prohibited, and 
+constitutes an infringement of LINAGORA intellectual property rights over these 
+trademarks as well.
+
+**Please report any possible violation of the GNU Affero General Public License
 version 3, any violation of the hereabove Additional Terms, any infringement
-and/or misuse of any Twake or Linagora trade marks and/or a violation of the
-aforementioned Trademark Policy at <info@linagora.com>.
+and/or misuse of any TWAKE or LINAGORA trade marks and/or a violation of the
+aforementioned Trademark Policy at <info@linagora.com>.**
 
-    	GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November
-    	2007
+    	GNU AFFERO GENERAL PUBLIC LICENSE 
+      Version 3, 19 November 2007
 
 Copyright © 2007 Free Software Foundation, Inc. <http://fsf.org/> Everyone is
 permitted to copy and distribute verbatim copies of this license document, but
@@ -676,3 +681,49 @@ liability in connection with the Program, unless a warranty or assumption of
 liability accompanies a copy of the Program in return for a fee.
 
 END OF TERMS AND CONDITIONS
+
+### How to Apply These Terms
+
+In order to distribute a program under the GNU Affero General Public License
+version 3 with the Additional Terms for TWAKE software, attach the following 
+notices to the program. It is safest to attach them to the start of each source 
+file to most effectively state the exclusion of warranty; and each file should 
+have at least the "copyright" line and a pointer to where the full notice is found.
+
+`<one line to give the program's name and a brief idea of what it does.>`
+
+`Copyright (C) <year>  <name of author>
+
+This program is free software: you can redistribute it and/or modify it under the 
+terms of the GNU Affero General Public License as published by the Free Software 
+Foundation, either version 3 of the License, or (at your option) any later version, 
+provided you comply with the Additional Terms applicable for TWAKE software by 
+LINAGORA pursuant to Section 7 of the GNU Affero General Public License, subsections 
+(b), (c), and (e), pursuant to which you must notably (i) retain the “Twake is powered 
+by Linagora” notice appended to any type of outbound messages (e.g. e-mail and meeting 
+requests) as well as in the TWAKE user interface, (ii) retain all hypertext links between 
+TWAKE and https://twake.app, as well as between LINAGORA and LINAGORA.com, and (iii) refrain 
+from infringing LINAGORA intellectual property rights over its trademarks and commercial brands. 
+Other Additional Terms apply, see <http://www.linagora.com/licenses/> for more details.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License and its applicable Additional 
+Terms for TWAKE along with this program. If not, see <http://www.gnu.org/licenses/> for the GNU Affero 
+General Public License version 3 and <http://www.linagora.com/licenses/> for the Additional Terms 
+applicable to the TWAKE software.`
+
+Also add information on how to contact you by electronic and paper mail.
+
+If your software can interact with users remotely through a computer network, you should also make sure 
+that it provides a way for users to get its source. For example, if your program is a web application, 
+its interface could display a "Source" link that leads users to an archive of the code. There are many ways 
+you could offer source, and different solutions will be better for different programs; see section 13 for 
+the specific requirements.
+
+You should also get your employer (if you work as a programmer) or school, if any, to sign a "copyright 
+disclaimer" for the program, if necessary. For more information on this, and how to apply and follow 
+the GNU AGPL, see <http://www.gnu.org/licenses/>.
+
