@@ -67,11 +67,18 @@ export default class MainView extends Component {
     return [
       <div className="public_header">
         <div className="left">
-          <GroupSwitch group={group} notifications={0} imageOnly />
+          <div className={'group_switch image_only'}>
+            <div
+              className={'current_company_logo ' + (group.logo ? 'has_image ' : '')}
+              style={{ backgroundImage: "url('" + window.addApiUrlIfNeeded(group.logo) + "')" }}
+            >
+              {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
+            </div>
+          </div>
           <span className="companyName">{group.name}</span>
         </div>
         <div className="right">
-          <a href="https://twakeapp.com" target="_BLANK">
+          <a href="https://twake.app" target="_BLANK">
             <span className="nomobile">
               {Languages.t(
                 'scenes.app.mainview.create_account',
