@@ -28,7 +28,9 @@ export type ColumnType =
   | "uuid"
   | "counter"
   | "blob"
-  | "boolean";
+  | "boolean"
+  // backward compatibility
+  | "twake_boolean";
 
 export type EntityTarget<Entity> = ObjectType<Entity>;
 
