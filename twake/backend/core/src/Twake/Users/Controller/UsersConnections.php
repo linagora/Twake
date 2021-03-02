@@ -153,7 +153,6 @@ class UsersConnections extends BaseController
             $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));
 
             $data["data"] = $this->getUser()->getAsArray();
-            $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 

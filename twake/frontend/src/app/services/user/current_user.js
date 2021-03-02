@@ -89,34 +89,6 @@ class CurrentUser extends Observable {
     });
   }
 
-  updateWorkspacesPreferences(preferences) {
-    var update = {
-      id: Login.currentUserId,
-      workspaces_preferences: JSON.parse(JSON.stringify(preferences)),
-    };
-    Collections.get('users').updateObject(update);
-
-    if (this.will_update_preferences) {
-      return;
-    }
-    this.will_update_preferences = true;
-    setTimeout(() => {
-      var data = {
-        preferences: JSON.parse(
-          JSON.stringify(Collections.get('users').find(Login.currentUserId).workspaces_preferences),
-        ),
-      };
-      var update = {
-        id: Login.currentUserId,
-        workspaces_preferences: data.preferences,
-      };
-      this.will_update_preferences = false;
-      Api.post('users/account/set_workspaces_preference', data, res => {
-        ws.publish('users/' + Login.currentUserId, { user: update });
-      });
-    }, 5000);
-  }
-
   updateUserName(username) {
     var that = this;
     var update = {

@@ -23,7 +23,6 @@ export type UserType = {
   username: string;
   workspaces?: any;
   workspaces_id?: string[];
-  workspaces_preferences?: any;
   _cached?: boolean;
   _cached_from?: any;
   _created?: boolean;
