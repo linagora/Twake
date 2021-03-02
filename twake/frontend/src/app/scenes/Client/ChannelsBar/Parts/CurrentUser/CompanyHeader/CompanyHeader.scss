@@ -7,7 +7,7 @@
 
   .notifications {
     cursor: pointer;
-    color: var(--black-alpha-1);
+    color: var(--black-alpha-50);
     font-size: 16px;
 
     .bell {
@@ -18,7 +18,7 @@
 
       &:hover {
         background: var(--grey-light);
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
       }
 
       &.disabled {
@@ -63,7 +63,7 @@
 
     .user-info {
       display: flex;
-      color: var(--black-alpha-2);
+      color: var(--black-alpha-70);
       align-items: center;
 
       .status {
@@ -140,14 +140,14 @@
     .name {
       background: #dfdfdf !important;
       height: 16px;
-      border-radius: var(--default-border-radius-large);
+      border-radius: var(--border-radius-large);
       width: 70%;
       margin-top: 2px;
     }
     .subname {
       margin-top: 6px;
       height: 16px;
-      border-radius: var(--default-border-radius-large);
+      border-radius: var(--border-radius-large);
       width: 90%;
     }
   }

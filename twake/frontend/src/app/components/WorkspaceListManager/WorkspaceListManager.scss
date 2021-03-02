@@ -43,7 +43,7 @@
       width: 16px;
       height: 16px;
       margin-top: 4px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
 
       &.email {
         color: #444;
@@ -72,7 +72,7 @@
       .user_head {
         width: 24px;
         height: 24px;
-        border-radius: var(--default-border-radius-large);
+        border-radius: var(--border-radius-large);
 
         &.email {
           color: #444;

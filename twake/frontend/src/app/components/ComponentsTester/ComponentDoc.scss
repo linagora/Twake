@@ -13,7 +13,7 @@
     right: 0;
     padding: 25px;
     box-sizing: border-box;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-top: 25px;
   }
 
@@ -44,7 +44,7 @@
     .type {
       background: var(--grey-background);
       padding: 2px 4px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
   }
 }

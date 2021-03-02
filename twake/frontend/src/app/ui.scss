@@ -75,9 +75,9 @@ body.dragging * {
 
 .white_box_with_shadow {
   box-sizing: border-box;
-  border-radius: var(--base_border_radius);
+  border-radius: var(--border-radius-base);
   background: #fff;
-  box-shadow: var(--larger_box_shadow);
+  box-shadow: var(--box-shadow-large);
 }
 
 .white_full_background {
@@ -137,7 +137,7 @@ a.error {
   width: 32px;
   height: 32px;
   background: var(--grey-background);
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   line-height: 32px;
   text-align: center;
   color: var(--grey-dark);
@@ -166,7 +166,7 @@ a.error {
 
 .tag {
   background: var(--grey-dark);
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   height: 18px;
   color: var(--white);
   font-size: 12px;
@@ -1155,7 +1155,7 @@ FORMS
   display: inline-block;
   background: var(--grey-background);
   padding: 4px 8px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   margin-right: 16px;
   font-size: 16px;
   margin-left: -6px;

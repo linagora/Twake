@@ -4,8 +4,8 @@
   bottom: 20px;
   width: auto;
   height: auto;
-  box-shadow: var(--base-box-shadow);
-  border-radius: var(--base_border_radius);
+  box-shadow: var(--box-shadow-base);
+  border-radius: var(--border-radius-base);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -59,7 +59,7 @@
         background: var(--secondary);
         padding: 4px;
         color: #fff;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
         max-width: 100px;
         overflow: hidden;
         text-overflow: ellipsis;

@@ -17,8 +17,8 @@
     margin: auto;
     .component {
       background: white;
-      border-radius: var(--base_border_radius);
-      box-shadow: var(--base-box-shadow);
+      border-radius: var(--border-radius-base);
+      box-shadow: var(--box-shadow-base);
       position: relative;
       display: inline-flex;
       flex-direction: column;
@@ -33,7 +33,7 @@
           width: 30px;
           background-size: contain;
           background-position: center;
-          border-radius: var(--default-border-radius);
+          border-radius: var(--border-radius-base);
           margin-right: 5px;
         }
         .app_name {

@@ -29,7 +29,7 @@
       .current_company_logo {
         width: 24px;
         height: 24px;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
       }
     }
   }
@@ -63,7 +63,7 @@
   }
 
   .plan {
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     font-size: 12px;
     height: 22px;
     float: right;

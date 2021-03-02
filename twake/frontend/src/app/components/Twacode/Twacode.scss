@@ -75,13 +75,13 @@
   .multiline-code {
     color: var(--white);
     padding: 5px;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     .hljs {
       border-radius: 6px;
     }
   }
   .inline-code {
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     background: #232323;
     padding-bottom: 1px;
   }
@@ -122,7 +122,7 @@
       background: #fff892;
       font-weight: 500;
       box-sizing: border-box;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
     &.with_user {
       font-weight: 500;
@@ -130,7 +130,7 @@
       color: var(--black);
       height: 18px;
       text-transform: capitalize;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       text-overflow: ellipsis;
       white-space: nowrap;
       display: inline-block;
@@ -147,7 +147,7 @@
       .userimage {
         width: 16px;
         height: 16px;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
         display: inline-block;
         vertical-align: middle;
         background: var(--grey-light);
@@ -166,7 +166,7 @@
     height: 18px;
     line-height: 18px;
     text-transform: capitalize;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
@@ -227,7 +227,7 @@
     width: 100%;
     max-width: 200px;
     height: 8px;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     overflow: hidden;
     background: rgba(128, 128, 128, 0.1);
     margin-top: 5px;
@@ -303,7 +303,7 @@
   .image.twacode {
     height: 120px;
     margin-top: 8px;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     max-width: 100%;
   }
 }

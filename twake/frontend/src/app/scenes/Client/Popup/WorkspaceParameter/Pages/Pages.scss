@@ -9,7 +9,7 @@
     width: 60px;
     height: 60px;
     line-height: 60px;
-    border-radius: var(--larger_border_radius);
+    border-radius: var(--border-radius-large);
     margin: auto;
     margin-bottom: 8px;
     background-size: cover;
@@ -68,7 +68,7 @@
     background-color: var(--grey-light);
     background-size: cover;
     background-position: center;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
   }
 
   .apps,
@@ -96,7 +96,7 @@
       padding-left: 5px;
       padding-right: 5px;
       box-sizing: border-box;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
 
       &:hover {
         background: var(--grey-background);
@@ -144,7 +144,7 @@
     margin: 15px;
     margin-top: 0px;
     background: #555;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     color: #fff;
     padding: 15px;
   }

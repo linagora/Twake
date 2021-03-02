@@ -57,7 +57,7 @@
       background: var(--white);
       z-index: 1;
       box-shadow: 0 2px 32px rgba(0, 0, 0, 0.2);
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       padding: 16px;
       box-sizing: border-box;
       display: flex;
@@ -180,7 +180,7 @@
           height: 16px;
           color: #ffffff;
           margin-right: 0px;
-          border-radius: var(--default-border-radius);
+          border-radius: var(--border-radius-base);
           padding: 2px 4px;
           box-sizing: border-box;
           line-height: 12px;
@@ -226,7 +226,7 @@
     & > .selectable {
       background: var(--primary-background);
       color: var(--primary);
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
 
     & > .selectable > .icon .user_list .user_head {
@@ -253,7 +253,7 @@
   &.selected > .selectable {
     background: var(--primary);
     color: var(--white);
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     & > .more .right-arrow {
       color: var(--white);
     }

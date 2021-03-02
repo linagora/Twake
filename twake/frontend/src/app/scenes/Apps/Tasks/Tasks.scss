@@ -8,7 +8,7 @@
     width: 216px;
     height: 60px;
     border: 1px solid var(--grey-light);
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-bottom: 16px;
     margin-right: 16px;
     display: inline-block;
@@ -83,7 +83,7 @@
     width: 216px;
     height: 90px;
     border: 1px solid var(--grey-light);
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-bottom: 16px;
     margin-right: 16px;
     display: inline-block;
@@ -137,7 +137,7 @@
     height: 42px;
     margin-right: 16px;
     margin-bottom: 16px;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     cursor: pointer;
 
     .user_head {

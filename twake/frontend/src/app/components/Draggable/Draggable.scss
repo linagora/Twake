@@ -34,7 +34,7 @@
     text-align: center;
     line-height: 40px;
     border-radius: 50%;
-    box-shadow: var(--base-box-shadow);
+    box-shadow: var(--box-shadow-base);
   }
 }
 
@@ -45,12 +45,12 @@
 .droppable_zone {
   background: #f2f2f200;
   margin: 0px;
-  border-radius: var(--base_border_radius);
+  border-radius: var(--border-radius-base);
   transition: margin 0.2s, border 0.2s;
   border: 0px dashed #ffffff00;
 
   .empty {
-    border-radius: var(--base_border_radius);
+    border-radius: var(--border-radius-base);
     background: #ffffff;
     padding: 0px;
     text-align: center;

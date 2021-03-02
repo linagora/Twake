@@ -11,35 +11,14 @@
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less';
 
-:root {
-  --primary: #837dff;
-  --primary-hover: #5d58d7;
-  --secondary: #182952;
-  --primary-background: #f3f2ff;
-  --black: #444;
-  --black-alpha-1: #18295288;
-  --black-alpha-2: #18295255;
-  --grey-light: #eeeeee;
-  --grey-dark: #92929c;
-  --grey-background: #f5f5f7;
-  --white: #fff;
-  --pale-grey: #f5f5f7;
-  --default-border-radius: 3px;
-  --default-border-radius-large: 5px;
-  --green: #18af2c;
-  --red: #ff5154;
-  --warning: #faad14;
-  --base-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3); //0 2px 4px rgba(0, 0, 0, 0.5)
-  --larger_box_shadow: 0 2px 15px rgba(0, 0, 0, 0.2); //0 2px 4px rgba(0, 0, 0, 0.5)
-  --base_border_radius: 3px;
-  --larger_border_radius: 5px;
-  --main-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, 'Apple Color Emoji', Arial,
-    sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
-}
+// --- Twake fonts --- //
+@main-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, 'Apple Color Emoji', Arial,
+  sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
 
 // --- Twake colors --- //
 @black: #444;
-@black-alpha-2: #18295255;
+@black-alpha-50: #18295288;
+@black-alpha-70: #18295255;
 @error: #ff5154;
 @primary: #837dff;
 @primary-background: #f3f2ff;
@@ -52,11 +31,47 @@
 @warning: #faad14;
 @white: #fff;
 
+// --- Twake sizing --- //
+@border-radius-small: 4px;
+@border-radius-base: 8px;
+@border-radius-large: 20px;
+@font-size-base: 14px; // major text font size
+@font-size-large: @font-size-base + 2px;
+@font-size-small: @font-size-base - 2px;
+@height-base: 32px;
+@height-large: @height-base + 8px;
+@height-small: 28px;
+
 // --- Twake shadows --- //
 @checkbox-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+@box-shadow-base: 0 2px 15px rgba(0, 0, 0, 0.3); //0 2px 4px rgba(0, 0, 0, 0.5)
+@box-shadow-large: 0 2px 15px rgba(0, 0, 0, 0.2); //0 2px 4px rgba(0, 0, 0, 0.5)
+
+// --- Root variables --- //
+:root {
+  --black: @black;
+  --black-alpha-50: @black-alpha-50;
+  --black-alpha-70: @black-alpha-70;
+  --border-radius-base: @border-radius-base;
+  --border-radius-large: @border-radius-large;
+  --box-shadow-base: @box-shadow-base;
+  --box-shadow-large: @box-shadow-large;
+  --green: @success;
+  --grey-light: @grey-light;
+  --grey-dark: @grey-dark;
+  --grey-background: @grey-background;
+  --main-font: @main-font;
+  --pale-grey: @grey-background;
+  --primary: @primary;
+  --primary-hover: @primary-hover;
+  --primary-background: @primary-background;
+  --red: @error;
+  --secondary: @secondary;
+  --white: @white;
+  --warning: @warning;
+}
 
 // --- ant-colors --- //
-@border-color-base: @grey-background; // major border color
 @disabled-bg: @grey-light; // disable state background
 @disabled-color: @white; // disable state color
 @error-color: @error; // error state color
@@ -66,13 +81,11 @@
 @success-color: @success; // success state color
 @warning-color: @warning; // warning state color
 
-// --- sizing --- //
-@border-radius-base: 3px; // major border radius
-@font-size-base: 14px; // major text font size
-@font-size-lg: 14px;
-@height-base: 32px;
-@height-lg: 40px;
-@height-sm: 28px;
+// --- ant-borders && ant-margins  --- //
+@border-color-base: @grey-background; // major border color
+
+// --- ant-fonts --- //
+@font-family: @main-font;
 
 // --- ant-btn --- //
 @btn-border-width: 0;
@@ -129,8 +142,8 @@
 @input-border-color: @grey-background; // input border color
 @input-bg: @grey-background; // input background color
 @input-height-base: @height-base;
-@input-height-lg: @height-lg;
-@input-height-sm: @height-sm;
+@input-height-lg: @height-large;
+@input-height-sm: @height-small;
 @input-hover-border-color: none; // input border color on hover
 @input-placeholder-color: @grey-dark; // placeholder input color
 
@@ -162,10 +175,10 @@ textarea.ant-input,
   min-height: @height-base;
 
   &.ant-input-sm {
-    min-height: @height-sm;
+    min-height: @height-small;
   }
   &.ant-input-lg {
-    min-height: @height-lg;
+    min-height: @height-large;
   }
 }
 

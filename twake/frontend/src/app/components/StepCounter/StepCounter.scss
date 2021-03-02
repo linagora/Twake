@@ -7,7 +7,7 @@
   .step {
     height: 8px;
     background: black;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin: 0px 5px;
     background: var(--primary-background);
     transition: background 0.2s;

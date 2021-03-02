@@ -37,7 +37,7 @@
     color: var(--grey-dark);
     font-size: 14px;
     background: var(--grey-light);
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     display: flex;
     padding: 8px;
     margin: 0px 14px;
@@ -55,7 +55,7 @@
       margin-right: 4px;
       width: auto;
       background: var(--green);
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       color: var(--white);
       padding-right: 4px;
       white-space: nowrap;
@@ -78,7 +78,7 @@
         color: var(--secondary);
         width: 24px;
         height: 24px;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
       }
     }
   }

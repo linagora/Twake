@@ -23,7 +23,7 @@
     width: 32px;
     height: 32px;
     line-height: 32px;
-    border-radius: var(--larger_border_radius);
+    border-radius: var(--border-radius-large);
     margin: auto;
     margin-bottom: 8px;
     background-size: cover;
@@ -78,7 +78,7 @@
     }
     .company_name {
       background: var(--grey-dark);
-      border-radius: var(--default-border-radius-large);
+      border-radius: var(--border-radius-large);
       width: 32px;
       margin: auto;
       height: 12px;

@@ -1,7 +1,7 @@
 .user_head {
   width: 18px;
   height: 18px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   border: solid 1px var(--grey-background);
   background-position: center;
   background-size: cover;
@@ -34,7 +34,7 @@
   &.big {
     width: 40px;
     height: 40px;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     .status {
       border-width: 2px;
       bottom: -2px;

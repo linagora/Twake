@@ -45,7 +45,7 @@
     line-height: 32px;
     vertical-align: middle;
     background: var(--white);
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     border: 1px solid var(--grey-light);
     box-sizing: border-box;
     font-size: 14px;
@@ -66,7 +66,7 @@
       }
       .progress_bar {
         background: var(--grey-background);
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
         height: 8px;
         flex: 1;
         overflow: hidden;

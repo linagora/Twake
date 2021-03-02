@@ -1,6 +1,6 @@
 .table {
   overflow: hidden;
-  border-radius: var(--base_border_radius);
+  border-radius: var(--border-radius-base);
   margin-bottom: 16px;
   border: 1px solid var(--grey-background);
   font-weight: 500;
@@ -14,7 +14,7 @@
 
     .tr .item .line {
       pointer-events: none;
-      border-radius: var(--default-border-radius-large);
+      border-radius: var(--border-radius-large);
       height: 16px;
       margin-top: 8px;
       width: 200px;

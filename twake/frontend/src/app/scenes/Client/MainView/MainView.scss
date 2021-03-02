@@ -39,7 +39,7 @@
       font-size: 13px;
       font-weight: 500;
       color: var(--primary);
-      color: var(--black-alpha-2);
+      color: var(--black-alpha-70);
       padding: 8px 8px 8px 16px;
       line-height: 24px;
       box-sizing: border-box;
@@ -57,7 +57,7 @@
       svg {
         cursor: pointer;
         right: 8px;
-        color: var(--black-alpha-1);
+        color: var(--black-alpha-50);
         &:hover {
           color: var(--black);
         }

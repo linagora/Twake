@@ -11,7 +11,7 @@
     animation-timing-function: linear;
     animation-name: animated_background_shape_animation;
     position: absolute;
-    border-radius: var(--base_border_radius);
+    border-radius: var(--border-radius-base);
   }
   .animated_shape.circle {
     border-radius: 100%;
