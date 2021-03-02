@@ -692,9 +692,9 @@ have at least the "copyright" line and a pointer to where the full notice is fou
 
 `<one line to give the program's name and a brief idea of what it does.>`
 
-`Copyright (C) <year>  <name of author>
+`Copyright (C) <year>  <name of author>`
 
-This program is free software: you can redistribute it and/or modify it under the 
+`This program is free software: you can redistribute it and/or modify it under the 
 terms of the GNU Affero General Public License as published by the Free Software 
 Foundation, either version 3 of the License, or (at your option) any later version, 
 provided you comply with the Additional Terms applicable for TWAKE software by 
@@ -704,13 +704,13 @@ by Linagora” notice appended to any type of outbound messages (e.g. e-mail and
 requests) as well as in the TWAKE user interface, (ii) retain all hypertext links between 
 TWAKE and https://twake.app, as well as between LINAGORA and LINAGORA.com, and (iii) refrain 
 from infringing LINAGORA intellectual property rights over its trademarks and commercial brands. 
-Other Additional Terms apply, see <http://www.linagora.com/licenses/> for more details.
+Other Additional Terms apply, see <http://www.linagora.com/licenses/> for more details.`
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
+`This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
 even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-Affero General Public License for more details.
+Affero General Public License for more details.`
 
-You should have received a copy of the GNU Affero General Public License and its applicable Additional 
+`You should have received a copy of the GNU Affero General Public License and its applicable Additional 
 Terms for TWAKE along with this program. If not, see <http://www.gnu.org/licenses/> for the GNU Affero 
 General Public License version 3 and <http://www.linagora.com/licenses/> for the Additional Terms 
 applicable to the TWAKE software.`
