@@ -10,16 +10,8 @@ import Company, {
 import CompanyUser from "../../../services/user/entities/company_user";
 import UserServiceAPI from "../../../services/user/api";
 import twake from "../../../twake";
-import { getInstance as getUserInstance } from "../../../services/user/entities/user";
+import User, { getInstance as getUserInstance } from "../../../services/user/entities/user";
 import { getLogger } from "../../../core/platform/framework/logger";
-
-type User = {
-  id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-};
 
 type CLIArgs = {
   company: number;
@@ -77,10 +69,12 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
     const obsv$ = from(companies).pipe(
       // Create companies sequentially
       mergeMap(company => createCompany(company), concurrentTasks),
+      // until we create enough companies
       bufferCount(companies.length),
       tap(companies => logger.info("Created companies %s", companies.length)),
       // for each created company
       switchMap(companies => from(companies)),
+      // generate a set of user for each company
       map(company => getUsersForCompany(company, nbUsersPerCompany)),
       // Create users sequentially
       pipe(
@@ -123,16 +117,16 @@ const getUsers = (company: Company, size: number = 100): User[] => {
 };
 
 const getUser = (company: Company, id: number): User => {
-  return {
+  return getUserInstance({
     id: uuid(),
     firstname: "John",
     lastname: `Doe${id}`,
-    email: `user${id}@${company.name}`,
+    emailcanonical: `user${id}@${company.name}`,
     password: passwordGenerator.generate({
       length: 10,
       numbers: true,
     }),
-  };
+  });
 };
 
 export default command;
