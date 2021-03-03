@@ -27,7 +27,8 @@
       cursor: pointer;
 
       &:hover {
-        background: var(--primary-background);
+        background: var(--grey-dark);
+        color: var(--white);
       }
     }
   }
