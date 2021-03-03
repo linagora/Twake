@@ -26,6 +26,14 @@ export class ChannelActivity {
   @Column("last_activity", "number")
   last_activity: number;
 
+  @Column("last_message", "encoded_json")
+  last_message: {
+    date: number;
+    sender: string;
+    title: string;
+    text: string;
+  };
+
   /* Not stored in database */
 
   channel: Channel;

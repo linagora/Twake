@@ -21,6 +21,12 @@ export type ChannelType = {
   user_member?: ChannelMemberType;
   connectors?: string[];
   last_activity?: number;
+  last_message?: {
+    date: number;
+    sender: string;
+    title: string;
+    text: string;
+  };
 };
 
 export type ChannelMemberType = {
