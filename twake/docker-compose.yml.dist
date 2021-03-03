@@ -1,89 +1,76 @@
-version: "2"
+version: "3.4"
 
 services:
   scylladb:
     image: scylladb/scylla:4.1.0
-    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
+    command: --smp 1 --memory 400M
+    ports:
+      - 9042:9042
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
-  scylladb2:
-    image: scylladb/scylla:4.1.0
-    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-    volumes:
-      - ./docker-data/scylladb2:/var/lib/scylla
+
   rabbitmq:
-    image: rabbitmq:3
+    image: library/rabbitmq:3.8.9-management-alpine
+    mem_limit: 300m
+    ports:
+      - 15672:15672
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
-    ports:
-      - 5672:5672
-      - 15672:15672
-  redis:
-    image: "redis:alpine"
-    command: redis-server --requirepass some_password
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_REPLICATION_MODE=master
+
   node:
     image: twaketech/twake-node
+    build:
+      context: ./backend/node
+      dockerfile: ../../docker/twake-node/Dockerfile.dev
     environment:
-      - DEV=dev
-      - DB_DRIVER=cassandra
-      - DB_CASSANDRA_URI=scylladb:9042
-      - DB_CASSANDRA_KEYSPACE=twake
-      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
-      - SEGMENT_SECRET_KEY=YOUR_SECRET_KEY
+      - NODE_ENV=production
     volumes:
-      - ./configuration/backend-node/:/configuration/
-      - ./docker-data/drive/:/twake-core/drive/
-      - ./docker-data/drive-preview/:/twake-core/web/medias/
-      - ./docker-data/uploads/:/twake-core/web/upload/
+      - ./backend/node:/usr/src/app
+      - ./configuration/backend-node/:/usr/src/app/config/
     depends_on:
       - scylladb
       - rabbitmq
-      - elasticsearch
-      - redis
     links:
       - scylladb
+
   php:
     image: twaketech/twake-php
+    environment:
+      - DEV=dev
+    build:
+      context: .
+      dockerfile: docker/twake-php/Dockerfile
     volumes:
-      - ./configuration/backend/:/configuration/
+      - ./backend/core/:/twake-core:cached
       - ./docker-data/drive/:/twake-core/drive/
+      - ./docker-data/fpm/:/etc/docker-data/fpm/
       - ./docker-data/drive-preview/:/twake-core/web/medias/
       - ./docker-data/uploads/:/twake-core/web/upload/
     depends_on:
-      - rabbitmq
       - scylladb
-      - elasticsearch
+      - rabbitmq
     links:
       - scylladb
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - ./docker-data/es_twake:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
+
   nginx:
     image: twaketech/twake-nginx
+    environment:
+      - DEV=dev
+    build:
+      context: .
+      dockerfile: docker/twake-nginx/Dockerfile
     ports:
       - 8000:80
-    links:
+    depends_on:
       - php
+      - node
     volumes_from:
       - php
+      - node
     volumes:
-      - ./configuration/frontend/:/configuration
+      - ./frontend/:/twake-react/
       - ./docker-data/logs/nginx/:/var/log/nginx
+      - ./docker-data/letsencrypt/:/etc/letsencrypt/
       - ./docker-data/drive-preview/:/twake-core/web/medias/
       - ./docker-data/uploads/:/twake-core/web/upload/

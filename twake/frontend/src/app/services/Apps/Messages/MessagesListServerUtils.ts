@@ -279,7 +279,7 @@ export class MessagesListServerUtils extends Observable {
       });
     }
 
-    if (this.hasLastMessage()) {
+    if (this.hasLastMessage() && document.hasFocus()) {
       this.readChannelOrThread();
     }
 
@@ -368,6 +368,7 @@ export class MessagesListServerUtils extends Observable {
   destroy() {
     this.destroyed = true;
     this.httpLoading = false;
+
     DepreciatedCollections.get('messages').removeSource(this.collectionKey);
     DepreciatedCollections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
   }

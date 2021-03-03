@@ -321,7 +321,8 @@ class PseudoMarkdownCompiler {
             .findBy({})
             .filter(
               item =>
-                item.name.toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') == channel,
+                (item.name || '').toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') ==
+                channel,
             )[0];
           if (channel_id && channel_id.id) {
             channel_id = channel_id.id;

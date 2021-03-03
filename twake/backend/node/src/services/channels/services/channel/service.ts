@@ -281,6 +281,8 @@ export class Service implements ChannelService {
 
     entity.channel = channel;
 
+    logger.info(`Update activity for channel ${entity.channel_id} to ${entity.last_activity}`);
+
     await this.activityRepository.save(entity);
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }

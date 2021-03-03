@@ -67,8 +67,6 @@ class Notifications extends Observable {
         request.then(function (result) {});
       }
     }
-
-    this.getCompaniesNotifications();
   }
 
   //This method is called each time we change our current company
@@ -81,6 +79,7 @@ class Notifications extends Observable {
       reloadStrategy: 'ontime',
       queryParameters: {
         company_id: companyId,
+        all_companies: true,
       },
     });
 
@@ -102,32 +101,12 @@ class Notifications extends Observable {
     notificationsCollection.find({}, { limit: 1000, refresh: true });
   }
 
-  //This one is called only once on starting platform
-  getCompaniesNotifications() {
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-      { tag: 'others_company' },
-    );
-
-    //Load if there is at least one notification for user
-    notificationsCollection.findOne({}, { limit: 1, waitForBackend: true });
-    this.getNotifications();
-  }
-
   getNotifications() {
-    const notificationsOtherCompaniesCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-      { tag: 'others_company' },
-    );
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
       NotificationResource,
     );
-    const notifications = notificationsOtherCompaniesCollection
-      .find({})
-      .concat(notificationsCollection.find({}));
+    const notifications = notificationsCollection.find({});
 
     // Count notifications:
     // - other group notifications are not counted

@@ -63,7 +63,7 @@ class Websockets
 
         $route_endpoint = $route_entity->getRouteRandomEndpoint();
 
-        if ($new || (new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60) {
+        if ($new || (new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60*60*24) {
 
             $new_key_part = bin2hex(random_bytes(30));
             $new_key = hash('sha256', $route_entity->getKey() . $new_key_part);

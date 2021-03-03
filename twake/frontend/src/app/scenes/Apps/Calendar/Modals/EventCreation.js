@@ -120,7 +120,7 @@ export default class EventCreation extends Component {
                   '//' +
                   window.location.host +
                   '/bundle/connectors/jitsi/call/twake_event_' +
-                  +event.front_id,
+                  event.front_id,
               );
             }}
           >

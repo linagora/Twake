@@ -1,5 +1,5 @@
 import { ColumnType } from "../../types";
-import { decrypt, encrypt } from "../../utils";
+import { decrypt, encrypt } from "../../../../../../../crypto";
 
 export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): string => {
   if (type === "encoded_string" || type === "encoded_json") {
@@ -11,7 +11,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
       }
     }
     if (v !== undefined) {
-      v = encrypt(v, options.secret);
+      v = encrypt(v, options.secret).data;
     }
     return v;
   }
@@ -34,7 +34,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
   if (v !== null && (type === "encoded_string" || type === "encoded_json")) {
     try {
-      v = decrypt(v, options.secret);
+      v = decrypt(v, options.secret).data;
     } catch (err) {
       v = v;
     }

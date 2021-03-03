@@ -394,6 +394,10 @@ class Workspaces
 
             $this->wms->removeAllMember($workspaceId);
 
+            if(!$workspace){
+                return true;
+            }
+
             $workspace->setis_deleted(true);
 
             $this->doctrine->persist($workspace);

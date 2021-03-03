@@ -427,11 +427,13 @@ export class CassandraConnector extends AbstractConnector<
     results.rows.forEach(row => {
       const entity = new (entityType as any)();
       Object.keys(row).forEach(key => {
-        entity[columnsDefinition[key].nodename] = transformValueFromDbString(
-          row[key],
-          columnsDefinition[key].type,
-          { column: { key: key, ...columnsDefinition[key].options }, secret: this.secret },
-        );
+        if (columnsDefinition[key]) {
+          entity[columnsDefinition[key].nodename] = transformValueFromDbString(
+            row[key],
+            columnsDefinition[key].type,
+            { column: { key: key, ...columnsDefinition[key].options }, secret: this.secret },
+          );
+        }
       });
       entities.push(entity);
     });

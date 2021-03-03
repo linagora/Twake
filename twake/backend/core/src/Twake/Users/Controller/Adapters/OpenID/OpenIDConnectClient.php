@@ -619,7 +619,7 @@ class OpenIDConnectClient
             return \bin2hex(\random_bytes(16));
         } catch (Error $e) {
             throw new OpenIDConnectClientException('Random token generation failed.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new OpenIDConnectClientException('Random token generation failed.');
         };
     }

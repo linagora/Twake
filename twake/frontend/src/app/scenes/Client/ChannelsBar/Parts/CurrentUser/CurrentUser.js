@@ -20,6 +20,8 @@ import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/Com
 import popupManager from 'services/popupManager/popupManager.js';
 import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
+import AccessRightsService from 'services/AccessRightsService';
+import Workspaces from 'services/workspaces/workspaces.js';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -251,7 +253,11 @@ export default class CurrentUser extends Component {
     }
 
     usermenu.push({ type: 'separator' });
-    if (!WorkspaceUserRights.isGroupInvite()) {
+    if (
+      !WorkspaceUserRights.isGroupInvite() &&
+      (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'administrator') ||
+        AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'administrator'))
+    ) {
       usermenu.push({
         type: 'menu',
         text: Languages.t(

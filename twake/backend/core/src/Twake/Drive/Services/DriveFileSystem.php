@@ -360,7 +360,7 @@ class DriveFileSystem
                 $version = $directoryOrFile->getLastVersion($this->em);
                 $adapter = $this->storagemanager->getAdapter($version->getProvider());
                 $identifier = $version->getData()["identifier"];
-                $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
+                $uploadstate = $this->em->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
                 for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
                     $adapter->remove($uploadstate, $i);
                 }
@@ -737,7 +737,11 @@ class DriveFileSystem
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
             $last_version = new DriveFileVersion($fileordirectory, $current_user);
-            $last_version->setProvider($this->storagemanager->getOneProvider());
+            $last_version->setProvider($upload_data["provider"] ?: $this->storagemanager->getOneProvider());
+        }
+
+        if($last_version && $upload_data["provider"]){
+            $last_version->setProvider($upload_data["provider"]);
         }
 
         $last_version->setData(isset($upload_data["data"]) ? $upload_data["data"] : Array());

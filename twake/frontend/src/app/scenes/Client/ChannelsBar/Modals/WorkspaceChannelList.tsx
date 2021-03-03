@@ -1,57 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import { Divider, Input, Row } from 'antd';
-
+import React, { useEffect, useRef, useState } from 'react';
+import { Input, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
-import RouterServices from 'services/RouterService';
-import { Collection } from 'services/CollectionsReact/Collections';
-
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import { ChannelResource } from 'app/models/Channel';
-import WorkspaceChannelRow from 'app/scenes/Client/ChannelsBar/Modals/WorkspaceChannelList/WorkspaceChannelRow';
+import listService, {
+  GenericChannel,
+} from 'app/scenes/Client/ChannelsBar/Modals/SearchListManager';
+import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
+import ChannelsService from 'services/channels/channels.js';
+import RouterServices from 'app/services/RouterService';
+import ModalManager from 'app/components/Modal/ModalManager';
+import { UserType } from 'app/models/User';
+import UsersService from 'services/user/user.js';
+import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-type WorkspaceChannel = {
-  id: string;
-  name: string;
-  type: string;
-  channelResource: ChannelResource;
-};
-
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
-    return { companyId, workspaceId };
+  const [search, setSearch] = useState<string>('');
+  const [limit, setLimit] = useState(10);
+  const [cursor, setCursor] = useState<number>(-1);
+  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
+    return { companyId };
   });
-
-  const [search, setSearch] = useState('');
-  const [limit, setLimit] = useState(100);
-  const workspaceChannels: WorkspaceChannel[] = [];
-  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-  const channelsCollection = Collection.get(collectionPath, ChannelResource);
-  const channels = channelsCollection.useWatcher({}, { limit: limit });
+  const currentUserId: string = UsersService.getCurrentUserId();
+  const inputRef = useRef<Input>(null);
 
   useEffect(() => {
-    channelsCollection.reload();
+    listService.bind(search);
   });
 
-  const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const mineCollection = Collection.get(minePath, ChannelResource);
-  const mine = mineCollection.useWatcher({});
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowUp' && cursor > 0) {
+      return setCursor(cursor - 1);
+    }
 
-  channels.map((channel: ChannelResource) => {
-    workspaceChannels.push({
-      id: channel.data.id || '',
-      name: channel.data.name || '',
-      type: 'workspace',
-      channelResource: channel,
-    });
-  });
+    if (event.key === 'ArrowDown' && cursor < listService.list.length - 1) {
+      if (cursor < limit - 1) return setCursor(cursor + 1);
+    }
 
-  const isJoined = (workspaceChannel: WorkspaceChannel) => {
-    return mine.some(
-      channel =>
-        workspaceChannel.channelResource.id === channel.id && channel.data.user_member?.user_id,
-    );
+    if (event.key === 'Enter' && cursor >= 0) {
+      const element = listService.list[cursor];
+
+      return handleElementType(element);
+    }
+  };
+
+  const handleElementType = (element: GenericChannel) => {
+    switch (element.type) {
+      case 'user':
+        return upsertDirectMessage([(element.resource as UserType).id || '', currentUserId]);
+      case 'workspace':
+        return joinChannel(element.resource as ChannelResource);
+      case 'direct':
+        return upsertDirectMessage((element.resource as ChannelResource).data.members || []);
+    }
+  };
+
+  const upsertDirectMessage = async (userIds: string[]): Promise<void> => {
+    await ChannelsService.openDiscussion(userIds, companyId);
+    return ModalManager.closeAll();
+  };
+
+  const joinChannel = (channel: ChannelResource) => {
+    const collectionPath: string = `/channels/v1/companies/${channel.data.company_id}/workspaces/${channel.data.workspace_id}/channels/${channel.data.id}/members/`;
+    const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
+    const findMember = channelMembersCollection.find({ user_id: currentUserId });
+
+    if (!findMember.length) {
+      channelMembersCollection.insert(
+        new ChannelMemberResource({
+          channel_id: channel.data.id,
+          user_id: currentUserId,
+          type: 'member',
+        }),
+      );
+    }
+
+    ModalManager.closeAll();
+    return RouterServices.history.push(`/client/${channel.data.workspace_id}/c/${channel.data.id}`);
+  };
+
+  const loadMore = () => {
+    setLimit(limit + 10);
+    return inputRef.current?.focus();
   };
 
   return (
@@ -61,10 +93,15 @@ export default () => {
           suffix={
             <Icon type="search" className="m-icon-small" style={{ color: 'var(--grey-dark)' }} />
           }
+          onKeyDown={handleKeyDown}
           placeholder={Languages.t('scenes.client.channelbar.workspacechannellist.autocomplete')}
           value={search}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            setSearch(event.target.value);
+            return setCursor(0);
+          }}
           autoFocus
+          ref={inputRef}
         />
       </Row>
       <PerfectScrollbar
@@ -72,27 +109,21 @@ export default () => {
         component="div"
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
-        <div style={{ height: '240px' }}>
-          {workspaceChannels
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .filter(({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1)
-            .map(workspaceChannel => {
-              return (
-                <div key={`${workspaceChannel.channelResource.key}`}>
-                  <WorkspaceChannelRow
-                    channel={workspaceChannel.channelResource}
-                    joined={isJoined(workspaceChannel)}
-                  />
-                  <Divider style={{ margin: 0 }} />
-                </div>
-              );
-            })}
-          {!workspaceChannels.filter(
-            ({ name }) => name.toUpperCase().indexOf(search.toUpperCase()) > -1,
-          ).length &&
-            limit < workspaceChannels.length + 100 &&
-            setLimit(workspaceChannels.length + 100)}
-        </div>
+        <SearchListContainer
+          list={listService.list}
+          active={cursor}
+          limit={limit}
+          setCursor={(index: number) => setCursor(index)}
+        />
+        {listService.list.length > limit && (
+          <Row justify="center" style={{ lineHeight: '32px' }}>
+            <Typography.Link onClick={loadMore}>
+              {Languages.t(
+                'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader',
+              )}
+            </Typography.Link>
+          </Row>
+        )}
       </PerfectScrollbar>
     </ObjectModal>
   );
