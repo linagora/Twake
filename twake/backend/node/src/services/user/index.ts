@@ -24,7 +24,6 @@ export default class UserService extends TwakeService<UserServiceAPI> {
       next();
     });
 
-
     return this;
   }
 
