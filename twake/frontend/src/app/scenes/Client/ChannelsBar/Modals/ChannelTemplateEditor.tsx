@@ -87,7 +87,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
           />
         </InputWithIcon>
       </div>
-      <div className="y-margin" />
+      <div style={{ padding: '16px 0' }} />
       <div className="x-margin">
         <Title level={5}>
           {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
@@ -103,7 +103,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
       </div>
       {isAbleToEditVisibility() === true && (
         <>
-          <div className="y-margin" />
+          <div style={{ padding: '16px 0' }} />
           <div className="x-margin">
             <Title level={5}>
               {Languages.t(

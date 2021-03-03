@@ -117,16 +117,12 @@
   }
 
   &.secondary-light {
-    background: var(--primary-background);
+    background: var(--grey-light);
     color: var(--black);
 
-    &:hover {
-      background: var(--primary);
-
-      color: var(--white);
-    }
+    &:hover,
     &:active {
-      background: var(--primary);
+      opacity: 0.9;
     }
     &.disabled,
     &:disabled {

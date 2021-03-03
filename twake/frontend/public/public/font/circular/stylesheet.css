@@ -8,6 +8,7 @@
     url('CircularStd-MediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -19,6 +20,7 @@
     url('CircularStd-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -30,6 +32,7 @@
     url('CircularStd-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -41,6 +44,7 @@
     url('CircularStd-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -53,6 +57,7 @@
     url('CircularStd-BlackItalic.ttf') format('truetype');
   font-weight: 900;
   font-style: italic;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -65,6 +70,7 @@
     url('CircularStd-BookItalic.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -77,6 +83,7 @@
     url('CircularStd-BoldItalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
 
 @font-face {
@@ -88,4 +95,5 @@
     url('CircularStd-Book.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  unicode-range: U+0000-001F, U+0021-036F;
 }
