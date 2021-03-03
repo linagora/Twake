@@ -4,7 +4,6 @@ import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
-import Globals from 'services/Globals.js';
 import UserService from 'services/user/user.js';
 
 import FooterUI from 'app/scenes/Client/ChannelsBar/Parts/Footer/Footer.js';
@@ -44,7 +43,7 @@ export default class Footer extends Component {
         onClickFeedback={
           () => {
             const currentUser = UserService.getCurrentUser();
-            Globals.window.freddyWidget.show({
+            window.freddyWidget.show({
               custom_fields: {
                 id: currentUser.id,
                 email: currentUser.email,
