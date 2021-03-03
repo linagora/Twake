@@ -36,7 +36,7 @@
     .btn {
       height: 40px;
       line-height: 40px;
-      border-radius: 5px;
+      border-radius: var(--border-radius-base);
       display: inline-block;
       padding: 0px 20px;
     }

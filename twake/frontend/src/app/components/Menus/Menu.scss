@@ -156,7 +156,7 @@
         height: 16px;
         text-align: center;
         line-height: 16px;
-        border-radius: var(--border-radius-base);
+        border-radius: var(--border-radius-small);
         font-weight: 500;
         margin-left: 5px;
         background: var(--grey-dark);
@@ -172,14 +172,14 @@
 
       .emoji-image {
         margin-top: 0px;
-        border-radius: var(--border-radius-base);
+        border-radius: var(--border-radius-small);
       }
     }
 
     .image {
       width: 24px;
       height: 24px;
-      border-radius: var(--border-radius-base);
+      border-radius: var(--border-radius-small);
       background-color: var(--grey-dark);
       display: inline-block;
       background-size: contain;
