@@ -43,6 +43,7 @@
     <link rel="manifest" href="/manifest.json" />
   </head>
   <body id="body" style="margin: 0; padding: 0;">
+    <div id="fyfk-widget"></div>
     <div id="root"></div>
     <img
       id="app_loader"
@@ -76,5 +77,12 @@
       }
     </script>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
+    <script>
+      var ffWidgetId = '4a0f72e7-9db7-4d0f-aad2-da3ea3c6cb63';
+      var ffWidgetScript  = document.createElement('script');
+      ffWidgetScript.type = 'text/javascript';
+      ffWidgetScript.src = 'https://cdn.freddyfeedback.com/widget/freddyfeedback.js';
+      document.head.appendChild(ffWidgetScript);
+  </script>
   </body>
 </html>
