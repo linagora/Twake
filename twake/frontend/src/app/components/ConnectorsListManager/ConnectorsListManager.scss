@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .connectorsListManager {
   margin: 0px -16px;
   margin-top: -8px;
@@ -10,7 +8,7 @@
     display: inline-block;
     background-position: center;
     background-size: contain;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     vertical-align: middle;
     margin-right: 8px;
   }
@@ -37,13 +35,13 @@
     &:hover {
       .m-icon-small {
         &.remove:hover {
-          color: $red;
+          color: var(--red);
         }
         &.config:hover {
-          color: $primary;
+          color: var(--primary);
         }
         &.add {
-          color: $primary;
+          color: var(--primary);
         }
       }
     }

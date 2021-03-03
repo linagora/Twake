@@ -32,7 +32,7 @@ export default (props: { children: React.ReactNode }): JSX.Element => {
   }
   if (branding.style && branding.style.default_border_radius) {
     document.documentElement.style.setProperty(
-      '--default-border-radius',
+      '--border-radius-base',
       branding.style.default_border_radius + 'px',
     );
   }

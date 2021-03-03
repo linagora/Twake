@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .buttonWithTimeout_container {
   position: relative;
   pointer-events: none;
@@ -41,11 +39,11 @@
 }
 
 .button {
-  background: $primary;
-  color: $white;
+  background: var(--primary);
+  color: var(--white);
   font-weight: 500;
   border: 0px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
@@ -54,14 +52,14 @@
     background: var(--primary-hover);
   }
   &:active {
-    background: #5b50d0;
+    background: var(--primary);
   }
   &:focus {
     outline: none;
   }
   &.disabled,
   &:disabled {
-    background: #b3acff;
+    background: var(--primary-background);
     pointer-events: none;
   }
 
@@ -88,7 +86,7 @@
 
   &.secondary {
     background: #807f8a;
-    color: $white;
+    color: var(--white);
 
     &:hover {
       background: #706f79;
@@ -104,7 +102,7 @@
 
   &.danger {
     background: #ff1020;
-    color: $white;
+    color: var(--white);
 
     &:hover {
       background: #f00010;
@@ -119,25 +117,23 @@
   }
 
   &.secondary-light {
-    background: $grey_light;
-    color: $black;
+    background: var(--grey-light);
+    color: var(--black);
 
-    &:hover {
-      background: #e8e8e8;
-    }
+    &:hover,
     &:active {
-      background: #dddddd;
+      opacity: 0.9;
     }
     &.disabled,
     &:disabled {
-      background: $grey_background;
-      color: $grey_dark;
+      background: var(--grey-background);
+      color: var(--grey-dark);
     }
   }
 
   &.primary-text {
     background: transparent;
-    color: $primary;
+    color: var(--primary);
     font-size: 12px;
     padding: 0 2px;
     .m-icon-small {
@@ -148,20 +144,20 @@
     }
     &.disabled,
     &:disabled {
-      color: $primary_background;
+      color: var(--primary-background);
     }
     &:hover {
-      color: $primary_hover;
-      //      background: $primary_background;
+      color: var(--primary-hover);
+      //      background: var(--primary-background);
     }
     &:active {
-      //      background: $primary_background;
+      //      background: var(--primary-background);
     }
   }
 
   &.secondary-text {
     background: transparent;
-    color: $grey_dark;
+    color: var(--grey-dark);
     font-size: 12px;
     padding: 0 2px;
     .m-icon-small {
@@ -172,14 +168,14 @@
     }
     &.disabled,
     &:disabled {
-      color: $grey_light;
+      color: var(--primary-background);
     }
     &:hover {
-      color: $black;
-      //background: $grey_background;
+      color: var(--black);
+      //background: var(--grey-background);
     }
     &:active {
-      color: $black;
+      color: var(--black);
     }
   }
 

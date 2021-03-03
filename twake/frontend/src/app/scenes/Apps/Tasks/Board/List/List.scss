@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .board .list {
   display: inline-block;
   height: 100%;
@@ -27,7 +25,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-right: 16px;
     transition: box-shadow 0.2s, transform 0.2s !important;
 
@@ -65,14 +63,14 @@
           opacity: 0.15;
           top: 0;
           left: 0;
-          border-radius: var(--default-border-radius-large);
+          border-radius: var(--border-radius-large);
         }
       }
 
       .list_color {
         width: calc(100% + 2px);
         height: 3px;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
         top: -1px;
         position: absolute;
         left: -1px;
@@ -87,7 +85,7 @@
         display: none;
         float: right;
         margin: 0px;
-        color: $black;
+        color: var(--black);
         font-size: 20px;
         margin-top: 4px;
         line-height: normal;
@@ -104,11 +102,11 @@
       padding-top: 0px;
       display: flex;
       transition: opacity 0.2s, height 0.2s;
-      border-radius: var(--default-border-radius-large);
-      background: $grey_background;
+      border-radius: var(--border-radius-large);
+      background: var(--grey-background);
       padding-right: 4px;
       &:hover {
-        background: $grey_light;
+        background: var(--primary-background);
       }
 
       button {
@@ -122,15 +120,15 @@
 
       &.unselected {
         &:hover {
-          background: $grey_background;
-          color: $black;
+          background: var(--grey-background);
+          color: var(--black);
         }
         background: transparent;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
         font-size: 14px;
         line-height: 32px;
         padding: 0 8px;
-        color: $grey_dark;
+        color: var(--grey-dark);
         cursor: pointer;
       }
     }
@@ -149,7 +147,7 @@
         font-size: 12px;
         border-radius: 2px;
         text-align: center;
-        color: $grey_dark;
+        color: var(--grey-dark);
         display: inline-block;
         width: 100%;
         transition: all 0.2s;

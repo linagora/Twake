@@ -167,7 +167,7 @@ export default class EventCreation extends Component {
         <div className="separator" />
 
         <Button
-          className="button medium secondary-light medium"
+          className="button medium secondary-light"
           style={{ width: 'auto' }}
           onClick={() => {
             this.doNotCancelEdit = true;

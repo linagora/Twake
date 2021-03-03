@@ -21,7 +21,7 @@
         font-size: 14px;
         opacity: 1;
         padding: 5px;
-        border-radius: var(--default-border-radius);
+        border-radius: var(--border-radius-base);
       }
       .move_icon:hover {
         cursor: pointer;
@@ -51,7 +51,7 @@
       height: 28px;
       line-height: 28px;
       font-size: 11px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       opacity: 0.6;
     }
     .dayName:first-child {
@@ -64,7 +64,7 @@
       height: 24px;
       line-height: 24px;
       margin-bottom: 2px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
     .day:not(.selected):hover {
       background: rgba(45, 156, 219, 0.2);
@@ -80,18 +80,18 @@
     }
     .selected {
       background: #827dff;
-      border-radius: var(--default-border-radius) 0px 0px var(--default-border-radius);
+      border-radius: var(--border-radius-base) 0px 0px var(--border-radius-base);
       color: white;
     }
     .selected + .last {
       border-radius: 0px 4px 4px 0px;
     }
     :not(.selected) + .last {
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
     .today:not(.selected) {
       color: rgb(235, 87, 87);
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
   }
 }

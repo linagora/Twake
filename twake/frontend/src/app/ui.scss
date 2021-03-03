@@ -1,17 +1,15 @@
-@import '~components/constants.scss';
-
 body,
 html {
   margin: 0;
   padding: 0;
-  font-family: $main_font;
-  color: $black;
+  font-family: var(--main-font);
+  color: var(--black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
-  background-color: $primary;
+  background-color: var(--primary);
 }
 
 body,
@@ -38,7 +36,7 @@ body,
 .allow_selection,
 input,
 textarea {
-  font-family: $main_font;
+  font-family: var(--main-font);
   -webkit-touch-callout: text; /* iOS Safari */
   -webkit-user-select: text; /* Safari */
   -khtml-user-select: text; /* Konqueror HTML */
@@ -77,9 +75,9 @@ body.dragging * {
 
 .white_box_with_shadow {
   box-sizing: border-box;
-  border-radius: $base_border_radius;
+  border-radius: var(--border-radius-base);
   background: #fff;
-  box-shadow: $larger_box_shadow;
+  box-shadow: var(--box-shadow-large);
 }
 
 .white_full_background {
@@ -118,17 +116,17 @@ body.dragging * {
 
 a {
   text-decoration: none;
-  color: $primary;
+  color: var(--primary);
   cursor: pointer;
 }
 
 a:hover {
-  color: $primary_hover;
+  color: var(--primary-hover);
 }
 
 a.red,
 a.error {
-  color: $red;
+  color: var(--red);
 
   &:hover {
     color: #dd0000;
@@ -138,11 +136,11 @@ a.error {
 .rounded-btn {
   width: 32px;
   height: 32px;
-  background: $grey_background;
-  border-radius: var(--default-border-radius);
+  background: var(--grey-background);
+  border-radius: var(--border-radius-base);
   line-height: 32px;
   text-align: center;
-  color: $grey_dark;
+  color: var(--grey-dark);
   padding-top: 4px;
   box-sizing: border-box;
   display: inline-block;
@@ -153,8 +151,8 @@ a.error {
   }
 
   &:hover {
-    background: $grey_light;
-    color: $grey_dark;
+    background: var(--primary-background);
+    color: var(--grey-dark);
   }
 }
 
@@ -167,10 +165,10 @@ a.error {
 }
 
 .tag {
-  background: $grey_dark;
-  border-radius: var(--default-border-radius);
+  background: var(--grey-dark);
+  border-radius: var(--border-radius-base);
   height: 18px;
-  color: $white;
+  color: var(--white);
   font-size: 12px;
   padding: 0 5px;
   line-height: 18px;
@@ -180,15 +178,15 @@ a.error {
   margin-right: 6px;
 
   &.orange {
-    background-color: $yellow;
+    background-color: var(--warning);
   }
 
   &.blue {
-    background-color: $primary;
+    background-color: var(--primary);
   }
 
   &.green {
-    background-color: $green;
+    background-color: var(--green);
   }
 }
 
@@ -359,7 +357,7 @@ TITLE
 }
 
 .small_subtitle {
-  color: $grey_dark;
+  color: var(--grey-dark);
   font-size: 12px;
   font-weight: 500;
   font-style: normal;
@@ -1058,7 +1056,7 @@ FORMS
 @keyframes highlightedObject {
   0%,
   50% {
-    background: $yellow;
+    background: var(--warning);
   }
   100% {
     background: transparent;
@@ -1116,7 +1114,7 @@ FORMS
 .app_title {
   font-size: 16px;
   font-weight: bold;
-  color: $black;
+  color: var(--black);
   margin-bottom: 8px;
   height: 40px;
   line-height: 40px;
@@ -1125,7 +1123,7 @@ FORMS
 .app_subtitle {
   font-size: 14px;
   font-weight: bold;
-  color: $grey_dark;
+  color: var(--grey-dark);
   margin-bottom: 14px;
 }
 
@@ -1138,9 +1136,9 @@ FORMS
   height: 56px;
   border-radius: 50%;
   padding-top: 12px;
-  color: $white;
+  color: var(--white);
   box-sizing: border-box;
-  background: $primary;
+  background: var(--primary);
   text-align: center;
   line-height: 32px;
   cursor: pointer;
@@ -1148,16 +1146,16 @@ FORMS
     font-size: 32px !important;
   }
   &:hover {
-    background: $primary_hover;
+    background: var(--primary-hover);
   }
 }
 
 .app_back_btn,
 .app_right_btn {
   display: inline-block;
-  background: $grey_background;
+  background: var(--grey-background);
   padding: 4px 8px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   margin-right: 16px;
   font-size: 16px;
   margin-left: -6px;
@@ -1175,7 +1173,7 @@ FORMS
   }
 
   &:hover {
-    background: $grey_light;
+    background: var(--primary-background);
   }
 }
 
@@ -1184,7 +1182,7 @@ FORMS
   height: 16px;
   margin: 0 -16px;
   margin-top: 16px;
-  border-top: 1px solid $grey_background;
+  border-top: 1px solid var(--grey-background);
 }
 
 @media screen and (max-width: 640px) {

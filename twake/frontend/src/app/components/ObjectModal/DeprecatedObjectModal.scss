@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .object_modal {
   position: relative;
   display: flex;
@@ -24,13 +22,13 @@
       width: 24px;
       height: 24px;
       line-height: 24px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       margin-left: 8px;
-      background: $grey_background;
+      background: var(--grey-background);
       cursor: pointer;
 
       &:hover {
-        background: $grey_light;
+        background: var(--primary-background);
       }
     }
   }
@@ -46,12 +44,12 @@
 
   .modal_title {
     font-size: 24px;
-    color: $black;
+    color: var(--black);
   }
 }
 
 .section_title {
-  color: $grey_dark;
+  color: var(--grey-dark);
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;

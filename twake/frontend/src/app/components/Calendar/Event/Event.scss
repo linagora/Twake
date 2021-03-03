@@ -1,11 +1,9 @@
-@import '~components/constants.scss';
-
 .event_container {
   margin: 0px;
   width: auto;
   height: auto;
-  border-radius: var(--default-border-radius);
-  color: $white;
+  border-radius: var(--border-radius-base);
+  color: var(--white);
   box-sizing: border-box;
   padding-left: 4px;
   padding-right: 2px;
@@ -90,7 +88,7 @@
   }
 
   .users > div {
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-left: 2px;
   }
 
@@ -124,7 +122,7 @@
 
   //rappel
   &.remind {
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     min-height: 18px;
   }
 
@@ -140,7 +138,7 @@
   //deplacement
 
   &.move {
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     border-top-left-radius: 4px;
   }
 }

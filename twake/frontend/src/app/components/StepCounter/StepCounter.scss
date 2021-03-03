@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .stepCounter {
   display: flex;
   width: 100%;
@@ -9,12 +7,12 @@
   .step {
     height: 8px;
     background: black;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin: 0px 5px;
-    background: $primary_background;
+    background: var(--primary-background);
     transition: background 0.2s;
   }
   .setSelected {
-    background: $primary;
+    background: var(--primary);
   }
 }

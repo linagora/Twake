@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .searchPopup {
   .background {
     position: absolute;
@@ -27,7 +25,7 @@
         .filters {
           max-width: 400px;
           width: 40%;
-          border-left: 1px solid $grey_light;
+          border-left: 1px solid var(--primary-background);
           padding: 16px;
           box-sizing: border-box;
         }
@@ -56,10 +54,10 @@
       width: 90vw;
       max-width: 500px;
       max-height: 50vh;
-      background: $white;
+      background: var(--white);
       z-index: 1;
       box-shadow: 0 2px 32px rgba(0, 0, 0, 0.2);
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       padding: 16px;
       box-sizing: border-box;
       display: flex;
@@ -72,7 +70,7 @@
         }
 
         .search_input.input {
-          border-bottom: 1px solid $grey_light;
+          border-bottom: 1px solid var(--primary-background);
           border-radius: 0;
           padding-top: 4px;
           padding-bottom: 4px;
@@ -90,7 +88,7 @@
 
   .search_tabs {
     display: flex;
-    border-bottom: 1px solid $grey_light;
+    border-bottom: 1px solid var(--primary-background);
     min-height: 48px;
 
     .component_tabs {
@@ -121,7 +119,7 @@
 }
 
 .searchQuickResult {
-  border-bottom: 1px solid $grey_light;
+  border-bottom: 1px solid var(--primary-background);
   padding: 8px;
   cursor: pointer;
   position: relative;
@@ -162,7 +160,7 @@
       .icon {
         font-size: 18px;
         margin-left: 0px;
-        color: $grey_dark;
+        color: var(--grey-dark);
       }
       .user_list {
         margin-top: -5px;
@@ -178,11 +176,11 @@
           margin-left: -16px;
         }
         .group_count {
-          background: $grey_dark;
+          background: var(--grey-dark);
           height: 16px;
           color: #ffffff;
           margin-right: 0px;
-          border-radius: var(--default-border-radius);
+          border-radius: var(--border-radius-base);
           padding: 2px 4px;
           box-sizing: border-box;
           line-height: 12px;
@@ -202,14 +200,14 @@
         height: 24px;
         right: 16px;
         font-size: 24px;
-        color: $primary;
+        color: var(--primary);
       }
     }
 
     & > .content {
       flex: 1;
       .group_and_workspace {
-        color: $grey_dark;
+        color: var(--grey-dark);
         font-size: 12px;
         margin-bottom: 4px;
         min-height: 16px;
@@ -226,26 +224,26 @@
 
   &:hover {
     & > .selectable {
-      background: $primary_background;
-      color: $primary;
-      border-radius: var(--default-border-radius);
+      background: var(--primary-background);
+      color: var(--primary);
+      border-radius: var(--border-radius-base);
     }
 
     & > .selectable > .icon .user_list .user_head {
-      border-color: $primary_background;
+      border-color: var(--primary-background);
       .status {
-        border-color: $primary_background;
+        border-color: var(--primary-background);
       }
     }
 
     &.selected {
       & > .selectable {
-        background: $primary_hover;
+        background: var(--primary-hover);
 
         & > .icon .user_list .user_head {
-          border-color: $primary_hover;
+          border-color: var(--primary-hover);
           .status {
-            border-color: $primary_hover;
+            border-color: var(--primary-hover);
           }
         }
       }
@@ -253,25 +251,25 @@
   }
 
   &.selected > .selectable {
-    background: $primary;
-    color: $white;
-    border-radius: var(--default-border-radius);
+    background: var(--primary);
+    color: var(--white);
+    border-radius: var(--border-radius-base);
     & > .more .right-arrow {
-      color: $white;
+      color: var(--white);
     }
     & > .content .group_and_workspace {
-      color: $primary_background;
+      color: var(--primary-background);
     }
     & > .icon .icon {
-      color: $grey_light;
+      color: var(--primary-background);
     }
     & > .icon .user_list .user_head {
-      border-color: $primary;
+      border-color: var(--primary);
       .status {
         &.grey {
-          background: $grey_light;
+          background: var(--primary-background);
         }
-        border-color: $primary;
+        border-color: var(--primary);
       }
     }
   }

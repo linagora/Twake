@@ -1,9 +1,7 @@
-@import '~components/constants.scss';
-
 .channel_category {
   font-size: 12px;
   font-weight: 500;
-  color: var(--black-alpha-2);
+  color: var(--black-alpha-70);
   margin-top: 24px;
   margin-left: 12px;
   margin-right: 12px;
@@ -53,7 +51,7 @@
   width: auto;
   margin: 0 8px;
   padding: 0 8px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   max-width: 216px;
   box-sizing: border-box;
   font-size: 14px;
@@ -144,11 +142,11 @@
   }
 
   .group_count {
-    background: var(--black-alpha-1);
+    background: var(--black-alpha-50);
     height: 16px;
     color: var(--white);
     margin-right: 8px;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     padding: 2px 4px;
     box-sizing: border-box;
     line-height: 12px;
@@ -162,7 +160,7 @@
     height: 16px;
     color: #fff;
     margin-right: 4px;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     padding: 2px 3px;
     font-weight: 700;
     box-sizing: border-box;
@@ -248,7 +246,7 @@
     }
     i.emojione.emoji-image {
       margin-top: 0px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
 
     .user_list {
@@ -271,7 +269,7 @@
     font-weight: 700;
     text-align: center;
     line-height: 16px;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-small);
     margin: 8px 4px;
     padding: 0 2px;
     vertical-align: top;
@@ -294,7 +292,7 @@
   height: 0px;
   background: var(--grey-light);
   border: 0px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   box-sizing: border-box;
   text-align: center;
   line-height: 28px;
@@ -355,7 +353,7 @@
 .loading_render {
   .channel {
     pointer-events: none;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     height: 16px;
     margin-bottom: 16px;
     animation-duration: 1s;
@@ -376,7 +374,7 @@
     font-size: 0;
     height: 16px;
     background: #dfdfdf;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     width: 60%;
     margin-top: 30px;
     margin-bottom: 16px;

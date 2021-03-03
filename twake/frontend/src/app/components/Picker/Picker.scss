@@ -1,8 +1,6 @@
-@import '~components/constants.scss';
-
 .picker_container {
   position: relative;
-  border-radius: var(--default-border-radius-large);
+  border-radius: var(--border-radius-large);
   &.inline {
     transition: box-shadow 0.2s;
 
@@ -30,7 +28,7 @@
 
 .picker {
   .pickerInput {
-    border-radius: $base_border_radius;
+    border-radius: var(--border-radius-base);
     display: flex;
     flex-wrap: wrap;
     position: relative;
