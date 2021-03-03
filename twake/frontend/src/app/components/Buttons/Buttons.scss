@@ -52,14 +52,14 @@
     background: var(--primary-hover);
   }
   &:active {
-    background: #5b50d0;
+    background: var(--primary);
   }
   &:focus {
     outline: none;
   }
   &.disabled,
   &:disabled {
-    background: #b3acff;
+    background: var(--primary-background);
     pointer-events: none;
   }
 
@@ -121,10 +121,12 @@
     color: var(--black);
 
     &:hover {
-      background: #e8e8e8;
+      background: var(--primary);
+
+      color: var(--white);
     }
     &:active {
-      background: #dddddd;
+      background: var(--primary);
     }
     &.disabled,
     &:disabled {

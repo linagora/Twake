@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from 'react';
 import Languages from 'services/languages/languages.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
-import { Select, Typography, Divider, Checkbox, Input, Button, Row, Col } from 'antd';
+import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/Inputs/InputWithSelect';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
@@ -87,7 +87,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
           />
         </InputWithIcon>
       </div>
-      <Divider />
+      <div className="y-margin" />
       <div className="x-margin">
         <Title level={5}>
           {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
@@ -103,7 +103,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
       </div>
       {isAbleToEditVisibility() === true && (
         <>
-          <Divider />
+          <div className="y-margin" />
           <div className="x-margin">
             <Title level={5}>
               {Languages.t(
