@@ -23,6 +23,13 @@ export type ChannelPrimaryKey = {
   workspace_id?: string;
 };
 
+export type ChannelActivityMessage = {
+  date: number;
+  sender: string;
+  title: string;
+  text: string;
+};
+
 export interface ChannelService
   extends TwakeServiceProvider,
     Initializable,
@@ -81,10 +88,13 @@ export interface ChannelService
 
   /**
    * Update the last activity for the given channel
-   * 
+   *
    * @param channel The channel to update the last_activity
    */
-  updateLastActivity(channel: ChannelPrimaryKey): Promise<UpdateResult<ChannelActivity>>;
+  updateLastActivity(
+    channel: ChannelPrimaryKey,
+    message: ChannelActivityMessage,
+  ): Promise<UpdateResult<ChannelActivity>>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

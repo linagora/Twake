@@ -30,7 +30,6 @@ class Routing extends BaseRouting
         "account/language" => ["handler" => "UsersAccount:setLanguage", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "account/get_notifications" => ["handler" => "UsersAccount:getNotificationPreferences", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "account/set_notifications" => ["handler" => "UsersAccount:setNotificationPreferences", "methods" => ["POST"], "security" => ["user_connected_security"]],
-        "account/set_workspaces_preference" => ["handler" => "UsersAccount:setWorkspacesPreferences", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "account/update_notifications" => ["handler" => "UsersAccount:updateNotificationPreferenceByWorkspace", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "account/set_tutorial_status" => ["handler" => "UsersAccount:setTutorialStatus", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "account/update_status" => ["handler" => "UsersAccount:updateStatus", "methods" => ["POST"], "security" => ["user_connected_security"]],

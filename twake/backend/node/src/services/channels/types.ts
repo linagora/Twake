@@ -48,4 +48,7 @@ export type ChannelActivityNotification = {
   workspace_id: uuid | "direct";
   channel_id: uuid;
   date: number;
+  sender: string;
+  title: string;
+  text: string;
 };

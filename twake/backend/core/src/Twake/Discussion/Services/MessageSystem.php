@@ -621,6 +621,9 @@ class MessageSystem
                 "workspace_id" => $channel->getData()["workspace_id"] ?: "direct",
                 "channel_id" => $messageArray["channel_id"],
                 "date" => $messageArray["creation_date"] * 1000,
+                "sender" => $messageArray["sender"],
+                "title" => $title,
+                "text" => $text
             ];
 
             if($messageArray["message_type"] != 2){ //Ignore system messages

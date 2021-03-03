@@ -14,10 +14,10 @@ import {
   OperationType,
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, { ChannelPrimaryKey } from "../../provider";
+import ChannelServiceAPI, { ChannelActivityMessage, ChannelPrimaryKey } from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
-import { ChannelObject } from "./types"; 
+import { ChannelObject } from "./types";
 import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
@@ -165,7 +165,11 @@ export class Service implements ChannelService {
           if (existingChannel) {
             const last_activity = await this.getChannelActivity(existingChannel);
 
-            return new SaveResult("channels", ChannelObject.mapTo(existingChannel, { last_activity }), OperationType.EXISTS);
+            return new SaveResult(
+              "channels",
+              ChannelObject.mapTo(existingChannel, { last_activity }),
+              OperationType.EXISTS,
+            );
           } else {
             //Fixme: remove directChannel instance
             throw CrudExeption.badRequest("table inconsistency");
@@ -183,7 +187,11 @@ export class Service implements ChannelService {
 
     logger.info("Saving channel %o", channelToSave);
     await this.channelRepository.save(channelToSave);
-    const saveResult = new SaveResult<ChannelObject>("channel", ChannelObject.mapTo(channelToSave), mode);
+    const saveResult = new SaveResult<ChannelObject>(
+      "channel",
+      ChannelObject.mapTo(channelToSave),
+      mode,
+    );
 
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
@@ -271,13 +279,22 @@ export class Service implements ChannelService {
       },
     ];
   })
-  async updateLastActivity(options: ChannelPrimaryKey): Promise<UpdateResult<ChannelActivity>> {
+  async updateLastActivity(
+    options: ChannelPrimaryKey,
+    channelActivityMessage: ChannelActivityMessage,
+  ): Promise<UpdateResult<ChannelActivity>> {
     const channel = await this.channelRepository.findOne(options);
     const entity = new ChannelActivity();
     entity.channel_id = options.id;
     entity.company_id = options.company_id;
     entity.workspace_id = options.workspace_id;
-    entity.last_activity = new Date().getTime();
+    entity.last_activity = channelActivityMessage.date;
+    entity.last_message = {
+      date: channelActivityMessage.date,
+      sender: channelActivityMessage.sender,
+      title: channelActivityMessage.title,
+      text: channelActivityMessage.text,
+    };
 
     entity.channel = channel;
 
@@ -289,7 +306,7 @@ export class Service implements ChannelService {
 
   private async getChannelActivity(channel: Channel): Promise<number> {
     let result = 0;
-    
+
     if (!channel) {
       return result;
     }
@@ -300,10 +317,10 @@ export class Service implements ChannelService {
         workspace_id: channel.workspace_id,
         channel_id: channel.id,
       } as ChannelActivity);
-      
-      result = (activity?.last_activity || 0) || 0;
+
+      result = activity?.last_activity || 0 || 0;
     } catch (error) {
-      logger.debug(`Can not get channel last activity for channel ${channel.id}`);    
+      logger.debug(`Can not get channel last activity for channel ${channel.id}`);
     }
     return result;
   }
@@ -313,7 +330,7 @@ export class Service implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel>> {
-    let channels: ListResult<Channel | UserChannel>;
+    let channels: ListResult<Channel | UserChannel>;
     let activityPerChannel: Map<string, ChannelActivity>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
@@ -339,7 +356,9 @@ export class Service implements ChannelService {
           $in: [["channel_id", channels.getEntities().map(channel => `'${channel.id}'`)]],
         });
 
-        activityPerChannel = new Map<string, ChannelActivity>(activities.getEntities().map(activity => [activity.channel_id, activity]));
+        activityPerChannel = new Map<string, ChannelActivity>(
+          activities.getEntities().map(activity => [activity.channel_id, activity]),
+        );
       } else {
         activityPerChannel = new Map<string, ChannelActivity>();
       }
