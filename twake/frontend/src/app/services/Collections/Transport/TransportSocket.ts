@@ -75,7 +75,7 @@ export default class TransportSocket {
       logger.debug('Disconnected from websocket');
       setTimeout(() => {
         this.connect();
-      });
+      }, 1000);
     });
 
     this.socket.on('connect', async () => {

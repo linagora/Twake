@@ -26,7 +26,9 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
   const channelResource: ChannelResource = channelsCollections.useWatcher({ id: channelId })[0];
 
   const configureChannelConnector = (app: AppType): void => {
-    return WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', channelResource.data);
+    return WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', {
+      channel: channelResource.data,
+    });
   };
 
   const onChange = (ids: string[]): void => {
