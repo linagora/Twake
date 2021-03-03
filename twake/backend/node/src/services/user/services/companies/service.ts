@@ -1,3 +1,4 @@
+import { v1 as uuid } from "uuid";
 import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -11,7 +12,7 @@ import CompanyUser, {
   CompanyUserPrimaryKey,
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
-import { v1 as uuid } from "uuid";
+import { ListUserOptions } from "../users/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -77,10 +78,14 @@ export class CompanyService implements CompaniesServiceAPI {
     }
 
     const userIds = companyUsers.getEntities().map(value => value.user_id);
+    // TODO: We may need to paginate if userIds is too big...
     const userPagination = new Pagination("", String(userIds.length));
-    const users: ListResult<User> = await this.userService.users.list(userPagination, {
-      $in: [["id", userIds]],
-    });
+    const users: ListResult<User> = await this.userService.users.list<ListUserOptions>(
+      userPagination,
+      {
+        userIds,
+      },
+    );
 
     return new ListResult<User>("user", users.getEntities(), companyUsers.nextPage);
   }
