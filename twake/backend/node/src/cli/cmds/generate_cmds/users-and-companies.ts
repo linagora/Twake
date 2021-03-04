@@ -122,6 +122,7 @@ const getUser = (company: Company, id: number): User => {
     firstname: "John",
     lastname: `Doe${id}`,
     emailcanonical: `user${id}@${company.name}`,
+    creationdate: Date.now(),
     password: passwordGenerator.generate({
       length: 10,
       numbers: true,
