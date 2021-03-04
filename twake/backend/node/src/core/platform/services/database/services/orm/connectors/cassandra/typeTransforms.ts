@@ -133,5 +133,8 @@ export const transformValueFromDbString = (
   if (type === "uuid") {
     return String(v);
   }
+  if (type === "number") {
+    return new Number(v);
+  }
   return v;
 };
