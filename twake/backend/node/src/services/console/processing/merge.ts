@@ -1,6 +1,6 @@
 import passwordGenerator from "generate-password";
 import { concat, EMPTY, from, Observable, ReplaySubject } from "rxjs";
-import { distinct, map, mergeMap, tap } from "rxjs/operators";
+import { distinct, map, mergeMap } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
 import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
@@ -28,8 +28,9 @@ export class MergeProcess {
     const companies$ = new ReplaySubject<CompanyCreatedStreamObject>();
     const users$ = this.getCompanies().pipe(
       mergeMap(company => this.createCompany(company), concurrent),
-      tap(created => {
-        companies$.next(created);
+      map(company => {
+        companies$.next(company);
+        return company;
       }),
       mergeMap(company =>
         this.getUsers(company.source).pipe(
@@ -98,7 +99,7 @@ export class MergeProcess {
   }
 
   private async createUser(company: Company, user: User): Promise<UserCreatedStreamObject> {
-    logger.debug("Creating user in console %s", user.emailcanonical);
+    logger.debug("Creating user in console %o", user.id);
 
     const result = await this.client.addUser(
       { code: company.id },
