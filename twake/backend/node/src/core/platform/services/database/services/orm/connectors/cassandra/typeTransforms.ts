@@ -91,15 +91,19 @@ export const transformValueFromDbString = (
       decryptedValue = decrypt(v, options.secret).data;
     } catch (err) {
       logger.debug({ err }, `Can not decrypt data %o of type ${type}`, v);
-      
+
       decryptedValue = v;
     }
-    
+
     if (type === "encoded_json") {
       try {
         decryptedValue = JSON.parse(decryptedValue);
       } catch (err) {
-        logger.debug({ err }, `Can not parse JSON from decrypted data %o of type ${type}`, decryptedValue);
+        logger.debug(
+          { err },
+          `Can not parse JSON from decrypted data %o of type ${type}`,
+          decryptedValue,
+        );
         decryptedValue = null;
       }
     }
