@@ -1,8 +1,9 @@
 import yargs from "yargs";
+import { count, groupBy, mergeMap, min, share } from "rxjs/operators";
 import twake from "../../../twake";
 import { getLogger } from "../../../core/platform/framework/logger";
 import { ConsoleServiceAPI } from "../../../services/console/api";
-import { count, share } from "rxjs/operators";
+import { UserCreatedStreamObject } from "../../../services/console/types";
 
 type MergeParams = {
   url: string;
@@ -49,21 +50,41 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       users: 0,
       companies: 0,
     };
-    const companies = [];
+    const adminsToCreate: UserCreatedStreamObject[] = [];
 
     const users$ = merge.users$.pipe(share());
     const companies$ = merge.companies$.pipe(share());
     const countUsers = users$.pipe(count()).subscribe({
       next: count => (stats.users = count),
     });
-    const countCompanies = companies$.pipe(count()).subscribe({
-      next: count => (stats.companies = count),
-    });
+    const oldestUserPerCompany = users$
+      .pipe(
+        // group by company id
+        groupBy(userInCompany => userInCompany.source.company.id),
+        mergeMap(group =>
+          group.pipe(
+            // get the user with the smaller creation date, let's say that this is the first one in the company so it is the admin
+            min((a, b) => {
+              return (a.source?.user?.creationdate || 0) <= (b.source?.user?.creationdate || 0)
+                ? -1
+                : 1;
+            }),
+          ),
+        ),
+      )
+      .subscribe({
+        complete: () => {
+          oldestUserPerCompany.unsubscribe();
+        },
+        next: oldestUserInCompany => {
+          adminsToCreate.push(oldestUserInCompany);
+        },
+      });
 
     const companiesSubscription = companies$.subscribe({
       next: company => {
         logger.info("New company created %s", company.source.displayName);
-        companies.push(company);
+        stats.companies++;
       },
       error: async (err: Error) => {
         logger.error("Error while creating a company: %s", err.message);
@@ -72,7 +93,12 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     });
 
     const usersSubscription = users$.subscribe({
-      next: user => logger.info("New user created - %s", user.destination.id),
+      next: user =>
+        logger.info(
+          "New user created - %s (%s)",
+          user.destination.id,
+          user.source.user.creationdate,
+        ),
       error: async (err: Error) => {
         logger.error("Error while creating user %s: ", err.message);
         await tearDown();
@@ -81,7 +107,14 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       complete: async () => {
         await tearDown();
         logger.info("✅ Merge is complete: %o", stats);
-        console.log("COMPA", companies.length);
+        adminsToCreate.map(user => {
+          console.log(
+            "Admin to create in company",
+            user.source.company.id,
+            ":",
+            user.source.user.id,
+          );
+        });
       },
     });
 
@@ -90,7 +123,6 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       usersSubscription.unsubscribe();
       companiesSubscription.unsubscribe();
       countUsers.unsubscribe();
-      countCompanies.unsubscribe();
     }
   },
 };
