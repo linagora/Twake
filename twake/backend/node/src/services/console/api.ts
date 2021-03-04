@@ -17,6 +17,8 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
     baseUrl: string,
     concurrent: number,
     dryRun: boolean,
+    console: string,
+    link: boolean,
   ): {
     companies$: Observable<CompanyCreatedStreamObject>;
     users$: Observable<UserCreatedStreamObject>;

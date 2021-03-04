@@ -37,6 +37,7 @@ export default class Company {
   dateAdded: number;
 
   @Column("on_creation_data", "encoded_json")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onCreationData: any;
 
   @Column("is_blocked", "twake_boolean")

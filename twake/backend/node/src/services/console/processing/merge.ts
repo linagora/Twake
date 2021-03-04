@@ -6,7 +6,14 @@ import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import UserServiceAPI from "../../user/api";
-import { CompanyCreatedStreamObject, UserCreatedStreamObject } from "../types";
+import {
+  CompanyCreatedStreamObject,
+  CreatedConsoleCompany,
+  CreatedConsoleUser,
+  UserCreatedStreamObject,
+} from "../types";
+import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
+import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
 
@@ -15,7 +22,13 @@ const logger = getLogger("console.process.merge");
 export class MergeProcess {
   private client: ConsoleServiceClient;
 
-  constructor(private userService: UserServiceAPI, consoleUrl: string, dryRun: boolean) {
+  constructor(
+    private userService: UserServiceAPI,
+    consoleUrl: string,
+    private dryRun: boolean,
+    private consoleId: string = "console",
+    private linkExternal: boolean = false,
+  ) {
     this.client = new ConsoleHTTPClient(consoleUrl, dryRun);
   }
 
@@ -90,6 +103,10 @@ export class MergeProcess {
       status: "todo",
     });
 
+    if (this.linkExternal) {
+      await this.createCompanyLink(company, result, this.consoleId);
+    }
+
     return {
       source: company,
       destination: {
@@ -116,11 +133,53 @@ export class MergeProcess {
       },
     );
 
+    if (this.linkExternal) {
+      await this.createUserLink(user, result, this.consoleId);
+    }
+
     return {
       source: { user, company },
       destination: {
         id: result._id,
       },
     };
+  }
+
+  private async createUserLink(
+    localUser: User,
+    remoteUser: CreatedConsoleUser,
+    serviceId: string,
+  ): Promise<void> {
+    logger.debug("Creating user link for user %s", localUser.id);
+    if (this.dryRun) {
+      return;
+    }
+
+    await this.userService.external.createExternalUser(
+      getExternalUserInstance({
+        service_id: serviceId,
+        external_id: remoteUser._id,
+        user_id: localUser.id,
+      }),
+    );
+  }
+
+  private async createCompanyLink(
+    localCompany: Company,
+    remoteCompany: CreatedConsoleCompany,
+    serviceId: string,
+  ): Promise<void> {
+    logger.debug("Creating company link for company %s", localCompany.id);
+    if (this.dryRun) {
+      return;
+    }
+
+    await this.userService.external.createExternalGroup(
+      getExternalGroupInstance({
+        service_id: serviceId,
+        company_id: localCompany.id,
+        external_id: remoteCompany.code,
+      }),
+    );
   }
 }

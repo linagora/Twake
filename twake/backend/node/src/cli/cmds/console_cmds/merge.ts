@@ -5,10 +5,15 @@ import { getLogger } from "../../../core/platform/framework/logger";
 import { ConsoleServiceAPI } from "../../../services/console/api";
 import { UserCreatedStreamObject } from "../../../services/console/types";
 
+/**
+ * Merge command parameters. Check the builder definition below for more details.
+ */
 type MergeParams = {
   url: string;
   concurrent: number;
   dry: boolean;
+  console: string;
+  linkExternal: boolean;
 };
 
 const services = [
@@ -41,11 +46,29 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       type: "boolean",
       description: "Make a dry run without creating anything on the Twake console",
     },
+    console: {
+      default: "console",
+      type: "string",
+      description: "The console service identifier to user to link user and companies",
+    },
+    link: {
+      default: false,
+      type: "boolean",
+      description:
+        "Link the companies/users to external companies/user. Works with the --console parameter",
+      implies: "console",
+    },
   },
   handler: async argv => {
     const platform = await twake.run(services);
     const consoleService = platform.getProvider<ConsoleServiceAPI>("console");
-    const merge = consoleService.merge(argv.url, argv.concurrent, argv.dry);
+    const merge = consoleService.merge(
+      argv.url,
+      argv.concurrent,
+      argv.dry,
+      argv.console,
+      argv.linkExternal,
+    );
     const stats = {
       users: 0,
       companies: 0,
