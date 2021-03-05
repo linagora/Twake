@@ -13,7 +13,9 @@ type MergeParams = {
   concurrent: number;
   dry: boolean;
   console: string;
-  linkExternal: boolean;
+  link: boolean;
+  client: string;
+  secret: string;
 };
 
 const services = [
@@ -58,6 +60,16 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
         "Link the companies/users to external companies/user. Works with the --console parameter",
       implies: "console",
     },
+    client: {
+      default: "twake",
+      type: "string",
+      description: "Client identifier to be used to authenticate calls to the Console",
+    },
+    secret: {
+      default: "secret",
+      type: "string",
+      description: "Client secret to be used to authenticate calls to the Console",
+    },
   },
   handler: async argv => {
     const platform = await twake.run(services);
@@ -67,7 +79,9 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       argv.concurrent,
       argv.dry,
       argv.console,
-      argv.linkExternal,
+      argv.link,
+      argv.client,
+      argv.secret,
     );
     const stats = {
       users: 0,

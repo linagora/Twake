@@ -24,12 +24,16 @@ export class MergeProcess {
 
   constructor(
     private userService: UserServiceAPI,
-    consoleUrl: string,
     private dryRun: boolean,
     private consoleId: string = "console",
     private linkExternal: boolean = false,
+    consoleClientParameters: {
+      url: string;
+      client: string;
+      secret: string;
+    },
   ) {
-    this.client = new ConsoleHTTPClient(consoleUrl, dryRun);
+    this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
   }
 
   getStreams(

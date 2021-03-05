@@ -15,13 +15,17 @@ class ConsoleService implements ConsoleServiceAPI {
     dryRun: boolean = false,
     console: string = "console",
     link: boolean = true,
+    client: string,
+    secret: string,
   ): {
     companies$: Observable<CompanyCreatedStreamObject>;
     users$: Observable<UserCreatedStreamObject>;
   } {
-    return new MergeProcess(this.userService, baseUrl, dryRun, console, link).getStreams(
-      concurrent,
-    );
+    return new MergeProcess(this.userService, dryRun, console, link, {
+      client,
+      secret,
+      url: baseUrl,
+    }).getStreams(concurrent);
   }
 }
 

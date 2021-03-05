@@ -14,8 +14,15 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
   version: "1";
   client: AxiosInstance;
 
-  constructor(url: string, private dryRun: boolean) {
-    this.client = axios.create({ baseURL: url });
+  constructor(
+    private infos: {
+      url: string;
+      client: string;
+      secret: string;
+    },
+    private dryRun: boolean,
+  ) {
+    this.client = axios.create({ baseURL: infos.url });
   }
 
   async addUser(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser> {
@@ -27,6 +34,10 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
 
     return this.client
       .post(`/api/companies/${company.code}/users`, user, {
+        auth: {
+          username: this.infos.client,
+          password: this.infos.secret,
+        },
         headers: {
           "Content-Type": "application/json",
         },
@@ -50,6 +61,10 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
         `/api/companies/${company.code}/users/${user.id}`,
         { role: user.role },
         {
+          auth: {
+            username: this.infos.client,
+            password: this.infos.secret,
+          },
           headers: {
             "Content-Type": "application/json",
           },
@@ -65,6 +80,10 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
 
     return this.client
       .post("/api/companies", company, {
+        auth: {
+          username: this.infos.client,
+          password: this.infos.secret,
+        },
         headers: {
           "Content-Type": "application/json",
         },
