@@ -41,7 +41,7 @@ export const transformValueToDbString = (
     return `${v}`;
   }
   if (type === "boolean") {
-    if (!isBoolean(v)) {
+    if (v !== undefined && v !== null && v !== 1 && v !== 0 && !isBoolean(v)) {
       throw new Error(`'${v}' is not a ${type}`);
     }
     return `${!!v}`;
