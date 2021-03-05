@@ -37,10 +37,10 @@ export class Channel {
   visibility: ChannelVisibility;
 
   @Column("is_default", "boolean")
-  is_default: boolean;
+  is_default: boolean = false;
 
   @Column("archived", "boolean")
-  archived: boolean;
+  archived: boolean = false;
 
   @Column("archivation_date", "number")
   archivation_date: number;

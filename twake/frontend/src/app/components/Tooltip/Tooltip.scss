@@ -12,7 +12,7 @@
     color: white;
     border-bottom: 1px dotted black;
     padding: 5px 10px;
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     text-align: center;
     font-size: 12px;
     line-height: 16px;

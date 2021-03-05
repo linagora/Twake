@@ -148,6 +148,9 @@ export class Service implements MemberService {
 
       memberToSave = cloneDeep(memberToUpdate);
 
+      //Ensure it is a boolean
+      memberToSave.favorite = !!memberToSave.favorite;
+
       updatableFields.forEach(field => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (memberToSave as any)[field] = member[field];
@@ -236,7 +239,7 @@ export class Service implements MemberService {
     if (!memberToDelete) {
       throw CrudExeption.notFound("Channel member not found");
     }
-    
+
     if (ChannelEntity.isDirectChannel(channel)) {
       if (!this.isCurrentUser(memberToDelete, context.user)) {
         throw CrudExeption.badRequest("User can not remove other users from direct channel");
@@ -390,7 +393,7 @@ export class Service implements MemberService {
     });
   }
 
-  isCurrentUser(member: ChannelMember | MemberOfChannel, user: User): boolean {
+  isCurrentUser(member: ChannelMember | MemberOfChannel, user: User): boolean {
     return String(member.user_id) === String(user.id);
   }
 

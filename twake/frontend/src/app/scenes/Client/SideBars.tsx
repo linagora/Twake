@@ -10,7 +10,7 @@ export default () => {
   });
 
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
       <WorkspacesBar key={'workspacebar-' + companyId} />
       <ChannelsBar key={'channelbar-' + workspaceId} />
     </Layout>

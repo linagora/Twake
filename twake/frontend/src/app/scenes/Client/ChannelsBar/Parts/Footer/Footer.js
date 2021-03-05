@@ -16,19 +16,22 @@ export default class Footer extends React.Component {
       {
         type: 'menu',
         text: Languages.t('general.help.support', [], 'Support'),
+        icon: 'comment',
         onClick: props.onClickHelp,
       },
       {
         type: 'menu',
         text: Languages.t('general.help.feedback', [], 'Feedback'),
+        icon: 'comment-alt-message',
         onClick: props.onClickFeedback,
       },
       {
         type: 'menu',
         text: Languages.t('general.help.documentation', [], 'Documentation'),
+        icon: 'book',
         onClick: props.onClickDocumentation,
       },
-    ]
+    ];
   }
   componentDidMount() {
     try {
@@ -55,12 +58,12 @@ export default class Footer extends React.Component {
       <div className="channel_footer">
         <div className="line_2">
           {this.props.onClickHelp && (
-            <Menu menu={this.menu} className="options">
-               <div className="help">
-                  <Icon type="question-circle" />
-                  {Languages.t('general.help', [], 'Help')}
-                </div>
-           </Menu>
+            <Menu menu={this.menu} className="options" position="top">
+              <div className="help">
+                <Icon type="question-circle" />
+                {Languages.t('general.help', [], 'Help')}
+              </div>
+            </Menu>
           )}
           {!this.onpremise && (
             <div
