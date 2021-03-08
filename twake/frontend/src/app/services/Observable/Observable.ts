@@ -27,19 +27,32 @@ export const useWatcher = <G>(
 
   const [, forceRender] = useState<G>(isAsync ? null : value);
 
-  useMemo(async () => {
+  useMemo(() => {
     observable.removeWatcher(forceRender);
-    const watcher = observable.addWatcher(forceRender, observedScope, options);
-    const changes = await observable.getChanges<G>(watcher);
-    forceRender(changes.changes);
+    observable.addWatcher(forceRender, observedScope, options);
   }, options?.memoizedFilters || []);
 
   useEffect(() => {
+    observable.removeWatcher(forceRender);
+    const watcher = observable.addWatcher(
+      v => {
+        forceRender(v);
+      },
+      observedScope,
+      options,
+    );
+
+    observable.getChanges<G>(watcher).then(changes => {
+      if (changes.didChange) {
+        forceRender(changes.changes);
+      }
+    });
+
     //Called on component unmount
     return () => {
       observable.removeWatcher(forceRender);
     };
-  }, [observable, ...(options?.memoizedFilters || [])]);
+  }, [observable]);
 
   return value as G;
 };
