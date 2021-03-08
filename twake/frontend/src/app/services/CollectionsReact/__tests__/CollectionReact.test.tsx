@@ -23,6 +23,8 @@ const MessagesComponent = (props: { channelId: string }) => {
 
   const messages = messagesCollection.useWatcher({});
 
+  console.log(messages);
+
   return (
     <div>
       <div id="message_list">
