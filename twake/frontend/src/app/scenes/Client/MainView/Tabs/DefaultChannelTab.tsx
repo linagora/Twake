@@ -12,6 +12,7 @@ import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
 import MainViewService from 'app/services/AppView/MainViewService';
+import { isArray } from 'lodash';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter(app => (app.display || {}).channel);
@@ -38,7 +39,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
   const current = () => {
     return (
-      channelResource.data.connectors &&
+      isArray(channelResource.data.connectors) &&
       channelResource.data.connectors.map((id: string) =>
         DepreciatedCollections.get('applications').find(id),
       )
