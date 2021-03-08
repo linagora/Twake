@@ -21,6 +21,10 @@ export default class CompanyUser {
   @Column("id", "uuid")
   id: string;
 
+  /**
+   * 0: member,
+   * 1, 2, 3: admin,
+   */
   @Column("level", "number")
   level: number;
 

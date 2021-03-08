@@ -153,8 +153,7 @@ export class MergeProcess {
             length: 10,
             numbers: true,
           }),
-          // TODO
-          role: "member",
+          role: companyUser.level == 0 ? "member" : "admin",
         },
       );
 
