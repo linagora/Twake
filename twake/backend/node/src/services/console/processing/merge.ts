@@ -169,6 +169,7 @@ export class MergeProcess {
       source: { user: companyUser, company },
       destination: {
         id: result?._id,
+        companyCode: company.id,
       },
       error,
     };

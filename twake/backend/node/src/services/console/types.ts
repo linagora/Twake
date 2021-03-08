@@ -36,6 +36,7 @@ export type UpdatedConsoleUserRole = UpdateConsoleUserRole;
 
 export type ConsoleUser = {
   id: string;
+  companyCode: string;
 };
 
 export type ConsoleCompany = {
