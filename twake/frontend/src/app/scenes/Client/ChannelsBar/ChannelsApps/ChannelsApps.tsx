@@ -45,7 +45,9 @@ export default class ChannelsApps extends Component {
   }
   render() {
     if (
-      Collections.get('channels').did_load_first_time ||
+      Collections.get('channels').did_load_first_time[
+        'channels_' + Workspaces.currentWorkspaceId
+      ] ||
       !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member')
     ) {
       ChannelsBarService.collectionIsReady(
@@ -53,6 +55,8 @@ export default class ChannelsApps extends Component {
         Workspaces.currentWorkspaceId + '+applications',
       );
     }
+
+    console.log('apps are ready: ', Collections.get('channels').did_load_first_time);
 
     if (
       !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
