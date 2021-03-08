@@ -56,8 +56,6 @@ export default class ChannelsApps extends Component {
       );
     }
 
-    console.log('apps are ready: ', Collections.get('channels').did_load_first_time);
-
     if (
       !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
     ) {
