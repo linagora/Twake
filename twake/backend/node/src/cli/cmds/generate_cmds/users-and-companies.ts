@@ -11,7 +11,6 @@ import CompanyUser from "../../../services/user/entities/company_user";
 import UserServiceAPI from "../../../services/user/api";
 import twake from "../../../twake";
 import User, { getInstance as getUserInstance } from "../../../services/user/entities/user";
-import { getLogger } from "../../../core/platform/framework/logger";
 
 type CLIArgs = {
   company: number;
@@ -19,7 +18,6 @@ type CLIArgs = {
   concurrent: number;
 };
 
-const logger = getLogger("cli");
 const services = ["user", "channels", "notifications", "database", "webserver", "pubsub"];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -56,13 +54,13 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
       user: User;
       company: Company;
     }): Promise<CompanyUser> => {
-      logger.info("Creating user %o", userInCompany);
+      console.log("Creating user", userInCompany);
       const created = await userService.users.create(getUserInstance(userInCompany.user));
 
       return userService.companies.addUserInCompany(userInCompany.company, created.entity);
     };
     const createCompany = (company: Company) => {
-      logger.info("Creating company %o", company);
+      console.log("Creating company", company);
       return userService.companies.createCompany(company);
     };
 
@@ -71,7 +69,7 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
       mergeMap(company => createCompany(company), concurrentTasks),
       // until we create enough companies
       bufferCount(companies.length),
-      tap(companies => logger.info("Created companies %s", companies.length)),
+      tap(companies => console.log("Created companies", companies.length)),
       // for each created company
       switchMap(companies => from(companies)),
       // generate a set of user for each company
@@ -91,7 +89,7 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
     return obsv$
       .toPromise()
       .then(() => platform.stop())
-      .finally(() => logger.info("✅ Company users are now created"));
+      .finally(() => console.log("✅ Company users are now created"));
   },
 };
 

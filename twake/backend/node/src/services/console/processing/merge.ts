@@ -1,6 +1,6 @@
 import passwordGenerator from "generate-password";
 import { concat, EMPTY, from, Observable, ReplaySubject } from "rxjs";
-import { distinct, map, mergeMap } from "rxjs/operators";
+import { distinct, filter, map, mergeMap } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
 import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
@@ -49,6 +49,7 @@ export class MergeProcess {
         companies$.next(company);
         return company;
       }),
+      filter(company => !company.error),
       mergeMap(company =>
         this.getUsers(company.source).pipe(
           map(user => ({
@@ -100,52 +101,69 @@ export class MergeProcess {
 
   private async createCompany(company: Company): Promise<CompanyCreatedStreamObject> {
     logger.debug("Creating company in the Console %s", company.displayName);
-    const result = await this.client.createCompany({
-      code: company.id,
-      displayName: company.displayName,
-      // TODO
-      status: "todo",
-    });
+    let createdCompany: CreatedConsoleCompany;
+    let error;
 
-    if (this.linkExternal) {
-      await this.createCompanyLink(company, result, this.consoleId);
+    try {
+      createdCompany = await this.client.createCompany({
+        code: company.id,
+        displayName: company.displayName,
+        // TODO
+        status: "todo",
+      });
+
+      if (this.linkExternal) {
+        await this.createCompanyLink(company, createdCompany, this.consoleId);
+      }
+    } catch (err) {
+      logger.warn("Error while creating company %s", company.displayName);
+      error = err;
     }
 
     return {
       source: company,
       destination: {
-        code: result.code,
+        code: createdCompany?.code,
       },
+      error,
     };
   }
 
   private async createUser(company: Company, user: User): Promise<UserCreatedStreamObject> {
     logger.debug("Creating user in console %o", user.id);
+    let error;
+    let result: CreatedConsoleUser;
 
-    const result = await this.client.addUser(
-      { code: company.id },
-      {
-        email: user.emailcanonical,
-        firstName: user.firstname,
-        lastName: user.lastname,
-        password: passwordGenerator.generate({
-          length: 10,
-          numbers: true,
-        }),
-        // TODO
-        role: "member",
-      },
-    );
+    try {
+      result = await this.client.addUser(
+        { code: company.id },
+        {
+          email: user.emailcanonical,
+          firstName: user.firstname,
+          lastName: user.lastname,
+          password: passwordGenerator.generate({
+            length: 10,
+            numbers: true,
+          }),
+          // TODO
+          role: "member",
+        },
+      );
 
-    if (this.linkExternal) {
-      await this.createUserLink(user, result, this.consoleId);
+      if (this.linkExternal) {
+        await this.createUserLink(user, result, this.consoleId);
+      }
+    } catch (err) {
+      logger.warn("Error while creating the user %o", user.id);
+      error = err;
     }
 
     return {
       source: { user, company },
       destination: {
-        id: result._id,
+        id: result?._id,
       },
+      error,
     };
   }
 

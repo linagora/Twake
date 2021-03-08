@@ -1,7 +1,7 @@
 import yargs from "yargs";
+import ora from "ora";
 import { count, groupBy, mergeMap, min, share } from "rxjs/operators";
 import twake from "../../../twake";
-import { getLogger } from "../../../core/platform/framework/logger";
 import { ConsoleServiceAPI } from "../../../services/console/api";
 import { UserCreatedStreamObject } from "../../../services/console/types";
 
@@ -27,14 +27,13 @@ const services = [
   "pubsub",
   "console",
 ];
-const logger = getLogger("cli");
 
 const command: yargs.CommandModule<MergeParams, MergeParams> = {
   command: "merge",
   describe: "Merge Twake Chat users in the Twake Console",
   builder: {
     url: {
-      default: "http://localhost:3000",
+      default: "http://localhost:8080",
       type: "string",
       description: "URL of the Twake console",
     },
@@ -72,6 +71,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     },
   },
   handler: async argv => {
+    const spinner = ora({ text: "Importing Twake data" }).start();
     const platform = await twake.run(services);
     const consoleService = platform.getProvider<ConsoleServiceAPI>("console");
     const merge = consoleService.merge(
@@ -86,8 +86,10 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     const stats = {
       users: 0,
       companies: 0,
+      userErrors: 0,
+      companyErrors: 0,
     };
-    const adminsToCreate: UserCreatedStreamObject[] = [];
+    const companyOwners: UserCreatedStreamObject[] = [];
 
     const users$ = merge.users$.pipe(share());
     const companies$ = merge.companies$.pipe(share());
@@ -100,7 +102,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
         groupBy(userInCompany => userInCompany.source.company.id),
         mergeMap(group =>
           group.pipe(
-            // get the user with the smaller creation date, let's say that this is the first one in the company so it is the admin
+            // get the user with the smaller creation date, let's say that this is the first one in the company so it is the owner
             min((a, b) => {
               return (a.source?.user?.creationdate || 0) <= (b.source?.user?.creationdate || 0)
                 ? -1
@@ -114,39 +116,44 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
           oldestUserPerCompany.unsubscribe();
         },
         next: oldestUserInCompany => {
-          adminsToCreate.push(oldestUserInCompany);
+          companyOwners.push(oldestUserInCompany);
         },
       });
 
     const companiesSubscription = companies$.subscribe({
       next: company => {
-        logger.info("New company created %s", company.source.displayName);
-        stats.companies++;
+        if (!company.error) {
+          spinner.text = `New company created ${company.source.id} (${company.source.displayName})`;
+          stats.companies++;
+        } else {
+          stats.companyErrors++;
+          spinner.text = `Creation error for company ${company.source.id} (${company.source.displayName})`;
+        }
       },
-      error: async (err: Error) => {
-        logger.error("Error while creating a company: %s", err.message);
+      error: async () => {
+        spinner.text = "Error while creating a company";
       },
-      complete: () => logger.info("All companies are created"),
+      complete: () => (spinner.text = "All companies are created"),
     });
 
     const usersSubscription = users$.subscribe({
-      next: user =>
-        logger.info(
-          "New user created - %s (%s)",
-          user.destination.id,
-          user.source.user.creationdate,
-        ),
-      error: async (err: Error) => {
-        logger.error("Error while creating user %s: ", err.message);
-        await tearDown();
-        logger.info("⛔️ Merge is not complete: some users may not have been imported %o", stats);
+      next: user => {
+        if (user.error) {
+          spinner.text = "User creation error";
+          stats.userErrors++;
+        } else {
+          spinner.text = `New user created ${user.destination.id}`;
+        }
+      },
+      error: async () => {
+        spinner.fail("Error while importing users");
       },
       complete: async () => {
         await tearDown();
-        logger.info("✅ Merge is complete: %o", stats);
-        adminsToCreate.map(user => {
+        spinner.succeed("Merge is complete");
+        companyOwners.map(user => {
           console.log(
-            "Admin to create in company",
+            "Owner to create in company",
             user.source.company.id,
             ":",
             user.source.user.id,

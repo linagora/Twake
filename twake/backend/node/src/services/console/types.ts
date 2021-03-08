@@ -45,6 +45,8 @@ export type ConsoleCompany = {
 export type CompanyCreatedStreamObject = {
   source: Company;
   destination: ConsoleCompany;
+  // Creation error
+  error?: Error;
 };
 
 export type UserCreatedStreamObject = {
@@ -53,4 +55,6 @@ export type UserCreatedStreamObject = {
     company: Company;
   };
   destination: ConsoleUser;
+  // Creation error
+  error?: Error;
 };
