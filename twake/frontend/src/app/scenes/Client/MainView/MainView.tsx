@@ -8,6 +8,7 @@ import MainContent from './MainContent';
 import './MainView.scss';
 import NoApp from './NoApp';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import { useWatcher } from 'app/services/Observable/Observable';
 
 const MainView: FC = () => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
@@ -16,16 +17,14 @@ const MainView: FC = () => {
     },
   );
 
-  const ready =
-    ChannelsBarService.useWatcher(() => {
-      return (
-        ChannelsBarService.ready[companyId + '+' + workspaceId] &&
-        ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
-        ChannelsBarService.ready[companyId + '+direct']
-      );
-    }) &&
-    !!companyId &&
-    !!workspaceId;
+  const loaded = useWatcher(ChannelsBarService, () => {
+    return (
+      ChannelsBarService.ready[companyId + '+' + workspaceId] &&
+      ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
+      ChannelsBarService.ready[companyId + '+direct']
+    );
+  });
+  const ready = loaded && !!companyId && !!workspaceId;
 
   if (ready && !channelId) {
     ChannelsBarService.autoSelectChannel(companyId || '', workspaceId || '');

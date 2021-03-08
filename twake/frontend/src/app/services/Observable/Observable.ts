@@ -17,6 +17,41 @@ type Watcher = {
   } & any;
 };
 
+export const useWatcher = <G>(
+  observable: Observable,
+  observedScope: () => Promise<G> | G,
+  options?: any,
+): G => {
+  const value: any = observedScope();
+  const isAsync = ['Promise', 'AsyncFunction'].indexOf(value?.constructor?.name || '') < 0;
+
+  const [, forceRender] = useState<G>(isAsync ? null : value);
+
+  useEffect(() => {
+    observable.removeWatcher(forceRender);
+    const watcher = observable.addWatcher(
+      v => {
+        forceRender(v);
+      },
+      observedScope,
+      options,
+    );
+
+    observable.getChanges<G>(watcher).then(changes => {
+      if (changes.didChange) {
+        forceRender(changes.changes);
+      }
+    });
+
+    //Called on component unmount
+    return () => {
+      observable.removeWatcher(forceRender);
+    };
+  }, [observable]);
+
+  return value as G;
+};
+
 export default class Observable extends EventListener {
   protected watchers: Watcher[] = [];
 
@@ -29,28 +64,7 @@ export default class Observable extends EventListener {
   }
 
   useWatcher<G>(observedScope: () => Promise<G> | G, options?: any): G {
-    const [state, setState] = useState<G>();
-
-    useMemo(async () => {
-      this.removeWatcher(setState);
-      const watcher = this.addWatcher(setState, observedScope, options);
-      const changes = await this.getChanges<G>(watcher);
-      setState(changes.changes);
-    }, options?.memoizedFilters || []);
-
-    useEffect(() => {
-      //Called on component unmount
-      return () => {
-        this.removeWatcher(setState);
-      };
-    }, []);
-
-    const value: any = observedScope();
-    if (['Promise', 'AsyncFunction'].indexOf(value?.constructor?.name || '') < 0) {
-      return value as G;
-    }
-
-    return state as G;
+    return useWatcher(this, observedScope, options);
   }
 
   notify() {
@@ -58,11 +72,11 @@ export default class Observable extends EventListener {
       const changes = await this.getChanges(watcher);
       if (changes.didChange) {
         //If things changed
-        watcher.callback(
+        const value =
           typeof changes.changes === 'object' && changes.changes?.constructor?.name !== 'Array'
             ? Object.assign(Object.create(Object.getPrototypeOf(changes.changes)), changes.changes)
-            : changes.changes,
-        );
+            : changes.changes;
+        watcher.callback(value);
       }
     });
   }

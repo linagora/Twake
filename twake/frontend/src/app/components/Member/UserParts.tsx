@@ -8,9 +8,10 @@ import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
 import OldCollections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/user.js';
+import { isArray } from 'lodash';
 
 export const useUsersListener = (usersIds: string[]) => {
-  const channelMembers = (usersIds || []).filter(
+  const channelMembers = (isArray(usersIds) ? usersIds : []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
   );
   OldCollections.get('users').useListener(useState, channelMembers);

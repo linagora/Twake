@@ -24,8 +24,13 @@ import LoginService from 'services/login/login';
 import { Menu } from 'react-feather';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
+import RouterServices from 'app/services/RouterService';
 
 export default (): JSX.Element => {
+  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
+    return { companyId, workspaceId };
+  });
+
   popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
@@ -56,7 +61,7 @@ export default (): JSX.Element => {
             >
               <SideBars />
             </Layout.Sider>
-            <MainView />
+            <MainView key={'mainview-' + companyId + '-' + workspaceId} />
           </Layout>
         </>
       );
