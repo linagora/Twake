@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import ora from "ora";
-import { count, groupBy, mergeMap, min, share } from "rxjs/operators";
+import { groupBy, mergeMap, min, share } from "rxjs/operators";
 import twake from "../../../twake";
 import { ConsoleServiceAPI } from "../../../services/console/api";
 import { UserCreatedStreamObject } from "../../../services/console/types";
@@ -14,8 +14,24 @@ type MergeParams = {
   dry: boolean;
   console: string;
   link: boolean;
+  csv: boolean;
   client: string;
   secret: string;
+};
+
+type ReportStatus = "success" | "failure";
+
+type CompanyReport = {
+  sourceId: string;
+  destinationCode: string;
+  status: ReportStatus;
+};
+
+type UserReport = {
+  sourceId: string;
+  destinationId: string;
+  destinationCompanyCode: string;
+  status: ReportStatus;
 };
 
 const services = [
@@ -46,6 +62,11 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       default: false,
       type: "boolean",
       description: "Make a dry run without creating anything on the Twake console",
+    },
+    csv: {
+      default: false,
+      type: "boolean",
+      description: "Generate result as CSV",
     },
     console: {
       default: "console",
@@ -83,19 +104,11 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       argv.client,
       argv.secret,
     );
-    const stats = {
-      users: 0,
-      companies: 0,
-      userErrors: 0,
-      companyErrors: 0,
-    };
     const companyOwners: UserCreatedStreamObject[] = [];
-
+    const userReports: UserReport[] = [];
+    const companyReports: CompanyReport[] = [];
     const users$ = merge.users$.pipe(share());
     const companies$ = merge.companies$.pipe(share());
-    const countUsers = users$.pipe(count()).subscribe({
-      next: count => (stats.users = count),
-    });
     const oldestUserPerCompany = users$
       .pipe(
         // group by company id
@@ -120,13 +133,20 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
 
     const companiesSubscription = companies$.subscribe({
       next: company => {
+        const report: CompanyReport = {
+          sourceId: company.source.id,
+          destinationCode: company.destination.code,
+          status: "success",
+        };
+
         if (!company.error) {
           spinner.text = `Company created: ${company.source.id} (${company.source.displayName})`;
-          stats.companies++;
         } else {
-          stats.companyErrors++;
           spinner.text = `Creation error for company ${company.source.id} (${company.source.displayName})`;
+          report.status = "failure";
         }
+
+        companyReports.push(report);
       },
       error: async () => {
         spinner.text = "Error while creating a company";
@@ -136,19 +156,29 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
 
     const usersSubscription = users$.subscribe({
       next: user => {
+        const report: UserReport = {
+          sourceId: user.source.user.id,
+          destinationId: user.destination.id,
+          destinationCompanyCode: user.destination.companyCode,
+          status: "success",
+        };
+
         if (user.error) {
           spinner.text = "User creation error";
-          stats.userErrors++;
+          report.status = "failure";
         } else {
           spinner.text = `Company ${user.source.company.id}: User created ${user.destination.id}`;
         }
+
+        userReports.push(report);
       },
-      error: async () => {
+      error: async (err: Error) => {
         spinner.fail("Error while importing users");
+        console.error(err);
       },
       complete: async () => {
-        spinner.succeed("Merge is complete");
-        await tearDown();
+        spinner.text = "Users created, updating owners";
+        // TODO
         companyOwners.map(user => {
           console.log(
             "Owner to create in company",
@@ -157,6 +187,8 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
             user.source.user.id,
           );
         });
+        spinner.succeed("Merge complete");
+        await tearDown();
       },
     });
 
@@ -164,8 +196,39 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       await platform.stop();
       usersSubscription.unsubscribe();
       companiesSubscription.unsubscribe();
-      countUsers.unsubscribe();
-      console.log(stats);
+      displayStats();
+    }
+
+    function displayStats() {
+      console.log(
+        "Companies success:",
+        companyReports.filter(company => company.status === "success").length,
+      );
+      console.log(
+        "Companies failure:",
+        companyReports.filter(company => company.status === "failure").length,
+      );
+      console.log("Users success:", userReports.filter(user => user.status === "success").length);
+      console.log("Users failure:", userReports.filter(user => user.status === "failure").length);
+
+      if (argv.csv) {
+        const users = userReports.map(
+          user =>
+            `${user.sourceId},${user.destinationId},${user.destinationCompanyCode},${user.status}`,
+        );
+        const userCSV = [
+          ...["sourceId,destinationId,destinationCompanyCode,status"],
+          ...users,
+        ].join("\n");
+
+        const companies = companyReports.map(
+          company => `${company.sourceId},${company.destinationCode},${company.status}`,
+        );
+        const companyCSV = [...["sourceId,destinationCode,status"], ...companies].join("\n");
+
+        console.log(userCSV);
+        console.log(companyCSV);
+      }
     }
   },
 };
