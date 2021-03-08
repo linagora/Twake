@@ -75,6 +75,13 @@ class App
                 \Sentry\init(['dsn' => $dsn, 'error_types' => (E_ERROR | E_WARNING | E_PARSE)]);
         }
 
+        $segment = $this->getContainer()->getParameter("env.segment");
+        $GLOBALS["segment_enabled"] = false;
+        if($segment){
+            $GLOBALS["segment_enabled"] = true;
+            \Segment::init($segment);
+        }
+
         $this->counter = new Counter($this);
 
         // Require and instanciate all defined bundles

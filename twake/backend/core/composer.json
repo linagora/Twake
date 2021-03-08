@@ -34,7 +34,8 @@
     "php-amqplib/php-amqplib": "^2.11",
     "phpseclib/phpseclib": "^2.0",
     "sentry/sdk": "^2.1",
-    "firebase/php-jwt": "^5.2"
+    "firebase/php-jwt": "^5.2",
+    "segmentio/analytics-php": "^1.5"
   },
   "autoload": {
     "psr-4": {

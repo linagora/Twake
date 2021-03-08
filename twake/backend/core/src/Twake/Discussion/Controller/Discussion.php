@@ -37,6 +37,10 @@ class Discussion extends BaseController
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_messages", 1);
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "message:send",
+                    "userId" => $this->getUser()->getId()
+                ]);
             }
         }
 

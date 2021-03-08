@@ -471,6 +471,19 @@ class DriveFileSystem
         $did_create = false;
         $fileordirectory = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
+
+            if($object["is_directory"]) {
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "drive:file:edit",
+                    "userId" => $this->getUser()->getId()
+                ]);
+            }else{
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "drive:folder:edit",
+                    "userId" => $this->getUser()->getId()
+                ]);
+            }
+
             $fileordirectory = $this->em->getRepository("Twake\Drive:DriveFile")
                 ->findOneBy(Array("id" => $object["id"] . ""));
             if (!$fileordirectory) {
@@ -480,6 +493,19 @@ class DriveFileSystem
             $fileordirectory->setLastModified();
 
         } else { // pas d'identifiant on veut donc créer un fichier
+
+            if($object["is_directory"]) {
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "drive:file:create",
+                    "userId" => $this->getUser()->getId()
+                ]);
+            }else{
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "drive:folder:create",
+                    "userId" => $this->getUser()->getId()
+                ]);
+            }
+
             if (!isset($object["workspace_id"])) {
                 return false;
             }

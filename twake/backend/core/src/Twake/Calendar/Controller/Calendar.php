@@ -28,6 +28,11 @@ class Calendar extends BaseController
         $res = $this->get("app.calendar.calendar")->save($object, $options, $this->getUser());
         if (!$res) {
             return new Response(Array("status" => "error"));
+        }else{
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "calendar:create",
+                "userId" => $this->getUser()->getId()
+            ]);
         }
         return new Response(Array("data" => Array("object" => $res)));
     }
@@ -38,7 +43,13 @@ class Calendar extends BaseController
         $objects = $this->get("app.calendar.calendar")->get($options, $this->getUser());
         if ($objects === false) {
             return new Response(Array("status" => "error"));
+        }else{
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "calendar:open",
+                "userId" => $this->getUser()->getId()
+            ]);
         }
+
         return new Response(Array("data" => $objects));
     }
 
