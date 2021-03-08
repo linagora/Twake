@@ -14,9 +14,7 @@ type PropsType = {
 };
 
 const DirectChannelRow = ({ key, userIds, active }: PropsType) => {
-  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
-    return { companyId };
-  });
+  const { companyId } = RouterServices.getStateFromRoute();
 
   const { avatar, name } = getUserParts({
     usersIds: userIds,

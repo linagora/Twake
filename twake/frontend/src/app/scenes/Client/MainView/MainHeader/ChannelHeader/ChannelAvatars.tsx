@@ -4,9 +4,7 @@ import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 
 export default (props: { workspaceId: string }): JSX.Element => {
-  const { companyId, channelId } = RouterServices.useRouteState(({ companyId, channelId }) => {
-    return { companyId, channelId };
-  });
+  const { companyId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${props.workspaceId}/channels/${channelId}/members/`;
   const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);

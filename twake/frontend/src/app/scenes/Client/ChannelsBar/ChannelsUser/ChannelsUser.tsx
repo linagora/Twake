@@ -14,9 +14,8 @@ import { NotificationResource } from 'app/models/Notification';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default () => {
-  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
-    return { companyId };
-  });
+  const { companyId } = RouterServices.getStateFromRoute();
+
   const url: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
   const channelsCollection = Collection.get(url, ChannelResource, {
     tag: 'mine',

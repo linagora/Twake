@@ -5,9 +5,7 @@ import React from 'react';
 import { Layout } from 'antd';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
-    return { companyId, workspaceId };
-  });
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>

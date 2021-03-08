@@ -30,9 +30,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { channelId } = RouterServices.useRouteState(({ channelId }) => {
-    return { channelId };
-  });
+  const { channelId } = RouterServices.getStateFromRoute();
 
   const selected = channelId === props.id;
 

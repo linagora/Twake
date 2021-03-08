@@ -20,9 +20,8 @@ export default () => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState(10);
   const [cursor, setCursor] = useState<number>(-1);
-  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
-    return { companyId };
-  });
+  const { companyId } = RouterServices.getStateFromRoute();
+
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<Input>(null);
 

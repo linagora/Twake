@@ -16,9 +16,8 @@ type PropsType = {
 };
 
 const SearchListContainer = ({ list, active, limit, setCursor }: PropsType) => {
-  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
-    return { companyId, workspaceId };
-  });
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+
   const minePath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const mineCollection = Collection.get(minePath, ChannelResource);
   const mine = mineCollection.useWatcher({});

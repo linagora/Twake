@@ -10,9 +10,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
 
 export default (): JSX.Element => {
-  const { channelId } = RouterServices.useRouteState(({ channelId }) => {
-    return { channelId };
-  });
+  const { channelId } = RouterServices.getStateFromRoute();
 
   const appChannel = DepreciatedCollections.get('channels').find(channelId);
   const application = DepreciatedCollections.get('applications').find(appChannel.app_id);
