@@ -1,5 +1,5 @@
 import Company from "../user/entities/company";
-import User from "../user/entities/user";
+import CompanyUser from "../user/entities/company_user";
 
 export interface CreateConsoleCompany {
   code: string;
@@ -51,7 +51,7 @@ export type CompanyCreatedStreamObject = {
 
 export type UserCreatedStreamObject = {
   source: {
-    user: User;
+    user: CompanyUser;
     company: Company;
   };
   destination: ConsoleUser;

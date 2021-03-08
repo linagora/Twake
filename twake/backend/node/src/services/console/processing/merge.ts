@@ -14,6 +14,7 @@ import {
 } from "../types";
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
 import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
+import CompanyUser from "../../user/entities/company_user";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
 
@@ -51,7 +52,7 @@ export class MergeProcess {
       }),
       filter(company => !company.error),
       mergeMap(company =>
-        this.getUsers(company.source).pipe(
+        this.getUserIds(company.source).pipe(
           map(user => ({
             user,
             company,
@@ -70,18 +71,16 @@ export class MergeProcess {
     };
   }
 
-  private getUsers(company: Company, paginable?: Paginable): Observable<User> {
-    return from(
-      this.userService.companies.getUsersForCompany({ group_id: company.id }, paginable),
-    ).pipe(
-      mergeMap(usersResult => {
-        const items$ = from(usersResult.getEntities());
-        const next$ = usersResult?.nextPage?.page_token
-          ? this.getUsers(company, usersResult.nextPage)
+  private getUserIds(company: Company, paginable?: Paginable): Observable<CompanyUser> {
+    return from(this.userService.companies.getUsers({ group_id: company.id }, paginable)).pipe(
+      mergeMap(companyUsers => {
+        const items$ = from(companyUsers.getEntities());
+        const next$ = companyUsers?.nextPage?.page_token
+          ? this.getUserIds(company, companyUsers.nextPage)
           : EMPTY;
         return concat(items$, next$);
       }),
-      distinct(user => user.id),
+      distinct(user => user.user_id),
     );
   }
 
@@ -129,12 +128,21 @@ export class MergeProcess {
     };
   }
 
-  private async createUser(company: Company, user: User): Promise<UserCreatedStreamObject> {
-    logger.debug("Creating user in console %o", user.id);
-    let error;
+  private async createUser(
+    company: Company,
+    companyUser: CompanyUser,
+  ): Promise<UserCreatedStreamObject> {
+    logger.debug("Creating user in console %o", companyUser.user_id);
+    let error: Error;
     let result: CreatedConsoleUser;
 
     try {
+      const user = await this.userService.users.get({ id: companyUser.user_id });
+
+      if (!user) {
+        throw new Error(`User ${companyUser.user_id} not found`);
+      }
+
       result = await this.client.addUser(
         { code: company.id },
         {
@@ -154,12 +162,12 @@ export class MergeProcess {
         await this.createUserLink(user, result, this.consoleId);
       }
     } catch (err) {
-      logger.warn("Error while creating the user %o", user.id);
+      logger.warn("Error while creating the user %o", companyUser.user_id);
       error = err;
     }
 
     return {
-      source: { user, company },
+      source: { user: companyUser, company },
       destination: {
         id: result?._id,
       },

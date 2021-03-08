@@ -12,7 +12,6 @@ import CompanyUser, {
   CompanyUserPrimaryKey,
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
-import { ListUserOptions } from "../users/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -64,29 +63,10 @@ export class CompanyService implements CompaniesServiceAPI {
     return userInCompany;
   }
 
-  async getUsersForCompany(
+  async getUsers(
     companyId: CompanyUserPrimaryKey,
     pagination?: Pagination,
-  ): Promise<ListResult<User>> {
-    const companyUsers: ListResult<CompanyUser> = await this.companyUserRepository.find(
-      { group_id: companyId.group_id },
-      { pagination },
-    );
-
-    if (companyUsers.isEmpty()) {
-      return new ListResult<User>("user", [], companyUsers.nextPage);
-    }
-
-    const userIds = companyUsers.getEntities().map(value => value.user_id);
-    // TODO: We may need to paginate if userIds is too big...
-    const userPagination = new Pagination("", String(userIds.length));
-    const users: ListResult<User> = await this.userService.users.list<ListUserOptions>(
-      userPagination,
-      {
-        userIds,
-      },
-    );
-
-    return new ListResult<User>("user", users.getEntities(), companyUsers.nextPage);
+  ): Promise<ListResult<CompanyUser>> {
+    return this.companyUserRepository.find({ group_id: companyId.group_id }, { pagination });
   }
 }

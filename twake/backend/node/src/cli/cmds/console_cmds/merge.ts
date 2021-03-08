@@ -104,9 +104,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
           group.pipe(
             // get the user with the smaller creation date, let's say that this is the first one in the company so it is the owner
             min((a, b) => {
-              return (a.source?.user?.creationdate || 0) <= (b.source?.user?.creationdate || 0)
-                ? -1
-                : 1;
+              return (a.source?.user?.dateAdded || 0) <= (b.source?.user?.dateAdded || 0) ? -1 : 1;
             }),
           ),
         ),
@@ -123,7 +121,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     const companiesSubscription = companies$.subscribe({
       next: company => {
         if (!company.error) {
-          spinner.text = `New company created ${company.source.id} (${company.source.displayName})`;
+          spinner.text = `Company created: ${company.source.id} (${company.source.displayName})`;
           stats.companies++;
         } else {
           stats.companyErrors++;
@@ -142,15 +140,15 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
           spinner.text = "User creation error";
           stats.userErrors++;
         } else {
-          spinner.text = `New user created ${user.destination.id}`;
+          spinner.text = `Company ${user.source.company.id}: User created ${user.destination.id}`;
         }
       },
       error: async () => {
         spinner.fail("Error while importing users");
       },
       complete: async () => {
-        await tearDown();
         spinner.succeed("Merge is complete");
+        await tearDown();
         companyOwners.map(user => {
           console.log(
             "Owner to create in company",
@@ -167,6 +165,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       usersSubscription.unsubscribe();
       companiesSubscription.unsubscribe();
       countUsers.unsubscribe();
+      console.log(stats);
     }
   },
 };

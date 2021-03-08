@@ -71,13 +71,13 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   addUserInCompany(company: Company, user: User): Promise<CompanyUser>;
 
   /**
-   * Get users in a given company
+   * Get user ids in the given company
    *
    * @param companyId
    * @param pagination
    */
-  getUsersForCompany(
+  getUsers(
     companyId: CompanyUserPrimaryKey,
     pagination?: Paginable,
-  ): Promise<ListResult<User>>;
+  ): Promise<ListResult<CompanyUser>>;
 }
