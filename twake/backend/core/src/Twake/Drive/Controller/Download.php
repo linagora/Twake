@@ -37,11 +37,6 @@ class Download extends BaseController
 
         $this->get("administration.counter")->incrementCounter("total_files_downloaded", 1);
 
-        if($GLOBALS["segment_enabled"]) \Segment::track([
-            "event" => "drive:download",
-            "userId" => $this->getUser()->getId()
-        ]);
-
         @$response = $this->get('driveupload.download')->download($workspace_id, $files_ids, $download, $versionId);
         if ($response === true) {
             return;
