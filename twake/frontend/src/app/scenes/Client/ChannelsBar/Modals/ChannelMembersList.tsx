@@ -88,7 +88,7 @@ const ChannelMembersList: FC<Props> = props => {
       closable={props.closable ? props.closable : false}
     >
       <div className="x-margin">
-        <Row align="middle" gutter={[28, 0]} style={{ marginBottom: '24px' }}>
+        <Row align="middle" gutter={[28, 0]}>
           <Col flex="auto">
             <Input
               size={'large'}
@@ -101,7 +101,7 @@ const ChannelMembersList: FC<Props> = props => {
         </Row>
       </div>
       <PerfectScrollbar
-        style={{ maxHeight: '240px', height: '240px', width: '100%' }}
+        style={{ maxHeight: '240px', height: '240px', width: '100%', paddingBottom: 8 }}
         component="div"
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
@@ -110,7 +110,7 @@ const ChannelMembersList: FC<Props> = props => {
           channelMembers
             .sort((a, b) => compareFullname(a, b, true))
             .map(user => (
-              <div key={user.id} className="x-margin">
+              <div key={user.id} className="x-margin" style={{ marginTop: 8 }}>
                 <MemberChannelRow
                   key={user.id}
                   channelId={props.channel.id}
@@ -131,7 +131,7 @@ const ChannelMembersList: FC<Props> = props => {
         )}
         {!!search.length &&
           searchedUsers.map(userId => (
-            <div key={userId} className="x-margin">
+            <div key={userId} className="x-margin" style={{ marginTop: 8 }}>
               <MemberChannelRow
                 key={userId}
                 userId={userId}
