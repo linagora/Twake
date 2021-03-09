@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 import Company from "../user/entities/company";
 import CompanyUser from "../user/entities/company_user";
 
@@ -57,5 +58,31 @@ export type UserCreatedStreamObject = {
   };
   destination: ConsoleUser;
   // Creation error
+  error?: Error;
+};
+
+type ReportStatus = "success" | "failure";
+
+export type CompanyReport = {
+  sourceId: string;
+  destinationCode: string;
+  status: ReportStatus;
+  company: CompanyCreatedStreamObject;
+};
+
+export type UserReport = {
+  sourceId: string;
+  destinationId: string;
+  destinationCompanyCode: string;
+  status: ReportStatus;
+  user: UserCreatedStreamObject;
+};
+
+export type MergeProgress = Observable<ProcessReport>;
+
+export type ProcessReport = {
+  type: "user:updated" | "user:created" | "user:error" | "company:created";
+  user?: UserReport;
+  company?: CompanyReport;
   error?: Error;
 };

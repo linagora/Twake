@@ -1,9 +1,8 @@
 import yargs from "yargs";
 import ora from "ora";
-import { groupBy, mergeMap, min, share } from "rxjs/operators";
 import twake from "../../../twake";
 import { ConsoleServiceAPI } from "../../../services/console/api";
-import { UserCreatedStreamObject } from "../../../services/console/types";
+import { CompanyReport, UserReport } from "../../../services/console/types";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -17,21 +16,6 @@ type MergeParams = {
   csv: boolean;
   client: string;
   secret: string;
-};
-
-type ReportStatus = "success" | "failure";
-
-type CompanyReport = {
-  sourceId: string;
-  destinationCode: string;
-  status: ReportStatus;
-};
-
-type UserReport = {
-  sourceId: string;
-  destinationId: string;
-  destinationCompanyCode: string;
-  status: ReportStatus;
 };
 
 const services = [
@@ -104,99 +88,61 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       argv.client,
       argv.secret,
     );
-    const companyOwners: UserCreatedStreamObject[] = [];
     const userReports: UserReport[] = [];
     const companyReports: CompanyReport[] = [];
-    const users$ = merge.users$.pipe(share());
-    const companies$ = merge.companies$.pipe(share());
-    const oldestUserPerCompany = users$
-      .pipe(
-        // group by company id
-        groupBy(userInCompany => userInCompany.source.company.id),
-        mergeMap(group =>
-          group.pipe(
-            // get the user with the smaller creation date, let's say that this is the first one in the company so it is the owner
-            min((a, b) => {
-              return (a.source?.user?.dateAdded || 0) <= (b.source?.user?.dateAdded || 0) ? -1 : 1;
-            }),
-          ),
-        ),
-      )
-      .subscribe({
-        complete: () => {
-          oldestUserPerCompany.unsubscribe();
-        },
-        next: oldestUserInCompany => {
-          companyOwners.push(oldestUserInCompany);
-        },
-      });
 
-    const companiesSubscription = companies$.subscribe({
-      next: company => {
-        const report: CompanyReport = {
-          sourceId: company.source.id,
-          destinationCode: company.destination.code,
-          status: "success",
-        };
+    const process = merge.subscribe({
+      next: report => {
+        if (report.type === "company:created") {
+          companyReports.push(report.company);
 
-        if (!company.error) {
-          spinner.text = `Company created: ${company.source.id} (${company.source.displayName})`;
-        } else {
-          spinner.text = `Creation error for company ${company.source.id} (${company.source.displayName})`;
-          report.status = "failure";
+          if (report.company.status === "success") {
+            spinner.text = `Company created: ${report.company.company.source.id} (${report.company.company.source.displayName})`;
+          } else {
+            spinner.text = `Creation error for company ${report.company.company.source.id} (${report.company.company.source.displayName})`;
+          }
         }
 
-        companyReports.push(report);
-      },
-      error: async () => {
-        spinner.text = "Error while creating a company";
-      },
-      complete: () => (spinner.text = "All companies are created"),
-    });
-
-    const usersSubscription = users$.subscribe({
-      next: user => {
-        const report: UserReport = {
-          sourceId: user.source.user.id,
-          destinationId: user.destination.id,
-          destinationCompanyCode: user.destination.companyCode,
-          status: "success",
-        };
-
-        if (user.error) {
-          spinner.text = "User creation error";
-          report.status = "failure";
-        } else {
-          spinner.text = `Company ${user.source.company.id}: User created ${user.destination.id}`;
+        if (report.type === "user:created") {
+          userReports.push(report.user);
+          if (report.user.status === "success") {
+            spinner.text = `Company ${report.user.user.source.company.id}: User created ${report.user.user.destination.id}`;
+          } else {
+            spinner.text = "User creation error";
+          }
         }
-
-        userReports.push(report);
       },
-      error: async (err: Error) => {
-        spinner.fail("Error while importing users");
-        console.error(err);
+      error: () => {
+        spinner.fail("Fatal error");
       },
       complete: async () => {
-        spinner.text = "Users created, updating owners";
-        // TODO
-        companyOwners.map(user => {
-          console.log(
-            "Owner to create in company",
-            user.source.company.id,
-            ":",
-            user.source.user.id,
-          );
-        });
-        spinner.succeed("Merge complete");
+        spinner.succeed("Merge is complete");
+        displayStats();
         await tearDown();
       },
     });
 
     async function tearDown() {
       await platform.stop();
-      usersSubscription.unsubscribe();
-      companiesSubscription.unsubscribe();
-      displayStats();
+      process.unsubscribe();
+    }
+
+    function reportAsCSV() {
+      const users = userReports.map(
+        user =>
+          `${user.sourceId},${user.destinationId},${user.destinationCompanyCode},${user.status}`,
+      );
+      const userCSV = [...["sourceId,destinationId,destinationCompanyCode,status"], ...users].join(
+        "\n",
+      );
+
+      const companies = companyReports.map(
+        company => `${company.sourceId},${company.destinationCode},${company.status}`,
+      );
+      const companyCSV = [...["sourceId,destinationCode,status"], ...companies].join("\n");
+
+      console.log(userCSV);
+      console.log(companyCSV);
     }
 
     function displayStats() {
@@ -212,22 +158,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       console.log("Users failure:", userReports.filter(user => user.status === "failure").length);
 
       if (argv.csv) {
-        const users = userReports.map(
-          user =>
-            `${user.sourceId},${user.destinationId},${user.destinationCompanyCode},${user.status}`,
-        );
-        const userCSV = [
-          ...["sourceId,destinationId,destinationCompanyCode,status"],
-          ...users,
-        ].join("\n");
-
-        const companies = companyReports.map(
-          company => `${company.sourceId},${company.destinationCode},${company.status}`,
-        );
-        const companyCSV = [...["sourceId,destinationCode,status"], ...companies].join("\n");
-
-        console.log(userCSV);
-        console.log(companyCSV);
+        reportAsCSV();
       }
     }
   },

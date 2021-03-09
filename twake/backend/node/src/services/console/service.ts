@@ -1,8 +1,7 @@
-import { Observable } from "rxjs";
 import UserServiceAPI from "../user/api";
 import { ConsoleServiceAPI } from "./api";
 import { MergeProcess } from "./processing/merge";
-import { CompanyCreatedStreamObject, UserCreatedStreamObject } from "./types";
+import { MergeProgress } from "./types";
 
 class ConsoleService implements ConsoleServiceAPI {
   version: "1";
@@ -17,15 +16,12 @@ class ConsoleService implements ConsoleServiceAPI {
     link: boolean = true,
     client: string,
     secret: string,
-  ): {
-    companies$: Observable<CompanyCreatedStreamObject>;
-    users$: Observable<UserCreatedStreamObject>;
-  } {
+  ): MergeProgress {
     return new MergeProcess(this.userService, dryRun, console, link, {
       client,
       secret,
       url: baseUrl,
-    }).getStreams(concurrent);
+    }).merge(concurrent);
   }
 }
 

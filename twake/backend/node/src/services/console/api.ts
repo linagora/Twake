@@ -1,15 +1,13 @@
-import { Observable } from "rxjs";
 import { TwakeServiceProvider } from "../../core/platform/framework";
 import {
-  CompanyCreatedStreamObject,
   ConsoleCompany,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,
   CreatedConsoleUser,
+  MergeProgress,
   UpdateConsoleUserRole,
   UpdatedConsoleUserRole,
-  UserCreatedStreamObject,
 } from "./types";
 
 export interface ConsoleServiceAPI extends TwakeServiceProvider {
@@ -21,10 +19,7 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
     link: boolean,
     client: string,
     secret: string,
-  ): {
-    companies$: Observable<CompanyCreatedStreamObject>;
-    users$: Observable<UserCreatedStreamObject>;
-  };
+  ): MergeProgress;
 }
 
 export interface ConsoleServiceClient {

@@ -1,6 +1,16 @@
 import passwordGenerator from "generate-password";
-import { concat, EMPTY, from, Observable, ReplaySubject } from "rxjs";
-import { distinct, filter, map, mergeMap } from "rxjs/operators";
+import { concat, EMPTY, forkJoin, from, Observable, ReplaySubject } from "rxjs";
+import {
+  distinct,
+  filter,
+  groupBy,
+  map,
+  mergeMap,
+  min,
+  share,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
 import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
@@ -10,6 +20,9 @@ import {
   CompanyCreatedStreamObject,
   CreatedConsoleCompany,
   CreatedConsoleUser,
+  MergeProgress,
+  ProcessReport,
+  UpdateConsoleUserRole,
   UserCreatedStreamObject,
 } from "../types";
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
@@ -37,19 +50,103 @@ export class MergeProcess {
     this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
   }
 
-  getStreams(
+  merge(concurrent: number = 1): MergeProgress {
+    const progress$ = new ReplaySubject<ProcessReport>();
+    const { users$, companies$ } = this.getStreams(concurrent);
+
+    const owners$ = users$.pipe(
+      // group by company id
+      groupBy(userInCompany => userInCompany.source.company.id),
+      mergeMap(group =>
+        group.pipe(
+          // get the user with the smaller creation date, let's say that this is the first one in the company so it is the owner
+          min((a, b) => {
+            return (a.source?.user?.dateAdded || 0) <= (b.source?.user?.dateAdded || 0) ? -1 : 1;
+          }),
+        ),
+      ),
+    );
+
+    const companiesSubscription = companies$.subscribe({
+      next(company) {
+        progress$.next({
+          type: "company:created",
+          company: {
+            sourceId: company.source.id,
+            destinationCode: company.destination.code,
+            status: company.error ? "failure" : "success",
+            company,
+          },
+        });
+      },
+    });
+
+    const usersSubscription = users$.subscribe({
+      next(user) {
+        progress$.next({
+          type: "user:created",
+          user: {
+            sourceId: user.source.user.id,
+            destinationId: user.destination.id,
+            destinationCompanyCode: user.destination.companyCode,
+            status: user.error ? "failure" : "success",
+            user,
+          },
+        });
+      },
+      error(err: Error) {
+        console.error(err);
+      },
+    });
+
+    const updateOwners$ = owners$.pipe(
+      mergeMap(owner => this.updateUserRole(owner, "owner"), concurrent),
+    );
+
+    const process$ = forkJoin([users$, companies$]).pipe(
+      switchMap(() => from(updateOwners$)),
+      tap(user =>
+        progress$.next({
+          type: "user:updated",
+          user: {
+            sourceId: user.source.source.user.id,
+            destinationId: user.source.destination.id,
+            destinationCompanyCode: user.source.destination.companyCode,
+            // TODO
+            status: "success",
+            user: user.source,
+          },
+        }),
+      ),
+    );
+
+    const process = process$.subscribe({
+      complete() {
+        usersSubscription.unsubscribe();
+        companiesSubscription.unsubscribe();
+        process.unsubscribe();
+        progress$.complete();
+      },
+    });
+
+    return progress$;
+  }
+
+  private getStreams(
     concurrent: number = 1,
   ): {
+    // hot companies observable
     companies$: Observable<CompanyCreatedStreamObject>;
+    // hot users observable
     users$: Observable<UserCreatedStreamObject>;
   } {
-    const companies$ = new ReplaySubject<CompanyCreatedStreamObject>();
-    const users$ = this.getCompanies().pipe(
+    const companies$ = this.getCompanies().pipe(
       mergeMap(company => this.createCompany(company), concurrent),
-      map(company => {
-        companies$.next(company);
-        return company;
-      }),
+      // make it hot
+      share(),
+    );
+
+    const users$ = companies$.pipe(
       filter(company => !company.error),
       mergeMap(company =>
         this.getUserIds(company.source).pipe(
@@ -63,6 +160,8 @@ export class MergeProcess {
         userInCompany => this.createUser(userInCompany.company.source, userInCompany.user),
         concurrent,
       ),
+      // make it hot
+      share(),
     );
 
     return {
@@ -211,5 +310,30 @@ export class MergeProcess {
         external_id: remoteCompany.code,
       }),
     );
+  }
+
+  private updateUserRole(
+    user: UserCreatedStreamObject,
+    role: string,
+  ): Promise<{
+    source: UserCreatedStreamObject;
+    result: UpdateConsoleUserRole & { error?: Error };
+  }> {
+    logger.debug(
+      `Updating user role for user ${user.source.user.id} in company ${user.source.company.id}`,
+    );
+    return this.client
+      .updateUserRole({ code: user.destination.companyCode }, { id: user.destination.id, role })
+      .then(result => ({ source: user, result }))
+      .catch((err: Error) => {
+        return {
+          source: user,
+          result: {
+            id: user.destination.id,
+            role,
+            error: err,
+          },
+        };
+      });
   }
 }
