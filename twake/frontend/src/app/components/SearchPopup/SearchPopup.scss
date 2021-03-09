@@ -25,7 +25,7 @@
         .filters {
           max-width: 400px;
           width: 40%;
-          border-left: 1px solid var(--primary-background);
+          border-left: 1px solid var(--grey-background);
           padding: 16px;
           box-sizing: border-box;
         }
@@ -70,7 +70,7 @@
         }
 
         .search_input.input {
-          border-bottom: 1px solid var(--primary-background);
+          border-bottom: 1px solid var(--grey-background);
           border-radius: 0;
           padding-top: 4px;
           padding-bottom: 4px;
@@ -88,7 +88,7 @@
 
   .search_tabs {
     display: flex;
-    border-bottom: 1px solid var(--primary-background);
+    border-bottom: 1px solid var(--grey-background);
     min-height: 48px;
 
     .component_tabs {
@@ -119,7 +119,7 @@
 }
 
 .searchQuickResult {
-  border-bottom: 1px solid var(--primary-background);
+  border-bottom: 1px solid var(--grey-background);
   padding: 8px;
   cursor: pointer;
   position: relative;
@@ -230,9 +230,9 @@
     }
 
     & > .selectable > .icon .user_list .user_head {
-      border-color: var(--primary-background);
+      border-color: var(--grey-background);
       .status {
-        border-color: var(--primary-background);
+        border-color: var(--grey-background);
       }
     }
 

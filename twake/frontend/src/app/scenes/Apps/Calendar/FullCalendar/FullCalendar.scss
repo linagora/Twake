@@ -131,7 +131,7 @@
   }
 
   .fc-scroller {
-    border-top: 1px solid var(--primary-background);
+    border-top: 1px solid var(--grey-background);
   }
 
   .fc-head .fc-head-container {
@@ -205,7 +205,7 @@
     }
     .fc-day,
     .fc-unthemed td.fc-today {
-      border-top: 1px solid var(--primary-background) !important;
+      border-top: 1px solid var(--grey-background) !important;
     }
     .fc-day-top {
       background: transparent !important;
@@ -232,7 +232,7 @@
   }
 
   .fc td {
-    border-left: 1px solid var(--primary-background);
+    border-left: 1px solid var(--grey-background);
   }
 
   .fc td:first-child {
@@ -251,13 +251,13 @@
   .fc-unthemed .fc-popover,
   .fc-unthemed .fc-list-view,
   .fc-unthemed .fc-list-heading td {
-    border-color: var(--primary-background);
+    border-color: var(--grey-background);
     color: var(--grey-dark);
   }
 
   tr:nth-child(even) {
     .fc-widget-content {
-      border-bottom: 1px solid var(--primary-background);
+      border-bottom: 1px solid var(--grey-background);
     }
     .fc-time {
       border-bottom: 0;
