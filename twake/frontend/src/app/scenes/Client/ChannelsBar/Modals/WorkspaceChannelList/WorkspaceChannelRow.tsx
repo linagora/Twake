@@ -19,11 +19,8 @@ type PropsType = {
 };
 
 export default ({ channel, joined, active }: PropsType) => {
-  const { companyId, workspaceId }: ClientStateType = RouterServices.useRouteState(
-    ({ companyId, workspaceId }) => {
-      return { companyId, workspaceId };
-    },
-  );
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+
   const userId: string = UsersService.getCurrentUserId();
 
   const ref = createRef<HTMLDivElement>();

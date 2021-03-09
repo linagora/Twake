@@ -16,9 +16,7 @@ import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/Hid
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
-    return { companyId, workspaceId };
-  });
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const ready = ChannelsBarService.useWatcher(() => {
     return (

@@ -17,6 +17,11 @@ class Task extends BaseController
         $res = $this->get("app.tasks.task")->remove($object, $options, $this->getUser());
         if (!$res) {
             return new Response(Array("status" => "error"));
+        }else{
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "tasks:task:remove",
+                "userId" => $this->getUser()->getId()
+            ]);
         }
         return new Response(Array("data" => Array("object" => $res)));
     }
@@ -29,6 +34,10 @@ class Task extends BaseController
 
         if (!$object["id"]) {
             $this->get("administration.counter")->incrementCounter("total_tasks", 1);
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "tasks:task:create",
+                "userId" => $this->getUser()->getId()
+            ]);
         }
 
         if (!$res) {
@@ -43,6 +52,11 @@ class Task extends BaseController
         $objects = $this->get("app.tasks.task")->get($options, $this->getUser());
         if ($objects === false) {
             return new Response(Array("status" => "error"));
+        }else{
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "tasks:task:get",
+                "userId" => $this->getUser()->getId()
+            ]);
         }
         return new Response(Array("data" => $objects));
     }

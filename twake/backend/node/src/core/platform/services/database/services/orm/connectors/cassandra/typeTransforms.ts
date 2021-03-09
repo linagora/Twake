@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { isBoolean, isNull } from "lodash";
+import { isBoolean, isInteger, isNull, isString, isUndefined } from "lodash";
 import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import { logger } from "../../../../../../../../core/platform/framework";
@@ -41,7 +41,8 @@ export const transformValueToDbString = (
     return `${v}`;
   }
   if (type === "boolean") {
-    if (!isBoolean(v)) {
+    //Security to avoid string with "false" in it
+    if (!isInteger(v) && !isBoolean(v) && !isNull(v) && !isUndefined(v)) {
       throw new Error(`'${v}' is not a ${type}`);
     }
     return `${!!v}`;

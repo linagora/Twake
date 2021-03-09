@@ -6,9 +6,7 @@ import ApplicationBar from './ApplicationHeader/ApplicationHeader';
 import RouterServices from 'app/services/RouterService';
 
 const MainHeader: FC<{}> = () => {
-  const { channelId } = RouterServices.useRouteState(({ channelId }) => {
-    return { channelId };
-  });
+  const { channelId } = RouterServices.getStateFromRoute();
   const channelType = MainViewService.useWatcher(() => MainViewService.getViewType());
   const channelCollection = MainViewService.getViewCollection();
   if (!channelCollection) {

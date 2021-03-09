@@ -469,37 +469,6 @@ class Drive extends Observable {
     );
   }
 
-  sendAsMessage(channel_id, parent_message_id, file) {
-    var data = {
-      file_id: file.id,
-      message: {
-        channel_id: channel_id,
-        parent_message_id: parent_message_id,
-        content: [
-          {
-            type: 'system',
-            content: Languages.t(
-              file.name
-                ? 'scenes.apps.drive.message_added_file'
-                : 'scenes.apps.drive.message_added_file_no_name',
-              [UserService.getFullName(CurrentUser.get()), file.name],
-            ),
-          },
-          { type: 'br' },
-          {
-            type: 'file',
-            content: file.id,
-          },
-        ],
-      },
-    };
-
-    var channel = Collections.get('channels').find(channel_id);
-    Api.post('drive/send_message', data, res => {
-      ChannelsService.incrementChannel(channel);
-    });
-  }
-
   getFileType(file) {
     var extension = file.extension;
 

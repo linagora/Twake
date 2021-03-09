@@ -15,11 +15,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import './Tabs.scss';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId, channelId, tabId } = RouterServices.useRouteState(
-    ({ companyId, workspaceId, channelId, tabId }) => {
-      return { companyId, workspaceId, channelId, tabId };
-    },
-  );
+  const { companyId, workspaceId, channelId, tabId } = RouterServices.getStateFromRoute();
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
   const TabsCollection = Collections.get(collectionPath, TabResource);
   const tabsList: TabResource[] = TabsCollection.useWatcher(

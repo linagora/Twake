@@ -31,6 +31,10 @@ class Event extends BaseController
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_events", 1);
+                if($GLOBALS["segment_enabled"]) \Segment::track([
+                    "event" => "calendar:event:create",
+                    "userId" => $this->getUser()->getId()
+                ]);
             }
         }
         return new Response(Array("data" => Array("object" => $res)));

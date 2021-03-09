@@ -18,11 +18,7 @@ import { ChannelMemberResource } from 'app/models/Channel';
 import Languages from 'services/languages/languages.js';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
-    ({ companyId, workspaceId, channelId }) => {
-      return { companyId, workspaceId, channelId };
-    },
-  );
+  const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const redirectToWorkspace = () => {
     const url = RouterServices.generateRouteFromState({

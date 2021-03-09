@@ -45,7 +45,9 @@ export default class ChannelsApps extends Component {
   }
   render() {
     if (
-      Collections.get('channels').did_load_first_time ||
+      Collections.get('channels').did_load_first_time[
+        'channels_' + Workspaces.currentWorkspaceId
+      ] ||
       !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member')
     ) {
       ChannelsBarService.collectionIsReady(

@@ -471,6 +471,9 @@ class DriveFileSystem
         $did_create = false;
         $fileordirectory = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
+
+            
+
             $fileordirectory = $this->em->getRepository("Twake\Drive:DriveFile")
                 ->findOneBy(Array("id" => $object["id"] . ""));
             if (!$fileordirectory) {
@@ -480,6 +483,7 @@ class DriveFileSystem
             $fileordirectory->setLastModified();
 
         } else { // pas d'identifiant on veut donc créer un fichier
+
             if (!isset($object["workspace_id"])) {
                 return false;
             }

@@ -12,9 +12,7 @@ const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { companyId } = RouterServices.useRouteState(({ companyId }) => {
-    return { companyId };
-  });
+  const { companyId } = RouterServices.getStateFromRoute();
 
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);

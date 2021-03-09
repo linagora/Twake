@@ -46,7 +46,7 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId) {
-    if (this.currentWorkspaceId != workspaceId && workspaceId) {
+    if (this.currentWorkspaceId != workspaceId && workspaceId && loginService.state === 'app') {
       this.currentWorkspaceId = workspaceId;
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
