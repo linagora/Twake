@@ -43,6 +43,12 @@ class DriveFile extends BaseController
             //If object[_once_new_version] is set a new version is added
             $res = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $current_user_id);
         } else {
+
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "drive:".($object["is_directory"] ? "directory" : "file") . ":" . ($object["id"] ? "edit" : "create"),
+                "userId" => $this->getUser()->getId()
+            ]);
+            
             $res = $this->get("app.drive")->save($object, $options, $current_user_id, Array());
         }
 
@@ -131,63 +137,6 @@ class DriveFile extends BaseController
 
         if ($can || true) {
             $data["data"] = $this->get('app.drive')->emptyTrash($groupId, $this->getUser());
-        }
-
-        return new Response($data);
-    }
-
-    public function sendAsMessage(Request $request)
-    {
-
-        $data = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $application = $this->get("app.applications")->findBySimpleName("twake_drive", true);
-
-        $object = $request->request->get("message", null);
-        $chan_id = $object["channel_id"];
-        $file_id = $request->request->get("file_id", null);
-
-        $object = $this->get("app.messages")->save($object, Array(), $this->getUser(), $application);
-
-        $event = Array(
-            "client_id" => "bot",
-            "action" => "save",
-            "object_type" => "",
-            "object" => $object
-        );
-        $this->get("app.websockets")->push("messages/" . $chan_id, $event);
-
-        $data["data"] = $object;
-
-        if ($file_id) {
-
-            $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
-                "type" => "DriveFile",
-                "object_id" => $file_id
-            ), Array());
-            if ($acces) {
-
-
-                $object = $this->get("app.drive")->find(Array("element_id" => $file_id), $this->getUser());
-
-                if ($object) {
-
-                    $access = $object["acces_info"];
-
-                    $is_editable = $access["is_editable"];
-                    $publicaccess = $access["token"];
-                    $authorized_members = $access["authorized_members"];
-                    $authorized_channels = $access["authorized_channels"];
-                    $authorized_channels[] = $chan_id;
-
-                    $publicaccess = $this->get('app.drive')->set_file_access($file_id, $publicaccess, $is_editable, $authorized_members, $authorized_channels, $this->getUser());
-
-                }
-
-            }
         }
 
         return new Response($data);

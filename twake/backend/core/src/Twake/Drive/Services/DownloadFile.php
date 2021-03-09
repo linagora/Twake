@@ -31,10 +31,6 @@ class DownloadFile
 
     public function download($workspace_id, $files_ids, $download, $versionId)
     {
-        if($GLOBALS["segment_enabled"]) \Segment::track([
-            "event" => "drive:download",
-            "userId" => $this->getUser()->getId()
-        ]);
 
         //TODO verify access to this file
 

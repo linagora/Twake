@@ -25,7 +25,6 @@ class Routing extends BaseRouting
         "drive/access/set" => ["handler" => "DriveFile:set_file_access", "methods" => ["POST"]],
         "drive/access/reset" => ["handler" => "DriveFile:reset_file_access", "methods" => ["POST"]],
         "drive/trash/empty" => ["handler" => "DriveFile:emptyTrash", "methods" => ["POST"]],
-        "drive/send_message" => ["handler" => "DriveFile:sendAsMessage", "methods" => ["POST"]],
         "drive/open" => ["handler" => "DriveFile:open", "methods" => ["POST"]],
         "driveupload/upload" => ["handler" => "Upload:uploadFile", "methods" => ["POST"]],
         "drive/download" => ["handler" => "Download:downloadfile", "methods" => ["POST", "GET"]],
