@@ -75,13 +75,13 @@
   .multiline-code {
     color: var(--white);
     padding: 5px;
-    border-radius: var(--border-radius-large);
+    border-radius: var(--border-radius-base);
     .hljs {
       border-radius: 6px;
     }
   }
   .inline-code {
-    border-radius: var(--border-radius-base);
+    border-radius: 3px;
     background: #232323;
     padding-bottom: 1px;
   }
