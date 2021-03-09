@@ -147,8 +147,8 @@ class Notifications
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "message_id" => $message->getId(),
-            "thread_id" => $message->getParentMessageId(),
-            "click_action" => "FLUTTER_NOTIFICATION_CLICK"
+            "thread_id" => $message ? $message->getParentMessageId() : "",
+            "click_action" => "FLUTTER_NOTIFICATION_CLICK",
         );
 
         $toPush = true;
