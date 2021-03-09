@@ -9,6 +9,7 @@ import './MainView.scss';
 import NoApp from './NoApp';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { useWatcher } from 'app/services/Observable/Observable';
+import AccountStatusComponent from 'app/components/OnBoarding/AccountStatusComponent';
 
 const MainView: FC = () => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
@@ -34,6 +35,7 @@ const MainView: FC = () => {
     <Layout className="global-view-layout">
       {!!channelId && ready && (
         <>
+          <AccountStatusComponent />
           <MainHeader />
           <MainContent />
         </>

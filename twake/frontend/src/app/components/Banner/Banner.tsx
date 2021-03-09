@@ -13,13 +13,13 @@ type PropsType = {
 
 const Banner = ({ closable, content, onClose, height, type }: PropsType) => {
   const headerStyle = {
-    height: height ? height : 60,
-    lineHeight: height ? `${height}px` : '60px',
+    height: height ? height : 68,
+    lineHeight: height ? `${height}px` : '68px',
   };
 
   return (
     <Layout.Header className={`banner-container ${type}`} style={headerStyle}>
-      <Row align="middle" justify="space-between" gutter={[0, 0]}>
+      <Row align="middle" justify="space-between" gutter={[0, 0]} style={headerStyle}>
         <Col /* ghost column */></Col>
         <Col>{content}</Col>
         <Col className="banner-col-icon">

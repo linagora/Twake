@@ -1908,4 +1908,29 @@ export default {
     'You are not a member',
   'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader':
     'Load more',
+  'general.re_send': 'Re-send',
+  'general.verify': 'Verify',
+  'components.unverified_account.typography_text_danger':
+    'You are left 6 six days of trial period. After 6 days access to trial account will be blocked and after 1 month will be permanently deleted',
+  'components.unverified_account.verification_details': 'We’ve sent verification details to',
+  'components.account_verification_status_sentence': 'Your account status is: $1',
+  'components.account_verication_status_unverified': 'Unverified',
+  'components.account_verication_status_blocked': 'Blocked',
+  'components.unverified_account.re_send_email': 'Didn’t receive the email?',
+  'components.blocked_account.trial_period_over':
+    'Your trial period is over. To unblock your account and get access to all functionality, please, verify your account via email confirmation',
+  'components.add_mails_workspace.button': 'Start using Twake',
+  'components.add_mails_workspace.title_1': 'Add some colleagues',
+  'components.add_mails_workspace.title_2':
+    'Twake is a team collaboration tool, so invite some colleagues of yours to test a workspace we created for you.',
+  'components.add_mails_workspace.text_area_placeholder': 'Enter emails of your collaborators*',
+  'components.add_mails_workspace.text_secondary':
+    'Please, enter emails separated by comma. You can invite up to 5 members for now and add more after email verification.',
+  'components.verify_mail.title_1': 'Congratulations',
+  'components.verify_mail.title_2': 'You are an official Twake user now!',
+  'components.verify_mail.button': 'Add team members',
+  'components.verify_mail.text':
+    'First of all, you have to verify your mail address. We’ve sent a verification link to',
+  'components.verify_mail.paragraph':
+    'You can do it later if you want but unverified accounts have access to only a limited version of Twake',
 };
