@@ -53,8 +53,12 @@ class Channels extends Observable {
     companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
     const channelsCollections = Collections.get(collectionPath, ChannelResource);
+    const currentUserId = UsersService.getCurrentUserId();
+    const currentUserAlreadyInMembersIds = membersIds.includes(currentUserId);
 
-    membersIds.push(UsersService.getCurrentUserId());
+    if (!currentUserAlreadyInMembersIds) {
+      membersIds.push(currentUserId);
+    }
     membersIds = membersIds.filter((e, index) => membersIds.indexOf(e) === index);
 
     const newDirectMessage = {
@@ -64,9 +68,14 @@ class Channels extends Observable {
       members: membersIds,
     };
 
-    let res = channelsCollections
-      .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
-      .filter(channel => _.isEqual(channel.data.members.sort(), membersIds.sort()))[0];
+    const directChannels = channelsCollections.find(
+      { company_id: companyId, workspace_id: 'direct' },
+      { withoutBackend: true },
+    );
+
+    let res = directChannels.filter(channel =>
+      _.isEqual(channel.data.members.sort(), membersIds.sort()),
+    )[0];
 
     if (!res) {
       res = await channelsCollections.upsert(new ChannelResource(newDirectMessage), {
