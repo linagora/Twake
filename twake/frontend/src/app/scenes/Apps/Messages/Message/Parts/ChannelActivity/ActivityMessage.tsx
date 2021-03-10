@@ -134,7 +134,10 @@ export default (props: PropsType): JSX.Element => {
     const previous = activity.context.previous;
     const next = activity.context.next;
 
-    if (previous?.resource?.name !== next?.resource?.name) {
+    if (
+      previous?.resource?.name !== next?.resource?.name ||
+      previous?.resource?.icon !== next?.resource?.icon
+    ) {
       const icon = <Emojione type={next?.resource.icon || ''} />;
 
       return translateUsingReactNode(
