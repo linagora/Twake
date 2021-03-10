@@ -11603,9 +11603,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rrule@=2.6.4:
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.4.tgz#7f4f31fda12bc7249bb176c891109a9bc448e035"
+rrule@2.6.8:
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.8.tgz#c61714f246e7676e8efa16c2baabac199f20f6db"
+  integrity sha512-cUaXuUPrz9d1wdyzHsBfT1hptKlGgABeCINFXFvulEPqh9Np9BnF3C3lrv9uO54IIr8VDb58tsSF3LhsW+4VRw==
   dependencies:
     tslib "^1.10.0"
   optionalDependencies:

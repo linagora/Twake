@@ -194,7 +194,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "resolve": "1.19.0",
     "resolve-url-loader": "3.1.2",
-    "rrule": "=2.6.4",
+    "rrule": "2.6.8",
     "sass-loader": "8.0.2",
     "semaphore": "^1.1.0",
     "semver": "6.3.0",
