@@ -141,7 +141,7 @@
     "fs-extra": "^8.1.0",
     "fullcalendar": "^5.1.0",
     "highlight.js": "^10.4.1",
-    "html-webpack-plugin": "4.4.1",
+    "html-webpack-plugin": "4.5.1",
     "http-proxy-middleware": "^1.0.1",
     "identity-obj-proxy": "3.0.0",
     "jest-environment-jsdom-fourteen": "1.0.1",
