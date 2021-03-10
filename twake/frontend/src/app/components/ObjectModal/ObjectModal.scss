@@ -1,16 +1,21 @@
 .modal-layout {
   padding: 0px;
 
+  h2.ant-typography img.emojione {
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 8px;
+  }
+
   &,
   .modal-layout-footer {
     background: transparent !important;
   }
 
   .modal-layout-header {
-    height: 24px;
-    line-height: 24px;
+    border-top-left-radius: var(--border-radius-large);
+    border-top-right-radius: var(--border-radius-large);
     padding: 0;
-    margin: 16px 16px 20px 16px;
     background: var(--white);
 
     .square-button {
@@ -22,14 +27,22 @@
       height: 24px;
       line-height: 24px;
       border-radius: var(--border-radius-large);
-      margin-left: 8px;
-      background: var(--grey-background);
       cursor: pointer;
+      background: var(--grey-background);
 
+      &.red {
+        color: var(--red);
+        background: var(--white);
+      }
       &:hover {
         opacity: 0.9;
       }
     }
+  }
+
+  .modal-layout-row {
+    height: 100%;
+    padding: 0 22px;
   }
 
   .modal-layout-footer {

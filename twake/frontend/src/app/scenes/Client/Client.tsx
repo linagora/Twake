@@ -50,7 +50,8 @@ export default (): JSX.Element => {
   } else {
     if (LoginService.currentUserId) {
       page = (
-        <>
+        <Layout className="appPage">
+          <NewVersionComponent />
           <Layout hasSider>
             <Layout.Sider
               trigger={<Menu size={16} />}
@@ -63,14 +64,14 @@ export default (): JSX.Element => {
             </Layout.Sider>
             <MainView key={'mainview-' + companyId + '-' + workspaceId} />
           </Layout>
-        </>
+        </Layout>
       );
     }
   }
 
   return (
     <>
-      <NewVersionComponent>{page}</NewVersionComponent>
+      {page}
       <MenusBodyLayer />
       <DraggableBodyLayer />
       <UploadViewer />

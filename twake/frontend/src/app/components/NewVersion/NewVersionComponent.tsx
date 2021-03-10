@@ -1,18 +1,17 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Api from 'services/Api';
 import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
 import { ConfigurationResource } from 'app/models/Configuration';
-import Environment from 'environment/environment';
-import { Col, Layout, Row, Typography } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import NewVersionModal from './NewVersionModal';
 
 let lastScrape: number = 0;
 
-const NewVersionComponent: FC = ({ children }) => {
+const NewVersionComponent = (): JSX.Element => {
   const [displayBanner, setDisplayBanner] = useState<boolean>(false);
 
   const compareVersion: (v1: string, v2: string) => number = (v1: string, v2: string) => {
@@ -68,7 +67,7 @@ const NewVersionComponent: FC = ({ children }) => {
   }, []);
 
   return (
-    <Layout key="appPage" className="appPage">
+    <>
       {displayBanner && (
         <Banner
           height={32}
@@ -95,8 +94,7 @@ const NewVersionComponent: FC = ({ children }) => {
           onClose={() => setDisplayBanner(false)}
         />
       )}
-      {children}
-    </Layout>
+    </>
   );
 };
 export default NewVersionComponent;
