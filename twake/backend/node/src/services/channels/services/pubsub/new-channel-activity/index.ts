@@ -28,15 +28,26 @@ export class NewChannelActivityProcessor
     try {
       this.service.updateLastActivity(
         {
-          id: message.channel_id,
-          workspace_id: message.workspace_id,
-          company_id: message.company_id,
+          channel: {
+            id: message.channel_id,
+            workspace_id: message.workspace_id,
+            company_id: message.company_id,
+          },
+          message: {
+            date: message.date,
+            sender: message.sender,
+            title: message.title,
+            text: message.text,
+          },
         },
         {
-          date: message.date,
-          sender: message.sender,
-          title: message.title,
-          text: message.text,
+          workspace: {
+            workspace_id: message.workspace_id,
+            company_id: message.company_id,
+          },
+          user: {
+            id: message.sender,
+          },
         },
       );
     } catch (err) {

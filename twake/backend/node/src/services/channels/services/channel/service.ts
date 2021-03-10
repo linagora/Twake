@@ -280,14 +280,19 @@ export class Service implements ChannelService {
     ];
   })
   async updateLastActivity(
-    options: ChannelPrimaryKey,
-    channelActivityMessage: ChannelActivityMessage,
+    payload: {
+      channel: ChannelPrimaryKey;
+      message: ChannelActivityMessage;
+    },
+    context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>> {
-    const channel = await this.channelRepository.findOne(options);
+    const channelPK = payload.channel;
+    const channelActivityMessage = payload.message;
+    const channel = await this.channelRepository.findOne(channelPK);
     const entity = new ChannelActivity();
-    entity.channel_id = options.id;
-    entity.company_id = options.company_id;
-    entity.workspace_id = options.workspace_id;
+    entity.channel_id = channelPK.id;
+    entity.company_id = channelPK.company_id;
+    entity.workspace_id = channelPK.workspace_id;
     entity.last_activity = channelActivityMessage.date;
     entity.last_message = {
       date: channelActivityMessage.date,
@@ -318,7 +323,7 @@ export class Service implements ChannelService {
         channel_id: channel.id,
       } as ChannelActivity);
 
-      result = activity?.last_activity || 0 || 0;
+      result = activity?.last_activity || 0;
     } catch (error) {
       logger.debug(`Can not get channel last activity for channel ${channel.id}`);
     }
