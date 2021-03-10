@@ -92,8 +92,11 @@ export interface ChannelService
    * @param channel The channel to update the last_activity
    */
   updateLastActivity(
-    channel: ChannelPrimaryKey,
-    message: ChannelActivityMessage,
+    payload: {
+      channel: ChannelPrimaryKey;
+      message: ChannelActivityMessage;
+    },
+    context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>>;
 }
 export interface MemberService

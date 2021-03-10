@@ -114,6 +114,9 @@ class UsersConnections extends BaseController
 
     public function logout(Request $request)
     {
+        if(!$this->getUser() || \is_string($this->getUser())){
+            return new Response(Array("error" => "user disconnected"));
+        }
 
         $device = $request->request->get("device", false);
         if ($device && isset($device["type"])) {
