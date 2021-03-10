@@ -26,6 +26,7 @@ const MainView: FC = () => {
   });
   const ready = loaded && !!companyId && !!workspaceId;
 
+
   if (ready && !channelId) {
     ChannelsBarService.autoSelectChannel(companyId || '', workspaceId || '');
   }

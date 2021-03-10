@@ -2,10 +2,10 @@
 
 # Twake - The Open Digital Workplace
 
-![saas-update-backend](https://github.com/TwakeApp/Twake/workflows/saas-update-backend/badge.svg?branch=main&style=flat)
-![saas-update-frontend](https://github.com/TwakeApp/Twake/workflows/saas-update-frontend/badge.svg?branch=main&style=flat)
-![backend](https://github.com/TwakeApp/Twake/workflows/backend/badge.svg?branch=main&style=flat)
-![docker](https://github.com/TwakeApp/Twake/workflows/docker/badge.svg?branch=main&style=flat)
+![update-saas-backend](https://github.com/TwakeApp/Twake/workflows/update-saas-backend/badge.svg?branch=main&style=flat)
+![update-saas-frontend](https://github.com/TwakeApp/Twake/workflows/update-saas-frontend/badge.svg?branch=main&style=flat)
+![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
+[![docker-build](https://github.com/Twake/Twake/actions/workflows/docker.yml/badge.svg)](https://github.com/Twake/Twake/actions/workflows/docker.yml)
 
 ![Docker](https://img.shields.io/docker/pulls/twaketech/twake-php?style=flat)
 [![Docs](https://img.shields.io/badge/docs-up--to--date-blueviolet?style=flat)](https://doc.twake.app)
@@ -56,6 +56,10 @@ Everyone can contribute at their own level, even if they only give a few minutes
 
 Install Twake on your machine with docker-compose using the install documentation here :
 [doc.twake.app/installation](https://doc.twake.app/installation)
+
+### Migration to 2021.Q1.385
+
+If you migrate to the 2021.Q1 version for a 2020.Q4 version or earlier, please follow the documentation at https://github.com/Twake/Twake/tree/main/migration/2020Q3_to_2020Q4
 
 ## License
 
