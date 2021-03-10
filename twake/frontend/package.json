@@ -146,7 +146,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest-environment-jsdom-fourteen": "1.0.1",
     "jest-resolve": "24.9.0",
-    "jest-watch-typeahead": "0.4.2",
+    "jest-watch-typeahead": "0.6.1",
     "jquery": "^3.5.1",
     "loglevel": "^1.7.1",
     "loglevel-plugin-prefix": "^0.8.4",
