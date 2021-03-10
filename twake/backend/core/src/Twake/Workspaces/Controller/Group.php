@@ -53,7 +53,7 @@ class Group extends BaseController
                 $data["errors"][] = "badimage";
             } else {
 
-                $group = $this->get("app.groups")->changeLogo($groupId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+                $group = $this->get("app.groups")->changeLogo($groupId, $thumbnail["file"]->getPublicURL(2), $this->getUser()->getId(), $this->getUploader());
             }
         } else {
             $group = $this->get("app.groups")->changeLogo($groupId, null, $this->getUser()->getId(), $this->getUploader());
@@ -166,7 +166,7 @@ class Group extends BaseController
         $workspaces = $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
         foreach ($workspaces as $workspace) {
-            $is_deleted = $workspace->getis_deleted();
+            $is_deleted = $workspace->getIsDeleted();
 
             if (!$is_deleted) {
                 $response["data"][] = Array(

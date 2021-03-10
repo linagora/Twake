@@ -57,7 +57,7 @@
     }
   },
   "database": {
-    "secret": "01234567890123456789012345678901",
+    "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
     "type": "mongodb",
     "mongodb": {
       "uri": "mongodb://localhost:27017",

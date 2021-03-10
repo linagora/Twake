@@ -40,7 +40,7 @@ class ApplyUpdates
         }
         if(!$company) {
             //Create company
-            $company = new Group($companyDTO["company"]["details"]["code"]);
+            $company = new Group($companyDTO["company"]["details"]["name"]);
 
             $this->em->persist($company);
             $this->em->flush();
@@ -49,22 +49,18 @@ class ApplyUpdates
             $this->em->persist($company_link);
         }
 
-        $company->setName($companyDTO["company"]["details"]["code"]);
+        $company->setName($companyDTO["company"]["details"]["name"]);
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
 
         // Format is {name: "string", limits: {}}
         $company->setPlan($companyDTO["company"]["plan"]);
 
+        // Format is {}
+        $company->setStats($companyDTO["company"]["stats"]);
+
         $logo = $companyDTO["company"]["details"]["logo"];
         if ($logo) {
-            $logoEntity = $company->getLogo();
-            if(!$logoEntity){
-                $logoEntity = new File();
-            }
-            $logoEntity->setPublicLink($logo);
-            $this->em->persist($logoEntity);
-            $this->em->flush();
-            $company->setLogo($logoEntity);
+            $company->setLogo($logo);
         }
 
         $this->em->persist($company);
@@ -153,11 +149,14 @@ class ApplyUpdates
         }
 
         // Update user names
-        $user->setEmail($email); //TODO
-        $user->setLanguage("en"); //TODO
-        $user->setPhone(""); //TODO
+        $user->setEmail($email);
+        $user->setPhone("");
         $user->setFirstName($userDTO["firstName"] ?: "");
         $user->setLastName($userDTO["lastName"] ?: "");
+        $user->setMailVerified($userDTO["isVerified"] ?: "");
+
+        $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
+        $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
 
         // Update user picture
         $picture = $userDTO["picture"];

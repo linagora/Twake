@@ -70,7 +70,7 @@ class ExportCommand extends ContainerAwareCommand
         }
         fwrite($handle_group_members, json_encode($group_members, JSON_PRETTY_PRINT));
         fclose($handle_group_members);
-        $url = $group->getLogo()->getName();
+        $url = $group->getLogo();
         $group = $group->getAsArray();
         if ($group["logo"] != "") {
             if (strpos($group["logo"], "://")) {

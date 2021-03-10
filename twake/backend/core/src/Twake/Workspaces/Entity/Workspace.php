@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}  , {"group_id":"ASC", "id":"ASC"}}})
+ * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}, {"group_id":"ASC", "id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
@@ -32,39 +32,48 @@ class Workspace extends SearchableObject
     private $name;
 
     /**
+     * @ORM\Column(name="logo", type="twake_text")
+     */
+    private $logo;
+
+    /**
+     * @ORM\Column(name="stats", type="twake_text")
+     */
+    protected $stats;
+
+
+    // Twake without console fields below
+
+
+    /**
+     * @ORM\Column(name="isdeleted", type="twake_boolean")
+     */
+    private $isdeleted = false;
+
+    /**
+     * @ORM\Column(name="isarchived", type="twake_boolean")
+     */
+    private $isarchived = false;
+
+    /**
+     * @ORM\Column(name="isdefault", type="twake_boolean")
+     */
+    private $isdefault = false;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
+     */
+    private $logoFile;
+
+    /**
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
      */
     private $uniquename;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
-     */
-    private $logo;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
-     */
-    private $wallpaper;
-
-    /**
-     * @ORM\Column(name="wallpaper_color", type="string", length=50)
-     */
-    private $color = "#7E7A6D";
-
-    /**
      * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Group")
      */
     private $group;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Twake\Users\Entity\User")
-     */
-    private $user;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\WorkspaceUser", mappedBy="workspace")
-     */
-    private $members;
 
     /**
      * @ORM\Column(name="member_count", type="integer")
@@ -87,29 +96,9 @@ class Workspace extends SearchableObject
     private $date_added;
 
     /**
-     * @ORM\Column(name="isdeleted", type="twake_boolean")
+     * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\WorkspaceUser", mappedBy="workspace")
      */
-    private $is_deleted = false;
-
-    /**
-     * @ORM\Column(name="isarchived", type="twake_boolean")
-     */
-    private $isarchived = false;
-
-    /**
-     * @ORM\Column(name="isnew", type="twake_boolean")
-     */
-    private $isnew = true;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $total_activity = 0;
-
-    /**
-     * @ORM\Column(name="isdefault", type="twake_boolean")
-     */
-    private $default = false;
+    private $members;
 
     /**
      * Workspace constructor.
@@ -205,9 +194,20 @@ class Workspace extends SearchableObject
     /**
      * @return mixed
      */
+    public function getLogoFile()
+    {
+        return $this->logoFile;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getLogo()
     {
-        return $this->logo;
+        if(!$this->logo){
+            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+        }
+        return $this->logo ?: "";
     }
 
     /**
@@ -216,22 +216,6 @@ class Workspace extends SearchableObject
     public function setLogo($logo)
     {
         $this->logo = $logo;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getWallpaper()
-    {
-        return $this->wallpaper;
-    }
-
-    /**
-     * @param mixed $logo
-     */
-    public function setWallpaper($w)
-    {
-        $this->wallpaper = $w;
     }
 
     /**
@@ -253,33 +237,17 @@ class Workspace extends SearchableObject
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getIsDeleted()
     {
-        return $this->user;
+        return $this->isdeleted;
     }
 
     /**
-     * @param mixed $user
+     * @param mixed $isdeleted
      */
-    public function setUser($user)
+    public function setIsDeleted($isdeleted)
     {
-        $this->user = $user;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getis_deleted()
-    {
-        return $this->is_deleted;
-    }
-
-    /**
-     * @param mixed $is_deleted
-     */
-    public function setis_deleted($is_deleted)
-    {
-        $this->is_deleted = $is_deleted;
+        $this->isdeleted = $isdeleted;
     }
 
     /**
@@ -338,23 +306,7 @@ class Workspace extends SearchableObject
     /**
      * @return mixed
      */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * @param mixed $color
-     */
-    public function setColor($color)
-    {
-        $this->color = $color;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getisArchived()
+    public function getIsArchived()
     {
         return $this->isarchived;
     }
@@ -370,25 +322,9 @@ class Workspace extends SearchableObject
     /**
      * @return mixed
      */
-    public function getisNew()
-    {
-        return $this->getGroup() != null && $this->isnew;
-    }
-
-    /**
-     * @param mixed $isnew
-     */
-    public function setIsNew($isnew)
-    {
-        $this->isnew = $isnew;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getIsDefault()
     {
-        return $this->default;
+        return $this->isdefault;
     }
 
     /**
@@ -396,29 +332,7 @@ class Workspace extends SearchableObject
      */
     public function setIsDefault($default)
     {
-        $this->default = $default;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTotalActivity()
-    {
-        if ($this->member_count < 1) {
-            $this->member_count = 1;
-        }
-        $date_interval = (date("U") - $this->date_added->getTimestamp()) / (60 * 60 * 24) + 1;
-        $val = intval($this->total_activity) / ($date_interval / 2);
-        $by_user = $val / $this->member_count;
-        return $by_user;
-    }
-
-    /**
-     * @param mixed $total_activity
-     */
-    public function setTotalActivity($total_activity)
-    {
-        $this->total_activity += 1;
+        $this->isdefault = $default;
     }
 
 
@@ -426,18 +340,21 @@ class Workspace extends SearchableObject
     {
         return Array(
             "id" => $this->getId(),
-            "private" => $this->getUser() != null,
-            "logo" => (($this->getLogo()) ? $this->getLogo()->getPublicURL() : ""),
-            "wallpaper" => (($this->getWallpaper()) ? $this->getWallpaper()->getPublicURL() : ""),
-            "color" => $this->getColor(),
-            "group" => (($this->getGroup()) ? $this->getGroup()->getAsArray() : null),
+            "company_id" => (($this->getGroup()) ? $this->getGroup()->getId() : null),
             "name" => $this->getName(),
-            "total_members" => $this->getMemberCount(),
-            "total_guests" => $this->getGuestCount(),
-            "total_pending" => $this->getPendingCount(),
-            "unique_name" => $this->getUniqueName(),
-            "is_archived" => $this->getisArchived(),
-            "is_new" => $this->getisNew()
+            "logo" => $this->getLogo(),
+
+            "default" => $this->getIsDefault(),
+            "archived" => $this->getIsArchived(),
+
+            "stats" => [
+                "created_at" => $this->date_added ? ($this->date_added->getTimestamp() * 1000) : 0,
+                "total_members" => $this->getMemberCount(),
+                "total_guests" => $this->getGuestCount(),
+                "total_pending" => $this->getPendingCount(),
+            ],
+
+            "group" => (($this->getGroup()) ? $this->getGroup()->getAsArray() : null),
         );
     }
 

@@ -722,7 +722,7 @@ class WorkspaceMembers
         $workspaces = Array();
         foreach ($link as $workspaceMember) {
             $workspace = $workspaceMember->getWorkspace($this->doctrine);
-            if ($workspace && $workspace->getUser() == null && $workspace->getGroup() != null && !$workspace->getis_deleted()) {
+            if ($workspace && $workspace->getUser() == null && $workspace->getGroup() != null && !$workspace->getIsDeleted()) {
 
                 $levels = $this->wls->getLevels($workspace->getId(), $userId);
                 $isAdmin = false;
@@ -743,7 +743,7 @@ class WorkspaceMembers
                     "_user_is_guest" => $workspaceMember->getExterne() || ($groupUser ? $groupUser->getExterne() : true),
                     "_user_is_organization_administrator" => $groupUser ? $groupUser->getLevel() === 3 : false,
                     "hasnotifications" => $workspaceMember->getHasNotifications(),
-                    "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getisArchived()
+                    "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getIsArchived()
                 );
             }
         }

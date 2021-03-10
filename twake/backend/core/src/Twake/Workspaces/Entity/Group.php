@@ -33,19 +33,32 @@ class Group extends SearchableObject
     protected $name;
 
     /**
-     * @ORM\Column(name="display_name", type="twake_text")
+     * @ORM\Column(name="plan", type="twake_text")
      */
-    protected $displayname;
+    protected $plan;
+
+    /**
+     * @ORM\Column(name="stats", type="twake_text")
+     */
+    protected $stats;
+
+    /**
+     * @ORM\Column(name="logo", type="twake_text")
+     */
+    protected $logo;
+
+
+    // Twake without console fields below
 
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      */
-    protected $logo;
+    protected $logoFile;
 
     /**
-     * @ORM\Column(name="plan", type="twake_text")
+     * @ORM\Column(name="display_name", type="twake_text")
      */
-    protected $plan;
+    protected $displayname;
     
     /**
      * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\Workspace", mappedBy="group")
@@ -150,13 +163,43 @@ class Group extends SearchableObject
     {
         $this->displayname = $displayname;
     }
+    
+    /**
+     * @return mixed
+     */
+    public function getStats()
+    {
+        if (!$this->stats) {
+            return null;
+        }
+        return json_decode($this->stats, 1);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setStats($stats)
+    {
+        $this->stats = json_encode($stats);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLogoFile()
+    {
+        return $this->logoFile;
+    }
 
     /**
      * @return mixed
      */
     public function getLogo()
     {
-        return $this->logo;
+        if(!$this->logo){
+            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+        }
+        return $this->logo ?: "";
     }
 
     /**
@@ -311,12 +354,10 @@ class Group extends SearchableObject
     {
         return Array(
             "id" => $this->getId(),
-            "unique_name" => $this->getName(),
             "name" => $this->getDisplayName(),
+            "logo" => $this->getLogo(),
             "plan" => $this->getPlan(),
-            "logo" => (($this->getLogo() != null) ? $this->getLogo()->getPublicURL(2) : ""),
-            "isBlocked" => $this->getIsBlocked(),
-            "total_members" => $this->member_count
+            "stats" => $this->getStats(),
         );
     }
 

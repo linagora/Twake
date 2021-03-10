@@ -156,11 +156,7 @@ class ImportCommand extends ContainerAwareCommand
 
                 $logo = $contents["logo"];
                 if ($logo !== '') {
-                    $logo = new File();
-                    $logo->setPublicLink($contents["logo"]);
-                    $manager->persist($logo);
-                    $manager->flush();
-                    $group->setLogo($logo);
+                    $group->setLogo($contents["logo"]);
                 }
 
                 $manager->persist($group);
@@ -301,11 +297,7 @@ class ImportCommand extends ContainerAwareCommand
                         $workspace_bdd->setColor($contents["color"]);
                         $logo = $contents["logo"];
                         if ($logo !== '') {
-                            $logo = new File();
-                            $logo->setPublicLink($contents["logo"]);
-                            $manager->persist($logo);
-                            $manager->flush();
-                            $workspace_bdd->setLogo($logo);
+                            $workspace_bdd->setLogo($contents["logo"]);
                         }
                         $workspace_bdd->setGroup($group);
                         $manager->persist($workspace_bdd);

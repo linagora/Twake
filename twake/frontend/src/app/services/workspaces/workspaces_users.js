@@ -137,7 +137,7 @@ class WorkspacesUsers extends Observable {
         that.notify();
       }
 
-      if (data.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
+      if (data.stats.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
         CurrentUser.updateTutorialStatus('did_invite_collaborators');
       }
     };
