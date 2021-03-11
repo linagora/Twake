@@ -85,9 +85,6 @@ class CheckService
             return false;
         }
 
-        if ($workspace->getUser() != null)//If is private
-            return $application->getDefault();
-
         $workspaceapp = null;
 
         $workspaceappsRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupApp");

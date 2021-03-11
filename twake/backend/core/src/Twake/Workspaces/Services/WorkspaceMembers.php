@@ -50,10 +50,6 @@ class WorkspaceMembers
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
-            if ($workspace->getUser() != null) {
-                return false; //Private workspace, only one user as admin
-            }
-
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
@@ -62,9 +58,6 @@ class WorkspaceMembers
             $this->doctrine->persist($member);
             $this->doctrine->flush();
 
-            if ($workspace->getUser() != null) {
-                $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
-            }
             $workspaceUser = $member->getAsArray($this->doctrine);
             $workspaceUser["groupLevel"] = $this->groupManager->getLevel($workspace->getGroup(), $userId, $currentUserId);
             $dataToPush = Array(
@@ -112,10 +105,6 @@ class WorkspaceMembers
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
-            if ($workspace->getUser() != null && $currentUserId != null && $currentUserId != $userId) { //No other members in private group
-                return;
-            }
-
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup()));
@@ -126,10 +115,6 @@ class WorkspaceMembers
 
             if ($member != null) {
                 return false; //Already added
-            }
-
-            if ($workspace->getUser() != null && $workspace->getUser()->getId() != $userId) {
-                return false; //Private workspace, only one user
             }
 
             if (!$levelId || $levelId == null) {
@@ -408,10 +393,6 @@ class WorkspaceMembers
 
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
-
-            if ($workspace->getUser() != null) {
-                return false; //Private workspace, only one user
-            }
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
@@ -723,7 +704,7 @@ class WorkspaceMembers
         $workspaces = Array();
         foreach ($link as $workspaceMember) {
             $workspace = $workspaceMember->getWorkspace($this->doctrine);
-            if ($workspace && $workspace->getUser() == null && $workspace->getGroup() != null && !$workspace->getIsDeleted()) {
+            if ($workspace && !$workspace->getIsDeleted() && $workspace->getGroup()) {
 
                 $levels = $this->wls->getLevels($workspace->getId(), $userId);
                 $isAdmin = false;

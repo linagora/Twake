@@ -62,6 +62,7 @@ class Group extends SearchableObject
 
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
+     * @ORM\JoinColumn(name="logo")
      */
     protected $logoFile;
 

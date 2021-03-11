@@ -95,13 +95,6 @@ class WorkspacesApps
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
-            if ($workspace->getUser() != null
-                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-            ) {
-                //cant disable in Private ws apps
-                return false;
-            }
-
             //Search WorkspaceApp targeting the app
             $groupappsRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupApp");
             $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));

@@ -62,6 +62,7 @@ class Workspace extends SearchableObject
 
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
+     * @ORM\JoinColumn(name="logo")
      */
     private $logoFile;
 
