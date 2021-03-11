@@ -11,24 +11,18 @@ export default class Company {
   @Column("id", "uuid")
   id: string;
 
-  @Column("name", "string")
+  @Column("name", "encoded_string")
   name: string;
-  
-  @Column("display_name", "encoded_string")
-  displayName: string;
-  
-  @Column("logo_id", "uuid")
-  lofo: string;
-  
-  @Column("plan", "encoded_string")
-  plan: string;
-  
-  @Column("workspaces_id", "encoded_json")
-  workspaces: Array<string>;
 
-  @Column("managers_id", "encoded_json")
-  managers: Array<string>;
-  
+  @Column("logo_id", "uuid")
+  logo: string;
+
+  @Column("plan", "encoded_json")
+  plan: any;
+
+  @Column("stats", "encoded_json")
+  stats: any;
+
   @Column("date_added", "number")
   dateAdded: number;
 
@@ -37,9 +31,6 @@ export default class Company {
 
   @Column("is_blocked", "boolean")
   isBlocked: boolean;
-  
-  @Column("is_private", "boolean")
-  isPrivate: boolean;
 
   @Column("member_count", "number")
   memberCount: number;

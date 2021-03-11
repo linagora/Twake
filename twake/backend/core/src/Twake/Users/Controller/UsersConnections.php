@@ -159,8 +159,6 @@ class UsersConnections extends BaseController
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
-            $data["data"]["status"] = "connected";
-
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
 
             $workspaces = Array();
@@ -199,6 +197,31 @@ class UsersConnections extends BaseController
             $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
 
             $data["data"]["workspaces"] = $workspaces;
+
+            //Start - Compatibility with new model
+            $data["data"]["preferences"] = [
+                "language" => $data["data"]["language"],
+                "timezone" => $data["data"]["timezone_offset"]
+            ];
+
+            $data["data"]["companies"] = [];
+            $registeredCompanies = [];
+            foreach($data["data"]["workspaces"] as $workspace){
+                $companyId = $workspace["group"]["id"];
+                if(!in_array($companyId, $registeredCompanies)){
+                    $registeredCompanies[] = $companyId;
+                    $data["data"]["companies"][] = [
+                        "company" => [
+                            "id" => $companyId,
+                            "name" => $workspace["group"]["name"],
+                            "logo" => $workspace["group"]["logo"],
+                        ],
+                        "status" => "", // Console implementation TODO
+                        "role" => $workspace["_user_is_organization_administrator"] ? "admin" : ($workspace["_user_is_guest"] ? "guest" : "member"),
+                    ];
+                }
+            }
+            //End - Compatibility with new model
 
         }
 

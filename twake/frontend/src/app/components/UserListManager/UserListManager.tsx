@@ -204,7 +204,7 @@ const UserListManager = (props: PropsType) => {
           {!!props.showAddAll &&
             Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
               .length > usersIds.length &&
-            Workspaces.getCurrentWorkspace().total_members < 30 && (
+            Workspaces.getCurrentWorkspace().stats.total_members < 30 && (
               <Button
                 className="small primary-text"
                 onClick={() => {

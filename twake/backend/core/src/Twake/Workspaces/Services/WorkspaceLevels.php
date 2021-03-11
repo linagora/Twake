@@ -66,10 +66,6 @@ class WorkspaceLevels
             return false;
         }
 
-        if ($workspace->getUser() != null && $workspace->getUser()->getId() == $user->getId()) {
-            return true;
-        }
-
         $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($link) {
             $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
@@ -77,8 +73,6 @@ class WorkspaceLevels
                 return false;
             }
 
-            $workspace->setTotalActivity($workspace->getTotalActivity() + 1);
-            $this->doctrine->persist($workspace);
             //No flush, if this is just a read we don't count the activity
 
             if ($level->getIsAdmin()) {

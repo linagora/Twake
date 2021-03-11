@@ -33,19 +33,43 @@ class Group extends SearchableObject
     protected $name;
 
     /**
-     * @ORM\Column(name="display_name", type="twake_text")
+     * @ORM\Column(name="plan", type="twake_text")
      */
-    protected $displayname;
+    protected $plan;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
+     * @ORM\Column(name="stats", type="twake_text")
+     */
+    protected $stats;
+
+    /**
+     * @ORM\Column(name="logo", type="twake_text")
      */
     protected $logo;
 
     /**
-     * @ORM\Column(name="plan", type="twake_text")
+     * @ORM\Column(name="identity_provider", type="twake_text")
      */
-    protected $plan;
+    protected $identity_provider = "";
+
+    /**
+     * @ORM\Column(name="identity_provider_id", type="twake_text")
+     */
+    protected $identity_provider_id = "";
+
+
+    // Twake without console fields below
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
+     * @ORM\JoinColumn(name="logo")
+     */
+    protected $logoFile;
+
+    /**
+     * @ORM\Column(name="display_name", type="twake_text")
+     */
+    protected $displayname;
     
     /**
      * @ORM\OneToMany(targetEntity="Twake\Workspaces\Entity\Workspace", mappedBy="group")
@@ -150,13 +174,69 @@ class Group extends SearchableObject
     {
         $this->displayname = $displayname;
     }
+    
+    /**
+     * @return mixed
+     */
+    public function getStats()
+    {
+        if (!$this->stats) {
+            return null;
+        }
+        return json_decode($this->stats, 1);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setStats($stats)
+    {
+        $this->stats = json_encode($stats);
+    }
+
+    public function getIdentityProvider()
+    {
+        return $this->identity_provider;
+    }
+
+    public function setIdentityProvider($identity_provider)
+    {
+        if (!$identity_provider) {
+            $this->identity_provider = "";
+        }
+        $this->identity_provider = $identity_provider;
+    }
+
+    public function getIdentityProviderId()
+    {
+        return $this->identity_provider_id;
+    }
+
+    public function setIdentityProviderId($identity_provider_id)
+    {
+        if (!$identity_provider_id) {
+            $this->identity_provider_id = "";
+        }
+        $this->identity_provider_id = $identity_provider_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLogoFile()
+    {
+        return $this->logoFile;
+    }
 
     /**
      * @return mixed
      */
     public function getLogo()
     {
-        return $this->logo;
+        if(!$this->logo){
+            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+        }
+        return $this->logo ?: "";
     }
 
     /**
@@ -311,12 +391,10 @@ class Group extends SearchableObject
     {
         return Array(
             "id" => $this->getId(),
-            "unique_name" => $this->getName(),
             "name" => $this->getDisplayName(),
+            "logo" => $this->getLogo(),
             "plan" => $this->getPlan(),
-            "logo" => (($this->getLogo() != null) ? $this->getLogo()->getPublicURL(2) : ""),
-            "isBlocked" => $this->getIsBlocked(),
-            "total_members" => $this->member_count
+            "stats" => $this->getStats(),
         );
     }
 

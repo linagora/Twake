@@ -184,14 +184,6 @@ class Groups
             $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
             $group = $groupRepository->find($groupId);
 
-            if ($group->getLogo()) {
-                if ($uploader) {
-                    $uploader->removeFile($group->getLogo(), false);
-                } else {
-                    $group->getLogo()->deleteFromDisk();
-                }
-                $this->doctrine->remove($group->getLogo());
-            }
             $group->setLogo($logo);
 
             $this->doctrine->persist($group);

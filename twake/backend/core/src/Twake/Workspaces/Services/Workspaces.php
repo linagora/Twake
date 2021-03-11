@@ -126,7 +126,7 @@ class Workspaces
 
         //Add user in workspace
         if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
+            $this->wms->addMember($workspace->getId(), $userId, false, $levelAdmin->getId());
         }
 
         //Create default channels
@@ -212,10 +212,9 @@ class Workspaces
             $groupId = $original_workspace->getGroup()->getId();
 
             $workspace = $this->create($name, $groupId, $currentUserId);
-            $workspace->setIsNew(false);
             $this->doctrine->persist($workspace);
 
-            if ($workspace && $workspace->getGroup() && !$workspace->getisArchived() && !$workspace->getisDeleted()) {
+            if ($workspace && $workspace->getGroup() && !$workspace->getIsArchived() && !$workspace->getisDeleted()) {
 
                 $workspacelevelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
                 $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
@@ -258,7 +257,7 @@ class Workspaces
                             //Add user with good level
                             if (isset($old_levels_id_to_new_levels[$member->getLevelId() . ""])) {
                                 $level_id = $old_levels_id_to_new_levels[$member->getLevelId() . ""]->getId();
-                                $this->wms->addMember($workspace->getId(), $member->getUserId(), false, false, $level_id);
+                                $this->wms->addMember($workspace->getId(), $member->getUserId(), false, $level_id);
                             }
 
                         }
@@ -398,7 +397,7 @@ class Workspaces
                 return true;
             }
 
-            $workspace->setis_deleted(true);
+            $workspace->setIsDeleted(true);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -441,14 +440,6 @@ class Workspaces
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
-            if ($workspace->getLogo()) {
-                if ($uploader) {
-                    $uploader->removeFile($workspace->getLogo(), false);
-                } else {
-                    $workspace->getLogo()->deleteFromDisk();
-                }
-                $this->doctrine->remove($workspace->getLogo());
-            }
             $workspace->setLogo($logo);
 
             $this->doctrine->persist($workspace);
@@ -561,8 +552,8 @@ class Workspaces
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
-            $isArchived = $workspace->getisArchived();
-            $is_deleted = $workspace->getis_deleted();
+            $isArchived = $workspace->getIsArchived();
+            $is_deleted = $workspace->getIsDeleted();
 
             if ($is_deleted == false && $isArchived == false) {
                 $workspace->setIsArchived(true);
@@ -598,8 +589,8 @@ class Workspaces
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
-            $isArchived = $workspace->getisArchived();
-            $is_deleted = $workspace->getis_deleted();
+            $isArchived = $workspace->getIsArchived();
+            $is_deleted = $workspace->getIsDeleted();
 
             if ($is_deleted == false && $isArchived == true) {
                 $workspace->setIsArchived(false);
