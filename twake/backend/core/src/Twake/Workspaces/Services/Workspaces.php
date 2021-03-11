@@ -126,7 +126,7 @@ class Workspaces
 
         //Add user in workspace
         if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
+            $this->wms->addMember($workspace->getId(), $userId, false, $levelAdmin->getId());
         }
 
         //Create default channels
@@ -257,7 +257,7 @@ class Workspaces
                             //Add user with good level
                             if (isset($old_levels_id_to_new_levels[$member->getLevelId() . ""])) {
                                 $level_id = $old_levels_id_to_new_levels[$member->getLevelId() . ""]->getId();
-                                $this->wms->addMember($workspace->getId(), $member->getUserId(), false, false, $level_id);
+                                $this->wms->addMember($workspace->getId(), $member->getUserId(), false, $level_id);
                             }
 
                         }

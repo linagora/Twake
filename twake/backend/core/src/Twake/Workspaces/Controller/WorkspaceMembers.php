@@ -101,14 +101,14 @@ class WorkspaceMembers extends BaseController
             $element = $element[0];
             if (strlen($element) > 0) {
                 if (strrpos($element, "@") <= 0) { //No mail or "@username"
-                    $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, true, $this->getUser()->getId());
+                    $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
                     if ($res) {
                         $added["user"][] = $element;
                     } else {
                         $not_added[] = $element;
                     }
                 } else {
-                    $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, true, $this->getUser()->getId());
+                    $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, $this->getUser()->getId());
                     if ($res == "user") {
                         $added["user"][] = $element;
                     } elseif ($res == "mail") {

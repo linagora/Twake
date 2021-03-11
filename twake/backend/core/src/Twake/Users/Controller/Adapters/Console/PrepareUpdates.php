@@ -53,9 +53,6 @@ class PrepareUpdates
     
     function updateUser($userId, $companyCode = null, $userDTO = null){
         error_log("updateUser with params: " . json_encode([$userId, $companyCode, $userDTO]));
-        //$header = "Authorization: Basic " . $this->authB64;
-        //$response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId, array(CURLOPT_HTTPHEADER => [$header]));
-        //$userDTO = json_decode($response->getContent(), 1);
         if(!$userDTO){
             return [
                 "success" => false
@@ -100,6 +97,7 @@ class PrepareUpdates
                 $companyRole = $role;
             }
         }
+        
         $result = (new ApplyUpdates($this->app))->addUser($user, $company, $companyRole);
         return [
             "success" => !!$result

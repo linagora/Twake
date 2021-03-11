@@ -51,6 +51,8 @@ class ApplyUpdates
 
         $company->setName($companyDTO["company"]["details"]["name"]);
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
+        $company->setIdentityProvider("console");
+        $company->setIdentityProviderId($companyConsoleCode);
 
         // Format is {name: "string", limits: {}}
         $company->setPlan($companyDTO["company"]["plan"]);
@@ -139,8 +141,9 @@ class ApplyUpdates
             $user->setPassword($encoder->encodePassword(bin2hex(random_bytes(40)), $user->getSalt()));
             $user->setUsername($username);
             $user->setMailVerified(true);
-            $user->setEmail($email); //TODO
+            $user->setEmail($email);
             $user->setIdentityProvider("console");
+            $user->setIdentityProviderId($userConsoleId);
 
             $this->em->persist($user);
             $this->em->flush();
@@ -230,10 +233,12 @@ class ApplyUpdates
             foreach($existingWorkspace as $workspace){
                 if($workspace->getIsDefault() || count($existingWorkspace) == 1){
                     //Add user in this workspace
-                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, false, null);
+                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, null);
                 }
             }
         }
+
+        $this->app->getServices()->get("app.workspace_members")->autoAddMemberByNewMail($userTwakeEntity->getEmail(), $userTwakeEntity->getId());
 
         return true;
 

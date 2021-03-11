@@ -47,6 +47,16 @@ class Group extends SearchableObject
      */
     protected $logo;
 
+    /**
+     * @ORM\Column(name="identity_provider", type="twake_text")
+     */
+    protected $identity_provider = "";
+
+    /**
+     * @ORM\Column(name="identity_provider_id", type="twake_text")
+     */
+    protected $identity_provider_id = "";
+
 
     // Twake without console fields below
 
@@ -181,6 +191,32 @@ class Group extends SearchableObject
     public function setStats($stats)
     {
         $this->stats = json_encode($stats);
+    }
+
+    public function getIdentityProvider()
+    {
+        return $this->identity_provider;
+    }
+
+    public function setIdentityProvider($identity_provider)
+    {
+        if (!$identity_provider) {
+            $this->identity_provider = "";
+        }
+        $this->identity_provider = $identity_provider;
+    }
+
+    public function getIdentityProviderId()
+    {
+        return $this->identity_provider_id;
+    }
+
+    public function setIdentityProviderId($identity_provider_id)
+    {
+        if (!$identity_provider_id) {
+            $this->identity_provider_id = "";
+        }
+        $this->identity_provider_id = $identity_provider_id;
     }
 
     /**

@@ -330,7 +330,7 @@ class ChannelSystemAbstract
                             $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                             $member->setExterne(true);
                             $this->entity_manager->persist($member);
-                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true, false, $current_user_id);
+                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true, $current_user_id);
                             $did_something = true;
                         }
                     }
@@ -377,7 +377,7 @@ class ChannelSystemAbstract
             $workspace_id = $channel->getOriginalWorkspaceId();
             $link = $this->entity_manager->getRepository("Twake\Workspaces:WorkspaceUser")->findBy(Array("workspace_id" => $workspace_id, "user_id" => $user->getId()));
             if (!$link) {
-                $this->workspaceUser->addMember($workspace_id, $user->getId(), true, false);
+                $this->workspaceUser->addMember($workspace_id, $user->getId(), true);
             }
         }
         return true;
