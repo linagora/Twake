@@ -13,7 +13,7 @@ export default (): JSX.Element => {
   const { channelId } = RouterServices.getStateFromRoute();
 
   const appChannel = DepreciatedCollections.get('channels').find(channelId);
-  const application = DepreciatedCollections.get('applications').find(appChannel.app_id);
+  const application = DepreciatedCollections.get('applications').find(appChannel?.app_id);
   const channel = new ChannelResource({
     name: Languages.t('app.name.' + application.simple_name, [], application.name),
   });
@@ -23,6 +23,10 @@ export default (): JSX.Element => {
     icon = <Icon type={IconType} style={{ width: 16, height: 16 }} />;
   } else {
     icon = <IconType size={16} />;
+  }
+
+  if (!appChannel) {
+    return <></>;
   }
 
   return (
