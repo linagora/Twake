@@ -50,12 +50,13 @@ class Channels extends Observable {
   readChannelIfNeeded(channel) {}
 
   async openDiscussion(membersIds, companyId = null) {
+    membersIds = membersIds.map(e => e); //Copy original list
     companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
     const channelsCollections = Collections.get(collectionPath, ChannelResource);
 
     membersIds.push(UsersService.getCurrentUserId());
-    membersIds = membersIds.filter((e, index) => membersIds.indexOf(e) === index);
+    membersIds = _.uniq(membersIds);
 
     const newDirectMessage = {
       company_id: companyId,
@@ -66,7 +67,9 @@ class Channels extends Observable {
 
     let res = channelsCollections
       .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
-      .filter(channel => _.isEqual(channel.data.members.sort(), membersIds.sort()))[0];
+      .filter(channel =>
+        _.isEqual(_.uniq(channel.data.members).sort(), _.uniq(membersIds).sort()),
+      )[0];
 
     if (!res) {
       res = await channelsCollections.upsert(new ChannelResource(newDirectMessage), {

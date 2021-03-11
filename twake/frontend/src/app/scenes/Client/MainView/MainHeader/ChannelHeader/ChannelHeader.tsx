@@ -16,6 +16,7 @@ import { useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Languages from 'services/languages/languages.js';
+import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
@@ -53,8 +54,12 @@ export default (): JSX.Element => {
   }
 
   if (!channel.data.user_member?.user_id) {
+    ChannelsBarService.updateCurrentChannelId(companyId || '', workspaceId || '', '');
     redirectToWorkspace();
+    return <Col></Col>;
   }
+
+  ChannelsBarService.updateCurrentChannelId(companyId || '', workspaceId || '', channelId || '');
 
   return (
     <Row align="middle" style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}>

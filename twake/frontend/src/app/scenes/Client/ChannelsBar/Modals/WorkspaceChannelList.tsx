@@ -40,8 +40,7 @@ export default () => {
 
     if (event.key === 'Enter' && cursor >= 0) {
       const element = listService.list[cursor];
-
-      return handleElementType(element);
+      return element ? handleElementType(element) : null;
     }
   };
 
