@@ -1,14 +1,28 @@
-import { Button, Col, Row, Typography } from 'antd';
+import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import Emojione from '../../Emojione/Emojione';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
+import ModalManager from 'app/components/Modal/ModalManager';
+import AddMailsInWorkspace from './AddMailsInWorkspace';
+import Api from 'app/services/Api';
 
-type PropsType = {};
+type PropsType = {
+  email: string;
+};
 
-const VerifyMail = ({}: PropsType) => {
-  const [email, setEmail] = useState<string>('dreamteam@linagora.com');
-  const onClickButton = () => console.log('clicked');
+const VerifyMail = ({ email }: PropsType) => {
+  const openAddMembers = () =>
+    ModalManager.open(<AddMailsInWorkspace />, {
+      position: 'center',
+      size: { width: '600px' },
+    });
+
+  const onClickButton = () => {
+    const route = 'users/console/api/verify_mail';
+
+    return Api.post(route, {});
+  };
 
   return (
     <ObjectModal
@@ -31,7 +45,7 @@ const VerifyMail = ({}: PropsType) => {
       footerAlign="center"
       hideFooterDivider
       footer={
-        <Button onClick={onClickButton} type="primary" size="large">
+        <Button onClick={openAddMembers} type="primary" size="large">
           {Languages.t('components.verify_mail.button')}
         </Button>
       }

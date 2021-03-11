@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 
-type PropsType = {};
+type PropsType = {
+  period: number;
+  email: string;
+};
 
-const UnverifiedAccount = ({}: PropsType): JSX.Element => {
-  const [email, setEmail] = useState<string>('dreamteam@linagora.com');
-
+const UnverifiedAccount = ({ period, email }: PropsType): JSX.Element => {
   const onClickButton = () => console.log('clicked');
 
   return (
@@ -36,7 +37,7 @@ const UnverifiedAccount = ({}: PropsType): JSX.Element => {
             margin: 0,
           }}
         >
-          {Languages.t('components.unverified_account.typography_text_danger')}
+          {Languages.t('components.unverified_account.typography_text_danger', [period])}
         </Typography.Text>
       </Row>
 

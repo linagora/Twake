@@ -6,27 +6,48 @@ import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import UnverifiedAccount from './popups/UnverifiedAccount';
 import BlockedAccount from './popups/BlockedAccount';
+import UserService from 'services/user/user.js';
 
 const AccountStatusComponent = (): JSX.Element => {
-  const [period, setPeriod] = useState<number>(8);
-  const [displayBanner, setDisplayBanner] = useState<boolean>(
-    period < 7 && period > 0 ? true : false,
-  );
+  const user = UserService.getCurrentUser();
+  const [period, setPeriod] = useState<number>(0);
+  const [displayBanner, setDisplayBanner] = useState<boolean>(false);
+  const periodLimit: number = 7;
 
   useEffect(() => {
+    calculateTrialPeriod();
     isBlockedAccount();
-  }, [period]);
+  }, [period, displayBanner]);
+
+  const calculateTrialPeriod = (): void => {
+    const oneDay: number = 1000 * 60 * 60 * 24;
+    // user created_at
+    const createdDay: number = user.created_at;
+    const currentDay: number = Date.now();
+    const shouldDisplayBanner: boolean = period > 0 && period < periodLimit ? true : false;
+    const currentPeriod: number = Math.round(Math.round(currentDay - createdDay) / oneDay);
+
+    if (!user.is_verified) {
+      setPeriod(currentPeriod);
+      return setDisplayBanner(shouldDisplayBanner);
+    }
+  };
+
+  const truncateDaysLeft = (period: number) => Math.trunc(period);
 
   const onClickButton = () =>
-    ModalManager.open(<UnverifiedAccount />, {
-      position: 'center',
-      size: { width: '600px' },
-    });
+    ModalManager.open(
+      <UnverifiedAccount period={truncateDaysLeft(periodLimit - period)} email={user.email} />,
+      {
+        position: 'center',
+        size: { width: '600px' },
+      },
+    );
 
   const isBlockedAccount = () => {
-    if (period === 0)
+    if (period >= periodLimit)
       return ModalManager.open(
-        <BlockedAccount />,
+        <BlockedAccount email={user.email} />,
         {
           position: 'center',
           size: { width: '600px' },
@@ -60,4 +81,5 @@ const AccountStatusComponent = (): JSX.Element => {
     </>
   );
 };
+
 export default AccountStatusComponent;
