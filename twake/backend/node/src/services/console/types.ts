@@ -27,6 +27,7 @@ export interface CreateConsoleUser {
   lastName: string;
   password: string;
   role: string;
+  skipInvite: boolean;
 }
 
 export type CreatedConsoleUser = Partial<CreateConsoleUser> & { _id: string };
@@ -68,6 +69,7 @@ export type CompanyReport = {
   destinationCode: string;
   status: ReportStatus;
   company: CompanyCreatedStreamObject;
+  error?: Error;
 };
 
 export type UserReport = {
@@ -76,13 +78,22 @@ export type UserReport = {
   destinationCompanyCode: string;
   status: ReportStatus;
   user: UserCreatedStreamObject;
+  error?: Error;
 };
 
 export type MergeProgress = Observable<ProcessReport>;
 
 export type ProcessReport = {
-  type: "user:updated" | "user:created" | "user:error" | "company:created";
-  user?: UserReport;
-  company?: CompanyReport;
-  error?: Error;
+  type:
+    | "user:updated"
+    | "user:updating"
+    | "user:created"
+    | "user:error"
+    | "company:created"
+    | "processing:owner"
+    | "log"
+    | "company:withoutadmin";
+  //error?: Error;
+  message?: string;
+  data?: UserReport | CompanyReport | Error | Company[];
 };

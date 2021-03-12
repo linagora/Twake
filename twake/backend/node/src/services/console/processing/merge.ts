@@ -1,6 +1,7 @@
 import passwordGenerator from "generate-password";
 import { concat, EMPTY, forkJoin, from, Observable, ReplaySubject } from "rxjs";
 import {
+  count,
   distinct,
   filter,
   groupBy,
@@ -8,8 +9,8 @@ import {
   mergeMap,
   min,
   share,
-  switchMap,
   tap,
+  toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
 import { Paginable } from "../../../core/platform/framework/api/crud-service";
@@ -18,12 +19,14 @@ import User from "../../user/entities/user";
 import UserServiceAPI from "../../user/api";
 import {
   CompanyCreatedStreamObject,
+  CompanyReport,
   CreatedConsoleCompany,
   CreatedConsoleUser,
   MergeProgress,
   ProcessReport,
   UpdateConsoleUserRole,
   UserCreatedStreamObject,
+  UserReport,
 } from "../types";
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
 import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
@@ -40,7 +43,7 @@ export class MergeProcess {
     private userService: UserServiceAPI,
     private dryRun: boolean,
     private consoleId: string = "console",
-    private linkExternal: boolean = false,
+    private linkExternal: boolean = true,
     consoleClientParameters: {
       url: string;
       client: string;
@@ -67,16 +70,35 @@ export class MergeProcess {
       ),
     );
 
+    const numberOfAdmins$ = users$.pipe(count(user => user.source.user.level.valueOf() === 3));
+    const companyWithoutAdmin$ = users$.pipe(
+      // group by company
+      groupBy(user => user.source.company.id),
+      mergeMap(group =>
+        group.pipe(
+          // get users as array
+          // TODO: we may be able to do this without doing a toArray but just by playing with the group
+          toArray(),
+          // filter groups where there is no user with level === 3
+          filter(users => !users.some(user => user.source.user.level.valueOf() === 3)),
+          // take first element to get the company
+          map(users => users[0].source.company),
+        ),
+      ),
+      toArray(),
+    );
+
     const companiesSubscription = companies$.subscribe({
       next(company) {
         progress$.next({
           type: "company:created",
-          company: {
+          data: {
             sourceId: company.source.id,
             destinationCode: company.destination.code,
             status: company.error ? "failure" : "success",
             company,
-          },
+            error: company.error,
+          } as CompanyReport,
         });
       },
     });
@@ -85,13 +107,14 @@ export class MergeProcess {
       next(user) {
         progress$.next({
           type: "user:created",
-          user: {
+          data: {
             sourceId: user.source.user.id,
             destinationId: user.destination.id,
             destinationCompanyCode: user.destination.companyCode,
             status: user.error ? "failure" : "success",
             user,
-          },
+            error: user.error,
+          } as UserReport,
         });
       },
       error(err: Error) {
@@ -101,23 +124,32 @@ export class MergeProcess {
 
     const updateOwners$ = owners$.pipe(
       mergeMap(owner => this.updateUserRole(owner, "owner"), concurrent),
-    );
-
-    const process$ = forkJoin([users$, companies$]).pipe(
-      switchMap(() => from(updateOwners$)),
       tap(user =>
         progress$.next({
           type: "user:updated",
-          user: {
+          data: {
             sourceId: user.source.source.user.id,
             destinationId: user.source.destination.id,
             destinationCompanyCode: user.source.destination.companyCode,
-            // TODO
-            status: "success",
+            status: user.result.error ? "failure" : "success",
             user: user.source,
-          },
+            error: user.result.error,
+          } as UserReport,
         }),
       ),
+    );
+
+    const process$ = forkJoin([users$, companies$, numberOfAdmins$, companyWithoutAdmin$]).pipe(
+      tap(result => {
+        progress$.next({ type: "log", message: `There are ${result[2]} admins` });
+        progress$.next({
+          type: "company:withoutadmin",
+          message: `Companies without admins ${result[3].length}`,
+          data: result[3],
+        });
+        progress$.next({ type: "processing:owner" });
+      }),
+      mergeMap(() => from(updateOwners$), concurrent),
     );
 
     const process = process$.subscribe({
@@ -206,8 +238,7 @@ export class MergeProcess {
       createdCompany = await this.client.createCompany({
         code: company.id,
         displayName: company.displayName,
-        // TODO
-        status: "todo",
+        status: "active",
       });
 
       if (this.linkExternal) {
@@ -246,13 +277,17 @@ export class MergeProcess {
         { code: company.id },
         {
           email: user.emailcanonical,
-          firstName: user.firstname,
-          lastName: user.lastname,
+          // console requires that firstname/lastname are defined and at least 1 chat long
+          firstName:
+            user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical,
+          lastName:
+            user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical,
           password: passwordGenerator.generate({
             length: 10,
             numbers: true,
           }),
-          role: companyUser.level == 0 ? "member" : "admin",
+          skipInvite: true,
+          role: companyUser.level.valueOf() === 3 ? "admin" : "member",
         },
       );
 
@@ -298,7 +333,6 @@ export class MergeProcess {
     remoteCompany: CreatedConsoleCompany,
     serviceId: string,
   ): Promise<void> {
-    logger.debug("Creating company link for company %s", localCompany.id);
     if (this.dryRun) {
       return;
     }

@@ -27,7 +27,11 @@ class Service implements UserServiceAPI {
 
   async init(context: TwakeContext): Promise<this> {
     try {
-      await Promise.all([this.users.init(context), this.companies.init(context)]);
+      await Promise.all([
+        this.users.init(context),
+        this.companies.init(context),
+        this.external.init(context),
+      ]);
     } catch (err) {
       console.error("Error while initializing notification service", err);
     }

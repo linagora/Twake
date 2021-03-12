@@ -3,6 +3,7 @@ import ora from "ora";
 import twake from "../../../twake";
 import { ConsoleServiceAPI } from "../../../services/console/api";
 import { CompanyReport, UserReport } from "../../../services/console/types";
+import Company from "../../../services/user/entities/company";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -58,7 +59,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       description: "The console service identifier to user to link user and companies",
     },
     link: {
-      default: false,
+      default: true,
       type: "boolean",
       description:
         "Link the companies/users to external companies/user. Works with the --console parameter",
@@ -76,7 +77,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     },
   },
   handler: async argv => {
-    const spinner = ora({ text: "Importing Twake data" }).start();
+    const spinner = ora({ text: `Importing Twake data on ${argv.url}` }).start();
     const platform = await twake.run(services);
     const consoleService = platform.getProvider<ConsoleServiceAPI>("console");
     const merge = consoleService.merge(
@@ -88,27 +89,77 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
       argv.client,
       argv.secret,
     );
+    const start = Date.now();
+    let stop: number = start;
     const userReports: UserReport[] = [];
     const companyReports: CompanyReport[] = [];
+    const ownerReports: UserReport[] = [];
+    let companiesWithoutAdmin: Company[] = [];
 
     const process = merge.subscribe({
       next: report => {
         if (report.type === "company:created") {
-          companyReports.push(report.company);
+          const companyReport = report.data as CompanyReport;
+          companyReports.push(companyReport);
 
-          if (report.company.status === "success") {
-            spinner.text = `Company created: ${report.company.company.source.id} (${report.company.company.source.displayName})`;
+          if (companyReport.status === "success") {
+            spinner.succeed(
+              `Company created: ${companyReport.company.source.id} ${companyReport.company.source.displayName}`,
+            );
           } else {
-            spinner.text = `Creation error for company ${report.company.company.source.id} (${report.company.company.source.displayName})`;
+            spinner.fail(
+              `Creation error for company ${companyReport.company.source.id} (${companyReport.company.source.displayName}): ${companyReport?.error?.message}`,
+            );
           }
         }
 
         if (report.type === "user:created") {
-          userReports.push(report.user);
-          if (report.user.status === "success") {
-            spinner.text = `Company ${report.user.user.source.company.id}: User created ${report.user.user.destination.id}`;
+          const userReport = report.data as UserReport;
+          userReports.push(userReport);
+
+          if (userReport.status === "success") {
+            spinner.succeed(
+              `Company ${userReport.user.source.company.id}: User created ${userReport.user.destination.id}`,
+            );
           } else {
-            spinner.text = "User creation error";
+            spinner.fail(
+              `Company ${userReport.user.source.company.id}: User creation error ${userReport.user.destination.id}: ${userReport?.error?.message}`,
+            );
+          }
+        }
+
+        if (report.type === "user:updated") {
+          const userReport = report.data as UserReport;
+          ownerReports.push(userReport);
+          if (userReport.status === "success") {
+            spinner.succeed(
+              `Company ${userReport.destinationCompanyCode} owner updated to user ${userReport.destinationId}`,
+            );
+          } else {
+            spinner.fail(
+              `Company ${userReport.destinationCompanyCode}: Owner update error for user ${userReport.destinationId}: ${userReport?.error?.message}`,
+            );
+          }
+        }
+
+        if (report.type === "processing:owner") {
+          spinner.start("Computing company owners, please wait...");
+        }
+
+        if (report.type === "user:updating") {
+          //spinner.succeed(`Updating owner for company ${report?.company?.sourceId}`);
+        }
+
+        if (report.type === "log") {
+          report.message && (spinner.text = report.message);
+        }
+
+        if (report.type === "company:withoutadmin") {
+          report.message && (spinner.text = report.message);
+          const companies = (report.data || []) as Company[];
+
+          if (companies.length) {
+            companiesWithoutAdmin = companies;
           }
         }
       },
@@ -116,6 +167,7 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
         spinner.fail("Fatal error");
       },
       complete: async () => {
+        stop = Date.now();
         spinner.succeed("Merge is complete");
         displayStats();
         await tearDown();
@@ -146,16 +198,51 @@ const command: yargs.CommandModule<MergeParams, MergeParams> = {
     }
 
     function displayStats() {
-      console.log(
-        "Companies success:",
-        companyReports.filter(company => company.status === "success").length,
-      );
-      console.log(
-        "Companies failure:",
-        companyReports.filter(company => company.status === "failure").length,
-      );
-      console.log("Users success:", userReports.filter(user => user.status === "success").length);
-      console.log("Users failure:", userReports.filter(user => user.status === "failure").length);
+      const userFailures = userReports.filter(user => user.error);
+      const companyFailures = companyReports.filter(company => company.error);
+      const ownerFailures = ownerReports.filter(report => report.error);
+
+      console.log("# Import report");
+      console.log(`Data imported in ${(stop - start) / 1000} seconds`);
+      console.log("## Company");
+      console.log("- Companies success:", companyReports.filter(company => !company.error).length);
+      console.log("- Companies failure:", companyFailures.length);
+      if (companyFailures.length) {
+        console.log("### Failures");
+        companyFailures.forEach(failure =>
+          console.log(
+            `- Company ${failure.company.source.id} error: ${failure.company.error?.message}`,
+          ),
+        );
+      }
+
+      console.log("## User");
+      console.log("- Users success:", userReports.filter(user => !user.error).length);
+      console.log("- Users failure:", userFailures.length);
+      if (userFailures.length) {
+        console.log("### Failures");
+        userFailures.forEach(failure =>
+          console.log(
+            `- User ${failure.user.source.user.user_id} error: ${failure.user.error?.message}`,
+          ),
+        );
+      }
+
+      console.log("## Owner");
+      console.log("- Owners success:", ownerReports.filter(report => !report.error).length);
+      console.log("- Owners failure:", ownerFailures.length);
+      if (ownerFailures.length) {
+        console.log("### Failures");
+        ownerFailures.forEach(report =>
+          console.log(`- User ${report.destinationId} error: ${report?.error?.message}`),
+        );
+      }
+
+      console.log("## Warnings");
+      console.log("### Companies witout admins");
+      companiesWithoutAdmin.forEach(company => {
+        console.log(`- ${company.id} - ${company.displayName}`);
+      });
 
       if (argv.csv) {
         reportAsCSV();

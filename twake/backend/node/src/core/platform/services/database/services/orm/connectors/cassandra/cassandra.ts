@@ -420,7 +420,7 @@ export class CassandraConnector extends AbstractConnector<
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),
       pageState: options.pagination.page_token || undefined,
-      prepare: true,
+      prepare: false,
     });
 
     const entities: Table[] = [];
