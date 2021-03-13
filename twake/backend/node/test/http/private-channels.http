@@ -63,7 +63,7 @@ GET {{channelsURL}}/channels/{{getId}}/members/{{currentUserId}}
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
-### Current user quits the private channel
+### Current user quits the private channel will fail because he is the only one in it
 
 DELETE {{channelsURL}}/channels/{{getId}}/members/{{currentUserId}}
 Content-Type: application/json

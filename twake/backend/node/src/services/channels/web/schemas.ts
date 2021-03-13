@@ -1,11 +1,4 @@
-const webSocketSchema = {
-  type: "object",
-  properties: {
-    name: { type: "string" },
-    room: { type: "string" },
-    encryption_key: { type: "string" },
-  },
-};
+import { webSocketSchema } from "../../types";
 
 const channelMemberSchema = {
   type: "object",
@@ -35,10 +28,10 @@ const channelSchema = {
     connectors: { type: ["array", "null"] },
     icon: { type: "string" },
     is_default: { type: "boolean" },
-    direct_channel_members: { type: ["array", "null"] },
     members: { type: ["array", "null"] },
     owner: { type: "string" },
     visibility: { type: "string" },
+    last_activity: { type: "number" },
     user_member: channelMemberSchema,
   },
 };

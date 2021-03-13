@@ -12,7 +12,7 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
-import { handleError } from ".";
+import { handleError } from "../../../../utils/handleError";
 import { getChannelRooms } from "../../services/member/realtime";
 import {
   ResourceCreateResponse,
@@ -20,6 +20,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
+  User,
 } from "../../../../services/types";
 
 export class ChannelMemberCrudController
@@ -47,6 +48,12 @@ export class ChannelMemberCrudController
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelMember>> {
+    if (!isCurrentUser(request.params.member_id, request.currentUser)) {
+      reply.badRequest("User does not have enough rights to get member");
+
+      return;
+    }
+
     const resource = await this.service.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
@@ -99,6 +106,12 @@ export class ChannelMemberCrudController
       ...request.body.resource,
       ...this.getPrimaryKey(request),
     });
+
+    if (!isCurrentUser(entity.user_id, request.currentUser)) {
+      reply.badRequest("Current user can not update this member");
+
+      return;
+    }
 
     try {
       const result = await this.service.save(entity, {}, getExecutionContext(request));
@@ -207,4 +220,8 @@ function getExecutionContext(
       workspace_id: request.params.workspace_id,
     },
   };
+}
+
+function isCurrentUser(memberId: string, user: User): boolean {
+  return memberId && memberId === user.id;
 }

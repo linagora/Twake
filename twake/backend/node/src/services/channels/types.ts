@@ -1,5 +1,6 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { Workspace, Channel } from "../types";
+import { Channel as ChannelEntity } from "../channels/entities/channel";
 import { uuid } from "../types";
 
 export interface WorkspaceExecutionContext extends ExecutionContext {
@@ -47,4 +48,7 @@ export type ChannelActivityNotification = {
   workspace_id: uuid | "direct";
   channel_id: uuid;
   date: number;
+  sender: string;
+  title: string;
+  text: string;
 };

@@ -1,27 +1,25 @@
-@import '~components/constants.scss';
-
 .component_doc {
-  background: $grey_background;
+  background: var(--grey-background);
   padding: 25px;
   max-height: 100vh;
   overflow: scroll;
   box-sizing: border-box;
 
   .section {
-    background: $white;
+    background: var(--white);
     max-width: 900px;
     margin: auto;
     left: 0;
     right: 0;
     padding: 25px;
     box-sizing: border-box;
-    border-radius: var(--default-border-radius);
+    border-radius: var(--border-radius-base);
     margin-top: 25px;
   }
 
   .header {
     input {
-      background: $black;
+      background: var(--black);
       color: #fff;
       font-family: monospace;
     }
@@ -40,13 +38,13 @@
     }
 
     td {
-      border: 1px solid $grey_background;
+      border: 1px solid var(--grey-background);
       padding: 8px;
     }
     .type {
-      background: $grey_background;
+      background: var(--grey-background);
       padding: 2px 4px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
     }
   }
 }

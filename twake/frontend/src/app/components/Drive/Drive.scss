@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 /* Drive */
 
 .directory,
@@ -27,7 +25,7 @@
 }
 .directory {
   background: #fff;
-  border: 1px solid $grey_light;
+  border: 1px solid var(--grey-background);
   height: 50px;
   box-sizing: border-box;
   display: inline-flex;
@@ -35,7 +33,7 @@
   line-height: 32px;
   margin-right: 16px;
   margin-bottom: 16px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   font-size: 13px;
   vertical-align: middle;
   width: 200px;
@@ -76,7 +74,7 @@
     padding-top: 4px;
 
     .m-icon-small {
-      color: $yellow;
+      color: var(--warning);
       font-size: 20px !important;
     }
 
@@ -96,7 +94,7 @@
 
 .file {
   overflow: hidden;
-  border: 1px solid $grey_light;
+  border: 1px solid var(--grey-background);
   background: #fff;
   height: 180px;
   width: 216px;
@@ -106,7 +104,7 @@
   line-height: 30px;
   margin-right: 16px;
   margin-bottom: 16px;
-  border-radius: var(--default-border-radius);
+  border-radius: var(--border-radius-base);
   font-size: 13px;
   vertical-align: middle;
   position: relative;
@@ -179,18 +177,18 @@
     padding-left: 8px;
     padding-right: 8px;
     bottom: 0px;
-    color: $black;
+    color: var(--black);
     height: 32px;
     font-weight: 500;
     width: 100%;
     box-sizing: border-box;
-    border-top: 1px solid $grey_background;
+    border-top: 1px solid var(--grey-background);
 
     .icon {
       height: 20px;
       width: 20px;
       box-sizing: border-box;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       margin-right: 6px;
       margin-left: -3px;
       margin-top: 5px;
@@ -238,7 +236,7 @@
   }
 
   &.is_selected {
-    background: $primary;
+    background: var(--primary);
     color: #fff;
     box-shadow: none;
 
@@ -249,7 +247,7 @@
 
     &:hover:not(.notInDrive),
     .data {
-      background-color: $primary;
+      background-color: var(--primary);
       color: #fff;
     }
   }
@@ -283,11 +281,11 @@
     .detail_preview {
       width: 32px;
       height: 32px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
-      background-color: $grey_light;
+      background-color: var(--primary-background);
 
       &.no_preview {
         background-size: 60%;
@@ -307,13 +305,13 @@
   margin-right: 0px;
   margin-bottom: 0px;
   border: 0;
-  border-bottom: 1px solid $grey_light;
-  border-top: 1px solid $grey_light;
+  border-bottom: 1px solid var(--grey-background);
+  border-top: 1px solid var(--grey-background);
   border-radius: 2px;
   width: 100%;
   height: 64px;
   padding-top: 16px;
-  color: $black;
+  color: var(--black);
   margin-top: -1px;
   padding-right: 12px;
 
@@ -337,11 +335,11 @@
 
   &:hover:not(.notInDrive):not(.is_selected) {
     box-shadow: none;
-    background: $primary_background;
+    background: var(--primary-background);
   }
 
   &.is_selected {
-    background: $primary;
+    background: var(--primary);
     color: #fff;
     box-shadow: none;
   }
@@ -359,7 +357,7 @@
 
 .drive_view.grid {
   .is_selected.file {
-    background: $primary;
+    background: var(--primary);
     color: #fff;
     box-shadow: none;
   }
@@ -378,7 +376,7 @@
 
   svg,
   svg * {
-    fill: $primary;
+    fill: var(--primary);
   }
 
   &.link {
@@ -451,7 +449,7 @@
   .version {
     display: flex;
     padding: 24px 0px;
-    border-bottom: solid 1px $grey_light;
+    border-bottom: solid 1px var(--grey-background);
     .titleVersionDetails {
       font-size: 24px;
       color: var(--black);
@@ -464,18 +462,18 @@
       .versionTitle {
         font-size: 14px;
         font-weight: bold;
-        color: $black;
+        color: var(--black);
       }
       .versionDate {
         font-size: 14px;
-        color: $black;
+        color: var(--black);
       }
     }
     .name {
       flex: 0.5;
       font-size: 14px;
       line-height: 24px;
-      color: $black;
+      color: var(--black);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -505,8 +503,8 @@
         width: 24px;
         height: 24px;
         display: inline-block;
-        background-color: var(--pale-grey);
-        border-radius: var(--default-border-radius);
+        background-color: var(--grey-background);
+        border-radius: var(--border-radius-base);
       }
     }
     .footerTitle {

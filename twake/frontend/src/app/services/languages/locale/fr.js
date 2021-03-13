@@ -20,6 +20,9 @@ export default {
   'general.unarchive': 'Désarchiver',
   'general.from_other_workspace': "Depuis l'espace $1",
   'general.help': 'Aide',
+  'general.help.support': 'Support',
+  'general.help.feedback': 'Feedback',
+  'general.help.documentation': 'Documentation',
   'general.send': 'Envoyer un message',
   'general.update': 'Mettre à jour',
   'general.remove': 'Supprimer',
@@ -1971,4 +1974,8 @@ export default {
   'components.alert.leave_private_channel.title': 'Voulez-vous vraiment quitter la chaîne?',
   'components.alert.leave_private_channel.description':
     "Vous ne pourrez plus rejoindre cette chaîne privée à moins que quelqu'un ne vous invite.",
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.tag':
+    "Vous n'êtes pas membre",
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader':
+    'Charger plus',
 };

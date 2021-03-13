@@ -69,13 +69,11 @@ export default class TransportSocket {
     this.socket = io.connect(socketEndpoint || '', {
       path: '/socket',
       reconnectionDelayMax: 10000,
+      reconnectionDelay: 2000,
     });
     const socket = this.socket;
     this.socket.on('disconnect', () => {
-      logger.debug('Disconnected from websocket');
-      setTimeout(() => {
-        this.connect();
-      });
+      logger.debug('Disconnected from websocket, socket.io will reconnect');
     });
 
     this.socket.on('connect', async () => {

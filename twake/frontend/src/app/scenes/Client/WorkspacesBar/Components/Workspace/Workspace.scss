@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .workspace {
   width: 100%;
   margin-bottom: 24px;
@@ -17,13 +15,13 @@
   &:hover,
   &.is_selected {
     .image {
-      background-color: $white;
+      background-color: var(--white);
     }
     .name {
-      color: $white;
+      color: var(--white);
     }
     &::after {
-      background: $white;
+      background: var(--white);
     }
   }
 
@@ -31,10 +29,10 @@
     position: absolute;
     top: -8px;
     left: calc(50% + 8px);
-    background: $red;
+    background: var(--red);
     width: 16px;
     height: 16px;
-    border: 2px solid $secondary;
+    border: 2px solid var(--secondary);
     box-sizing: border-box;
     border-radius: 50%;
   }
@@ -48,7 +46,7 @@
     top: 14px;
     position: absolute;
     left: 0px;
-    background: $grey_dark;
+    background: var(--grey-dark);
     opacity: 0;
     transition: top 0.2s, height 0.2s, background 0.2s;
   }
@@ -57,7 +55,7 @@
       height: 32px !important;
       top: 0px !important;
       opacity: 1;
-      background: $white;
+      background: var(--white);
     }
   }
   &.has_notifications {
@@ -70,16 +68,16 @@
   }
 
   .image {
-    background-color: $grey_dark;
+    background-color: var(--grey-dark);
     background-size: cover;
     background-position: center;
-    color: $secondary;
+    color: var(--secondary);
     font-size: 14px;
     text-align: center;
     width: 32px;
     height: 32px;
     line-height: 32px;
-    border-radius: $larger_border_radius;
+    border-radius: var(--border-radius-base);
     margin: auto;
     margin-bottom: 8px;
     background-size: cover;
@@ -93,7 +91,7 @@
   }
 
   .name {
-    color: $grey_dark;
+    color: var(--grey-dark);
     opacity: 1;
     text-align: center;
     font-size: 12px;
@@ -117,11 +115,11 @@
     }
     .image {
       font-size: 0px;
-      background: $grey_dark !important;
+      background: var(--grey-dark) !important;
     }
     .name {
-      background: $grey_dark;
-      border-radius: var(--default-border-radius-large);
+      background: var(--grey-dark);
+      border-radius: var(--border-radius-large);
       width: 32px;
       margin: auto;
       height: 12px;

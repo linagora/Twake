@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .workspaceParameter {
   .parameters_loader {
     margin: auto;
@@ -109,7 +107,7 @@
                 line-height: 35px;
                 background: #f2f2f2;
                 height: 34px;
-                border-radius: $base_border_radius;
+                border-radius: var(--border-radius-base);
                 padding: 0 10px;
                 margin-right: 10px;
                 display: inline-block;
@@ -119,7 +117,7 @@
               }
 
               .main_mail {
-                background: $primary;
+                background: var(--primary);
                 color: #fff;
                 width: auto !important;
                 min-width: 0;

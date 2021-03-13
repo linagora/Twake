@@ -7,10 +7,18 @@ import {
   CrudExeption,
   OperationType,
   UpdateResult,
+  CreateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import ChannelServiceAPI, { MemberService } from "../../provider";
 
-import { Channel as ChannelEntity, ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import {
+  Channel as ChannelEntity,
+  ChannelMember,
+  ChannelMemberPrimaryKey,
+  getChannelMemberInstance,
+  getMemberOfChannelInstance,
+  MemberOfChannel,
+} from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { Channel, ResourceEventsPayload, User } from "../../../types";
 import { cloneDeep, isNil, omitBy } from "lodash";
@@ -19,22 +27,56 @@ import { pick } from "../../../../utils/pick";
 import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import {
   PubsubParameter,
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import { plainToClass } from "class-transformer";
+
+const USER_CHANNEL_KEYS = [
+  "id",
+  "company_id",
+  "workspace_id",
+  "user_id",
+  "channel_id",
+  "type",
+  "last_access",
+  "last_increment",
+  "favorite",
+  "notification_level",
+  "expiration",
+] as const;
+
+const CHANNEL_MEMBERS_KEYS = [
+  "company_id",
+  "workspace_id",
+  "user_id",
+  "channel_id",
+  "type",
+] as const;
 
 export class Service implements MemberService {
   version: "1";
+  userChannelsRepository: Repository<ChannelMember>;
+  channelMembersRepository: Repository<MemberOfChannel>;
 
-  constructor(private service: MemberService, private channelService: ChannelServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private channelService: ChannelServiceAPI) {}
 
   async init(): Promise<this> {
     try {
-      this.service.init && (await this.service.init());
+      this.userChannelsRepository = await this.database.getRepository(
+        "user_channels",
+        ChannelMember,
+      );
+      this.channelMembersRepository = await this.database.getRepository(
+        "channel_members",
+        MemberOfChannel,
+      );
     } catch (err) {
-      logger.error("Can not initialize channel member service");
+      logger.error({ err }, "Can not initialize channel member service");
     }
 
     return this;
@@ -72,7 +114,7 @@ export class Service implements MemberService {
       throw CrudExeption.notFound("Channel does not exists");
     }
 
-    const memberToUpdate = await this.service.get(this.getPrimaryKey(member), context);
+    const memberToUpdate = await this.userChannelsRepository.findOne(this.getPrimaryKey(member));
     const mode = memberToUpdate ? OperationType.UPDATE : OperationType.CREATE;
 
     logger.debug(`MemberService.save - ${mode} member %o`, memberToUpdate);
@@ -106,13 +148,20 @@ export class Service implements MemberService {
 
       memberToSave = cloneDeep(memberToUpdate);
 
+      //Ensure it is a boolean
+      memberToSave.favorite = !!memberToSave.favorite;
+
       updatableFields.forEach(field => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (memberToSave as any)[field] = member[field];
       });
 
-      const updateResult = await this.service.update(this.getPrimaryKey(member), memberToSave);
-      this.onUpdated(context.channel, memberToSave, updateResult);
+      await this.userChannelsRepository.save(memberToSave);
+      this.onUpdated(
+        context.channel,
+        memberToSave,
+        new UpdateResult<ChannelMember>("channel_member", memberToSave),
+      );
     } else {
       const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
       const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
@@ -121,7 +170,7 @@ export class Service implements MemberService {
       const userIsDefinedInChannelUserList = (channel.members || []).includes(
         String(member.user_id),
       );
-      const isChannelCreator = context.user && channel.owner === context.user.id;
+      const isChannelCreator = context.user && String(channel.owner) === String(context.user.id);
 
       // 1. Private channel: user can not join private channel by themself when it is private
       // only member can add other users in channel
@@ -132,8 +181,20 @@ export class Service implements MemberService {
         isPublicChannel ||
         (isDirectChannel && userIsDefinedInChannelUserList)
       ) {
-        const saveResult = await this.service.save(member, options, context);
-        this.onCreated(channel, member, context.user, saveResult);
+        const memberToSave = { ...member, ...context.channel };
+        const userChannel = getChannelMemberInstance(pick(memberToSave, ...USER_CHANNEL_KEYS));
+        const channelMember = getMemberOfChannelInstance(
+          pick(memberToSave, ...CHANNEL_MEMBERS_KEYS),
+        );
+        await this.userChannelsRepository.save(userChannel);
+        await this.channelMembersRepository.save(channelMember);
+
+        this.onCreated(
+          channel,
+          member,
+          context.user,
+          new CreateResult<ChannelMember>("channel_member", memberToSave),
+        );
       } else {
         throw CrudExeption.badRequest(`User ${member.user_id} is not allowed to join this channel`);
       }
@@ -142,12 +203,9 @@ export class Service implements MemberService {
     return new SaveResult<ChannelMember>("channel_member", member, mode);
   }
 
-  async get(
-    pk: ChannelMemberPrimaryKey,
-    context?: ChannelExecutionContext,
-  ): Promise<ChannelMember> {
+  async get(pk: ChannelMemberPrimaryKey): Promise<ChannelMember> {
     // FIXME: Who can fetch a single member?
-    return await this.service.get(this.getPrimaryKey(pk), context);
+    return await this.userChannelsRepository.findOne(this.getPrimaryKey(pk));
   }
 
   @RealtimeDeleted<ChannelMember>((member, context) => [
@@ -171,7 +229,7 @@ export class Service implements MemberService {
     pk: ChannelMemberPrimaryKey,
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
-    const memberToDelete = await this.service.get(pk, context);
+    const memberToDelete = await this.userChannelsRepository.findOne(pk);
     const channel = await this.channelService.channels.get(context.channel);
 
     if (!channel) {
@@ -182,6 +240,12 @@ export class Service implements MemberService {
       throw CrudExeption.notFound("Channel member not found");
     }
 
+    if (ChannelEntity.isDirectChannel(channel)) {
+      if (!this.isCurrentUser(memberToDelete, context.user)) {
+        throw CrudExeption.badRequest("User can not remove other users from direct channel");
+      }
+    }
+
     if (ChannelEntity.isPrivateChannel(channel)) {
       const canLeave = await this.canLeavePrivateChannel(context.user, channel);
 
@@ -190,27 +254,79 @@ export class Service implements MemberService {
       }
     }
 
-    const result = await this.service.delete(pk, context);
+    await this.userChannelsRepository.remove(getChannelMemberInstance(pk));
+    await this.channelMembersRepository.remove(getMemberOfChannelInstance(pk));
 
     this.onDeleted(memberToDelete, context.user, channel);
 
-    return result;
+    return new DeleteResult<ChannelMember>("channel_member", pk as ChannelMember, true);
   }
 
-  list(
+  /**
+   * List given channel members
+   */
+  async list(
     pagination: Pagination,
     options: ChannelListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    return this.service.list(pagination, options, context);
+    const channel = await this.channelService.channels.get({
+      company_id: context.channel.company_id,
+      workspace_id: context.channel.workspace_id,
+      id: context.channel.id,
+    });
+
+    if (!channel) {
+      throw CrudExeption.notFound("Channel not found");
+    }
+
+    if (ChannelEntity.isDirectChannel(channel) || ChannelEntity.isPrivateChannel(channel)) {
+      const isMember = await this.isChannelMember(context.user, channel);
+
+      if (!isMember) {
+        throw CrudExeption.badRequest("User does not have enough rights to get channels");
+      }
+    }
+
+    const result = await this.channelMembersRepository.find(
+      {
+        company_id: context.channel.company_id,
+        workspace_id: context.channel.workspace_id,
+        channel_id: context.channel.id,
+      },
+      { pagination },
+    );
+
+    return new ListResult<ChannelMember>(
+      "channel_member",
+      result
+        .getEntities()
+        .map(member => plainToClass(ChannelMember, { id: member.user_id, ...member })),
+      result.nextPage,
+    );
   }
 
-  listUserChannels(
+  async listUserChannels(
     user: User,
     pagination: Pagination,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    return this.service.listUserChannels(user, pagination, context);
+    const result = await this.userChannelsRepository.find(
+      {
+        company_id: context.workspace.company_id,
+        workspace_id: context.workspace.workspace_id,
+        user_id: user.id,
+      },
+      { pagination },
+    );
+
+    return new ListResult<ChannelMember>(
+      "channel_member",
+      result
+        .getEntities()
+        .map(member => plainToClass(ChannelMember, { id: member.user_id, ...member })),
+      result.nextPage,
+    );
   }
 
   /**
@@ -277,8 +393,8 @@ export class Service implements MemberService {
     });
   }
 
-  isCurrentUser(member: ChannelMember, user: User): boolean {
-    return member.user_id === user.id;
+  isCurrentUser(member: ChannelMember | MemberOfChannel, user: User): boolean {
+    return String(member.user_id) === String(user.id);
   }
 
   isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {

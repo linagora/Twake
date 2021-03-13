@@ -45,7 +45,9 @@ export default class ChannelsApps extends Component {
   }
   render() {
     if (
-      Collections.get('channels').did_load_first_time ||
+      Collections.get('channels').did_load_first_time[
+        'channels_' + Workspaces.currentWorkspaceId
+      ] ||
       !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member')
     ) {
       ChannelsBarService.collectionIsReady(
@@ -78,13 +80,16 @@ export default class ChannelsApps extends Component {
 
     const workspace_channels_by_app_id: any = {};
     workspace_apps_channels.map((ch: any) => {
-      workspace_channels_by_app_id[ch.app_id] = ch;
+      ch.app_id && (workspace_channels_by_app_id[ch.app_id] = ch);
     });
 
     return (
       <div className="applications_channels" style={{ marginTop: 8 }}>
         {Object.keys(workspace_channels_by_app_id).map(id => {
           const channel = workspace_channels_by_app_id[id];
+          if (!channel) {
+            return '';
+          }
           const app = Collections.get('applications').find(channel.app_id);
           if (channel && !(!app || !(app.display || {}).app)) {
             const name = Languages.t('app.name.' + app.simple_name, [], app.name);

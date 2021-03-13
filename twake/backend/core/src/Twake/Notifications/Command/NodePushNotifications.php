@@ -57,7 +57,7 @@ class NodePushNotifications extends ContainerAwareCommand
                 $message_id = $push_message["message_id"];
                 $thread_id = $push_message["thread_id"];
                 $user_id = $push_message["user"];
-                $badge_value = $push_message["value"];
+                $badge_value = $push_message["badge_value"];
 
                 //Get $title and $message from $message_id
                 $messageEntity = $messagesRepo->findOneBy(["id" => $message_id]);

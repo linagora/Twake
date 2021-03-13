@@ -11,27 +11,90 @@
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less';
 
+// Circular Std = France
+// Helvetica Neue = Vietnam
+// TT Norms = Russia
+
+// --- Twake fonts --- //
+@main-font: 'Circular Std', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue',
+  'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+
 // --- Twake colors --- //
-@black: #444;
-@black-alpha-2: #18295255;
+@black: #000;
+@black-alpha-50: #18295288;
+@black-alpha-70: #18295255;
 @error: #ff5154;
-@primary: #837dff;
-@primary-background: #f3f2ff;
-@primary-hover: #5d58d7;
+@primary: #3840f7;
+@primary-background: #3842f723;
+@primary-hover: #3850f7;
 @grey-background: #f5f5f7;
 @grey-light: #eeeeee;
-@grey-dark: #92929c;
-@secondary: #182952;
-@success: #18af2c;
-@warning: #faad14;
+@grey-dark: #6a6a6a;
+@secondary: #0d0f38; //#182952;
+@success: #04aa11;
+@warning: #ff8607;
 @white: #fff;
+
+/*
+// Preparation of dark theme
+@black: #fff;
+@black-alpha-50: #ffffff88;
+@black-alpha-70: #ffffff55;
+@error: #ff5154;
+@primary: #2da4fc;
+@primary-background: #111;
+@primary-hover: #0091ff;
+@grey-background: #222;
+@grey-light: #555;
+@grey-dark: #999;
+@secondary: #080808; //#182952;
+@success: #04aa11;
+@warning: #ff8607;
+@white: #111;
+*/
+
+// --- Twake sizing --- //
+@border-radius-small: 4px;
+@border-radius-base: 8px;
+@border-radius-large: 20px;
+@font-size-base: 14px; // major text font size
+@font-size-large: @font-size-base + 2px;
+@font-size-small: @font-size-base - 2px;
+@height-base: 32px;
+@height-large: @height-base + 8px;
+@height-small: 28px;
 
 // --- Twake shadows --- //
 @checkbox-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+@box-shadow-base: 0 2px 15px rgba(0, 0, 0, 0.3); //0 2px 4px rgba(0, 0, 0, 0.5)
+@box-shadow-large: 0 2px 15px rgba(0, 0, 0, 0.2); //0 2px 4px rgba(0, 0, 0, 0.5)
+
+// --- Root variables --- //
+:root {
+  --black: @black;
+  --black-alpha-50: @black-alpha-50;
+  --black-alpha-70: @black-alpha-70;
+  --border-radius-small: @border-radius-small;
+  --border-radius-base: @border-radius-base;
+  --border-radius-large: @border-radius-large;
+  --box-shadow-base: @box-shadow-base;
+  --box-shadow-large: @box-shadow-large;
+  --green: @success;
+  --grey-dark: @grey-dark;
+  --grey-background: @grey-background;
+  --main-font: @main-font;
+  --grey-light: @grey-light;
+  --primary: @primary;
+  --primary-hover: @primary-hover;
+  --primary-background: @primary-background;
+  --red: @error;
+  --secondary: @secondary;
+  --white: @white;
+  --warning: @warning;
+}
 
 // --- ant-colors --- //
-@border-color-base: @grey-background; // major border color
-@disabled-bg: @grey-light; // disable state background
+@disabled-bg: @primary-background; // disable state background
 @disabled-color: @white; // disable state color
 @error-color: @error; // error state color
 @heading-color: @black; // heading text color
@@ -40,13 +103,11 @@
 @success-color: @success; // success state color
 @warning-color: @warning; // warning state color
 
-// --- sizing --- //
-@border-radius-base: 3px; // major border radius
-@font-size-base: 14px; // major text font size
-@font-size-lg: 14px;
-@height-base: 32px;
-@height-lg: 40px;
-@height-sm: 28px;
+// --- ant-borders && ant-margins  --- //
+@border-color-base: @grey-background; // major border color
+
+// --- ant-fonts --- //
+@font-family: @main-font;
 
 // --- ant-btn --- //
 @btn-border-width: 0;
@@ -103,8 +164,8 @@
 @input-border-color: @grey-background; // input border color
 @input-bg: @grey-background; // input background color
 @input-height-base: @height-base;
-@input-height-lg: @height-lg;
-@input-height-sm: @height-sm;
+@input-height-lg: @height-large;
+@input-height-sm: @height-small;
 @input-hover-border-color: none; // input border color on hover
 @input-placeholder-color: @grey-dark; // placeholder input color
 
@@ -136,10 +197,10 @@ textarea.ant-input,
   min-height: @height-base;
 
   &.ant-input-sm {
-    min-height: @height-sm;
+    min-height: @height-small;
   }
   &.ant-input-lg {
-    min-height: @height-lg;
+    min-height: @height-large;
   }
 }
 
@@ -172,11 +233,16 @@ textarea.ant-input,
 // --- ant-modal-body --- //
 @modal-body-padding: 0;
 
+// --- ant-modal-content --- //
+.ant-modal-content {
+  border-radius: @border-radius-large;
+}
+
 // --- ant-select --- //
 @select-background: @grey-background;
 @select-border-color: @grey-background;
 @select-dropdown-bg: @white;
-@select-item-active-bg: @grey-background;
+@select-item-active-bg: @primary-background;
 @select-item-selected-bg: @primary;
 @select-item-selected-color: @white;
 
@@ -238,7 +304,7 @@ textarea.ant-input,
 }
 
 .ant-tabs-tab-active > .ant-tabs-tab-btn {
-  border-radius: 4px;
+  border-radius: @border-radius-base;
   background-color: @primary-background;
 }
 .ant-tabs-top > .ant-tabs-nav::before,

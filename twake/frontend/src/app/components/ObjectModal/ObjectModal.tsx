@@ -16,7 +16,7 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
   return (
     <Layout className="modal-layout" hasSider={false}>
       <Header className="modal-layout-header">
-        <Row align="middle" justify="space-between" className="modal-layout-row">
+        <Row justify="space-between" className="modal-layout-row">
           {props.title && (
             <Col>
               <Typography.Title level={5} style={{ margin: 0 }}>

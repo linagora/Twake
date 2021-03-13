@@ -33,8 +33,8 @@ export class AMQPPubsubManager implements PubsubClientManager {
 
     // Connect event is not sent on first connection
     // so we have to deal with the `connected` flag
-    connection.on("connect", () => {
-      logger.info(`${LOG_PREFIX} Connected to RabbitMQ`);
+    connection.on("connect", ({ url }) => {
+      logger.info(`${LOG_PREFIX} Connected to RabbitMQ on ${url}`);
       if (this.connected) {
         return;
       }

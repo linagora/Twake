@@ -120,7 +120,9 @@ export default class EventCreation extends Component {
                   '//' +
                   window.location.host +
                   '/bundle/connectors/jitsi/call/twake_event_' +
-                  event.front_id,
+                  (event.front_id || '').replace(/-/g, '_') +
+                  '__' +
+                  (event.front_id || '').replace(/-/g, '_'),
               );
             }}
           >
@@ -167,7 +169,7 @@ export default class EventCreation extends Component {
         <div className="separator" />
 
         <Button
-          className="button medium secondary-light medium"
+          className="button medium secondary-light"
           style={{ width: 'auto' }}
           onClick={() => {
             this.doNotCancelEdit = true;

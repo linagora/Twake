@@ -3,6 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import {
   buildSelectQuery,
   buildComparison,
+  buildIn,
 } from "../../../../../../../../../src/core/platform/services/database/services/orm/connectors/cassandra/query-builder";
 import { ChannelMemberNotificationPreference } from "../../../../../../../../../src/services/notifications/entities/channel-member-notification-preferences";
 
@@ -165,6 +166,26 @@ describe("The QueryBuilder module", () => {
       expect(result).toContain("bar >= 2");
       expect(result).toContain("baz < 3");
       expect(result).toContain("qix <= 4");
+    });
+  });
+
+  describe("The buildIn function", () => {
+    it("should create a id IN (ids) string", () => {
+      expect(
+        buildIn({
+          $in: [["id", ["1", "2", "3"]]],
+        }),
+      ).toContain("id IN (1,2,3)");
+
+      const result = buildComparison({
+        $in: [
+          ["id", ["1", "2", "3"]],
+          ["user", ["a", "b"]],
+        ],
+      });
+
+      expect(result).toContain("id IN (1,2,3)");
+      expect(result).toContain("user IN (a,b)");
     });
   });
 });

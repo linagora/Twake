@@ -36,7 +36,7 @@ class Parameters extends \Common\Configuration
                 "dbname" => "twake",
                 "user" => "root",
                 "password" => "root",
-                "encryption_key" => "c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0",
+                "encryption_key" => "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
                 "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}"
             ],
             "es" => [

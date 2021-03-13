@@ -4,6 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
+import UserService from 'services/user/user.js';
 
 import FooterUI from 'app/scenes/Client/ChannelsBar/Parts/Footer/Footer.js';
 
@@ -38,6 +39,22 @@ export default class Footer extends Component {
           (() => {
             window.open(InitService.server_infos.help_link);
           })
+        }
+        onClickFeedback={
+          () => {
+            const currentUser = UserService.getCurrentUser();
+            window.freddyWidget.show({
+              custom_fields: {
+                id: currentUser.id,
+                email: currentUser.email,
+              }
+            });
+          }
+        }
+        onClickDocumentation={
+          () => {
+            window.open("https://doc.twake.app/how-to-use-it/welcome");
+          }
         }
       />
     );

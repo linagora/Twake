@@ -20,6 +20,9 @@ export default {
   'general.unarchive': 'Unarchive',
   'general.from_other_workspace': 'From workspace $1',
   'general.help': 'Help',
+  'general.help.support': 'Support',
+  'general.help.feedback': 'Feedback',
+  'general.help.documentation': 'Documentation',
   'general.send': 'Send message',
   'general.update': 'Update',
   'general.remove': 'Remove',
@@ -1850,7 +1853,8 @@ export default {
   'components.channelworkspacelist.title': 'Channels',
   'components.channelworkspacelist.button_join': 'Join',
   'components.channelworkspacelist.button_joined': 'Joined',
-  'scenes.client.channelbar.workspacechannellist.autocomplete': 'Search channel',
+  'scenes.client.channelbar.workspacechannellist.autocomplete':
+    'Search channel, user or direct messages',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation': 'Create a new tab',
   'scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition': 'Rename $1',
   'components.connectorslistmanager.add_connectors': 'Add connectors',
@@ -1900,4 +1904,8 @@ export default {
   'components.alert.leave_private_channel.title': 'Are you sure you want to leave the channel ?',
   'components.alert.leave_private_channel.description':
     'You will not be able to join this private channel again unless someone invite you.',
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.tag':
+    'You are not a member',
+  'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader':
+    'Load more',
 };

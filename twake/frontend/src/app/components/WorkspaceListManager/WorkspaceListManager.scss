@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .workspaceListManager {
   & > .no-workspaces {
     line-height: 32px;
@@ -18,7 +16,7 @@
       width: 25px;
       height: 25px;
       border-radius: 14px;
-      border: 2px solid $white;
+      border: 2px solid var(--white);
       box-sizing: border-box;
 
       &.email {
@@ -45,7 +43,7 @@
       width: 16px;
       height: 16px;
       margin-top: 4px;
-      border-radius: var(--default-border-radius);
+      border-radius: var(--border-radius-base);
 
       &.email {
         color: #444;
@@ -74,7 +72,7 @@
       .user_head {
         width: 24px;
         height: 24px;
-        border-radius: var(--default-border-radius-large);
+        border-radius: var(--border-radius-large);
 
         &.email {
           color: #444;
@@ -103,17 +101,17 @@
       height: 24px;
       .m-icon-small {
         margin: 3px;
-        color: $black;
+        color: var(--black);
         cursor: pointer;
       }
 
       &:hover {
         .m-icon-small {
           &.remove {
-            color: $red;
+            color: var(--red);
           }
           &.add {
-            color: $primary;
+            color: var(--primary);
           }
         }
       }

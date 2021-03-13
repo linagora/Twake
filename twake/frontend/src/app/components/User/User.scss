@@ -1,13 +1,11 @@
-@import '~components/constants.scss';
-
 .user_head {
   width: 18px;
   height: 18px;
-  border-radius: var(--default-border-radius);
-  border: solid 1px $grey_background;
+  border-radius: var(--border-radius-base);
+  border: solid 1px var(--grey-background);
   background-position: center;
   background-size: cover;
-  background-color: $grey_light;
+  background-color: var(--primary-background);
   position: relative;
   border: 0px solid #fff;
 
@@ -22,21 +20,21 @@
     width: 8px;
     height: 8px;
     border-radius: 6px;
-    background: $green;
-    border: 1px solid $grey_background;
+    background: var(--green);
+    border: 1px solid var(--grey-background);
 
     &.grey {
-      background: $grey_dark;
+      background: var(--grey-dark);
     }
     &.red {
-      background: $red;
+      background: var(--red);
     }
   }
 
   &.big {
     width: 40px;
     height: 40px;
-    border-radius: var(--default-border-radius-large);
+    border-radius: var(--border-radius-large);
     .status {
       border-width: 2px;
       bottom: -2px;

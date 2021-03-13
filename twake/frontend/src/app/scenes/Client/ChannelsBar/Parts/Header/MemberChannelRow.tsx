@@ -26,9 +26,7 @@ type Props = {
 export default (props: Props) => {
   let userEvents: JSX.Element;
   const [isMember, setIsMember] = useState<boolean>(false);
-  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
-    return { workspaceId };
-  });
+  const { workspaceId } = RouterServices.getStateFromRoute();
   const currentUserId: string = UsersService.getCurrentUserId();
 
   const { avatar, name, users } = getUserParts({

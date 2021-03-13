@@ -1,53 +1,31 @@
-import { FastifyInstance, FastifyPluginCallback, RouteShorthandOptions } from "fastify";
-import { UserParams, CreateUserBody } from "./types";
-import { createUserSchema } from "./schemas";
-import * as controller from "./controller";
-import User from "../entity/user";
+import { FastifyInstance, FastifyPluginCallback, FastifyRequest, RouteShorthandOptions } from "fastify";
+import { UsersCrudController } from "./controller";
+import UserServiceAPI from "../api";
+import { getUserSchema } from "./schemas";
 
-const routes: FastifyPluginCallback = (fastify: FastifyInstance, _opts, next) => {
-  fastify.get(
-    "/",
-    {
-      preValidation: [fastify.authenticate],
-    },
-    async (req): Promise<User[]> => {
-      req.log.info("Get users");
+const usersUrl = "/users";
 
-      return controller.getUsers();
-    },
-  );
+const routes: FastifyPluginCallback<{
+  service: UserServiceAPI
+}> = (fastify: FastifyInstance, options, next) => {
+  const usersController = new UsersCrudController(options.service.users);
+  const accessControl = async (request: FastifyRequest) => {
+    // TODO
+    const authorized = true
 
-  fastify.get<{
-    Params: UserParams;
-  }>(
-    "/:id",
-    {
-      preValidation: [fastify.authenticate],
-    },
-    async (req): Promise<User> => {
-      req.log.debug(`Current user ${JSON.stringify(req.user)}`);
-      req.log.info(`Get user ${req.params.id}`);
-      return controller.getUser(req.params.id);
-    },
-  );
-
-  const routeOptions: RouteShorthandOptions = {
-    preValidation: [fastify.authenticate],
-    schema: createUserSchema,
+    if (!authorized) {
+      throw fastify.httpErrors.badRequest("Invalid company/workspace");
+    }
   };
 
-  fastify.post<{
-    Body: CreateUserBody;
-  }>(
-    "/",
-    routeOptions,
-    async (request, reply): Promise<User> => {
-      request.log.info(`Creating user ${JSON.stringify(request.body)}`);
-      reply.status(201);
-
-      return new User("1");
-    },
-  );
+  fastify.route({
+    method: "GET",
+    url: `${usersUrl}/:id`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getUserSchema,
+    handler: usersController.get.bind(usersController),
+  });
 
   next();
 };

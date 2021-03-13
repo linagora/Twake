@@ -11,8 +11,7 @@ export type ChannelType = {
   channel_group?: string;
   visibility?: string;
   default?: boolean;
-  direct_channel_members?: string[];
-  members?: string[]; //Todo should not be used if backend is stable
+  members?: string[];
   owner?: string;
   members_count?: number;
   guests_count?: number;
@@ -22,6 +21,12 @@ export type ChannelType = {
   user_member?: ChannelMemberType;
   connectors?: string[];
   last_activity?: number;
+  last_message?: {
+    date: number;
+    sender: string;
+    title: string;
+    text: string;
+  };
 };
 
 export type ChannelMemberType = {

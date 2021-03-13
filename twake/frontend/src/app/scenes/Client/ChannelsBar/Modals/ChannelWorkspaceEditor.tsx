@@ -17,9 +17,7 @@ type Props = {
 };
 
 const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
-  const { workspaceId, companyId } = RouterServices.useRouteState(({ workspaceId, companyId }) => {
-    return { workspaceId, companyId };
-  });
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);

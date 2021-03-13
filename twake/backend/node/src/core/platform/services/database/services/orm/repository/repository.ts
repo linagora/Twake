@@ -12,12 +12,22 @@ export type RemoveFilter = { [key: string]: any };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type comparisonType = [string, any];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type inType = [string, Array<any>];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type likeType = [string, any];
+
 export type FindOptions = {
   pagination?: Pagination;
   $lt?: comparisonType[];
   $lte?: comparisonType[];
   $gt?: comparisonType[];
   $gte?: comparisonType[];
+  /**
+   * The $in operator selects the documents where the value of a field equals any value in the specified array
+   */
+  $in?: inType[];
+  $like?: likeType[];
 };
 
 /**

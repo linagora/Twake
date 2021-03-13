@@ -1,149 +1,85 @@
-import _ from "lodash";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
+import { UserNotificationPreferencesAPI } from "../../api";
 import {
-  DeleteResult,
+  CrudExeption,
   ListResult,
   SaveResult,
   OperationType,
+  DeleteResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import {
-  ChannelMemberNotificationPreference,
-  ChannelMemberNotificationPreferencePrimaryKey,
+  UserNotificationPreferences,
+  UserNotificationPreferencesType,
+  UserNotificationPreferencesPrimaryKey,
 } from "../../entities";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import { ChannelMemberPreferencesServiceAPI } from "../../api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../../core/platform/framework";
+import { pick, assign } from "lodash";
 
-const TYPE = "channel_members_notification_preferences";
-
-export class ChannelMemberPreferencesService implements ChannelMemberPreferencesServiceAPI {
+export class NotificationPreferencesService implements UserNotificationPreferencesAPI {
   version: "1";
-  repository: Repository<ChannelMemberNotificationPreference>;
+  repository: Repository<UserNotificationPreferences>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<ChannelMemberNotificationPreference>(
-      TYPE,
-      ChannelMemberNotificationPreference,
+    this.repository = await this.database.getRepository<UserNotificationPreferences>(
+      UserNotificationPreferencesType,
+      UserNotificationPreferences,
     );
 
     return this;
   }
 
-  async save(
-    entity: ChannelMemberNotificationPreference,
-  ): Promise<SaveResult<ChannelMemberNotificationPreference>> {
-    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
-      user_id: entity.user_id,
-      company_id: entity.company_id,
-      channel_id: entity.channel_id,
-    };
-
-    let preference = await this.repository.findOne(pk);
-
-    if (!preference) {
-      preference = new ChannelMemberNotificationPreference();
-      preference = _.merge(entity, pk);
-    }
-
-    preference = _.merge(preference, entity);
-
-    await this.repository.save(preference);
-
-    return new SaveResult(TYPE, preference, OperationType.CREATE);
+  async list(): Promise<ListResult<UserNotificationPreferences>> {
+    throw new Error("Not implemented");
   }
 
-  async get(
-    pk: ChannelMemberNotificationPreferencePrimaryKey,
-  ): Promise<ChannelMemberNotificationPreference> {
+  async get(pk: UserNotificationPreferencesPrimaryKey): Promise<UserNotificationPreferences> {
     return await this.repository.findOne(pk);
   }
 
   async delete(
-    pk: ChannelMemberNotificationPreferencePrimaryKey,
-  ): Promise<DeleteResult<ChannelMemberNotificationPreference>> {
-    await this.repository.remove(pk as ChannelMemberNotificationPreference);
+    pk: UserNotificationPreferencesPrimaryKey,
+  ): Promise<DeleteResult<UserNotificationPreferences>> {
+    await this.repository.remove(pk as UserNotificationPreferences);
 
-    return new DeleteResult(TYPE, pk as ChannelMemberNotificationPreference, true);
-  }
-
-  list(): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    throw new Error("Not implemented");
-  }
-
-  async getChannelPreferencesForUsers(
-    channelAndCompany: Pick<
-      ChannelMemberNotificationPreferencePrimaryKey,
-      "channel_id" | "company_id"
-    >,
-    users: string[] = [],
-    lastRead: {
-      lessThan: number;
-    },
-  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    logger.debug(
-      `ChannelMemberPreferenceService - Get Channel preferences for users ${JSON.stringify(
-        users,
-      )} with lastRead < ${lastRead?.lessThan}`,
+    return new DeleteResult(
+      UserNotificationPreferencesType,
+      pk as UserNotificationPreferences,
+      true,
     );
-    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
-
-    if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
-      result.filterEntities(entity => {
-        return entity.last_read < lastRead.lessThan;
-      });
-    }
-
-    logger.debug(
-      `ChannelMemberPreferenceService - Result ${JSON.stringify(
-        result.getEntities().map(preference => preference.user_id),
-      )}`,
-    );
-
-    return result;
   }
 
-  async getChannelPreferencesForUsersFilteredByReadTime(
-    channelAndCompany: Pick<
-      ChannelMemberNotificationPreferencePrimaryKey,
-      "channel_id" | "company_id"
-    >,
-    users: string[] = [],
-    lastRead: number,
-  ): Promise<ListResult<ChannelMemberNotificationPreference>> {
-    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
-
-    if (result.getEntities().length > 0 && lastRead) {
-      result.filterEntities(entity => {
-        return entity.last_read < lastRead;
-      });
-    }
-
-    return result;
-  }
-
-  async updateLastRead(
-    channelAndCompany: Pick<ChannelMemberNotificationPreference, "channel_id" | "company_id">,
+  async listPreferences(
+    workspace_id: string,
+    company_id: string,
     user_id: string,
-    lastRead: number,
-  ): Promise<ChannelMemberNotificationPreference> {
-    const pk: ChannelMemberNotificationPreferencePrimaryKey = {
-      user_id,
-      company_id: channelAndCompany.company_id,
-      channel_id: channelAndCompany.channel_id,
-    };
-
-    const preference = await this.repository.findOne(pk);
-
-    if (!preference) {
-      return;
+    filter: Pick<UserNotificationPreferencesPrimaryKey, "user_id">,
+  ): Promise<ListResult<UserNotificationPreferences>> {
+    if (!workspace_id || !company_id || !user_id) {
+      throw CrudExeption.badRequest("workspace_id, company_id and user_id are required");
     }
 
-    preference.last_read = lastRead;
+    return await this.repository.find({
+      workspace_id,
+      company_id,
+      user_id,
+      ...pick(filter, ["user_id"]),
+    });
+  }
 
-    await this.repository.save(preference);
+  async savePreferences(
+    notificationPreferences: UserNotificationPreferences,
+  ): Promise<SaveResult<UserNotificationPreferences>> {
+    const notificationPreferencesEntity = new UserNotificationPreferences();
+    assign(notificationPreferencesEntity, notificationPreferences);
 
-    return preference;
+    await this.repository.save(notificationPreferencesEntity);
+
+    return new SaveResult(
+      UserNotificationPreferencesType,
+      notificationPreferences,
+      OperationType.CREATE,
+    );
   }
 }

@@ -1,10 +1,8 @@
-@import '~components/constants.scss';
-
 .select {
   box-sizing: border-box;
   width: auto;
   vertical-align: middle;
-  background-color: $grey_background;
+  background-color: var(--grey-background);
   border: 0px;
   text-overflow: ellipsis;
   padding-right: 24px;

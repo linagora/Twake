@@ -314,7 +314,10 @@ export default class Tasks extends Component {
               >
                 {Languages.t('scenes.apps.tasks.my_tasks', 'Mes tâches')}
 
-                <div className="right-select-member" style={{ marginTop: '-8px', width: '200px' }}>
+                <div
+                  className="right-select-member"
+                  style={{ marginTop: '-8px', minWidth: '200px' }}
+                >
                   <UserListManager
                     users={[]}
                     buttonIcon={'enter'}

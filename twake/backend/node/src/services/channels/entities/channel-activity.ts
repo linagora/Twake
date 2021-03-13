@@ -1,5 +1,4 @@
 import { Type } from "class-transformer";
-import c from "config";
 import { Channel } from ".";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
@@ -26,6 +25,14 @@ export class ChannelActivity {
 
   @Column("last_activity", "number")
   last_activity: number;
+
+  @Column("last_message", "encoded_json")
+  last_message: {
+    date: number;
+    sender: string;
+    title: string;
+    text: string;
+  };
 
   /* Not stored in database */
 

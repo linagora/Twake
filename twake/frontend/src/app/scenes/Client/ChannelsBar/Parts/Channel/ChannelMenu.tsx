@@ -34,9 +34,7 @@ export default (props: Props): JSX.Element => {
   const currentUser = UserService.getCurrentUser();
   const companyId = props.channel.data.company_id;
   const channelWorkspaceId = props.channel.data.workspace_id;
-  const { workspaceId } = RouterServices.useRouteState(({ workspaceId }) => {
-    return { workspaceId };
-  });
+  const { workspaceId } = RouterServices.getStateFromRoute();
 
   const channelPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/::mine`;
   const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/${props.channel.data.id}/members/`;

@@ -17,15 +17,15 @@
   }
 
   .add-tab-button {
+    vertical-align: top;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: none;
-    height: 18px;
-    width: 18px;
-    border-radius: 4px;
-    background-color: var(--grey-background);
-    color: var(--black-alpha-2);
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: var(--border-radius-large);
+    background: var(--grey-background);
     margin-left: -8px;
 
     &:hover {

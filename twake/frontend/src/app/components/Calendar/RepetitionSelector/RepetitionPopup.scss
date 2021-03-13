@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .repetition_popup {
   font-weight: 500;
 
@@ -29,16 +27,16 @@
   }
 
   .selectedColor {
-    background-color: $primary;
-    color: $grey_background;
+    background-color: var(--primary);
+    color: var(--grey-background);
   }
 
   .unselectedColor {
-    background-color: $grey_background;
-    color: $primary;
+    background-color: var(--grey-background);
+    color: var(--primary);
 
     &:hover {
-      background: $primary_background;
+      background: var(--primary-background);
     }
   }
 

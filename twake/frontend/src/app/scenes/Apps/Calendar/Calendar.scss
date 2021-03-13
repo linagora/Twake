@@ -1,5 +1,3 @@
-@import '~components/constants.scss';
-
 .calendar_app {
   height: 100%;
   width: 100%;
@@ -58,9 +56,9 @@
     }
 
     .week_number {
-      color: $white;
-      background: $grey_dark;
-      border-radius: var(--default-border-radius);
+      color: var(--white);
+      background: var(--grey-dark);
+      border-radius: var(--border-radius-base);
       padding: 1px 4px;
       font-size: 12px;
       vertical-align: middle;
