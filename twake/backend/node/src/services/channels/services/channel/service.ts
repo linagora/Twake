@@ -275,6 +275,7 @@ export class Service implements ChannelService {
           workspace_id: channelActivity.workspace_id,
           id: channelActivity.channel_id,
           last_activity: channelActivity.last_activity,
+          last_message: channelActivity.last_message,
         },
       },
     ];
@@ -371,10 +372,13 @@ export class Service implements ChannelService {
       channels.mapEntities(<UserChannel>(channel: Channel) => {
         const userChannel = find(userChannels.getEntities(), { channel_id: channel.id });
 
+        const channelActivity = activityPerChannel.get(channel.id);
+
         return ({
           ...channel,
           ...{ user_member: userChannel },
-          last_activity: activityPerChannel.get(channel.id)?.last_activity || 0,
+          last_activity: channelActivity?.last_activity || 0,
+          last_message: channelActivity?.last_message || {},
         } as unknown) as UserChannel;
       });
 
