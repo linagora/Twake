@@ -30,7 +30,7 @@ class Calendar extends BaseController
             return new Response(Array("status" => "error"));
         }else{
             if($GLOBALS["segment_enabled"]) \Segment::track([
-                "event" => "calendar:create",
+                "event" => "calendar:".($object["id"] ? "edit" : "create"),
                 "userId" => $this->getUser()->getId()
             ]);
         }
