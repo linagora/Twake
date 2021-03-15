@@ -6,6 +6,7 @@ import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
+import { SkipCLI } from "../../framework/decorators/skip";
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
   version = "1";
@@ -37,6 +38,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     return this;
   }
 
+  @SkipCLI()
   async doStart(): Promise<this> {
     try {
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");

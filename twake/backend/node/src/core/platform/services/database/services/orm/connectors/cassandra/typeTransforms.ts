@@ -17,6 +17,7 @@ export const cassandraType = {
   counter: "COUNTER",
   blob: "BLOB",
   boolean: "BOOLEAN",
+  twake_boolean: "TINYINT",
 };
 
 type TransformOptions = {
@@ -46,6 +47,12 @@ export const transformValueToDbString = (
       throw new Error(`'${v}' is not a ${type}`);
     }
     return `${!!v}`;
+  }
+  if (type === "twake_boolean") {
+    if (!isBoolean(v)) {
+      throw new Error(`'${v}' is not a ${type}`);
+    }
+    return v ? "1" : "0";
   }
   if (type === "encoded_string" || type === "encoded_json") {
     if (type === "encoded_json") {
@@ -112,6 +119,10 @@ export const transformValueFromDbString = (
     return decryptedValue;
   }
 
+  if (type === "twake_boolean") {
+    return Boolean(v);
+  }
+
   if (type === "json") {
     try {
       return JSON.parse(v);
@@ -121,6 +132,9 @@ export const transformValueFromDbString = (
   }
   if (type === "uuid") {
     return String(v);
+  }
+  if (type === "number") {
+    return new Number(v);
   }
   return v;
 };

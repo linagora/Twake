@@ -8,5 +8,5 @@ export const logger = pino({
   level: config.get("level", "info"),
 });
 
-export const getLogger = (name?: string) =>
+export const getLogger = (name?: string): pino.Logger =>
   logger.child({ name: `twake${name ? "." + name : ""}` });

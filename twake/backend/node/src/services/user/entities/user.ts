@@ -1,3 +1,4 @@
+import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "user";
@@ -10,11 +11,10 @@ export default class User {
   @Column("id", "uuid")
   id: string;
 
-  // TODO: Booleans can be 0, 1 in old database, and must be converted to true/false in adapter
-  @Column("banned", "boolean")
+  @Column("banned", "twake_boolean")
   banned = false;
 
-  @Column("is_robot", "boolean")
+  @Column("is_robot", "twake_boolean")
   isrobot = false;
 
   @Column("first_name", "encoded_string")
@@ -42,7 +42,7 @@ export default class User {
   @Column("connections", "number")
   connections: number;
 
-  @Column("connected", "boolean")
+  @Column("connected", "twake_boolean")
   connected: boolean;
 
   // FIXME: Looks like this is an array stringified, need to check DB
@@ -89,10 +89,10 @@ export default class User {
   @Column("origin", "string")
   origin: string;
 
-  @Column("is_new", "boolean")
+  @Column("is_new", "twake_boolean")
   isnew = true;
 
-  @Column("mail_verified", "boolean")
+  @Column("mail_verified", "twake_boolean")
   mail_verified = false;
 
   @Column("mail_verification_override", "string")
@@ -109,7 +109,7 @@ export default class User {
   @Column("remember_me_secret", "encoded_string")
   remember_me_secret: string;
 
-  @Column("enabled", "boolean")
+  @Column("enabled", "twake_boolean")
   enabled: boolean;
 
   @Column("salt", "string")
@@ -136,9 +136,13 @@ export default class User {
   @Column("roles", "json")
   roles: Array<string>;
 
-  constructor(id: string) {
+  constructor(id?: string) {
     this.id = id;
   }
 }
 
 export type UserPrimaryKey = Pick<User, "id">;
+
+export function getInstance(user: Partial<User> & UserPrimaryKey): User {
+  return merge(new User(), user);
+}

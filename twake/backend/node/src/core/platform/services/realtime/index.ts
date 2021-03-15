@@ -1,4 +1,5 @@
 import { Consumes, ServiceName, TwakeService } from "../../framework";
+import { SkipCLI } from "../../framework/decorators/skip";
 import WebSocketAPI from "../../services/websocket/provider";
 import { RealtimeEventBus, RealtimeServiceAPI, RealtimeRoomManager } from "./api";
 import { eventBus } from "./bus";
@@ -18,6 +19,7 @@ export default class RealtimeService
     return this;
   }
 
+  @SkipCLI()
   async doStart(): Promise<this> {
     const ws = this.context.getProvider<WebSocketAPI>("websocket");
 

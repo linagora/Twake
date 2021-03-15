@@ -4,8 +4,8 @@ import routes from "./routes";
 
 export default (
   fastify: FastifyInstance,
-  options: FastifyRegisterOptions<{ prefix: string, service: UserServiceAPI }>,
+  options: FastifyRegisterOptions<{ prefix: string; service: UserServiceAPI }>,
 ): void => {
-  fastify.log.info("Configuring /users routes");
+  fastify.log.debug("Configuring /users routes");
   fastify.register(routes, options);
 };

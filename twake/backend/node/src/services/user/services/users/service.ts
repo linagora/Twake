@@ -10,7 +10,10 @@ import {
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import Repository, { FindFilter, FindOptions } from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository, {
+  FindFilter,
+  FindOptions,
+} from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
@@ -27,23 +30,33 @@ export class UserService implements UsersServiceAPI {
     return this;
   }
 
-  create(item: User, context?: ExecutionContext): Promise<CreateResult<User>> {
-    throw new Error("Method not implemented.");
+  async create(user: User): Promise<CreateResult<User>> {
+    this.repository.save(user);
+
+    return new CreateResult("user", user);
   }
-  
+
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {
     throw new Error("Method not implemented.");
   }
-  
-  save<SaveOptions>(item: User, options?: SaveOptions, context?: ExecutionContext): Promise<SaveResult<User>> {
+
+  save<SaveOptions>(
+    item: User,
+    options?: SaveOptions,
+    context?: ExecutionContext,
+  ): Promise<SaveResult<User>> {
     throw new Error("Method not implemented.");
   }
-  
+
   delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
     throw new Error("Method not implemented.");
   }
-  
-  list(pagination: Pagination, options?: ListUserOptions, context?: ExecutionContext): Promise<ListResult<User>> {
+
+  list(
+    pagination: Pagination,
+    options?: ListUserOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<User>> {
     const findFilter: FindFilter = {};
     const findOptions: FindOptions = {
       pagination,

@@ -2,7 +2,7 @@ import { getLogger } from "../logger";
 
 const logger = getLogger("core.platform.framework.decorators.Skip");
 
-type SkipCondition = () => Promise<boolean> | boolean;
+type SkipCondition = () => Promise<boolean> | boolean;
 
 /**
  * Skip a method call based on some condition
@@ -28,8 +28,8 @@ export function Skip(condition: SkipCondition): MethodDecorator {
 }
 
 /**
- * Skip when process.env.NODE_ENV is set to "CLI"
+ * Skip when process.env.NODE_ENV is set to "cli"
  */
 export function SkipCLI(): MethodDecorator {
-  return Skip(() => process.env.NODE_ENV === "CLI");
+  return Skip(() => process.env.NODE_ENV === "cli");
 }
