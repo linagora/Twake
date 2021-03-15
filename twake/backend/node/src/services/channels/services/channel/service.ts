@@ -18,7 +18,7 @@ import ChannelServiceAPI, { ChannelActivityMessage, ChannelPrimaryKey } from "..
 import { logger } from "../../../../core/platform/framework";
 
 import { ChannelObject } from "./types";
-import { Channel, ChannelMember, UserChannel } from "../../entities";
+import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -42,16 +42,20 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import DefaultChannelServiceImpl from "./default/service";
 
 export class Service implements ChannelService {
   version: "1";
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
   directChannelRepository: Repository<DirectChannel>;
+  defaultChannelService: DefaultChannelServiceImpl;
 
   constructor(private channelService: ChannelServiceAPI, private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
+    this.defaultChannelService = new DefaultChannelServiceImpl(this.database, this.channelService);
+
     try {
       this.activityRepository = await this.database.getRepository(
         "channel_activity",
@@ -63,7 +67,13 @@ export class Service implements ChannelService {
         DirectChannel,
       );
     } catch (err) {
-      console.error("Can not initialize database service", err);
+      logger.error({ err }, "Can not initialize channel db service");
+    }
+
+    try {
+      await this.defaultChannelService.init();
+    } catch (err) {
+      logger.warn("Can not initialize default channel service", err);
     }
 
     return this;
@@ -494,6 +504,12 @@ export class Service implements ChannelService {
     this.onUnread(channel, member);
 
     return true;
+  }
+
+  async getDefaultChannels(
+    workspace: Pick<Channel, "workspace_id" | "company_id">,
+  ): Promise<DefaultChannel[]> {
+    return this.defaultChannelService.getDefaultChannels(workspace);
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {

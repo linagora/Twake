@@ -340,6 +340,81 @@ export class Service implements MemberService {
     return (await list).getEntities().length > 1;
   }
 
+  async addUsersToChannel(
+    users: User[] = [],
+    channel: Channel,
+  ): Promise<ListResult<ChannelMember>> {
+    if (!channel) {
+      throw CrudExeption.badRequest("Channel is required");
+    }
+
+    const members: ChannelMember[] = await Promise.all(
+      users.map(user => {
+        const context: ChannelExecutionContext = {
+          channel,
+          user,
+        };
+
+        const member: ChannelMember = getChannelMemberInstance({
+          channel_id: channel.id,
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          user_id: user.id,
+        } as ChannelMember);
+
+        return this.save(member, null, context)
+          .then(result => {
+            logger.debug("Member %o added to channel %o", member, channel);
+            return result.entity;
+          })
+          .catch(err => {
+            logger.warn({ err }, "Member has not been added %o", member);
+            return null;
+          });
+      }),
+    );
+
+    const addedMembers: ChannelMember[] = members.filter(
+      <ChannelMember>(n?: ChannelMember): n is ChannelMember => Boolean(n),
+    );
+
+    return new ListResult<ChannelMember>("channel_member", addedMembers);
+  }
+
+  async addUserToChannels(user: User, channels: Channel[]): Promise<ListResult<ChannelMember>> {
+    const members: ChannelMember[] = await Promise.all(
+      channels.map(channel => {
+        const context: ChannelExecutionContext = {
+          channel,
+          user,
+        };
+
+        const member: ChannelMember = getChannelMemberInstance({
+          channel_id: channel.id,
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          user_id: user.id,
+        } as ChannelMember);
+
+        return this.save(member, null, context)
+          .then(result => {
+            logger.debug("Member %o added to channel %o", member, channel);
+            return result.entity;
+          })
+          .catch(err => {
+            logger.warn({ err }, "Member has not been added %o", member);
+            return null;
+          });
+      }),
+    );
+
+    const addedMembers: ChannelMember[] = members.filter(
+      <ChannelMember>(n?: ChannelMember): n is ChannelMember => Boolean(n),
+    );
+
+    return new ListResult<ChannelMember>("channel_member", addedMembers);
+  }
+
   @PubsubPublish("channel:member:updated")
   onUpdated(
     @PubsubParameter("channel")

@@ -70,6 +70,10 @@ export class Channel {
       channel.workspace_id === ChannelVisibility.DIRECT
     );
   }
+
+  static isDefaultChannel(channel: Channel): boolean {
+    return channel.is_default;
+  }
 }
 
 export class UserChannel extends Channel {

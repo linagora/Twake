@@ -11,6 +11,8 @@ import {
   Channel,
   ChannelMember,
   ChannelMemberPrimaryKey,
+  DefaultChannel,
+  DefaultChannelPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import { User } from "../types";
@@ -98,6 +100,14 @@ export interface ChannelService
     },
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>>;
+
+  /**
+   * Get the list default channels
+   * @param workspace
+   */
+  getDefaultChannels(
+    workspace: Pick<Channel, "company_id" | "workspace_id">,
+  ): Promise<DefaultChannel[]>;
 }
 export interface MemberService
   extends TwakeServiceProvider,
@@ -113,6 +123,24 @@ export interface MemberService
    * Check if user is channel member
    */
   isChannelMember(user: User, channel: Channel): Promise<ChannelMember>;
+
+  /**
+   * Add a list of users to channel.
+   * This never rejects: If the user is not added, it will not be in the result list
+   *
+   * @param users Users to add
+   * @param channel Channel to add users to
+   */
+  addUsersToChannel(users: User[], channel: ChannelPrimaryKey): Promise<ListResult<ChannelMember>>;
+
+  /**
+   * Add the user to a list of channels.
+   * This never rejects: If the user is not added, it will not be in the result list
+   *
+   * @param user the user to add
+   * @param channels the channels to add the user to
+   */
+  addUserToChannels(user: User, channels: ChannelPrimaryKey[]): Promise<ListResult<ChannelMember>>;
 }
 
 export interface TabService
@@ -124,4 +152,21 @@ export default interface ChannelServiceAPI extends TwakeServiceProvider, Initial
   channels: ChannelService;
   members: MemberService;
   tabs: TabService;
+}
+
+/**
+ * Manage default channels entities
+ */
+export interface DefaultChannelService
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<DefaultChannel, DefaultChannelPrimaryKey, ChannelExecutionContext> {
+  /**
+   * Get all the default channels in the given workspace
+   *
+   * @param workspace the workspace to get default channels from
+   */
+  getDefaultChannels(
+    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+  ): Promise<DefaultChannel[]>;
 }
