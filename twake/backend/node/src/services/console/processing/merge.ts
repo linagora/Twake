@@ -58,11 +58,13 @@ export class MergeProcess {
     const { users$, companies$ } = this.getStreams(concurrent);
 
     const owners$ = users$.pipe(
+      // get only the admins
+      filter(userInCompany => userInCompany.source.user.level.valueOf() === 3),
       // group by company id
       groupBy(userInCompany => userInCompany.source.company.id),
       mergeMap(group =>
         group.pipe(
-          // get the user with the smaller creation date, let's say that this is the first one in the company so it is the owner
+          // get the admin with the smaller creation date, let's say that this is the first one in the company so it is the owner
           min((a, b) => {
             return (a.source?.user?.dateAdded || 0) <= (b.source?.user?.dateAdded || 0) ? -1 : 1;
           }),
