@@ -40,7 +40,10 @@ async function run(services: string[] = []): Promise<TwakePlatform> {
     console.error(error);
   });
 
-  process.on("SIGINT", stop);
+  process.on("SIGINT", async () => {
+    await stop();
+    process.kill(process.pid, "SIGUSR2");
+  });
 
   process.once("SIGUSR2", async () => {
     await stop();
