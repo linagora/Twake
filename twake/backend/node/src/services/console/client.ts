@@ -41,6 +41,9 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
         headers: {
           "Content-Type": "application/json",
         },
+        params: {
+          skipInvite: user.skipInvite,
+        },
       })
       .then(({ data }) => data);
   }
