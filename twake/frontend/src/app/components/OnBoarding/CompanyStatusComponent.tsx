@@ -5,15 +5,19 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import UserService from 'services/user/user.js';
 import VerifyEmail from './popups/VerifyEmail';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import InitService from 'app/services/InitService';
 
 const CompanyStatusComponent = (): JSX.Element => {
   const workspace = Workspaces.getCurrentWorkspace();
   const user = UserService.getCurrentUser();
   const onboarding: string | null = localStorage.getItem(`onboarding_${workspace.id}`);
+  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
 
   useEffect(() => {
-    displayAddMailsInWorkspace();
-    isNewAccount();
+    if (InitService.server_infos.auth?.console?.use === true) {
+      displayAddMailsInWorkspace();
+      isNewAccount();
+    }
   }, []);
 
   const isNewWorkspace = (): boolean => {
@@ -27,7 +31,7 @@ const CompanyStatusComponent = (): JSX.Element => {
   };
 
   const displayAddMailsInWorkspace = (): void => {
-    if (!workspace.id) return;
+    if (!workspace?.id) return;
 
     const shouldDisplayModal: boolean =
       onboarding !== 'completed' &&
@@ -45,7 +49,8 @@ const CompanyStatusComponent = (): JSX.Element => {
   };
 
   const isNewAccount = () => {
-    const company = DepreciatedCollections.get('workspaces').find(workspace.id);
+    if (!company?.id) return;
+
     const isNewUser =
       onboarding &&
       onboarding !== 'completed' &&

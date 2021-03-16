@@ -7,6 +7,12 @@ export type ConfigurationType = {
       disable_email_verification?: any | null;
       use?: boolean;
     };
+    console?: {
+      account_management_url: string;
+      collaborators_management_url: string;
+      company_management_url: string;
+      use: boolean;
+    };
   };
   auth_mode?: string[];
   elastic_search_available?: boolean;

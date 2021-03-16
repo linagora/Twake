@@ -7,6 +7,7 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import UnverifiedAccount from './popups/UnverifiedAccount';
 import BlockedAccount from './popups/BlockedAccount';
 import UserService from 'services/user/user.js';
+import InitService from 'app/services/InitService';
 
 const AccountStatusComponent = (): JSX.Element => {
   const user = UserService.getCurrentUser();
@@ -15,21 +16,25 @@ const AccountStatusComponent = (): JSX.Element => {
   const periodLimit: number = (user.created_at || 0) + maxUnverifiedDays * oneDay;
   const daysLeft: number = Math.ceil((periodLimit - Date.now()) / oneDay);
 
-  const showBlockedModal = () =>
-    ModalManager.open(
-      <BlockedAccount email={user.email} />,
-      {
+  const showBlockedModal = () => {
+    if (InitService.server_infos.auth?.console?.use === true)
+      return ModalManager.open(
+        <BlockedAccount email={user.email} />,
+        {
+          position: 'center',
+          size: { width: '600px' },
+        },
+        false,
+      );
+  };
+
+  const showUnverifiedModal = () => {
+    if (InitService.server_infos.auth?.console?.use === true)
+      return ModalManager.open(<UnverifiedAccount period={daysLeft} email={user.email} />, {
         position: 'center',
         size: { width: '600px' },
-      },
-      false,
-    );
-
-  const showUnverifiedModal = () =>
-    ModalManager.open(<UnverifiedAccount period={daysLeft} email={user.email} />, {
-      position: 'center',
-      size: { width: '600px' },
-    });
+      });
+  };
 
   const showBanner = !user.is_verified;
   if (!user.is_verified && daysLeft <= 0) {
