@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import Banner from 'app/components/Banner/Banner';
 import { Button, Typography } from 'antd';
@@ -10,55 +10,35 @@ import UserService from 'services/user/user.js';
 
 const AccountStatusComponent = (): JSX.Element => {
   const user = UserService.getCurrentUser();
-  const [period, setPeriod] = useState<number>(0);
-  const [displayBanner, setDisplayBanner] = useState<boolean>(false);
-  const periodLimit: number = 7;
+  const maxUnverifiedDays: number = 7;
+  const oneDay: number = 1000 * 60 * 60 * 24;
+  const periodLimit: number = (user.created_at || 0) + maxUnverifiedDays * oneDay;
+  const daysLeft: number = Math.ceil((periodLimit - Date.now()) / oneDay);
 
-  useEffect(() => {
-    calculateTrialPeriod();
-    isBlockedAccount();
-  }, [period, displayBanner]);
-
-  const calculateTrialPeriod = (): void => {
-    const oneDay: number = 1000 * 60 * 60 * 24;
-    // user created_at
-    const createdDay: number = user.created_at;
-    const currentDay: number = Date.now();
-    const shouldDisplayBanner: boolean = period > 0 && period < periodLimit ? true : false;
-    const currentPeriod: number = Math.round(Math.round(currentDay - createdDay) / oneDay);
-
-    if (!user.is_verified) {
-      setPeriod(currentPeriod);
-      return setDisplayBanner(shouldDisplayBanner);
-    }
-  };
-
-  const truncateDaysLeft = (period: number) => Math.trunc(period);
-
-  const onClickButton = () =>
+  const showBlockedModal = () =>
     ModalManager.open(
-      <UnverifiedAccount period={truncateDaysLeft(periodLimit - period)} email={user.email} />,
+      <BlockedAccount email={user.email} />,
       {
         position: 'center',
         size: { width: '600px' },
       },
+      false,
     );
 
-  const isBlockedAccount = () => {
-    if (period >= periodLimit)
-      return ModalManager.open(
-        <BlockedAccount email={user.email} />,
-        {
-          position: 'center',
-          size: { width: '600px' },
-        },
-        false,
-      );
-  };
+  const showUnverifiedModal = () =>
+    ModalManager.open(<UnverifiedAccount period={daysLeft} email={user.email} />, {
+      position: 'center',
+      size: { width: '600px' },
+    });
+
+  const showBanner = !user.is_verified;
+  if (!user.is_verified && daysLeft <= 0) {
+    showBlockedModal();
+  }
 
   return (
     <>
-      {displayBanner && (
+      {showBanner && (
         <Banner
           type="important"
           content={
@@ -70,7 +50,7 @@ const AccountStatusComponent = (): JSX.Element => {
               </Typography.Title>
               <Button
                 style={{ marginLeft: 17, height: 32, color: 'var(--red)' }}
-                onClick={onClickButton}
+                onClick={showUnverifiedModal}
               >
                 {Languages.t('general.verify')}
               </Button>
