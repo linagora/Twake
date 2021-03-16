@@ -43,6 +43,7 @@ import {
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
+import UserServiceAPI from "../../../user/api";
 
 export class Service implements ChannelService {
   version: "1";
@@ -51,10 +52,18 @@ export class Service implements ChannelService {
   directChannelRepository: Repository<DirectChannel>;
   defaultChannelService: DefaultChannelServiceImpl;
 
-  constructor(private channelService: ChannelServiceAPI, private database: DatabaseServiceAPI) {}
+  constructor(
+    private channelService: ChannelServiceAPI,
+    private database: DatabaseServiceAPI,
+    private userService: UserServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
-    this.defaultChannelService = new DefaultChannelServiceImpl(this.database, this.channelService);
+    this.defaultChannelService = new DefaultChannelServiceImpl(
+      this.database,
+      this.channelService,
+      this.userService,
+    );
 
     try {
       this.activityRepository = await this.database.getRepository(
@@ -210,7 +219,7 @@ export class Service implements ChannelService {
 
   async get(pk: ChannelPrimaryKey): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
-    let channel = await this.channelRepository.findOne(primaryKey);
+    const channel = await this.channelRepository.findOne(primaryKey);
     const last_activity = await this.getChannelActivity(channel);
 
     return ChannelObject.mapTo(channel, { last_activity });

@@ -145,7 +145,7 @@ export interface Paginable {
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token: string, readonly limitStr = "100") {}
+  constructor(readonly page_token?: string, readonly limitStr = "100") {}
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {

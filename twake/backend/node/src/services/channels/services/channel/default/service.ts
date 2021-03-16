@@ -1,3 +1,5 @@
+import { from, Observable } from "rxjs";
+import { mergeMap } from "rxjs/operators";
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
 import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
@@ -11,16 +13,24 @@ import {
   ListResult,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
-import { User, Workspace } from "../../../../types";
 import DefaultChannelListener from "./listener";
-import { logger } from "../../../../../core/platform/framework";
+import { getLogger } from "../../../../../core/platform/framework";
+import UserServiceAPI from "../../../../user/api";
+import { ChannelMember } from "../../../../channels/entities/channel-member";
+import WorkspaceUser from "../../../../user/entities/workspace_user";
+
+const logger = getLogger("channel:default");
 
 export default class DefaultChannelServiceImpl implements DefaultChannelService {
   version: "1";
   repository: Repository<DefaultChannel>;
   listener: DefaultChannelListener;
 
-  constructor(private database: DatabaseServiceAPI, private channelService: ChannelServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private channelService: ChannelServiceAPI,
+    private userService: UserServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository("default_channels", DefaultChannel);
@@ -95,24 +105,44 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
    * TODO: Add pubsub annotation, check if needed
    * @param channel
    */
-  async onCreated(channel: DefaultChannel): Promise<void> {
-    logger.info("Default channel %o has been created", channel);
-    this.addWorkspaceUsersToChannel(channel);
+  onCreated(channel: DefaultChannel): void {
+    logger.debug("Default channel %s has been created", channel.channel_id);
+    const subscription = this.addWorkspaceUsersToChannel(channel).subscribe({
+      next: member => {
+        logger.debug(
+          "User %s has been added to default channel %s: %s",
+          member.user.userId,
+          channel.channel_id,
+          member.added,
+        );
+      },
+      error: (err: Error) => {
+        logger.error({ err }, "Error while adding user to default channel %s", channel.channel_id);
+      },
+      complete: () => {
+        logger.debug("Workspace users have been added to default channel %s", channel.channel_id);
+        subscription.unsubscribe();
+      },
+    });
   }
 
-  async addWorkspaceUsersToChannel(channel: DefaultChannelPrimaryKey): Promise<void> {
-    const workspace: Workspace = {
-      company_id: channel.company_id,
-      workspace_id: channel.workspace_id,
-    };
-    const users = await getWorkspaceUsers(workspace);
+  addWorkspaceUsersToChannel(
+    channel: DefaultChannelPrimaryKey,
+  ): Observable<{ user?: WorkspaceUser; member?: ChannelMember; added: boolean; err?: Error }> {
+    const users$ = this.userService.workspaces.getAllUsers({ workspaceId: channel.workspace_id });
 
-    await this.channelService.members.addUsersToChannel(users, channel);
-
-    async function getWorkspaceUsers(workspace: Workspace): Promise<User[]> {
-      logger.warn("TODO: Implement getting workspace users %o", workspace);
-      return [];
-    }
+    return users$.pipe(
+      mergeMap(user =>
+        from(
+          this.channelService.members
+            .addUserToChannels(user, [channel])
+            .then(result => ({ user: user, member: result.getEntities()[0], added: true }))
+            .catch(err => {
+              return { user, added: false, err };
+            }),
+        ),
+      ),
+    );
   }
 
   async getDefaultChannels(

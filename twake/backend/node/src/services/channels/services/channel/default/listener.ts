@@ -16,7 +16,7 @@ export default class DefaultChannelListener implements Initializable {
         }
 
         if (Channel.isDefaultChannel(event.channel)) {
-          logger.debug("Default channel has been created", event);
+          logger.debug("Default channel has been created %o", event);
           this.service.create(
             getDefaultChannelInstance({
               channel_id: event.channel.id,

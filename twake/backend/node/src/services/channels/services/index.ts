@@ -7,19 +7,21 @@ import { getService as getTabService } from "./tab";
 import { PubsubListener } from "./pubsub";
 import Activities from "./channel/activities/service";
 import { getService as getActivitiesService } from "./channel/activities";
+import UserServiceAPI from "../../user/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  user: UserServiceAPI,
 ): ChannelServiceAPI {
-  return getServiceInstance(databaseService, pubsub);
+  return getServiceInstance(databaseService, pubsub, user);
 }
-
 function getServiceInstance(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  user: UserServiceAPI,
 ): ChannelServiceAPI {
-  return new Service(databaseService, pubsub);
+  return new Service(databaseService, pubsub, user);
 }
 
 class Service implements ChannelServiceAPI {
@@ -28,13 +30,11 @@ class Service implements ChannelServiceAPI {
   members: MemberService;
   tabs: TabService;
   activities: Activities;
-  pubsub: PubsubServiceAPI;
   pubsubListener: PubsubListener;
 
-  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
-    this.pubsub = pubsub;
+  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, user: UserServiceAPI) {
     this.members = getMemberService(databaseService, this);
-    this.channels = getChannelService(databaseService, this);
+    this.channels = getChannelService(databaseService, this, user);
     this.tabs = getTabService(databaseService);
     this.activities = getActivitiesService(pubsub);
     this.pubsubListener = new PubsubListener(this, pubsub);
