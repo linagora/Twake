@@ -5,7 +5,7 @@ import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import AddMailsInWorkspace from './AddMailsInWorkspace';
-import Api from 'app/services/Api';
+import ConsoleService from 'app/services/ConsoleService';
 
 type PropsType = {
   email: string;
@@ -18,11 +18,7 @@ const VerifyMail = ({ email }: PropsType) => {
       size: { width: '600px' },
     });
 
-  const onClickButton = () => {
-    const route = 'users/console/api/verify_mail';
-
-    return Api.post(route, {});
-  };
+  const onClickButton = () => ConsoleService.verifyMail();
 
   return (
     <ObjectModal

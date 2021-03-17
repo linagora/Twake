@@ -21,11 +21,10 @@ const CompanyStatusComponent = (): JSX.Element => {
   }, []);
 
   const isNewWorkspace = (): boolean => {
-    const oneDay: number = 1000 * 60 * 60 * 24;
-    // workspace created_at
-    const createdDay: number = workspace.stats?.created_at;
-    const currentDay: number = Date.now();
-    const currentPeriod: number = Math.round(Math.round(currentDay - createdDay) / oneDay);
+    const oneDay = 1000 * 60 * 60 * 24;
+    const createdDay = workspace.stats?.created_at;
+    const currentDay = Date.now();
+    const currentPeriod = Math.round(Math.round(currentDay - createdDay) / oneDay);
 
     return currentPeriod <= 7 ? true : false;
   };

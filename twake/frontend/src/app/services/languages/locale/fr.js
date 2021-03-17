@@ -1981,7 +1981,7 @@ export default {
   'general.re_send': 'Renvoyer',
   'general.verify': 'Vérifier',
   'components.unverified_account.typography_text_danger':
-    "Il vous reste $1 jour(s) de période d'essai. Après 6 jours, l'accès au compte d'essai sera bloqué et après 1 mois, il sera définitivement supprimé",
+    "Il vous reste $1 jour(s) de période d'essai. Après $2 jours, l'accès au compte d'essai sera bloqué et après 1 mois, il sera définitivement supprimé",
   'components.unverified_account.verification_details':
     'Nous avons envoyé les détails de vérification à',
   'components.account_verification_status_sentence': "L'état de votre compte est: $1",

@@ -11,10 +11,10 @@ import InitService from 'app/services/InitService';
 
 const AccountStatusComponent = (): JSX.Element => {
   const user = UserService.getCurrentUser();
-  const maxUnverifiedDays: number = 7;
-  const oneDay: number = 1000 * 60 * 60 * 24;
-  const periodLimit: number = (user.created_at || 0) + maxUnverifiedDays * oneDay;
-  const daysLeft: number = Math.ceil((periodLimit - Date.now()) / oneDay);
+  const maxUnverifiedDays = 7;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const periodLimit = (user.created_at || 0) + maxUnverifiedDays * oneDay;
+  const daysLeft = Math.ceil((periodLimit - Date.now()) / oneDay);
 
   const showBlockedModal = () => {
     if (InitService.server_infos.auth?.console?.use === true)
@@ -30,17 +30,20 @@ const AccountStatusComponent = (): JSX.Element => {
 
   const showUnverifiedModal = () => {
     if (InitService.server_infos.auth?.console?.use === true)
-      return ModalManager.open(<UnverifiedAccount period={daysLeft} email={user.email} />, {
-        position: 'center',
-        size: { width: '600px' },
-      });
+      return ModalManager.open(
+        <UnverifiedAccount daysLeft={daysLeft} limit={maxUnverifiedDays} email={user.email} />,
+        {
+          position: 'center',
+          size: { width: '600px' },
+        },
+      );
   };
 
-  const showBanner = !user.is_verified;
   if (!user.is_verified && daysLeft <= 0) {
     showBlockedModal();
   }
 
+  const showBanner = !user.is_verified;
   return (
     <>
       {showBanner && (
