@@ -771,56 +771,31 @@ class User
 
     public function addDevice($userId, $type, $value, $version = "?")
     {
-        $userRepository = $this->em->getRepository("Twake\Users:User");
         $devicesRepository = $this->em->getRepository("Twake\Users:Device");
-        $user = $userRepository->find($userId);
 
-        $res = false;
-        if ($user != null) {
-            $device = $devicesRepository->findOneBy(Array("value" => $value));
-            if (!$device) {
-                $newDevice = new Device($user->getId(), $type, $value, $version);
-
-                $userDevices = $devicesRepository->findBy(Array("user_id" => $userId));
-                foreach($userDevices as $userDevice){
-                    $this->em->remove($userDevice);
-                }
-                
-            } else if ($device->getUserId() != $user->getId()) {
-                $this->em->remove($device);
-                $newDevice = new Device($user->getId(), $type, $value, $version);
-            } else {
-                $newDevice = $device;
-                $device->setVersion($version);
-            }
-
-            $this->em->persist($newDevice);
-            $this->em->flush();
-
-            $res = true;
+        $devices = $devicesRepository->findBy(Array("value" => $value));
+        $devices = array_merge($devices, $devicesRepository->findBy(Array("user_id" => $userId)));
+        foreach($devices as $device){
+            $this->em->remove($device);
         }
 
-        return $res;
+        $newDevice = new Device($userId, $type, $value, $version);
+
+        return true;
 
     }
 
     public function removeDevice($userId, $type, $value)
     {
-        $userRepository = $this->em->getRepository("Twake\Users:User");
         $devicesRepository = $this->em->getRepository("Twake\Users:Device");
-        $user = $userRepository->find($userId);
-
-        $res = false;
-        if ($user != null) {
-            $device = $devicesRepository->findOneBy(Array("value" => $value));
-            if ($device && $device->getUserId() == $userId) {
+        $devices = $devicesRepository->findBy(Array("user_id" => $userId));
+        foreach($devices as $device){
+            if($device->getValue() === $value){
                 $this->em->remove($device);
-                $this->em->flush();
             }
-            $res = true;
         }
 
-        return $res;
+        return true;
     }
 
     public function getSecondaryMails($userId)
