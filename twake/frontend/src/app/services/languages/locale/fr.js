@@ -1981,7 +1981,7 @@ export default {
   'general.re_send': 'Renvoyer',
   'general.verify': 'Vérifier',
   'components.unverified_account.typography_text_danger':
-    "Il vous reste 6 six jours de période d'essai. Après 6 jours, l'accès au compte d'essai sera bloqué et après 1 mois, il sera définitivement supprimé",
+    "Il vous reste $1 jour(s) de période d'essai. Après $2 jours, l'accès au compte d'essai sera bloqué et après 1 mois, il sera définitivement supprimé",
   'components.unverified_account.verification_details':
     'Nous avons envoyé les détails de vérification à',
   'components.account_verification_status_sentence': "L'état de votre compte est: $1",
@@ -2000,7 +2000,7 @@ export default {
     "Veuillez saisir les e-mails séparés par une virgule. Vous pouvez inviter jusqu'à 5 membres pour le moment et en ajouter d'autres après la vérification de l'e-mail.",
   'components.verify_mail.title_1': 'Félicitations',
   'components.verify_mail.title_2': 'Vous êtes un utilisateur officiel de Twake!',
-  'components.verify_mail.button': 'Ajouter des membres de votre équipe',
+  'components.verify_mail.button': 'Ajouter des membres',
   'components.verify_mail.text':
     "Tout d'abord, vous devez vérifier votre adresse e-mail. Nous avons envoyé un lien de vérification à",
   'components.verify_mail.paragraph':

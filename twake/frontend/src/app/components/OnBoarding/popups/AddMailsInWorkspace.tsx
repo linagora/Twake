@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import AutoHeight from '../../AutoHeight/AutoHeight';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
+import workspacesUsersService from 'services/workspaces/workspaces_users.js';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 type PropsType = {};
 
 const AddMailsInWorkspace = ({}: PropsType) => {
   const [emails, setEmails] = useState<string[]>();
   const [fullString, setFullString] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const stringToArray = (str: string) => {
     let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
@@ -20,10 +23,21 @@ const AddMailsInWorkspace = ({}: PropsType) => {
     const array = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
 
     setEmails(array);
-    console.log(emails);
   };
 
-  const onClickButton = () => console.log('clicked');
+  const onClickButton = () => {
+    /*
+    TODO
+    setLoading(true);
+    return workspacesUsersService.addUser(
+      emails,
+      () => {
+        setLoading(false);
+        return ModalManager.close();
+      },
+      null,
+    );*/
+  };
 
   return (
     <ObjectModal
@@ -36,7 +50,7 @@ const AddMailsInWorkspace = ({}: PropsType) => {
       footerAlign="center"
       footer={
         <Row className="x-margin" justify="center">
-          <Button onClick={onClickButton} type="primary" size="large">
+          <Button onClick={onClickButton} type="primary" size="large" loading={loading}>
             {Languages.t('components.add_mails_workspace.button')}
           </Button>
         </Row>

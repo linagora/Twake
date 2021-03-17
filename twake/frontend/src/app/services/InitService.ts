@@ -2,17 +2,12 @@ import Observable from 'services/Observable/Observable';
 import Api from 'services/Api';
 import Websocket from 'services/websocket.js';
 import RouterServices from 'app/services/RouterService';
+import { ConfigurationType } from 'app/models/Configuration';
 
 type ServerInfoType = {
   branding?: any;
   websocket_public_key?: string;
-  auth?: {
-    [type: string]:
-      | {
-          use: boolean;
-        }
-      | any;
-  };
+  auth?: ConfigurationType['auth'];
   ready?:
     | true
     | {

@@ -2,13 +2,16 @@ import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
+import ConsoleService from 'app/services/ConsoleService';
 
-type PropsType = {};
+type PropsType = {
+  daysLeft: number;
+  limit: number;
+  email: string;
+};
 
-const UnverifiedAccount = ({}: PropsType): JSX.Element => {
-  const [email, setEmail] = useState<string>('dreamteam@linagora.com');
-
-  const onClickButton = () => console.log('clicked');
+const UnverifiedAccount = ({ daysLeft, email, limit }: PropsType): JSX.Element => {
+  const onClickButton = () => ConsoleService.verifyMail();
 
   return (
     <ObjectModal
@@ -36,7 +39,7 @@ const UnverifiedAccount = ({}: PropsType): JSX.Element => {
             margin: 0,
           }}
         >
-          {Languages.t('components.unverified_account.typography_text_danger')}
+          {Languages.t('components.unverified_account.typography_text_danger', [daysLeft, limit])}
         </Typography.Text>
       </Row>
 

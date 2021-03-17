@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 
-type PropsType = {};
+type PropsType = {
+  email: string;
+};
 
-const BlockedAccount = ({}: PropsType): JSX.Element => {
-  const [email, setEmail] = useState<string>('dreamteam@linagora.com');
+const BlockedAccount = ({ email }: PropsType): JSX.Element => {
   const onClickButton = () => console.log('clicked');
 
   return (
