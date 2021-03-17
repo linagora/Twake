@@ -10,7 +10,7 @@ export type ChannelType = {
   description?: string;
   channel_group?: string;
   visibility?: string;
-  default?: boolean;
+  is_default?: boolean;
   members?: string[];
   owner?: string;
   members_count?: number;
