@@ -31,6 +31,7 @@ export class NewUserInWorkspaceJoinDefaultChannelsProcessor
     logger.info(`${this.name} - Processing notification for message %o`, message);
 
     try {
+      // TODO: Get all the default channels (observable, not paginated)
       const channels: DefaultChannel[] = await this.service.channels.getDefaultChannels({
         company_id: message.company_id,
         workspace_id: message.workspace_id,

@@ -11,6 +11,7 @@ import {
   DeleteResult,
   Paginable,
   ListResult,
+  CrudExeption,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
 import DefaultChannelListener from "./listener";
@@ -39,11 +40,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return this;
   }
 
-  async create(
-    item: DefaultChannel,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context?: ChannelExecutionContext,
-  ): Promise<CreateResult<DefaultChannel>> {
+  async create(item: DefaultChannel): Promise<CreateResult<DefaultChannel>> {
     await this.repository.save(item);
 
     // Once a default channel has been successfully created, we have to add all the workspace users as member of the channel
@@ -54,9 +51,8 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return new CreateResult<DefaultChannel>("default_channel", item);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  get(pk: DefaultChannelPrimaryKey, context?: ChannelExecutionContext): Promise<DefaultChannel> {
-    throw new Error("Method not implemented.");
+  get(pk: DefaultChannelPrimaryKey): Promise<DefaultChannel> {
+    return this.repository.findOne(pk);
   }
 
   update(
@@ -81,13 +77,16 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     throw new Error("Method not implemented.");
   }
 
-  delete(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    pk: Pick<DefaultChannel, "channel_id" | "company_id">,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context?: ChannelExecutionContext,
-  ): Promise<DeleteResult<DefaultChannel>> {
-    throw new Error("Method not implemented.");
+  async delete(pk: DefaultChannelPrimaryKey): Promise<DeleteResult<DefaultChannel>> {
+    const defaultChannel = await this.get(pk);
+
+    if (!defaultChannel) {
+      throw CrudExeption.notFound("Default channel has not been found");
+    }
+
+    await this.repository.remove(defaultChannel);
+
+    return new DeleteResult("default_channel", defaultChannel, true);
   }
 
   list<ListOptions>(
@@ -102,7 +101,6 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   }
 
   /**
-   * TODO: Add pubsub annotation, check if needed
    * @param channel
    */
   onCreated(channel: DefaultChannel): void {
@@ -135,8 +133,18 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
       mergeMap(user =>
         from(
           this.channelService.members
-            .addUserToChannels(user, [channel])
-            .then(result => ({ user: user, member: result.getEntities()[0], added: true }))
+            .addUserToChannels(user, [
+              {
+                company_id: channel.company_id,
+                workspace_id: channel.workspace_id,
+                id: channel.channel_id,
+              },
+            ])
+            .then(result => ({
+              user,
+              member: result.getEntities()[0],
+              added: !!result.getEntities()[0],
+            }))
             .catch(err => {
               return { user, added: false, err };
             }),

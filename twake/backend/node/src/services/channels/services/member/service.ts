@@ -1,4 +1,4 @@
-import { RealtimeSaved, RealtimeDeleted, logger } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted, getLogger } from "../../../../core/platform/framework";
 import {
   DeleteResult,
   Pagination,
@@ -57,6 +57,8 @@ const CHANNEL_MEMBERS_KEYS = [
   "channel_id",
   "type",
 ] as const;
+
+const logger = getLogger("channel.member");
 
 export class Service implements MemberService {
   version: "1";
@@ -362,6 +364,8 @@ export class Service implements MemberService {
           user_id: user.id,
         } as ChannelMember);
 
+        // FIXME: Check if the settings are not overrided...
+
         return this.save(member, null, context)
           .then(result => {
             logger.debug("Member %o added to channel %o", member, channel);
@@ -383,28 +387,32 @@ export class Service implements MemberService {
 
   async addUserToChannels(user: User, channels: Channel[]): Promise<ListResult<ChannelMember>> {
     const members: ChannelMember[] = await Promise.all(
-      channels.map(channel => {
+      channels.map(async channel => {
         const context: ChannelExecutionContext = {
           channel,
           user,
         };
 
-        const member: ChannelMember = getChannelMemberInstance({
+        const member = getChannelMemberInstance({
           channel_id: channel.id,
           company_id: channel.company_id,
           workspace_id: channel.workspace_id,
           user_id: user.id,
-        } as ChannelMember);
+        });
 
-        return this.save(member, null, context)
-          .then(result => {
-            logger.debug("Member %o added to channel %o", member, channel);
-            return result.entity;
-          })
-          .catch(err => {
-            logger.warn({ err }, "Member has not been added %o", member);
+        try {
+          const isAlreadyMember = await this.isChannelMember(user, channel);
+          if (isAlreadyMember) {
+            logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
             return null;
-          });
+          }
+
+          const result = await this.save(member, null, context);
+          return result.entity;
+        } catch (err) {
+          logger.warn({ err }, "Member has not been added %o", member);
+          return null;
+        }
       }),
     );
 

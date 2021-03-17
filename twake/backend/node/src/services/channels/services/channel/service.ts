@@ -561,6 +561,7 @@ export class Service implements ChannelService {
       archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
     };
 
+    // FIXME:: Will be called on update also...
     localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     logger.debug(`Channel ${mode}d`, pushUpdates);
   }
@@ -572,7 +573,10 @@ export class Service implements ChannelService {
    * @param result The delete result
    */
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
-    logger.debug("Channel deleted", channel, result);
+    if (result.deleted) {
+      logger.debug("Channel %s has been deleted", channel.id);
+      localEventBus.publish<ResourceEventsPayload>("channel:deleted", { channel });
+    }
   }
 
   /**

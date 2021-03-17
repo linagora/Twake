@@ -72,7 +72,7 @@ export class Channel {
   }
 
   static isDefaultChannel(channel: Channel): boolean {
-    return channel.is_default;
+    return channel?.is_default;
   }
 }
 
