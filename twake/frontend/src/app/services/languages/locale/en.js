@@ -1866,7 +1866,7 @@ export default {
   'scenes.app.channelsbar.hide_discussion_leaving.title': 'Hide discussion?',
   'scenes.app.channelsbar.hide_discussion_leaving.content':
     'You can hide this discussion. Your messages are not lost and we can reopen it again when needed.',
-  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 user(s) will be added',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 email(s) will be added',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Add users to your company before inviting them to this workspace.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Go to Twake Console',

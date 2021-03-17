@@ -1939,8 +1939,7 @@ export default {
   'scenes.app.channelsbar.hide_discussion_leaving.title': 'Masquer la discussion?',
   'scenes.app.channelsbar.hide_discussion_leaving.content':
     "Vous pouvez masquer cette discussion. Vos messages ne sont pas perdus et vous pouvez l'ouvrir à nouveau si besoin.",
-  'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
-    '$1 utilisateur(s) seront ajoutés',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 email(s) seront ajoutés',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
