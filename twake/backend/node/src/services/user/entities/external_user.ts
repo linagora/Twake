@@ -14,7 +14,7 @@ export default class ExternalUser {
   @Column("external_id", "string")
   external_id: string;
 
-  @Column("user_id", "uuid")
+  @Column("user_id", "timeuuid")
   user_id: string;
 }
 

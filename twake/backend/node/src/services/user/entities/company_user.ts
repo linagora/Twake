@@ -18,7 +18,7 @@ export default class CompanyUser {
   @Column("user_id", "uuid")
   user_id: string;
 
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
 
   /**

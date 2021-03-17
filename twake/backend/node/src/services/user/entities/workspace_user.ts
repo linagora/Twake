@@ -17,7 +17,7 @@ export default class WorkspaceUser {
   @Column("user_id", "uuid")
   userId: string;
 
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
 
   @Column("level_id", "number")

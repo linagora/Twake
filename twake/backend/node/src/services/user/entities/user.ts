@@ -8,7 +8,7 @@ export const TYPE = "user";
   type: TYPE,
 })
 export default class User {
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
 
   @Column("banned", "twake_boolean")
