@@ -285,7 +285,7 @@ class OpenIDConnectClient
      * @return bool
      * @throws OpenIDConnectClientException
      */
-    public function authenticate() {
+    public function authenticate($options = []) {
 
         // Do a preemptive check to see if the provider has thrown an error from a previous redirect
         if (isset($_REQUEST['error'])) {
@@ -308,7 +308,7 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState()) {
+            if ($_REQUEST['state'] !== $this->getState() || $options["ignore_state"]) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
 

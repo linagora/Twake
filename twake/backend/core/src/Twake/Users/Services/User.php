@@ -128,6 +128,7 @@ class User
                     if (in_array(-1, $res)) {
                         //Mail used
                         $mailUsedError = true;
+                        break;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
@@ -139,7 +140,7 @@ class User
                     $ok = true;
                 }
                 $counter++;
-            } while (!$ok);
+            } while (!$ok && $counter < 1000);
             if($mailUsedError){
                 return false;
             }

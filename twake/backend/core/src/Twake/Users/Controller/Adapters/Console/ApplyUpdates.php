@@ -26,6 +26,7 @@ class ApplyUpdates
     }
     
     function updateCompany($companyDTO){
+        error_log("apply:updateCompany with params: ". json_encode([$companyDTO]));
 
         $companyConsoleCode = $companyDTO["company"]["details"]["code"];
 
@@ -86,7 +87,7 @@ class ApplyUpdates
      * Take a user from api and save it into PHP
      */
     function updateUser($userDTO){
-        error_log("updateUser with params: ". json_encode([$userDTO]));
+        error_log("apply:updateUser with params: ". json_encode([$userDTO]));
 
         $roles = $userDTO["roles"];
 
@@ -119,6 +120,7 @@ class ApplyUpdates
                     if (in_array(-1, $res)) {
                         //Mail used
                         $mailUsedError = true;
+                        break;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
@@ -130,7 +132,7 @@ class ApplyUpdates
                     $ok = true;
                 }
                 $counter++;
-            } while (!$ok);
+            } while (!$ok && $counter < 1000);
             if($mailUsedError){
                 return false;
             }

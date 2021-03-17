@@ -105,7 +105,8 @@ class Console extends BaseController
             $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone'));
             try {
                 $authentificated = $oidc->authenticate([
-                  "ignore_id_token" => true
+                  "ignore_id_token" => true,
+                  "ignore_state" => true
                 ]);
             }catch(\Exception $err){
                 error_log("Error with Authenticated: ".$err);
