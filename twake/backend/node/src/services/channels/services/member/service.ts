@@ -344,14 +344,21 @@ export class Service implements MemberService {
 
   async addUsersToChannel(
     users: User[] = [],
-    channel: Channel,
-  ): Promise<ListResult<ChannelMember>> {
+    channel: ChannelEntity,
+  ): Promise<
+    ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
+  > {
     if (!channel) {
       throw CrudExeption.badRequest("Channel is required");
     }
 
-    const members: ChannelMember[] = await Promise.all(
-      users.map(user => {
+    const members: Array<{
+      channel: ChannelEntity;
+      added: boolean;
+      member?: ChannelMember;
+      err?: Error;
+    }> = await Promise.all(
+      users.map(async user => {
         const context: ChannelExecutionContext = {
           channel,
           user,
@@ -364,29 +371,45 @@ export class Service implements MemberService {
           user_id: user.id,
         } as ChannelMember);
 
-        // FIXME: Check if the settings are not overrided...
+        try {
+          const isAlreadyMember = await this.isChannelMember(user, channel);
+          if (isAlreadyMember) {
+            logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
+            return { channel, added: false };
+          }
 
-        return this.save(member, null, context)
-          .then(result => {
-            logger.debug("Member %o added to channel %o", member, channel);
-            return result.entity;
-          })
-          .catch(err => {
-            logger.warn({ err }, "Member has not been added %o", member);
-            return null;
-          });
+          const result = await this.save(member, null, context);
+          return {
+            channel,
+            added: true,
+            member: result.entity,
+          };
+        } catch (err) {
+          logger.warn({ err }, "Member has not been added %o", member);
+          return {
+            channel,
+            err,
+            added: false,
+          };
+        }
       }),
     );
 
-    const addedMembers: ChannelMember[] = members.filter(
-      <ChannelMember>(n?: ChannelMember): n is ChannelMember => Boolean(n),
-    );
-
-    return new ListResult<ChannelMember>("channel_member", addedMembers);
+    return new ListResult("channel_member", members);
   }
 
-  async addUserToChannels(user: User, channels: Channel[]): Promise<ListResult<ChannelMember>> {
-    const members: ChannelMember[] = await Promise.all(
+  async addUserToChannels(
+    user: User,
+    channels: ChannelEntity[],
+  ): Promise<
+    ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
+  > {
+    const members: Array<{
+      channel: ChannelEntity;
+      added: boolean;
+      member?: ChannelMember;
+      err?: Error;
+    }> = await Promise.all(
       channels.map(async channel => {
         const context: ChannelExecutionContext = {
           channel,
@@ -404,23 +427,19 @@ export class Service implements MemberService {
           const isAlreadyMember = await this.isChannelMember(user, channel);
           if (isAlreadyMember) {
             logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
-            return null;
+            return { channel, added: false };
           }
 
           const result = await this.save(member, null, context);
-          return result.entity;
+          return { channel, member: result.entity, added: true };
         } catch (err) {
           logger.warn({ err }, "Member has not been added %o", member);
-          return null;
+          return { channel, added: false, err };
         }
       }),
     );
 
-    const addedMembers: ChannelMember[] = members.filter(
-      <ChannelMember>(n?: ChannelMember): n is ChannelMember => Boolean(n),
-    );
-
-    return new ListResult<ChannelMember>("channel_member", addedMembers);
+    return new ListResult("channel_member", members);
   }
 
   @PubsubPublish("channel:member:updated")

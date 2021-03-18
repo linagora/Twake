@@ -26,6 +26,7 @@ export default class DefaultChannelListener implements Initializable {
   }
 
   onChannelDeleted(event: ResourceEventsPayload): void {
+    logger.debug("Channel has been deleted %o", event.channel);
     if (!event.channel || !Channel.isDefaultChannel(event.channel)) {
       return;
     }
@@ -44,6 +45,8 @@ export default class DefaultChannelListener implements Initializable {
   }
 
   onChannelUpdated(event: ResourceEventsPayload): void {
+    logger.debug("Channel has been updated %o", event.channel);
+
     if (!event.channel || !event.resourcesBefore || !event.resourcesBefore.length) {
       return;
     }
@@ -88,23 +91,21 @@ export default class DefaultChannelListener implements Initializable {
   }
 
   onChannelCreated(event: ResourceEventsPayload): void {
-    if (!event.channel) {
+    if (!event.channel || !Channel.isDefaultChannel(event.channel)) {
       return;
     }
 
-    if (Channel.isDefaultChannel(event.channel)) {
-      logger.debug("Channel %s has been created with 'default' attribute", event.channel.id);
-      this.service
-        .create(
-          getDefaultChannelInstance({
-            channel_id: event.channel.id,
-            company_id: event.channel.company_id,
-            workspace_id: event.channel.workspace_id,
-          }),
-        )
-        .catch((err: Error) => {
-          logger.error({ err }, "Default channel %id can not be created", event.channel.id);
-        });
-    }
+    logger.debug("Channel %s has been created with 'default' attribute", event.channel.id);
+    this.service
+      .create(
+        getDefaultChannelInstance({
+          channel_id: event.channel.id,
+          company_id: event.channel.company_id,
+          workspace_id: event.channel.workspace_id,
+        }),
+      )
+      .catch((err: Error) => {
+        logger.warn({ err }, "Default channel %id can not be created", event.channel.id);
+      });
   }
 }

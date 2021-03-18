@@ -14,7 +14,11 @@ import {
   OperationType,
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, { ChannelActivityMessage, ChannelPrimaryKey } from "../../provider";
+import ChannelServiceAPI, {
+  ChannelActivityMessage,
+  ChannelPrimaryKey,
+  DefaultChannelService,
+} from "../../provider";
 import { logger } from "../../../../core/platform/framework";
 
 import { ChannelObject } from "./types";
@@ -50,7 +54,7 @@ export class Service implements ChannelService {
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
   directChannelRepository: Repository<DirectChannel>;
-  defaultChannelService: DefaultChannelServiceImpl;
+  defaultChannelService: DefaultChannelService;
 
   constructor(
     private channelService: ChannelServiceAPI,
@@ -515,10 +519,19 @@ export class Service implements ChannelService {
     return true;
   }
 
-  async getDefaultChannels(
-    workspace: Pick<Channel, "workspace_id" | "company_id">,
+  getDefaultChannels(
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<DefaultChannel[]> {
     return this.defaultChannelService.getDefaultChannels(workspace);
+  }
+
+  async addUserToDefaultChannels(
+    user: User,
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<ChannelMember[]> {
+    const result = await this.defaultChannelService.addUserToDefaultChannels(user, workspace);
+
+    return result.filter(e => e.added).map(e => e.member);
   }
 
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
@@ -554,16 +567,8 @@ export class Service implements ChannelService {
 
         await this.createDirectChannel(directChannel);
       }
+      localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }
-
-    const pushUpdates = {
-      is_default: !!savedChannel.is_default && savedChannel.is_default !== channel.is_default,
-      archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
-    };
-
-    // FIXME:: Will be called on update also...
-    localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
-    logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
   /**

@@ -1,13 +1,15 @@
-import { DefaultChannel } from "../../../entities";
-import { logger } from "../../../../../core/platform/framework";
+import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import ChannelServiceAPI from "../../../provider";
 
 type NewUserInWorkspaceNotification = {
-  user: string;
+  user_id: string;
   company_id: string;
   workspace_id: string;
 };
+
+const NAME = "Channel::NewUserInWorkspaceJoinDefaultChannelsProcessor";
+const logger = getLogger(`channel.pubsub.${NAME}`);
 
 /**
  * When a new user is added in a workspace, a `workspace:user:added` event is published.
@@ -18,34 +20,32 @@ export class NewUserInWorkspaceJoinDefaultChannelsProcessor
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
-    in: "workspace:user:added",
+    in: "workspace:member:added",
   };
 
-  readonly name = "Channel::NewUserInWorkspaceJoinDefaultChannelsProcessor";
+  readonly name = NAME;
 
   validate(message: NewUserInWorkspaceNotification): boolean {
-    return !!(message && message.company_id && message.workspace_id && message.user);
+    return !!(message && message.company_id && message.workspace_id && message.user_id);
   }
 
   async process(message: NewUserInWorkspaceNotification): Promise<void> {
-    logger.info(`${this.name} - Processing notification for message %o`, message);
+    logger.debug("Processing notification for message %o", message);
 
     try {
-      // TODO: Get all the default channels (observable, not paginated)
-      const channels: DefaultChannel[] = await this.service.channels.getDefaultChannels({
-        company_id: message.company_id,
-        workspace_id: message.workspace_id,
-      });
-
-      if (!channels || !channels.length) {
-        logger.debug(`${this.name} - No default channels in workspace %o`, message);
-        return;
-      }
-
-      logger.info(
-        `${this.name} - Adding user ${message.user} to channels ${JSON.stringify(channels)}`,
+      const channelMembers = await this.service.channels.addUserToDefaultChannels(
+        { id: message.user_id },
+        {
+          company_id: message.company_id,
+          workspace_id: message.workspace_id,
+        },
       );
-      await this.service.members.addUserToChannels({ id: message.user }, channels);
+
+      logger.debug(
+        "User %s has been added as member to default channels %o",
+        message.user_id,
+        (channelMembers || []).map(c => c.channel_id),
+      );
     } catch (err) {
       logger.error(
         { err },

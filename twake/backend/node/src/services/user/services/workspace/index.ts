@@ -88,7 +88,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     );
   }
 
-  getAllUsers(
+  getAllUsers$(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Observable<WorkspaceUser> {
@@ -96,7 +96,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       mergeMap(workspaceUsers => {
         const items$ = from(workspaceUsers.getEntities());
         const next$ = workspaceUsers?.nextPage?.page_token
-          ? this.getAllUsers(workspaceId, workspaceUsers.nextPage)
+          ? this.getAllUsers$(workspaceId, workspaceUsers.nextPage)
           : EMPTY;
 
         return concat(items$, next$);

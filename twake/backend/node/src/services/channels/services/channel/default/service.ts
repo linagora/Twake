@@ -1,5 +1,5 @@
-import { from, Observable } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import { from, Observable, concat, EMPTY } from "rxjs";
+import { map, mergeMap, toArray } from "rxjs/operators";
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
 import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
@@ -19,6 +19,8 @@ import { getLogger } from "../../../../../core/platform/framework";
 import UserServiceAPI from "../../../../user/api";
 import { ChannelMember } from "../../../../channels/entities/channel-member";
 import WorkspaceUser from "../../../../user/entities/workspace_user";
+import { User } from "../../../../../services/types";
+import { Channel } from "../../../../../services/channels/entities";
 
 const logger = getLogger("channel:default");
 
@@ -40,15 +42,15 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     return this;
   }
 
-  async create(item: DefaultChannel): Promise<CreateResult<DefaultChannel>> {
-    await this.repository.save(item);
+  async create(channel: DefaultChannel): Promise<CreateResult<DefaultChannel>> {
+    await this.repository.save(channel);
 
     // Once a default channel has been successfully created, we have to add all the workspace users as member of the channel
     // There are several ways to do it: Directly or using pubsub
     // Since member service is a channel sub service we can do it directly
     // Another good way to be sure that the user is in default channels is to have an endpoint which ensures this...
-    this.onCreated(item);
-    return new CreateResult<DefaultChannel>("default_channel", item);
+    this.onCreated(channel);
+    return new CreateResult<DefaultChannel>("default_channel", channel);
   }
 
   get(pk: DefaultChannelPrimaryKey): Promise<DefaultChannel> {
@@ -104,7 +106,10 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
    * @param channel
    */
   onCreated(channel: DefaultChannel): void {
-    logger.debug("Default channel %s has been created", channel.channel_id);
+    logger.debug(
+      "Default channel %s has been created, adding users as members",
+      channel.channel_id,
+    );
     const subscription = this.addWorkspaceUsersToChannel(channel).subscribe({
       next: member => {
         logger.debug(
@@ -127,13 +132,15 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   addWorkspaceUsersToChannel(
     channel: DefaultChannelPrimaryKey,
   ): Observable<{ user?: WorkspaceUser; member?: ChannelMember; added: boolean; err?: Error }> {
-    const users$ = this.userService.workspaces.getAllUsers({ workspaceId: channel.workspace_id });
+    const workspaceUsers$ = this.userService.workspaces.getAllUsers$({
+      workspaceId: channel.workspace_id,
+    });
 
-    return users$.pipe(
-      mergeMap(user =>
+    return workspaceUsers$.pipe(
+      mergeMap(wsUser =>
         from(
           this.channelService.members
-            .addUserToChannels(user, [
+            .addUserToChannels({ id: wsUser.userId }, [
               {
                 company_id: channel.company_id,
                 workspace_id: channel.workspace_id,
@@ -141,24 +148,75 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
               },
             ])
             .then(result => ({
-              user,
-              member: result.getEntities()[0],
-              added: !!result.getEntities()[0],
+              user: wsUser,
+              member: result.getEntities()[0].member,
+              added: result.getEntities()[0].added,
+              err: result.getEntities()[0].err,
             }))
             .catch(err => {
-              return { user, added: false, err };
+              return { user: wsUser, added: false, err };
             }),
         ),
       ),
     );
   }
 
-  async getDefaultChannels(
-    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
-  ): Promise<DefaultChannel[]> {
-    // TODO: Manage pagination based on this.list
-    const result = await this.repository.find(workspace);
+  async addUserToDefaultChannels(
+    user: User,
+    workspace: Required<Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>> {
+    if (!user || !workspace) {
+      throw new Error("Can not add user to default channel (user or workspaces are empty)");
+    }
 
-    return result.getEntities();
+    try {
+      const channels = await this.getDefaultChannels({
+        company_id: workspace.company_id,
+        workspace_id: workspace.workspace_id,
+      });
+
+      if (!channels || !channels.length) {
+        logger.debug("No default channels in workspace %s", workspace.workspace_id);
+        return [];
+      }
+
+      logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
+
+      return (await this.channelService.members.addUserToChannels(user, channels)).getEntities();
+    } catch (err) {
+      logger.error({ err }, "Error while adding user for default channels");
+    }
+  }
+
+  getDefaultChannels(
+    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+    pagination?: Paginable,
+  ): Promise<DefaultChannel[]> {
+    return this.getDefaultChannels$(workspace, pagination).pipe(toArray()).toPromise();
+  }
+
+  getDefaultChannels$(
+    workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+    pagination?: Paginable,
+  ): Observable<DefaultChannel> {
+    const list = (
+      workspace: Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">,
+      pagination: Paginable,
+    ) => {
+      return this.repository.find(workspace, {
+        pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token },
+      });
+    };
+
+    return from(list(workspace, pagination)).pipe(
+      mergeMap(channels => {
+        const items$ = from(channels.getEntities());
+        const next$ = channels?.nextPage?.page_token
+          ? this.getDefaultChannels$(workspace, channels.nextPage)
+          : EMPTY;
+
+        return concat(items$, next$);
+      }),
+    );
   }
 }
