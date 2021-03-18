@@ -27,17 +27,19 @@ const AppView: FC<PropsType> = props => {
 
   const channelCollection = configuration.collection;
   let channel = null;
-  if (channelCollection.useWatcher) {
-    channel = channelCollection.useWatcher({ id: props.id }, { withoutBackend: true })[0];
-  } else {
-    channel = channelCollection.find(props.id);
-    channel = {
-      data: {
-        workspace_id: channel.original_workspace,
-        company_id: channel.original_group,
-        ...channel,
-      },
-    };
+  if(channelCollection){
+    if (channelCollection?.findOne) {
+      channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true });
+    } else {
+      channel = channelCollection.find(props.id);
+      channel = {
+        data: {
+          workspace_id: channel.original_workspace,
+          company_id: channel.original_group,
+          ...channel,
+        },
+      };
+    }
   }
 
   const app = props.viewService.getConfiguration().app;
