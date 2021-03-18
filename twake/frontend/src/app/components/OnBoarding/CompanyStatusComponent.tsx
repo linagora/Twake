@@ -37,11 +37,13 @@ const CompanyStatusComponent = (): JSX.Element => {
       workspace?.group?.stats?.total_members <= 1 &&
       isNewCompany();
 
-    if (isNewUser)
+    if (isNewUser){
+      localStorage.setItem(`onboarding_${companyId}`, 'completed');
       return ModalManager.open(<WelcomeOnTwake email={user.email} />, {
         position: 'center',
         size: { width: '600px' },
       });
+    }
   };
 
   return <></>;
