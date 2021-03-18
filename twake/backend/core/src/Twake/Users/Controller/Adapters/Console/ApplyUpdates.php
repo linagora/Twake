@@ -98,7 +98,7 @@ class ApplyUpdates
             preg_replace("/[^a-zA-Z0-9]/", "",
                 trim(
                     strtolower(
-                        $userDTO["firstName"] . " " . $userDTO["lastName"] ?: explode("@", $userDTO["email"])[0]
+                        explode("@", $userDTO["email"])[0]
                     )
                 )
             )
@@ -114,6 +114,7 @@ class ApplyUpdates
             $original_username = $username;
             $ok = false;
             $mailUsedError = false;
+            $usernameUsedError = false;
             do {
                 $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
@@ -125,7 +126,9 @@ class ApplyUpdates
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                        $usernameUsedError = true;
                     }else{
+                        $usernameUsedError = false;
                         $ok = true;
                     }
                 }else{
@@ -133,7 +136,7 @@ class ApplyUpdates
                 }
                 $counter++;
             } while (!$ok && $counter < 1000);
-            if($mailUsedError){
+            if($mailUsedError || $usernameUsedError){
                 return false;
             }
 
@@ -156,9 +159,9 @@ class ApplyUpdates
         // Update user names
         $user->setEmail($email);
         $user->setPhone("");
-        $user->setFirstName($userDTO["firstName"] ?: "");
+        $user->setFirstName($userDTO["firstName"] ?: ($userDTO["fullName"] ?: ""));
         $user->setLastName($userDTO["lastName"] ?: "");
-        $user->setMailVerified($userDTO["isVerified"] ?: "");
+        $user->setMailVerified(!!$userDTO["isVerified"]);
 
         $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
         $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
