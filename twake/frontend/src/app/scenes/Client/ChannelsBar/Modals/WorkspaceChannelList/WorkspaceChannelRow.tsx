@@ -47,7 +47,7 @@ export default ({ channel, joined, active }: PropsType) => {
     }
 
     ModalManager.closeAll();
-    return RouterServices.history.push(`/client/${workspaceId}/c/${channel.data.id}`);
+    return RouterServices.pushTo(`/client/${workspaceId}/c/${channel.data.id}`);
   };
 
   return (

@@ -39,7 +39,7 @@ class ChannelsBarService extends Observable {
     const channelId = localStorage.getItem(companyId + ':' + workspaceId + ':channel');
     if (channelId) {
       this.updateCurrentChannelId(companyId, workspaceId, '');
-      RouterService.history.push(RouterService.generateRouteFromState({ channelId: channelId }));
+      RouterService.pushTo(RouterService.generateRouteFromState({ channelId: channelId }));
     }
   }
 }

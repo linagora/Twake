@@ -37,12 +37,9 @@ class InitService extends Observable {
 
     if (this.server_infos.ready !== true && this.server_infos.ready !== undefined) {
       //Server is not ready
-      RouterServices.history.replace(
-        RouterServices.addRedirection(RouterServices.pathnames.SETUP),
-        {
-          ...this.server_infos.ready,
-        },
-      );
+      RouterServices.replace(RouterServices.addRedirection(RouterServices.pathnames.SETUP), {
+        ...this.server_infos.ready,
+      });
       this.app_ready = false;
       this.notify();
       setTimeout(() => {

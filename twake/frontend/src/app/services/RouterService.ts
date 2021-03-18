@@ -257,6 +257,14 @@ class RouterServices extends Observable {
     }
     return false;
   }
+
+  pushTo(path: string, state?: unknown): void {
+    return this.history.push(path, state);
+  }
+
+  replace(path: string, state?: unknown): void {
+    return this.history.replace(path, state);
+  }
 }
 
 export default new RouterServices();

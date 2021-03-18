@@ -26,7 +26,7 @@ export default (): JSX.Element => {
       workspaceId: workspaceId,
       channelId: '',
     });
-    return RouterServices.history.push(url);
+    return RouterServices.pushTo(url);
   };
 
   const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${
