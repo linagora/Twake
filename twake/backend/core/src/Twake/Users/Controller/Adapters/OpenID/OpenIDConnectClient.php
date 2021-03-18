@@ -340,7 +340,7 @@ class OpenIDConnectClient
             $this->accessToken = $token_json->access_token;
 
             // If this is a valid claim
-            if ($this->verifyJWTclaims($claims, $token_json->access_token)) {
+            if ($this->verifyJWTclaims($claims, $token_json->access_token, $options)) {
 
                 // Clean up the session a little
                 $this->unsetNonce();
@@ -399,7 +399,7 @@ class OpenIDConnectClient
             $this->idToken = $id_token;
 
             // If this is a valid claim
-            if ($this->verifyJWTclaims($claims, $accessToken)) {
+            if ($this->verifyJWTclaims($claims, $accessToken, $options)) {
 
                 // Clean up the session a little
                 $this->unsetNonce();
@@ -992,7 +992,7 @@ class OpenIDConnectClient
      * @param string|null $accessToken
      * @return bool
      */
-    protected function verifyJWTclaims($claims, $accessToken = null) {
+    protected function verifyJWTclaims($claims, $accessToken = null, $options = []) {
         if(isset($claims->at_hash) && isset($accessToken)){
             if(isset($this->getIdTokenHeader()->alg) && $this->getIdTokenHeader()->alg !== 'none'){
                 $bit = substr($this->getIdTokenHeader()->alg, 2, 3);
@@ -1005,7 +1005,7 @@ class OpenIDConnectClient
         }
         return (($this->issuerValidator->__invoke($claims->iss))
             && (($claims->aud === $this->clientID) || in_array($this->clientID, $claims->aud, true))
-            && ($claims->nonce === $this->getNonce())
+            && ($claims->nonce === $this->getNonce() || $options["ignore_nonce"])
             && ( !isset($claims->exp) || ((gettype($claims->exp) === 'integer') && ($claims->exp >= time() - $this->leeway)))
             && ( !isset($claims->nbf) || ((gettype($claims->nbf) === 'integer') && ($claims->nbf <= time() + $this->leeway)))
             && ( !isset($claims->at_hash) || $claims->at_hash === $expected_at_hash )

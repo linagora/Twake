@@ -106,7 +106,8 @@ class Console extends BaseController
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true,
-                  "ignore_state" => true
+                  "ignore_state" => true,
+                  "ignore_nonce" => true
                 ]);
             }catch(\Exception $err){
                 error_log("Error with Authenticated: ".$err);
