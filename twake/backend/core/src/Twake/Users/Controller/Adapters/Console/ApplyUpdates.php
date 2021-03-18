@@ -26,6 +26,7 @@ class ApplyUpdates
     }
     
     function updateCompany($companyDTO){
+        error_log("apply:updateCompany with params: ". json_encode([$companyDTO]));
 
         $companyConsoleCode = $companyDTO["company"]["details"]["code"];
 
@@ -86,7 +87,7 @@ class ApplyUpdates
      * Take a user from api and save it into PHP
      */
     function updateUser($userDTO){
-        error_log("updateUser with params: ". json_encode([$userDTO]));
+        error_log("apply:updateUser with params: ". json_encode([$userDTO]));
 
         $roles = $userDTO["roles"];
 
@@ -97,7 +98,7 @@ class ApplyUpdates
             preg_replace("/[^a-zA-Z0-9]/", "",
                 trim(
                     strtolower(
-                        $userDTO["firstName"] . " " . $userDTO["lastName"] ?: explode("@", $userDTO["email"])[0]
+                        explode("@", $userDTO["email"])[0]
                     )
                 )
             )
@@ -113,25 +114,29 @@ class ApplyUpdates
             $original_username = $username;
             $ok = false;
             $mailUsedError = false;
+            $usernameUsedError = false;
             do {
                 $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
                         $mailUsedError = true;
+                        break;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                        $usernameUsedError = true;
                     }else{
+                        $usernameUsedError = false;
                         $ok = true;
                     }
                 }else{
                     $ok = true;
                 }
                 $counter++;
-            } while (!$ok);
-            if($mailUsedError){
+            } while (!$ok && $counter < 1000);
+            if($mailUsedError || $usernameUsedError){
                 return false;
             }
 
@@ -154,9 +159,9 @@ class ApplyUpdates
         // Update user names
         $user->setEmail($email);
         $user->setPhone("");
-        $user->setFirstName($userDTO["firstName"] ?: "");
+        $user->setFirstName($userDTO["firstName"] ?: ($userDTO["fullName"] ?: ""));
         $user->setLastName($userDTO["lastName"] ?: "");
-        $user->setMailVerified($userDTO["isVerified"] ?: "");
+        $user->setMailVerified(!!$userDTO["isVerified"]);
 
         $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
         $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");

@@ -61,7 +61,18 @@ class UsersConnections extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
-            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
+            $workspaces = Array();
+            foreach ($workspaces_obj as $workspace_obj) {
+                $value = $workspace_obj["workspace"]->getAsArray();
+                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
+                $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
+                $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
+                $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
+                $workspaces[] = $value;
+            }
+
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
 
             $data["data"]["status"] = "connected";
 
