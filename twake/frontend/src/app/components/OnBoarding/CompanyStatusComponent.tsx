@@ -3,61 +3,42 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import AddMailsInWorkspace from './popups/AddMailsInWorkspace';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserService from 'services/user/user.js';
-import VerifyEmail from './popups/VerifyEmail';
+import WelcomeOnTwake from './popups/WelcomeOnTwake';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'app/services/InitService';
+import RouterServices from 'app/services/RouterService';
 
 const CompanyStatusComponent = (): JSX.Element => {
-  const workspace = Workspaces.getCurrentWorkspace();
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const user = UserService.getCurrentUser();
-  const onboarding: string | null = localStorage.getItem(`onboarding_${workspace.id}`);
-  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
+  const onboarding: string | null = localStorage.getItem(`onboarding_${companyId}`);
+  const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
 
   useEffect(() => {
     if (InitService.server_infos.auth?.console?.use === true) {
-      displayAddMailsInWorkspace();
       isNewAccount();
     }
   }, []);
 
-  const isNewWorkspace = (): boolean => {
+  const isNewCompany = (): boolean => {
     const oneDay = 1000 * 60 * 60 * 24;
-    const createdDay = workspace.stats?.created_at;
+    const createdDay = workspace?.group?.stats?.created_at;
     const currentDay = Date.now();
     const currentPeriod = Math.round(Math.round(currentDay - createdDay) / oneDay);
 
     return currentPeriod <= 7 ? true : false;
   };
 
-  const displayAddMailsInWorkspace = (): void => {
+  const isNewAccount = () => {
     if (!workspace?.id) return;
 
-    const shouldDisplayModal: boolean =
+    const isNewUser: boolean =
       onboarding !== 'completed' &&
-      workspace.stats.total_members === 1 &&
-      workspace.stats.total_guests === 0 &&
-      isNewWorkspace();
-
-    if (shouldDisplayModal) {
-      localStorage.setItem(`onboarding_${workspace.id}`, 'completed');
-      return ModalManager.open(<AddMailsInWorkspace />, {
-        position: 'center',
-        size: { width: '600px' },
-      });
-    }
-  };
-
-  const isNewAccount = () => {
-    if (!company?.id) return;
-
-    const isNewUser =
-      onboarding &&
-      onboarding !== 'completed' &&
-      company.stats?.total_members === 1 &&
-      company.stats?.total_guests === 0;
+      workspace?.group?.stats?.total_members <= 1 &&
+      isNewCompany();
 
     if (isNewUser)
-      return ModalManager.open(<VerifyEmail email={user.email} />, {
+      return ModalManager.open(<WelcomeOnTwake email={user.email} />, {
         position: 'center',
         size: { width: '600px' },
       });
