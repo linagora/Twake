@@ -308,7 +308,7 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState() || $options["ignore_state"]) {
+            if ($_REQUEST['state'] !== $this->getState() && !$options["ignore_state"]) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
 
