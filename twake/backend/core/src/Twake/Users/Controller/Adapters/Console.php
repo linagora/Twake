@@ -97,7 +97,7 @@ class Console extends BaseController
                 $this->getParameter("defaults.auth.console.openid.client_secret")
             );
 
-            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", ""));
+            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", [""])[0]);
             $oidc->providerConfigParam($this->getParameter("defaults.auth.console.openid.provider_config", []));
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
