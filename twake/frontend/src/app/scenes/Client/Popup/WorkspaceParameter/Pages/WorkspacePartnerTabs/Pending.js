@@ -13,6 +13,8 @@ import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import CreateCompanyAccount from '../CreateCompanyAccount.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
+import InitService from 'app/services/InitService';
+import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 
 export default class Pending extends React.Component {
   render() {
@@ -22,7 +24,11 @@ export default class Pending extends React.Component {
           onAdd={
             workspaceUserRightsService.hasWorkspacePrivilege() &&
             (() => {
-              popupManager.open(<AddUser standalone />);
+              if (InitService.server_infos?.auth?.console?.use) {
+                return popupManager.open(<AddUserFromTwakeConsole standalone />);
+              } else {
+                return popupManager.open(<AddUser standalone />);
+              }
             })
           }
           addText={Languages.t(

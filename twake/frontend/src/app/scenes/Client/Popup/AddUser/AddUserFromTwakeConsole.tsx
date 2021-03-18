@@ -1,49 +1,52 @@
 import React, { useState } from 'react';
-import { Button, Typography } from 'antd';
+import { Button, Col, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
-import UserListManager from 'app/components/UserListManager/UserListManager';
 import './AddUser.scss';
 import Emojione from 'app/components/Emojione/Emojione';
 import InitService from 'app/services/InitService';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { UserType } from 'app/models/User';
-import workspacesUsersService from 'services/workspaces/workspaces_users.js';
 import popupManager from 'services/popupManager/popupManager.js';
+import AutoHeight from 'app/components/AutoHeight/AutoHeight';
+import ConsoleService from 'app/services/ConsoleService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Workspaces from 'services/workspaces/workspaces.js';
 
 type PropsType = {
   [key: string]: any;
 };
 
 const AddUserFromTwakeConsole = (props: PropsType) => {
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const workspace = Workspaces.getCurrentWorkspace();
+  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
   const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [fullString, setFullString] = useState<string>();
 
-  const onClickBtn = () => {
-    let emails: string[] = [];
-    selectedUsers.map((id: string) => {
-      const user: UserType = Collections.get('users').find(id);
-      if (user.email) return emails.push(user.email);
-    });
-    if (props.onChange) props.onChange(emails);
-    return finish(emails);
+  const stringToArray = (str: string) => {
+    let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
+    let mailToArray: string[] = [];
+    const stringToArray = str.match(regex);
+
+    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
+
+    const array = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
+
+    setEmails(array);
   };
 
-  const finish = (emails: string[]) => {
-    if (!disabled) {
-      setDisabled(true);
-      if (props.standalone) {
-        workspacesUsersService.addUser(
-          emails,
-          () => {
-            close();
-          },
-          null,
-        );
-      } else if (props.finish) {
-        props.finish();
-        close();
-      }
-    }
+  const onClickBtn = async () => {
+    setLoading(true);
+    setDisabled(true);
+
+    return await ConsoleService.addMailsInWorkspace({
+      workspace_id: workspace.id,
+      company_id: company.id,
+      emails,
+    }).finally(() => {
+      setLoading(false);
+      setDisabled(false);
+      return close();
+    });
   };
 
   const close = () => {
@@ -55,47 +58,37 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
     }, 200);
   };
 
-  const onClickLink = () => {
-    if (InitService.server_infos?.auth?.console?.use) {
-      return window.open(
-        InitService.server_infos?.auth?.console?.collaborators_management_url,
-        '_blank',
-      );
-    }
-  };
   return (
     <div className="add-user-from-twake-console">
       <Typography.Title level={3} className="">
         {Languages.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
         <Emojione type=":upside_down:" />
       </Typography.Title>
-      <div className="user-list-container">
-        <UserListManager
-          max={10}
-          users={[]}
-          canRemoveMyself
-          noPlaceholder
-          scope="group"
-          autoFocus
-          onUpdate={(ids: string[]) => setSelectedUsers(ids)}
+      <div className="user-list-container small-y-margin">
+        <AutoHeight
+          minHeight="120px"
+          maxHeight="120px"
+          value={fullString}
+          onChange={(e: { target: { value: string } }) => {
+            setFullString(e.target.value);
+            stringToArray(e.target.value);
+          }}
+          placeholder={Languages.t('components.add_mails_workspace.text_area_placeholder')}
         />
       </div>
-      <div className="current-user-state small-text">
+      <div className="current-user-state small-text small-top-margin">
         {Languages.t('scenes.app.popup.adduserfromtwakeconsole.current_users_state', [
-          selectedUsers.length || 0,
+          emails.length || 0,
         ])}
-        <div className="small-y-margin smalltext">
-          <span style={{ opacity: 0.5 }}>
-            {Languages.t('scenes.app.popup.adduserfromtwakeconsole.description')}{' '}
-          </span>
-          <Typography.Link onClick={onClickLink}>
-            {Languages.t('general.app.popup.adduserfromtwakeconsole.description_link')}
-          </Typography.Link>
-        </div>
+      </div>
+      <div className="current-user-state">
+        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+          {Languages.t('components.add_mails_workspace.text_secondary')}
+        </Typography.Text>
       </div>
       <div className="add-user-button-container">
-        <Button type="primary" onClick={onClickBtn} disabled={disabled}>
-          {selectedUsers.length === 0
+        <Button type="primary" onClick={onClickBtn} disabled={disabled} loading={loading}>
+          {emails.length === 0
             ? Languages.t('scenes.app.workspaces.components.skip')
             : Languages.t('general.add')}
         </Button>

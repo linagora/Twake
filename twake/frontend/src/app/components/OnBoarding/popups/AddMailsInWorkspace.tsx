@@ -3,13 +3,17 @@ import React, { useState } from 'react';
 import AutoHeight from '../../AutoHeight/AutoHeight';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
-import workspacesUsersService from 'services/workspaces/workspaces_users.js';
 import ModalManager from 'app/components/Modal/ModalManager';
+import ConsoleService from 'app/services/ConsoleService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import Workspaces from 'services/workspaces/workspaces.js';
 
 type PropsType = {};
 
 const AddMailsInWorkspace = ({}: PropsType) => {
-  const [emails, setEmails] = useState<string[]>();
+  const workspace = Workspaces.getCurrentWorkspace();
+  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
+  const [emails, setEmails] = useState<string[]>([]);
   const [fullString, setFullString] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -25,18 +29,17 @@ const AddMailsInWorkspace = ({}: PropsType) => {
     setEmails(array);
   };
 
-  const onClickButton = () => {
-    /*
-    TODO
+  const onClickButton = async () => {
     setLoading(true);
-    return workspacesUsersService.addUser(
+
+    return await ConsoleService.addMailsInWorkspace({
+      workspace_id: workspace.id,
+      company_id: company.id,
       emails,
-      () => {
-        setLoading(false);
-        return ModalManager.close();
-      },
-      null,
-    );*/
+    }).finally(() => {
+      setLoading(false);
+      return ModalManager.close();
+    });
   };
 
   return (
