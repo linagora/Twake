@@ -212,9 +212,9 @@ class Login extends Observable {
           WindowState.setTitle();
           RouterServices.pushTo(
             RouterServices.addRedirection(
-              RouterServices.pathnames.LOGIN +
-                '?' +
-                RouterServices.history.location.search.substr(1),
+              `${RouterServices.pathnames.LOGIN}?${RouterServices.history.location.search.substr(
+                1,
+              )}`,
             ),
           );
         } else {
@@ -322,7 +322,7 @@ class Login extends Observable {
           Globals.window.location.reload();
         } else {
           RouterServices.pushTo(
-            RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
+            `${RouterServices.pathnames.LOGIN}?${RouterServices.history.location.search.substr(1)}`,
           );
         }
       }
