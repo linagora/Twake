@@ -9,7 +9,7 @@ type NewUserInWorkspaceNotification = {
 };
 
 const NAME = "Channel::NewUserInWorkspaceJoinDefaultChannelsProcessor";
-const logger = getLogger(`channel.pubsub.${NAME}`);
+const logger = getLogger("channel.pubsub.new-user-in-workspace-join-default-channels-processor");
 
 /**
  * When a new user is added in a workspace, a `workspace:user:added` event is published.

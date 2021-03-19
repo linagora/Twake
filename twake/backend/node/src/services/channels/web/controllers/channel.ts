@@ -8,7 +8,6 @@ import { getWebsocketInformation, getWorkspaceRooms } from "../../services/chann
 import {
   BaseChannelsParameters,
   ChannelListQueryParameters,
-  ChannelMemberParameters,
   ChannelParameters,
   ChannelSaveOptions,
   CreateChannelBody,
@@ -24,6 +23,9 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../services/types";
+import { getLogger } from "../../../../core/platform/framework/logger";
+
+const logger = getLogger("channel.controller");
 
 export class ChannelCrudController
   implements
@@ -97,6 +99,7 @@ export class ChannelCrudController
         workspace_id: request.params.workspace_id,
       },
     });
+    logger.debug("reqId: %s - save - Channel input %o", request.id, entity);
 
     try {
       const options = {
@@ -106,15 +109,34 @@ export class ChannelCrudController
       const context = getExecutionContext(request);
       const channelResult = await this.service.save(entity, options, context);
 
+      logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
+
+      // FIXME: This must fo in the channel.save since we dispatch things in it and potentially already deal with members and so creator member
+      // For example, for default channels, we get all the users of the workspace
+      // For direct channels we do other stuff...
+      // So the member management must go before any dispatch in it...
       const channelMember = new ChannelMember();
       channelMember.company_id = channelResult.entity.company_id;
       channelMember.workspace_id = channelResult.entity.workspace_id;
       channelMember.channel_id = channelResult.entity.id;
       channelMember.user_id = context.user.id;
+      logger.debug(
+        "reqId: %s - save - Channel %s - Adding current user has member %o",
+        request.id,
+        channelResult.entity.id,
+        channelMember,
+      );
       const memberResult = await this.membersService.save(
         channelMember,
         {},
         getChannelExecutionContext(request, channelResult.entity),
+      );
+
+      logger.debug(
+        "reqId: %s - save - Channel %s - current user has been added",
+        request.id,
+        channelResult.entity.id,
+        channelMember,
       );
 
       const result = channelResult;
@@ -248,6 +270,7 @@ function getExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     workspace: {
       company_id: request.params.company_id,
@@ -264,6 +287,7 @@ function getChannelExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     channel: {
       id: channel.id,

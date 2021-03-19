@@ -19,8 +19,7 @@ import ChannelServiceAPI, {
   ChannelPrimaryKey,
   DefaultChannelService,
 } from "../../provider";
-import { logger } from "../../../../core/platform/framework";
-
+import { getLogger } from "../../../../core/platform/framework";
 import { ChannelObject } from "./types";
 import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
@@ -48,6 +47,8 @@ import {
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import UserServiceAPI from "../../../user/api";
+
+const logger = getLogger("channel.service");
 
 export class Service implements ChannelService {
   version: "1";

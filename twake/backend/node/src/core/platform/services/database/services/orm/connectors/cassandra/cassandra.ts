@@ -443,7 +443,7 @@ export class CassandraConnector extends AbstractConnector<
       options.pagination.limitStr || "100",
     );
     logger.debug(
-      `services.database.orm.cassandra.find - Query: ${query} -> Result: entities.length = ${entities.length}`,
+      `services.database.orm.cassandra.find - Query Result (items=${entities.length}): ${query}`,
     );
 
     return new ListResult<Table>(entityDefinition.type, entities, nextPage);

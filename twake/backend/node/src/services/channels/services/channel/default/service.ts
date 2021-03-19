@@ -1,5 +1,5 @@
 import { from, Observable, concat, EMPTY } from "rxjs";
-import { map, mergeMap, toArray } from "rxjs/operators";
+import { mergeMap, toArray } from "rxjs/operators";
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
 import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
@@ -22,7 +22,7 @@ import WorkspaceUser from "../../../../user/entities/workspace_user";
 import { User } from "../../../../../services/types";
 import { Channel } from "../../../../../services/channels/entities";
 
-const logger = getLogger("channel:default");
+const logger = getLogger("channel.default");
 
 export default class DefaultChannelServiceImpl implements DefaultChannelService {
   version: "1";
@@ -106,24 +106,27 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
    * @param channel
    */
   onCreated(channel: DefaultChannel): void {
-    logger.debug(
-      "Default channel %s has been created, adding users as members",
-      channel.channel_id,
-    );
+    logger.debug("Default channel %s: Adding workspace users as members", channel.channel_id);
+    const members: ChannelMember[] = [];
     const subscription = this.addWorkspaceUsersToChannel(channel).subscribe({
       next: member => {
         logger.debug(
-          "User %s has been added to default channel %s: %s",
-          member.user.userId,
+          "Default Channel %s: User %s has been added: %s",
           channel.channel_id,
+          member.user.userId,
           member.added,
         );
+        member.added && members.push(member.member);
       },
       error: (err: Error) => {
-        logger.error({ err }, "Error while adding user to default channel %s", channel.channel_id);
+        logger.error({ err }, "Default Channel %s: Error while adding users", channel.channel_id);
       },
       complete: () => {
-        logger.debug("Workspace users have been added to default channel %s", channel.channel_id);
+        logger.debug(
+          "Default Channel %s: Workspace users have been added: %o",
+          channel.channel_id,
+          members.map(m => m.user_id),
+        );
         subscription.unsubscribe();
       },
     });

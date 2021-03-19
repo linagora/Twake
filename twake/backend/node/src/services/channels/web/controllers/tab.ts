@@ -13,7 +13,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ChannelExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
 import { handleError } from "../../../../utils/handleError";
-import { getChannelRooms } from "../../services/member/realtime";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
@@ -193,6 +192,7 @@ function getExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     channel: {
       id: request.params.id,

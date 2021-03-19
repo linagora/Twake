@@ -213,6 +213,7 @@ function getExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     channel: {
       id: request.params.id,
