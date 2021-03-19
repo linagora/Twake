@@ -5,14 +5,12 @@ import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ConsoleService from 'app/services/ConsoleService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import RouterServices from 'services/RouterService';
 
 type PropsType = {};
 
 const AddMailsInWorkspace = ({}: PropsType) => {
-  const workspace = Workspaces.getCurrentWorkspace();
-  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [emails, setEmails] = useState<string[]>([]);
   const [fullString, setFullString] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -33,8 +31,8 @@ const AddMailsInWorkspace = ({}: PropsType) => {
     setLoading(true);
 
     return await ConsoleService.addMailsInWorkspace({
-      workspace_id: workspace.id,
-      company_id: company.id,
+      workspace_id: workspaceId || "",
+      company_id: companyId || "",
       emails,
     }).finally(() => {
       setLoading(false);
