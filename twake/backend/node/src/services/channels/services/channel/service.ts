@@ -567,6 +567,16 @@ export class Service implements ChannelService {
         } as DirectChannel;
 
         await this.createDirectChannel(directChannel);
+      } else {
+        if (options.addCreatorAsMember && savedChannel.owner) {
+          try {
+            await this.channelService.members.addUserToChannels({ id: savedChannel.owner }, [
+              savedChannel,
+            ]);
+          } catch (err) {
+            logger.warn({ err }, "Can not add owner as channel member");
+          }
+        }
       }
       localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }

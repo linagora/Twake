@@ -2,7 +2,7 @@ import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Channel, ChannelMember, UserChannel } from "../../entities";
+import { Channel, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
@@ -104,6 +104,7 @@ export class ChannelCrudController
     try {
       const options = {
         members: request.body.options ? request.body.options.members || [] : [],
+        addCreatorAsMember: true,
       } as ChannelSaveOptions;
 
       const context = getExecutionContext(request);
@@ -111,46 +112,27 @@ export class ChannelCrudController
 
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
-      // FIXME: This must fo in the channel.save since we dispatch things in it and potentially already deal with members and so creator member
-      // For example, for default channels, we get all the users of the workspace
-      // For direct channels we do other stuff...
-      // So the member management must go before any dispatch in it...
-      const channelMember = new ChannelMember();
-      channelMember.company_id = channelResult.entity.company_id;
-      channelMember.workspace_id = channelResult.entity.workspace_id;
-      channelMember.channel_id = channelResult.entity.id;
-      channelMember.user_id = context.user.id;
-      logger.debug(
-        "reqId: %s - save - Channel %s - Adding current user has member %o",
-        request.id,
-        channelResult.entity.id,
-        channelMember,
-      );
-      const memberResult = await this.membersService.save(
-        channelMember,
-        {},
+      const member = await this.membersService.get(
+        {
+          channel_id: channelResult.entity.id,
+          workspace_id: channelResult.entity.workspace_id,
+          company_id: channelResult.entity.company_id,
+          user_id: context.user.id,
+        },
         getChannelExecutionContext(request, channelResult.entity),
       );
 
-      logger.debug(
-        "reqId: %s - save - Channel %s - current user has been added",
-        request.id,
-        channelResult.entity.id,
-        channelMember,
-      );
-
-      const result = channelResult;
       const resultEntity = ({
         ...channelResult.entity,
-        ...{ user_member: memberResult.entity },
+        ...{ user_member: member },
       } as unknown) as UserChannel;
 
-      if (result.entity) {
+      if (channelResult.entity) {
         reply.code(201);
       }
 
       return {
-        websocket: getWebsocketInformation(result.entity),
+        websocket: getWebsocketInformation(channelResult.entity),
         resource: resultEntity,
       };
     } catch (err) {

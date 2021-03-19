@@ -351,6 +351,11 @@ export class Service implements MemberService {
     if (!channel) {
       throw CrudExeption.badRequest("Channel is required");
     }
+    logger.debug(
+      "Add users %o to channel %o",
+      users.map(u => u.id),
+      channel.id,
+    );
 
     const members: Array<{
       channel: ChannelEntity;
@@ -404,6 +409,11 @@ export class Service implements MemberService {
   ): Promise<
     ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
   > {
+    logger.debug(
+      "Add user %s to channels %o",
+      user.id,
+      channels.map(c => c.id),
+    );
     const members: Array<{
       channel: ChannelEntity;
       added: boolean;
