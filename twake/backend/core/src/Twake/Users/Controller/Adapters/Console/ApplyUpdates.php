@@ -99,8 +99,7 @@ class ApplyUpdates
             preg_replace("/[^a-zA-Z0-9]/", "",
                 trim(
                     strtolower(
-                        $userDTO["firstName"] . " " . $userDTO["lastName"] ?: explode("@", $userDTO["email"])[0]
-                    )
+                        explode("@", $userDTO["email"])[0]                    )
                 )
             )
         );
@@ -115,25 +114,29 @@ class ApplyUpdates
             $original_username = $username;
             $ok = false;
             $mailUsedError = false;
+            $usernameUsedError = false;
             do {
                 $res = $this->user_service->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
                     if (in_array(-1, $res)) {
                         //Mail used
                         $mailUsedError = true;
+                        break;
                     }
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
+                        $usernameUsedError = true;
                     }else{
+                        $usernameUsedError = false;
                         $ok = true;
                     }
                 }else{
                     $ok = true;
                 }
                 $counter++;
-            } while (!$ok);
-            if($mailUsedError){
+            } while (!$ok && $counter < 1000);
+            if($mailUsedError || $usernameUsedError){
                 return false;
             }
 
