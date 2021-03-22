@@ -109,6 +109,8 @@ export class Service implements ChannelService {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
     const isDirectChannel = Channel.isDirectChannel(channel);
+    const isPrivateChannel = Channel.isPrivateChannel(channel);
+    const isDefaultChannel = Channel.isDefaultChannel(channel);
 
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
@@ -129,8 +131,8 @@ export class Service implements ChannelService {
         description: true,
         icon: true,
         channel_group: true,
-        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
-        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
+        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
+        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
@@ -165,6 +167,10 @@ export class Service implements ChannelService {
     }
 
     if (mode === OperationType.CREATE) {
+      if (isPrivateChannel && isDefaultChannel) {
+        throw CrudExeption.badRequest("Private channel can not be default");
+      }
+
       if (isDirectChannel) {
         options.members = Array.from(new Set<string>(options?.members || []).add(context.user.id));
         channel.members = options.members;
