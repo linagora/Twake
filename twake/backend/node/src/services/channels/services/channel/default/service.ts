@@ -1,5 +1,5 @@
 import { from, Observable, concat, EMPTY } from "rxjs";
-import { mergeMap, toArray } from "rxjs/operators";
+import { filter, mergeMap, toArray } from "rxjs/operators";
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
 import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
@@ -140,6 +140,8 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     });
 
     return workspaceUsers$.pipe(
+      // filter out external workspace users
+      filter(wsUser => !wsUser.isExternal),
       mergeMap(wsUser =>
         from(
           this.channelService.members
