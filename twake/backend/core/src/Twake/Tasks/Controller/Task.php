@@ -36,7 +36,7 @@ class Task extends BaseController
             $this->get("administration.counter")->incrementCounter("total_tasks", 1);            
         }
         if($GLOBALS["segment_enabled"]) \Segment::track([
-            "event" => "tasks:task".($object["id"] ? "edit" : "create"),
+            "event" => "tasks:task:".($object["id"] ? "edit" : "create"),
             "userId" => $this->getUser()->getId()
         ]);
 
