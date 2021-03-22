@@ -73,13 +73,13 @@ class Api extends BaseController
         $groupUserRepository = $doctrine->getRepository("Twake\Workspaces:GroupUser");
         $workspaceUserRepository = $doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
         $companyUser = $groupUserRepository->findOneBy(Array("group" => $companyId, "user" => $this->getUser()->getId()));
-        $workspaceUser = $groupUserRepository->findOneBy(Array("workspace_id" => $workspaceId, "user_id" => $this->getUser()->getId()));
+        $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspaceId, "user_id" => $this->getUser()->getId()));
         if(!$companyUser || !$workspaceUser){
             return new Response(["error" => "user not in company or workspace"]);
         }
 
         // Also add the emails as pending on Twake side
-        $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
+        $workspaceUserByMailRepository = $doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
         foreach($emails as $mail){
             $this->get("app.workspace_members")->addMemberByMail($workspaceId, $mail, $asExterne, $this->getUser()->getId(), false);
         }
