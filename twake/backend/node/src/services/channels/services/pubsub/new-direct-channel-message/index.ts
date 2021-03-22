@@ -1,9 +1,11 @@
 import { without } from "lodash";
 import { Channel, ChannelMember } from "../../../entities";
-import { logger } from "../../../../../core/platform/framework";
+import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import { MessageNotification } from "../../../../messages/types";
 import ChannelServiceAPI from "../../../provider";
+
+const logger = getLogger("channel.pubsub.new-direct-channel-message");
 
 export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNotification, void> {
   constructor(readonly service: ChannelServiceAPI) {}

@@ -1,4 +1,4 @@
-import { logger, Initializable } from "../../../../../core/platform/framework";
+import { getLogger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { Channel as ChannelEntity } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../types";
@@ -8,6 +8,7 @@ import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/a
 import { ChannelParameters } from "../../../web/types";
 import { ChannelVisibility } from "../../../types";
 
+const logger = getLogger("channel.activities");
 export default class Activities implements Initializable {
   pubsub: PubsubServiceAPI;
 

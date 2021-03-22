@@ -2,13 +2,12 @@ import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Channel, ChannelMember, UserChannel } from "../../entities";
+import { Channel, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
   ChannelListQueryParameters,
-  ChannelMemberParameters,
   ChannelParameters,
   ChannelSaveOptions,
   CreateChannelBody,
@@ -24,6 +23,9 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../services/types";
+import { getLogger } from "../../../../core/platform/framework/logger";
+
+const logger = getLogger("channel.controller");
 
 export class ChannelCrudController
   implements
@@ -97,38 +99,40 @@ export class ChannelCrudController
         workspace_id: request.params.workspace_id,
       },
     });
+    logger.debug("reqId: %s - save - Channel input %o", request.id, entity);
 
     try {
       const options = {
         members: request.body.options ? request.body.options.members || [] : [],
+        addCreatorAsMember: true,
       } as ChannelSaveOptions;
 
       const context = getExecutionContext(request);
       const channelResult = await this.service.save(entity, options, context);
 
-      const channelMember = new ChannelMember();
-      channelMember.company_id = channelResult.entity.company_id;
-      channelMember.workspace_id = channelResult.entity.workspace_id;
-      channelMember.channel_id = channelResult.entity.id;
-      channelMember.user_id = context.user.id;
-      const memberResult = await this.membersService.save(
-        channelMember,
-        {},
+      logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
+
+      const member = await this.membersService.get(
+        {
+          channel_id: channelResult.entity.id,
+          workspace_id: channelResult.entity.workspace_id,
+          company_id: channelResult.entity.company_id,
+          user_id: context.user.id,
+        },
         getChannelExecutionContext(request, channelResult.entity),
       );
 
-      const result = channelResult;
       const resultEntity = ({
         ...channelResult.entity,
-        ...{ user_member: memberResult.entity },
+        ...{ user_member: member },
       } as unknown) as UserChannel;
 
-      if (result.entity) {
+      if (channelResult.entity) {
         reply.code(201);
       }
 
       return {
-        websocket: getWebsocketInformation(result.entity),
+        websocket: getWebsocketInformation(channelResult.entity),
         resource: resultEntity,
       };
     } catch (err) {
@@ -248,6 +252,7 @@ function getExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     workspace: {
       company_id: request.params.company_id,
@@ -264,6 +269,7 @@ function getChannelExecutionContext(
     user: request.currentUser,
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
     channel: {
       id: channel.id,

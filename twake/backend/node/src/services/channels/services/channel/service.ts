@@ -14,11 +14,14 @@ import {
   OperationType,
   CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, { ChannelActivityMessage, ChannelPrimaryKey } from "../../provider";
-import { logger } from "../../../../core/platform/framework";
-
+import ChannelServiceAPI, {
+  ChannelActivityMessage,
+  ChannelPrimaryKey,
+  DefaultChannelService,
+} from "../../provider";
+import { getLogger } from "../../../../core/platform/framework";
 import { ChannelObject } from "./types";
-import { Channel, ChannelMember, UserChannel } from "../../entities";
+import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -42,16 +45,31 @@ import {
   PubsubParameter,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import DefaultChannelServiceImpl from "./default/service";
+import UserServiceAPI from "../../../user/api";
+
+const logger = getLogger("channel.service");
 
 export class Service implements ChannelService {
   version: "1";
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
   directChannelRepository: Repository<DirectChannel>;
+  defaultChannelService: DefaultChannelService;
 
-  constructor(private channelService: ChannelServiceAPI, private database: DatabaseServiceAPI) {}
+  constructor(
+    private channelService: ChannelServiceAPI,
+    private database: DatabaseServiceAPI,
+    private userService: UserServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
+    this.defaultChannelService = new DefaultChannelServiceImpl(
+      this.database,
+      this.channelService,
+      this.userService,
+    );
+
     try {
       this.activityRepository = await this.database.getRepository(
         "channel_activity",
@@ -63,7 +81,13 @@ export class Service implements ChannelService {
         DirectChannel,
       );
     } catch (err) {
-      console.error("Can not initialize database service", err);
+      logger.error({ err }, "Can not initialize channel db service");
+    }
+
+    try {
+      await this.defaultChannelService.init();
+    } catch (err) {
+      logger.warn("Can not initialize default channel service", err);
     }
 
     return this;
@@ -85,6 +109,8 @@ export class Service implements ChannelService {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
     const isDirectChannel = Channel.isDirectChannel(channel);
+    const isPrivateChannel = Channel.isPrivateChannel(channel);
+    const isDefaultChannel = Channel.isDefaultChannel(channel);
 
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
@@ -105,8 +131,8 @@ export class Service implements ChannelService {
         description: true,
         icon: true,
         channel_group: true,
-        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
-        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel,
+        is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
+        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
@@ -141,6 +167,10 @@ export class Service implements ChannelService {
     }
 
     if (mode === OperationType.CREATE) {
+      if (isPrivateChannel && isDefaultChannel) {
+        throw CrudExeption.badRequest("Private channel can not be default");
+      }
+
       if (isDirectChannel) {
         options.members = Array.from(new Set<string>(options?.members || []).add(context.user.id));
         channel.members = options.members;
@@ -200,7 +230,7 @@ export class Service implements ChannelService {
 
   async get(pk: ChannelPrimaryKey): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
-    let channel = await this.channelRepository.findOne(primaryKey);
+    const channel = await this.channelRepository.findOne(primaryKey);
     const last_activity = await this.getChannelActivity(channel);
 
     return ChannelObject.mapTo(channel, { last_activity });
@@ -496,6 +526,21 @@ export class Service implements ChannelService {
     return true;
   }
 
+  getDefaultChannels(
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<DefaultChannel[]> {
+    return this.defaultChannelService.getDefaultChannels(workspace);
+  }
+
+  async addUserToDefaultChannels(
+    user: User,
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<ChannelMember[]> {
+    const result = await this.defaultChannelService.addUserToDefaultChannels(user, workspace);
+
+    return result.filter(e => e.added).map(e => e.member);
+  }
+
   getPrimaryKey(channelOrPrimaryKey: Channel | ChannelPrimaryKey): ChannelPrimaryKey {
     return pick(channelOrPrimaryKey, ...(["company_id", "workspace_id", "id"] as const));
   }
@@ -528,16 +573,19 @@ export class Service implements ChannelService {
         } as DirectChannel;
 
         await this.createDirectChannel(directChannel);
+      } else {
+        if (options.addCreatorAsMember && savedChannel.owner) {
+          try {
+            await this.channelService.members.addUserToChannels({ id: savedChannel.owner }, [
+              savedChannel,
+            ]);
+          } catch (err) {
+            logger.warn({ err }, "Can not add owner as channel member");
+          }
+        }
       }
+      localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }
-
-    const pushUpdates = {
-      is_default: !!savedChannel.is_default && savedChannel.is_default !== channel.is_default,
-      archived: !!savedChannel.archived && savedChannel.archived !== channel.archived,
-    };
-
-    localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
-    logger.debug(`Channel ${mode}d`, pushUpdates);
   }
 
   /**
@@ -547,7 +595,10 @@ export class Service implements ChannelService {
    * @param result The delete result
    */
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
-    logger.debug("Channel deleted", channel, result);
+    if (result.deleted) {
+      logger.debug("Channel %s has been deleted", channel.id);
+      localEventBus.publish<ResourceEventsPayload>("channel:deleted", { channel });
+    }
   }
 
   /**

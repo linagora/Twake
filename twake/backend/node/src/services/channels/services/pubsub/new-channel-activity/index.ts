@@ -1,8 +1,9 @@
-import { logger } from "../../../../../core/platform/framework";
+import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import { ChannelActivityNotification } from "../../../types";
 import { ChannelService } from "../../../provider";
 
+const logger = getLogger("channel.pubsub.new-channel-activity");
 export class NewChannelActivityProcessor
   implements PubsubHandler<ChannelActivityNotification, void> {
   constructor(readonly service: ChannelService) {}

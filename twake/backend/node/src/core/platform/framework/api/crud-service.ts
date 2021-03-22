@@ -98,7 +98,7 @@ export class ListResult<Entity> extends ContextualizedTarget implements Paginabl
     return this.entities || [];
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.getEntities().length === 0;
   }
 }
@@ -119,6 +119,7 @@ export declare type EntityOperationResult<Entity> =
 
 export interface ExecutionContext {
   user: User;
+  reqId?: string;
   url?: string;
   method?: string;
   transport?: "http" | "ws";
@@ -145,7 +146,7 @@ export interface Paginable {
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token: string, readonly limitStr = "100") {}
+  constructor(readonly page_token?: string, readonly limitStr = "100") {}
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {

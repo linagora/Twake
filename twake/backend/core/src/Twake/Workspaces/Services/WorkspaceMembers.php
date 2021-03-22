@@ -22,6 +22,7 @@ class WorkspaceMembers
     private $doctrine;
     private $pusher;
     private $calendar;
+    private $queues;
 
     public function __construct(App $app)
     {
@@ -34,6 +35,7 @@ class WorkspaceMembers
         $this->calendar = $app->getServices()->get("app.calendar.calendar");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
         $this->groupManager = $app->getServices()->get("app.group_managers");
+        $this->queues = $app->getServices()->get('app.queues')->getAdapter();
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -163,6 +165,12 @@ class WorkspaceMembers
                 "workspace" => $workspace->getAsArray()
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+            
+            $this->queues->push("workspace:member:added", [
+                "company_id" => $workspace->getGroup()->getId(),
+                "workspace_id" => $workspaceId,
+                "user_id" => $userId
+            ], ["exchange_type" => "fanout"]);
 
             /*            $datatopush = Array(
                             "type" => "CHANGE_MEMBERS",
@@ -449,8 +457,13 @@ class WorkspaceMembers
                 "type" => "remove",
                 "workspace" => $workspace->getAsArray(),
             );
-
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+            
+            $this->queues->push("workspace:member:removed", [
+                "company_id" => $workspace->getGroup()->getId(),
+                "workspace_id" => $workspaceId,
+                "user_id" => $userId
+            ], ["exchange_type" => "fanout"]);
 
             if ($member) {
                 if($member->getExterne()){
