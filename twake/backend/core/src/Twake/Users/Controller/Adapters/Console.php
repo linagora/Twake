@@ -42,6 +42,8 @@ class Console extends BaseController
 
     function logout(Request $request, $message = null)
     {
+        error_log(json_encode($message));
+
         if(!$this->isServiceEnabled()){
             return new Response(["error" => "unauthorized"], 401);
         }
@@ -106,7 +108,6 @@ class Console extends BaseController
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true,
-                  "ignore_state" => true,
                   "ignore_nonce" => true
                 ]);
             }catch(\Exception $err){
