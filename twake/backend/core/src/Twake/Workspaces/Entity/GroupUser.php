@@ -46,8 +46,12 @@ class GroupUser
     /**
      * @ORM\Column(name="is_externe", type="twake_boolean")
      */
-    // don't use it <3
     private $externe;
+
+    /**
+     * @ORM\Column(name="role", type="string", length=10)
+     */
+    private $role = "member"; //"guest" | "admin" | "member"
 
     /**
      * @ORM\Column(name="app_used_today", type="string", length=100000)
@@ -139,7 +143,28 @@ class GroupUser
      */
     public function setLevel($level)
     {
+        if($level > 1){
+            $this->setRole("admin");
+        }else if($this->getRole() !== "guest"){
+            $this->setRole("member");
+        }
         $this->level = $level;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
     }
 
     /**
@@ -286,6 +311,9 @@ class GroupUser
      */
     public function setExterne($externe)
     {
+        if($externe){
+            $this->setRole("guest");
+        }
         $this->externe = $externe;
     }
 

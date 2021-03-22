@@ -223,6 +223,9 @@ class ApplyUpdates
 
         $companyUserEntity->setExterne($roleDTO["roleCode"] === "guest"); 
         $companyUserEntity->setLevel(($roleDTO["roleCode"] === "admin" || $roleDTO["roleCode"] === "owner") ? 3 : 0); 
+        $role = $roleDTO["roleCode"];
+        if($role == "owner") $role = "admin";
+        $companyUserEntity->setRole($role);
 
         $this->em->persist($companyUserEntity);
         $this->em->flush();
