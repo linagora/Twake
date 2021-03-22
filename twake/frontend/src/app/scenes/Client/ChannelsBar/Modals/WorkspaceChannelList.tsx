@@ -76,7 +76,7 @@ export default () => {
     }
 
     ModalManager.closeAll();
-    return RouterServices.pushTo(`/client/${channel.data.workspace_id}/c/${channel.data.id}`);
+    return RouterServices.push(`/client/${channel.data.workspace_id}/c/${channel.data.id}`);
   };
 
   const loadMore = () => {

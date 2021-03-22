@@ -79,7 +79,7 @@ class Channels extends Observable {
     }
 
     if (res) {
-      RouterService.pushTo(
+      RouterService.push(
         RouterService.generateRouteFromState({
           channelId: res.id,
           companyId: res.data.company_id,
@@ -147,7 +147,7 @@ class Channels extends Observable {
       this.currentChannelFrontId = channel.front_id;
       this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
 
-      RouterService.pushTo(RouterService.generateRouteFromState({ channelId: channel.id }));
+      RouterService.push(RouterService.generateRouteFromState({ channelId: channel.id }));
 
       this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
 

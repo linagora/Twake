@@ -91,7 +91,7 @@ export default (props: Props): JSX.Element => {
 
   const redirectToWorkspace = () => {
     const url = RouterServices.generateRouteFromState({ workspaceId: workspaceId, channelId: '' });
-    return RouterServices.pushTo(url);
+    return RouterServices.push(url);
   };
 
   const editChannel = () => {

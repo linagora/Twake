@@ -54,7 +54,7 @@ export default ({
         const route: string = RouterServices.generateRouteFromState({
           tabId: tabResource.data.id,
         });
-        return RouterServices.pushTo(route);
+        return RouterServices.push(route);
       }}
     >
       {WorkspacesApps.getAppIconComponent(tabResource.data, { size: 14 })}

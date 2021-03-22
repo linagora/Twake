@@ -258,7 +258,7 @@ class RouterServices extends Observable {
     return false;
   }
 
-  pushTo(path: string, state?: unknown): void {
+  push(path: string, state?: unknown): void {
     return this.history.push(path, state);
   }
 

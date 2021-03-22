@@ -167,7 +167,7 @@ class Workspaces extends Observable {
     if (replace) {
       RouterServices.replace(route);
     } else {
-      RouterServices.pushTo(route);
+      RouterServices.push(route);
     }
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });

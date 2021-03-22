@@ -16,7 +16,7 @@ export default () => {
       },
     };
     if (!RouterServices.useRedirection()) {
-      RouterServices.pushTo('/');
+      RouterServices.push('/');
     }
   }
   return (

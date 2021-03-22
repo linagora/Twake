@@ -16,7 +16,7 @@ export default function Setup() {
 
   if (ready === true) {
     if (!RouterServices.useRedirection()) {
-      RouterServices.pushTo('/');
+      RouterServices.push('/');
     }
     return <div />;
   }
