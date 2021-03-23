@@ -339,7 +339,7 @@ export default class WorkspacePartner extends Component {
               ),
               render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
-            {
+            !InitService.server_infos?.auth?.console?.use && {
               title: Languages.t(
                 'scenes.apps.parameters.workspace_sections.members.pending',
                 [],
