@@ -2,10 +2,9 @@ FROM twaketech/nginx-static-yarn
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
-ADD docker/twake-nginx/site.conf /etc/nginx/sites-enabled/site
-
+ADD docker/twake-nginx/site.conf /etc/nginx/sites-available/site.template
+RUN apt-get update && apt-get install gettext-base
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
-#RUN echo "upstream php-backoffice-upstream { server php_backoffice:9000; }" > /etc/nginx/conf.d/upstream.conf
 
 WORKDIR /twake-react/
 
@@ -15,6 +14,7 @@ RUN yarn install --network-timeout 1000000000
 ENV GENERATE_SOURCEMAP false
 RUN cat /twake-react/src/app/environment/environment.ts.dist
 RUN cat /twake-react/src/app/environment/environment.ts
+ENV GENERATE_SOURCEMAP=false
 RUN yarn build
 
 RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist
