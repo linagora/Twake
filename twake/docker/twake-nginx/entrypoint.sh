@@ -17,7 +17,7 @@ fi
 
 MOBILE_HOST="${MOBILE_HOST:-http://node:3000}"
 NODE_HOST="${NODE_HOST:-http://node:3000}"
-PHP_UPSTREAM="${PHP_UPSTREAM:-php-upstream}"
+PHP_UPSTREAM="${PHP_UPSTREAM:-php:9000}"
 export MOBILE_HOST
 export NODE_HOST
 export PHP_UPSTREAM
