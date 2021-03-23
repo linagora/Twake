@@ -978,8 +978,7 @@ class OpenIDConnectClient
                 $verified = $this->verifyHMACJWTsignature($hashtype, $this->getClientSecret(), $payload, $signature);
                 break;
             case 'none':
-                error_log("This is dev code, must be removed in the end!!!");
-                $verified = true;
+                $verified = false;
                 break;
             default:
                 throw new OpenIDConnectClientException('No support for signature type: ' . $header->alg);
@@ -1131,7 +1130,6 @@ class OpenIDConnectClient
      * @return mixed
      */
     protected function fetchURL($url, $post_body = null, $headers = array()) {
-
 
         // OK cool - then let's create a new cURL resource handle
         $ch = curl_init();
