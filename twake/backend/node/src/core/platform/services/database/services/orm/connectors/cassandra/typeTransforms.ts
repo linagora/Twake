@@ -134,7 +134,7 @@ export const transformValueFromDbString = (
     return String(v);
   }
   if (type === "number") {
-    return new Number(v);
+    return new Number(v).valueOf();
   }
   return v;
 };

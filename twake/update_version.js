@@ -5,7 +5,7 @@
 const versions = {
   VERSION_NAME: process.env.TWAKE_VERSION_NAME || "Albatros",
   VERSION: process.env.TWAKE_VERSION || "2021.Q1",
-  VERSION_DETAIL: process.env.TWAKE_VERSION_DETAIL || "2021.Q1.401",
+  VERSION_DETAIL: process.env.TWAKE_VERSION_DETAIL || "2021.Q1.434",
   MIN_VERSION_WEB: process.env.TWAKE_MIN_VERSION_WEB || "2021.Q1.385",
   MIN_VERSION_MOBILE: process.env.TWAKE_MIN_VERSION_MOBILE || "2021.Q1.385",
 };
@@ -13,6 +13,8 @@ const versions = {
 const files = [
   "frontend/src/app/environment/version.ts",
   "backend/core/src/Twake/Core/Controller/Version.php",
+  "../.github/workflows/saas-update-backend.yml",
+  "../.github/workflows/saas-update-front.yml",
 ];
 
 var fs = require("fs");
@@ -36,6 +38,11 @@ files.forEach((file) => {
         "$1" + replacement + "$2"
       );
     });
+
+    result = result.replace(
+      new RegExp('(DOCKERTAGVERSION=)[a-zA-Z0-9.]*(")', "g"),
+      "$1" + versions.VERSION_DETAIL + "$2"
+    );
 
     fs.writeFile(file, result, "utf8", function (err) {
       if (err) return console.log(err);

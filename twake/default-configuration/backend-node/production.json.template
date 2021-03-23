@@ -1,6 +1,6 @@
 {
   "phpnode": {
-    "secret": "api_supersecret"
+    "secret": "api_supersecret (set the same in php later)"
   },
   "websocket": {
     "path": "/socket/",
@@ -9,20 +9,22 @@
     },
     "auth": {
       "jwt": {
-        "secret": "supersecret"
+        "secret": "supersecret (use the same as in php)"
       }
     }
   },
   "auth": {
     "jwt": {
-      "secret": "supersecret"
+      "secret": "supersecret (use the same as in php)"
     }
   },
   "database": {
-    "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
+    "secret": "GET YOUR SECRET FROM PHP Parameters.php: db.secret",
     "type": "cassandra",
     "cassandra": {
-      "contactPoints": ["scylladb:9042"],
+      "contactPoints": [
+        "scylladb:9042"
+      ],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -31,6 +33,8 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://admin:admin@rabbitmq:5672"]
+    "urls": [
+      "amqp://admin:admin@rabbitmq:5672"
+    ]
   }
 }

@@ -11,7 +11,7 @@
     "dev:linter": "eslint src/",
     "start": "craco start",
     "test": "CI=true craco test",
-    "build": "CI=false craco --max_old_space_size=4096 build"
+    "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -53,7 +53,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
-    "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-es2017": "^7.0.0-beta.53",
     "@craco/craco": "^5.6.4",
@@ -94,7 +93,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-test-renderer": "^16.9.3",
-    "@types/redux": "^3.6.0",
+    "@types/redux": "^3.6.31",
     "@types/semaphore": "^1.1.0",
     "@types/socket.io-client": "^1.4.34",
     "@types/uuid": "^8.3.0",
@@ -106,7 +105,6 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^24.9.0",
     "babel-plugin-import": "^1.13.0",
     "babel-plugin-named-asset-import": "^0.3.6",
     "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
@@ -129,7 +127,7 @@
     "eslint-config-react-app": "^5.2.0",
     "eslint-config-react-app-eslint-six": "^4.0.2",
     "eslint-loader": "3.0.3",
-    "eslint-plugin-flowtype": "4.6.0",
+    "eslint-plugin-flowtype": "4.7.0",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jsx-a11y": "6.4.1",
     "eslint-plugin-react": "7.21.5",
@@ -141,7 +139,7 @@
     "fs-extra": "^8.1.0",
     "fullcalendar": "^5.1.0",
     "highlight.js": "^10.4.1",
-    "html-webpack-plugin": "4.4.1",
+    "html-webpack-plugin": "4.5.2",
     "http-proxy-middleware": "^1.0.1",
     "identity-obj-proxy": "3.0.0",
     "jest-environment-jsdom-fourteen": "1.0.1",
@@ -161,12 +159,12 @@
     "postcss-loader": "3.0.0",
     "postcss-normalize": "8.0.1",
     "postcss-preset-env": "6.7.0",
-    "postcss-safe-parser": "4.0.1",
+    "postcss-safe-parser": "4.0.2",
     "react": "^16.13.0",
     "react-ace": "^9.1.1",
     "react-app-polyfill": "^1.0.6",
     "react-beautiful-dnd": "10.1.0",
-    "react-dev-utils": "^11.0.3",
+    "react-dev-utils": "^11.0.4",
     "react-dom": "^16.13.0",
     "react-emojione": "^5.0.1",
     "react-fastclick": "^3.0.2",
@@ -202,14 +200,15 @@
     "shortcuts": "^1.6.1",
     "socket.io-client": "^2.3.1",
     "style-loader": "0.23.1",
-    "terser-webpack-plugin": "2.3.8",
-    "ts-pnp": "1.1.5",
+    "terser-webpack-plugin": "3.0.0",
+    "ts-pnp": "1.2.0",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
     "uuid": "^8.3.1",
     "workbox-webpack-plugin": "4.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.7",
     "craco-alias": "^2.1.1",
     "prettier": "^2.0.5"
   }
