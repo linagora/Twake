@@ -10,7 +10,9 @@ class ConsoleService {
         {},
         (res: { data: { error: string; message: string; statusCode: number } }) => {
           if (res.data === null)
-            return toaster.success(Languages.t('services.console_services.toaster.success'));
+            return toaster.success(
+              Languages.t('services.console_services.toaster.success_verify_email'),
+            );
           else return toaster.error(res.data.message);
         },
       );
@@ -33,7 +35,11 @@ class ConsoleService {
           }
 
           if (res.data?.ok?.length) {
-            toaster.success(`Successfully added ${res.data.ok.length} email(s)`);
+            toaster.success(
+              Languages.t('services.console_services.toaster.success_invite_emails', [
+                res.data.ok.length,
+              ]),
+            );
           }
         }
       });
