@@ -3,20 +3,17 @@ import { Button, Col, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
 import './AddUser.scss';
 import Emojione from 'app/components/Emojione/Emojione';
-import InitService from 'app/services/InitService';
 import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
 import ConsoleService from 'app/services/ConsoleService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import RouterServices from 'services/RouterService';
 
 type PropsType = {
   [key: string]: any;
 };
 
 const AddUserFromTwakeConsole = (props: PropsType) => {
-  const workspace = Workspaces.getCurrentWorkspace();
-  const company = DepreciatedCollections.get('workspaces').find(workspace.id);
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
@@ -39,8 +36,8 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
     setDisabled(true);
 
     return await ConsoleService.addMailsInWorkspace({
-      workspace_id: workspace.id,
-      company_id: company.id,
+      workspace_id: workspaceId || "",
+      company_id: companyId || "",
       emails,
     }).finally(() => {
       setLoading(false);

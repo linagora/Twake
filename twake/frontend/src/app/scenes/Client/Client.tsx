@@ -25,7 +25,7 @@ import { Menu } from 'react-feather';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import RouterServices from 'app/services/RouterService';
-import WorkspaceStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
+import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
@@ -53,7 +53,7 @@ export default (): JSX.Element => {
       page = (
         <Layout className="appPage">
           <NewVersionComponent />
-          <WorkspaceStatusComponent />
+          <CompanyStatusComponent />
           <Layout hasSider>
             <Layout.Sider
               trigger={<Menu size={16} />}

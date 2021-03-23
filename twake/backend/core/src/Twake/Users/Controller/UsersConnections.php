@@ -61,6 +61,7 @@ class UsersConnections extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
+            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
             $workspaces = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray();

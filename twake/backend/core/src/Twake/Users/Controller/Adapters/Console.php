@@ -42,6 +42,8 @@ class Console extends BaseController
 
     function logout(Request $request, $message = null)
     {
+        error_log(json_encode($message));
+
         if(!$this->isServiceEnabled()){
             return new Response(["error" => "unauthorized"], 401);
         }
@@ -97,16 +99,15 @@ class Console extends BaseController
                 $this->getParameter("defaults.auth.console.openid.client_secret")
             );
 
-            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", ""));
+            $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", [""])[0]);
             $oidc->providerConfigParam($this->getParameter("defaults.auth.console.openid.provider_config", []));
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
 
-            $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone'));
+            $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone', 'offline_access'));
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true,
-                  "ignore_state" => true,
                   "ignore_nonce" => true
                 ]);
             }catch(\Exception $err){
