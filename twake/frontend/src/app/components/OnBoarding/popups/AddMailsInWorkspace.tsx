@@ -6,33 +6,26 @@ import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ConsoleService from 'app/services/ConsoleService';
 import RouterServices from 'services/RouterService';
+import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 
 type PropsType = {};
 
 const AddMailsInWorkspace = ({}: PropsType) => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
-  const [emails, setEmails] = useState<string[]>([]);
-  const [fullString, setFullString] = useState<string>();
+  const [emails, _setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const stringToArray = (str: string) => {
-    let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
-    let mailToArray: string[] = [];
-    const stringToArray = str.match(regex);
+  const setEmails = (str: string) =>
+    _setEmails(WorkspacesUsers.fullStringToEmails(str) as string[]);
 
-    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
-
-    const array = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
-
-    setEmails(array);
-  };
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEmails(e.target.value);
 
   const onClickButton = async () => {
     setLoading(true);
 
     return await ConsoleService.addMailsInWorkspace({
-      workspace_id: workspaceId || "",
-      company_id: companyId || "",
+      workspace_id: workspaceId || '',
+      company_id: companyId || '',
       emails,
     }).finally(() => {
       setLoading(false);
@@ -74,11 +67,7 @@ const AddMailsInWorkspace = ({}: PropsType) => {
           <AutoHeight
             minHeight="110px"
             maxHeight="300px"
-            value={fullString}
-            onChange={(e: { target: { value: string } }) => {
-              setFullString(e.target.value);
-              stringToArray(e.target.value);
-            }}
+            onChange={onChange}
             placeholder={Languages.t('components.add_mails_workspace.text_area_placeholder')}
           />
         </Col>

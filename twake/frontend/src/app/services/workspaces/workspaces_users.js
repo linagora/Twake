@@ -521,6 +521,16 @@ class WorkspacesUsers extends Observable {
       });
     }
   }
+
+  fullStringToEmails(str) {
+    const regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
+    const mailToArray = [];
+    const stringToArray = str.match(regex);
+
+    (stringToArray || []).map(item => mailToArray.push(item.toLocaleLowerCase()));
+
+    return mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
+  }
 }
 
 const service = new WorkspacesUsers();

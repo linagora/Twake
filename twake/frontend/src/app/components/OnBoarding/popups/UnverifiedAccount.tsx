@@ -11,7 +11,12 @@ type PropsType = {
 };
 
 const UnverifiedAccount = ({ daysLeft, email, limit }: PropsType): JSX.Element => {
-  const onClickButton = () => ConsoleService.verifyMail();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onClickButton = () => {
+    setLoading(true);
+    return ConsoleService.verifyMail().finally(() => setLoading(false));
+  };
 
   return (
     <ObjectModal
@@ -25,7 +30,7 @@ const UnverifiedAccount = ({ daysLeft, email, limit }: PropsType): JSX.Element =
       hideFooterDivider
       footerAlign="center"
       footer={
-        <Button type="ghost" size="small" onClick={onClickButton}>
+        <Button type="ghost" size="small" onClick={onClickButton} loading={loading}>
           {Languages.t('general.re_send')}
         </Button>
       }

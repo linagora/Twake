@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Col, Row, Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
 import './AddUser.scss';
 import Emojione from 'app/components/Emojione/Emojione';
@@ -7,6 +7,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
 import ConsoleService from 'app/services/ConsoleService';
 import RouterServices from 'services/RouterService';
+import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 
 type PropsType = {
   [key: string]: any;
@@ -16,28 +17,19 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [emails, setEmails] = useState<string[]>([]);
-  const [fullString, setFullString] = useState<string>();
+  const [emails, _setEmails] = useState<string[]>([]);
 
-  const stringToArray = (str: string) => {
-    let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
-    let mailToArray: string[] = [];
-    const stringToArray = str.match(regex);
+  const setEmails = (str: string) => _setEmails(WorkspacesUsers.fullStringToEmails(str));
 
-    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
-
-    const array = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
-
-    setEmails(array);
-  };
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEmails(e.target.value);
 
   const onClickBtn = async () => {
     setLoading(true);
     setDisabled(true);
 
     return await ConsoleService.addMailsInWorkspace({
-      workspace_id: workspaceId || "",
-      company_id: companyId || "",
+      workspace_id: workspaceId || '',
+      company_id: companyId || '',
       emails,
     }).finally(() => {
       setLoading(false);
@@ -65,11 +57,7 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
         <AutoHeight
           minHeight="120px"
           maxHeight="120px"
-          value={fullString}
-          onChange={(e: { target: { value: string } }) => {
-            setFullString(e.target.value);
-            stringToArray(e.target.value);
-          }}
+          onChange={onChange}
           placeholder={Languages.t('components.add_mails_workspace.text_area_placeholder')}
         />
       </div>
