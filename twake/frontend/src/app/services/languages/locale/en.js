@@ -1933,4 +1933,8 @@ export default {
     'First of all, you have to verify your mail address. We’ve sent a verification link to',
   'components.verify_mail.paragraph':
     'You can do it later if you want but unverified accounts have access to only a limited version of Twake',
+  'services.console_services.toaster.success_verify_email':
+    'A verification link has been sent to your email account',
+  'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
+  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 email(s)',
 };

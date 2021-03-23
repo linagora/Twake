@@ -12,13 +12,17 @@ type PropsType = {
 };
 
 const WelcomeOnTwake = ({ email }: PropsType) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const openAddMembers = () =>
     ModalManager.open(<AddMailsInWorkspace />, {
       position: 'center',
       size: { width: '600px' },
     });
 
-  const onClickButton = () => ConsoleService.verifyMail();
+  const onClickButton = () => {
+    setLoading(true);
+    return ConsoleService.verifyMail().finally(() => setLoading(false));
+  };
 
   return (
     <ObjectModal
@@ -106,7 +110,7 @@ const WelcomeOnTwake = ({ email }: PropsType) => {
       </Row>
 
       <Row justify="center" style={{ marginBottom: 104 }}>
-        <Button type="ghost" size="small" onClick={onClickButton}>
+        <Button type="ghost" size="small" onClick={onClickButton} loading={loading}>
           {Languages.t('general.re_send')}
         </Button>
       </Row>

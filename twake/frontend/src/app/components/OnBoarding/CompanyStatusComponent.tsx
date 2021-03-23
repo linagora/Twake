@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
-import AddMailsInWorkspace from './popups/AddMailsInWorkspace';
-import Workspaces from 'services/workspaces/workspaces.js';
 import UserService from 'services/user/user.js';
 import WelcomeOnTwake from './popups/WelcomeOnTwake';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
@@ -33,11 +31,9 @@ const CompanyStatusComponent = (): JSX.Element => {
     if (!workspace?.id) return;
 
     const isNewUser: boolean =
-      onboarding !== 'completed' &&
-      workspace?.group?.stats?.total_members <= 1 &&
-      isNewCompany();
+      onboarding !== 'completed' && workspace?.group?.stats?.total_members <= 1 && isNewCompany();
 
-    if (isNewUser){
+    if (isNewUser) {
       localStorage.setItem(`onboarding_${companyId}`, 'completed');
       return ModalManager.open(<WelcomeOnTwake email={user.email} />, {
         position: 'center',
