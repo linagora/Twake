@@ -1935,4 +1935,5 @@ export default {
     'You can do it later if you want but unverified accounts have access to only a limited version of Twake',
   'services.console_services.toaster.success':
     'A verification link has been sent to your email account',
+    'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console'
 };

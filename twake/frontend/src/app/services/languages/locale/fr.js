@@ -2006,4 +2006,5 @@ export default {
     "Vous pouvez le faire plus tard si vous le souhaitez, mais les comptes non vérifiés n'ont accès qu'à une version limitée de Twake",
   'services.console_services.toaster.success':
     'Un lien de vérification a été envoyé à votre compte de messagerie',
+  'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
 };
