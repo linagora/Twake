@@ -2,7 +2,7 @@ import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Channel, UserChannel } from "../../entities";
+import { Channel, ChannelMember, UserChannel } from "../../entities";
 import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
@@ -24,6 +24,7 @@ import {
   ResourceUpdateResponse,
 } from "../../../../services/types";
 import { getLogger } from "../../../../core/platform/framework/logger";
+import _ from "lodash";
 
 const logger = getLogger("channel.controller");
 
@@ -112,13 +113,14 @@ export class ChannelCrudController
 
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
-      const member = await this.membersService.get(
-        {
+      const member = await this.membersService.save(
+        _.assign(new ChannelMember(), {
           channel_id: channelResult.entity.id,
           workspace_id: channelResult.entity.workspace_id,
           company_id: channelResult.entity.company_id,
           user_id: context.user.id,
-        },
+        }),
+        {},
         getChannelExecutionContext(request, channelResult.entity),
       );
 
