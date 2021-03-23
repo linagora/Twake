@@ -14,6 +14,12 @@ class Upload extends BaseController
     public function Preprocess(Request $request)
     {
         $identifier = $this->get('driveupload.upload')->preprocess($request, $this->getUser()->getId());
+
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "drive:file:create",
+            "userId" => $this->getUser()->getId()
+        ]);
+
         return new Response(Array("identifier" => $identifier));
     }
 
@@ -32,6 +38,12 @@ class Upload extends BaseController
     public function Preview(Request $request)
     {
         $response = new Response();
+
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "drive:preview",
+            "userId" => $this->isConnected() ? $this->getUser()->getId() : "anonymous"
+        ]);
+
         $this->get('driveupload.previewmanager')->generatePreviewFromFolder($request);
         return $response;
     }

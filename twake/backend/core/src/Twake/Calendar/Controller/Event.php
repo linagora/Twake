@@ -18,6 +18,10 @@ class Event extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         }
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "calendar:event:remove",
+            "userId" => $this->getUser()->getId()
+        ]);
         return new Response(Array("data" => Array("object" => $res)));
     }
 
@@ -31,11 +35,11 @@ class Event extends BaseController
         } else {
             if (!$object["id"]) {
                 $this->get("administration.counter")->incrementCounter("total_events", 1);
-                if($GLOBALS["segment_enabled"]) \Segment::track([
-                    "event" => "calendar:event:".($object["id"] ? "edit" : "create"),
-                    "userId" => $this->getUser()->getId()
-                ]);
             }
+            if($GLOBALS["segment_enabled"]) \Segment::track([
+                "event" => "calendar:event:".($object["id"] ? "edit" : "create"),
+                "userId" => $this->getUser()->getId()
+            ]);
         }
         return new Response(Array("data" => Array("object" => $res)));
     }

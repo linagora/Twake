@@ -23,7 +23,7 @@ class Api extends BaseController
     public function __construct(App $app)
     {
         parent::__construct($app);
-        $this->api = $app->get("app.restclient");
+        $this->api = $app->getServices()->get("app.restclient");
         $this->endpoint = $this->getParameter("defaults.auth.console.provider");
         $this->authB64 = base64_encode(
             $this->getParameter("defaults.auth.console.credentials.key")
@@ -34,7 +34,7 @@ class Api extends BaseController
     /**
      * Send again the verification email for an user
      */
-    private function verifyMail(Request $request)
+    public function verifyMail(Request $request)
     {
         if(!$this->getUser()){
             return new Response(["error" => "disconnected"]);
@@ -44,7 +44,7 @@ class Api extends BaseController
             "email" => $this->getUser()->getEmail()
         ];
         $header = "Authorization: Basic " . $this->authB64;
-        $response = $this->api->get(rtrim($this->endpoint, "/") . "/api/users/resend-verification-email", $data, array(CURLOPT_HTTPHEADER => [$header]));
+        $response = $this->api->post(rtrim($this->endpoint, "/") . "/users/resend-verification-email", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
         $result = json_decode($response->getContent(), 1);
 
         return new Response(["data" => $result]);
@@ -53,7 +53,7 @@ class Api extends BaseController
     /**
      * Invite a list of emails to a workspace
      */
-    private function invite(Request $request)
+    public function invite(Request $request)
     {
         $companyId = $request->request->get("company_id", "");
         $workspaceId = $request->request->get("workspace_id", "");
@@ -61,11 +61,11 @@ class Api extends BaseController
         $emails =  $request->request->get("emails", []);
 
         // Get company code
-        $doctrine = $app->getServices()->get("app.twake_doctrine");
+        $doctrine = $this->get("app.twake_doctrine");
         $groupRepository = $doctrine->getRepository("Twake\Workspaces:Group");
         $company = $groupRepository->find($companyId);
 
-        if($company->getIdentityProvider() !== "console"){
+        if(!$company || $company->getIdentityProvider() !== "console"){
             return new Response(["error" => "not a console company"]);
         }
 
@@ -73,13 +73,13 @@ class Api extends BaseController
         $groupUserRepository = $doctrine->getRepository("Twake\Workspaces:GroupUser");
         $workspaceUserRepository = $doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
         $companyUser = $groupUserRepository->findOneBy(Array("group" => $companyId, "user" => $this->getUser()->getId()));
-        $workspaceUser = $groupUserRepository->findOneBy(Array("workspace_id" => $workspaceId, "user_id" => $this->getUser()->getId()));
+        $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspaceId, "user_id" => $this->getUser()->getId()));
         if(!$companyUser || !$workspaceUser){
             return new Response(["error" => "user not in company or workspace"]);
         }
 
         // Also add the emails as pending on Twake side
-        $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
+        $workspaceUserByMailRepository = $doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
         foreach($emails as $mail){
             $this->get("app.workspace_members")->addMemberByMail($workspaceId, $mail, $asExterne, $this->getUser()->getId(), false);
         }
@@ -90,7 +90,7 @@ class Api extends BaseController
         ];
 
         $header = "Authorization: Basic " . $this->authB64;
-        $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", $data, array(CURLOPT_HTTPHEADER => [$header]));
+        $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
         $result = json_decode($response->getContent(), 1);
 
         return new Response(["data" => $result]);

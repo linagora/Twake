@@ -66,11 +66,13 @@ class Hooks
 
     function userAdded($data){
         $service = new PrepareUpdates($this->app);
+        if($data["company"]["code"]) $service->updateCompany($data["company"]["code"]);
         return new Response($service->addUser($data["user"]["_id"], $data["company"]["code"] ?: null, $data["user"]) ?: "");
     }
 
     function userRemoved($data){
         $service = new PrepareUpdates($this->app);
+        if($data["company"]["code"]) $service->updateCompany($data["company"]["code"]);
         return new Response($service->removeUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "");
     }
     

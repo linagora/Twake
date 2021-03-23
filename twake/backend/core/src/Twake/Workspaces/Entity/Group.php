@@ -180,10 +180,14 @@ class Group extends SearchableObject
      */
     public function getStats()
     {
-        if (!$this->stats) {
-            return null;
+        $stats = [];
+        if ($this->stats) {
+            $stats = json_decode($this->stats, 1);
         }
-        return json_decode($this->stats, 1);
+
+        $stats["created_at"] = ($this->getDateAdded() ? ($this->getDateAdded()->format('U') * 1000) : 0);
+
+        return $stats;
     }
 
     /**
