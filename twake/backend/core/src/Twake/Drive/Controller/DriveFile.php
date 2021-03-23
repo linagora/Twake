@@ -43,14 +43,13 @@ class DriveFile extends BaseController
             //If object[_once_new_version] is set a new version is added
             $res = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $current_user_id);
         } else {
-
-            if($GLOBALS["segment_enabled"]) \Segment::track([
-                "event" => "drive:".($object["is_directory"] ? "directory" : "file") . ":" . ($object["id"] ? "edit" : "create"),
-                "userId" => $this->getUser()->getId()
-            ]);
-            
             $res = $this->get("app.drive")->save($object, $options, $current_user_id, Array());
         }
+
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "drive:".($object["is_directory"] ? "directory" : "file") . ":" . ($object["id"] ? "edit" : "create"),
+            "userId" => $this->getUser()->getId()
+        ]);
 
         if (!empty($object["_once_set_access"]) && !empty($object["id"])) {
 

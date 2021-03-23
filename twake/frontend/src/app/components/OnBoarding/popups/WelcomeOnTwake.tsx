@@ -11,7 +11,7 @@ type PropsType = {
   email: string;
 };
 
-const VerifyMail = ({ email }: PropsType) => {
+const WelcomeOnTwake = ({ email }: PropsType) => {
   const openAddMembers = () =>
     ModalManager.open(<AddMailsInWorkspace />, {
       position: 'center',
@@ -114,4 +114,4 @@ const VerifyMail = ({ email }: PropsType) => {
   );
 };
 
-export default VerifyMail;
+export default WelcomeOnTwake;

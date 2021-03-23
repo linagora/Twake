@@ -308,12 +308,12 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState() && !$options["ignore_state"]) {
+            if ($_REQUEST['state'] !== $this->getState($_REQUEST['state']) && !$options["ignore_state"]) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
 
             // Cleanup state
-            $this->unsetState();
+            $this->unsetState($_REQUEST['state']);
 
             if (!property_exists($token_json, 'id_token')) {
                 throw new OpenIDConnectClientException('User did not authorize openid scope.');
@@ -374,12 +374,12 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState()) {
+            if ($_REQUEST['state'] !== $this->getState($_REQUEST['state'])) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
 
             // Cleanup state
-            $this->unsetState();
+            $this->unsetState($_REQUEST['state']);
 
             $claims = $this->decodeJWT($id_token, 1);
 
@@ -451,6 +451,8 @@ class OpenIDConnectClient
         }
 
         $signout_endpoint  .= (strpos($signout_endpoint, '?') === false ? '?' : '&') . http_build_query( $signout_params, null, '&', $this->enc_type);
+        error_log("redirect user to (signout): ".$signout_endpoint);
+
         $this->redirect($signout_endpoint);
     }
 
@@ -616,7 +618,9 @@ class OpenIDConnectClient
         // Error and Exception need to be catched in this order, see https://github.com/paragonie/random_compat/blob/master/README.md
         // random_compat polyfill library should be removed if support for PHP versions < 7 is dropped
         try {
-            return \bin2hex(\random_bytes(16));
+            $a = \bin2hex(\random_bytes(16));
+            error_log("random string: ".$a);
+            return $a;
         } catch (Error $e) {
             throw new OpenIDConnectClientException('Random token generation failed.');
         } catch (\Exception $e) {
@@ -676,6 +680,7 @@ class OpenIDConnectClient
         }
 
         $auth_endpoint .= (strpos($auth_endpoint, '?') === false ? '?' : '&') . http_build_query($auth_params, null, '&', $this->enc_type);
+        error_log("redirect user to: ".$auth_endpoint);
 
         $this->commitSession();
         $this->redirect($auth_endpoint);
@@ -1603,7 +1608,7 @@ class OpenIDConnectClient
      * @return string
      */
     protected function setState($state) {
-        $this->setSessionKey('openid_connect_state', $state);
+        $this->setSessionKey('openid_connect_state_' . $state, $state);
         return $state;
     }
 
@@ -1612,8 +1617,8 @@ class OpenIDConnectClient
      *
      * @return string
      */
-    protected function getState() {
-        return $this->getSessionKey('openid_connect_state');
+    protected function getState($stateId = "") {
+        return $this->getSessionKey('openid_connect_state_' . $stateId);
     }
 
     /**
@@ -1621,8 +1626,8 @@ class OpenIDConnectClient
      *
      * @return void
      */
-    protected function unsetState() {
-        $this->unsetSessionKey('openid_connect_state');
+    protected function unsetState($stateId = "") {
+        $this->unsetSessionKey('openid_connect_state_' . $stateId);
     }
 
     /**
