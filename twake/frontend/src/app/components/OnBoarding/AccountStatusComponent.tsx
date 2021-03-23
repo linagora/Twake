@@ -16,6 +16,10 @@ const AccountStatusComponent = (): JSX.Element => {
   const periodLimit = (user.created_at || 0) + maxUnverifiedDays * oneDay;
   const daysLeft = Math.ceil((periodLimit - Date.now()) / oneDay);
 
+  if (InitService.server_infos.auth?.console?.use !== true) {
+    return <></>
+  }
+
   const showBlockedModal = () => {
     if (InitService.server_infos.auth?.console?.use === true)
       return ModalManager.open(
