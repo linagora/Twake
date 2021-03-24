@@ -121,6 +121,10 @@ export default (props: Props) => {
             {Languages.t('scenes.client.channelbar.channelmemberslist.tag')}
           </Tag>
         )}
+        {/*
+          // TODO find a way to display this tag only when guest member
+          <Tag color="var(--grey-dark)">{Languages.t('components.workspace.group.guest')}</Tag>
+        */}
       </Col>
       {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
