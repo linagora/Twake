@@ -20,7 +20,7 @@
   'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
 
 // --- Twake colors --- //
-@black: #000;
+@black: #000000;
 @black-alpha-50: #18295288;
 @black-alpha-70: #18295255;
 @error: #ff5154;
@@ -112,14 +112,39 @@
 // --- ant-btn --- //
 @btn-border-width: 0;
 @btn-primary-color: @white;
-
+@btn-height-sm: 36px;
+@btn-height-lg: 54px;
+@btn-font-size-lg: 17px;
 .ant-btn {
   box-shadow: none;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.29;
+  letter-spacing: -0.41px;
+  text-align: center;
+}
+
+.ant-btn-sm:not(.ant-btn-text)  {
+  width: 163px;
+}
+
+.ant-btn-lg:not(.ant-btn-text) {
+  width: 272px;
+
+  font-size: 17px;
 }
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
   background: @primary-hover;
+}
+
+.ant-btn-ghost,
+.ant-btn-ghost:hover,
+.ant-btn-ghost:focus {
+  background-color: @primary-background;
+  color: @primary-color;
 }
 
 // --- animations --- //
@@ -230,8 +255,24 @@ textarea.ant-input,
   align-items: center;
 }
 
+// --- ant-list-item --- //
+.ant-list-split .ant-list-item {
+  border-bottom: 0;
+}
+
+.ant-list-item {
+  display: flex;
+  justify-content: start;
+  align-items: flex-start;
+  padding: 0;
+}
+
 // --- ant-modal-body --- //
 @modal-body-padding: 0;
+
+.ant-modal {
+  width: 600px !important;
+}
 
 // --- ant-modal-content --- //
 .ant-modal-content {
@@ -331,6 +372,40 @@ textarea.ant-input,
 .ant-tabs-top > div > .ant-tabs-nav,
 .ant-tabs-bottom > div > .ant-tabs-nav {
   margin: 0;
+}
+
+// --- ant-typography --- //
+.ant-typography {
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+}
+
+// Typography.Text
+span.ant-typography {
+  color: @black;
+  letter-spacing: normal;
+}
+
+// Typography.Paragraph
+div.ant-typography {
+  font-size: 17px;
+  color: @grey-dark;
+  letter-spacing: -0.41px;
+}
+
+h2.ant-typography,
+.ant-typography h2 {
+  font-weight: 900;
+  font-size: 32px;
+  letter-spacing: -0.35px;
+}
+
+h3.ant-typography,
+.ant-typography h3 {
+  font-weight: 500;
+  font-size: 20px;
 }
 
 // --- ant-notifications --- //

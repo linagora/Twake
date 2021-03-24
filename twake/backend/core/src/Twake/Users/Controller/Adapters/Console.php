@@ -42,6 +42,8 @@ class Console extends BaseController
 
     function logout(Request $request, $message = null)
     {
+        error_log(json_encode($message));
+
         if(!$this->isServiceEnabled()){
             return new Response(["error" => "unauthorized"], 401);
         }
@@ -102,11 +104,10 @@ class Console extends BaseController
 
             $oidc->setRedirectURL(rtrim($this->getParameter("env.server_name"), "/") . "/ajax/users/console/openid");
 
-            $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone'));
+            $oidc->addScope(array('openid', 'email', 'profile', 'address', 'phone', 'offline_access'));
             try {
                 $authentificated = $oidc->authenticate([
                   "ignore_id_token" => true,
-                  "ignore_state" => true,
                   "ignore_nonce" => true
                 ]);
             }catch(\Exception $err){

@@ -32,7 +32,7 @@ Or run your own local Twake instance with :
 
 ```
 cd twake
-docker-compose up -d
+sudo ./start.sh
 # Twake will be running on port 8000
 ```
 

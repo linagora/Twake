@@ -137,7 +137,7 @@ class WorkspacesUsers extends Observable {
         that.notify();
       }
 
-      if (data.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
+      if (data.stats.total_members > 1 && WorkspaceUserRights.hasWorkspacePrivilege()) {
         CurrentUser.updateTutorialStatus('did_invite_collaborators');
       }
     };
@@ -520,6 +520,16 @@ class WorkspacesUsers extends Observable {
         ),
       });
     }
+  }
+
+  fullStringToEmails(str) {
+    const regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
+    const mailToArray = [];
+    const stringToArray = str.match(regex);
+
+    (stringToArray || []).map(item => mailToArray.push(item.toLocaleLowerCase()));
+
+    return mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
   }
 }
 

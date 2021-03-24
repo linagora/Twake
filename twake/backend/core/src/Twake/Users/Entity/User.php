@@ -134,9 +134,14 @@ class User extends SearchableObject
     protected $phone = "";
 
     /**
-     * @ORM\Column(name="identity_provider", type="string", length=64)
+     * @ORM\Column(name="identity_provider", type="twake_text")
      */
     protected $identity_provider = "";
+
+    /**
+     * @ORM\Column(name="identity_provider_id", type="twake_text")
+     */
+    protected $identity_provider_id = "";
 
     /**
      * @ORM\Column(name="token_login", type="twake_text")
@@ -415,6 +420,19 @@ class User extends SearchableObject
         $this->identity_provider = $identity_provider;
     }
 
+    public function getIdentityProviderId()
+    {
+        return $this->identity_provider_id;
+    }
+
+    public function setIdentityProviderId($identity_provider_id)
+    {
+        if (!$identity_provider_id) {
+            $this->identity_provider_id = "";
+        }
+        $this->identity_provider_id = $identity_provider_id;
+    }
+
     public function getTokenLogin()
     {
         return json_decode(empty($this->token_login)?"{}":$this->token_login, 1);
@@ -532,6 +550,28 @@ class User extends SearchableObject
             "groups_id" => $this->getGroups(),
             "workspaces_id" => $this->getWorkspaces()
         );
+
+        //Start - Compatibility with new model
+        $return["id"] = $return["id"];
+        $return["provider"] = $return["identity_provider"] ?: "internal";
+        $return["provider_id"] = $this->getIdentityProviderId();
+
+        $return["email"] = $return["email"];
+        $return["is_verified"] = $this->getMailVerified();
+        $return["picture"] = $return["thumbnail"];
+        $return["first_name"] = $return["firstname"];
+        $return["last_name"] = $return["lastname"];
+        $return["created_at"] = ($this->getCreationDate() ? ($this->getCreationDate()->format('U') * 1000) : null);
+
+        $return["preferences"] = [
+            "locale" => $this->getLanguage(),
+            "timezone" => $this->timezone,
+        ];
+
+        $return["status"] = trim(join(" ", $return["status_icon"]));
+        $return["last_activity"] = $this->getLastActivity() * 1000;
+        //End - Compatibility with new model
+                    
         return $return;
     }
 

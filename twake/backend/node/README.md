@@ -36,6 +36,29 @@ docker-compose -f ./docker-compose.test.yml run node npm run test:unit
 
 will run unit tests only (`test:unit`). For possible tests to run, check the `package.json` scripts.
 
+### Command Line Interface (CLI)
+ 
+The Twake backend CLI provides a set of commands to manage/use/develop Twake from the `twake-cli` binary.
+Before to use the CLI, you must `compile` Twake with `npm run build`. Once done, you can get help on on any command with the `--help` flag like `./bin/twake-cli console --help`.
+
+#### The 'console merge' command
+
+This command allows to connect to the database configured in the `./config/default.json` file and to "merge" the Twake users and companies into the "Twake Console".
+
+```sh
+./bin/twake-cli console merge --url http://console.twake.app --client twake-app --secret supersecret
+```
+
+The simplified console workflow is like (some parts are done in parallel):
+
+1. Get all the companies
+2. Iterate over companies and create them in the console side
+3. For each company, get all the users
+4. Iterate over all the users and create them in the console (if the user is in several companies, create once, add it to all the companies)
+5. For each company, get all the admins and choose the oldest one which will be 'marked' as the owner on the console side
+
+At the end of the 'merge', a report will be displayed.
+
 ### Component Framework
 
 The backend is developed using a software component approach in order to compose and adapt the platform based on needs and constraints.

@@ -420,7 +420,7 @@ export class CassandraConnector extends AbstractConnector<
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr),
       pageState: options.pagination.page_token || undefined,
-      prepare: true,
+      prepare: false,
     });
 
     const entities: Table[] = [];
@@ -443,7 +443,7 @@ export class CassandraConnector extends AbstractConnector<
       options.pagination.limitStr || "100",
     );
     logger.debug(
-      `services.database.orm.cassandra.find - Query: ${query} -> Result: entities.length = ${entities.length}`,
+      `services.database.orm.cassandra.find - Query Result (items=${entities.length}): ${query}`,
     );
 
     return new ListResult<Table>(entityDefinition.type, entities, nextPage);

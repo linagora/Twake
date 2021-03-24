@@ -22,7 +22,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
   const [visibility, setVisibility] = useState<string>(channel?.visibility || 'public');
-  const [defaultChannel, setDefaultChannel] = useState<boolean>(false);
+  const [defaultChannel, setDefaultChannel] = useState<boolean>(channel?.is_default || false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
@@ -33,7 +33,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
       description,
       visibility,
       channel_group: group,
-      default: defaultChannel,
+      is_default: defaultChannel,
     });
   });
 
@@ -52,7 +52,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
     return groupsNames;
   };
 
-  const isAbleToEditVisibility = () => {
+  const isAbleToEditVisibilityOrDefault = () => {
     const isNewChannel = !channel;
     const editable =
       (channel &&
@@ -99,7 +99,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
           rows={1}
         />
       </div>
-      {isAbleToEditVisibility() === true && (
+      {isAbleToEditVisibilityOrDefault() && (
         <>
           <div style={{ padding: '16px 0' }} />
           <div className="x-margin">
@@ -124,10 +124,10 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
           </div>
         </>
       )}
-      {false && (
+      {isAbleToEditVisibilityOrDefault() && (
         <div style={{ height: '32px' }} className="top-margin left-margin">
           {visibility === 'public' && (
-            <Checkbox onChange={() => setDefaultChannel(!defaultChannel)}>
+            <Checkbox onChange={() => setDefaultChannel(!defaultChannel)} checked={defaultChannel}>
               {Languages.t('scenes.client.channelbar.channeltemplateeditor.checkbox')}
             </Checkbox>
           )}

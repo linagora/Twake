@@ -1939,8 +1939,7 @@ export default {
   'scenes.app.channelsbar.hide_discussion_leaving.title': 'Masquer la discussion?',
   'scenes.app.channelsbar.hide_discussion_leaving.content':
     "Vous pouvez masquer cette discussion. Vos messages ne sont pas perdus et vous pouvez l'ouvrir à nouveau si besoin.",
-  'scenes.app.popup.adduserfromtwakeconsole.current_users_state':
-    '$1 utilisateur(s) seront ajoutés',
+  'scenes.app.popup.adduserfromtwakeconsole.current_users_state': '$1 email(s) seront ajoutés',
   'scenes.app.popup.adduserfromtwakeconsole.description':
     'Ajoutez des utilisateurs dans votre entreprise avant de les inviter dans cet espace de travail.',
   'general.app.popup.adduserfromtwakeconsole.description_link': 'Accédez à Twake Console',
@@ -1978,4 +1977,35 @@ export default {
     "Vous n'êtes pas membre",
   'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader':
     'Charger plus',
+  'general.re_send': 'Renvoyer',
+  'general.verify': 'Vérifier',
+  'components.unverified_account.typography_text_danger':
+    "Il vous reste $1 jour(s) de période d'essai. Après $2 jours, l'accès au compte d'essai sera bloqué et après 1 mois, il sera définitivement supprimé",
+  'components.unverified_account.verification_details':
+    'Nous avons envoyé les détails de vérification à',
+  'components.account_verification_status_sentence': "L'état de votre compte est: $1",
+  'components.account_verication_status_unverified': 'Non vérifié',
+  'components.account_verication_status_blocked': 'Bloqué',
+  'components.unverified_account.re_send_email': "Vous n'avez pas reçu l'e-mail?",
+  'components.blocked_account.trial_period_over':
+    "Votre période d'essai est terminée. Pour débloquer votre compte et accéder à toutes les fonctionnalités, veuillez vérifier votre compte par e-mail de confirmation",
+  'components.add_mails_workspace.button': 'Commencez à utiliser Twake',
+  'components.add_mails_workspace.title_1': 'Ajouter des collègues',
+  'components.add_mails_workspace.title_2':
+    "Twake est un outil de collaboration d'équipe, alors invitez certains de vos collègues à tester un espace de travail que nous avons créé pour vous.",
+  'components.add_mails_workspace.text_area_placeholder':
+    'Saisissez les e-mails de vos collaborateurs*',
+  'components.add_mails_workspace.text_secondary':
+    "Veuillez saisir les e-mails séparés par une virgule. Vous pouvez inviter jusqu'à 5 membres pour le moment et en ajouter d'autres après la vérification de l'e-mail.",
+  'components.verify_mail.title_1': 'Félicitations',
+  'components.verify_mail.title_2': 'Vous êtes un utilisateur officiel de Twake!',
+  'components.verify_mail.button': 'Ajouter des membres',
+  'components.verify_mail.text':
+    "Tout d'abord, vous devez vérifier votre adresse e-mail. Nous avons envoyé un lien de vérification à",
+  'components.verify_mail.paragraph':
+    "Vous pouvez le faire plus tard si vous le souhaitez, mais les comptes non vérifiés n'ont accès qu'à une version limitée de Twake",
+  'services.console_services.toaster.success_verify_email':
+    'Un lien de vérification a été envoyé à votre compte de messagerie',
+  'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
+  'services.console_services.toaster.success_invite_emails': '$1 email(s) ajouté(s) avec succès',
 };

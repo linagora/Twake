@@ -24,7 +24,7 @@ export default () => {
 
   return (
     <BadDevice force={publicAccess}>
-      <ClientPage />;
+      <ClientPage />
     </BadDevice>
   );
 };

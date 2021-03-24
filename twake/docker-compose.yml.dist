@@ -3,7 +3,7 @@ version: "3.4"
 services:
   scylladb:
     image: scylladb/scylla:4.1.0
-    command: --smp 1 --memory 400M
+    command: --smp 1 --memory 1G
     ports:
       - 9042:9042
     volumes:
@@ -11,7 +11,6 @@ services:
 
   rabbitmq:
     image: library/rabbitmq:3.8.9-management-alpine
-    mem_limit: 300m
     ports:
       - 15672:15672
     environment:
@@ -27,7 +26,7 @@ services:
       - NODE_ENV=production
     volumes:
       - ./backend/node:/usr/src/app
-      - ./configuration/backend-node/:/usr/src/app/config/
+      - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
     depends_on:
       - scylladb
       - rabbitmq
@@ -57,6 +56,7 @@ services:
     image: twaketech/twake-nginx
     environment:
       - DEV=dev
+      #- MOBILE_HOST=http://node:3000
     build:
       context: .
       dockerfile: docker/twake-nginx/Dockerfile

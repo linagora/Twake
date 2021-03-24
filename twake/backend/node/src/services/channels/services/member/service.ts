@@ -1,4 +1,4 @@
-import { RealtimeSaved, RealtimeDeleted, logger } from "../../../../core/platform/framework";
+import { RealtimeSaved, RealtimeDeleted, getLogger } from "../../../../core/platform/framework";
 import {
   DeleteResult,
   Pagination,
@@ -57,6 +57,8 @@ const CHANNEL_MEMBERS_KEYS = [
   "channel_id",
   "type",
 ] as const;
+
+const logger = getLogger("channel.member");
 
 export class Service implements MemberService {
   version: "1";
@@ -338,6 +340,116 @@ export class Service implements MemberService {
     const list = this.list(new Pagination(undefined, "2"), {}, { channel, user });
 
     return (await list).getEntities().length > 1;
+  }
+
+  async addUsersToChannel(
+    users: User[] = [],
+    channel: ChannelEntity,
+  ): Promise<
+    ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
+  > {
+    if (!channel) {
+      throw CrudExeption.badRequest("Channel is required");
+    }
+    logger.debug(
+      "Add users %o to channel %o",
+      users.map(u => u.id),
+      channel.id,
+    );
+
+    const members: Array<{
+      channel: ChannelEntity;
+      added: boolean;
+      member?: ChannelMember;
+      err?: Error;
+    }> = await Promise.all(
+      users.map(async user => {
+        const context: ChannelExecutionContext = {
+          channel,
+          user,
+        };
+
+        const member: ChannelMember = getChannelMemberInstance({
+          channel_id: channel.id,
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          user_id: user.id,
+        } as ChannelMember);
+
+        try {
+          const isAlreadyMember = await this.isChannelMember(user, channel);
+          if (isAlreadyMember) {
+            logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
+            return { channel, added: false };
+          }
+
+          const result = await this.save(member, null, context);
+          return {
+            channel,
+            added: true,
+            member: result.entity,
+          };
+        } catch (err) {
+          logger.warn({ err }, "Member has not been added %o", member);
+          return {
+            channel,
+            err,
+            added: false,
+          };
+        }
+      }),
+    );
+
+    return new ListResult("channel_member", members);
+  }
+
+  async addUserToChannels(
+    user: User,
+    channels: ChannelEntity[],
+  ): Promise<
+    ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
+  > {
+    logger.debug(
+      "Add user %s to channels %o",
+      user.id,
+      channels.map(c => c.id),
+    );
+    const members: Array<{
+      channel: ChannelEntity;
+      added: boolean;
+      member?: ChannelMember;
+      err?: Error;
+    }> = await Promise.all(
+      channels.map(async channel => {
+        const context: ChannelExecutionContext = {
+          channel,
+          user,
+        };
+
+        const member = getChannelMemberInstance({
+          channel_id: channel.id,
+          company_id: channel.company_id,
+          workspace_id: channel.workspace_id,
+          user_id: user.id,
+        });
+
+        try {
+          const isAlreadyMember = await this.isChannelMember(user, channel);
+          if (isAlreadyMember) {
+            logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
+            return { channel, added: false };
+          }
+
+          const result = await this.save(member, null, context);
+          return { channel, member: result.entity, added: true };
+        } catch (err) {
+          logger.warn({ err }, "Member has not been added %o", member);
+          return { channel, added: false, err };
+        }
+      }),
+    );
+
+    return new ListResult("channel_member", members);
   }
 
   @PubsubPublish("channel:member:updated")

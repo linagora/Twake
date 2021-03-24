@@ -9,7 +9,7 @@ import Strings from 'services/utils/strings.js';
 import InputWithButton from 'components/Inputs/InputWithButton.js';
 import workspacesUsersService from 'services/workspaces/workspaces_users.js';
 import './AddUser.scss';
-import InputWithIcon from 'app/components/Inputs/InputWithIcon';
+import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 
 type Props = {
   standalone: boolean;
@@ -96,17 +96,11 @@ export default class AddUser extends Component<Props, State> {
   }
 
   stringToArray(str: string) {
-    let regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
-    let mailToArray: string[] = [];
-    const stringToArray = str.match(regex);
-
-    (stringToArray || []).map((item: any) => mailToArray.push(item.toLocaleLowerCase()));
-
-    const members = mailToArray.filter((elem, index, self) => index === self.indexOf(elem));
+    const members = WorkspacesUsers.fullStringToEmails(str);
 
     if (this.props.onChange) this.props.onChange(members);
     this.setState({
-      members: members,
+      members,
     });
   }
 
@@ -140,8 +134,7 @@ export default class AddUser extends Component<Props, State> {
     return inputToShow === index + 1 ? true : false;
   }
 
-  closeInput(index: number) {
-  }
+  closeInput(index: number) {}
 
   setInputs() {
     let arr: any[] = [];

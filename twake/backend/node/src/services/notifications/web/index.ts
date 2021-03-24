@@ -6,6 +6,6 @@ export default (
   fastify: FastifyInstance,
   options: FastifyRegisterOptions<{ prefix: string; service: NotificationServiceAPI }>,
 ): void => {
-  fastify.log.info("Configuring /internal/services/notifications/v1 routes");
+  fastify.log.debug("Configuring /internal/services/notifications/v1 routes");
   fastify.register(routes, options);
 };

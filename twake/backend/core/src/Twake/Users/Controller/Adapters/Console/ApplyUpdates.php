@@ -26,6 +26,7 @@ class ApplyUpdates
     }
     
     function updateCompany($companyDTO){
+        error_log("apply:updateCompany with params: ". json_encode([$companyDTO]));
 
         $companyConsoleCode = $companyDTO["company"]["details"]["code"];
 
@@ -40,7 +41,7 @@ class ApplyUpdates
         }
         if(!$company) {
             //Create company
-            $company = new Group($companyDTO["company"]["details"]["code"]);
+            $company = new Group($companyDTO["company"]["details"]["name"]);
 
             $this->em->persist($company);
             $this->em->flush();
@@ -49,22 +50,20 @@ class ApplyUpdates
             $this->em->persist($company_link);
         }
 
-        $company->setName($companyDTO["company"]["details"]["code"]);
+        $company->setName($companyDTO["company"]["details"]["name"]);
         $company->setDisplayName($companyDTO["company"]["details"]["name"]);
+        $company->setIdentityProvider("console");
+        $company->setIdentityProviderId($companyConsoleCode);
 
         // Format is {name: "string", limits: {}}
         $company->setPlan($companyDTO["company"]["plan"]);
 
+        // Format is {}
+        $company->setStats($companyDTO["company"]["stats"]);
+
         $logo = $companyDTO["company"]["details"]["logo"];
         if ($logo) {
-            $logoEntity = $company->getLogo();
-            if(!$logoEntity){
-                $logoEntity = new File();
-            }
-            $logoEntity->setPublicLink($logo);
-            $this->em->persist($logoEntity);
-            $this->em->flush();
-            $company->setLogo($logoEntity);
+            $company->setLogo($logo);
         }
 
         $this->em->persist($company);
@@ -88,7 +87,7 @@ class ApplyUpdates
      * Take a user from api and save it into PHP
      */
     function updateUser($userDTO){
-        error_log("updateUser with params: ". json_encode([$userDTO]));
+        error_log("apply:updateUser with params: ". json_encode([$userDTO]));
 
         $roles = $userDTO["roles"];
 
@@ -99,7 +98,8 @@ class ApplyUpdates
             preg_replace("/[^a-zA-Z0-9]/", "",
                 trim(
                     strtolower(
-                        explode("@", $userDTO["email"])[0]                    )
+                        explode("@", $userDTO["email"])[0]
+                    )
                 )
             )
         );
@@ -146,8 +146,9 @@ class ApplyUpdates
             $user->setPassword($encoder->encodePassword(bin2hex(random_bytes(40)), $user->getSalt()));
             $user->setUsername($username);
             $user->setMailVerified(true);
-            $user->setEmail($email); //TODO
+            $user->setEmail($email);
             $user->setIdentityProvider("console");
+            $user->setIdentityProviderId($userConsoleId);
 
             $this->em->persist($user);
             $this->em->flush();
@@ -156,11 +157,14 @@ class ApplyUpdates
         }
 
         // Update user names
-        $user->setEmail($email); //TODO
-        $user->setLanguage("en"); //TODO
-        $user->setPhone(""); //TODO
-        $user->setFirstName($userDTO["firstName"] ?: "");
+        $user->setEmail($email);
+        $user->setPhone("");
+        $user->setFirstName($userDTO["firstName"] ?: ($userDTO["fullName"] ?: ""));
         $user->setLastName($userDTO["lastName"] ?: "");
+        $user->setMailVerified(!!$userDTO["isVerified"]);
+
+        $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
+        $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
 
         // Update user picture
         $picture = $userDTO["picture"];
@@ -219,6 +223,9 @@ class ApplyUpdates
 
         $companyUserEntity->setExterne($roleDTO["roleCode"] === "guest"); 
         $companyUserEntity->setLevel(($roleDTO["roleCode"] === "admin" || $roleDTO["roleCode"] === "owner") ? 3 : 0); 
+        $role = $roleDTO["roleCode"];
+        if($role == "owner") $role = "admin";
+        $companyUserEntity->setRole($role);
 
         $this->em->persist($companyUserEntity);
         $this->em->flush();
@@ -234,10 +241,12 @@ class ApplyUpdates
             foreach($existingWorkspace as $workspace){
                 if($workspace->getIsDefault() || count($existingWorkspace) == 1){
                     //Add user in this workspace
-                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, false, null);
+                    $this->app->getServices()->get("app.workspace_members")->addMember($workspace->getId(), $userTwakeEntity->getId(), false, null);
                 }
             }
         }
+
+        $this->app->getServices()->get("app.workspace_members")->autoAddMemberByNewMail($userTwakeEntity->getEmail(), $userTwakeEntity->getId());
 
         return true;
 

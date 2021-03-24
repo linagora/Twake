@@ -33,10 +33,18 @@ export class CreateChannelBody {
 }
 
 export class ChannelCreateOptions {
+  /**
+   * Members to add to channel in case of direct channel
+   */
   members?: string[];
 }
 
-export type ChannelSaveOptions = ChannelCreateOptions;
+export type ChannelSaveOptions = ChannelCreateOptions & {
+  /**
+   * Add the channel creator as member.
+   */
+  addCreatorAsMember?: boolean;
+};
 
 export class ChannelListOptions {
   channels?: string[];

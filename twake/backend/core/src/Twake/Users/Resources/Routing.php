@@ -65,6 +65,8 @@ class Routing extends BaseRouting
         "console/openid/logout_success" => ["handler" => "Adapters/Console:logoutSuccess", "methods" => ["GET"]],
         "console/openid/{method?}" => ["handler" => "Adapters/Console:index", "methods" => ["GET", "POST"]],
         "console/openid" => ["handler" => "Adapters/Console:index", "methods" => ["GET", "POST"]],
+        "console/api/verify_mail" => ["handler" => "Adapters/Console/Api:verifyMail", "methods" => ["POST"]],
+        "console/api/invite" => ["handler" => "Adapters/Console/Api:invite", "methods" => ["POST"]],
     ];
 
 }

@@ -64,7 +64,7 @@ class WorkspaceData extends BaseController
                     $data["errors"][] = "badimage";
                 } else {
 
-                    $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+                    $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"]->getPublicURL(2), $this->getUser()->getId(), $this->getUploader());
                 }
             } else {
                 $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());

@@ -1,3 +1,4 @@
+import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 // backward compatibility with PHP where companies used to be `group`
@@ -17,18 +18,22 @@ export default class CompanyUser {
   @Column("user_id", "uuid")
   user_id: string;
 
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
-  
+
+  /**
+   * 0: member,
+   * 1, 2, 3: admin,
+   */
   @Column("level", "number")
   level: number;
-  
+
   @Column("did_connect_today", "boolean")
   didConnectToday: boolean;
-  
+
   @Column("app_used_today", "json")
   appUsedToday: Array<string>;
-  
+
   @Column("nb_workspace", "number")
   nbWorkspaces: number;
 
@@ -45,4 +50,10 @@ export default class CompanyUser {
   appUsedPeriod: number;
 }
 
-export type CompanyUserPrimaryKey = Pick<CompanyUser, "group_id">;
+export type CompanyUserPrimaryKey = Partial<Pick<CompanyUser, "group_id" | "user_id">>;
+
+export function getInstance(
+  companyUser: Partial<CompanyUser> & CompanyUserPrimaryKey,
+): CompanyUser {
+  return merge(new CompanyUser(), companyUser);
+}

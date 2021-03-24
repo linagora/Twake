@@ -2,6 +2,14 @@
   "sentry": {
     "dsn": "SENTRY_DSN"
   },
+  "logger": {
+    "level": "LOG_LEVEL"
+  },
+  "webserver": {
+    "logger": {
+      "level": "LOG_LEVEL"
+    }
+  },
   "phpnode": {
     "secret": "PHP_NODE_API_SECRET"
   },

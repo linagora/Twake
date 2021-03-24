@@ -9,11 +9,13 @@
     "build:copy-assets": "npm run build:copy-config",
     "build:copy-config": "cp -R config dist",
     "dev": "tsc-watch --project . --noClear --outDir ./dist --onSuccess \"nodemon ./dist/server.js\" | pino-pretty",
+    "dev:cli": "tsc-watch --project . --noClear --outDir ./dist --onSuccess \"nodemon ./dist/cli/index.js workspace user\" | pino-pretty",
+    "dev:cli-dry": "tsc-watch --project . --noClear --outDir ./dist --onSuccess \"nodemon ./dist/cli/index.js console merge --dry\" | pino-pretty",
     "dev:debug": "tsc-watch --project . --noClear --outDir ./dist --onSuccess \"nodemon --inspect=0.0.0.0 ./dist/server.js\" | pino-pretty",
     "lint": "eslint . --ext .ts --quiet --fix",
     "lint:no-fix": "eslint . --ext .ts",
     "lint:prettier": "prettier --config .prettierrc 'src/**/*.ts'",
-    "serve": "node dist/server.js",
+    "serve": "node --max-http-header-size=30000 dist/server.js",
     "serve:watch": "nodemon dist/server.js | pino-pretty",
     "serve:debug": "nodemon --inspect dist/server.js | pino-pretty",
     "start": "npm run serve",
@@ -34,6 +36,9 @@
     "url": "https://github.com/Twake/twake-backend/issues"
   },
   "homepage": "https://github.com/Twake/twake-backend#readme",
+  "bin": {
+    "twake-cli": "./bin/twake-cli"
+  },
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -43,6 +48,7 @@
     "@types/amqp-connection-manager": "^2.0.10",
     "@types/analytics-node": "^3.1.4",
     "@types/chai": "^4.2.12",
+    "@types/cli-table": "^0.3.0",
     "@types/config": "0.0.36",
     "@types/eslint": "^7.2.3",
     "@types/jest": "^26.0.14",
@@ -83,8 +89,10 @@
     "amqp-connection-manager": "^3.2.1",
     "amqplib": "^0.7.1",
     "analytics-node": "^3.5.0",
+    "axios": "^0.21.1",
     "cassandra-driver": "^4.6.0",
     "class-transformer": "^0.3.1",
+    "cli-table": "^0.3.6",
     "config": "^3.3.2",
     "deep-object-diff": "^1.1.0",
     "fastify": "3.9.2",
@@ -93,14 +101,17 @@
     "fastify-plugin": "^2.3.4",
     "fastify-sensible": "^3.0.1",
     "fastify-websocket": "^2.0.11",
+    "generate-password": "^1.6.0",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.2",
+    "ora": "^5.3.0",
     "pino": "^6.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
     "socketio-jwt": "^4.6.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yargs": "^16.2.0"
   }
 }

@@ -18,6 +18,10 @@ class Board extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         }
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "tasks:board:remove",
+            "userId" => $this->getUser()->getId()
+        ]);
         return new Response(Array("data" => Array("object" => $res)));
     }
 
@@ -29,6 +33,10 @@ class Board extends BaseController
         if (!$res) {
             return new Response(Array("status" => "error"));
         }
+        if($GLOBALS["segment_enabled"]) \Segment::track([
+            "event" => "tasks:board:".($object["id"] ? "edit" : "create"),
+            "userId" => $this->getUser()->getId()
+        ]);
         return new Response(Array("data" => Array("object" => $res)));
     }
 

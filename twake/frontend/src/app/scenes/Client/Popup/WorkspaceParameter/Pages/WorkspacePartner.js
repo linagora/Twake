@@ -88,8 +88,8 @@ export default class WorkspacePartner extends Component {
     var subMenu = [];
     var adminLevelId = workspacesUsers.getAdminLevel().id;
 
-    var bloc_edit_group_manager = [
-      !InitService.server_infos?.auth?.console?.use && {
+    var bloc_edit_group_manager = (!InitService.server_infos?.auth?.console?.use && [
+      {
         type: 'react-element',
         text: '',
         icon: 'edit',
@@ -125,6 +125,12 @@ export default class WorkspacePartner extends Component {
       {
         type: 'text',
         text: Languages.t('scenes.app.popup.workspaceparameter.pages.edit_level_user_text'),
+      },
+    ]) || [
+      {
+        type: 'menu',
+        text: Languages.t('scenes.app.popup.workspaceparameter.edit_from_console'),
+        onClick: () => window.open('https://console.qa.twake.app/company/users', '_blank'),
       },
     ];
 

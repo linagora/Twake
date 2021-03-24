@@ -4,6 +4,7 @@ namespace Configuration;
 
 class Parameters extends \Common\Configuration
 {
+
     public $configuration = [];
 
     public function __construct()
@@ -38,7 +39,9 @@ class Parameters extends \Common\Configuration
                 "encryption_key" => "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
                 "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}"
             ],
-            "es" => false,
+            "es" => [
+              "host" => false
+            ],
             "queues" => [
                 "rabbitmq" => [
                     "use" => true,
@@ -207,37 +210,7 @@ class Parameters extends \Common\Configuration
                       "firstname_key" => ''
                   ],
                   "console" => [
-                    "use" => true,
-                    "provider" => "http://account-twakeconsole.linagora.vn/api/",
-                    "public_key" => "",
-                    "secret" => "secret",
-                    "credentials" => [
-                      "key" => "twake",
-                      "secret" => "secret"
-                    ],
-                    "redirections" => [
-                      "account_management_url" => "http://web-twakeconsole.linagora.vn/profile",
-                      "company_management_url" => "http://web-twakeconsole.linagora.vn/company",
-                      "collaborators_management_url" => "http://web-twakeconsole.linagora.vn/company/users",
-                    ],
-                    //"None" signature is not supported
-                    //PKCE not tested but implemented in our lib
-                    "openid" => [
-                      "provider_uri" => 'http://auth-twakeconsole.linagora.vn',
-                      "client_id" => 'twake',
-                      "client_secret" => 'twakesecret',
-                      "ignore_mail_verified" => true,
-                      "ignore_id_token_verification" => true,
-                      "logout_suffix" => "/oauth2/logout",
-                      //"disable_logout_redirect" => false
-                      "provider_config" => [
-                        "code_challenge_methods_supported" => "",
-                        "token_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/token", //token_endpoint
-                        "userinfo_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/userinfo",//userinfo_endpoint
-                        "end_session_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/logout",//end_session_endpoint
-                        "authorization_endpoint" => "http://auth-twakeconsole.linagora.vn/oauth2/authorize",//authorization_endpoint                  
-                      ]
-                    ]
+                    "use" => false
                   ]
               ]
             ],

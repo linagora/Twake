@@ -25,6 +25,7 @@ import { Menu } from 'react-feather';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import RouterServices from 'app/services/RouterService';
+import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
@@ -50,7 +51,9 @@ export default (): JSX.Element => {
   } else {
     if (LoginService.currentUserId) {
       page = (
-        <>
+        <Layout className="appPage">
+          <NewVersionComponent />
+          <CompanyStatusComponent />
           <Layout hasSider>
             <Layout.Sider
               trigger={<Menu size={16} />}
@@ -63,14 +66,14 @@ export default (): JSX.Element => {
             </Layout.Sider>
             <MainView key={'mainview-' + companyId + '-' + workspaceId} />
           </Layout>
-        </>
+        </Layout>
       );
     }
   }
 
   return (
     <>
-      <NewVersionComponent>{page}</NewVersionComponent>
+      {page}
       <MenusBodyLayer />
       <DraggableBodyLayer />
       <UploadViewer />

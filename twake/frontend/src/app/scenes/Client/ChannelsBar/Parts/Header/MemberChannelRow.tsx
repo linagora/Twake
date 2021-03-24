@@ -13,6 +13,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import RouterServices from 'services/RouterService';
 import Collection from 'app/services/Collections/Collection';
 import UsersService from 'services/user/user.js';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 const { Text } = Typography;
 
@@ -56,7 +57,10 @@ export default (props: Props) => {
     channelMemberResource.setPersisted();
     await props.collection.upsert(channelMemberResource, { withoutBackend: true });
     await props.collection.remove(channelMemberResource);
-    return setIsMember(false);
+
+    setIsMember(false);
+
+    currentUserId === props.userId && ModalManager.close();
   };
 
   if (props.inAddition) {

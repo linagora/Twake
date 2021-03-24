@@ -46,6 +46,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
+        is_default: newChannel.is_default || false,
         visibility:
           newChannel.visibility !== undefined ? newChannel.visibility : channel.data.visibility,
         channel_group:

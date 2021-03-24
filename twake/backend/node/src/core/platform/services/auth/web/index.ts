@@ -5,6 +5,6 @@ export default (
   fastify: FastifyInstance,
   opts: FastifyRegisterOptions<{ prefix: string }>,
 ): void => {
-  fastify.log.info("Configuring /auth");
+  fastify.log.debug("Configuring /auth");
   fastify.register(routes, opts);
 };
