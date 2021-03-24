@@ -10,6 +10,7 @@ import workspaceUserRightsService from 'services/workspaces/workspace_user_right
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 import InitService from 'app/services/InitService';
+import { Tag } from 'antd';
 
 export default class Members extends React.Component {
   render() {
@@ -72,26 +73,34 @@ export default class Members extends React.Component {
                 var tags = [];
                 if (col.level === adminLevel) {
                   tags.push(
-                    <div className="tag blue">
+                    <Tag color="var(--primary)">
                       {Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.administrater_status',
                         [],
                         'Administrateur',
                       )}
-                    </div>,
+                    </Tag>,
                   );
                 }
                 if (col.groupLevel > 0 && col.groupLevel !== null) {
                   tags.push(
-                    <div className="tag orange">
+                    <Tag color="var(--warning)">
                       {Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.company_manager_status',
                         [],
                         "Gérant d'entreprise",
                       )}
-                    </div>,
+                    </Tag>,
                   );
                 }
+                // TODO find a way to display this tag only when guest member
+                // if (true) {
+                //   tags.push(
+                //     <Tag color="var(--grey-dark)">
+                //       {Languages.t('components.workspace.group.guest')}
+                //     </Tag>,
+                //   );
+                // }
 
                 return (
                   <div
@@ -108,7 +117,7 @@ export default class Members extends React.Component {
                       {UserService.getFullName(col.user)} {col.user.email}
                     </div>
 
-                    <div className="fix_text_padding_medium">{tags}</div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>{tags}</div>
                   </div>
                 );
               },
