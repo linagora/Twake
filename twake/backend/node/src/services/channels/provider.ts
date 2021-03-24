@@ -14,6 +14,8 @@ import {
   ChannelMemberPrimaryKey,
   DefaultChannel,
   DefaultChannelPrimaryKey,
+  ChannelPendingEmails,
+  ChannelGuestPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import { User } from "../types";
@@ -216,3 +218,8 @@ export interface DefaultChannelService
     workspace: Required<Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
+
+export interface ChannelGuestService
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<ChannelPendingEmails, ChannelGuestPrimaryKey, ChannelExecutionContext> {}
