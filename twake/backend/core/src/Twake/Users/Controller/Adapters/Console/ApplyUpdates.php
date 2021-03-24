@@ -132,11 +132,15 @@ class ApplyUpdates
                         $ok = true;
                     }
                 }else{
+                    $usernameUsedError = false;
                     $ok = true;
                 }
                 $counter++;
             } while (!$ok && $counter < 1000);
             if($mailUsedError || $usernameUsedError){
+                error_log("Console user not created because mail exists or username exists:");
+                error_log("Username used " . $username . ": " . ( $usernameUsedError ? "true" : "false" ) );
+                error_log("Email used " . $email . ": " . ( $mailUsedError ? "true" : "false" ) );
                 return false;
             }
 
@@ -195,6 +199,8 @@ class ApplyUpdates
                 (new PrepareUpdates($this->app))->addUser($userConsoleId, $companyConsoleCode, $userDTO);
             }
         }
+
+        error_log("Created console user in Twake with success, id: " . $user->getId());
 
         return $user;
 
