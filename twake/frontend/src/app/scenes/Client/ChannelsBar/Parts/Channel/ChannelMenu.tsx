@@ -23,6 +23,7 @@ import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { NotificationResource } from 'app/models/Notification';
 import RouterServices from 'app/services/RouterService';
+import GuestManagement from 'app/scenes/Client/ChannelsBar/Modals/GuestManagement';
 
 type Props = {
   channel: ChannelResource;
@@ -67,6 +68,13 @@ export default (props: Props): JSX.Element => {
 
   const displayMembers = () => {
     return ModalManager.open(<ChannelMembersList channel={props.channel} closable />, {
+      position: 'center',
+      size: { width: '600px', minHeight: '329px' },
+    });
+  };
+
+  const displayGuestManagement = () => {
+    return ModalManager.open(<GuestManagement channel={props.channel} />, {
       position: 'center',
       size: { width: '600px', minHeight: '329px' },
     });
@@ -208,16 +216,18 @@ export default (props: Props): JSX.Element => {
         type: 'menu',
         hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
-        onClick: () => {
-          editChannel();
-        },
+        onClick: () => editChannel(),
       },
       {
         type: 'menu',
         text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
-        onClick: () => {
-          displayMembers();
-        },
+        onClick: () => displayMembers(),
+      },
+      {
+        type: 'menu',
+        // TODO Translation
+        text: Languages.t('Guest management'),
+        onClick: () => displayGuestManagement(),
       },
     );
   }
