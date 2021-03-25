@@ -1,6 +1,5 @@
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { DefaultChannel, DefaultChannelPrimaryKey } from "../../../entities/default-channel";
 import ChannelServiceAPI, { ChannelGuestService } from "../../../provider";
 import {
   CreateResult,
@@ -20,7 +19,8 @@ import {
   ChannelPendingEmails,
 } from "../../../../../services/channels/entities";
 
-const logger = getLogger("channel.default");
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const logger = getLogger("channel.guests");
 
 export default class ChannelGuestsService implements ChannelGuestService {
   version: "1";
@@ -37,8 +37,12 @@ export default class ChannelGuestsService implements ChannelGuestService {
     return this;
   }
 
-  async create(channel: ChannelPendingEmails): Promise<CreateResult<ChannelPendingEmails>> {
-    return new CreateResult<ChannelPendingEmails>("default_channel", channel);
+  async create(pendingEmail: ChannelPendingEmails): Promise<CreateResult<ChannelPendingEmails>> {
+    await this.repository.save(pendingEmail);
+
+    // Once a channel guest has been successfully created, we have to add him to all channels of the company that he was invited
+    this.onCreated(pendingEmail);
+    return new CreateResult<ChannelPendingEmails>("channel_pending_emails", pendingEmail);
   }
 
   get(pk: ChannelGuestPrimaryKey): Promise<ChannelPendingEmails> {
@@ -49,7 +53,7 @@ export default class ChannelGuestsService implements ChannelGuestService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     pk: ChannelGuestPrimaryKey,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    item: DefaultChannel,
+    item: ChannelPendingEmails,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     context?: ChannelExecutionContext,
   ): Promise<UpdateResult<ChannelPendingEmails>> {
@@ -67,16 +71,16 @@ export default class ChannelGuestsService implements ChannelGuestService {
     throw new Error("Method not implemented.");
   }
 
-  async delete(pk: DefaultChannelPrimaryKey): Promise<DeleteResult<ChannelPendingEmails>> {
-    const defaultChannel = await this.get(pk);
+  async delete(pk: ChannelGuestPrimaryKey): Promise<DeleteResult<ChannelPendingEmails>> {
+    const channelGuest = await this.get(pk);
 
-    if (!defaultChannel) {
-      throw CrudExeption.notFound("Default channel has not been found");
+    if (!channelGuest) {
+      throw CrudExeption.notFound("Channel guest has not been found");
     }
 
-    await this.repository.remove(defaultChannel);
+    await this.repository.remove(channelGuest);
 
-    return new DeleteResult("default_channel", defaultChannel, true);
+    return new DeleteResult("channel_pending_emails", channelGuest, true);
   }
 
   list<ListOptions>(
@@ -87,6 +91,13 @@ export default class ChannelGuestsService implements ChannelGuestService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     context?: ChannelExecutionContext,
   ): Promise<ListResult<ChannelPendingEmails>> {
+    throw new Error("Method not implemented.");
+  }
+
+  onCreated(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    pendingEmail: ChannelPendingEmails,
+  ): void {
     throw new Error("Method not implemented.");
   }
 }
