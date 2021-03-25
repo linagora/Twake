@@ -6,13 +6,10 @@ import User from 'services/user/user.js';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import Collections from 'app/services/CollectionsReact/Collections';
-import { ChannelResource } from 'app/models/Channel';
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'services/localStorage.js';
 import workspacesUsers from './workspaces_users.js';
 import WindowService from 'services/utils/window.js';
-import Languages from 'services/languages/languages.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
@@ -20,9 +17,10 @@ import Notifications from 'services/user/notifications';
 import $ from 'jquery';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
-
+import InitService from 'app/services/InitService';
 import Globals from 'services/Globals.js';
 import JWTStorage from 'services/JWTStorage';
+import ConsoleService from 'services/ConsoleService';
 
 class Workspaces extends Observable {
   constructor() {
@@ -254,21 +252,38 @@ class Workspaces extends Observable {
         workspace = res.data.workspace;
 
         if (wsMembers.length > 0) {
-          var data = {
-            workspaceId: res.data.workspace.id,
-            list: wsMembers.join(','),
-            asExterne: false,
-          };
+          if (InitService.server_infos?.auth?.console?.use) {
+            //Invite using console
+            ConsoleService.addMailsInWorkspace({
+              workspace_id: res.data.workspace.id || '',
+              company_id: res.data.workspace.group.id || '',
+              wsMembers,
+            }).finally(() => {
+              that.loading = false;
+              popupManager.close();
+              if (workspace) {
+                that.select(workspace);
+              } else {
+                that.notify();
+              }
+            });
+          } else {
+            var data = {
+              workspaceId: res.data.workspace.id,
+              list: wsMembers.join(','),
+              asExterne: false,
+            };
 
-          Api.post('workspace/members/addlist', data, () => {
-            that.loading = false;
-            popupManager.close();
-            if (workspace) {
-              that.select(workspace);
-            } else {
-              that.notify();
-            }
-          });
+            Api.post('workspace/members/addlist', data, () => {
+              that.loading = false;
+              popupManager.close();
+              if (workspace) {
+                that.select(workspace);
+              } else {
+                that.notify();
+              }
+            });
+          }
         } else {
           that.loading = false;
           popupManager.close();
