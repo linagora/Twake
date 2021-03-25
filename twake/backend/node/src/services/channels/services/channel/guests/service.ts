@@ -1,6 +1,6 @@
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import ChannelServiceAPI, { ChannelGuestService } from "../../../provider";
+import { ChannelGuestService } from "../../../provider";
 import {
   CreateResult,
   UpdateResult,
@@ -13,7 +13,6 @@ import {
 import { ChannelExecutionContext } from "../../../types";
 import ChannelGuestListener from "./listener";
 import { getLogger } from "../../../../../core/platform/framework";
-import UserServiceAPI from "../../../../user/api";
 import {
   ChannelGuestPrimaryKey,
   ChannelPendingEmails,
@@ -27,13 +26,12 @@ export default class ChannelGuestsService implements ChannelGuestService {
   repository: Repository<ChannelPendingEmails>;
   listener: ChannelGuestListener;
 
-  constructor(
-    private database: DatabaseServiceAPI,
-    private channelService: ChannelServiceAPI,
-    private userService: UserServiceAPI,
-  ) {}
+  constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
+    this.repository = await this.database.getRepository("default_channels", ChannelPendingEmails);
+    this.listener = new ChannelGuestListener(this);
+    await this.listener.init();
     return this;
   }
 

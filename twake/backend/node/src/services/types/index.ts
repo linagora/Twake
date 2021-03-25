@@ -2,7 +2,12 @@
  * Common types for business services
  */
 
-import { ChannelMember, Channel as ChannelEntity, ChannelTab } from "../channels/entities";
+import {
+  ChannelMember,
+  Channel as ChannelEntity,
+  ChannelTab,
+  ChannelPendingEmails,
+} from "../channels/entities";
 import { ChannelParameters, PaginationQueryParameters } from "../channels/web/types";
 import { MessageNotification } from "../messages/types";
 
@@ -114,6 +119,7 @@ export interface ResourceEventsPayload {
   user?: User;
   channel?: ChannelEntity;
   channelParameters?: ChannelParameters;
+  guest?: ChannelPendingEmails;
   member?: ChannelMember;
   message?: MessageNotification;
   actor?: User;
