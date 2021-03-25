@@ -254,21 +254,38 @@ class Workspaces extends Observable {
         workspace = res.data.workspace;
 
         if (wsMembers.length > 0) {
-          var data = {
-            workspaceId: res.data.workspace.id,
-            list: wsMembers.join(','),
-            asExterne: false,
-          };
+          if (InitService.server_infos?.auth?.console?.use) {
+            //Invite using console
+            ConsoleService.addMailsInWorkspace({
+              workspace_id: workspaceId || '',
+              company_id: companyId || '',
+              emails,
+            }).finally(() => {
+              that.loading = false;
+              popupManager.close();
+              if (workspace) {
+                that.select(workspace);
+              } else {
+                that.notify();
+              }
+            });
+          } else {
+            var data = {
+              workspaceId: res.data.workspace.id,
+              list: wsMembers.join(','),
+              asExterne: false,
+            };
 
-          Api.post('workspace/members/addlist', data, () => {
-            that.loading = false;
-            popupManager.close();
-            if (workspace) {
-              that.select(workspace);
-            } else {
-              that.notify();
-            }
-          });
+            Api.post('workspace/members/addlist', data, () => {
+              that.loading = false;
+              popupManager.close();
+              if (workspace) {
+                that.select(workspace);
+              } else {
+                that.notify();
+              }
+            });
+          }
         } else {
           that.loading = false;
           popupManager.close();
