@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/docker/pulls/twaketech/twake-php?style=flat)
 [![Docs](https://img.shields.io/badge/docs-up--to--date-blueviolet?style=flat)](https://doc.twake.app)
 [![Community](https://img.shields.io/badge/community-awesome-brightgreen?style=flat)](https://community.twake.app)
-[![Twitter](https://img.shields.io/badge/twitter-%40twake-blue?style=flat)](https://twitter.com/twake)
+[![Twitter](https://img.shields.io/badge/twitter-%40twake-blue?style=flat)](https://twitter.com/twake) [![Join the chat at https://gitter.im/linagora/Twake](https://badges.gitter.im/linagora/Twake.svg)](https://gitter.im/linagora/Twake?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Twake is a secure open source collaboration platform to improve organizational productivity.
 Twake offers all the features for collaboration :
