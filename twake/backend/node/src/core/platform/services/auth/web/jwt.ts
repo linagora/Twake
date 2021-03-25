@@ -12,7 +12,12 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
   fastify.decorate("authenticate", async (request: FastifyRequest) => {
     try {
       const jwt: JwtType = await request.jwtVerify();
-      request.currentUser = { ...{ org: jwt.org }, ...{ email: jwt.email }, ...{ id: jwt.sub } };
+      request.currentUser = {
+        ...{ org: jwt.org },
+        ...{ email: jwt.email },
+        ...{ id: jwt.sub },
+        ...{ identity_provider_id: jwt.csl_sub },
+      };
       request.log.debug(`Authenticated as user ${request.currentUser.id}`);
     } catch (err) {
       throw fastify.httpErrors.unauthorized("Bad credentials");

@@ -40,6 +40,8 @@ export const webSocketSchema = {
 export interface User {
   // unique user id
   id: uuid;
+  // unique console user id
+  identity_provider_id: uuid;
   // user email
   email?: string;
   // Organisation properties

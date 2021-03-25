@@ -324,6 +324,7 @@ class User
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
+            "csl_sub" => $user->getIdentityProviderId(),
             "email" => $user->getEmail(),
             "org" => $orgs,
         ];
@@ -335,7 +336,8 @@ class User
             "type" => "refresh",
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
-            "sub" => $user->getId()
+            "sub" => $user->getId(),
+            "csl_sub" => $user->getIdentityProviderId(),
         ];
         $jwt_refresh = JWT::encode($payload, $key);
 

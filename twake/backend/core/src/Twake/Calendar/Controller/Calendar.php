@@ -31,7 +31,7 @@ class Calendar extends BaseController
         }else{
             if($GLOBALS["segment_enabled"]) \Segment::track([
                 "event" => "calendar:".($object["id"] ? "edit" : "create"),
-                "userId" => $this->getUser()->getId()
+                "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
             ]);
         }
         return new Response(Array("data" => Array("object" => $res)));
@@ -46,7 +46,7 @@ class Calendar extends BaseController
         }else{
             if($GLOBALS["segment_enabled"]) \Segment::track([
                 "event" => "calendar:open",
-                "userId" => $this->getUser()->getId()
+                "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
             ]);
         }
 

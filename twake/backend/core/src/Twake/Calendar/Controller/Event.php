@@ -20,7 +20,7 @@ class Event extends BaseController
         }
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "calendar:event:remove",
-            "userId" => $this->getUser()->getId()
+            "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
         ]);
         return new Response(Array("data" => Array("object" => $res)));
     }
@@ -38,7 +38,7 @@ class Event extends BaseController
             }
             if($GLOBALS["segment_enabled"]) \Segment::track([
                 "event" => "calendar:event:".($object["id"] ? "edit" : "create"),
-                "userId" => $this->getUser()->getId()
+                "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
             ]);
         }
         return new Response(Array("data" => Array("object" => $res)));

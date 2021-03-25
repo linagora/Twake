@@ -20,7 +20,7 @@ class Task extends BaseController
         }else{
             if($GLOBALS["segment_enabled"]) \Segment::track([
                 "event" => "tasks:task:remove",
-                "userId" => $this->getUser()->getId()
+                "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
             ]);
         }
         return new Response(Array("data" => Array("object" => $res)));
@@ -37,7 +37,7 @@ class Task extends BaseController
         }
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "tasks:task:".($object["id"] ? "edit" : "create"),
-            "userId" => $this->getUser()->getId()
+            "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
         ]);
 
         if (!$res) {
@@ -55,7 +55,7 @@ class Task extends BaseController
         }else{
             if($GLOBALS["segment_enabled"]) \Segment::track([
                 "event" => "tasks:task:get",
-                "userId" => $this->getUser()->getId()
+                "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
             ]);
         }
         return new Response(Array("data" => $objects));

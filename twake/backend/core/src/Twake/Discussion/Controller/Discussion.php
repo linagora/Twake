@@ -39,7 +39,7 @@ class Discussion extends BaseController
                 $this->get("administration.counter")->incrementCounter("total_messages", 1);
                 if($GLOBALS["segment_enabled"]) \Segment::track([
                     "event" => "message:send",
-                    "userId" => $this->getUser()->getId()
+                    "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
                 ]);
             }
         }
