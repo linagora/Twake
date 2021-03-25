@@ -113,14 +113,13 @@ export class ChannelCrudController
 
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
-      const member = await this.membersService.save(
+      const member = await this.membersService.get(
         _.assign(new ChannelMember(), {
           channel_id: channelResult.entity.id,
           workspace_id: channelResult.entity.workspace_id,
           company_id: channelResult.entity.company_id,
           user_id: context.user.id,
         }),
-        {},
         getChannelExecutionContext(request, channelResult.entity),
       );
 

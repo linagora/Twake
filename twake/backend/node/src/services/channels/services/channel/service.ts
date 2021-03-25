@@ -584,6 +584,18 @@ export class Service implements ChannelService {
           }
         }
       }
+
+      //Add requester as member
+      if (context.user.id) {
+        try {
+          await this.channelService.members.addUserToChannels({ id: context.user.id }, [
+            savedChannel,
+          ]);
+        } catch (err) {
+          logger.warn({ err }, "Can not add requester as channel member");
+        }
+      }
+
       localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }
   }
