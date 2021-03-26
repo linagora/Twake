@@ -1,6 +1,6 @@
 export type JwtType = {
   sub: string;
-  csl_sub: string; //Console sub
+  provider_id: string; //Console sub
   email: string;
   nbf: number;
   refresh_nbf: number;

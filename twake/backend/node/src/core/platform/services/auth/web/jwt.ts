@@ -16,7 +16,7 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
         ...{ org: jwt.org },
         ...{ email: jwt.email },
         ...{ id: jwt.sub },
-        ...{ identity_provider_id: jwt.csl_sub },
+        ...{ identity_provider_id: jwt.provider_id },
       };
       request.log.debug(`Authenticated as user ${request.currentUser.id}`);
     } catch (err) {
