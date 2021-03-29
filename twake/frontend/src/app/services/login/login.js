@@ -210,11 +210,9 @@ class Login extends Observable {
           that.notify();
 
           WindowState.setTitle();
-          RouterServices.history.push(
+          RouterServices.push(
             RouterServices.addRedirection(
-              RouterServices.pathnames.LOGIN +
-                '?' +
-                RouterServices.history.location.search.substr(1),
+              `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
             ),
           );
         } else {
@@ -278,7 +276,7 @@ class Login extends Observable {
             }
             that.login_loading = false;
             that.init();
-            return RouterServices.history.replace(RouterServices.pathnames.LOGIN);
+            return RouterServices.replace(RouterServices.pathnames.LOGIN);
           } else {
             that.login_error = true;
             that.login_loading = false;
@@ -321,8 +319,8 @@ class Login extends Observable {
         if (!no_reload) {
           Globals.window.location.reload();
         } else {
-          RouterServices.history.push(
-            RouterServices.pathnames.LOGIN + '?' + RouterServices.history.location.search.substr(1),
+          RouterServices.push(
+            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
           );
         }
       }
@@ -355,7 +353,7 @@ class Login extends Observable {
 
     this.state = 'app';
     this.notify();
-    RouterServices.history.push(RouterServices.generateRouteFromState({}));
+    RouterServices.push(RouterServices.generateRouteFromState({}));
 
     Notifications.start();
     CurrentUser.start();

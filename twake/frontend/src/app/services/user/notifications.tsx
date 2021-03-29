@@ -219,7 +219,7 @@ class Notifications extends Observable {
             )[0]?.id;
           }
           if (workspaceId) {
-            RouterService.history.push(
+            RouterService.push(
               RouterService.generateRouteFromState({
                 companyId: notificationObject.company_id,
                 workspaceId: workspaceId,

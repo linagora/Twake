@@ -165,9 +165,9 @@ class Workspaces extends Observable {
       channelId: '',
     });
     if (replace) {
-      RouterServices.history.replace(route);
+      RouterServices.replace(route);
     } else {
-      RouterServices.history.push(route);
+      RouterServices.push(route);
     }
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });

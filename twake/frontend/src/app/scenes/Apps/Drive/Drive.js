@@ -314,7 +314,7 @@ export default class Drive extends Component {
         channelId: this.props.channel.id,
         directoryId: directory_id,
       });
-      RouterServices.history.replace(url);
+      RouterServices.replace(url);
       */
     }
 
