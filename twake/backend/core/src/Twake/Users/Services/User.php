@@ -122,7 +122,6 @@ class User
             $original_username = $username;
             $ok = false;
             $mailUsedError = false;
-            $usernameUsedError = false;
             do {
                 $res = $this->getAvaibleMailPseudo($email, $username);
                 if ($res !== true) {
@@ -134,18 +133,15 @@ class User
                     if (in_array(-2, $res)) {
                         //Username used
                         $username = $original_username . $counter;
-                        $usernameUsedError = false;
                     }else{
-                        $usernameUsedError = true;
                         $ok = true;
                     }
                 }else{
-                    $usernameUsedError = false;
                     $ok = true;
                 }
                 $counter++;
             } while (!$ok && $counter < 1000);
-            if($mailUsedError || $usernameUsedError){
+            if($mailUsedError){
                 return false;
             }
 
@@ -324,7 +320,6 @@ class User
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
-            "provider_id" => $user->getIdentityProviderId(),
             "email" => $user->getEmail(),
             "org" => $orgs,
         ];
@@ -336,8 +331,7 @@ class User
             "type" => "refresh",
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
-            "sub" => $user->getId(),
-            "provider_id" => $user->getIdentityProviderId(),
+            "sub" => $user->getId()
         ];
         $jwt_refresh = JWT::encode($payload, $key);
 
@@ -786,6 +780,8 @@ class User
         }
 
         $newDevice = new Device($userId, $type, $value, $version);
+        $this->em->persist($newDevice);
+        $this->em->flush();
 
         return true;
 
