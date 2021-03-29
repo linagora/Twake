@@ -780,6 +780,8 @@ class User
         }
 
         $newDevice = new Device($userId, $type, $value, $version);
+        $this->em->persist($newDevice);
+        $this->em->flush();
 
         return true;
 
