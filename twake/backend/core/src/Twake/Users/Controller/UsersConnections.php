@@ -106,7 +106,7 @@ class UsersConnections extends BaseController
             $forename = $request->query->get("forename", "");
             $mail = $request->query->get("mail", "");
             $username = $request->query->get("username", "");
-            $url = "https://app.twakeapp.com/login?subscribe=1&origin=" . $origin;
+            $url = "https://app.twakeapp.com/login?subscribe&origin=" . $origin;
             if ($username && $username != "") {
                 $url = $url . "&username=" . $username;
             }
