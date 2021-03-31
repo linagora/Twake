@@ -195,11 +195,14 @@ export class Service implements ChannelService {
           if (existingChannel) {
             const last_activity = await this.getChannelActivity(existingChannel);
 
-            return new SaveResult(
+            const saveResult = new SaveResult(
               "channels",
               ChannelObject.mapTo(existingChannel, { last_activity }),
               OperationType.EXISTS,
             );
+            await this.addContextUserToChannel(context, saveResult);
+
+            return saveResult;
           } else {
             //Fixme: remove directChannel instance
             throw CrudExeption.badRequest("table inconsistency");
@@ -223,6 +226,7 @@ export class Service implements ChannelService {
       mode,
     );
 
+    await this.addContextUserToChannel(context, saveResult);
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
     return saveResult;
@@ -549,6 +553,24 @@ export class Service implements ChannelService {
     return channel.owner && String(channel.owner) === user.id;
   }
 
+  async addContextUserToChannel(
+    context: WorkspaceExecutionContext,
+    result: SaveResult<Channel>,
+  ): Promise<void> {
+    const savedChannel = result.entity;
+
+    //Add requester as member
+    if (context.user.id) {
+      try {
+        await this.channelService.members.addUserToChannels({ id: context.user.id }, [
+          savedChannel,
+        ]);
+      } catch (err) {
+        logger.warn({ err }, "Can not add requester as channel member");
+      }
+    }
+  }
+
   /**
    * Called when channel update has been successfully called
    *
@@ -584,6 +606,7 @@ export class Service implements ChannelService {
           }
         }
       }
+
       localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }
   }

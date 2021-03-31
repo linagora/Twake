@@ -24,6 +24,13 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEmails(e.target.value);
 
   const onClickBtn = async () => {
+    if (props.onChange) props.onChange(emails);
+
+    if (props.finish) {
+      props.finish();
+      return;
+    }
+
     setLoading(true);
     setDisabled(true);
 
