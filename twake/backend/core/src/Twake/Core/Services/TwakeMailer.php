@@ -78,6 +78,8 @@ class TwakeMailer
         $data["twakeaddress"] = $this->mail_parameters["twake_address"];
         $data["twakeurl"] = $this->mail_parameters["twake_domain_url"];
 
+        $data["twakeappurl"] = $this->app->getContainer()->getParameter("frontend_server_name", $this->app->getContainer()->getParameter("server_name", $data["twakeurl"]));
+
         $language = "en";
         if (isset($data["_language"])) {
             $language = $data["_language"];
