@@ -23,6 +23,12 @@ export class NewUserInWorkspaceJoinDefaultChannelsProcessor
     in: "workspace:member:added",
   };
 
+  readonly options = {
+    unique: true,
+    ack: true,
+    queue: "workspace:user:added:consumer_default_channels",
+  };
+
   readonly name = NAME;
 
   validate(message: NewUserInWorkspaceNotification): boolean {

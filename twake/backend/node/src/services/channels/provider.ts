@@ -15,13 +15,14 @@ import {
   DefaultChannel,
   DefaultChannelPrimaryKey,
   ChannelPendingEmails,
-  ChannelGuestPrimaryKey,
+  ChannelPendingEmailsPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import { User } from "../types";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
+import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -177,6 +178,7 @@ export interface TabService
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
   channels: ChannelService;
+  pendingEmails: ChannelPendingEmailService;
   members: MemberService;
   tabs: TabService;
 }
@@ -219,7 +221,11 @@ export interface DefaultChannelService
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
 
-export interface ChannelGuestService
+export interface ChannelPendingEmailService
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<ChannelPendingEmails, ChannelGuestPrimaryKey, ChannelExecutionContext> {}
+    CRUDService<ChannelPendingEmails, ChannelPendingEmailsPrimaryKey, ChannelExecutionContext> {
+  findPendingEmails(
+    pk: ChannelPendingEmailsListQueryParameters,
+  ): Promise<ListResult<ChannelPendingEmails>>;
+}

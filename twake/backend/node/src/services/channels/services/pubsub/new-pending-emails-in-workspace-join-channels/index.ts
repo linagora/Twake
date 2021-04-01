@@ -1,10 +1,11 @@
 import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
-import { ChannelGuestService } from "../../../provider";
+import ChannelServiceAPI, { ChannelPendingEmailService } from "../../../provider";
 
 type NewEmailInWorkspaceNotification = {
   email: string;
   company_id: string;
+  channel_id: string;
   workspace_id: string;
 };
 
@@ -17,10 +18,16 @@ const logger = getLogger("channel.pubsub.new-pending-emails-in-workspace-join-ch
  */
 export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
   implements PubsubHandler<NewEmailInWorkspaceNotification, void> {
-  constructor(readonly service: ChannelGuestService) {}
+  constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
-    in: "workspace:email:added",
+    in: "workspace:user:added",
+  };
+
+  readonly options = {
+    unique: true,
+    ack: true,
+    queue: "workspace:user:added:consumer_channel_pending_emails",
   };
 
   readonly name = NAME;
@@ -33,7 +40,14 @@ export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
     logger.debug("Processing notification for message %o", message);
 
     try {
+      const pendingEmailsInWorkspace = await this.service.pendingEmails.findPendingEmails(message);
+
+      console.log("pendingEmailsInWorkspace", pendingEmailsInWorkspace);
       /*
+
+      user id ici 
+      pas email pending
+
       logger.debug(
         "Email %s has been added as member to all the channels that he is invited %o",
         message.email,

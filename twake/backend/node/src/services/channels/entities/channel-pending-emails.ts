@@ -4,7 +4,7 @@ import { Entity, Column } from "../../../core/platform/services/database/service
 import { ChannelMemberType } from "../types";
 
 @Entity("channel_pending_emails", {
-  primaryKey: [["company_id", "workspace_id"], "email", "channel_id"],
+  primaryKey: [["company_id", "workspace_id"], "channel_id", "email"],
   type: "channel_pending_emails",
 })
 export class ChannelPendingEmails {
@@ -35,19 +35,13 @@ export class ChannelPendingEmails {
   @Type(() => String)
   @Column("email", "string")
   email: string;
-
-  /**
-   * Member type
-   */
-  @Column("type", "string")
-  type: ChannelMemberType;
 }
 
-export type ChannelGuestPrimaryKey = Pick<
+export type ChannelPendingEmailsPrimaryKey = Pick<
   ChannelPendingEmails,
-  "channel_id" | "company_id" | "workspace_id"
+  "channel_id" | "company_id" | "workspace_id" | "email"
 >;
 
-export function getInstance(member: ChannelPendingEmails): ChannelPendingEmails {
-  return merge(new ChannelPendingEmails(), member);
+export function getInstance(pendingEmail: ChannelPendingEmails): ChannelPendingEmails {
+  return merge(new ChannelPendingEmails(), pendingEmail);
 }

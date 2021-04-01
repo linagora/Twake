@@ -4,8 +4,8 @@ export * from "./tab";
 export * from "./channel-member";
 export {
   ChannelPendingEmails,
-  ChannelGuestPrimaryKey,
-  getInstance as getChannelGuestInstance,
+  ChannelPendingEmailsPrimaryKey,
+  getInstance as getChannelPendingEmailsInstance,
 } from "./channel-pending-emails";
 
 export {
