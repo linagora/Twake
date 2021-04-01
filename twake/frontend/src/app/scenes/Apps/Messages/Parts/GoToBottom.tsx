@@ -9,8 +9,8 @@ type Props = {
 export default (props: Props) => {
   return (
     <div
-      className={'go-to-now '}
-      key="go-to-now"
+      className={'go-to-bottom'}
+      key="go-to-bottom"
       onClick={() => {
         props.jumpBottom();
       }}

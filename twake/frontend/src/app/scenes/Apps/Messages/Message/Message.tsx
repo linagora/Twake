@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import Globals from 'services/Globals.js';
-
 import { CornerDownRight } from 'react-feather';
-import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
-import './Message.scss';
-
 import Languages from 'services/languages/languages.js';
 import FirstMessage from './Parts/FirstMessage/FirstMessage';
 import Thread from '../Parts/Thread';
@@ -15,12 +10,11 @@ import UserService from 'services/user/user.js';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import TimeSeparator from './TimeSeparator';
-import MessagesListServiceManager from 'app/services/Apps/Messages/MessagesListUtils';
-
 import Input from '../Input/Input';
-
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
+import './Message.scss';
+import { Message } from 'app/services/Apps/Messages/Message';
 
 type Props = {
   fake?: boolean;
@@ -28,6 +22,9 @@ type Props = {
   collectionKey: string;
   highlighted?: boolean;
   style?: any;
+  /**
+   * Deprecated
+   */
   delayRender?: boolean;
   noReplies?: boolean;
   noBlock?: boolean;
@@ -36,7 +33,7 @@ type Props = {
   threadHeader?: string;
 };
 
-export default class MessageComponent extends Component<Props, { render: boolean }> {
+export default class MessageComponent extends Component<Props> {
   domNode: any;
   messageEditorService: MessageEditors;
   allowUpdates: boolean = false;
@@ -44,10 +41,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
 
   constructor(props: Props) {
     super(props);
-
-    this.state = {
-      render: !props.delayRender,
-    };
 
     this.getResponses = this.getResponses.bind(this);
     this.setDomElement = this.setDomElement.bind(this);
@@ -86,7 +79,8 @@ export default class MessageComponent extends Component<Props, { render: boolean
     });
 
     if (this.message) {
-      MessagesListServiceManager.get(this.props.collectionKey).setMessageNode(this.message, this);
+      // FIXME: IS it still useful?
+      //MessagesListServiceManager.get(this.props.collectionKey)?.setMessageNode(this.message, this);
     }
   }
 
@@ -98,47 +92,37 @@ export default class MessageComponent extends Component<Props, { render: boolean
     this.domNode = node;
   }
 
-  startRenderContent() {
-    if (!this.state.render) {
-      this.setState({ render: true });
-    }
-  }
-
-  stopRenderContent() {
-    if (this.state.render) {
-      this.setState({ render: false });
-    }
-  }
-
-  isRendered() {
-    return this.state.render;
-  }
-
   dropMessage(message: any) {
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
 
-  getResponses() {
-    const message = this.message;
-    if (!message) {
+  /**
+   * Get the sorted (by creation_date) responses of the current message
+   *
+   * @returns Responses for the current message
+   */
+  getResponses(): Message[] {
+    if (!this.message) {
       return [];
     }
-    return Collections.get('messages')
+    return ((Collections.get('messages')
       .findBy({
-        channel_id: message.channel_id,
-        parent_message_id: message.id,
+        channel_id: this.message.channel_id,
+        parent_message_id: this.message.id,
         _user_ephemeral: undefined,
-      })
-      .filter((i: Message) => !i._user_ephemeral)
-      .sort((a: Message, b: Message) => (a.creation_date || 0) - (b.creation_date || 0));
+      }) || []) as Message[])
+      .filter(i => !i._user_ephemeral)
+      .sort((a, b) => (a.creation_date || 0) - (b.creation_date || 0));
   }
 
   render() {
+    const message = this.message;
+    let previous_message = message;
+    const max_responses = 3;
+
     if (this.props.fake === true) {
       return <Thread loading refDom={this.setDomElement} />;
     }
-
-    const message = this.message;
 
     if (message?.hidden_data?.type === 'init_channel') {
       return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
@@ -149,14 +133,9 @@ export default class MessageComponent extends Component<Props, { render: boolean
       return <ActivityMessage refDom={this.setDomElement} activity={activity} />;
     }
 
-    const max_responses = 3;
-    let previous_message: Message = message;
-    let responses = this.getResponses();
-
+    const responses = this.getResponses();
     const linkToThread = !!message.parent_message_id && this.props.repliesAsLink;
-
     const showInput = this.messageEditorService.currentEditor === message?.id;
-
     const canDropIn =
       !message.parent_message_id && !message._user_ephemeral && message.message_type !== 2;
 
@@ -171,7 +150,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
           refDom={this.setDomElement}
           threadId={message?.id || ''}
           highlighted={this.props.highlighted}
-          hidden={!this.state.render}
           withBlock={!message.parent_message_id && !this.props.noBlock}
           canDrag={!(this.props.repliesAsLink && message.parent_message_id)}
           message={message}
@@ -181,7 +159,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
             small={linkToThread}
             message={message}
             head
-            delayRender={!this.state.render}
           >
             <MessageContent
               key={message?._last_modified || message?.front_id}
@@ -210,7 +187,7 @@ export default class MessageComponent extends Component<Props, { render: boolean
           )}
 
           {!this.props.noReplies &&
-            responses.slice(-max_responses).map((message: Message) => {
+            responses.slice(-max_responses).map(message => {
               if (!message) {
                 return '';
               }
@@ -228,7 +205,6 @@ export default class MessageComponent extends Component<Props, { render: boolean
                   alinea
                   message={message}
                   small
-                  delayRender={!this.state.render}
                   key={message.front_id}
                 >
                   <MessageContent

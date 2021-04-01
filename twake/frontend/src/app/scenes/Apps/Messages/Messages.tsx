@@ -3,12 +3,11 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import ChannelsService from 'services/channels/channels.js';
-import MessagesList from './MessagesList';
+import MessageList from './MessageList';
 import './Messages.scss';
 import NewThread from './Input/NewThread';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
-import Collections from 'app/services/Collections/Collections';
 import { ChannelResource } from 'app/models/Channel';
 
 type Props = {
@@ -46,22 +45,22 @@ export default class MainView extends Component<Props> {
       <div
         className="messages-view"
         onClick={() => {
-          //Mark channel as read
-          const messagesListServerService = MessagesListServerServicesManager.get(
+          const messageLoader = MessagesListServerServicesManager.get(
             this.props.channel.data.company_id || '',
             this.props.channel.data.workspace_id || '',
             this.props.channel.id,
             this.threadId,
             this.collectionKey,
           );
-          messagesListServerService.readChannelOrThread();
+          messageLoader.readChannelOrThread();
         }}
       >
-        <MessagesList
+        <MessageList
           threadId={this.threadId}
           channel={this.props.channel.data}
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
+          scrollDirection="up"
         />
         <DroppableZone
           className="bottom_input"

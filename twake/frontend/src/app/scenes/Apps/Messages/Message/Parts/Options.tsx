@@ -1,6 +1,5 @@
 import React from 'react';
 import 'moment-timezone';
-import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
@@ -17,6 +16,7 @@ import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
 import RouterServices from 'app/services/RouterService';
+import { Message } from 'app/services/Apps/Messages/Message';
 
 type Props = {
   message: Message;
