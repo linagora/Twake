@@ -20,7 +20,7 @@ export class MessageFile {
   @Column("id", "timeuuid")
   id: string;
 
-  @Column("id", "encoded_json")
+  @Column("metadata", "encoded_json")
   metadata: MessageFileMetadata;
 }
 
