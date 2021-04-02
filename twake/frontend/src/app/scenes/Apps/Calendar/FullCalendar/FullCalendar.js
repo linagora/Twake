@@ -73,6 +73,8 @@ export default class FullCalendar extends Component {
         return true;
       },
       select: function (event) {
+        that.cancelClickOut = true;
+
         //Create event
         if (moment(event.end).diff(event.start) == 15 * 60 * 1000) {
           that.api.unselect();

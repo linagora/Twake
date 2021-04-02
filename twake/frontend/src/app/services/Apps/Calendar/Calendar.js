@@ -127,8 +127,6 @@ class Calendar extends Observable {
   }
 
   closePopups() {
-    console.log('close');
-    //console.trace();
     this.preview = null;
     if (this.edited) {
       Collections.get('events').cancelEdit(this.edited);
