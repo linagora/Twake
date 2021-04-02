@@ -74,6 +74,20 @@ class Login extends Observable {
       }
     });
 
+    var error_code = WindowState.findGetParameter('error_code') ? true : false;
+    if (error_code) {
+      this.firstInit = true;
+      this.setPage('error');
+      this.error_code = WindowState.findGetParameter('error_code') || '';
+      try {
+        this.parsed_error_code = JSON.parse(WindowState.findGetParameter('error_code')).error;
+      } catch (e) {
+        this.parsed_error_code = 'Unable to parse error.';
+      }
+      this.notify();
+      return;
+    }
+
     var subscribe =
       WindowState.findGetParameter('subscribe') !== undefined
         ? WindowState.findGetParameter('subscribe') === true

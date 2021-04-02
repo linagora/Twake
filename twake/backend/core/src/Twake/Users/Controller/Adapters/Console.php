@@ -37,7 +37,7 @@ class Console extends BaseController
           $message = "success";
         }
 
-        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login");
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login" . "?error_code=".str_replace('+', '%20', urlencode(json_encode($message))));
     }
 
     function logout(Request $request, $message = null)
@@ -98,6 +98,7 @@ class Console extends BaseController
                 $this->getParameter("defaults.auth.console.openid.client_id"),
                 $this->getParameter("defaults.auth.console.openid.client_secret")
             );
+            $oidc->setServerKey($this->app->getContainer()->getParameter("jwt.secret"));
 
             $oidc->setCodeChallengeMethod($this->getParameter("defaults.auth.console.openid.provider_config.code_challenge_methods_supported", [""])[0]);
             $oidc->providerConfigParam($this->getParameter("defaults.auth.console.openid.provider_config", []));
@@ -121,19 +122,26 @@ class Console extends BaseController
                 $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
                 $response = json_decode($response->getContent(), 1);
 
-                /** @var User $user */
-                $user = (new ApplyUpdates($this->app))->updateUser($response);
+                try {
 
-                $userTokens = null;
-                if($user){
-                    $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
+                    /** @var User $user */
+                    $user = (new ApplyUpdates($this->app))->updateUser($response);
+
+                    $userTokens = null;
+                    if($user){
+                        $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
+                    }
+
+                } catch (\Exception $e) {
+                    error_log($e);
+                    $this->logout($request, ["error" => "Unknown error while creating/getting account"]);
                 }
 
                 if ($userTokens) {
                     return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
                     . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
                 }else{
-                    return $this->logout($request, ["error" => "No user profile created"]);
+                    return $this->logout($request, ["error" => "No user profile created: is your email already used in Twake?"]);
                 }
 
             }else{
@@ -142,7 +150,7 @@ class Console extends BaseController
 
         } catch (\Exception $e) {
             error_log($e);
-            $this->logout($request);
+            $this->logout($request, ["error" => "Unknown error while processing OIDC login"]);
         }
 
         return $this->logout($request, ["error" => "An unknown error occurred"]);
