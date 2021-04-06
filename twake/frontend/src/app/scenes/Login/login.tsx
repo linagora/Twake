@@ -12,6 +12,7 @@ import LoginView from './LoginView/LoginView.js';
 import Signin from './Signin/Signin.js';
 import VerifyMail from './VerifyMail/VerifyMail.js';
 import ForgotPassword from './ForgotPassword/ForgotPassword.js';
+import Error from './Error/Error';
 
 export default () => {
   LoginService.useListener(useState);
@@ -37,6 +38,7 @@ export default () => {
         <InteractiveLoginBackground />
       )}
 
+      {LoginService.state == 'error' && <Error />}
       {LoginService.state == 'logged_out' && <LoginView />}
       {LoginService.state == 'signin' && <Signin />}
       {LoginService.state == 'verify_mail' && <VerifyMail />}

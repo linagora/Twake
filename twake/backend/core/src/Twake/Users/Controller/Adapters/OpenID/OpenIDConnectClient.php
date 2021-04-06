@@ -1,30 +1,12 @@
 <?php
-/**
- *
- * Copyright MITRE 2020
- *
- * OpenIDConnectClient for PHP5
- * Author: Michael Jett <mjett@mitre.org>
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may obtain
- * a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- *
- */
-
 namespace Twake\Users\Controller\Adapters\OpenID;
+
+use \Firebase\JWT\JWT;
 
 /**
  *
  * JWT signature verification support by Jonathan Reed <jdreed@mit.edu>
+ * Edited by Romaric Mourgues to make it stateless and compatible with LemonLDAP
  * Licensed under the same license as the rest of this file.
  *
  * phpseclib is required to validate the signatures of some tokens.
@@ -238,6 +220,19 @@ class OpenIDConnectClient
     private $pkceAlgs = array('S256' => 'sha256', 'plain' => false);
 
     /**
+     * Server key, used to generate stateless OIDC state
+     */
+    private $serverKey = "";
+
+    public function setServerKey($key){
+        $this->serverKey = $key;
+    }
+
+    private function getServerKey(){
+        return $this->serverKey;
+    }
+
+    /**
      * @param $provider_url string optional
      *
      * @param $client_id string optional
@@ -308,12 +303,9 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState($_REQUEST['state']) && !$options["ignore_state"]) {
+            if (!$this->checkState($_REQUEST['state']) && !$options["ignore_state"]) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
-
-            // Cleanup state
-            $this->unsetState($_REQUEST['state']);
 
             if (!property_exists($token_json, 'id_token')) {
                 throw new OpenIDConnectClientException('User did not authorize openid scope.');
@@ -374,12 +366,9 @@ class OpenIDConnectClient
             }
 
             // Do an OpenID Connect session check
-            if ($_REQUEST['state'] !== $this->getState($_REQUEST['state'])) {
+            if ($_REQUEST['state'] !== $this->checkState($_REQUEST['state'])) {
                 throw new OpenIDConnectClientException('Unable to determine state');
             }
-
-            // Cleanup state
-            $this->unsetState($_REQUEST['state']);
 
             $claims = $this->decodeJWT($id_token, 1);
 
@@ -643,7 +632,7 @@ class OpenIDConnectClient
         $nonce = $this->setNonce($this->generateRandString());
 
         // State essentially acts as a session key for OIDC
-        $state = $this->setState($this->generateRandString());
+        $state = $this->genState();
 
         $auth_params = array_merge($this->authParams, array(
             'response_type' => $response_type,
@@ -1607,9 +1596,17 @@ class OpenIDConnectClient
      * @param string $state
      * @return string
      */
-    protected function setState($state) {
-        $this->setSessionKey('openid_connect_state_' . $state, $state);
-        return $state;
+    protected function genState() {
+        //Generate a state using jwt
+        $payload = [
+            "token" => $this->generateRandString(),
+            "exp" => date("U") + 5 * 60
+        ];
+
+        $key = $this->getServerKey();
+        $jwt = JWT::encode($payload, $key);
+
+        return $jwt;
     }
 
     /**
@@ -1617,17 +1614,19 @@ class OpenIDConnectClient
      *
      * @return string
      */
-    protected function getState($stateId = "") {
-        return $this->getSessionKey('openid_connect_state_' . $stateId);
-    }
+    protected function checkState($state = "") {
+        $key = $this->getServerKey();
 
-    /**
-     * Cleanup state
-     *
-     * @return void
-     */
-    protected function unsetState($stateId = "") {
-        $this->unsetSessionKey('openid_connect_state_' . $stateId);
+        try{
+            //Check state is valid and non expired
+            $jwt = JWT::decode($state, $key, array('HS256'));
+
+            if($jwt->exp > date("U")){
+                return true;
+            }
+        }catch(\Exception $e){}
+
+        return false;
     }
 
     /**

@@ -61,6 +61,7 @@ class OpenID extends BaseController
                 $this->getParameter("defaults.auth.openid.client_id"),
                 $this->getParameter("defaults.auth.openid.client_secret")
             );
+            $oidc->setServerKey($this->app->getContainer()->getParameter("jwt.secret"));
 
             $oidc->providerConfigParam($this->getParameter("defaults.auth.openid.provider_config", []));
 
