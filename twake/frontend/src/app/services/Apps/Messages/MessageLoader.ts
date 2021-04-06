@@ -6,7 +6,7 @@ import { ChannelResource } from 'app/models/Channel';
 import Collections from 'app/services/CollectionsReact/Collections';
 import logger from 'app/services/Logger';
 import { Message } from './Message';
-import { FeedListeners, FeedLoader, NextParameters, FeedResponse } from '../Feed/FeedLoader';
+import { FeedLoader, NextParameters, FeedResponse, InitParameters } from '../Feed/FeedLoader';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -47,10 +47,18 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
    */
   private lastMessageOfTheStream = '';
 
+  private initialDirection: 'up' | 'down';
+  private initialOffset: string | undefined;
+
   /**
-   * Last message of the feed, this is the one which has the bigger creation date | timeuuid (ie the younger)
+   * Last message of the feed, this is the one which has the bigger creation date | timeuuid (ie the youngest)
    */
   private lastMessageId: string = '';
+  /**
+   * First message of the feed, this is the one which has the smaller creation date | timeuuid (ie the oldest)
+   */
+  private firstMessageId: string = '';
+
   private didInit = false;
   private destroyed = false;
   private httpLoading = false;
@@ -58,8 +66,6 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   // FIXME: Move it to the channel related service
   private readChannelTimeout: any;
   private lastReadMessage: string = '';
-
-  private listeners: FeedListeners<Message> | undefined;
 
   constructor(
     private companyId: string = '',
@@ -69,26 +75,26 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     private collectionKey: string,
   ) {
     super();
+    this.initialDirection = 'up';
     this.onNewMessageFromWebsocketListener = this.onNewMessageFromWebsocketListener.bind(this);
   }
 
-  async init(params: { offset?: string, pageSize?: number } = {}, listeners?: FeedListeners<Message>): Promise<unknown> {
+  async init(params: InitParameters = { direction: 'up' }): Promise<unknown> {
     this.pageSize = params.pageSize || DEFAULT_PAGE_SIZE;
-    this.listeners = listeners;
+    this.initialDirection = params.direction ? params.direction : this.initialDirection;
+    this.initialOffset = params.offset;
+    logger.info(this);
     DepreciatedCollections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
 
-    if (!this.destroyed && this.didInit && params.offset) {
-      // we are back from another page, we are already initialized, so we restart things fro the start
-      this.reset(true);
-      return this.nextPage({ offset: params.offset, direction: params.offset ? 'down' : 'up' });
+    if (params.offset && this.initialDirection === 'down') {
+      this.firstMessageOffset = params.offset;
     }
-    
+
     if (this.httpLoading) {
       logger.warn("Init in progress, skipping");
       return;
     }
 
-    // TODO: When channel is reopened; we must call next page first
     return new Promise<void>(resolve => {
       if (!this.didInit) {
         this.httpLoading = true;
@@ -115,15 +121,30 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         // First load callback
         (messages: Message[]) => {
           this.httpLoading = false;
-          this.updateCursors(messages, true);
-          // FIXME: Add the no offset condition here
-          if (!params.offset) {
+
+          if (this.threadId) {
+            this.updateCursors(messages);
+            if (this.threadId && messages.length < this.pageSize) {
+              this.setBottomIsComplete();
+            }  
+          }
+
+          if (!params.offset && this.initialDirection === 'up') {
             // without any offset, we loaded all the bottom messages on this first call
             this.setBottomIsComplete();
           }
 
           if (messages[0]?.hidden_data?.type === 'init_channel' || messages.length < this.pageSize) {
             this.setTopIsComplete()
+          }
+
+          // we started to load the feed from a given message
+          // ie we are displaying a thread
+          // be careful that it can conflicts with loading a message from the middle of a stream
+          // TODO: Set a parameter to say that we do not want to fetch messages upward...
+          // FIXME: FALSE, we are also loading the feed from a given message and so we should not block the feed
+          if (params.offset && this.initialDirection === 'down') {
+            this.setTopIsComplete();
           }
 
           // bottom reached?
@@ -137,14 +158,12 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
           resolve();
         },
       );
-    }).then(() => {
-      this.onNewMessageFromWebsocketListener(null);
-      return new Promise(resolve => resolve(null));
     });
   }
 
-  async nextPage(params: NextParameters = { direction: 'up' }): Promise<FeedResponse<Message>> {
+  async nextPage(params: { direction: 'up' | 'down'}): Promise<FeedResponse<Message>> {
     logger.debug("nextPage - ", params);
+
     if (!this.didInit) {
       throw new Error("Loader must be initialized first");
     }
@@ -156,15 +175,9 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       return this.buildResponse([], false, params);
     }
 
-    const offset = params.offset ? params.offset : (loadUp ? this.firstMessageOffset : this.lastMessageOffset);
-
-    if (
-      (loadUp && offset && this.firstMessageOfTheStream && this.firstMessageOfTheStream === offset) ||
-      (!loadUp && offset && this.lastMessageOfTheStream && this.lastMessageOfTheStream === offset)
-    ) {
-      logger.debug('nextPage - Trying to load messages at same offset than first || last message', 'params=', params, 'offset=', offset, 'firstMessageOfTheStream=', this.firstMessageOfTheStream, 'lastMessageOfTheStream=', this.lastMessageOfTheStream);
-
-      return this.buildResponse(this.getItems(), false, params);
+    let offset = loadUp ? this.firstMessageOffset : this.lastMessageOffset;
+    if (this.threadId) {
+      offset = this.firstMessageOffset;
     }
 
     return new Promise(resolve => {
@@ -177,18 +190,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         },
         (messages: Message[]) => {
           this.httpLoading = false;
-          // HERE
-          this.updateCursors(messages, !!params.offset);
-          if (loadUp && messages.length < this.pageSize) {
-            this.setTopIsComplete();
-          }
-          if (!loadUp && messages.length < this.pageSize) {
-            this.setBottomIsComplete();
-          }
-          this.notify();
-          resolve(this.buildResponse(this.getItems(), true, params));
+          this.updateCursors(messages, false);
+          const fromTo = loadUp ?
+            { from: this.firstMessageOffset, to: offset || this.lastMessageOffset } :
+            { from: offset || this.firstMessageOffset, to: this.lastMessageOffset };
+          
+          resolve(this.buildResponse(this.getItems(fromTo), true, params));
         },
-      );
+      )
     });
   }
 
@@ -212,16 +221,10 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     };
   }
 
-  /**
-   * Get last loaded messages without holes between messages
-   *
-   * @returns a list messages between first and last cursors
-   */
-  getItems(): Message[] {
-    if (this.lastMessageOffset === this.firstMessageOffset && this.httpLoading) {
-      return [];
-    }
+  getItems(fromTo?: { from: string, to: string }): Message[] {
+    const offsets = fromTo || { from: this.firstMessageId, to: this.lastMessageId}
 
+    logger.debug("Get items", offsets);
     const filter: any = {
       channel_id: this.channelId,
     };
@@ -230,14 +233,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     }
     let messages: Message[] = DepreciatedCollections.get('messages').findBy(filter);
 
-    // TODO: Do we need this?
-    //this.detectNewWebsocketsMessages(messages);
+    // TODO: Why did we need this?
+    // this.detectNewWebsocketsMessages(messages);
 
     messages = messages
       // keep only the messages between the first and last loaded ones 
       .filter(message => (
-        Numbers.compareTimeuuid(this.lastMessageOffset, message.id) >= 0 &&
-        Numbers.compareTimeuuid(this.firstMessageOffset, message.id) <= 0
+        Numbers.compareTimeuuid(offsets.to, message.id) >= 0 &&
+        Numbers.compareTimeuuid(offsets.from, message.id) <= 0
       ))
       // remove ephemeral messages
       .filter(message => !message._user_ephemeral)
@@ -261,17 +264,11 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       });
     }
 
-    // FIXME: This should not be in this service but in a listener in the channel component
-    if (this.hasLastMessage() && document.hasFocus()) {
-      this.readChannelOrThread();
-    }
-
     return messages;
   }
 
   /**
    * Updates the last message of the feed with the given one if and only if it is newer than the previous one
-   * TODO: We have to distinguosh the last message block with the last youger message, this is not the same...
    *
    * @param message
    * @returns 
@@ -285,6 +282,18 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       this.lastMessageId = message.id;
     } else {
       this.lastMessageId = Numbers.compareTimeuuid(this.lastMessageId, message.id) <= 0 ? message.id : this.lastMessageId;
+    }
+  }
+
+  private setFirstMessageId(message: Message): void {
+    if (!message || !message.id) {
+      return;
+    }
+
+    if (!this.firstMessageId) {
+      this.firstMessageId = message.id;
+    } else {
+      this.firstMessageId = Numbers.compareTimeuuid(this.firstMessageId, message.id) >= 0 ? message.id : this.firstMessageId;
     }
   }
 
@@ -306,24 +315,21 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     return newUnknownMessages;
   }
 
-  onNewMessageFromWebsocketListener(_event: any) {
+  onNewMessageFromWebsocketListener(_event: any): void {
     const newMessages = this.detectNewWebsocketsMessages(
       DepreciatedCollections.get('messages').findBy({
         channel_id: this.channelId,
       }),
     );
     logger.debug("New messages from websocket", newMessages);
-    if (newMessages) {
-      this.listeners && this.listeners.onCreated && this.listeners.onCreated(newMessages);
+    if (newMessages.length) {
+      this.notify();
     }
-    this.notify();
   }
 
   onNewMessageFromWebsocket(message: Message) {
-    // TODO: Check me
-    if (this.lastMessageOffset === this.lastMessageOfTheStream) {
-      this.updateCursors([message]);
-    }
+    // simply update the first and last messages and not the pagination
+    this.updateFirstLast([message]);
   }
 
   reset(force?: boolean) {
@@ -338,11 +344,18 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     }
   }
 
-  private updateCursors(messages: Message[] = [], reset: boolean = false) {
-    logger.debug("Updating pagination cursors with messages", messages.length, reset);
+  private updateCursors(messages: Message[] = [], reset: boolean = false, cursorValues?: { firstMessageOffset?: string, lastMessageOffset?: string }) {
+    logger.debug("Updating pagination cursors with messages", messages.map(m => m.id).join(' - '), reset, cursorValues);
+    this.printCursors('Before update');
     if (reset) {
       this.reset();
-    }
+      if (cursorValues?.firstMessageOffset) {
+        this.firstMessageOffset = cursorValues.firstMessageOffset;
+      }
+      if (cursorValues?.lastMessageOffset) {
+        this.lastMessageOffset = cursorValues.lastMessageOffset;
+      }
+    } 
 
     const wasAtEnd = this.hasLastMessage();
 
@@ -355,6 +368,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         this.topHasBeenReached = true;
       }
       this.setLastMessageId(m);
+      this.setFirstMessageId(m);
       this.lastMessageOffset = Numbers.maxTimeuuid(this.lastMessageOffset, m.id);
       this.firstMessageOffset = Numbers.minTimeuuid(this.firstMessageOffset, m.id);
     });
@@ -365,14 +379,31 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         this.lastMessageOffset,
       );
     }
-    this.printCursors();
+    this.printCursors("After update");
   }
 
-  private printCursors() {
-    logger.debug(`Cursors:
+  /**
+   * Update the first and last message cursors. We do not update the pagination ones here, just the global ones.
+   * 
+   * @param messages 
+   */
+  private updateFirstLast(messages: Message[] = []): void {
+    messages.forEach(m => {
+      if (m.hidden_data?.type === 'init_channel') {
+        this.topHasBeenReached = true;
+      }
+      this.setLastMessageId(m);
+      this.setFirstMessageId(m);
+    });
+  }
+
+  private printCursors(label: string = '') {
+    logger.debug(`${label} Cursors:
       firstMessageOffset: ${this.firstMessageOffset},
       lastMessageOffset: ${this.lastMessageOffset},
       lastMessageOfTheStream: ${this.lastMessageOfTheStream},
+      firstMessageId: ${this.firstMessageId},
+      lastMessageId: ${this.lastMessageId},
     `);
   }
 

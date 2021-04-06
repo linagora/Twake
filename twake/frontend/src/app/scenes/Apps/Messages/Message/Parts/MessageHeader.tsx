@@ -12,7 +12,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 //import MessagesListServiceManager, {
 //  MessagesListUtils as MessagesListService,
 //} from 'app/services/Apps/Messages/MessagesListUtils';
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
+import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -42,9 +42,8 @@ export default class MessageHeader extends Component<Props, State> {
     };
 
     this.messagesListServerService =
-      MessagesListServerServicesManager.getByChannelId(
+      MessageLoaderFactory.getByChannelId(
         this.props.message?.channel_id || '',
-        '',
         this.props.collectionKey,
       ) || null;
     if (this.messagesListServerService) {

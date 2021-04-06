@@ -4,11 +4,12 @@ import Languages from 'services/languages/languages.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import ChannelsService from 'services/channels/channels.js';
 import MessageList from './MessageList';
-import './Messages.scss';
 import NewThread from './Input/NewThread';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
+import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
+import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
+import './Messages.scss';
 
 type Props = {
   channel: ChannelResource;
@@ -18,9 +19,13 @@ type Props = {
 
 export default class MainView extends Component<Props> {
   options: any = {};
-  threadId: string = ''; //Non-empty = thread view
-  collectionKey: string = ''; //For a specific collection (aka channel)
+  /**
+   * Display a thread view when non empty
+   */
+  threadId = '';
+  collectionKey = ''; //For a specific collection (aka channel)
   upload_zone: any;
+  messageLoader: MessageLoader;
 
   constructor(props: Props) {
     super(props);
@@ -31,7 +36,14 @@ export default class MainView extends Component<Props> {
     this.options = props.options || {};
     this.options.context = props.options.context || {};
     this.threadId = this.options.context.threadId || '';
-    this.collectionKey = 'messages_' + this.props.channel.id + '_' + this.threadId;
+    this.collectionKey = `messages_${this.props.channel.id}_${this.threadId}`;
+    this.messageLoader = MessagesListServerServicesManager.get(
+      this.props.channel.data.company_id || '',
+      this.props.channel.data.workspace_id || '',
+      this.props.channel.id,
+      this.threadId,
+      this.collectionKey,
+    )
   }
   componentWillUnmount() {
     Languages.removeListener(this);
@@ -44,23 +56,14 @@ export default class MainView extends Component<Props> {
     return (
       <div
         className="messages-view"
-        onClick={() => {
-          const messageLoader = MessagesListServerServicesManager.get(
-            this.props.channel.data.company_id || '',
-            this.props.channel.data.workspace_id || '',
-            this.props.channel.id,
-            this.threadId,
-            this.collectionKey,
-          );
-          messageLoader.readChannelOrThread();
-        }}
+        onClick={() => this.messageLoader.readChannelOrThread()}
       >
         <MessageList
           threadId={this.threadId}
           channel={this.props.channel.data}
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
-          scrollDirection="up"
+          scrollDirection={this.threadId ? 'down' : 'up'}
         />
         <DroppableZone
           className="bottom_input"

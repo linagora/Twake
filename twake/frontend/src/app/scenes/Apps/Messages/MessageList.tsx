@@ -3,21 +3,23 @@ import { ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
+import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessageLoaderFactory';
 import WindowService from 'services/utils/window';
-import ChannelsService from 'services/channels/channels';
 import Logger from 'app/services/Logger';
 import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
 import { Message } from 'app/services/Apps/Messages/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
+import MessageComponent from './Message/Message';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
 
+type ScrollDirection =  "up" | "down";
+
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const LoadComponent = () => <Spin indicator={antIcon} />;
-const LoaderComponent = () => (
+const FullPageLoaderComponent = () => (
   <div className="loading-full">
     <div className="loading">
       <LoadComponent/>
@@ -34,7 +36,7 @@ type Props = {
   /**
    * The initial scroll direction
    */
-  scrollDirection: "up" | "down";
+  scrollDirection: ScrollDirection;
 };
 
 type State = {
@@ -64,12 +66,14 @@ export default class MessagesList extends React.Component<Props, State> {
   private initialPageSize: number;
   private position: "top" | "bottom" | "middle" | "unknown";
   private scrolling: boolean;
+  private lockScrollUp: boolean;
   
   constructor(props: Props) {
     super(props);
     this.nbOfCalls = 0;
     this.isLoading = false;
-    this.topHasBeenReached = false;
+    this.lockScrollUp = !!this.props.threadId;
+    this.topHasBeenReached = this.lockScrollUp;
     this.bottomHasBeenReached = false;
     this.upOffset = "";
     this.downOffset = "";
@@ -94,19 +98,53 @@ export default class MessagesList extends React.Component<Props, State> {
       isLoaded: false,
       items: [],
     };
+    this.onNewCollectionEvent = this.onNewCollectionEvent.bind(this);
   }
 
   async componentDidMount() {
-    await this.init();
+    const startFrom = WindowService.getInfoFromUrl()?.message || this.props.threadId || '';
+
+    await this.init({ startFrom });
     await this.nextPage(this.props.scrollDirection);
     this.initialPageSize = this.state.items.length || this.pageSize;
+    // FIXME: lastItemIndex must be updated
     this.setIsLoaded(true);
-    this.loader.addListener(this);
+    this.loader.addListener(this.onNewCollectionEvent);
   }
 
   componentWillUnmount() {
     this.loader.destroy();
-    this.loader.removeListener(this);
+    this.loader.removeListener(this.onNewCollectionEvent);
+  }
+
+  /**
+   * The collection has been updated, update the items to dispatch a new render
+   * TODO: Update the firstItemIndex
+   */
+  private onNewCollectionEvent(data_: any): void {
+    const items = this.loader.getItems() || [];
+    const diff = items.length - this.state.items.length;
+
+    if (diff === 0) {
+      this.logger.debug("Some Messages have been updated");
+      // or some has been deleted and created at the same time...
+      // or this is a response to a thread and so there are no items length diff
+    } else if (diff > 0) {
+      this.logger.debug(`${diff} new messages`);
+    } else if (diff < 0) {
+      this.logger.debug(`${diff} less messages`);
+    }
+    
+    if (items.length) {
+      const previousPosition = this.position;
+
+      this.setItems(items);
+
+      if (["bottom", "unknown"].includes(previousPosition)) {
+        // This may not work in case of a reply
+        this.scrollToMessage("end", items[items.length - 1])
+      }
+    }
   }
 
   setIsLoaded(isLoaded: boolean) {
@@ -127,36 +165,46 @@ export default class MessagesList extends React.Component<Props, State> {
     }));
   }
 
-  async nextPage(direction: "up" | "down" = "up"): Promise<void> {
-    this.logger.debug(`loadMore:${direction}`);
+  async init(params: { startFrom: string }): Promise<void> {
+    this.logger.debug("Initializing message list feed with parameters", params);
+    
+    await this.loader.init({ offset: params.startFrom, pageSize: this.pageSize, direction: this.props.threadId ? 'down' : 'up' });
+
+    this.isInitialized = true;
+  };
+
+  async nextPage(direction: ScrollDirection = "up"): Promise<void> {
+    this.logger.debug(`nextPage:${direction}`);
     if (this.isLoading) {
-      this.logger.debug(`loadMore:${direction} - Loading already in progress`);
+      this.logger.debug(`nextPage:${direction} - Loading already in progress`);
       return;
     }
 
     if (!this.isInitialized) {
-      this.logger.debug(`loadMore:${direction} - Not initialized`);
+      this.logger.debug(`nextPage:${direction} - Not initialized`);
+      return;
+    }
+
+    if (this.lockScrollUp && direction === "up") {
+      this.logger.debug(`nextPage:${direction} - Scroll up is not allowed`);
       return;
     }
 
     if (direction === "up" && this.topHasBeenReached) {
-      this.logger.debug(`loadMore:${direction} - Top has already been reached`);
+      this.logger.debug(`nextPage:${direction} - Top has already been reached`);
       return;
     }
     
     if (direction === "down" && this.bottomHasBeenReached) {
-      this.logger.debug(`loadMore:${direction} - Bottom has already been reached`);
+      this.logger.debug(`nextPage:${direction} - Bottom has already been reached`);
       return;
     }
 
-    const offset = direction === "up" ? this.upOffset : this.downOffset;
-    this.logger.debug(`loadMore:${direction}, offset:${offset}`)
-
     this.nbOfCalls++;
     this.isLoading = true;
-    const response = await this.loader.nextPage({ direction, offset });
+    const response = await this.loader.nextPage({ direction });
     this.isLoading = false;
-    this.logger.debug(`loadMore:${direction} - Loader response`, response);
+    this.logger.debug(`nextPage:${direction} - Loader response`, response);
 
     if (!response.loaded) {
       this.logger.debug("No data loaded, skipping...");
@@ -168,32 +216,30 @@ export default class MessagesList extends React.Component<Props, State> {
     this.topHasBeenReached = response.completes.top;
     this.bottomHasBeenReached = response.completes.bottom;
 
-    const items = response.items || [];
+    let items = response.items || [];
 
     if (!items.length) {
       return;
     }
 
+    if (direction === "up") {
+      // last item of the response is the same as the first one of the state (we paginated from it and it may be included in the response)
+      if (this.state.items.length && items[items.length - 1].id === this.state.items[0].id) {
+        items.splice(items.length - 1, 1);
+      }
+    }
+
+    if (direction === "down") {
+      // first item of the page if the same as the last one of the state (we paginated from it and it may be included in the response)
+      if (this.state.items.length && items[0].id === this.state.items[this.state.items.length - 1].id) {
+        items.shift();
+      }
+    }
+
+    // update the indexes so that the infinite scroll scroller is up to date and does not tilt
     direction === "up" ? this.firstItemIndex = (this.firstItemIndex - items.length) : (this.lastItemIndex = this.lastItemIndex + items.length);
     // prepend / append items in the list so that the infinite view is updated
     direction === "up" ? this.setItems([...items, ...this.state.items]) : this.setItems([...this.state.items, ...items])
-  };
-
-  async init() {
-    this.logger.debug("Initializing message feed");
-    const messageId = WindowService.getInfoFromUrl()?.message;
-    
-    await this.loader.init({ offset: (messageId && !this.props.threadId) ? messageId : "", pageSize: this.pageSize }, {
-      onCreated: this.onMessagesCreated.bind(this),
-      onUpdated: this.onMessagesUpdated.bind(this),
-      onDeleted: this.onMessagesDeleted.bind(this),
-    });
-
-    // FIXME: Don't know why
-    if (messageId) {
-      ChannelsService.url_values.message = false; //Not the best place for this
-    }
-    this.isInitialized = true;
   };
 
   /**
@@ -204,17 +250,16 @@ export default class MessagesList extends React.Component<Props, State> {
    * @returns 
    */
   scrollToMessage(align: "start" | "center" | "end" = "start", message?: Message): void {
-    // TODO: in case of reply, we can also have the message in the "main" stream
-    // Check if the message is in the index of messages, if so choose where to scroll
-    const isReply = message?.parent_message_id;
+    const isReply = !!message?.parent_message_id;
     const id = isReply ? message?.parent_message_id : message?.id;
+    // TODO: Findthe right index in virtuoso array
     const index = message ? this.state.items.findIndex(m => m.id === id) : this.lastItemIndex;
 
     if (index < 0) {
       return;
     }
 
-    this.logger.debug("Scrollto", index);
+    this.logger.debug("Scrollto", index, "messageId", id, "isReply", isReply, "lastItemIndex", this.lastItemIndex);
     this.virtuosoRef.current?.scrollToIndex({
       align: isReply ? "end" : align,
       index,
@@ -234,47 +279,6 @@ export default class MessagesList extends React.Component<Props, State> {
     this.scrolling = scrolling;
   }
 
-  async onMessagesCreated(messages: Message[] = []): Promise<void> {
-    this.logger.debug("Messages has been created", messages);
-    if (!messages.length) {
-      return;
-    }
-
-    const message = messages[0];
-    const previousPosition = this.position;
-    
-    // This is false
-    //this.downOffset = message.id || message.front_id || "";
-    //this.bottomHasBeenReached = false;
-
-    // we should only be able to get the new message from the loader
-    const items = this.loader.getItems() || [];
-
-    if (items.length) {
-      //this.setItems([...items]);
-      // TODO: Update the indexes; the last one should be increased by one...
-    }
-
-    // hope that the render occured just above and so we can check if this is a bottom message
-    // TODO: The message can also be a reploy to something, so that we should scroll if it is the response of the last message...
-
-    const isBottom = this.isBottomMessage(message);
-    this.logger.debug("Message is bottom one?", isBottom);
-    
-    if (isBottom && (previousPosition === "bottom" || previousPosition === "unknown")) {
-      this.scrollToMessage("start", message);
-    }
-  }
-  
-  onMessagesUpdated(messages: Message[]): void {
-    this.logger.debug("Messages has been updated");
-    // TODO update the message and call for render...
-  }
-  
-  onMessagesDeleted(messages: Message[]): void {
-    this.logger.debug("Messages has been deleted");
-  }
-
   onRangeChanged(range: ListRange): void {
     // TODO: If needed, this can be used to display the gotobottom button more precisely.
     // this.logger.debug("Range changed", range);
@@ -284,11 +288,23 @@ export default class MessagesList extends React.Component<Props, State> {
     return (
       <>
       { !this.state.isLoaded
-        ? <LoaderComponent/>
+        ? <FullPageLoaderComponent/>
         : <div
             style={{width: '100%', height: '100%'}}
             className={this.state.showBottomButton ? "messages-list scrolled-up" : "messages-list"}
           >
+            {this.props.threadId && 
+              // TODO: be sure that the message is loaded...
+              // TODO: This message can be displayed before any other one just after the init
+              // TODO: We can also push it in the loader as first position because for now it is not returned in the getItems but it should...
+              (<MessageComponent
+                noReplies
+                threadHeader={this.props.threadId}
+                key={this.props.threadId}
+                messageId={this.props.threadId}
+                collectionKey={this.props.collectionKey}
+              />
+            )}
             <Virtuoso
               ref={this.virtuosoRef}
               overscan={{ main: 1000, reverse: 1000 }}
@@ -326,7 +342,7 @@ export default class MessagesList extends React.Component<Props, State> {
                   return (
                     <div className="header" style={{ display: 'flex', justifyContent: 'center' }}>
                       {
-                        this.topHasBeenReached || this.nbOfCalls < 1
+                        this.lockScrollUp || this.topHasBeenReached || this.nbOfCalls === 0
                         ?
                         <></>
                         :

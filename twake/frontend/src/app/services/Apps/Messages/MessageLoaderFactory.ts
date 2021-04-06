@@ -1,17 +1,38 @@
+import Logger from 'app/services/Logger';
 import { MessageLoader } from './MessageLoader';
 
-class MessagesListServerUtilsManager {
-  services: { [key: string]: MessageLoader } = {};
+class MessageLoaderFactory {
+  services: Map<string, MessageLoader> = new Map<string, MessageLoader>();
   channelsContextById: { [channelId: string]: { companyId: string; workspaceId: string } } = {};
+  logger: Logger.Logger;
 
-  getByChannelId(channelId: string, _threadId: string, collectionKey: string): MessageLoader | undefined {
+  constructor() {
+    this.logger = Logger.getLogger('MessageLoaderFactory');
+  }
+
+  /**
+   * 
+   * @param channelId
+   * @param collectionKey 
+   * @returns 
+   */
+  getByChannelId(channelId: string, collectionKey: string): MessageLoader | undefined {
     const key = this.getKey(channelId, collectionKey);
 
-    if (this.services[key]) {
-      return this.services[key];
+    if (this.services.has(key)) {
+      return this.services.get(key);
     }
   }
 
+  /**
+   * 
+   * @param companyId 
+   * @param workspaceId 
+   * @param channelId 
+   * @param threadId 
+   * @param collectionKey 
+   * @returns 
+   */
   get(
     companyId: string,
     workspaceId: string,
@@ -20,11 +41,9 @@ class MessagesListServerUtilsManager {
     collectionKey: string,
   ): MessageLoader {
     const key = this.getKey(channelId, collectionKey);
-    let service = this.services[key];
+    let service = this.services.get(key);
 
     if (service) {
-      //@ts-ignore
-      window.MessagesListServerUtils = service;
       return service;
     }
 
@@ -41,7 +60,7 @@ class MessagesListServerUtilsManager {
       collectionKey,
     );
 
-    this.services[key] = service;
+    this.services.set(key, service);
 
     return service;
   }
@@ -51,4 +70,7 @@ class MessagesListServerUtilsManager {
   }
 }
 
-export default new MessagesListServerUtilsManager();
+const factory = new MessageLoaderFactory();
+(window as any).TwakeMessageLoaderFactory = factory;
+
+export default factory;
