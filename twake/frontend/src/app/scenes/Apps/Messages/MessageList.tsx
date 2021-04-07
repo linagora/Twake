@@ -167,9 +167,8 @@ export default class MessagesList extends React.Component<Props, State> {
 
   async init(params: { startFrom: string }): Promise<void> {
     this.logger.debug("Initializing message list feed with parameters", params);
-    
+    this.isLoading = false;
     await this.loader.init({ offset: params.startFrom, pageSize: this.pageSize, direction: this.props.threadId ? 'down' : 'up' });
-
     this.isInitialized = true;
   };
 

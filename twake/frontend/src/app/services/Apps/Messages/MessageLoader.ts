@@ -83,16 +83,22 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.pageSize = params.pageSize || DEFAULT_PAGE_SIZE;
     this.initialDirection = params.direction ? params.direction : this.initialDirection;
     this.initialOffset = params.offset;
-    logger.info(this);
     DepreciatedCollections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
-
-    if (params.offset && this.initialDirection === 'down') {
-      this.firstMessageOffset = params.offset;
-    }
 
     if (this.httpLoading) {
       logger.warn("Init in progress, skipping");
       return;
+    }
+
+    if (this.didInit) {
+      // In case init was already called, we reset the cursors so that we can switch between message lists
+      // If, one day, we have collection which are managing cache and are able to receive resources in the background
+      // then we should be able to load the cache from here and return directly instead of having to add the souce below again and again
+      this.reset(true);
+    }
+
+    if (params.offset && this.initialDirection === 'down') {
+      this.firstMessageOffset = params.offset;
     }
 
     return new Promise<void>(resolve => {
@@ -190,7 +196,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         },
         (messages: Message[]) => {
           this.httpLoading = false;
-          this.updateCursors(messages, false);
+          this.updateCursors(messages);
           const fromTo = loadUp ?
             { from: this.firstMessageOffset, to: offset || this.lastMessageOffset } :
             { from: offset || this.firstMessageOffset, to: this.lastMessageOffset };
