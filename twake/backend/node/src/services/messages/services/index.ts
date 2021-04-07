@@ -1,6 +1,18 @@
 import { TwakeContext } from "../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
+import {
+  MessageUserBookmarksServiceAPI,
+  MessageThreadsServiceAPI,
+  MessageThreadMessagesServiceAPI,
+  MessageViewsServiceAPI,
+} from "../api";
+
+import { getService as getMessageUserBookmarksServiceAPI } from "./user-bookmarks";
+import { getService as getMessageThreadsServiceAPI } from "./threads";
+import { getService as getMessageThreadMessagesServiceAPI } from "./messages";
+import { getService as getMessageViewsServiceAPI } from "./views";
+import { MessagesEngine } from "./engine";
 
 export function getService(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI): Service {
   return getServiceInstance(databaseService, pubsub);
@@ -13,12 +25,35 @@ function getServiceInstance(
   return new Service(databaseService, pubsub);
 }
 
-class Service {
+export default class Service {
   version: "1";
 
-  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {}
+  userBookmarks: MessageUserBookmarksServiceAPI;
+  threads: MessageThreadsServiceAPI;
+  messages: MessageThreadMessagesServiceAPI;
+  views: MessageViewsServiceAPI;
+  engine: MessagesEngine;
+
+  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
+    this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
+    this.threads = getMessageThreadsServiceAPI(databaseService);
+    this.messages = getMessageThreadMessagesServiceAPI(databaseService);
+    this.views = getMessageViewsServiceAPI(databaseService);
+    this.engine = new MessagesEngine(databaseService, pubsub);
+  }
 
   async init(context: TwakeContext): Promise<this> {
+    try {
+      await Promise.all([
+        this.userBookmarks.init(context),
+        this.threads.init(context),
+        this.messages.init(context),
+        this.views.init(context),
+        this.engine.init(),
+      ]);
+    } catch (err) {
+      console.error("Error while initializing messages service", err);
+    }
     return this;
   }
 }

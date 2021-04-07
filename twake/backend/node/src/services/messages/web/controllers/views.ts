@@ -22,4 +22,8 @@ export class ViewsController
   async list(request: FastifyRequest<{}>): Promise<ResourceListResponse<Message>> {
     return new ResourceListResponse();
   }
+
+  async listFiles(request: FastifyRequest<{}>): Promise<ResourceListResponse<Message>> {
+    return new ResourceListResponse();
+  }
 }
