@@ -1,96 +1,65 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { MessageServiceAPI } from "../api";
+import {
+  ThreadsController,
+  MessagesController,
+  UserBookmarksController,
+  ViewsController,
+} from "./controllers";
 
 const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   fastify: FastifyInstance,
   options,
   next,
 ) => {
-  /**
-   * Main threads message APIs
-   */
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads",
-    preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Create new thread and append a first message in it");
-    },
-  });
+  const threadsController = new ThreadsController(options.service);
+  const messagesController = new MessagesController(options.service);
+  const userBookmarksController = new UserBookmarksController(options.service);
+  const viewsController = new ViewsController(options.service);
 
+  /**
+   * In threads message collection
+   */
   fastify.route({
     method: "POST",
     url: "/companies/:company_id/threads/:thread_id/messages",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Create message in a thread");
-    },
+    handler: messagesController.save.bind(messagesController),
   });
 
   fastify.route({
     method: "POST",
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Edit message in a thread");
-    },
+    handler: messagesController.save.bind(messagesController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/threads/:thread_id/messages",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all messages in a thread");
-    },
-  });
-
-  /**
-   * Views routes
-   */
-  fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/feed",
-    preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all messages in a channel");
-    },
+    handler: messagesController.list.bind(messagesController),
   });
 
   fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/filtered/:filter",
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/reaction",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all messages in a channel filtered by pinned for instance");
-    },
+    handler: messagesController.reaction.bind(messagesController),
   });
 
   fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/files",
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/bookmark",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all files in a channel or for a user");
-    },
+    handler: messagesController.bookmark.bind(messagesController),
   });
 
   fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/bookmarks",
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/pin",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all messages for a bookmark");
-    },
-  });
-
-  fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/inbox",
-    preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get all messages in user inbox");
-    },
+    handler: messagesController.pin.bind(messagesController),
   });
 
   /**
@@ -100,27 +69,69 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
     method: "GET",
     url: "/preferences/bookmarks",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Get bookmarks");
-    },
+    handler: userBookmarksController.save.bind(userBookmarksController),
   });
 
   fastify.route({
     method: "POST",
     url: "/preferences/bookmarks",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Post new bookmarks");
-    },
+    handler: userBookmarksController.save.bind(userBookmarksController),
   });
 
   fastify.route({
     method: "DELETE",
     url: "/preferences/bookmarks/:name",
     preValidation: [fastify.authenticate],
-    handler: (req, res) => {
-      res.send("Remove bookmark by name");
-    },
+    handler: userBookmarksController.save.bind(userBookmarksController),
+  });
+
+  /**
+   * Threads creation route
+   */
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads",
+    preValidation: [fastify.authenticate],
+    handler: threadsController.save.bind(threadsController),
+  });
+
+  /**
+   * Views routes
+   */
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/feed",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.list.bind(viewsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/filtered/:filter",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.list.bind(viewsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/files",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.list.bind(viewsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/bookmarks",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.list.bind(viewsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/inbox",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.list.bind(viewsController),
   });
 
   next();
