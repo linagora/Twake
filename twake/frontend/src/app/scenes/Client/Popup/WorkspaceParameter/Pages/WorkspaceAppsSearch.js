@@ -295,7 +295,7 @@ export default class WorkspaceAppsSearch extends Component {
 
         <div className="group_section">
           <div className="text" style={{ marginBottom: 16 }}>
-            <a
+            {/* <a
               key="show_all_apps"
               href="https://twakeapp.com"
               target="_blank"
@@ -306,7 +306,7 @@ export default class WorkspaceAppsSearch extends Component {
                 [],
                 "Voir la liste d'applications",
               )}
-            </a>
+            </a> */}
             <a href="#" key="goback" onClick={() => this.props.exit()}>
               {Languages.t('general.back', [], 'Retour')}
             </a>

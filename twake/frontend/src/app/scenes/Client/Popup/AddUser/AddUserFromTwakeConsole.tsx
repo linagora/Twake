@@ -58,7 +58,6 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
     <div className="add-user-from-twake-console">
       <Typography.Title level={3} className="">
         {Languages.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
-        <Emojione type=":upside_down:" />
       </Typography.Title>
       <div className="user-list-container small-y-margin">
         <AutoHeight

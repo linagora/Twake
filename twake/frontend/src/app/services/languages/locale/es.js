@@ -419,7 +419,7 @@ export default {
   'scenes.apps.parameters.group_sections.payment': 'Suscripción',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Eliminar espacio',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
-    'Eliminar este espacio de trabajo',
+    'Para confirmar que desea eliminar este espacio de trabajo, escriba el nombre que aparece a continuación y pulse suprimir',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Entrar ',
 
   //--AccountPage

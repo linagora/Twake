@@ -322,14 +322,14 @@ class WorkspaceMembers
             if($sendEmail){
 
                 //Send mail
-                $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
-                    "_language" => $currentUser ? $currentUser->getLanguage() : "en",
-                    "mail" => $mail,
-                    "sender_user" => $currentUser ? $currentUser->getUsername() : "TwakeBot",
-                    "sender_user_mail" => $currentUser ? $currentUser->getEmail() : "noreply@twakeapp.com",
-                    "workspace" => $workspace->getName(),
-                    "group" => $workspace->getGroup()->getDisplayName()
-                ));
+                // $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
+                //     "_language" => $currentUser ? $currentUser->getLanguage() : "en",
+                //     "mail" => $mail,
+                //     "sender_user" => $currentUser ? $currentUser->getUsername() : "TwakeBot",
+                //     "sender_user_mail" => $currentUser ? $currentUser->getEmail() : "noreply@twakeapp.com",
+                //     "workspace" => $workspace->getName(),
+                //     "group" => $workspace->getGroup()->getDisplayName()
+                // ));
 
             }
 

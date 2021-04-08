@@ -166,8 +166,7 @@ export default class AddUser extends Component<Props, State> {
     var content = (
       <div className={this.props.inline ? '' : 'addUserView'}>
         <div className="subtitle bottom-margin">
-          {this.state.i18n.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
-          <Emojione type=":upside_down:" />
+          {this.state.i18n.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}          
         </div>
 
         {this.state.multi && (

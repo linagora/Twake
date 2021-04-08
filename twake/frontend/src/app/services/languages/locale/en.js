@@ -1085,7 +1085,7 @@ export default {
     'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add collaborators to your company.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Twake is better in team.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team members.',
   'scenes.app.workspaces.create_company.title': 'Create my company',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Add a secondary email',
   'scenes.app.workspaces.welcome_page.added_to_company': 'You have been invited to ',
@@ -1360,7 +1360,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Delete application',
   'scenes.app.popup.appsparameters.pages.update_button': 'Update',
   'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Need more space? Create a new workspace and it will be perfect!',
+    'Need more space?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Create a new workspace',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Name of the workspace',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
@@ -1386,7 +1386,7 @@ export default {
     'You are the manager of the company.',
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Delete workspace',
-  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description': 'Delete this workspace',
+  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description': 'To confirm you want to delete this workspace, please type the name below and hit delete',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
