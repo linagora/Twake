@@ -1,17 +1,19 @@
 import React, { createRef, RefObject } from 'react';
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { IndexLocationWithAlign, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessageLoaderFactory';
+import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
 import Logger from 'app/services/Logger';
-import MessageAndTimeSeparator from './Message/MessageAndTimeSeparator';
+import Message from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message as MessageModel } from 'app/services/Apps/Messages/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
 import RouterServices from 'app/services/RouterService';
 import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
+import MessageListFactory from 'app/services/Apps/Messages/MessageListFactory';
+import { MessageList } from 'app/services/Apps/Messages/MessageList';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -44,7 +46,7 @@ type Props = {
 type State = {
   showBottomButton: boolean;
   isLoaded: boolean;
-  messages: Message[];
+  messages: MessageModel[];
   newMessages: number;
 };
 
@@ -76,6 +78,7 @@ export default class MessagesList extends React.Component<Props, State> {
    */
   private lockScrollUp: boolean;
   private startAtOffset: string;
+  private service: MessageList;
   
   constructor(props: Props) {
     super(props);
@@ -94,13 +97,15 @@ export default class MessagesList extends React.Component<Props, State> {
     this.position = "unknown";
     this.isInitialized = false;
     this.scrolling = false;
-    this.loader = MessagesListServerServicesManager.get(
+    this.loader = MessageLoaderFactory.get(
       props.channel.company_id,
       props.channel.workspace_id,
       props.channel.id,
       props.threadId,
       props.collectionKey,
     );
+    this.service = MessageListFactory.get(props.collectionKey, this.loader);
+    this.service.setScroller(this.scrollToMessage.bind(this));
     this.state = {
       showBottomButton: false,
       newMessages: 0,
@@ -134,9 +139,10 @@ export default class MessagesList extends React.Component<Props, State> {
   componentWillUnmount() {
     this.loader.destroy();
     this.loader.removeListener(this.onNewCollectionEvent);
+    MessageListFactory.destroy(this.service);
   }
 
-  private init(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<Message>> {
+  private init(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<MessageModel>> {
     this.logger.debug("Initializing message list feed with parameters", params);
     this.loading = { down: false, up: false };
     return this.loader.init({ offset: params.startFrom, pageSize: this.pageSize, direction: params.direction });
@@ -180,8 +186,7 @@ export default class MessagesList extends React.Component<Props, State> {
    */
   private onBottomUpdate(atBottom: boolean) {
     this.position = atBottom ? "bottom" : "middle";
-    this.setShowBottomButton(!atBottom);
-
+    this.setState({ showBottomButton: !atBottom });
     atBottom && this.setState({ newMessages: 0 });
   }
 
@@ -220,7 +225,7 @@ export default class MessagesList extends React.Component<Props, State> {
     this.processLoaderResponse(response, direction);
   };
 
-  private processLoaderResponse(response: FeedResponse<Message>, direction: ScrollDirection): void {
+  private processLoaderResponse(response: FeedResponse<MessageModel>, direction: ScrollDirection): void {
     this.logger.debug(`processLoaderResponse:${direction} - Loader response`, response);
 
     if (!response.loaded) {
@@ -256,17 +261,32 @@ export default class MessagesList extends React.Component<Props, State> {
     }
   }
 
-  scrollToMessage(align: "start" | "center" | "end" = "start", message?: Message): void {
+  /**
+   * Scroll to a given message (if it exists in the state). If not defined, scroll to bottom
+   * 
+   * @param align 
+   * @param message 
+   * @returns true when message has been found and when scroll has been asked.
+   */
+  scrollToMessage(align: "start" | "center" | "end" = "start", message?: MessageModel): boolean {
+    const indexLocation: IndexLocationWithAlign = {
+      align,
+      behavior: 'smooth',
+      index: this.state.messages.length,
+    };
+
     if (!message) {
       this.setState(() => ({ newMessages: 0 }));
-      // TODO: If the current scroll is not far from the target, we can smoothly scroll, else set it to auto
-      const behavior = 'smooth';
-      this.virtuosoRef.current?.scrollToIndex({
-        align,
-        index: this.state.messages.length,
-        behavior,
-      });
+    } else {
+      indexLocation.index = this.state.messages.findIndex(m => m.id === message.id);
     }
+
+    if (indexLocation.index < 0) {
+      return false;
+    }
+
+    this.virtuosoRef.current?.scrollToIndex(indexLocation);
+    return true;
   }
 
   /**
@@ -284,7 +304,7 @@ export default class MessagesList extends React.Component<Props, State> {
     return result;
   }
 
-  isBottomMessage(message: Message): boolean {
+  isBottomMessage(message: MessageModel): boolean {
     const id = message.parent_message_id || message.id;
     const messageIndex = this.state.messages.findIndex(m => m.id === id);
 
@@ -296,15 +316,9 @@ export default class MessagesList extends React.Component<Props, State> {
     this.scrolling = scrolling;
   }
 
-  setMessages(messages: Message[] = []) {
+  setMessages(messages: MessageModel[] = []) {
     this.setState(() => ({
       messages,
-    }));
-  }
-
-  setShowBottomButton(showBottomButton: boolean) {
-    this.setState(() => ({
-      showBottomButton,
     }));
   }
 
@@ -336,9 +350,9 @@ export default class MessagesList extends React.Component<Props, State> {
               endReached={() => this.nextPage("down")}
               isScrolling={(value) => this.isScrolling(value)}
               followOutput={(isAtBottom) => this.followOuput(isAtBottom)}
-              itemContent={(index: number, message: Message) => {
+              itemContent={(index: number, message: MessageModel) => {
                 return (
-                  <MessageAndTimeSeparator
+                  <Message
                     key={message.id || message.front_id}
                     messageId={message.id || message.front_id || ""}
                     threadHeader={this.props.threadId}
