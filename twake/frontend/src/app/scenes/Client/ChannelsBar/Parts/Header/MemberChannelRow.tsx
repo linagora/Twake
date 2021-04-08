@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Button, Col, Row, Tag, Typography } from 'antd';
-import { Trash } from 'react-feather';
+import { Mail, PlusCircle, Trash } from 'react-feather';
 
 import { ChannelMemberResource } from 'app/models/Channel';
 import { getUserParts } from 'app/components/Member/UserParts';
@@ -14,25 +14,33 @@ import RouterServices from 'services/RouterService';
 import Collection from 'app/services/Collections/Collection';
 import UsersService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
+import { PendingEmailResource } from 'app/models/PendingEmail';
+import GuestManagementService from 'app/services/GuestManagementService';
+import Emojione from 'app/components/Emojione/Emojione';
 
 const { Text } = Typography;
 
 type Props = {
   channelId: string;
-  userId: string;
+  userId?: string;
   inAddition?: boolean;
-  collection: Collection<ChannelMemberResource>;
-  userType?: 'member' | 'guest' | 'bot';
+  collection: Collection<ChannelMemberResource | PendingEmailResource>;
+  userType?: 'member' | 'guest' | 'bot' | 'pending-email';
+  inPendingEmailAddition?: boolean;
+  pendingEmailToAdd?: string;
+  onPendingEmailAddition?: () => unknown;
+  onPendingEmailDeletion?: () => unknown;
 };
 
 export default (props: Props) => {
   let userEvents: JSX.Element;
   const [isMember, setIsMember] = useState<boolean>(false);
-  const { workspaceId } = RouterServices.getStateFromRoute();
+  const [selected, setSelected] = useState<boolean>(false);
+  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
   const currentUserId: string = UsersService.getCurrentUserId();
 
   const { avatar, name, users } = getUserParts({
-    usersIds: [props.userId] || [],
+    usersIds: [props.userId || ''] || [],
     max: 6,
     size: 24,
   });
@@ -64,6 +72,22 @@ export default (props: Props) => {
     currentUserId === props.userId && ModalManager.close();
   };
 
+  const savePendingEmail = () =>
+    GuestManagementService.upsertPendingEmail({
+      workspace_id: workspaceId || '',
+      channel_id: props.channelId || '',
+      company_id: companyId || '',
+      email: props.pendingEmailToAdd || '',
+    }).finally(props.onPendingEmailAddition);
+
+  const removePendingEmail = async () => {
+    const col = props.collection as Collection<PendingEmailResource>;
+    const pendingEmail = col.findOne({ id: props.userId });
+    return await GuestManagementService.deletePendingEmail(pendingEmail.data).finally(
+      props.onPendingEmailDeletion,
+    );
+  };
+
   if (props.inAddition) {
     const buttonStyle: { [key: string]: string } = {
       minWidth: '42px',
@@ -83,6 +107,10 @@ export default (props: Props) => {
     );
   } else {
     let menu: any = [
+      props.userType === 'pending-email' && {
+        text: <div>Re-send invitation</div>,
+        onClick: () => console.log('clicked'),
+      },
       {
         text: (
           <div style={{ color: 'var(--red)' }}>
@@ -94,22 +122,73 @@ export default (props: Props) => {
           </div>
         ),
         icon: <Trash size={16} color="var(--red)" />,
-        onClick: leaveChannel,
+        onClick: props.userType !== 'pending-email' ? leaveChannel : removePendingEmail,
       },
     ];
     userEvents = (
       <Col>
         <div className="add more-icon">
-          <Menu menu={menu} className="options">
-            <Icon type="ellipsis-h more-icon grey-icon" />
+          <Menu menu={menu} className="options" onClose={() => setSelected(false)}>
+            <Icon type="ellipsis-h more-icon grey-icon" onClick={() => setSelected(true)} />
           </Menu>
         </div>
       </Col>
     );
   }
 
-  if (!users[0]) {
+  if (!users[0] && props.userType !== 'pending-email') {
     return <></>;
+  }
+
+  if (props.inPendingEmailAddition) {
+    return (
+      <Row
+        key={`key_${props.pendingEmailToAdd || ''}`}
+        className="pending-email add-pending-email x-margin"
+        align="middle"
+        justify="space-between"
+        onClick={savePendingEmail}
+      >
+        <Col className="small-left-margin" style={{ display: 'flex', alignItems: 'center' }}>
+          <PlusCircle size={18} />
+        </Col>
+        <Col flex="auto" className="x-margin">
+          add <Typography.Text strong>{props.pendingEmailToAdd || ''}</Typography.Text>
+        </Col>
+      </Row>
+    );
+  }
+
+  if (props.userType === 'pending-email') {
+    const col = props.collection as Collection<PendingEmailResource>;
+    const pendingEmail = col.findOne({ id: props.userId });
+    const shouldDisplayPendingRow = !!pendingEmail;
+
+    if (shouldDisplayPendingRow) {
+      return (
+        <Row
+          className={`pending-email ${selected ? 'selected' : ''}`}
+          key={`key_${props.userId}`}
+          align="middle"
+          justify="space-between"
+        >
+          <Col className="small-x-margin" style={{ display: 'flex', alignItems: 'center' }}>
+            <Mail size={18} />
+          </Col>
+          <Col flex="auto" className="small-right-margin">
+            <Typography.Text type="secondary" className="pending-email-text">
+              {pendingEmail.data.email}
+            </Typography.Text>
+          </Col>
+          <Col>
+            <Tag color="var(--warning)">Mail sent</Tag>
+          </Col>
+          <Col className="small-right-margin">
+            {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+          </Col>
+        </Row>
+      );
+    } else return <></>;
   }
 
   return (
