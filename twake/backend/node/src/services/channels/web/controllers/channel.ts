@@ -1,10 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import {
-  CreateResult,
-  ListResult,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
+import { CreateResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   Channel,
@@ -26,7 +22,6 @@ import {
   ChannelListQueryParameters,
   ChannelParameters,
   ChannelPendingEmailsDeleteQueryParameters,
-  ChannelPendingEmailsListQueryParameters,
   ChannelSaveOptions,
   CreateChannelBody,
   ReadChannelBody,
@@ -316,13 +311,6 @@ export class ChannelCrudController
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
-    console.log("req.params", request.params);
-    console.log("object", {
-      channel_id: request.params.channel_id,
-      company_id: request.params.company_id,
-      workspace_id: request.params.workspace_id,
-      email: request.params.email,
-    });
     const pendingEmail = await this.pendingEmails.delete(
       getChannelPendingEmailsInstance({
         channel_id: request.params.channel_id,
