@@ -9,6 +9,8 @@ import { Input, Row, Typography } from 'antd';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestManagementService';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import Languages from 'services/languages/languages.js';
+import { capitalize } from 'lodash';
 
 type PropsType = {
   channel: ChannelResource;
@@ -43,11 +45,17 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
   const shouldDisplayLoader = list.length > limit;
   return (
     // TODO Translation
-    <ObjectModal title={`Manage guests in ${channel.data.name}`} closable>
+    <ObjectModal
+      title={Languages.t('scenes.client.channels_bar.modals.guest_management.title', [
+        capitalize(channel.data.name),
+      ])}
+      closable
+    >
       <Row className="x-margin">
-        {/* TODO TRANSLATION HERE */}
         <Input
-          placeholder="Search between guests and pending emails"
+          placeholder={Languages.t(
+            'scenes.client.channels_bar.modals.guest_management.input_placeholder',
+          )}
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -95,13 +103,15 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
           )}
         {shouldDisplayLoader && (
           <Row align="middle" justify="center" style={{ height: 44 }}>
-            <Typography.Link onClick={() => setLimit(limit + 10)}>Load more</Typography.Link>
+            <Typography.Link onClick={() => setLimit(limit + 10)}>
+              {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+            </Typography.Link>
           </Row>
         )}
         {shouldDisplayTips && (
           <Row align="middle" justify="center" style={{ height: '100%' }}>
             <Typography.Text type="secondary">
-              Start adding or searching email by using the input above
+              {Languages.t('scenes.client.channels_bar.modals.guest_management.tips')}
             </Typography.Text>
           </Row>
         )}

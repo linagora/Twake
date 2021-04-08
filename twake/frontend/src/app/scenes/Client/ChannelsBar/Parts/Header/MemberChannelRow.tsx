@@ -16,7 +16,6 @@ import UsersService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestManagementService';
-import Emojione from 'app/components/Emojione/Emojione';
 
 const { Text } = Typography;
 
@@ -108,7 +107,13 @@ export default (props: Props) => {
   } else {
     let menu: any = [
       props.userType === 'pending-email' && {
-        text: <div>Re-send invitation</div>,
+        text: (
+          <div>
+            {Languages.t(
+              'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation',
+            )}
+          </div>
+        ),
         onClick: () => console.log('clicked'),
       },
       {
@@ -153,7 +158,8 @@ export default (props: Props) => {
           <PlusCircle size={18} />
         </Col>
         <Col flex="auto" className="x-margin">
-          add <Typography.Text strong>{props.pendingEmailToAdd || ''}</Typography.Text>
+          {Languages.t('general.add')}{' '}
+          <Typography.Text strong>{props.pendingEmailToAdd || ''}</Typography.Text>
         </Col>
       </Row>
     );
@@ -181,7 +187,11 @@ export default (props: Props) => {
             </Typography.Text>
           </Col>
           <Col>
-            <Tag color="var(--warning)">Mail sent</Tag>
+            <Tag color="var(--warning)">
+              {Languages.t(
+                'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email',
+              )}
+            </Tag>
           </Col>
           <Col className="small-right-margin">
             {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}

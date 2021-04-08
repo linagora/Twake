@@ -1941,4 +1941,12 @@ export default {
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
   'services.console_services.toaster.success_invite_emails': 'Successfully added $1 user(s)',
+  'scenes.client.channels_bar.modals.guest_management.title': 'Manage guests in $1',
+  'scenes.client.channels_bar.modals.guest_management.input_placeholder':
+    'Search between guests and pending emails',
+  'scenes.client.channels_bar.modals.guest_management.tips':
+    'Start adding or searching email by using the input above',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
+    'Re-send invitation',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail sent',
 };
