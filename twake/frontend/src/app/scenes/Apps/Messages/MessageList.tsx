@@ -1,5 +1,5 @@
 import React, { createRef, RefObject } from 'react';
-import { IndexLocationWithAlign, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -316,6 +316,26 @@ export default class MessagesList extends React.Component<Props, State> {
     this.scrolling = scrolling;
   }
 
+  /**
+   * Remove the highlighted message when defined and when if not in the display range anymore.
+   *
+   * @param range
+   * @returns 
+   */
+  onVisibleItemsChanged(range: ListRange) {
+    if (this.service.hightlight) {
+      const index = this.state.messages.findIndex(m => m.id === this.service.hightlight?.id)
+      const hightlight = this.firstItemIndex + index;
+      if (index < 0) {
+        return;
+      }
+
+      if (hightlight < range.startIndex || hightlight > range.endIndex) {
+        this.service.hightlight = undefined;
+      }
+    }
+  }
+
   setMessages(messages: MessageModel[] = []) {
     this.setState(() => ({
       messages,
@@ -350,7 +370,10 @@ export default class MessagesList extends React.Component<Props, State> {
               endReached={() => this.nextPage("down")}
               isScrolling={(value) => this.isScrolling(value)}
               followOutput={(isAtBottom) => this.followOuput(isAtBottom)}
+              rangeChanged={(range) => this.onVisibleItemsChanged(range)}
               itemContent={(index: number, message: MessageModel) => {
+                const highlight = !!this.service.hightlight && !!this.service.hightlight.id && !!message.id && (this.service.hightlight.id === message.id);
+
                 return (
                   <Message
                     key={message.id || message.front_id}
@@ -358,13 +381,11 @@ export default class MessagesList extends React.Component<Props, State> {
                     threadHeader={this.props.threadId}
                     previousMessageId={this.state.messages[index - 1]?.id || ""}
                     unreadAfter={this.props.unreadAfter}
-                    // TODO
-                    //const highlighted = messagesListService.highlighted === messages[index]?.id;
-                    highlighted={false}
+                    highlighted={highlight}
                     collectionKey={this.props.collectionKey}
                     repliesAsLink={!this.props.threadId}
-                  />
-              );}}
+                  />);
+              }}
               atBottomStateChange={atBottom => this.onBottomUpdate(atBottom)}
               atTopStateChange={atTop => {
                 this.position = atTop ? "top" : "middle";
