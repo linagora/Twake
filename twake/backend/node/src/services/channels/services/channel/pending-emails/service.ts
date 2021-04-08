@@ -100,9 +100,6 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
 
     const result = await this.repository.find(pk, { pagination });
 
-    console.log("pk", pk);
-    console.log("result", result);
-
     return new ListResult<ChannelPendingEmails>(
       "channel_pending_emails",
       result
@@ -112,19 +109,6 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
         ),
       result.nextPage,
     );
-
-    // const result = await this.repository.find(context);
-
-    // if (!result) {
-    //   throw CrudExeption.notFound("Pending emails not found");
-    // }
-    // return new ListResult<ChannelPendingEmails>(
-    //   "channel_pending_emails",
-    //   result
-    //     .getEntities()
-    //     .map(pendingMember => plainToClass(ChannelPendingEmails, { ...pendingMember })),
-    //   result.nextPage,
-    // );
   }
 
   findPendingEmails(
