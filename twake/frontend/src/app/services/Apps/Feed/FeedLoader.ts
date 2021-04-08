@@ -4,7 +4,7 @@ export type FeedResponse<T> = {
   /**
    * The request parameters which produced this response
    */
-  query: NextParameters & { pageSize: number };
+  query?: NextParameters & { pageSize: number };
 
   /**
    * The offsets to be used for the next queries
@@ -89,7 +89,7 @@ export interface FeedLoader<T> {
    *
    * @param parameters
    */
-  init(parameters: InitParameters): Promise<any>;
+  init(parameters: InitParameters): Promise<FeedResponse<T>>;
 
   /**
    * Load next page

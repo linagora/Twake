@@ -70,12 +70,13 @@ export default (props: Props) => {
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
             const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-            const url =
-              document.location.origin +
+            const url = `${document.location.origin}${
               RouterServices.generateRouteFromState({
                 workspaceId: workspace.id,
                 channelId: props.message.channel_id,
-              });
+                messageId: props.message.parent_message_id || props.message.id,
+              })
+            }`;
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);

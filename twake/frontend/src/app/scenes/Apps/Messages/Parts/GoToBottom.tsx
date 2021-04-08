@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages.js';
 import { ArrowDown } from 'react-feather';
 
 type Props = {
-  jumpBottom: () => void;
+  onClick: () => void;
 };
 
 export default (props: Props) => {
@@ -11,9 +11,7 @@ export default (props: Props) => {
     <div
       className={'go-to-bottom'}
       key="go-to-bottom"
-      onClick={() => {
-        props.jumpBottom();
-      }}
+      onClick={ () => props.onClick() }
     >
       <ArrowDown size={16} />{' '}
       {Languages.t('scenes.apps.messages.messageslist.go_last_message_button')}
