@@ -59,6 +59,7 @@ class Api extends BaseController
         $workspaceId = $request->request->get("workspace_id", "");
         $asExterne = false;
         $emails =  $request->request->get("emails", []);
+        $role = $request->request->get("role", "member");
 
         // Get company code
         $doctrine = $this->get("app.twake_doctrine");
@@ -85,12 +86,24 @@ class Api extends BaseController
         }
 
         $companyCode = $company->getIdentityProviderId();
-        $data = [
-            "emails" => $emails
-        ];
 
         $header = "Authorization: Basic " . $this->authB64;
-        $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
+
+        if($role === "member") {
+            $data = [
+                "emails" => $emails
+            ];
+            $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
+        }
+        else {
+            $data = [
+                "email" => $emails[0],
+                "password" => base64_encode(random_bytes(6)),
+                "role" => $role
+            ];
+            $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
+        }
+
         $result = json_decode($response->getContent(), 1);
 
         return new Response(["data" => $result]);
