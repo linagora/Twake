@@ -77,11 +77,6 @@ export default class MessageComponent extends Component<Props> {
       savedCurrentEditor = '';
       return false;
     });
-
-    if (this.message) {
-      // FIXME: IS it still useful?
-      //MessagesListServiceManager.get(this.props.collectionKey)?.setMessageNode(this.message, this);
-    }
   }
 
   getDomElement() {
