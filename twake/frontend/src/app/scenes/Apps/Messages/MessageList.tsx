@@ -17,6 +17,7 @@ const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
 
 type ScrollDirection =  "up" | "down";
+type ScrollPosition = "top" | "bottom" | "middle" | "unknown";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const LoadComponent = () => <Spin indicator={antIcon} />;
@@ -44,6 +45,7 @@ type State = {
   showBottomButton: boolean;
   isLoaded: boolean;
   items: Message[];
+  newMessages: number;
 };
 
 export default class MessagesList extends React.Component<Props, State> {
@@ -67,8 +69,11 @@ export default class MessagesList extends React.Component<Props, State> {
    * Since this is a reverse infinite scroll, we need to get this first size before to render the list...
    */
   private initialPageSize: number;
-  private position: "top" | "bottom" | "middle" | "unknown";
+  private position: ScrollPosition;
   private scrolling: boolean;
+  /**
+   * Locking the scroll up when we display a thread
+   */
   private lockScrollUp: boolean;
   
   constructor(props: Props) {
@@ -96,6 +101,7 @@ export default class MessagesList extends React.Component<Props, State> {
     );
     this.state = {
       showBottomButton: false,
+      newMessages: 0,
       isLoaded: false,
       items: [],
     };
@@ -131,6 +137,7 @@ export default class MessagesList extends React.Component<Props, State> {
       // or some has been deleted and created at the same time...
       // or this is a response to a thread and so there are no items length diff
     } else if (diff > 0) {
+      this.setState({ newMessages: diff });
       this.logger.debug(`${diff} new messages`);
     } else if (diff < 0) {
       this.logger.debug(`${diff} less messages`);
@@ -164,6 +171,13 @@ export default class MessagesList extends React.Component<Props, State> {
     this.setState(() => ({
       showBottomButton,
     }));
+  }
+
+  private onBottomUpdate(atBottom: boolean) {
+    this.position = atBottom ? "bottom" : "middle";
+    this.setShowBottomButton(!atBottom);
+
+    atBottom && this.setState({ newMessages: 0 });
   }
 
   private async init(params: { startFrom: string, direction: 'up' | 'down' }): Promise<FeedResponse<Message>> {
@@ -264,6 +278,8 @@ export default class MessagesList extends React.Component<Props, State> {
       return;
     }
 
+    // TODO: Reset when we scroll down to the last message
+    this.setState(() => ({ newMessages: 0 }));
     this.logger.debug("Scrollto", index, "messageId", id, "isReply", isReply, "lastItemIndex", this.lastItemIndex);
     this.virtuosoRef.current?.scrollToIndex({
       align: isReply ? "end" : align,
@@ -335,10 +351,7 @@ export default class MessagesList extends React.Component<Props, State> {
                     repliesAsLink={!this.props.threadId}
                   />
               );}}
-              atBottomStateChange={atBottom => {
-                this.position = atBottom ? "bottom" : "middle";
-                this.setShowBottomButton(!atBottom);
-              }}
+              atBottomStateChange={atBottom => this.onBottomUpdate(atBottom)}
               atTopStateChange={atTop => {
                 this.position = atTop ? "top" : "middle";
               }}
@@ -358,7 +371,10 @@ export default class MessagesList extends React.Component<Props, State> {
                 },
               }}
             />
-            <GoToBottom onClick={ () => this.scrollToMessage("end") } />
+            <GoToBottom
+              onClick={ () => this.scrollToMessage("end") }
+              newMessages={ this.state.newMessages }
+            />
           </div>
         }
       </>

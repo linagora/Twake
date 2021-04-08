@@ -1642,6 +1642,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': 'пишет...',
   'scenes.apps.messages.messageslist.get_writing_users': 'пишут...',
   'scenes.apps.messages.messageslist.go_last_message_button': 'Перейти к последнему сообщению',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'Новые сообщения',
   'scenes.apps.messages.messageslist.load_after_button': 'Загрузить следующие сообщения',
   'scenes.apps.messages.messageslist.load_before_button': 'Загрузить прежние сообщения',
   'scenes.apps.messages.messageslist.max_id': 'Максимальный идентификатор:',
