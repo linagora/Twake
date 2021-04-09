@@ -67,6 +67,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   // FIXME: Move it to the channel related service
   private readChannelTimeout: any;
   private lastReadMessage: string = '';
+  private collection: any;
 
   constructor(
     private companyId: string = '',
@@ -76,6 +77,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     private collectionKey: string,
   ) {
     super();
+    this.collection = DepreciatedCollections.get('messages');
     this.initialDirection = 'up';
     this.onNewMessageFromWebsocketListener = this.onNewMessageFromWebsocketListener.bind(this);
   }
@@ -83,7 +85,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   async init(params: InitParameters = { direction: 'up' }): Promise<FeedResponse<Message>> {
     this.pageSize = params.pageSize || DEFAULT_PAGE_SIZE;
     this.initialDirection = params.direction ? params.direction : this.initialDirection;
-    DepreciatedCollections.get('messages').addListener(this.onNewMessageFromWebsocketListener);
+    this.collection.addListener(this.onNewMessageFromWebsocketListener);
 
     if (this.httpLoading) {
       logger.warn("Init in progress, skipping");
@@ -110,7 +112,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         return this.buildResponse([], false, params);
       }
 
-      DepreciatedCollections.get('messages').addSource(
+      this.collection.addSource(
         {
           http_base_url: 'discussion',
           http_options: {
@@ -204,7 +206,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
     return new Promise(resolve => {
       this.httpLoading = true;
-      DepreciatedCollections.get('messages').sourceLoad(
+      this.collection.sourceLoad(
         this.collectionKey,
         {
           offset,
@@ -224,13 +226,6 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
           } else {
             fromTo.to = Numbers.maxTimeuuid(this.lastThreadOffset, this.lastMessageId);
           }
-
-          console.log("FROMTO2", fromTo, offset, "lastThreadOffset:", this.lastThreadOffset, "lastMessageOffset:", this.lastMessageOffset);
-
-
-          //const fromTo = loadUp ?
-          //  { from: this.firstMessageOffset, to: offset || this.lastMessageOffset } :
-          //  { from: offset || this.firstMessageOffset, to: this.lastMessageOffset };
 
           resolve(this.buildResponse(this.getItems(fromTo), true, params));
         },
@@ -269,7 +264,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     if (this.threadId) {
       filter.parent_message_id = this.threadId;
     }
-    let messages: Message[] = DepreciatedCollections.get('messages').findBy(filter);
+    let messages: Message[] = this.collection.findBy(filter);
 
     // TODO: Why did we need this?
     // this.detectNewWebsocketsMessages(messages);
@@ -367,7 +362,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
   private onNewMessageFromWebsocketListener(_event: any): void {
     const newMessages = this.detectNewWebsocketsMessages(
-      DepreciatedCollections.get('messages').findBy({
+      this.collection.findBy({
         channel_id: this.channelId,
       }),
     );
@@ -472,8 +467,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.destroyed = true;
     this.httpLoading = false;
 
-    DepreciatedCollections.get('messages').removeSource(this.collectionKey);
-    DepreciatedCollections.get('messages').removeListener(this.onNewMessageFromWebsocketListener);
+    this.collection.removeSource(this.collectionKey);
+    this.collection.removeListener(this.onNewMessageFromWebsocketListener);
   }
 
   readChannelOrThread() {
