@@ -34,7 +34,6 @@ type Props = {
 };
 
 export default class MessageComponent extends Component<Props> {
-  domNode: any;
   messageEditorService: MessageEditors;
   allowUpdates: boolean = false;
   message: Message;
@@ -43,7 +42,6 @@ export default class MessageComponent extends Component<Props> {
     super(props);
 
     this.getResponses = this.getResponses.bind(this);
-    this.setDomElement = this.setDomElement.bind(this);
 
     this.message =
       Collections.get('messages').find(props.messageId) ||
@@ -79,14 +77,6 @@ export default class MessageComponent extends Component<Props> {
     });
   }
 
-  getDomElement() {
-    return this.domNode;
-  }
-
-  setDomElement(node: any) {
-    this.domNode = node;
-  }
-
   dropMessage(message: any) {
     MessagesService.dropMessage(message, this.message, this.props.collectionKey);
   }
@@ -116,16 +106,16 @@ export default class MessageComponent extends Component<Props> {
     const max_responses = 3;
 
     if (this.props.fake === true) {
-      return <Thread loading refDom={this.setDomElement} />;
+      return <Thread loading />;
     }
 
     if (message?.hidden_data?.type === 'init_channel') {
-      return <FirstMessage refDom={this.setDomElement} channelId={message.channel_id || ''} />;
+      return <FirstMessage channelId={message.channel_id || ''} />;
     }
 
     if (message?.hidden_data?.type === 'activity') {
       const activity = message.hidden_data.activity as ActivityType;
-      return <ActivityMessage refDom={this.setDomElement} activity={activity} />;
+      return <ActivityMessage activity={activity} />;
     }
 
     const responses = this.getResponses();
@@ -142,7 +132,6 @@ export default class MessageComponent extends Component<Props> {
       >
         <Thread
           collectionKey={this.props.collectionKey}
-          refDom={this.setDomElement}
           threadId={message?.id || ''}
           highlighted={this.props.highlighted}
           withBlock={!message.parent_message_id && !this.props.noBlock}

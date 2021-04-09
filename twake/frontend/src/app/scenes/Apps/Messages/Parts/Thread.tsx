@@ -19,7 +19,6 @@ type Props = {
   withBlock?: boolean;
   className?: string;
   onClick?: (event: any) => void;
-  refDom?: (node: any) => void;
   canDrag?: boolean;
   allowUpload?: boolean;
 };
@@ -34,7 +33,6 @@ export default (props: Props) => (
       (props.className ? props.className + ' ' : '')
     }
     onClick={props.onClick}
-    ref={props.refDom}
   >
     {!!props.loading && (
       <div className="thread-section">
