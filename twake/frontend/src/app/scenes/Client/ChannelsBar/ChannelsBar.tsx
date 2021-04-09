@@ -9,6 +9,8 @@ import Footer from './Parts/Footer.js';
 import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';
 import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
+import AddUserButton from 'components/AddUserButton/AddUserButton';
+import Workspaces from 'services/workspaces/workspaces.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
@@ -49,7 +51,8 @@ export default () => {
   if (!companyId || !workspaceId) {
     return <></>;
   }
-
+  console.log('logsl userMembers,', Workspaces.currentWorkspaceId);
+  console.log('logsl userMembers,', Workspaces.getCurrentWorkspace().stats.total_members);
   return (
     <Layout.Sider
       theme="light"
@@ -86,6 +89,7 @@ export default () => {
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
           <ChannelsApps key={workspaceId} />
+          {Workspaces.getCurrentWorkspace().stats.total_members <= 1 && <AddUserButton />}
           <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>

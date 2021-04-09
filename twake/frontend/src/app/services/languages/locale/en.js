@@ -1406,7 +1406,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.back_to_search_button': 'Return to the search',
   'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button':
     'Cancel the invitation by e-mail.',
-  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add collaborators',
+  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add colleagues',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text':
     'Collaborators in this workspace $1',
   'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'Collaborators',
