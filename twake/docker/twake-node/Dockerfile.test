@@ -1,5 +1,5 @@
 # This Dockerfile is used only for tests since the docker-compose file version does not support build targets
-FROM node:12.21.0-alpine
+FROM node:12.22.0-alpine
 
 WORKDIR /usr/src/app
 COPY package*.json ./
