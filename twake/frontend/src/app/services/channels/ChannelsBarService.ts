@@ -36,7 +36,17 @@ class ChannelsBarService extends Observable {
   }
 
   autoSelectChannel(companyId: string, workspaceId: string) {
-    const channelId = localStorage.getItem(companyId + ':' + workspaceId + ':channel');
+    let channelId = localStorage.getItem(companyId + ':' + workspaceId + ':channel');
+    if (!channelId) {
+      console.log('logsl no channel stored');
+      const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+      const channelsCollection = Collection.get(url, ChannelResource);
+      channelsCollection.setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
+      const channels = channelsCollection.find({});
+      if (channels.length > 0) {
+        channelId = channels[0].id;
+      }
+    }
     if (channelId) {
       this.updateCurrentChannelId(companyId, workspaceId, '');
       RouterService.push(RouterService.generateRouteFromState({ channelId: channelId }));
