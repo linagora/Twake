@@ -33,6 +33,9 @@ class Console extends BaseController
         }
         try{
           $message = json_decode(urldecode($request->query->get("error_code")));
+          if($message == "null"){
+            $message = "success";
+          }
         }catch(\Exception $err){
           $message = "success";
         }
