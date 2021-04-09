@@ -24,13 +24,14 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEmails(e.target.value);
 
   const onClickBtn = async () => {
-    if (props.onChange) props.onChange(emails);
+    if (props.onChange) {
+      props.onChange(emails);
+    }
 
     if (props.finish) {
       props.finish();
       return;
     }
-
     setLoading(true);
     setDisabled(true);
 
@@ -53,7 +54,6 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
       popupManager.close();
     }, 200);
   };
-
   return (
     <div className="add-user-from-twake-console">
       <Typography.Title level={3} className="">
@@ -78,7 +78,12 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
         </Typography.Text>
       </div>
       <div className="add-user-button-container">
-        <Button type="primary" onClick={onClickBtn} disabled={disabled} loading={loading}>
+        <Button
+          type="primary"
+          onClick={onClickBtn}
+          disabled={disabled || props.loading}
+          loading={loading || props.loading}
+        >
           {emails.length === 0
             ? Languages.t('scenes.app.workspaces.components.skip')
             : Languages.t('general.add')}

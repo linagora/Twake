@@ -29,9 +29,11 @@ class ConsoleService {
         if (res) {
           if (res.error) return toaster.error(res.error);
           else if (res.data?.nok?.length) {
-            res.data.nok.map(({ email, message }: { email: string; message: string }) =>
-              toaster.warning(`${email} - ${message}`),
-            );
+            res.data.nok.map(({ email, message }: { email: string; message: string }) => {
+              if (message != 'User already belonged to the company') {
+                toaster.warning(`${email} - ${message}`);
+              }
+            });
           }
 
           if (res.data?.ok?.length) {
