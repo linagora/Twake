@@ -7,7 +7,7 @@
     url('TTNorms-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -19,7 +19,7 @@
     url('TTNorms-ThinItalic.ttf') format('truetype');
   font-weight: 100;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -31,7 +31,7 @@
     url('TTNorms-Thin.ttf') format('truetype');
   font-weight: 100;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -43,7 +43,7 @@
     url('TTNorms-LightItalic.ttf') format('truetype');
   font-weight: 300;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -56,7 +56,7 @@
     url('TTNorms-ExtraBoldItalic.ttf') format('truetype');
   font-weight: 800;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -68,7 +68,7 @@
     url('TTNorms-Italic.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -80,7 +80,7 @@
     url('TTNorms-ExtraLight.ttf') format('truetype');
   font-weight: 200;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -92,7 +92,7 @@
     url('TTNorms-HeavyItalic.ttf') format('truetype');
   font-weight: 900;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -105,7 +105,7 @@
     url('TTNorms-MediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -117,7 +117,7 @@
     url('TTNorms-BoldItalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -129,7 +129,7 @@
     url('TTNorms-Heavy.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -141,7 +141,7 @@
     url('TTNorms-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -153,7 +153,7 @@
     url('TTNorms-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -165,7 +165,7 @@
     url('TTNorms-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -178,7 +178,7 @@
     url('TTNorms-ExtraLightItalic.ttf') format('truetype');
   font-weight: 200;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -190,7 +190,7 @@
     url('TTNorms-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -202,7 +202,7 @@
     url('TTNorms-BlackItalic.ttf') format('truetype');
   font-weight: 900;
   font-style: italic;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }
 
 @font-face {
@@ -214,5 +214,5 @@
     url('TTNorms-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
-  unicode-range: U+0370-052F;
+  /*unicode-range: U+0370-052F;*/
 }

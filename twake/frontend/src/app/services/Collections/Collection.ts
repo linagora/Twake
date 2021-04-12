@@ -202,15 +202,17 @@ export default class Collection<R extends Resource<any>> {
       return [this.findOne(filter, options)];
     }
 
-    if (!this.completion.isLocked && !options?.withoutBackend) {
-      this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
-        if (mongoItems.length > 0) {
-          mongoItems.forEach(mongoItem => {
-            this.updateLocalResource(mongoItem);
-          });
-          this.eventEmitter.notify();
-        }
-      });
+    if (!this.completion.isLocked) {
+      if (!options?.withoutBackend) {
+        this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
+          if (mongoItems.length > 0) {
+            mongoItems.forEach(mongoItem => {
+              this.updateLocalResource(mongoItem);
+            });
+            this.eventEmitter.notify();
+          }
+        });
+      }
     } else {
       this.completeTimeout && clearTimeout(this.completeTimeout);
       this.completeTimeout = setTimeout(() => {
