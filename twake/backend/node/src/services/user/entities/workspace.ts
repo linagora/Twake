@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "workspace";
 
 @Entity(TYPE, {
-  primaryKey: [["id"], "group_id", "id"],
+  primaryKey: [["id"], "group_id"],
   type: TYPE,
 })
 export default class Workspace {

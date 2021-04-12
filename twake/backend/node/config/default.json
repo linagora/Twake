@@ -10,7 +10,8 @@
     "pubsub",
     "realtime",
     "phpnode",
-    "tracker"
+    "tracker",
+    "files"
   ],
   "sentry": {
     "dsn": ""

@@ -8,6 +8,8 @@ import { TwakeServiceOptions } from "./service-options";
 import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
 import { logger } from "../logger";
 
+let pendingServices: any = {};
+
 export abstract class TwakeService<T extends TwakeServiceProvider>
   implements TwakeServiceInterface<TwakeServiceProvider> {
   state: BehaviorSubject<TwakeServiceState>;
@@ -38,11 +40,13 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
 
     try {
       logger.info("Initializing service %s", this.name);
+      pendingServices[this.name] = true;
       this.state.next(TwakeServiceState.Initializing);
       await this.doInit();
       this.state.next(TwakeServiceState.Initialized);
       logger.info("Service %s is initialized", this.name);
-
+      delete pendingServices[this.name];
+      logger.info("Pending services: %s", JSON.stringify(Object.keys(pendingServices)));
       return this;
     } catch (err) {
       logger.error("Error while initializing service %s", this.name);

@@ -2,6 +2,8 @@ import { TwakeService } from "../../framework";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance, fastify } from "fastify";
 import sensible from "fastify-sensible";
+import multipart from "fastify-multipart";
+import formbody from "fastify-formbody";
 import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
@@ -33,6 +35,8 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     // will have to create a core service for this, or another service which must be started first...
     this.server.register(jwtPlugin);
     this.server.register(sensible);
+    this.server.register(multipart);
+    this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));
 
     return this;
