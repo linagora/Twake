@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 import ConsoleService from 'app/services/ConsoleService';
+import LoginService from 'services/login/login';
 
 type PropsType = {
   email: string;
