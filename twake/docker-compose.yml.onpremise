@@ -34,6 +34,8 @@ services:
     environment:
       - DEV=production
     volumes:
+      - ./configuration/backend/Parameters.php:/configuration/Parameters.php
+      - ./connectors/:/twake-core/src/BuiltInConnectors/Connectors
       - ./docker-data/drive/:/twake-core/drive/
       - ./docker-data/fpm/:/etc/docker-data/fpm/
       - ./docker-data/drive-preview/:/twake-core/web/medias/
