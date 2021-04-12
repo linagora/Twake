@@ -31,7 +31,7 @@ const CompanyStatusComponent = (): JSX.Element => {
     if (!workspace?.id) return;
 
     const isNewUser: boolean =
-      onboarding !== 'completed' && workspace?.group?.stats?.total_members <= 1 && isNewCompany();
+      onboarding !== 'completed' && workspace?.group?.stats?.total_members <= 1 && isNewCompany() && !user?.is_verified;
 
     if (isNewUser) {
       localStorage.setItem(`onboarding_${companyId}`, 'completed');

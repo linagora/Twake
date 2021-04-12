@@ -37,7 +37,7 @@ class Console extends BaseController
           $message = false;
         }
 
-        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login" . ($message ? "?error_code=".str_replace('+', '%20', urlencode(json_encode($message))) : ""));
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login" . ($message ? ("?error_code=".str_replace('+', '%20', urlencode(json_encode($message)))) : "?auto"));
     }
 
     function logout(Request $request, $message = null)
