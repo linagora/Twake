@@ -104,5 +104,10 @@ export interface FeedLoader<T> {
    */
   getItems(fromTo?: { from: string, to: string }): T[];
 
-  destroy?(): void;
+  /**
+   * Destroy the loader and all its resources
+   *
+   * @param force: Optional parameter to destroy more resources on some cases
+   */
+  destroy?(force?: boolean): void;
 }

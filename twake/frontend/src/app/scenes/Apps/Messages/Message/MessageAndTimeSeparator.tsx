@@ -18,7 +18,6 @@ type Props = {
   repliesAsLink?: boolean;
   unreadAfter: number;
   threadHeader?: string;
-  refMessage?: (node: any) => void;
 };
 
 export default React.memo((props: Props) => {

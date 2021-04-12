@@ -1,9 +1,7 @@
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import Collection from 'app/services/Depreciated/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
-import Notifications from 'services/user/notifications';
-import { ChannelResource } from 'app/models/Channel';
-import Collections from 'app/services/CollectionsReact/Collections';
 import logger from 'app/services/Logger';
 import { Message } from './Message';
 import { FeedLoader, NextParameters, FeedResponse, InitParameters } from '../Feed/FeedLoader';
@@ -61,13 +59,10 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   private firstMessageId: string = '';
 
   private didInit = false;
-  private destroyed = false;
   private httpLoading = false;
 
-  // FIXME: Move it to the channel related service
-  private readChannelTimeout: any;
   private lastReadMessage: string = '';
-  private collection: any;
+  private collection: Collection;
 
   constructor(
     private companyId: string = '',
@@ -92,26 +87,21 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       return this.buildResponse([], false, params);
     }
 
+    // if already initialized, send back the whole messages
     if (this.didInit) {
-      // In case init was already called, we reset the cursors so that we can switch between message lists
-      // If, one day, we have collection which are managing cache and are able to receive resources in the background
-      // then we should be able to load the cache from here and return directly instead of having to add the souce below again and again
-      this.reset(true);
+      // We do not know if there are new messages since the last nextPage call so we reset the top/bottom flags
+      this.topHasBeenReached = false;
+      this.bottomHasBeenReached = false;
+      return this.buildResponse(this.getItems(), true, params);
     }
 
-    if (params.offset) {// && this.initialDirection === 'down') {
+    // On first call
+    if (params.offset) {
       this.firstMessageOffset = params.offset;
     }
 
     return new Promise<FeedResponse<Message>>(resolve => {
-      if (!this.didInit) {
-        this.httpLoading = true;
-      }
-      if (this.destroyed) {
-        this.destroyed = false;
-        return this.buildResponse([], false, params);
-      }
-
+      this.httpLoading = true;
       this.collection.addSource(
         {
           http_base_url: 'discussion',
@@ -229,7 +219,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
           resolve(this.buildResponse(this.getItems(fromTo), true, params));
         },
-      )
+      );
     });
   }
 
@@ -264,10 +254,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     if (this.threadId) {
       filter.parent_message_id = this.threadId;
     }
-    let messages: Message[] = this.collection.findBy(filter);
-
-    // TODO: Why did we need this?
-    // this.detectNewWebsocketsMessages(messages);
+    let messages: Message[] = this.collection.findBy(filter, null);
 
     messages = messages
       // keep only the messages between the first and last loaded ones 
@@ -364,7 +351,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     const newMessages = this.detectNewWebsocketsMessages(
       this.collection.findBy({
         channel_id: this.channelId,
-      }),
+      }, null),
     );
     logger.debug("New messages from websocket", newMessages);
     if (newMessages.length) {
@@ -463,27 +450,12 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.bottomHasBeenReached = true;
   }
 
-  destroy() {
-    this.destroyed = true;
+  destroy(force?: boolean) {
+    logger.debug("Destroying message loader for channel", this.channelId);
     this.httpLoading = false;
-
-    this.collection.removeSource(this.collectionKey);
     this.collection.removeListener(this.onNewMessageFromWebsocketListener);
-  }
-
-  readChannelOrThread() {
-    if (this.readChannelTimeout) {
-      clearTimeout(this.readChannelTimeout);
+    if (force) {
+      this.collection.removeSource(this.collectionKey);
     }
-    if (this.lastReadMessage === this.lastMessageOffset) {
-      return;
-    }
-    this.readChannelTimeout = setTimeout(() => {
-      const path = `/channels/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/channels/::mine`;
-      const collection = Collections.get(path, ChannelResource);
-      const channel = collection.findOne({ id: this.channelId }, { withoutBackend: true });
-      this.lastReadMessage = this.lastMessageOffset;
-      Notifications.read(channel);
-    }, 500);
   }
 }

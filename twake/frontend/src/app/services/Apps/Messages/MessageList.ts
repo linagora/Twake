@@ -1,13 +1,13 @@
 import { Message } from "./Message";
 import { MessageLoader } from "./MessageLoader";
 import logger from "app/services/Logger";
-import { isNullOrUndefined } from "node:util";
 
 type Scroller = (align: "start" | "center" | "end", message?: Message) => boolean;
 
 export class MessageList {
   hightlight: Message | undefined;
   scroller: Scroller | undefined;
+  lastReadMessage = "";
 
   constructor(readonly key: string, private loader: MessageLoader) {}
 

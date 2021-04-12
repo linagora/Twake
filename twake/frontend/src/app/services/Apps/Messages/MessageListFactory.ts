@@ -1,4 +1,3 @@
-import Logger from 'app/services/Logger';
 import { MessageList } from './MessageList';
 import { MessageLoader } from './MessageLoader';
 

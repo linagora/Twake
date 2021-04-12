@@ -150,7 +150,6 @@ export default class MessagesList extends React.Component<Props, State> {
 
   /**
    * The collection has been updated, update the items to dispatch a new render
-   * TODO: Update the firstItemIndex
    */
   private onNewCollectionEvent(data_: any): void {
     const messages = this.loader.getItems() || [];
@@ -169,12 +168,10 @@ export default class MessagesList extends React.Component<Props, State> {
     
     if (messages.length) {
       const previousPosition = this.position;
-
       this.setMessages(messages);
 
       if (["bottom", "unknown"].includes(previousPosition)) {
-        // This may not work in case of a reply
-        this.scrollToMessage("end", messages[messages.length - 1])
+        this.scrollToMessage("end");
       }
     }
   }
@@ -369,7 +366,7 @@ export default class MessagesList extends React.Component<Props, State> {
               startReached={() => this.nextPage("up")}
               endReached={() => this.nextPage("down")}
               isScrolling={(value) => this.isScrolling(value)}
-              followOutput={(isAtBottom) => this.followOuput(isAtBottom)}
+              followOutput={true}
               rangeChanged={(range) => this.onVisibleItemsChanged(range)}
               itemContent={(index: number, message: MessageModel) => {
                 const highlight = !!this.service.hightlight && !!this.service.hightlight.id && !!message.id && (this.service.hightlight.id === message.id);
