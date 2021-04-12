@@ -662,6 +662,7 @@ export default {
   'scenes.apps.account.notifications.mail_option_ever': 'Send me all the notification emails',
   'scenes.apps.account.notifications.mail_option_daily': 'Just send me a daily report',
   'scenes.apps.account.notifications.mail_option_never': 'Never send e-mail notifications',
+  'scenes.apps.account.notifications.sound': 'Sound notification',
   'scenes.apps.account.workspaces.workspace_name': 'Workspace name',
   'scenes.apps.account.workspaces.members_number': 'Number of members',
   'scenes.apps.account.workspaces.favorite_workspace': 'Favorite workspaces',
@@ -1367,9 +1368,13 @@ export default {
     'Set the frequency of mobile notifications.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Frenquency of notifications',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Receive only notifications that match certain keywords.',
+    'Highlight the following keywords:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Set the frequency of email notifications.',
+  'scenes.app.popup.userparameter.pages.private_message_content.show':
+    'Show private messages content',
+  'scenes.app.popup.userparameter.pages.private_message_content.hide':
+    'Hide private messages content',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
     'Choose a period during which you do not receive notifications.',
   'scenes.app.popup.userparameter.pages.no_night_disturbing_label': 'Do not disturb at night',

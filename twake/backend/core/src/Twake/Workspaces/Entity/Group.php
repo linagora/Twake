@@ -64,7 +64,7 @@ class Group extends SearchableObject
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      * @ORM\JoinColumn(name="logo_id")
      */
-    protected $logoFile;
+    protected $logofile;
 
     /**
      * @ORM\Column(name="display_name", type="twake_text")
@@ -229,7 +229,7 @@ class Group extends SearchableObject
      */
     public function getLogoFile()
     {
-        return $this->logoFile;
+        return $this->logofile;
     }
 
     /**

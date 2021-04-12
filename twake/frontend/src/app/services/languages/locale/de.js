@@ -1396,7 +1396,7 @@ export default {
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle':
     'Häufigkeit der Benachrichtigungen',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Erhalten Sie nur Benachrichtigungen, die bestimmten Keywords entsprechen.',
+    'Markieren Sie die folgenden Schlüsselwörter:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Legen Sie die Häufigkeit der E-Mail-Benachrichtigungen fest.',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':

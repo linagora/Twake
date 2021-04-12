@@ -681,6 +681,7 @@ export default {
     'Envoyez-moi seulement un rapport journalier',
   'scenes.apps.account.notifications.mail_option_never':
     'Ne jamais envoyez de notifications par e-mail',
+  'scenes.apps.account.notifications.sound': 'Notification sonore',
   'scenes.apps.account.workspaces.workspace_name': 'Nom des espaces de travail',
   'scenes.apps.account.workspaces.members_number': 'Nombre de membres',
   'scenes.apps.account.workspaces.favorite_workspace': 'Espaces de travail favoris',
@@ -1429,7 +1430,7 @@ export default {
     'Configurez la fréquence des notifications mobile.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Fréquence des notifications',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Ne recevez que des notifications correspondant à certains mots clés.',
+    'Mettre en surbrillance les mots clés suivants:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Configurez la fréquence des notifications mail.',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
@@ -1441,6 +1442,10 @@ export default {
   'scenes.aie': 'Aïe !',
   'scenes.app.mainview.quick_search_placeholder': 'Recherche rapide',
   'scenes.app.popup.userparameter.personnal_workspaces_title': 'Vos espaces de travail',
+  'scenes.app.popup.userparameter.pages.private_message_content.show':
+    'Afficher le contenu des messages privés',
+  'scenes.app.popup.userparameter.pages.private_message_content.hide':
+    'Masquer le contenu des messages privés',
   'scenes.app.popup.workspaceparameter.admin_current_status': 'Vous êtes Administrateur.',
   'scenes.app.popup.workspaceparameter.admin_manager_current_status':
     "Vous êtes Administrateur et Gérant de l'entreprise.",
