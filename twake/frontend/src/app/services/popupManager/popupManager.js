@@ -17,6 +17,9 @@ class PopupService extends Observable {
     if (this.component[this.component.length - 1]?.key === key) {
       return;
     }
+    if (key != 'no-key') {
+      delete this.popupStates[key];
+    }
     WindowService.setTitle();
     MenusManager.closeMenu();
 

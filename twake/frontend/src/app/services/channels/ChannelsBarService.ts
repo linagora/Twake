@@ -1,5 +1,6 @@
 import { ChannelResource } from 'app/models/Channel';
 import Observable from 'app/services/Observable/Observable';
+import { constant } from 'lodash';
 import MainViewService from '../AppView/MainViewService';
 import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';

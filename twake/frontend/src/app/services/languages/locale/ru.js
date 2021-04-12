@@ -1129,7 +1129,7 @@ export default {
     'Количество полей увеличивается автоматически.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Прежде чем вы закончите, вы можете добавить сотрудников в вашу компанию.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Twake лучше в команде.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Добавьте членов своей команды.',
   'scenes.app.workspaces.create_company.title': 'Создать мою компанию',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Добавить вторичную электронную почту',
   'scenes.app.workspaces.welcome_page.added_to_company': 'Вы были приглашены в ',
@@ -1411,7 +1411,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Удалить приложение',
   'scenes.app.popup.appsparameters.pages.update_button': 'Обновить',
   'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Нужно больше места? Новое рабочее пространство и будет идеально!',
+    'Нужно больше места?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Создать новое рабочее пространство',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Название рабочего пространства',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
@@ -1437,7 +1437,7 @@ export default {
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Удалить рабочее пространство',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
-    'Удалить это рабочее пространство',
+    'Чтобы подтвердить, что вы хотите удалить эту рабочую область, пожалуйста, введите имя ниже и нажмите кнопку "Удалить".',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Введите ',
   'scenes.app.popup.workspaceparameter.pages.access_apps': 'Доступ к вашим приложениям и разъёмам',
   'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Администратор',
