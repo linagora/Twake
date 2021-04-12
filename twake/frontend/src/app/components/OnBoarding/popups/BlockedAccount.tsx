@@ -2,6 +2,7 @@ import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
+import ConsoleService from 'app/services/ConsoleService';
 
 type PropsType = {
   email: string;
