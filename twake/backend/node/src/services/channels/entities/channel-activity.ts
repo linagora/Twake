@@ -30,6 +30,7 @@ export class ChannelActivity {
   last_message: {
     date: number;
     sender: string;
+    sender_name: string;
     title: string;
     text: string;
   };
