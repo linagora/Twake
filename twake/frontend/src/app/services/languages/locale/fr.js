@@ -1139,7 +1139,7 @@ export default {
     'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
-  'scenes.app.workspaces.create_company.invitations.title_2': "Twake, c'est mieux à plusieurs.",
+  'scenes.app.workspaces.create_company.invitations.title_2': "Ajoutez vos collaborateurs.",
   'scenes.app.workspaces.create_company.title': 'Création de mon entreprise',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Ajouter un e-mail secondaire',
   'scenes.app.workspaces.welcome_page.added_to_company': 'Vous avez été invité dans l’entreprise',
@@ -1423,7 +1423,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.remove_app_button': "Supprimer l'application",
   'scenes.app.popup.appsparameters.pages.update_button': 'Mettre à jour',
   'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !',
+    'Besoin de plus de place ?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Créer un nouvel espace de travail',
   'scenes.app.popup.createworkspacepage.placeholder_name': "Nom de l'espace de travail",
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
@@ -1453,7 +1453,7 @@ export default {
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': "Supprimer l'espace",
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
-    'Supprimer cet espace de travail',
+    'Pour confirmer que vous souhaitez supprimer cet espace de travail, veuillez saisir le nom ci-dessous et cliquer sur "supprimer".',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Entrer ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Accédez à vos applications et connecteurs',

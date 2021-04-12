@@ -34,10 +34,10 @@ class Console extends BaseController
         try{
           $message = json_decode(urldecode($request->query->get("error_code")));
         }catch(\Exception $err){
-          $message = "success";
+          $message = false;
         }
 
-        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login" . "?error_code=".str_replace('+', '%20', urlencode(json_encode($message))));
+        return $this->redirect(rtrim($this->getParameter("env.frontend_server_name", $this->getParameter("env.server_name")), "/") . "/login" . ($message ? ("?error_code=".str_replace('+', '%20', urlencode(json_encode($message)))) : "?auto"));
     }
 
     function logout(Request $request, $message = null)

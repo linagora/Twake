@@ -1,0 +1,25 @@
+.addUserButton {
+  color: var(--primary);
+
+  &:hover {
+    background: var(--primary-background);
+
+    .iconBox {
+      background-color: transparent !important;
+    }
+  }
+  .icon {
+    .iconBox {
+      width: 18px;
+      height: 18px;
+      background-color: var(--primary-background);
+      border-radius: 4px;
+      padding-left: 2px;
+
+      .icon-unicon {
+        color: var(--primary) !important;
+      }
+    }
+    color: var(--primary) !important ;
+  }
+}

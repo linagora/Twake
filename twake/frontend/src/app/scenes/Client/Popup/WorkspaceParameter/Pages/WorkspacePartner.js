@@ -130,7 +130,7 @@ export default class WorkspacePartner extends Component {
       {
         type: 'menu',
         text: Languages.t('scenes.app.popup.workspaceparameter.edit_from_console'),
-        onClick: () => window.open('https://console.qa.twake.app/company/users', '_blank'),
+        onClick: () => window.open(InitService.server_infos?.auth?.console?.collaborators_management_url, '_blank'),
       },
     ];
 

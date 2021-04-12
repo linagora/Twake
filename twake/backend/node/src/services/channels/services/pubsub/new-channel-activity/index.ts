@@ -37,8 +37,9 @@ export class NewChannelActivityProcessor
           message: {
             date: message.date,
             sender: message.sender,
+            sender_name: message.sender_name,
             title: message.title,
-            text: message.text,
+            text: message.body,
           },
         },
         {
