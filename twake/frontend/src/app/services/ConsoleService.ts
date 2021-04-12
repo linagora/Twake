@@ -31,6 +31,7 @@ class ConsoleService {
           else if (res.data?.nok?.length) {
             res.data.nok.map(({ email, message }: { email: string; message: string }) => {
               if (message != 'User already belonged to the company') {
+                // FIXME : do not compare the message
                 toaster.warning(`${email} - ${message}`);
               }
             });

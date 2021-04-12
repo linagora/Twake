@@ -51,8 +51,6 @@ export default () => {
   if (!companyId || !workspaceId) {
     return <></>;
   }
-  console.log('logsl userMembers,', Workspaces.currentWorkspaceId);
-  console.log('logsl userMembers,', Workspaces.getCurrentWorkspace().stats.total_members);
   return (
     <Layout.Sider
       theme="light"

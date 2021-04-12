@@ -295,18 +295,6 @@ export default class WorkspaceAppsSearch extends Component {
 
         <div className="group_section">
           <div className="text" style={{ marginBottom: 16 }}>
-            {/* <a
-              key="show_all_apps"
-              href="https://twakeapp.com"
-              target="_blank"
-              style={{ float: 'right' }}
-            >
-              {Languages.t(
-                'scenes.app.popup.workspaceparameter.pages.show_all_apps_text',
-                [],
-                "Voir la liste d'applications",
-              )}
-            </a> */}
             <a href="#" key="goback" onClick={() => this.props.exit()}>
               {Languages.t('general.back', [], 'Retour')}
             </a>

@@ -75,7 +75,7 @@ class Login extends Observable {
     });
 
     var error_code = WindowState.findGetParameter('error_code') ? true : false;
-    if (error_code && WindowState.findGetParameter('error_code') != "success") {
+    if (error_code) {
       this.firstInit = true;
       this.setPage('error');
       this.error_code = WindowState.findGetParameter('error_code') || '';
