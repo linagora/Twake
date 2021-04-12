@@ -187,13 +187,17 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                     $fieldname = $mapping["columnName"];
                 }
 
+                $fieldname = $fieldname . "_id";
+
+                if(isset($mapping["joinColumns"][0]["name"])){
+                    $fieldname = $mapping["joinColumns"][0]["name"];
+                }
+
                 if (strtolower($fieldname) != $fieldname) {
                     $ignored_cols++;
                     error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
                     continue;
                 }
-
-                $fieldname = $fieldname . "_id";
 
                 if (!(isset($mapping["id"]) && $mapping["id"])) { //isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
                     $indexed_fields[$fieldname] = true;

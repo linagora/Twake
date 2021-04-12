@@ -64,7 +64,7 @@ class Workspace extends SearchableObject
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      * @ORM\JoinColumn(name="logo_id")
      */
-    private $logoFile;
+    private $logofile;
 
     /**
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
@@ -197,7 +197,7 @@ class Workspace extends SearchableObject
      */
     public function getLogoFile()
     {
-        return $this->logoFile;
+        return $this->logofile;
     }
 
     /**
