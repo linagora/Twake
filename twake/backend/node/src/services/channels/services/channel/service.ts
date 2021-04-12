@@ -588,6 +588,20 @@ export class Service implements ChannelService {
     const savedChannel = result.entity;
 
     if (mode === OperationType.CREATE) {
+      this.updateLastActivity(
+        {
+          channel: channel,
+          message: {
+            date: new Date().getTime(),
+            sender: null,
+            sender_name: null,
+            title: null,
+            text: null,
+          },
+        },
+        context,
+      );
+
       if (isDirectChannel(channel)) {
         const directChannel = {
           channel_id: savedChannel.id,

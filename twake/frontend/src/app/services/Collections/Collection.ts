@@ -1,4 +1,4 @@
-import { assign } from 'lodash';
+import { assign, reject } from 'lodash';
 import getStore, { CollectionStore } from './Storage';
 import EventEmitter from './EventEmitter';
 import Resource from './Resource';
@@ -15,6 +15,7 @@ export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
   query: any;
+  callback: Function;
 } & any;
 
 export type ServerRequestOptions = {
@@ -189,6 +190,25 @@ export default class Collection<R extends Resource<any>> {
     return;
   }
 
+  public async get(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<R[]> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.find(filter, {
+          refresh: true,
+          callback: (items: R[]) => {
+            resolve(items);
+          },
+          ...options,
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   /**
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
@@ -202,20 +222,31 @@ export default class Collection<R extends Resource<any>> {
       return [this.findOne(filter, options)];
     }
 
-    if (!this.completion.isLocked && !options?.withoutBackend) {
-      this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
-        if (mongoItems.length > 0) {
-          mongoItems.forEach(mongoItem => {
-            this.updateLocalResource(mongoItem);
+    if (!options?.withoutBackend) {
+      if (!this.completion.isLocked || options?.refresh) {
+        this.completion
+          .completeFind(mongoItems, filter, options)
+          .then(async mongoItems => {
+            if (mongoItems.length > 0) {
+              mongoItems.forEach(mongoItem => {
+                this.updateLocalResource(mongoItem);
+              });
+              this.eventEmitter.notify();
+            }
+
+            if (options?.callback) {
+              options?.callback(mongoItems.map(mongoItem => this.resources[mongoItem.id]));
+            }
+          })
+          .catch(err => {
+            throw err;
           });
-          this.eventEmitter.notify();
-        }
-      });
-    } else {
-      this.completeTimeout && clearTimeout(this.completeTimeout);
-      this.completeTimeout = setTimeout(() => {
-        this.find(filter, options);
-      }, 1000);
+      } else {
+        this.completeTimeout && clearTimeout(this.completeTimeout);
+        this.completeTimeout = setTimeout(() => {
+          this.find(filter, options);
+        }, 1000);
+      }
     }
 
     mongoItems.forEach(mongoItem => {
