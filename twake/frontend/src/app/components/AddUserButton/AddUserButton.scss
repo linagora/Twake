@@ -1,13 +1,6 @@
 .addUserButton {
   color: var(--primary);
 
-  &:hover {
-    background: var(--primary-background);
-
-    .iconBox {
-      background-color: transparent !important;
-    }
-  }
   .icon {
     .iconBox {
       width: 18px;
