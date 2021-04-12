@@ -1418,7 +1418,7 @@ export default {
     'Установить частоту мобильных уведомлений.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Частота уведомлений',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Получайте только те уведомления, которые соответствуют определенным ключевым словам.',
+    'Выделите следующие ключевые слова:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Установите частоту уведомлений по электронной почте.',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
