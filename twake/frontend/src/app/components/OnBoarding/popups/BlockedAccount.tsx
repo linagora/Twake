@@ -73,6 +73,10 @@ const BlockedAccount = ({ email }: PropsType): JSX.Element => {
           {Languages.t('components.unverified_account.re_send_email')}
         </Typography.Text>
       </Row>
+      
+      <Row justify="center" style={{ marginTop: 32, marginBottom: 8 }}>
+        <a className="blue_link" onClick={() => LoginService.logout()}>{Languages.t('scenes.apps.account.account.logout')}</a>
+      </Row>
     </ObjectModal>
   );
 };
