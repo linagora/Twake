@@ -332,6 +332,7 @@ export class Service implements ChannelService {
     entity.last_message = {
       date: channelActivityMessage.date,
       sender: channelActivityMessage.sender,
+      sender_name: channelActivityMessage.sender_name,
       title: channelActivityMessage.title,
       text: channelActivityMessage.text,
     };
