@@ -175,6 +175,8 @@ class ApplyUpdates
         $user->setFirstName($userDTO["firstName"] ?: ($userDTO["name"] ?: ""));
         $user->setLastName($userDTO["lastName"] ?: "");
         $user->setMailVerified(!!$userDTO["isVerified"]);
+        $user->setIdentityProvider("console");
+        $user->setIdentityProviderId($userConsoleId);
 
         $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
         $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
