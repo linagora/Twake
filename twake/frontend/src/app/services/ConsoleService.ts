@@ -1,8 +1,23 @@
 import { message as toaster } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Api from './Api';
+import InitService from './InitService';
 
 class ConsoleService {
+  public getCompanyManagementUrl(companyId: string) {
+    return (InitService.server_infos?.auth?.console?.company_management_url || '').replace(
+      '{company_id}',
+      companyId,
+    );
+  }
+
+  public getCompanyUsersManagementUrl(companyId: string) {
+    return (InitService.server_infos?.auth?.console?.collaborators_management_url || '').replace(
+      '{company_id}',
+      companyId,
+    );
+  }
+
   public verifyMail() {
     const onVerification = new Promise(async resolve => {
       const response = await Api.post(
