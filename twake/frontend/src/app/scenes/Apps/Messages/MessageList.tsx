@@ -40,10 +40,6 @@ type Props = {
    * The initial scroll direction
    */
   scrollDirection: ScrollDirection;
-  /**
-   * Callback called when first messages are loaded
-   */
-  onFirstLoad: () => void;
 };
 
 type State = {
@@ -226,8 +222,6 @@ export default class MessagesList extends React.Component<Props, State> {
       this.logger.debug("processLoaderResponse - No messages loaded");
     }
 
-    this.props.onFirstLoad();
-    
     this.topHasBeenReached = response.completes.top;
     this.bottomHasBeenReached = response.completes.bottom;
     
@@ -255,6 +249,8 @@ export default class MessagesList extends React.Component<Props, State> {
       }
       this.setMessages([...this.state.messages, ...messages])
     }
+
+    this.service.markChannelAsRead(true);
   }
 
   /**

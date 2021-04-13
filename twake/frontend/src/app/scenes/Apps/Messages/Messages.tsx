@@ -46,16 +46,12 @@ export default class MainView extends Component<Props> {
     MessagesService.removeListener(this);
   }
 
-  markChannelAsRead() {
-    this.messageService.markChannelAsRead();
-  }
-
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
     return (
       <div
         className="messages-view"
-        onClick={() => this.markChannelAsRead()}
+        onClick={() => this.messageService.markChannelAsRead()}
       >
         <MessageList
           threadId={this.threadId}
@@ -63,7 +59,6 @@ export default class MainView extends Component<Props> {
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
           scrollDirection={this.threadId ? 'down' : 'up'}
-          onFirstLoad={() => this.markChannelAsRead()}
         />
         <DroppableZone
           className="bottom_input"

@@ -1,5 +1,10 @@
 type Direction = "up" | "down";
 
+export type Completion = {
+  top: boolean;
+  bottom: boolean;
+};
+
 export type FeedResponse<T> = {
   /**
    * The request parameters which produced this response
@@ -19,10 +24,7 @@ export type FeedResponse<T> = {
    * - Bottom may switch from true to false if new items are added
    * - Top may not switch from true to false since we can not create items in the past.
    */
-  completes: {
-    top: boolean;
-    bottom: boolean;
-  }
+  completes: Completion;
 
   /**
    * A list of items
@@ -103,6 +105,11 @@ export interface FeedLoader<T> {
    * Note that this will not load the items if they are not available, they will just send back what is already available in the loader.
    */
   getItems(fromTo?: { from: string, to: string }): T[];
+
+  /**
+   * Get the completion values
+   */
+  getCompletion(): Completion;
 
   /**
    * Destroy the loader and all its resources

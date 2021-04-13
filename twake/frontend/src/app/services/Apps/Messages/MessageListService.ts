@@ -13,8 +13,6 @@ export class MessageListService {
   hightlight: Message | undefined;
   scroller: Scroller | undefined;
   readChannelTimeout: any;
-  // TODO: Both exposed in loader
-  lastMessageOffset = "";
   lastReadMessage = "";
 
   constructor(readonly key: string, private channel: ChannelResource) {
@@ -51,14 +49,20 @@ export class MessageListService {
   }
 
   isLastMessageRead(): boolean {
-    if (this.lastReadMessage === this.lastMessageOffset) {
+    const lastMessage = this.loader.getLastItem();
+
+    if (lastMessage && this.lastReadMessage && (this.lastReadMessage === lastMessage)) {
       return true;
     }
 
     return false;
   }
 
-  markChannelAsRead(): void {
+  markChannelAsRead(requireFocus = false): void {
+    if (requireFocus && !document.hasFocus()) {
+      return;
+    }
+
     if (this.isLastMessageRead()) {
       return;
     }
@@ -72,7 +76,7 @@ export class MessageListService {
       const collection = Collections.get(path, ChannelResource);
       const channel = collection.findOne({ id: this.channel.id }, { withoutBackend: true });
 
-      this.lastReadMessage = this.lastMessageOffset;
+      this.lastReadMessage = this.loader.getLastItem();
       Notifications.read(channel);
     }, 500);
   }

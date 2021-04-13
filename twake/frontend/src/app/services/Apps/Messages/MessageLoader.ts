@@ -4,7 +4,7 @@ import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
 import logger from 'app/services/Logger';
 import { Message } from './Message';
-import { FeedLoader, NextParameters, FeedResponse, InitParameters } from '../Feed/FeedLoader';
+import { FeedLoader, NextParameters, FeedResponse, InitParameters, Completion } from '../Feed/FeedLoader';
 import { ChannelResource } from 'app/models/Channel';
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -60,9 +60,9 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   private firstMessageId: string = '';
 
   private didInit = false;
+
   private httpLoading = false;
 
-  private lastReadMessage: string = '';
   private collection: Collection;
 
   constructor(
@@ -284,6 +284,17 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     }
 
     return messages;
+  }
+
+  getCompletion(): Completion {
+    return {
+      top: this.topHasBeenReached,
+      bottom: this.bottomHasBeenReached,
+    };
+  }
+
+  getLastItem(): string {
+    return this.lastMessageId;
   }
 
   /**
