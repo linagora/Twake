@@ -88,6 +88,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     );
   }
 
+  getAllForUser(
+    userId: Pick<WorkspaceUserPrimaryKey, "userId">,
+    pagination?: Paginable,
+  ): Promise<ListResult<WorkspaceUser>> {
+    return this.workspaceUserRepository.find(
+      { user_id: userId.userId },
+      { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
+    );
+  }
+
   getAllUsers$(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,

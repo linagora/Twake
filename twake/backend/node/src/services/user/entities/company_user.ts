@@ -28,8 +28,11 @@ export default class CompanyUser {
   @Column("level", "number")
   level: number;
 
-  @Column("did_connect_today", "boolean")
+  @Column("did_connect_today", "twake_boolean")
   didConnectToday: boolean;
+
+  @Column("is_externe", "twake_boolean")
+  isExterne: boolean;
 
   @Column("app_used_today", "json")
   appUsedToday: Array<string>;

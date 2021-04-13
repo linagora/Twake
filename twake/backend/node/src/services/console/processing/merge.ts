@@ -285,6 +285,21 @@ export class MergeProcess {
         user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical;
       const name = (firstName + " " + lastName).trim();
 
+      let role = companyUser.level.valueOf() === 3 ? "admin" : "member";
+      if (role != "admin") {
+        if (companyUser.isExterne) {
+          role = "guest";
+        }
+        const workspacesUsers = await this.userService.workspaces.getAllForUser({
+          userId: companyUser.user_id,
+        });
+        workspacesUsers.getEntities().forEach(e => {
+          if (e.isExternal) {
+            role = "guest";
+          }
+        });
+      }
+
       result = await this.client.addUser(
         { code: company.id },
         {
@@ -302,7 +317,7 @@ export class MergeProcess {
             numbers: true,
           }),
           skipInvite: true,
-          role: companyUser.level.valueOf() === 3 ? "admin" : "member",
+          role,
         },
       );
 

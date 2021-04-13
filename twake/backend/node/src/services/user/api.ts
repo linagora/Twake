@@ -102,6 +102,15 @@ export interface WorkspaceServiceAPI
   ): Promise<ListResult<WorkspaceUser>>;
 
   /**
+   * Get all the workspace for a user
+   *
+   * @param userId
+   */
+  getAllForUser(
+    userId: Pick<WorkspaceUserPrimaryKey, "userId">,
+  ): Promise<ListResult<WorkspaceUser>>;
+
+  /**
    * Get all the users of a workspace as Observable
    *
    * @param workspaceId
