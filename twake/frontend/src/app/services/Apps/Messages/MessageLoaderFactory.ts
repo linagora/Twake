@@ -1,72 +1,34 @@
-import Logger from 'app/services/Logger';
+import { ChannelResource } from 'app/models/Channel';
 import { MessageLoader } from './MessageLoader';
 
 class MessageLoaderFactory {
-  services: Map<string, MessageLoader> = new Map<string, MessageLoader>();
-  channelsContextById: { [channelId: string]: { companyId: string; workspaceId: string } } = {};
-  logger: Logger.Logger;
+  private loaders: Map<string, MessageLoader> = new Map<string, MessageLoader>();
+  channelsContextById: { [channelId: string]: { companyId?: string; workspaceId?: string | null | undefined } } = {};
 
-  constructor() {
-    this.logger = Logger.getLogger('MessageLoaderFactory');
-  }
+  get(collectionKey: string, channel: ChannelResource, threadId?: string): MessageLoader {
+    const key = this.getKey(channel, collectionKey, threadId);
+    let loader = this.loaders.get(key);
 
-  /**
-   * 
-   * @param channelId
-   * @param collectionKey 
-   * @returns 
-   */
-  getByChannelId(channelId: string, collectionKey: string): MessageLoader | undefined {
-    const key = this.getKey(channelId, collectionKey);
-
-    if (this.services.has(key)) {
-      return this.services.get(key);
-    }
-  }
-
-  /**
-   * 
-   * @param companyId 
-   * @param workspaceId 
-   * @param channelId 
-   * @param threadId 
-   * @param collectionKey 
-   * @returns 
-   */
-  get(
-    companyId: string,
-    workspaceId: string,
-    channelId: string,
-    threadId: string,
-    collectionKey: string,
-  ): MessageLoader {
-    const key = this.getKey(channelId, collectionKey);
-    let service = this.services.get(key);
-
-    if (service) {
-      return service;
+    if (loader) {
+      return loader;
     }
 
-    this.channelsContextById[channelId] = {
-      companyId: companyId,
-      workspaceId: workspaceId,
-    };
+    if (channel.data.id) {
+      this.channelsContextById[channel.data.id] = {
+        companyId: channel.data.company_id,
+        workspaceId: channel.data.workspace_id,
+      };
+    }
 
-    service = new MessageLoader(
-      companyId,
-      workspaceId,
-      channelId,
-      threadId,
-      collectionKey,
-    );
+    loader = new MessageLoader(collectionKey, channel, threadId);
 
-    this.services.set(key, service);
+    this.loaders.set(key, loader);
 
-    return service;
+    return loader;
   }
 
-  private getKey(channelId: string, collectionKey: string): string {
-    return `${channelId}-${collectionKey}`;
+  private getKey(channel: ChannelResource, collectionKey: string, threadId?: string): string {
+    return `channel:${channel.data.id}/collection:${collectionKey}/thread:${threadId}`;
   }
 }
 

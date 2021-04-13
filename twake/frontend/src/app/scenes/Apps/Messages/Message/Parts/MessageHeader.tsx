@@ -9,15 +9,13 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
-import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/services/Apps/Messages/Message';
-import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
-import { MessageList } from 'app/services/Apps/Messages/MessageList';
-import MessageListFactory from 'app/services/Apps/Messages/MessageListFactory';
+import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
+import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 
 type Props = {
   message: Message;
@@ -30,8 +28,7 @@ type State = {
 };
 
 export default class MessageHeader extends Component<Props, State> {
-  private messageLoader: MessageLoader | null = null;
-  private messageService: MessageList | null = null;
+  private messageService: MessageListService | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -39,14 +36,7 @@ export default class MessageHeader extends Component<Props, State> {
       messageLink: '',
     };
 
-    this.messageLoader =
-      MessageLoaderFactory.getByChannelId(
-        this.props.message?.channel_id || '',
-        this.props.collectionKey,
-      ) || null;
-    if (this.messageLoader) {
-      this.messageService = MessageListFactory.get(this.props.collectionKey, this.messageLoader);
-    }
+    this.messageService = MessageListServiceFactory.get(this.props.collectionKey);
   }
 
   componentWillUnmount() {
@@ -65,8 +55,12 @@ export default class MessageHeader extends Component<Props, State> {
     }
 
     const scrollToMessage = () => {
+      if (!this.messageService) {
+        return;
+      }
+
       if (this.props.message.parent_message_id) {
-        this.messageService?.scrollTo({ id: this.props.message.parent_message_id });
+        this.messageService.scrollTo({ id: this.props.message.parent_message_id });
       }
     };
 

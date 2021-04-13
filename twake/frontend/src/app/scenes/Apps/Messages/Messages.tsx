@@ -6,11 +6,9 @@ import ChannelsService from 'services/channels/channels.js';
 import MessageList from './MessageList';
 import NewThread from './Input/NewThread';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
-import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
-import Notifications from 'services/user/notifications';
-import Collections from 'app/services/CollectionsReact/Collections';
+import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
+import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import './Messages.scss';
 
 type Props = {
@@ -27,8 +25,7 @@ export default class MainView extends Component<Props> {
   threadId = '';
   collectionKey = ''; //For a specific collection (aka channel)
   upload_zone: any;
-  messageLoader: MessageLoader;
-  readChannelTimeout: any;
+  messageService: MessageListService;
 
   constructor(props: Props) {
     super(props);
@@ -39,39 +36,8 @@ export default class MainView extends Component<Props> {
     this.options = props.options || {};
     this.options.context = props.options.context || {};
     this.threadId = this.options.context.threadId || '';
-    this.collectionKey = `messages_${this.props.channel.id}_${this.threadId}`;
-
-    this.messageLoader = MessagesListServerServicesManager.get(
-      this.props.channel.data.company_id || '',
-      this.props.channel.data.workspace_id || '',
-      this.props.channel.id,
-      this.threadId,
-      this.collectionKey,
-    );
-  }
-
-  // TODO: Move it to a service
-  readChannelOrThread() {
-    //if (this.readChannelTimeout) {
-    //  clearTimeout(this.readChannelTimeout);
-    //}
-    //// TODO Expose it from this.messageLoader
-    //if (this.lastReadMessage === this.lastMessageOffset) {
-    //  return;
-    //}
-    //this.readChannelTimeout = setTimeout(() => {
-    //  const path = `/channels/v1/companies/${this.props.channel.data.company_id}/workspaces/${this.props.channel.data.workspace_id}/channels/::mine`;
-    //  const collection = Collections.get(path, ChannelResource);
-    //  const channel = collection.findOne({ id: this.props.channel.id }, { withoutBackend: true });
-    //  this.lastReadMessage = this.lastMessageOffset;
-    //  Notifications.read(channel);
-    //}, 500);
-  }
-
-  componentDidMount() {
-    // TODO: Mask it has read once the MessageList is loaded
-    // TODO: The event must come from the component itself
-    this.readChannelOrThread();
+    this.collectionKey = `messages@channel:${this.props.channel.id}/thread:${this.threadId}`;
+    this.messageService = MessageListServiceFactory.get(this.collectionKey, this.props.channel);
   }
 
   componentWillUnmount() {
@@ -80,12 +46,16 @@ export default class MainView extends Component<Props> {
     MessagesService.removeListener(this);
   }
 
+  markChannelAsRead() {
+    this.messageService.markChannelAsRead();
+  }
+
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
     return (
       <div
         className="messages-view"
-        onClick={() => this.readChannelOrThread()}
+        onClick={() => this.markChannelAsRead()}
       >
         <MessageList
           threadId={this.threadId}
@@ -93,6 +63,7 @@ export default class MainView extends Component<Props> {
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
           scrollDirection={this.threadId ? 'down' : 'up'}
+          onFirstLoad={() => this.markChannelAsRead()}
         />
         <DroppableZone
           className="bottom_input"

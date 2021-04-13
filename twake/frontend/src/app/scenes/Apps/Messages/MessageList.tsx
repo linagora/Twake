@@ -3,7 +3,6 @@ import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'rea
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
 import Logger from 'app/services/Logger';
 import Message from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
@@ -12,8 +11,8 @@ import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
 import RouterServices from 'app/services/RouterService';
 import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
-import MessageListFactory from 'app/services/Apps/Messages/MessageListFactory';
-import { MessageList } from 'app/services/Apps/Messages/MessageList';
+import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
+import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -41,6 +40,10 @@ type Props = {
    * The initial scroll direction
    */
   scrollDirection: ScrollDirection;
+  /**
+   * Callback called when first messages are loaded
+   */
+  onFirstLoad: () => void;
 };
 
 type State = {
@@ -78,7 +81,7 @@ export default class MessagesList extends React.Component<Props, State> {
    */
   private lockScrollUp: boolean;
   private startAtOffset: string;
-  private service: MessageList;
+  private service: MessageListService;
   
   constructor(props: Props) {
     super(props);
@@ -97,14 +100,8 @@ export default class MessagesList extends React.Component<Props, State> {
     this.position = "unknown";
     this.isInitialized = false;
     this.scrolling = false;
-    this.loader = MessageLoaderFactory.get(
-      props.channel.company_id,
-      props.channel.workspace_id,
-      props.channel.id,
-      props.threadId,
-      props.collectionKey,
-    );
-    this.service = MessageListFactory.get(props.collectionKey, this.loader);
+    this.service = MessageListServiceFactory.get(props.collectionKey, props.channel);
+    this.loader = this.service.getLoader(props.threadId);
     this.service.setScroller(this.scrollToMessage.bind(this));
     this.state = {
       showBottomButton: false,
@@ -139,7 +136,7 @@ export default class MessagesList extends React.Component<Props, State> {
   componentWillUnmount() {
     this.loader.destroy();
     this.loader.removeListener(this.onNewCollectionEvent);
-    MessageListFactory.destroy(this.service);
+    MessageListServiceFactory.destroy(this.service);
   }
 
   private init(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<MessageModel>> {
@@ -228,6 +225,8 @@ export default class MessagesList extends React.Component<Props, State> {
     if (!response.loaded) {
       this.logger.debug("processLoaderResponse - No messages loaded");
     }
+
+    this.props.onFirstLoad();
     
     this.topHasBeenReached = response.completes.top;
     this.bottomHasBeenReached = response.completes.bottom;

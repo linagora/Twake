@@ -5,6 +5,7 @@ import Observable from 'app/services/Depreciated/observable';
 import logger from 'app/services/Logger';
 import { Message } from './Message';
 import { FeedLoader, NextParameters, FeedResponse, InitParameters } from '../Feed/FeedLoader';
+import { ChannelResource } from 'app/models/Channel';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -65,11 +66,9 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   private collection: Collection;
 
   constructor(
-    private companyId: string = '',
-    private workspaceId: string = '',
-    private channelId: string = '',
-    private threadId: string = '',
     private collectionKey: string,
+    private channel: ChannelResource,
+    private threadId: string = '',
   ) {
     super();
     this.collection = DepreciatedCollections.get('messages');
@@ -106,14 +105,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         {
           http_base_url: 'discussion',
           http_options: {
-            channel_id: this.channelId,
-            company_id: this.companyId,
-            workspace_id: this.workspaceId,
+            channel_id: this.channel.data.id,
+            company_id: this.channel.data.company_id,
+            workspace_id: this.channel.data.workspace_id,
             parent_message_id: this.threadId,
             limit: (this.initialDirection === "up" ? 1 : -1) * this.pageSize,
             offset: params.offset || false,
           },
-          websockets: [{ uri: `messages/${this.channelId}`, options: { type: 'messages' } }],
+          websockets: [{ uri: `messages/${this.channel.data.id}`, options: { type: 'messages' } }],
         },
         this.collectionKey,
         // First load callback
@@ -249,7 +248,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
     logger.debug("Get items", offsets);
     const filter: any = {
-      channel_id: this.channelId,
+      channel_id: this.channel.data.id,
     };
     if (this.threadId) {
       filter.parent_message_id = this.threadId;
@@ -350,7 +349,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   private onNewMessageFromWebsocketListener(_event: any): void {
     const newMessages = this.detectNewWebsocketsMessages(
       this.collection.findBy({
-        channel_id: this.channelId,
+        channel_id: this.channel.data.id,
       }, null),
     );
     logger.debug("New messages from websocket", newMessages);
@@ -451,7 +450,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   }
 
   destroy(force?: boolean) {
-    logger.debug("Destroying message loader for channel", this.channelId);
+    logger.debug("Destroying message loader for channel", this.channel.data.id);
     this.httpLoading = false;
     this.collection.removeListener(this.onNewMessageFromWebsocketListener);
     if (force) {
