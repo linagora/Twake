@@ -48,6 +48,12 @@ export default class Company {
 
   @Column("member_count", "number")
   memberCount: number;
+
+  @Column("identity_provider", "encoded_string")
+  identity_provider: string;
+
+  @Column("identity_provider_id", "encoded_string")
+  identity_provider_id: string;
 }
 
 export type CompanyPrimaryKey = Pick<Company, "id">;

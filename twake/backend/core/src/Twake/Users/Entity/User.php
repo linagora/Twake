@@ -558,7 +558,7 @@ class User extends SearchableObject
             "username" => $this->getUsername(),
             "firstname" => $this->getFirstName(),
             "lastname" => $this->getLastName(),
-            "thumbnail" => (($this->getThumbnail() == null) ? null : $this->getThumbnail()->getPublicURL(2)) . "",
+            "thumbnail" => $this->getPicture(),
             "identity_provider" => $this->getIdentityProvider(),
             "connected" => $this->isConnected(),
             "language" => $this->getLanguage(),
@@ -582,7 +582,7 @@ class User extends SearchableObject
 
         $return["email"] = $return["email"];
         $return["is_verified"] = $this->getMailVerified();
-        $return["picture"] = $return["thumbnail"];
+        $return["picture"] = $this->getPicture();
         $return["first_name"] = $return["firstname"];
         $return["last_name"] = $return["lastname"];
         $return["created_at"] = ($this->getCreationDate() ? ($this->getCreationDate()->format('U') * 1000) : null);
