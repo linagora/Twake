@@ -133,7 +133,7 @@ export default class WorkspacePartner extends Component {
         text: Languages.t('scenes.app.popup.workspaceparameter.edit_from_console'),
         onClick: () =>
           window.open(
-            ConsoleService.getCompanyManagementUrl(WorkspaceService.currentGroupId),
+            ConsoleService.getCompanyUsersManagementUrl(WorkspaceService.currentGroupId),
             '_blank',
           ),
       },

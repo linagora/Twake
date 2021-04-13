@@ -16,6 +16,7 @@ import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default () => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
@@ -87,12 +88,12 @@ export default () => {
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
           <ChannelsApps key={workspaceId} />
-          {Workspaces.getCurrentWorkspace().stats.total_members <= 1 && <AddUserButton />}
+          {AccessRightsService.hasLevel(workspaceId || '', 'administrator') &&
+            Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
           <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
-      {/*<Tutorial />*/}
       <Footer />
     </Layout.Sider>
   );

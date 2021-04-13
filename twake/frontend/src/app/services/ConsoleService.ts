@@ -1,20 +1,25 @@
 import { message as toaster } from 'antd';
 import Languages from 'services/languages/languages.js';
 import Api from './Api';
+import DepreciatedCollections from './Depreciated/Collections/Collections';
 import InitService from './InitService';
 
 class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
+    const identity_provider_id = DepreciatedCollections.get('groups').find(companyId)
+      ?.identity_provider_id;
     return (InitService.server_infos?.auth?.console?.company_management_url || '').replace(
       '{company_id}',
-      companyId,
+      identity_provider_id,
     );
   }
 
   public getCompanyUsersManagementUrl(companyId: string) {
+    const identity_provider_id = DepreciatedCollections.get('groups').find(companyId)
+      ?.identity_provider_id;
     return (InitService.server_infos?.auth?.console?.collaborators_management_url || '').replace(
       '{company_id}',
-      companyId,
+      identity_provider_id,
     );
   }
 

@@ -60,8 +60,8 @@ class ApplyUpdates
         $company->setIdentityProviderId($companyConsoleCode);
 
         $avatar = $userDTO["company"]["details"]["avatar"];
-        $picture = $companyDTO["value"];
-        if($avatar["type"] !== "url"){
+        $picture = $companyDTO["value"] ?: "";
+        if($avatar["type"] && $avatar["type"] !== "url"){
             $picture = rtrim($this->endpoint, "/") . "/avatars/" . $avatar["value"];
         }
         $company->setLogo($picture);
@@ -181,8 +181,8 @@ class ApplyUpdates
 
         // Update user picture
         $avatar = $userDTO["avatar"];
-        $picture = $avatar["value"];
-        if($avatar["type"] !== "url"){
+        $picture = $avatar["value"] ?: "";
+        if($avatar["type"] && $avatar["type"] !== "url"){
             $picture = rtrim($this->endpoint, "/") . "/avatars/" . $avatar["value"];
         }
         $user->setPicture($picture);

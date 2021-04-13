@@ -399,6 +399,8 @@ class Group extends SearchableObject
             "logo" => $this->getLogo(),
             "plan" => $this->getPlan(),
             "stats" => $this->getStats(),
+            "identity_provider" => $this->getIdentityProvider(),
+            "identity_provider_id" => $this->getIdentityProviderId(),
         );
     }
 
