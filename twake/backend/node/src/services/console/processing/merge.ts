@@ -33,6 +33,7 @@ import { getInstance as getExternalGroupInstance } from "../../user/entities/ext
 import CompanyUser from "../../user/entities/company_user";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
+import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 
 const logger = getLogger("console.process.merge");
 
@@ -40,6 +41,7 @@ export class MergeProcess {
   private client: ConsoleServiceClient;
 
   constructor(
+    private database: DatabaseServiceAPI,
     private userService: UserServiceAPI,
     private dryRun: boolean,
     private consoleId: string = "console",
@@ -285,7 +287,8 @@ export class MergeProcess {
         user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical;
       const name = (firstName + " " + lastName).trim();
 
-      let role = companyUser.level.valueOf() === 3 ? "admin" : "member";
+      let role: "admin" | "guest" | "member" =
+        companyUser.level.valueOf() === 3 ? "admin" : "member";
       if (role != "admin") {
         if (companyUser.isExterne) {
           role = "guest";
@@ -320,6 +323,13 @@ export class MergeProcess {
           role,
         },
       );
+
+      const companyUserRepository = await this.database.getRepository<CompanyUser>(
+        "group_user",
+        CompanyUser,
+      );
+      companyUser.role = role;
+      companyUserRepository.save(companyUser);
 
       if (this.linkExternal) {
         await this.createUserLink(user, result, this.consoleId);

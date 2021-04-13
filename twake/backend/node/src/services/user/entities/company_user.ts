@@ -21,21 +21,8 @@ export default class CompanyUser {
   @Column("id", "timeuuid")
   id: string;
 
-  /**
-   * 0: member,
-   * 1, 2, 3: admin,
-   */
-  @Column("level", "number")
-  level: number;
-
-  @Column("did_connect_today", "twake_boolean")
-  didConnectToday: boolean;
-
-  @Column("is_externe", "twake_boolean")
-  isExterne: boolean;
-
-  @Column("app_used_today", "json")
-  appUsedToday: Array<string>;
+  @Column("is_externe", "string")
+  role: "guest" | "admin" | "member";
 
   @Column("nb_workspace", "number")
   nbWorkspaces: number;
@@ -47,10 +34,26 @@ export default class CompanyUser {
   lastUpdateDay: number;
 
   @Column("nb_connections_period", "number")
-  nbConnectionsPeriod: number;
+  nbConnectionsPeriod: number; //Depreciated
 
   @Column("app_used_period", "number")
-  appUsedPeriod: number;
+  appUsedPeriod: number; //Depreciated
+
+  /**
+   * 0: member,
+   * 1, 2, 3: admin,
+   */
+  @Column("level", "number")
+  level: number; //Depreciated
+
+  @Column("is_externe", "twake_boolean")
+  isExterne: boolean; //Depreciated
+
+  @Column("did_connect_today", "twake_boolean")
+  didConnectToday: boolean; //Depreciated
+
+  @Column("app_used_today", "json")
+  appUsedToday: Array<string>; //Depreciated
 }
 
 export type CompanyUserPrimaryKey = Partial<Pick<CompanyUser, "group_id" | "user_id">>;
