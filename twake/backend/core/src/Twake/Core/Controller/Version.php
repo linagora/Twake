@@ -50,7 +50,7 @@ class Version extends BaseController
             "version" => [
                 "current" => /* @VERSION_DETAIL */ "2021.Q2.481",
                 "minimal" => [
-                    "web" => /* @MIN_VERSION_WEB */ "2021.Q1.385",
+                    "web" => /* @MIN_VERSION_WEB */ "2021.Q1.481",
                     "mobile" => /* @MIN_VERSION_MOBILE */ "2021.Q1.385",
                 ]
             ],
