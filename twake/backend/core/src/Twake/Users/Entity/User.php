@@ -355,7 +355,7 @@ class User extends SearchableObject
     public function getPicture()
     {
         if(!$this->picture){
-            return $this->getThumbnail() ? $this->getThumbnail()->getPublicURL(2) : "";
+            $this->setPicture($this->getThumbnail() ? $this->getThumbnail()->getPublicURL(2) : "");
         }
         return $this->picture ?: "";
     }

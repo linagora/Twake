@@ -206,7 +206,7 @@ class Workspace extends SearchableObject
     public function getLogo()
     {
         if(!$this->logo){
-            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+            $this->setLogo($this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "");
         }
         return $this->logo ?: "";
     }
