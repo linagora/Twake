@@ -24,7 +24,7 @@ class ApplyUpdates
     {
         $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
-        $this->endpoint = $this->getParameter("defaults.auth.console.provider");
+        $this->endpoint = $app->getContainer()->getParameter("defaults.auth.console.provider");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->user_service = $app->getServices()->get("app.user");
     }
