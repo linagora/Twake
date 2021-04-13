@@ -29,6 +29,7 @@ export class NewChannelActivityProcessor
     try {
       this.service.updateLastActivity(
         {
+          date: message.date,
           channel: {
             id: message.channel_id,
             workspace_id: message.workspace_id,

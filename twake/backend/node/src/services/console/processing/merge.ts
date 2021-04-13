@@ -33,6 +33,7 @@ import { getInstance as getExternalGroupInstance } from "../../user/entities/ext
 import CompanyUser from "../../user/entities/company_user";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
+import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 
 const logger = getLogger("console.process.merge");
 
@@ -40,6 +41,7 @@ export class MergeProcess {
   private client: ConsoleServiceClient;
 
   constructor(
+    private database: DatabaseServiceAPI,
     private userService: UserServiceAPI,
     private dryRun: boolean,
     private consoleId: string = "console",
@@ -240,6 +242,10 @@ export class MergeProcess {
       createdCompany = await this.client.createCompany({
         code: company.id,
         displayName: company.displayName,
+        avatar: {
+          type: "url",
+          value: company.logo,
+        },
         status: "active",
       });
 
@@ -275,23 +281,55 @@ export class MergeProcess {
         throw new Error(`User ${companyUser.user_id} not found`);
       }
 
+      const firstName =
+        user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical;
+      const lastName =
+        user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical;
+      const name = (firstName + " " + lastName).trim();
+
+      let role: "admin" | "guest" | "member" =
+        companyUser.level.valueOf() === 3 ? "admin" : "member";
+      if (role != "admin") {
+        if (companyUser.isExterne) {
+          role = "guest";
+        }
+        const workspacesUsers = await this.userService.workspaces.getAllForUser({
+          userId: companyUser.user_id,
+        });
+        workspacesUsers.getEntities().forEach(e => {
+          if (e.isExternal) {
+            role = "guest";
+          }
+        });
+      }
+
       result = await this.client.addUser(
         { code: company.id },
         {
           email: user.emailcanonical,
           // console requires that firstname/lastname are defined and at least 1 chat long
-          firstName:
-            user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical,
-          lastName:
-            user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical,
+          firstName,
+          lastName,
+          name,
+          avatar: {
+            type: "url",
+            value: user.picture,
+          },
           password: passwordGenerator.generate({
             length: 10,
             numbers: true,
           }),
           skipInvite: true,
-          role: companyUser.level.valueOf() === 3 ? "admin" : "member",
+          role,
         },
       );
+
+      const companyUserRepository = await this.database.getRepository<CompanyUser>(
+        "group_user",
+        CompanyUser,
+      );
+      companyUser.role = role;
+      companyUserRepository.save(companyUser);
 
       if (this.linkExternal) {
         await this.createUserLink(user, result, this.consoleId);

@@ -15,6 +15,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
+import ConsoleService from 'app/services/ConsoleService';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -198,7 +199,7 @@ export default class WorkspaceParameter extends Component {
         onClick: () => {
           if (InitService.server_infos?.auth?.console?.use) {
             return window.open(
-              InitService.server_infos?.auth?.console?.company_management_url,
+              ConsoleService.getCompanyManagementUrl(WorkspaceService.currentGroupId),
               '_blank',
             );
           } else {

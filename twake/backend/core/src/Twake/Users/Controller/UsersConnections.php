@@ -50,7 +50,6 @@ class UsersConnections extends BaseController
         $response = new Response();
         $logged = $this->getUser() && !is_string($this->getUser());
         if(!$logged || ($usernameOrMail && $password)){
-            $this->get("app.session_handler")->setUser(null);
             $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
         }
 

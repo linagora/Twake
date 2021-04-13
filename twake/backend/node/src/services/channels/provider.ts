@@ -98,6 +98,7 @@ export interface ChannelService
    */
   updateLastActivity(
     payload: {
+      date: number;
       channel: ChannelPrimaryKey;
       message: ChannelActivityMessage;
     },

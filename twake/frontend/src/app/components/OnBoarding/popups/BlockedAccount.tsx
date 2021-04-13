@@ -28,9 +28,17 @@ const BlockedAccount = ({ email }: PropsType): JSX.Element => {
       hideFooterDivider
       footerAlign="center"
       footer={
-        <Button type="ghost" size="small" onClick={onClickButton} loading={loading}>
-          {Languages.t('general.re_send')}
-        </Button>
+        <>
+          <Button type="ghost" size="small" onClick={onClickButton} loading={loading}>
+            {Languages.t('general.re_send')}
+          </Button>
+
+          <Row justify="center" style={{ marginTop: 16 }}>
+            <a className="blue_link" onClick={() => LoginService.logout()}>
+              {Languages.t('scenes.apps.account.account.logout')}
+            </a>
+          </Row>
+        </>
       }
     >
       <Row justify="center" style={{ marginTop: 36 }}>
@@ -79,10 +87,6 @@ const BlockedAccount = ({ email }: PropsType): JSX.Element => {
         >
           {Languages.t('components.unverified_account.re_send_email')}
         </Typography.Text>
-      </Row>
-      
-      <Row justify="center" style={{ marginTop: 32, marginBottom: 8 }}>
-        <a className="blue_link" onClick={() => LoginService.logout()}>{Languages.t('scenes.apps.account.account.logout')}</a>
       </Row>
     </ObjectModal>
   );

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import workspaceService from 'services/workspaces/workspaces.js';
+import WorkspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import Menu from 'components/Menus/Menu.js';
@@ -18,15 +18,16 @@ import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspaceP
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import InitService from 'app/services/InitService';
+import ConsoleService from 'app/services/ConsoleService';
 
 export default class WorkspacePartner extends Component {
   constructor() {
     super();
-    var workspace = Collections.get('workspaces').find(workspaceService.currentWorkspaceId);
+    var workspace = Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId);
     this.state = {
       i18n: Languages,
       workspace: Collections.get('workspaces'),
-      workspaceService: workspaceService,
+      WorkspaceService: WorkspaceService,
       attributeOpen: 0,
       subMenuOpened: 0,
       workspaceName: workspace ? workspace.name : '',
@@ -42,7 +43,7 @@ export default class WorkspacePartner extends Component {
     };
     this.inputWorkspaceName = null;
     Collections.get('workspaces').addListener(this);
-    workspaceService.addListener(this);
+    WorkspaceService.addListener(this);
     workspacesUsers.addListener(this);
     workspaceUserRightsService.addListener(this);
     Languages.addListener(this);
@@ -52,7 +53,7 @@ export default class WorkspacePartner extends Component {
   }
   componentWillUnmount() {
     Collections.get('workspaces').removeListener(this);
-    workspaceService.removeListener(this);
+    WorkspaceService.removeListener(this);
     workspacesUsers.removeListener(this);
     workspaceUserRightsService.removeListener(this);
     Languages.removeListener(this);
@@ -130,7 +131,11 @@ export default class WorkspacePartner extends Component {
       {
         type: 'menu',
         text: Languages.t('scenes.app.popup.workspaceparameter.edit_from_console'),
-        onClick: () => window.open(InitService.server_infos?.auth?.console?.collaborators_management_url, '_blank'),
+        onClick: () =>
+          window.open(
+            ConsoleService.getCompanyUsersManagementUrl(WorkspaceService.currentGroupId),
+            '_blank',
+          ),
       },
     ];
 
@@ -227,7 +232,7 @@ export default class WorkspacePartner extends Component {
             AlertManager.confirm(() =>
               this.state.workspacesUsers.removeUser(
                 col.user.id,
-                workspaceService.currentWorkspaceId,
+                WorkspaceService.currentWorkspaceId,
               ),
             );
           },
@@ -245,7 +250,7 @@ export default class WorkspacePartner extends Component {
         workspaceUserRightsService.hasWorkspacePrivilege() &&
         (col.user || {}).mail_verification_override != false &&
         (col.user || {}).mail_verification_override ==
-          workspaceService.currentWorkspaceId + '_' + UserService.getCurrentUserId()
+          WorkspaceService.currentWorkspaceId + '_' + UserService.getCurrentUserId()
       ) {
         menu = [
           {
@@ -283,12 +288,12 @@ export default class WorkspacePartner extends Component {
       key => {
         var user = this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
         if (
-          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[
+          !this.state.workspacesUsers.getUsersByWorkspace(WorkspaceService.currentWorkspaceId)[
             key
           ] ||
-          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
+          !this.state.workspacesUsers.getUsersByWorkspace(WorkspaceService.currentWorkspaceId)[key]
             .user ||
-          !this.state.workspacesUsers.getUsersByWorkspace(workspaceService.currentWorkspaceId)[key]
+          !this.state.workspacesUsers.getUsersByWorkspace(WorkspaceService.currentWorkspaceId)[key]
             .user.id
         ) {
           usersInGroup.push({
@@ -296,7 +301,7 @@ export default class WorkspacePartner extends Component {
             user: user,
             externe: this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key]
               .externe,
-            groupLevel: this.state.workspacesUsers.users_by_group[workspaceService.currentGroupId][
+            groupLevel: this.state.workspacesUsers.users_by_group[WorkspaceService.currentGroupId][
               key
             ].groupLevel,
           });
