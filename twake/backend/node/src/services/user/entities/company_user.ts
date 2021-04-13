@@ -21,7 +21,7 @@ export default class CompanyUser {
   @Column("id", "timeuuid")
   id: string;
 
-  @Column("is_externe", "string")
+  @Column("role", "string")
   role: "guest" | "admin" | "member";
 
   @Column("nb_workspace", "number")
