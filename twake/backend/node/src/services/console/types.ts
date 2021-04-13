@@ -5,6 +5,10 @@ import CompanyUser from "../user/entities/company_user";
 export interface CreateConsoleCompany {
   code: string;
   displayName: string;
+  avatar: {
+    type: "url";
+    value: string;
+  };
   country?: string;
   address?: string;
   logo?: string;
@@ -25,6 +29,11 @@ export interface CreateConsoleUser {
   email: string;
   firstName: string;
   lastName: string;
+  name: string;
+  avatar: {
+    type: "url";
+    value: string;
+  };
   password: string;
   role: string;
   skipInvite: boolean;

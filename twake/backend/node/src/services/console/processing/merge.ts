@@ -240,6 +240,10 @@ export class MergeProcess {
       createdCompany = await this.client.createCompany({
         code: company.id,
         displayName: company.displayName,
+        avatar: {
+          type: "url",
+          value: company.logo,
+        },
         status: "active",
       });
 
@@ -275,15 +279,24 @@ export class MergeProcess {
         throw new Error(`User ${companyUser.user_id} not found`);
       }
 
+      const firstName =
+        user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical;
+      const lastName =
+        user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical;
+      const name = (firstName + " " + lastName).trim();
+
       result = await this.client.addUser(
         { code: company.id },
         {
           email: user.emailcanonical,
           // console requires that firstname/lastname are defined and at least 1 chat long
-          firstName:
-            user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical,
-          lastName:
-            user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical,
+          firstName,
+          lastName,
+          name,
+          avatar: {
+            type: "url",
+            value: user.picture,
+          },
           password: passwordGenerator.generate({
             length: 10,
             numbers: true,

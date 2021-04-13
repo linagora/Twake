@@ -25,6 +25,9 @@ export default class Company {
   stats: any;
 
   @Column("logo_id", "uuid")
+  logofile: string;
+
+  @Column("logo", "uuid")
   logo: string;
 
   @Column("workspaces_id", "encoded_json")

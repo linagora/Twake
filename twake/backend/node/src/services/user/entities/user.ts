@@ -23,11 +23,11 @@ export default class User {
   @Column("last_name", "encoded_string")
   lastname: string;
 
-  /**
-   * FIXME: This is a thumbnail_id in current user table
-   */
-  @Column("thumbnail", "string")
-  thumbnail: string;
+  @Column("thumbnail_id", "string")
+  thumbnailfile: string;
+
+  @Column("picture", "string")
+  picture: string;
 
   @Column("workspaces", "encoded_json")
   workspaces: Array<string>;
