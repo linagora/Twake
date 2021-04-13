@@ -56,7 +56,12 @@ class User extends SearchableObject
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      */
-    protected $thumbnail;
+    protected $thumbnail; //Old format depreciated (now with console)
+
+    /**
+     * @ORM\Column(name="picture", type="twake_text")
+     */
+    protected $picture;
 
     /**
      * @ORM\Column(name="workspaces", type="twake_text")
@@ -342,6 +347,25 @@ class User extends SearchableObject
     public function setThumbnail($thumbnail)
     {
         $this->thumbnail = $thumbnail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPicture()
+    {
+        if(!$this->picture){
+            return $this->getThumbnail() ? $this->getThumbnail()->getPublicURL(2) : "";
+        }
+        return $this->picture ?: "";
+    }
+
+    /**
+     * @param mixed $logo
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
     }
 
     public function isActive()
