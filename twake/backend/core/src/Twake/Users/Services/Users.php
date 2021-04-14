@@ -228,10 +228,26 @@ class Users
 
     public function completeUserWithCompanies($user, $requester = null)
     {
-        if($user) {
-            $companies = Array("hello", "world");
-            $user["companies"] = $companies;
-        } 
+        if(is_string($requester)){
+            return $user;
+        }
+        
+        $membersRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
+        $companies = $membersRepository->findBy(Array("user" => $user));
+        $user["companies"] = [];
+
+        foreach($companies as $companyMember){
+            if($requester && !$membersRepository->findBy(Array("user" => $requester, "group" => $companyMember->getGroup())) ){
+                continue;
+            }
+            $user["companies"][] = [
+                "role" => $companyMember->getRole(),
+                "status" => "active",
+                "company" => [
+                    "id" => $companyMember->getGroup()->getId()
+                ]
+            ];
+        }
 
         return $user;
     }
