@@ -179,7 +179,7 @@ class ApplyUpdates
         $user->setIdentityProviderId($userConsoleId);
 
         $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
-        $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
+        $user->setTimezone(@$userDTO["preferences"]["timeZone"] ?: "");
 
         // Update user picture
         $avatar = $userDTO["avatar"];

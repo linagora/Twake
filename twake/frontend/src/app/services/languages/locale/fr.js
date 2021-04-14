@@ -1139,7 +1139,7 @@ export default {
     'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
-  'scenes.app.workspaces.create_company.invitations.title_2': "Ajoutez vos collaborateurs.",
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Ajoutez vos collaborateurs.',
   'scenes.app.workspaces.create_company.title': 'Création de mon entreprise',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Ajouter un e-mail secondaire',
   'scenes.app.workspaces.welcome_page.added_to_company': 'Vous avez été invité dans l’entreprise',
@@ -1422,8 +1422,7 @@ export default {
     "Une erreur s'est produite lors de la mise à jour de l'application.",
   'scenes.app.popup.appsparameters.pages.remove_app_button': "Supprimer l'application",
   'scenes.app.popup.appsparameters.pages.update_button': 'Mettre à jour',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Besoin de plus de place ?',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Besoin de plus de place ?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Créer un nouvel espace de travail',
   'scenes.app.popup.createworkspacepage.placeholder_name': "Nom de l'espace de travail",
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
@@ -1482,8 +1481,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     "Applications développées par l'entreprise",
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': "Identité de l'entreprise",
-  'scenes.app.popup.workspaceparameter.pages.company_manager_label': "Gérant de l'entreprise",
-  'scenes.app.popup.workspaceparameter.pages.company_manager_status': "Gérant d'entreprise",
+  'scenes.app.popup.workspaceparameter.pages.company_manager_label': "Admin de l'entreprise",
+  'scenes.app.popup.workspaceparameter.pages.company_manager_status': "Admin d'entreprise",
   'scenes.app.popup.workspaceparameter.pages.company_name_description':
     'Modifiez le nom de cette entreprise',
   'scenes.app.popup.workspaceparameter.pages.company_name_label': "Nom de l'entreprise",
@@ -2012,5 +2011,6 @@ export default {
   'services.console_services.toaster.success_verify_email':
     'Un lien de vérification a été envoyé à votre compte de messagerie',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
-  'services.console_services.toaster.success_invite_emails': '$1 email(s) ajouté(s) avec succès',
+  'services.console_services.toaster.success_invite_emails':
+    '$1 utilisateur(s) ajouté(s) avec succès',
 };
