@@ -10,24 +10,23 @@ use Common\Http\Request;
 class Users extends BaseController
 {
 
-    // $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
     public function search(Request $request)
     {
 
-        $scroll_id = $request->request->get("scroll_id");
-        $repository = "Twake\Users:User";
         $options = $request->request->get("query", $request->request->get("options", Array()));
 
         if (is_string($options)) {
             $options = Array("name" => $options);
         }
 
-        if (isset($scroll_id) && isset($repository)) {
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
-        } else {
-            $globalresult = $this->get("app.users")->search($options);
+        $globalresult = $this->get("app.users")->search($options);
+        
+        $users = [];
+        foreach($globalresult["users"] as $obj){
+            $users[] = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
         }
-
+        $globalresult["users"] = $users;
+        
         $data = Array("data" => $globalresult);
 
         return new Response($data);
