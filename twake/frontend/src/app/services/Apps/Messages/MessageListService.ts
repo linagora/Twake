@@ -9,10 +9,30 @@ import MessageLoaderFactory from "./MessageLoaderFactory";
 type Scroller = (align: "start" | "center" | "end", message?: Message) => boolean;
 
 export class MessageListService {
+  /**
+   * The message loader for this message list
+   */
   private loader: MessageLoader;
-  hightlight: Message | undefined;
+
+  /**
+   * The id of the message to highlight
+   */
+
+  hightlight: string | undefined;
+
+  /**
+   * The scroller to message function 
+   */
   scroller: Scroller | undefined;
+
+  /**
+   * Id returned by setTimeout when delaying the "read channel action"
+   */
   readChannelTimeout: any;
+  
+  /**
+   * Last read message id
+   */
   lastReadMessage = "";
 
   constructor(readonly key: string, private channel: ChannelResource) {
@@ -36,16 +56,13 @@ export class MessageListService {
   }
 
   async scrollTo(message: Message): Promise<void> {
+    // TODO: When the message is not available in the list, we should be able to open the stream at a given position with offset
     logger.debug("Scroll to message", message);
-    this.hightlight = message;
-
-    const scrolled = this.scroller && this.scroller("start", message);
-
-    if (!scrolled) {
-      // TODO: Must be tested!
-      await this.loader.init({ offset: message.id, direction: "down" });
-      this.scrollTo(message);
+    if (message.id) {
+      this.hightlight = message.id;
     }
+
+    this.scroller && this.scroller("start", message);
   }
 
   isLastMessageRead(): boolean {

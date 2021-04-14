@@ -13,6 +13,7 @@ import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
+import { ChannelResource } from 'app/models/Channel';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -31,7 +32,17 @@ const FullPageLoaderComponent = () => (
 );
 
 type Props = {
-  channel: any;
+  /**
+   * The channel linked to the message list
+   */
+  channel: ChannelResource;
+  /**
+   * The message id to start the message list at. When not defined, start at bottom.
+   */
+  startAt: string;
+  /**
+   * When defined, display the thread, not the complete message list
+   */
   threadId: string;
   collectionKey: string;
   unreadAfter: number;
@@ -51,7 +62,7 @@ type State = {
 
 export default class MessagesList extends React.Component<Props, State> {
   private logger: Logger.Logger;
-  private loader: MessageLoader;
+  private startAt: string;
   private pageSize: number;
   private virtuosoRef: RefObject<VirtuosoHandle>;
   private loading: {
@@ -76,11 +87,12 @@ export default class MessagesList extends React.Component<Props, State> {
    * Locking the scroll up when we display a thread
    */
   private lockScrollUp: boolean;
-  private startAtOffset: string;
-  private service: MessageListService;
+  private loader!: MessageLoader;
+  private service!: MessageListService;
   
   constructor(props: Props) {
     super(props);
+    this.startAt = props.startAt;
     this.nbOfCalls = { up: 0, down: 0 };
     this.loading = { up: false, down: false };
     this.lockScrollUp = !!this.props.threadId;
@@ -92,13 +104,9 @@ export default class MessagesList extends React.Component<Props, State> {
     this.initialTopMostItemIndex = 0;
     this.initialPageSize = this.pageSize;
     this.firstItemIndex = START_INDEX;
-    this.startAtOffset = '';
     this.position = "unknown";
     this.isInitialized = false;
     this.scrolling = false;
-    this.service = MessageListServiceFactory.get(props.collectionKey, props.channel);
-    this.loader = this.service.getLoader(props.threadId);
-    this.service.setScroller(this.scrollToMessage.bind(this));
     this.state = {
       showBottomButton: false,
       newMessages: 0,
@@ -109,14 +117,26 @@ export default class MessagesList extends React.Component<Props, State> {
   }
 
   async componentDidMount() {
-    this.startAtOffset = RouterServices.getStateFromRoute().messageId || '';
-    const startFrom = this.startAtOffset || this.props.threadId || '';
+    this.service = MessageListServiceFactory.get(this.props.collectionKey, this.props.channel);
+    this.loader = this.service.getLoader(this.props.threadId);
+    this.service.setScroller(this.scrollToMessage.bind(this));
+
+    if (this.startAt) {
+      this.service.hightlight = this.startAt;
+    }
+
+    const startFrom = this.startAt || this.props.threadId || '';
     const direction = startFrom ? 'down' : 'up';
 
-    const initResponse = await this.init({ startFrom, direction });
-    this.processLoaderResponse(initResponse, direction);
+    await this.init({ startFrom, direction });
+    this.setState({ isLoaded: true });
+  }
+
+  private async init(params: { startFrom: string, direction: ScrollDirection }): Promise<void> {
+    const initResponse = await this.initLoader(params);
+    this.processLoaderResponse(initResponse, params.direction);
     this.initialPageSize = this.state.messages.length || this.pageSize;
-    if (direction === 'up') {
+    if (params.direction === 'up') {
       // Set the initial index at bottom on first load when loading the feed from the end
       // TODO: In case we want to start at a given position (first unread for example), we can change the value here
       this.initialTopMostItemIndex = this.state.messages.length;
@@ -125,26 +145,31 @@ export default class MessagesList extends React.Component<Props, State> {
       this.initialTopMostItemIndex = 0;
     }
     this.isInitialized = true;
-    this.setState({ isLoaded: true });
     this.loader.addListener(this.onNewCollectionEvent);
   }
 
-  componentWillUnmount() {
-    this.loader.destroy();
-    this.loader.removeListener(this.onNewCollectionEvent);
-    MessageListServiceFactory.destroy(this.service);
+  componentWillUnmount(): void {
+    this.cleanup();
   }
 
-  private init(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<MessageModel>> {
+  private cleanup(): void {
+    this.loader.destroy();
+    this.loader.removeListener(this.onNewCollectionEvent);
+    // TODO: Do we really need this here?
+    //MessageListServiceFactory.destroy(this.service);
+  }
+
+  private initLoader(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<MessageModel>> {
     this.logger.debug("Initializing message list feed with parameters", params);
     this.loading = { down: false, up: false };
+    this.nbOfCalls = { up: 0, down: 0 };
     return this.loader.init({ offset: params.startFrom, pageSize: this.pageSize, direction: params.direction });
   };
 
   /**
    * The collection has been updated, update the items to dispatch a new render
    */
-  private onNewCollectionEvent(data_: any): void {
+  private onNewCollectionEvent(_data: any): void {
     const messages = this.loader.getItems() || [];
     const diff = messages.length - this.state.messages.length;
 
@@ -282,13 +307,50 @@ export default class MessagesList extends React.Component<Props, State> {
   }
 
   /**
+   * If we loaded the feed from an offset and not reached the end, we choose to reload everything from bottom
+   * else just just down...
+   */
+  async scrollToBottom(): Promise<boolean> {
+    return (this.startAt && !this.bottomHasBeenReached)
+      ? await this.loadAtBottom()
+      : this.scrollToMessage("end");
+  }
+
+  /**
+   * Reload everything at the bottom of the stream.
+   * This is used when the user opens the stream at a given offset, and want to scroll to the last message.
+   */
+  private async loadAtBottom(): Promise<boolean> {
+    this.logger.debug("Reload the page at the bottom");
+    this.startAt = "";
+    this.firstItemIndex = START_INDEX;
+    this.initialTopMostItemIndex = 0;
+    this.cleanup();
+    this.loader.reset(true);
+    this.setState({
+      showBottomButton: false,
+      newMessages: 0,
+      isLoaded: false,
+      messages: [],
+    });
+
+    // problem with this, when init again, we do not go into the first init callback and so the cursors are not up to date
+    // TODO: Find a way to update the cursors before the nextPage call so that firstMessageId and lastMessageId are good
+    await this.init({ direction: "up", startFrom: "" });
+    await this.nextPage("up");
+    this.setState({ isLoaded: true });
+
+    return true;
+  }
+
+  /**
    *
    * @param isAtBottom
    * @returns true or smooth to ask to follow the output when new messages are added at the end of the list
    */
   followOuput(isAtBottom: boolean): boolean | 'smooth' {
     let result = isAtBottom;
-    if (this.startAtOffset) {
+    if (this.startAt) {
       // Do not follow until the user chose to scroll to bottom
       result = false;
     }
@@ -316,7 +378,7 @@ export default class MessagesList extends React.Component<Props, State> {
    */
   onVisibleItemsChanged(range: ListRange) {
     if (this.service.hightlight) {
-      const index = this.state.messages.findIndex(m => m.id === this.service.hightlight?.id)
+      const index = this.state.messages.findIndex(m => m.id === this.service.hightlight);
       const hightlight = this.firstItemIndex + index;
       if (index < 0) {
         return;
@@ -364,7 +426,7 @@ export default class MessagesList extends React.Component<Props, State> {
               followOutput={true}
               rangeChanged={(range) => this.onVisibleItemsChanged(range)}
               itemContent={(index: number, message: MessageModel) => {
-                const highlight = !!this.service.hightlight && !!this.service.hightlight.id && !!message.id && (this.service.hightlight.id === message.id);
+                const highlight = !!this.service.hightlight && !!message.id && (this.service.hightlight === message.id);
 
                 return (
                   <Message
@@ -399,7 +461,7 @@ export default class MessagesList extends React.Component<Props, State> {
               }}
             />
             <GoToBottom
-              onClick={ () => this.scrollToMessage("end") }
+              onClick={ () => this.scrollToBottom() }
               newMessages={ this.state.newMessages }
             />
           </div>

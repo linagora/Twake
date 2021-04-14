@@ -21,7 +21,7 @@ class MessageListServiceFactory {
     }
 
     if (!channel) {
-      throw new Error("Can not find service for this channel, create it first");
+      throw new Error(`Can not find service for collection ${collectionKey}, create it first`);
     }
 
     service = new MessageListService(collectionKey, channel);

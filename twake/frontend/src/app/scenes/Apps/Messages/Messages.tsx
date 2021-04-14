@@ -9,6 +9,7 @@ import DroppableZone from 'components/Draggable/DroppableZone.js';
 import { ChannelResource } from 'app/models/Channel';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
+import RouterServices from 'app/services/RouterService';
 import './Messages.scss';
 
 type Props = {
@@ -19,11 +20,21 @@ type Props = {
 
 export default class MainView extends Component<Props> {
   options: any = {};
+
   /**
    * Display a thread view when non empty
    */
   threadId = '';
-  collectionKey = ''; //For a specific collection (aka channel)
+
+  /**
+   * Start at the given message id. Does not work when threadId is defined.
+   */
+  startAtOffset = '';
+  collectionKey: string;
+  /**
+   * Avoid to render until everything needed is ready
+   */
+  ready = false;
   upload_zone: any;
   messageService: MessageListService;
 
@@ -40,22 +51,31 @@ export default class MainView extends Component<Props> {
     this.messageService = MessageListServiceFactory.get(this.collectionKey, this.props.channel);
   }
 
+  componentDidMount(): void {
+    this.startAtOffset = RouterServices.getStateFromRoute().messageId || '';
+    this.ready = true;
+  }
+
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
     MessagesService.removeListener(this);
+    this.ready = false;
   }
 
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
-    return (
+
+    return this.ready
+      ? (
       <div
         className="messages-view"
         onClick={() => this.messageService.markChannelAsRead()}
       >
         <MessageList
+          startAt={this.startAtOffset}
           threadId={this.threadId}
-          channel={this.props.channel.data}
+          channel={this.props.channel}
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
           scrollDirection={this.threadId ? 'down' : 'up'}
@@ -73,6 +93,7 @@ export default class MainView extends Component<Props> {
           />
         </DroppableZone>
       </div>
-    );
+    )
+    : (<></>);
   }
 }

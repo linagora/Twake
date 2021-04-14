@@ -63,6 +63,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
   private httpLoading = false;
 
+  private nbCalls = 0;
+
   private collection: Collection;
 
   constructor(
@@ -79,13 +81,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   async init(params: InitParameters = { direction: 'up' }): Promise<FeedResponse<Message>> {
     this.pageSize = params.pageSize || DEFAULT_PAGE_SIZE;
     this.initialDirection = params.direction ? params.direction : this.initialDirection;
+    // FIXME: When not destroyed and calling init again and again, we stack many listeners
     this.collection.addListener(this.onNewMessageFromWebsocketListener);
-
+    
     if (this.httpLoading) {
       logger.warn("Init in progress, skipping");
       return this.buildResponse([], false, params);
     }
-
+    
     // if already initialized, send back the whole messages
     if (this.didInit) {
       // We do not know if there are new messages since the last nextPage call so we reset the top/bottom flags
@@ -117,6 +120,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         this.collectionKey,
         // First load callback
         (messages: Message[]) => {
+          this.nbCalls++;
           logger.debug("Initial messages", messages);
           this.updateCursors(messages);
           this.httpLoading = false;
@@ -202,8 +206,9 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
           limit: (loadUp ? 1 : -1) * this.pageSize,
         },
         (messages: Message[]) => {
-          logger.debug("nextPage - messages", messages);
+          this.nbCalls++;
           this.httpLoading = false;
+          logger.debug("nextPage - messages", messages);
           this.updateCursors(messages);
 
           if (messages.length < this.pageSize) {
@@ -212,6 +217,12 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
           if (loadUp) {
             fromTo.from = this.firstMessageOffset;
+            if (this.nbCalls === 1) {
+              // In this case, the init callback has never been called
+              // This means that the current loader instance has been cleaned
+              // and that we need to update the fromTo
+              fromTo.to = Numbers.maxTimeuuid(this.lastThreadOffset, this.lastMessageId);
+            }
           } else {
             fromTo.to = Numbers.maxTimeuuid(this.lastThreadOffset, this.lastMessageId);
           }
@@ -374,11 +385,13 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.updateFirstLast([message]);
   }
 
-  private reset(force?: boolean) {
+  reset(force?: boolean): void {
     this.firstMessageOffset = '';
     this.lastMessageOffset = '';
     this.lastMessageId = '';
+    this.firstMessageId = '';
     this.lastThreadOffset = '';
+    this.nbCalls = 0;
     if (force) {
       this.firstMessageOfTheStream = '';
       this.lastMessageOfTheStream = '';
@@ -460,11 +473,13 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.bottomHasBeenReached = true;
   }
 
-  destroy(force?: boolean) {
+  destroy(force?: boolean): void {
     logger.debug("Destroying message loader for channel", this.channel.data.id);
     this.httpLoading = false;
     this.collection.removeListener(this.onNewMessageFromWebsocketListener);
     if (force) {
+      // This has to be used carefully: There is a big timeout on source removal: 10 seconds
+      // If removed, we can not switch back to a channel before this delay.
       this.collection.removeSource(this.collectionKey);
     }
   }
