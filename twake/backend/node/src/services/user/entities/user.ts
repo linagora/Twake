@@ -12,10 +12,10 @@ export default class User {
   id: string;
 
   @Column("first_name", "encoded_string")
-  firstname: string;
+  first_name: string;
 
   @Column("last_name", "encoded_string")
-  lastname: string;
+  last_name: string;
 
   @Column("picture", "string")
   picture: string;
@@ -48,14 +48,17 @@ export default class User {
 
   // TODO: Index
   @Column("username_canonical", "string")
-  usernamecanonical: string;
+  username_canonical: string;
 
   // TODO: Index
   @Column("email_canonical", "string")
-  emailcanonical: string;
+  email_canonical: string;
 
   @Column("timezone", "string")
   timezone: string;
+
+  @Column("password", "string")
+  password: string;
 
   constructor(id?: string) {
     this.id = id;
