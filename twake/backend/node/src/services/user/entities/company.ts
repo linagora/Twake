@@ -27,7 +27,7 @@ export default class Company {
   @Column("logo_id", "uuid")
   logofile: string;
 
-  @Column("logo", "uuid")
+  @Column("logo", "string")
   logo: string;
 
   @Column("workspaces_id", "encoded_json")
