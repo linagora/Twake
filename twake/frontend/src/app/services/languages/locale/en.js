@@ -1670,6 +1670,7 @@ export default {
   'scenes.apps.drive.trash': 'Trash',
   'scenes.apps.drive.top_menu_more': 'More',
   'scenes.apps.drive.top_menu_no_items': '$1 items',
+  'scenes.apps.messages.new_thread': 'Start a new discussion',
   'scenes.apps.messages.from_camera': 'From camera',
   'scenes.apps.messages.from_device': 'From device',
   'scenes.apps.messages.input.message_to': 'Message to #$1',

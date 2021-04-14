@@ -1739,6 +1739,7 @@ export default {
   'scenes.apps.drive.trash': 'Corbeille',
   'scenes.apps.drive.top_menu_more': 'Plus',
   'scenes.apps.drive.top_menu_no_items': '$1 éléments',
+  'scenes.apps.messages.new_thread': 'Commencer une nouvelle discussion',
   'scenes.apps.messages.from_camera': 'Depuis la caméra',
   'scenes.apps.messages.from_device': "Depuis l'appareil",
   'scenes.apps.messages.input.message_to': 'Message à $1',
