@@ -2,20 +2,17 @@ import { createBrowserHistory, History } from 'history';
 import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';
 
-// Import your component here
 import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/login';
 import Setup from 'app/scenes/Setup/Setup';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
-import { useParams } from 'react-router-dom';
 
 import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
-import ChannelsBarService from './channels/ChannelsBarService';
 
 export type RouteType = {
   path: string;
@@ -49,7 +46,7 @@ class RouterServices extends Observable {
     matchPath(this.history.location.pathname, { path: pathSchema });
 
   //List of client sub paths
-  clientSubPathnames: string[] = [
+  clientSubPathnames: Readonly<string[]> = [
     '/client/:workspaceId',
     '/client/:workspaceId/c/:channelId',
     '/client/:workspaceId/c/:channelId/t/:threadId',
@@ -58,7 +55,10 @@ class RouterServices extends Observable {
     '/client/:workspaceId/c/:channelId/t/:threadId/m/:messageId',
   ];
 
-  // Define your route here
+  private allowedQueryParameters: Record<string, Map<string, string>> = {
+    '/client/:workspaceId/c/:channelId': new Map<string, string>([["m", "messageId"]]),
+  };
+
   pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
     SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
@@ -67,7 +67,7 @@ class RouterServices extends Observable {
     ERROR: '/error',
   };
 
-  UUIDsToTranslate: string[] = [
+  UUIDsToTranslate: Readonly<string[]> = [
     'companyId',
     'workspaceId',
     'channelId',
@@ -78,7 +78,6 @@ class RouterServices extends Observable {
     'documentId',
   ];
 
-  // Setup your route here
   routes: Readonly<RouteType[]> = [
     //TODO add parameters / account / workspace creation pages
     {
@@ -138,7 +137,9 @@ class RouterServices extends Observable {
     });
   }
 
-  // Generate state from routing
+  /**
+   * Generate state from routing
+   */
   getStateFromRoute(): ClientStateType {
     let match: any = null;
     this.clientSubPathnames
@@ -149,6 +150,7 @@ class RouterServices extends Observable {
           match = this.match(route) as any;
         }
       });
+
     const reducedState: any = {
       companyId: '',
       workspaceId: match?.params?.workspaceId || '',
@@ -162,6 +164,19 @@ class RouterServices extends Observable {
       appName: match?.params?.appName || '',
       shared: !!this.match(this.pathnames.SHARED),
     };
+
+    const queryParameters = this.allowedQueryParameters[match.path];
+
+    if (queryParameters && this.history.location.search) {
+      const params = new URLSearchParams(this.history.location.search);
+
+      params.forEach((value, key) => {
+        const alias = queryParameters.get(key);
+        if (alias) {
+          reducedState[alias] = value;
+        }
+      });
+    }
 
     const state: any = {};
     Object.keys(reducedState).forEach(key => {
@@ -185,11 +200,13 @@ class RouterServices extends Observable {
     return state;
   }
 
-  // Generate UUID to shortened and create url
+  /**
+   * Generate UUID to shortened and create url
+   */
   generateRouteFromState(
     params: ClientStateType,
     options: { replace?: boolean; keepSearch?: boolean } = {},
-  ) {
+  ): string {
     const currentState = this.getStateFromRoute();
     const expandedState: any = options?.replace ? params : Object.assign(currentState, params);
     const state: any = {};
@@ -204,7 +221,7 @@ class RouterServices extends Observable {
       }
     });
 
-    const search = options?.keepSearch ? '?' + this.history.location.search.substr(1) : '';
+    let search = options?.keepSearch ? '?' + this.history.location.search.substr(1) : '';
 
     if (state.shared) {
       return (
@@ -224,17 +241,24 @@ class RouterServices extends Observable {
       );
     }
 
+    const searchParameters = new URLSearchParams(search ? search.substring(1) : "");
+    if (state.messageId) {
+      searchParameters.append("m", state.messageId);
+    }
+    search = searchParameters.toString() ? `?${searchParameters.toString()}` : "";
+
     return (
       `${this.pathnames.CLIENT}/${state.workspaceId}` +
       (state.channelId ? `/c/${state.channelId}` : '') +
       (state.threadId ? `/t/${state.threadId}` : '') +
-      (state.messageId ? `/m/${state.messageId}` : '') +
       search
     );
   }
 
-  // Add redirection in url
-  addRedirection(route: string) {
+  /**
+   * Add redirection in url
+   */
+  addRedirection(route: string): string {
     const existingRef = decodeURIComponent(
       (this.history.location.search.split('ref=')[1] || '').split('&')[0],
     );
@@ -246,7 +270,9 @@ class RouterServices extends Observable {
     return route + separator + 'ref=' + encodeURIComponent(ref);
   }
 
-  // If redirection is present in url we redirect the user to it. Otherwise we return false;
+  /**
+   * If redirection is present in url we redirect the user to it. Otherwise we return false;
+   */
   useRedirection(): boolean {
     const existingRef = decodeURIComponent(
       (this.history.location.search.split('ref=')[1] || '').split('&')[0],

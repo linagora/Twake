@@ -53,6 +53,10 @@ export default class MainView extends Component<Props> {
 
   componentDidMount(): void {
     this.startAtOffset = RouterServices.getStateFromRoute().messageId || '';
+    if (this.startAtOffset) {
+      // this is something quite weird but there are no way to do it another way...
+      RouterServices.history.replace({ search: '' });
+    }
     this.ready = true;
   }
 
