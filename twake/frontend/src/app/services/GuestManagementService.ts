@@ -4,7 +4,6 @@ import { ChannelMemberResource } from 'app/models/Channel';
 import RouterServices from 'services/RouterService';
 import UserServices from 'services/user/user.js';
 import { UserType } from 'app/models/User';
-import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
 import ConsoleService from './ConsoleService';
 
 export type GenericMember = {
@@ -35,10 +34,12 @@ class GuestManagementService {
   }
 
   filterSearch(search: string): GenericMember[] {
-    return this.list.filter(
-      ({ filterString }) =>
-        (filterString || '').toUpperCase().indexOf((search || '').toUpperCase()) > -1,
-    );
+    if (search.length) {
+      return this.list.filter(
+        ({ filterString }) =>
+          (filterString || '').toUpperCase().indexOf((search || '').toUpperCase()) > -1,
+      );
+    } else return this.list;
   }
 
   setGuests(members: ChannelMemberResource[]): GenericMember[] {

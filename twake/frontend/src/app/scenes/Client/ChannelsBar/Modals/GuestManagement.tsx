@@ -19,8 +19,10 @@ type PropsType = {
 const GuestManagement = ({ channel }: PropsType): JSX.Element => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState<number>(10);
-
+  const [shouldDisplayAdditionRow, setShouldDisplayAdditionRow] = useState<boolean>(false);
   const { workspaceId, companyId } = RouterService.getStateFromRoute();
+
+  GuestManagementService.bind({ search, channel_id: channel.data.id || '' });
   const { list } = GuestManagementService;
 
   const memberCollectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
@@ -32,19 +34,23 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
     PendingEmailResource,
   );
 
-  useEffect(() => {
-    GuestManagementService.bind({ search, channel_id: channel.data.id || '' });
-    list.length === 0 && setLimit(10);
-    return () => GuestManagementService.destroyList();
-  }, [search, list, limit]);
+  channelMembersCollection.useWatcher({});
+  pendingEmailsCollection.useWatcher({});
 
-  const shouldDisplayAdditionRow =
-    list.length === 0 && WorkspacesUsers.fullStringToEmails(search).length === 1;
+  useEffect(() => {
+    const searchedEmail = WorkspacesUsers.fullStringToEmails(search)[0] as string;
+    const searchedEmailAlreadyAdded = list.some(item => item.filterString === searchedEmail);
+    const displayAdditionRow = (searchedEmail || '').length && !searchedEmailAlreadyAdded;
+
+    if (displayAdditionRow) {
+      setShouldDisplayAdditionRow(true);
+    } else setShouldDisplayAdditionRow(false);
+  }, [list, search]);
+
   const shouldDisplayMemberRow = list.length > 0;
   const shouldDisplayTips = !shouldDisplayMemberRow && !shouldDisplayAdditionRow;
   const shouldDisplayLoader = list.length > limit;
   return (
-    // TODO Translation
     <ObjectModal
       title={Languages.t('scenes.client.channels_bar.modals.guest_management.title', [
         capitalize(channel.data.name),
@@ -78,7 +84,7 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
             userType="pending-email"
             inPendingEmailAddition
             pendingEmailToAdd={search}
-            onPendingEmailAddition={() => setSearch('')}
+            onPendingEmailAddition={() => setShouldDisplayAdditionRow(false)}
           />
         )}
         {shouldDisplayMemberRow &&
@@ -90,7 +96,6 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
                     key={member.key}
                     channelId={member.resource.data.channel_id || ''}
                     userId={member.resource.data.id || ''}
-                    onPendingEmailDeletion={() => setSearch('')}
                     collection={
                       member.type === 'pending-email'
                         ? pendingEmailsCollection
