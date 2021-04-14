@@ -1,40 +1,54 @@
 import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { ChannelPendingEmailService } from "../../../provider";
+import ChannelServiceAPI, {
+  ChannelPendingEmailService,
+  ChannelPrimaryKey,
+} from "../../../provider";
 import {
   CreateResult,
   UpdateResult,
   SaveResult,
   DeleteResult,
-  Paginable,
   ListResult,
   CrudExeption,
   Pagination,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
-import ChannelGuestListener from "./listener";
 import { getLogger } from "../../../../../core/platform/framework";
-import { ChannelPendingEmailsPrimaryKey, ChannelPendingEmails } from "../../../entities";
+import {
+  ChannelPendingEmailsPrimaryKey,
+  ChannelPendingEmails,
+  getChannelPendingEmailsInstance,
+} from "../../../entities";
 import { ChannelPendingEmailsListQueryParameters } from "../../../web/types";
 import { plainToClass } from "class-transformer";
+import UserServiceAPI from "../../../../user/api";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger = getLogger("channel.pending_emails");
 
+type NewUserInWorkspaceNotification = {
+  user_id: string;
+  company_id: string;
+  workspace_id: string;
+};
+
 export default class ChannelPendingEmailsService implements ChannelPendingEmailService {
   version: "1";
   repository: Repository<ChannelPendingEmails>;
-  listener: ChannelGuestListener;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private userService: UserServiceAPI,
+    private service: ChannelServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository(
       "channel_pending_emails",
       ChannelPendingEmails,
     );
-    this.listener = new ChannelGuestListener(this);
-    await this.listener.init();
+
     return this;
   }
 
@@ -115,6 +129,57 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
     pk: ChannelPendingEmailsListQueryParameters,
   ): Promise<ListResult<ChannelPendingEmails>> {
     return this.repository.find(pk);
+  }
+
+  /**
+   * ne pas ajouter les guest et pending email dans les defaults channels - fait
+   * supprimer pending email après être invité - fait
+   * corriger bug sur la liste qui est vide a l'ouverture de la popup
+   * autoriser a ajouter pending email si user === guest ou n'existe pas
+   *
+   * ou placer le type NewUserInWorkspaceNotification
+   */
+  async proccessPendingEmails(
+    user: NewUserInWorkspaceNotification,
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<void> {
+    // Get user object
+    const userObj = await this.userService.users.get({
+      id: user.user_id,
+    });
+
+    // All pending emails in workspace
+    const allPendingEmailsInWorkspace = await this.repository.find(workspace);
+
+    // Filter pending emails in workspace with user object email
+    allPendingEmailsInWorkspace.filterEntities(({ email }) => email === userObj.emailcanonical);
+
+    // Add user to all channel that he is invited then delete pending email entity
+    allPendingEmailsInWorkspace
+      .getEntities()
+      .forEach(async ({ workspace_id, channel_id, company_id, email }) => {
+        // Add user to channel
+        const list = await this.service.members.addUserToChannels(userObj, [
+          {
+            workspace_id,
+            company_id,
+            id: channel_id,
+          },
+        ]);
+
+        // If added to channel, delete pending email
+        const isAddedToChannel = list.getEntities()[0].added;
+        if (isAddedToChannel) {
+          await this.delete(
+            getChannelPendingEmailsInstance({
+              workspace_id,
+              company_id,
+              email,
+              channel_id,
+            }),
+          );
+        }
+      });
   }
 
   onCreated(

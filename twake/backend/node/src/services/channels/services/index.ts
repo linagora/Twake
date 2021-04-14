@@ -45,7 +45,7 @@ class Service implements ChannelServiceAPI {
     this.tabs = getTabService(databaseService);
     this.activities = getActivitiesService(pubsub);
     this.pubsubListener = new PubsubListener(this, pubsub);
-    this.pendingEmails = new ChannelPendingEmailsService(databaseService);
+    this.pendingEmails = new ChannelPendingEmailsService(databaseService, user, this);
   }
 
   async init(): Promise<this> {

@@ -221,6 +221,13 @@ export interface DefaultChannelService
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
 
+// TYPE HERE
+type NewUserInWorkspaceNotification = {
+  user_id: string;
+  company_id: string;
+  workspace_id: string;
+};
+
 export interface ChannelPendingEmailService
   extends TwakeServiceProvider,
     Initializable,
@@ -228,4 +235,9 @@ export interface ChannelPendingEmailService
   findPendingEmails(
     pk: ChannelPendingEmailsListQueryParameters,
   ): Promise<ListResult<ChannelPendingEmails>>;
+
+  proccessPendingEmails(
+    user: NewUserInWorkspaceNotification,
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<unknown>;
 }

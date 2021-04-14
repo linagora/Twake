@@ -1,11 +1,11 @@
 import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
-import ChannelServiceAPI, { ChannelPendingEmailService } from "../../../provider";
+import ChannelServiceAPI from "../../../provider";
 
-type NewEmailInWorkspaceNotification = {
-  email: string;
+// TYPE HERE
+type NewUserInWorkspaceNotification = {
+  user_id: string;
   company_id: string;
-  channel_id: string;
   workspace_id: string;
 };
 
@@ -17,7 +17,7 @@ const logger = getLogger("channel.pubsub.new-pending-emails-in-workspace-join-ch
  * In such case, the email must be added to all the channels that he is invited.
  */
 export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
-  implements PubsubHandler<NewEmailInWorkspaceNotification, void> {
+  implements PubsubHandler<NewUserInWorkspaceNotification, void> {
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
@@ -32,27 +32,20 @@ export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
 
   readonly name = NAME;
 
-  validate(message: NewEmailInWorkspaceNotification): boolean {
-    return !!(message && message.company_id && message.workspace_id && message.email);
+  validate(message: NewUserInWorkspaceNotification): boolean {
+    return !!(message && message.company_id && message.workspace_id && message.user_id);
   }
 
-  async process(message: NewEmailInWorkspaceNotification): Promise<void> {
+  async process(message: NewUserInWorkspaceNotification): Promise<void> {
     logger.debug("Processing notification for message %o", message);
 
     try {
-      const pendingEmailsInWorkspace = await this.service.pendingEmails.findPendingEmails(message);
+      await this.service.pendingEmails.proccessPendingEmails(message, {
+        workspace_id: message.workspace_id,
+        company_id: message.company_id,
+      });
 
-      console.log("pendingEmailsInWorkspace", pendingEmailsInWorkspace);
-      /*
-
-      user id ici 
-      pas email pending
-
-      logger.debug(
-        "Email %s has been added as member to all the channels that he is invited %o",
-        message.email,
-        (channelMembers || []).map(c => c.channel_id),
-      );*/
+      logger.debug("Pending email %s has been added as member to channel %o");
     } catch (err) {
       logger.error(
         { err },
