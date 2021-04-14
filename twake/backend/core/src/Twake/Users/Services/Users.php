@@ -233,7 +233,7 @@ class Users
         }
         
         $membersRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
-        $companies = $membersRepository->findBy(Array("user" => $user));
+        $companies = $membersRepository->findBy(Array("user" => $user["id"]));
         $user["companies"] = [];
 
         foreach($companies as $companyMember){
