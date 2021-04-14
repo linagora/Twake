@@ -226,6 +226,16 @@ class Users
         return $this->list_users ?: null;
     }
 
+    public function completeUserWithCompanies($user, $requester = null)
+    {
+        if($user) {
+            $companies = Array("hello", "world");
+            $user["companies"] = $companies;
+        } 
+
+        return $user;
+    }
+
     public function getById($id, $entity = false)
     {
         $userRepository = $this->em->getRepository("Twake\Users:User");

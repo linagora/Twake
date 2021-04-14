@@ -10,6 +10,7 @@ use Common\Http\Request;
 class Users extends BaseController
 {
 
+    // $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
     public function search(Request $request)
     {
 
@@ -47,7 +48,9 @@ class Users extends BaseController
         }else{
             $user = [];
             foreach($id as $singleId){
-                $user[] = $this->get("app.users")->getById($singleId);
+                $obj = $this->get("app.users")->getById($singleId);
+                $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
+                $user[] = $obj;
             }
         }
 
