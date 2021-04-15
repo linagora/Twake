@@ -82,6 +82,7 @@ export default () => {
       )}
 
       <ScrollWithHiddenComponents
+        disabled={!ready}
         tag="channel_bar_component"
         scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
         scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
