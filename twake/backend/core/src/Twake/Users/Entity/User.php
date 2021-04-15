@@ -587,7 +587,7 @@ class User extends SearchableObject
         $return["last_name"] = $return["lastname"];
         $return["created_at"] = ($this->getCreationDate() ? ($this->getCreationDate()->format('U') * 1000) : null);
 
-        $return["preferences"] = [
+        $return["preference"] = [
             "locale" => $this->getLanguage(),
             "timezone" => $this->timezone,
         ];
