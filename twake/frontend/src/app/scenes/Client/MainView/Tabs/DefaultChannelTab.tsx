@@ -61,7 +61,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: '',
         });
-        return RouterServices.history.push(route);
+        return RouterServices.push(route);
       }}
     >
       <MessageCircle size={14} className="small-right-margin" />

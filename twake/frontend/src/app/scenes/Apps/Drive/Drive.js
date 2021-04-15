@@ -314,7 +314,7 @@ export default class Drive extends Component {
         channelId: this.props.channel.id,
         directoryId: directory_id,
       });
-      RouterServices.history.replace(url);
+      RouterServices.replace(url);
       */
     }
 
@@ -828,6 +828,8 @@ export default class Drive extends Component {
                   data={files}
                   view_mode={DriveService.view_mode}
                 />
+
+                <div style={{ marginTop: 64 }} />
               </div>
             )}
           </DriveMultiSelector>

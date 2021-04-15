@@ -15,6 +15,7 @@ import ChannelsService from 'services/channels/channels.js';
 import emojione from 'emojione';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import UserService from 'services/user/user.js';
+import NotificationPreferences from './notificationParameters';
 
 type DesktopNotification = {
   channel_id: string;
@@ -67,6 +68,22 @@ class Notifications extends Observable {
         request.then(function (result) {});
       }
     }
+
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+    );
+
+    notificationsCollection.getTransport().start();
+    notificationsCollection.addEventListener(
+      'notification:desktop',
+      this.triggerUnreadMessagesPushNotification,
+    );
+
+    //Listen websockets
+    notificationsCollection.addWatcher(() => {
+      this.getNotifications();
+    }, {});
   }
 
   //This method is called each time we change our current company
@@ -82,22 +99,6 @@ class Notifications extends Observable {
         all_companies: true,
       },
     });
-
-    notificationsCollection.getTransport().start();
-    notificationsCollection.removeEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-    notificationsCollection.addEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-
-    //Listen websockets
-    notificationsCollection.addWatcher(() => {
-      this.getNotifications();
-    }, {});
-
     notificationsCollection.find({}, { limit: 1000, refresh: true });
   }
 
@@ -156,6 +157,7 @@ class Notifications extends Observable {
       }
     }
     this.updateAppBadge(badgeCount);
+    NotificationPreferences.init();
     this.notify();
   }
 
@@ -219,7 +221,7 @@ class Notifications extends Observable {
             )[0]?.id;
           }
           if (workspaceId) {
-            RouterService.history.push(
+            RouterService.push(
               RouterService.generateRouteFromState({
                 companyId: notificationObject.company_id,
                 workspaceId: workspaceId,

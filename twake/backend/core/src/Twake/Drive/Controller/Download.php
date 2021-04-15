@@ -39,7 +39,7 @@ class Download extends BaseController
 
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "drive:download",
-            "userId" => $this->isConnected() ? $this->getUser()->getId() : "anonymous"
+            "userId" => $this->isConnected() ? ($this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()) : "anonymous"
         ]);
 
         @$response = $this->get('driveupload.download')->download($workspace_id, $files_ids, $download, $versionId);

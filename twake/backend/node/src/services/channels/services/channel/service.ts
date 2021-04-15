@@ -316,8 +316,9 @@ export class Service implements ChannelService {
   })
   async updateLastActivity(
     payload: {
+      date: number;
       channel: ChannelPrimaryKey;
-      message: ChannelActivityMessage;
+      message: ChannelActivityMessage | null;
     },
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>> {
@@ -328,13 +329,16 @@ export class Service implements ChannelService {
     entity.channel_id = channelPK.id;
     entity.company_id = channelPK.company_id;
     entity.workspace_id = channelPK.workspace_id;
-    entity.last_activity = channelActivityMessage.date;
-    entity.last_message = {
-      date: channelActivityMessage.date,
-      sender: channelActivityMessage.sender,
-      title: channelActivityMessage.title,
-      text: channelActivityMessage.text,
-    };
+    entity.last_activity = payload.date;
+    entity.last_message = channelActivityMessage
+      ? {
+          date: channelActivityMessage.date,
+          sender: channelActivityMessage.sender,
+          sender_name: channelActivityMessage.sender_name,
+          title: channelActivityMessage.title,
+          text: channelActivityMessage.text,
+        }
+      : null;
 
     entity.channel = channel;
 
@@ -606,6 +610,15 @@ export class Service implements ChannelService {
           }
         }
       }
+
+      this.updateLastActivity(
+        {
+          date: new Date().getTime(),
+          channel: channel,
+          message: null,
+        },
+        context,
+      );
 
       localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }

@@ -16,7 +16,7 @@ export default () => {
       },
     };
     if (!RouterServices.useRedirection()) {
-      RouterServices.history.push('/');
+      RouterServices.push('/');
     }
   }
   return (

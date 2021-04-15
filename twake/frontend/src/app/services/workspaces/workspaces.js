@@ -163,9 +163,9 @@ class Workspaces extends Observable {
       channelId: '',
     });
     if (replace) {
-      RouterServices.history.replace(route);
+      RouterServices.replace(route);
     } else {
-      RouterServices.history.push(route);
+      RouterServices.push(route);
     }
 
     LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
@@ -250,14 +250,13 @@ class Workspaces extends Observable {
         that.addToUser(res.data.workspace);
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
-
         if (wsMembers.length > 0) {
           if (InitService.server_infos?.auth?.console?.use) {
             //Invite using console
             ConsoleService.addMailsInWorkspace({
               workspace_id: res.data.workspace.id || '',
               company_id: res.data.workspace.group.id || '',
-              wsMembers,
+              emails : wsMembers,
             }).finally(() => {
               that.loading = false;
               popupManager.close();

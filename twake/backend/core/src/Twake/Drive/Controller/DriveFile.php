@@ -48,7 +48,7 @@ class DriveFile extends BaseController
 
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "drive:".($object["is_directory"] ? "directory" : "file") . ":" . ($object["id"] ? "edit" : "create"),
-            "userId" => $this->getUser()->getId()
+            "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
         ]);
 
         if (!empty($object["_once_set_access"]) && !empty($object["id"])) {

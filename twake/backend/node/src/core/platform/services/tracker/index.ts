@@ -16,7 +16,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     localEventBus.subscribe<ResourceEventsPayload>(channelListEvent, data => {
       logger.debug(`Tracker - New ${channelListEvent} event`);
       this.identify({
-        userId: data.user.id,
+        userId: data.user.identity_provider_id || data.user.id,
         traits: {
           email: data.user.email || "",
           company: {

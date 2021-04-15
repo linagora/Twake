@@ -17,7 +17,7 @@ class Upload extends BaseController
 
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "drive:file:create",
-            "userId" => $this->getUser()->getId()
+            "userId" => $this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()
         ]);
 
         return new Response(Array("identifier" => $identifier));
@@ -41,7 +41,7 @@ class Upload extends BaseController
 
         if($GLOBALS["segment_enabled"]) \Segment::track([
             "event" => "drive:preview",
-            "userId" => $this->isConnected() ? $this->getUser()->getId() : "anonymous"
+            "userId" => $this->isConnected() ? ($this->getuser()->getIdentityProviderId() ?: $this->getUser()->getId()) : "anonymous"
         ]);
 
         $this->get('driveupload.previewmanager')->generatePreviewFromFolder($request);

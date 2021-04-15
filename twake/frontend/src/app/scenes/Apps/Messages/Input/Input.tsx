@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import InputOptions from './Parts/InputOptions';
 import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
@@ -27,6 +27,7 @@ export default (props: Props) => {
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const refInput = useRef<any>(null);
   const messageEditorService: MessageEditors = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
 
@@ -41,6 +42,9 @@ export default (props: Props) => {
   };
   const onSend = async () => {
     const content = await messageEditorService.getContent(props.threadId, props.messageId || '');
+
+    refInput?.current?.change('');
+
     if (props.onSend) {
       props.onSend(content);
       return;
@@ -52,6 +56,7 @@ export default (props: Props) => {
       sendMessage(content);
       autocomplete.setContent('');
       autocomplete.blur();
+
       return true;
     }
     return false;
@@ -130,6 +135,7 @@ export default (props: Props) => {
       <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
       {!hasEphemeralMessage && (
         <InputAutocomplete
+          ref={refInput}
           messageId={props.messageId || ''}
           onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
           channelId={props.channelId}

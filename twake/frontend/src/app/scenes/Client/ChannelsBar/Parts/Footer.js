@@ -40,17 +40,6 @@ export default class Footer extends Component {
             window.open(InitService.server_infos.help_link);
           })
         }
-        onClickFeedback={
-          () => {
-            const currentUser = UserService.getCurrentUser();
-            window.freddyWidget.show({
-              custom_fields: {
-                id: currentUser.id,
-                email: currentUser.email,
-              }
-            });
-          }
-        }
         onClickDocumentation={
           () => {
             window.open("https://doc.twake.app/how-to-use-it/welcome");

@@ -31,7 +31,7 @@ export default (): JSX.Element => {
     const route: string = RouterServices.generateRouteFromState({
       tabId: '',
     });
-    RouterServices.history.push(route);
+    RouterServices.push(route);
   }
 
   return (

@@ -14,10 +14,8 @@ class _MainViewService extends AppViewService {
   }
 
   public select(id: string, configuration?: ViewConfiguration) {
-    if (id != this.getId()) {
-      RouterService.history.push(
-        RouterService.generateRouteFromState({ channelId: id, tabId: '' }),
-      );
+    if (RouterService.history.action !== 'POP' && id != this.getId()) {
+      RouterService.push(RouterService.generateRouteFromState({ channelId: id, tabId: '' }));
     }
     super.select(id, configuration);
   }

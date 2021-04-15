@@ -662,6 +662,7 @@ export default {
   'scenes.apps.account.notifications.mail_option_ever': 'Send me all the notification emails',
   'scenes.apps.account.notifications.mail_option_daily': 'Just send me a daily report',
   'scenes.apps.account.notifications.mail_option_never': 'Never send e-mail notifications',
+  'scenes.apps.account.notifications.sound': 'Sound notification',
   'scenes.apps.account.workspaces.workspace_name': 'Workspace name',
   'scenes.apps.account.workspaces.members_number': 'Number of members',
   'scenes.apps.account.workspaces.favorite_workspace': 'Favorite workspaces',
@@ -1085,7 +1086,7 @@ export default {
     'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add collaborators to your company.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Twake is better in team.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team members.',
   'scenes.app.workspaces.create_company.title': 'Create my company',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Add a secondary email',
   'scenes.app.workspaces.welcome_page.added_to_company': 'You have been invited to ',
@@ -1359,17 +1360,20 @@ export default {
     'An error occurred while updating the application.',
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Delete application',
   'scenes.app.popup.appsparameters.pages.update_button': 'Update',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Need more space? Create a new workspace and it will be perfect!',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Need more space?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Create a new workspace',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Name of the workspace',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
     'Set the frequency of mobile notifications.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Frenquency of notifications',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Receive only notifications that match certain keywords.',
+    'Highlight the following keywords:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Set the frequency of email notifications.',
+  'scenes.app.popup.userparameter.pages.private_message_content.show':
+    'Show private messages content',
+  'scenes.app.popup.userparameter.pages.private_message_content.hide':
+    'Hide private messages content',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
     'Choose a period during which you do not receive notifications.',
   'scenes.app.popup.userparameter.pages.no_night_disturbing_label': 'Do not disturb at night',
@@ -1381,12 +1385,12 @@ export default {
   'scenes.app.popup.userparameter.personnal_workspaces_title': 'Your workspaces',
   'scenes.app.popup.workspaceparameter.admin_current_status': 'You are an Administrator.',
   'scenes.app.popup.workspaceparameter.admin_manager_current_status':
-    'You are a Director and Manager of the company.',
-  'scenes.app.popup.workspaceparameter.manager_current_status':
-    'You are the manager of the company.',
+    'You are a workspace administrator.',
+  'scenes.app.popup.workspaceparameter.manager_current_status': 'You are a company administrator.',
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Delete workspace',
-  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description': 'Delete this workspace',
+  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
+    'To confirm you want to delete this workspace, please type the name below and hit delete',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
@@ -1406,15 +1410,15 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.back_to_search_button': 'Return to the search',
   'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button':
     'Cancel the invitation by e-mail.',
-  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add collaborators',
+  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add colleagues',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text':
     'Collaborators in this workspace $1',
   'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'Collaborators',
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     'Applications developed by the company',
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': 'Identity of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Manager of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Manager of the company',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Company Admin',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Company Admin',
   'scenes.app.popup.workspaceparameter.pages.company_name_description':
     'Change the name of this company',
   'scenes.app.popup.workspaceparameter.pages.company_name_label': 'Name of the company',
@@ -1936,5 +1940,5 @@ export default {
   'services.console_services.toaster.success_verify_email':
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
-  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 email(s)',
+  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 user(s)',
 };

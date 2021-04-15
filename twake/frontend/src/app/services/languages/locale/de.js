@@ -1106,7 +1106,7 @@ export default {
     'Die Anzahl der Felder nimmt automatisch zu.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Bevor Sie fertig sind, können Sie Ihrem Unternehmen Mitarbeiter hinzufügen.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Twake ist besser mit deinem Team.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Hinzufügen Ihrer Teammitglieder.',
   'scenes.app.workspaces.create_company.title': 'Schaffe meine Firma',
   'scenes.app.workspaces.welcome_page.add_secondary_emails':
     'Fügen Sie eine sekundäre E-Mail hinzu',
@@ -1387,7 +1387,7 @@ export default {
   'scenes.app.popup.appsparameters.pages.website_label': 'Webseite',
   'scenes.app.popup.appsparameters.pages.write_privileges_label': 'Schreibrechte',
   'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Brauche mehr Platz? Ein neuer Arbeitsplatz und es wird perfekt!',
+    'Brauche mehr Platz?',
   'scenes.app.popup.createworkspacepage.create_new_workspace':
     'Erstellen Sie einen neuen Arbeitsbereich',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Name des Arbeitsbereichs',
@@ -1396,7 +1396,7 @@ export default {
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle':
     'Häufigkeit der Benachrichtigungen',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Erhalten Sie nur Benachrichtigungen, die bestimmten Keywords entsprechen.',
+    'Markieren Sie die folgenden Schlüsselwörter:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Legen Sie die Häufigkeit der E-Mail-Benachrichtigungen fest.',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
@@ -1428,7 +1428,7 @@ export default {
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Leerzeichen löschen',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
-    'Löschen Sie diesen Arbeitsbereich',
+    'Um zu bestätigen, dass Sie diesen Arbeitsbereich löschen möchten, geben Sie bitte den Namen unten ein und drücken Sie auf Löschen',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Eingeben ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Greifen Sie auf Ihre Anwendungen und Konnektoren zu',

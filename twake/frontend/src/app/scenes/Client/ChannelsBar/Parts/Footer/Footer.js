@@ -21,12 +21,6 @@ export default class Footer extends React.Component {
       },
       {
         type: 'menu',
-        text: Languages.t('general.help.feedback', [], 'Feedback'),
-        icon: 'comment-alt-message',
-        onClick: props.onClickFeedback,
-      },
-      {
-        type: 'menu',
         text: Languages.t('general.help.documentation', [], 'Documentation'),
         icon: 'book',
         onClick: props.onClickDocumentation,

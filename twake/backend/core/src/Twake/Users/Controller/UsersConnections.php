@@ -49,7 +49,7 @@ class UsersConnections extends BaseController
 
         $response = new Response();
         $logged = $this->getUser() && !is_string($this->getUser());
-        if(!$logged){
+        if(!$logged || ($usernameOrMail && $password)){
             $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
         }
 
