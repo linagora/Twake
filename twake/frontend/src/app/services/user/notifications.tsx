@@ -68,6 +68,22 @@ class Notifications extends Observable {
         request.then(function (result) {});
       }
     }
+
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+    );
+
+    notificationsCollection.getTransport().start();
+    notificationsCollection.addEventListener(
+      'notification:desktop',
+      this.triggerUnreadMessagesPushNotification,
+    );
+
+    //Listen websockets
+    notificationsCollection.addWatcher(() => {
+      this.getNotifications();
+    }, {});
   }
 
   //This method is called each time we change our current company
@@ -83,22 +99,6 @@ class Notifications extends Observable {
         all_companies: true,
       },
     });
-
-    notificationsCollection.getTransport().start();
-    notificationsCollection.removeEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-    notificationsCollection.addEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-
-    //Listen websockets
-    notificationsCollection.addWatcher(() => {
-      this.getNotifications();
-    }, {});
-
     notificationsCollection.find({}, { limit: 1000, refresh: true });
   }
 

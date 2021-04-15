@@ -1360,8 +1360,7 @@ export default {
     'An error occurred while updating the application.',
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Delete application',
   'scenes.app.popup.appsparameters.pages.update_button': 'Update',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Need more space?',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Need more space?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Create a new workspace',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Name of the workspace',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
@@ -1386,12 +1385,12 @@ export default {
   'scenes.app.popup.userparameter.personnal_workspaces_title': 'Your workspaces',
   'scenes.app.popup.workspaceparameter.admin_current_status': 'You are an Administrator.',
   'scenes.app.popup.workspaceparameter.admin_manager_current_status':
-    'You are a Director and Manager of the company.',
-  'scenes.app.popup.workspaceparameter.manager_current_status':
-    'You are the manager of the company.',
+    'You are a workspace administrator.',
+  'scenes.app.popup.workspaceparameter.manager_current_status': 'You are a company administrator.',
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Delete workspace',
-  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description': 'To confirm you want to delete this workspace, please type the name below and hit delete',
+  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
+    'To confirm you want to delete this workspace, please type the name below and hit delete',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
@@ -1418,8 +1417,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     'Applications developed by the company',
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': 'Identity of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Manager of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Manager of the company',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Company Admin',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Company Admin',
   'scenes.app.popup.workspaceparameter.pages.company_name_description':
     'Change the name of this company',
   'scenes.app.popup.workspaceparameter.pages.company_name_label': 'Name of the company',
@@ -1941,5 +1940,5 @@ export default {
   'services.console_services.toaster.success_verify_email':
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
-  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 email(s)',
+  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 user(s)',
 };

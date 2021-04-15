@@ -20,8 +20,8 @@ export default class WorkspaceUser {
   @Column("id", "timeuuid")
   id: string;
 
-  @Column("level_id", "number")
-  levelId: number;
+  @Column("role", "string")
+  role: "admin" | "member"; //Relative to workspace only (not relative to company)
 
   @Column("date_added", "number")
   dateAdded: number;
@@ -29,14 +29,8 @@ export default class WorkspaceUser {
   @Column("last_access", "number")
   lastAccess: number;
 
-  @Column("hasnotifications", "twake_boolean")
-  hasNotifications: boolean;
-
   @Column("is_externe", "twake_boolean")
-  isExternal: boolean;
-
-  @Column("is_auto_add_externe", "twake_boolean")
-  autoAddExternalExternal: boolean;
+  isExternal: boolean; //Depreciated
 }
 
 export type WorkspaceUserPrimaryKey = Partial<Pick<WorkspaceUser, "workspaceId" | "userId">>;

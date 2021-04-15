@@ -34,7 +34,7 @@ export default (props: {
         {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
         {unreadOtherCompanies > 0 && <div className="notification_dot" />}
       </div>
-      <div className="company_name">{group.mininame || (group.name || '').substr(0, 6)}</div>
+      <div className="company_name">{(group.name || '').trim()}</div>
     </div>
   );
 };

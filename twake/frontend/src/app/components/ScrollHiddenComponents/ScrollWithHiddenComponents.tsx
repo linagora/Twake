@@ -9,6 +9,7 @@ type PropsType = {
   scrollTopComponent?: JSX.Element;
   scrollBottomComponent?: JSX.Element;
   tag: string;
+  disabled?: boolean;
 };
 
 const ScrollWithHiddenComponents: FC<PropsType> = ({
@@ -16,14 +17,18 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
   scrollTopComponent,
   scrollBottomComponent,
   tag,
+  disabled,
 }) => {
   const ref = useRef<any>(null);
   const service = HiddenNotificationService.get(tag);
 
   useEffect(() => {
+    if (disabled) {
+      return;
+    }
     service.setScroller(ref.current.firstChild);
     return () => service.removeScroller();
-  }, [tag, ref]);
+  }, [tag, ref, disabled]);
 
   const beacon: number[] = service.useWatcher(() => [
     service.state.beaconTop.length,

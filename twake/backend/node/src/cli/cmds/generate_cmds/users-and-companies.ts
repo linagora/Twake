@@ -117,10 +117,10 @@ const getUsers = (company: Company, size: number = 100): User[] => {
 const getUser = (company: Company, id: number): User => {
   return getUserInstance({
     id: uuid(),
-    firstname: "John",
-    lastname: `Doe${id}`,
-    emailcanonical: `user${id}@${company.name}`,
-    creationdate: Date.now(),
+    first_name: "John",
+    last_name: `Doe${id}`,
+    email_canonical: `user${id}@${company.name}`,
+    creation_date: Date.now(),
     password: passwordGenerator.generate({
       length: 10,
       numbers: true,

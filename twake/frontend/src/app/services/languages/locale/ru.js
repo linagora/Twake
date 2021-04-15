@@ -1410,8 +1410,7 @@ export default {
     'Ошибка произошла при обновлении приложения.',
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Удалить приложение',
   'scenes.app.popup.appsparameters.pages.update_button': 'Обновить',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Нужно больше места?',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Нужно больше места?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Создать новое рабочее пространство',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Название рабочего пространства',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':

@@ -282,9 +282,9 @@ export class MergeProcess {
       }
 
       const firstName =
-        user.firstname && user.firstname.trim().length ? user.firstname : user.emailcanonical;
+        user.first_name && user.first_name.trim().length ? user.first_name : user.email_canonical;
       const lastName =
-        user.lastname && user.lastname.trim().length ? user.lastname : user.emailcanonical;
+        user.last_name && user.last_name.trim().length ? user.last_name : user.email_canonical;
       const name = (firstName + " " + lastName).trim();
 
       let role: "admin" | "guest" | "member" =
@@ -306,7 +306,7 @@ export class MergeProcess {
       result = await this.client.addUser(
         { code: company.id },
         {
-          email: user.emailcanonical,
+          email: user.email_canonical,
           // console requires that firstname/lastname are defined and at least 1 chat long
           firstName,
           lastName,

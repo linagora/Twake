@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import EventListener from 'events';
 
 /**
@@ -27,38 +27,44 @@ export const useWatcher = <G>(
 
   const [, forceRender] = useState<G>(isAsync ? null : value);
 
+  const savedObservable = useRef(observable);
+  const savedForceRender = useRef((v: any) => forceRender(v));
+
   useMemo(() => {
-    observable.removeWatcher(forceRender);
+    savedObservable.current.removeWatcher(forceRender);
     observable.addWatcher(forceRender, observedScope, options);
+    savedObservable.current = observable;
   }, options?.memoizedFilters || []);
 
   useEffect(() => {
-    observable.removeWatcher(forceRender);
-    const watcher = observable.addWatcher(
-      v => {
-        forceRender(v);
-      },
+    savedObservable.current.removeWatcher(savedForceRender.current);
+    observable.addWatcher(savedForceRender.current, observedScope, options);
+    savedObservable.current = observable;
+  }, [observable]);
+
+  useEffect(() => {
+    const watcher = savedObservable.current.addWatcher(
+      savedForceRender.current,
       observedScope,
       options,
     );
 
-    observable.getChanges<G>(watcher).then(changes => {
+    savedObservable.current.getChanges<G>(watcher).then(changes => {
       if (changes.didChange) {
         forceRender(changes.changes);
       }
     });
 
-    //Called on component unmount
     return () => {
-      observable.removeWatcher(forceRender);
+      savedObservable.current.removeWatcher(savedForceRender.current);
     };
-  }, [observable]);
+  }, []);
 
   return value as G;
 };
 
 export default class Observable extends EventListener {
-  protected watchers: Watcher[] = [];
+  public watchers: Watcher[] = [];
 
   constructor() {
     super();

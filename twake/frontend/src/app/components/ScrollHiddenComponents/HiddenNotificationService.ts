@@ -56,15 +56,6 @@ class HiddenNotificationService extends Observable {
     });
   }
 
-  public setScroller(node: NodeType) {
-    this.scroller = { node, top: node.getBoundingClientRect().y };
-
-    node.addEventListener('scroll', this.detectHiddenBeacons, { passive: true });
-
-    this.setBeaconsTop(this.scroller);
-    this.detectHiddenBeacons();
-  }
-
   private detectHiddenBeacons(evt: any = null) {
     if (!this.scroller.node) return;
 
@@ -92,10 +83,21 @@ class HiddenNotificationService extends Observable {
     }, 500);
   }
 
+  public setScroller(node: NodeType) {
+    this.scroller = { node, top: node.getBoundingClientRect().y };
+
+    node.addEventListener('scroll', this.detectHiddenBeacons, { passive: true });
+    window.addEventListener('resize', this.detectHiddenBeacons);
+
+    this.setBeaconsTop(this.scroller);
+    this.detectHiddenBeacons();
+  }
+
   public removeScroller() {
+    window.removeEventListener('resize', this.detectHiddenBeacons);
     this.scroller = { node: undefined, top: undefined };
     if (this.scroller.node) {
-      this.scroller.node.removeEventListener('scroll', this.detectHiddenBeacons.bind(this));
+      this.scroller.node.removeEventListener('scroll', this.detectHiddenBeacons);
     }
   }
 }
