@@ -134,9 +134,6 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
           // loading from an initial offset ie opening feed from a given message
           if (!this.threadId && params.offset && this.initialDirection === 'down') {
-            // this simply store the message we want to start from and all its responses.
-            // The last response will be the last item cursor
-            // So we are missing all the other messages after the initial one...
             if (messages.length < this.pageSize) {
               this.setBottomIsComplete();
             }
@@ -147,7 +144,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
             this.setBottomIsComplete();
           }
 
-          if (messages[0]?.hidden_data?.type === 'init_channel' || messages.length < this.pageSize) {
+          if (messages[0]?.hidden_data?.type === 'init_channel' || (this.nbCalls > 1 && messages.length < this.pageSize)) {
             this.setTopIsComplete()
           }
 
