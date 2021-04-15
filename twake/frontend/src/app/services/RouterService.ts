@@ -165,7 +165,7 @@ class RouterServices extends Observable {
       shared: !!this.match(this.pathnames.SHARED),
     };
 
-    const queryParameters = this.allowedQueryParameters[match.path];
+    const queryParameters = this.allowedQueryParameters[match?.path];
 
     if (queryParameters && this.history.location.search) {
       const params = new URLSearchParams(this.history.location.search);
