@@ -141,7 +141,7 @@ class Workspaces
                 "name" => "General",
                 "description" => "",
                 "visibility" => "public",
-                "default" => true
+                "is_default" => true
             ],
             "options" => [],
             "user_id" => $userId
