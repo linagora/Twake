@@ -409,6 +409,12 @@ export default class MessagesList extends React.Component<Props, State> {
     }));
   }
 
+  getPreviousMessage(message: MessageModel): MessageModel | undefined {
+    const index = this.state.messages.findIndex(m => message.id && (m.id === message.id));
+
+    return index > 0 ? this.state.messages[index - 1] : undefined;
+  }
+
   render() {
     return (
       <>
@@ -446,7 +452,7 @@ export default class MessagesList extends React.Component<Props, State> {
                     key={message.id || message.front_id}
                     messageId={message.id || message.front_id || ""}
                     threadHeader={this.props.threadId}
-                    previousMessageId={this.state.messages[index - 1]?.id || ""}
+                    previousMessageId={this.getPreviousMessage(message)?.id || ""}
                     unreadAfter={this.props.unreadAfter}
                     highlighted={highlight}
                     collectionKey={this.props.collectionKey}
