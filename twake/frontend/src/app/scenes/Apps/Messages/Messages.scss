@@ -25,8 +25,22 @@
   }
 
   .messages-list {
-    .header-loader {
-      margin: 10px;
+    .header {
+      display: flex;
+      justify-content: center;
+
+      .loader {
+        margin: 10px;
+      }
+    }
+
+    .footer {
+      display: flex;
+      justify-content: center;
+
+      .loader {
+        margin: 10px;
+      }
     }
 
     .go-to-bottom {

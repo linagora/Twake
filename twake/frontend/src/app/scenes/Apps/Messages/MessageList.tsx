@@ -8,7 +8,6 @@ import Message from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
 import { Message as MessageModel } from 'app/services/Apps/Messages/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
-import RouterServices from 'app/services/RouterService';
 import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
@@ -30,6 +29,20 @@ const FullPageLoaderComponent = () => (
     </div>
   </div>
 );
+const HeaderLoader = (hide: boolean) => {
+  return (
+    <div className="header">
+      { hide ? <></> : <div className="loader"><LoadComponent/></div> }
+    </div>
+  );
+};
+const BottomLoader = (hide: boolean) => {
+  return (
+    <div className="footer">
+      { hide ? <></> : <div className="loader"><LoadComponent/></div> }
+    </div>
+  );
+};
 
 type Props = {
   /**
@@ -445,19 +458,8 @@ export default class MessagesList extends React.Component<Props, State> {
                 this.position = atTop ? "top" : "middle";
               }}
               components={{
-                Header: () => {
-                  return (
-                    <div className="header" style={{ display: 'flex', justifyContent: 'center' }}>
-                      {
-                        this.lockScrollUp || this.topHasBeenReached
-                        ?
-                        <></>
-                        :
-                        <div className="header-loader"><LoadComponent/></div>
-                      }
-                    </div>
-                  );
-                },
+                Header: () => HeaderLoader(this.lockScrollUp || this.topHasBeenReached),
+                Footer: () => BottomLoader(this.bottomHasBeenReached || this.nbOfCalls.down === 0)
               }}
             />
             <GoToBottom
