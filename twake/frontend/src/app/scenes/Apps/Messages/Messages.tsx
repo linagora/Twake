@@ -18,7 +18,14 @@ type Props = {
   options: any;
 };
 
-export default class MainView extends Component<Props> {
+type State = {
+  /**
+   * True when everything is ready to be displayed
+   */
+  ready: boolean;
+};
+
+export default class MainView extends Component<Props, State> {
   options: any = {};
 
   /**
@@ -31,10 +38,6 @@ export default class MainView extends Component<Props> {
    */
   startAtOffset = '';
   collectionKey: string;
-  /**
-   * Avoid to render until everything needed is ready
-   */
-  ready = false;
   upload_zone: any;
   messageService: MessageListService;
 
@@ -49,6 +52,9 @@ export default class MainView extends Component<Props> {
     this.threadId = this.options.context.threadId || '';
     this.collectionKey = `messages@channel:${this.props.channel.id}/thread:${this.threadId}`;
     this.messageService = MessageListServiceFactory.get(this.collectionKey, this.props.channel);
+    this.state = {
+      ready: false,
+    };
   }
 
   componentDidMount(): void {
@@ -57,20 +63,20 @@ export default class MainView extends Component<Props> {
       // this is something quite weird but there are no way to do it another way...
       RouterServices.history.replace({ search: '' });
     }
-    this.ready = true;
+    this.setState({ ready: true});
   }
 
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
     MessagesService.removeListener(this);
-    this.ready = false;
+    this.setState({ ready: false });
   }
 
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
 
-    return this.ready
+    return this.state.ready
       ? (
       <div
         className="messages-view"
