@@ -241,7 +241,7 @@ class Users
                 continue;
             }
             $user["companies"][] = [
-                "role" => $companyMember->getRole(),
+                "role" => $companyMember->getRole() === null ? "member" : $companyMember->getRole(),
                 "status" => "active",
                 "company" => [
                     "id" => $companyMember->getGroup()->getId()
