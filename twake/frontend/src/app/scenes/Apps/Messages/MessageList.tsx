@@ -465,7 +465,7 @@ export default class MessagesList extends React.Component<Props, State> {
               }}
               components={{
                 Header: () => HeaderLoader(this.lockScrollUp || this.topHasBeenReached),
-                Footer: () => BottomLoader(this.bottomHasBeenReached || this.nbOfCalls.down === 0)
+                Footer: () => BottomLoader(this.bottomHasBeenReached || this.nbOfCalls.down <= 1)
               }}
             />
             <GoToBottom
