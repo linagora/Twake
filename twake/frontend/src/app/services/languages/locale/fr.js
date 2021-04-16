@@ -1456,7 +1456,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.enter': 'Entrer ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Accédez à vos applications et connecteurs',
-  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Administrateur',
+  'scenes.app.popup.workspaceparameter.pages.administrater_status':
+    "Administrateur de l'espace de travail",
   'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing':
     "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'Toutes les applications',
@@ -2021,4 +2022,7 @@ export default {
   'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
     "Renvoyer l'invitation",
   'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail envoyé',
+  'general.user.role.company.admin': "Administrateur de l'entreprise",
+  'general.user.role.company.member': 'Membre',
+  'general.user.role.company.guest': 'Invité',
 };

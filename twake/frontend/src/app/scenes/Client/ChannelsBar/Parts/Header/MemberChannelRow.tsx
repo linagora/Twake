@@ -16,6 +16,7 @@ import UsersService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestManagementService';
+import UserService from 'services/user/user.js';
 
 const { Text } = Typography;
 
@@ -38,7 +39,7 @@ export default (props: Props) => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();
   const currentUserId: string = UsersService.getCurrentUserId();
 
-  const { avatar, name, users } = getUserParts({
+  const { avatar, name, users, companyRole } = getUserParts({
     usersIds: [props.userId || ''] || [],
     max: 6,
     size: 24,
@@ -206,15 +207,15 @@ export default (props: Props) => {
       <Col className="small-right-margin">{avatar}</Col>
       <Col flex={4}>
         <Text strong>{name}</Text> @{users[0]?.username}{' '}
+      </Col>
+      <Col>
         {props.userId === currentUserId && (
           <Tag color="var(--green)">
             {Languages.t('scenes.client.channelbar.channelmemberslist.tag')}
           </Tag>
         )}
-        {props.userType === 'guest' && (
-          <Tag color="var(--grey-dark)">{Languages.t('components.workspace.group.guest')}</Tag>
-        )}
       </Col>
+      {UserService.getUserRole(users[0], companyId) !== 'member' && <Col>{companyRole}</Col>}
       {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
   );

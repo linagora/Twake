@@ -11,9 +11,12 @@ import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 import InitService from 'app/services/InitService';
 import { Tag } from 'antd';
+import RouterServices from 'services/RouterService';
+import { getUserParts } from 'app/components/Member/UserParts';
 
 export default class Members extends React.Component {
   render() {
+    const { companyId } = RouterServices.getStateFromRoute();
     const adminLevel = workspacesUsers.getAdminLevel().id;
     return (
       <div>
@@ -71,9 +74,11 @@ export default class Members extends React.Component {
               dataIndex: 'name',
               render: col => {
                 var tags = [];
+                const { users, companyRole } = getUserParts({ usersIds: [col.user.id] });
+
                 if (col.level === adminLevel) {
                   tags.push(
-                    <Tag color="var(--primary)">
+                    <Tag color="var(--warning)">
                       {Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.administrater_status',
                         [],
@@ -82,25 +87,7 @@ export default class Members extends React.Component {
                     </Tag>,
                   );
                 }
-                if (col.groupLevel > 0 && col.groupLevel !== null) {
-                  tags.push(
-                    <Tag color="var(--warning)">
-                      {Languages.t(
-                        'scenes.app.popup.workspaceparameter.pages.company_manager_status',
-                        [],
-                        "Gérant d'entreprise",
-                      )}
-                    </Tag>,
-                  );
-                }
-                // TODO find a way to display this tag only when guest member
-                // if (true) {
-                //   tags.push(
-                //     <Tag color="var(--grey-dark)">
-                //       {Languages.t('components.workspace.group.guest')}
-                //     </Tag>,
-                //   );
-                // }
+                UserService.getUserRole(users[0], companyId) !== 'member' && tags.push(companyRole);
 
                 return (
                   <div
@@ -108,7 +95,7 @@ export default class Members extends React.Component {
                     style={{ paddingRight: 8, boxSizing: 'border-box' }}
                   >
                     <div
-                      class="user_image"
+                      className="user_image"
                       style={{
                         backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
                       }}

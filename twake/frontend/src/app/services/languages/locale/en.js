@@ -1394,7 +1394,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
-  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Administrator',
+  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Workspace administrator',
   'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing':
     'You can not leave the workspace, because you are the last administrator. You can define a new administrator or delete/archive this workspace.',
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'All applications',
@@ -1949,4 +1949,7 @@ export default {
   'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
     'Re-send invitation',
   'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail sent',
+  'general.user.role.company.admin': 'Company administrator',
+  'general.user.role.company.member': 'Member',
+  'general.user.role.company.guest': 'Guest',
 };

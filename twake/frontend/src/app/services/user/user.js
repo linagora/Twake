@@ -2,7 +2,6 @@ import React from 'react';
 import Login from 'services/login/login.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
-
 import Globals from 'services/Globals.js';
 
 class User {
@@ -177,6 +176,7 @@ class User {
               if (!user) {
                 this.stop_async_get[ids[index]] = true;
               } else {
+                callback && callback(user);
                 this.users_repository.updateObject(user);
                 callbacks[user.id] && callbacks[user.id]();
               }
@@ -189,6 +189,15 @@ class User {
     if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0 && !this.stop_async_get[id]) {
       this.nextUsersGetBulk.push({ id, callback });
     }
+  }
+
+  // member - guest - admin - unknown
+  getUserRole(user, company_id) {
+    const currentUserCompany = (user?.companies || []).filter(
+      item => item.company.id === company_id,
+    )[0];
+
+    return currentUserCompany?.role || 'unknown';
   }
 }
 
