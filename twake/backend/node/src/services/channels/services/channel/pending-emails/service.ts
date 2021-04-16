@@ -23,15 +23,10 @@ import {
 import { ChannelPendingEmailsListQueryParameters } from "../../../web/types";
 import { plainToClass } from "class-transformer";
 import UserServiceAPI from "../../../../user/api";
+import { NewUserInWorkspaceNotification } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger = getLogger("channel.pending_emails");
-
-type NewUserInWorkspaceNotification = {
-  user_id: string;
-  company_id: string;
-  workspace_id: string;
-};
 
 export default class ChannelPendingEmailsService implements ChannelPendingEmailService {
   version: "1";
@@ -131,14 +126,6 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
     return this.repository.find(pk);
   }
 
-  /**
-   * ne pas ajouter les guest et pending email dans les defaults channels - fait
-   * supprimer pending email après être invité - fait
-   * corriger bug sur la liste qui est vide a l'ouverture de la popup
-   * autoriser a ajouter pending email si user === guest ou n'existe pas
-   *
-   * ou placer le type NewUserInWorkspaceNotification
-   */
   async proccessPendingEmails(
     user: NewUserInWorkspaceNotification,
     workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
@@ -152,7 +139,7 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
     const allPendingEmailsInWorkspace = await this.repository.find(workspace);
 
     // Filter pending emails in workspace with user object email
-    allPendingEmailsInWorkspace.filterEntities(({ email }) => email === userObj.emailcanonical);
+    allPendingEmailsInWorkspace.filterEntities(({ email }) => email === userObj.email_canonical);
 
     // Add user to all channel that he is invited then delete pending email entity
     allPendingEmailsInWorkspace

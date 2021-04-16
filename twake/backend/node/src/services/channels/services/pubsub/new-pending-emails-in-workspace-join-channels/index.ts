@@ -1,13 +1,7 @@
 import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import ChannelServiceAPI from "../../../provider";
-
-// TYPE HERE
-type NewUserInWorkspaceNotification = {
-  user_id: string;
-  company_id: string;
-  workspace_id: string;
-};
+import { NewUserInWorkspaceNotification } from "../../channel/types";
 
 const NAME = "Channel::NewPendingEmailsInWorkspaceJoinChannelsProcessor";
 const logger = getLogger("channel.pubsub.new-pending-emails-in-workspace-join-channels-processor");

@@ -23,6 +23,7 @@ import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
+import { NewUserInWorkspaceNotification } from "./services/channel/types";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -220,13 +221,6 @@ export interface DefaultChannelService
     workspace: Required<Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
-
-// TYPE HERE
-type NewUserInWorkspaceNotification = {
-  user_id: string;
-  company_id: string;
-  workspace_id: string;
-};
 
 export interface ChannelPendingEmailService
   extends TwakeServiceProvider,
