@@ -78,6 +78,7 @@ export default class MessagesList extends React.Component<Props, State> {
   private startAt: string;
   private pageSize: number;
   private virtuosoRef: RefObject<VirtuosoHandle>;
+  private scrollerRef!: HTMLElement | Window | null;
   private loading: {
     [ key in ScrollDirection ]: boolean
   };
@@ -102,6 +103,7 @@ export default class MessagesList extends React.Component<Props, State> {
   private lockScrollUp: boolean;
   private loader!: MessageLoader;
   private service!: MessageListService;
+  private previousScroll: number = 0;
   
   constructor(props: Props) {
     super(props);
@@ -145,6 +147,10 @@ export default class MessagesList extends React.Component<Props, State> {
     this.setState({ isLoaded: true });
   }
 
+  componentWillUnmount(): void {
+    this.cleanup();
+  }
+
   private async init(params: { startFrom: string, direction: ScrollDirection }): Promise<void> {
     const initResponse = await this.initLoader(params);
     this.processLoaderResponse(initResponse, params.direction);
@@ -161,10 +167,6 @@ export default class MessagesList extends React.Component<Props, State> {
     this.loader.addListener(this.onNewCollectionEvent);
   }
 
-  componentWillUnmount(): void {
-    this.cleanup();
-  }
-
   private cleanup(): void {
     this.loader.destroy();
     this.loader.removeListener(this.onNewCollectionEvent);
@@ -176,6 +178,7 @@ export default class MessagesList extends React.Component<Props, State> {
     this.logger.debug("Initializing message list feed with parameters", params);
     this.loading = { down: false, up: false };
     this.nbOfCalls = { up: 0, down: 0 };
+    this.previousScroll = 0;
     return this.loader.init({ offset: params.startFrom, pageSize: this.pageSize, direction: params.direction });
   };
 
@@ -212,10 +215,24 @@ export default class MessagesList extends React.Component<Props, State> {
    * 
    * @param atBottom 
    */
-  private onBottomUpdate(atBottom: boolean) {
+  private onBottomUpdate(atBottom: boolean): void {
     this.position = atBottom ? "bottom" : "middle";
-    this.setState({ showBottomButton: !atBottom });
-    atBottom && this.setState({ newMessages: 0 });
+    const scrollTop = this.scrollerRef ? (this.scrollerRef as HTMLElement).scrollTop : 0;
+
+    if (atBottom) {
+      this.previousScroll = scrollTop;
+      this.setState({ showBottomButton: false });
+      return;
+    }
+    
+    // do not display the bottom button until the user scrolled up
+    if (this.previousScroll <= scrollTop) {
+      this.previousScroll = scrollTop;
+      return;
+    }
+
+    this.previousScroll = scrollTop;
+    this.setState({ showBottomButton: true, newMessages: 0 });
   }
 
   private async nextPage(direction: ScrollDirection = "up"): Promise<void> {
@@ -245,7 +262,6 @@ export default class MessagesList extends React.Component<Props, State> {
       return;
     }
 
-    this.nbOfCalls[direction]++;
     this.loading[direction] = true;
     const response = await this.loader.nextPage({ direction });
     this.loading[direction] = false;
@@ -260,6 +276,7 @@ export default class MessagesList extends React.Component<Props, State> {
       this.logger.debug("processLoaderResponse - No messages loaded");
     }
 
+    this.nbOfCalls[direction]++;
     this.topHasBeenReached = response.completes.top;
     this.bottomHasBeenReached = response.completes.bottom;
     
@@ -347,8 +364,6 @@ export default class MessagesList extends React.Component<Props, State> {
       messages: [],
     });
 
-    // problem with this, when init again, we do not go into the first init callback and so the cursors are not up to date
-    // TODO: Find a way to update the cursors before the nextPage call so that firstMessageId and lastMessageId are good
     await this.init({ direction: "up", startFrom: "" });
     await this.nextPage("up");
     this.setState({ isLoaded: true });
@@ -378,8 +393,11 @@ export default class MessagesList extends React.Component<Props, State> {
     return messageIndex !== -1 && messageIndex === this.state.messages.length -1;
   }
 
-  isScrolling(scrolling: any) {
-    // TODO: To be used in sub components
+  /**
+   * 
+   * @param scrolling: false when starting to scroll, true when scroll ends
+   */
+  isScrolling(scrolling: boolean) {
     this.scrolling = scrolling;
   }
 
@@ -435,6 +453,7 @@ export default class MessagesList extends React.Component<Props, State> {
             )}
             <Virtuoso
               ref={this.virtuosoRef}
+              scrollerRef={ref => (this.scrollerRef = ref)}
               overscan={{ main: 1000, reverse: 1000 }}
               firstItemIndex={this.firstItemIndex}
               initialTopMostItemIndex={this.initialTopMostItemIndex}
