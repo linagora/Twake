@@ -2016,7 +2016,7 @@ export default {
     '$1 utilisateur(s) ajouté(s) avec succès',
   'scenes.client.channels_bar.modals.guest_management.title': 'Gérez les invités dans $1',
   'scenes.client.channels_bar.modals.guest_management.input_placeholder':
-    'Rechercher entre les invités et les e-mails en attente',
+    'Rechercher des invités ou e-mails en attente',
   'scenes.client.channels_bar.modals.guest_management.tips':
     'Commencez à ajouter ou à rechercher des e-mails',
   'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
