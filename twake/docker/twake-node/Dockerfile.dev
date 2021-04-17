@@ -1,6 +1,6 @@
 # Test Stage
 
-FROM node:12.21.0-alpine as test
+FROM node:12-alpine as test
 
 WORKDIR /usr/src/app
 COPY package*.json ./
