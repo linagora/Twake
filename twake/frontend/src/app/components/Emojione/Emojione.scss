@@ -29,4 +29,11 @@ i.emojione.emoji-image {
 .emoji-container {
   vertical-align: middle;
   display: inline-flex;
+
+  &.emoji-text .emoji-container {
+    &,
+    img.emojione {
+      vertical-align: top;
+    }
+  }
 }
