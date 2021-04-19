@@ -215,7 +215,7 @@ export default (props: Props) => {
           </Tag>
         )}
       </Col>
-      {UserService.getUserRole(users[0], companyId) !== 'member' && <Col>{companyRole}</Col>}
+      {UserService.getUserRole(users[0], companyId) === 'guest' && <Col>{companyRole}</Col>}
       {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
     </Row>
   );

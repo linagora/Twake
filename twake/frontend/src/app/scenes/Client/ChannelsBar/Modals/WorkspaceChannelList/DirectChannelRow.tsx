@@ -49,7 +49,7 @@ const DirectChannelRow = ({ key, userIds, active }: PropsType) => {
       <Col flex="auto">
         <Typography.Text strong>{name}</Typography.Text>
       </Col>
-      {UserServices.getUserRole(users[0], companyId) !== 'member' && <Col>{companyRole}</Col>}
+      {UserServices.getUserRole(users[0], companyId) === 'guest' && <Col>{companyRole}</Col>}
     </Row>
   );
 };
