@@ -89,7 +89,45 @@ export default class WorkspacePartner extends Component {
     var subMenu = [];
     var adminLevelId = workspacesUsers.getAdminLevel().id;
 
-    var bloc_edit_group_manager = InitService.server_infos?.auth?.console?.use && [
+    var bloc_edit_group_manager = (!InitService.server_infos?.auth?.console?.use && [
+      {
+        type: 'react-element',
+        text: '',
+        icon: 'edit',
+        reactElement: () => (
+          <div className="editLevel">
+            <Switch
+              disabled={workspacesUsers.updateRoleUserLoading[col.user.id]}
+              label={Languages.t(
+                'scenes.app.popup.workspaceparameter.pages.company_manager_label',
+                [],
+                "Gérant de l'entreprise",
+              )}
+              value={col.groupLevel > 0}
+              onChange={state => {
+                this.confirmIfMe(
+                  col.user.id,
+                  {
+                    text: Languages.t(
+                      'scenes.app.popup.workspaceparameter.pages.modify_level',
+                      [],
+                      "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
+                    ),
+                  },
+                  () => {
+                    workspacesUsers.updateManagerRole(col.user.id, state);
+                  },
+                );
+              }}
+            />
+          </div>
+        ),
+      },
+      {
+        type: 'text',
+        text: Languages.t('scenes.app.popup.workspaceparameter.pages.edit_level_user_text'),
+      },
+    ]) || [
       {
         type: 'menu',
         text: Languages.t('scenes.app.popup.workspaceparameter.edit_from_console'),
@@ -199,6 +237,13 @@ export default class WorkspacePartner extends Component {
             );
           },
         });
+      }
+
+      if (workspaceUserRightsService.hasGroupPrivilege('MANAGE_MANAGERS')) {
+        if (menu.length > 0) {
+          menu.push({ type: 'separator' });
+        }
+        menu = menu.concat(bloc_edit_group_manager);
       }
 
       if (
