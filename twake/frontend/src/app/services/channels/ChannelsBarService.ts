@@ -1,5 +1,6 @@
 import { ChannelResource } from 'app/models/Channel';
 import Observable from 'app/services/Observable/Observable';
+import { constant } from 'lodash';
 import MainViewService from '../AppView/MainViewService';
 import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';
@@ -35,8 +36,19 @@ class ChannelsBarService extends Observable {
     localStorage.setItem(companyId + ':' + workspaceId + ':channel', channelId);
   }
 
-  autoSelectChannel(companyId: string, workspaceId: string) {
-    const channelId = localStorage.getItem(companyId + ':' + workspaceId + ':channel');
+  async autoSelectChannel(companyId: string, workspaceId: string) {
+    let channelId = localStorage.getItem(companyId + ':' + workspaceId + ':channel');
+
+    if (!channelId) {
+      const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+      const channelsCollection = Collection.get(url, ChannelResource);
+      const channels = await channelsCollection.get({}, { query: { mine: true } });
+      console.log('TRY TO SELECT A CHANNEL FROM HERE', channels);
+      if (channels.length > 0) {
+        channelId = channels[0].id;
+      }
+    }
+
     if (channelId) {
       this.updateCurrentChannelId(companyId, workspaceId, '');
       RouterService.push(RouterService.generateRouteFromState({ channelId: channelId }));

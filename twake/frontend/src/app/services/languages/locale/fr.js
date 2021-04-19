@@ -681,6 +681,7 @@ export default {
     'Envoyez-moi seulement un rapport journalier',
   'scenes.apps.account.notifications.mail_option_never':
     'Ne jamais envoyez de notifications par e-mail',
+  'scenes.apps.account.notifications.sound': 'Notification sonore',
   'scenes.apps.account.workspaces.workspace_name': 'Nom des espaces de travail',
   'scenes.apps.account.workspaces.members_number': 'Nombre de membres',
   'scenes.apps.account.workspaces.favorite_workspace': 'Espaces de travail favoris',
@@ -1138,7 +1139,7 @@ export default {
     'Le nombre de champs augmente en appuyant sur entrée.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Avant de terminer, vous pouvez ajouter des collaborateurs dans votre entreprise.',
-  'scenes.app.workspaces.create_company.invitations.title_2': "Twake, c'est mieux à plusieurs.",
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Ajoutez vos collaborateurs.',
   'scenes.app.workspaces.create_company.title': 'Création de mon entreprise',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Ajouter un e-mail secondaire',
   'scenes.app.workspaces.welcome_page.added_to_company': 'Vous avez été invité dans l’entreprise',
@@ -1421,15 +1422,14 @@ export default {
     "Une erreur s'est produite lors de la mise à jour de l'application.",
   'scenes.app.popup.appsparameters.pages.remove_app_button': "Supprimer l'application",
   'scenes.app.popup.appsparameters.pages.update_button': 'Mettre à jour',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Besoin de plus de place ? Un nouvel espace de travail et ce sera parfait !',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Besoin de plus de place ?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Créer un nouvel espace de travail',
   'scenes.app.popup.createworkspacepage.placeholder_name': "Nom de l'espace de travail",
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
     'Configurez la fréquence des notifications mobile.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Fréquence des notifications',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Ne recevez que des notifications correspondant à certains mots clés.',
+    'Mettre en surbrillance les mots clés suivants:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Configurez la fréquence des notifications mail.',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
@@ -1441,6 +1441,10 @@ export default {
   'scenes.aie': 'Aïe !',
   'scenes.app.mainview.quick_search_placeholder': 'Recherche rapide',
   'scenes.app.popup.userparameter.personnal_workspaces_title': 'Vos espaces de travail',
+  'scenes.app.popup.userparameter.pages.private_message_content.show':
+    'Afficher le contenu des messages privés',
+  'scenes.app.popup.userparameter.pages.private_message_content.hide':
+    'Masquer le contenu des messages privés',
   'scenes.app.popup.workspaceparameter.admin_current_status': 'Vous êtes Administrateur.',
   'scenes.app.popup.workspaceparameter.admin_manager_current_status':
     "Vous êtes Administrateur et Gérant de l'entreprise.",
@@ -1448,7 +1452,7 @@ export default {
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': "Supprimer l'espace",
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
-    'Supprimer cet espace de travail',
+    'Pour confirmer que vous souhaitez supprimer cet espace de travail, veuillez saisir le nom ci-dessous et cliquer sur "supprimer".',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Entrer ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Accédez à vos applications et connecteurs',
@@ -1477,8 +1481,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     "Applications développées par l'entreprise",
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': "Identité de l'entreprise",
-  'scenes.app.popup.workspaceparameter.pages.company_manager_label': "Gérant de l'entreprise",
-  'scenes.app.popup.workspaceparameter.pages.company_manager_status': "Gérant d'entreprise",
+  'scenes.app.popup.workspaceparameter.pages.company_manager_label': "Admin de l'entreprise",
+  'scenes.app.popup.workspaceparameter.pages.company_manager_status': "Admin d'entreprise",
   'scenes.app.popup.workspaceparameter.pages.company_name_description':
     'Modifiez le nom de cette entreprise',
   'scenes.app.popup.workspaceparameter.pages.company_name_label': "Nom de l'entreprise",
@@ -1661,6 +1665,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': "est en train d'écrire...",
   'scenes.apps.messages.messageslist.get_writing_users': "sont en train d'écrire...",
   'scenes.apps.messages.messageslist.go_last_message_button': 'Aller au dernier message',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'Nouveaux messages',
   'scenes.apps.messages.messageslist.load_after_button': 'Charger les messages suivants',
   'scenes.apps.messages.messageslist.load_before_button': 'Charger les messages précédents',
   'scenes.apps.messages.messageslist.max_id': 'Identifiant maximum : ',
@@ -1738,6 +1743,7 @@ export default {
   'scenes.apps.drive.trash': 'Corbeille',
   'scenes.apps.drive.top_menu_more': 'Plus',
   'scenes.apps.drive.top_menu_no_items': '$1 éléments',
+  'scenes.apps.messages.new_thread': 'Commencer une nouvelle discussion',
   'scenes.apps.messages.from_camera': 'Depuis la caméra',
   'scenes.apps.messages.from_device': "Depuis l'appareil",
   'scenes.apps.messages.input.message_to': 'Message à $1',
@@ -2007,5 +2013,6 @@ export default {
   'services.console_services.toaster.success_verify_email':
     'Un lien de vérification a été envoyé à votre compte de messagerie',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
-  'services.console_services.toaster.success_invite_emails': '$1 email(s) ajouté(s) avec succès',
+  'services.console_services.toaster.success_invite_emails':
+    '$1 utilisateur(s) ajouté(s) avec succès',
 };

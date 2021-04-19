@@ -94,6 +94,7 @@ class SearchListManager {
         UsersService.search(
           Strings.removeAccents(text),
           {
+            scope: 'group',
             group_id: Workspaces.currentGroupId,
           },
           (res: UserType[]) => users.push(...res.filter((el: UserType) => !!el)),

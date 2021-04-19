@@ -33,7 +33,8 @@ class Users
         $name = $options["name"];
 
         $scope = $options["scope"] ?: "all";
-     
+        if($scope !== "group" || $scope !== "workspace") $scope = "group";
+
         $usersArray = [];
         $usersEntities = [];
 
@@ -72,10 +73,21 @@ class Users
             foreach($users as $user){
                 if($user){
 
-                    //TODO execute search filter
-                    
-                    $usersArray[] = [$user->getAsArray(), 0];
-                    $usersEntities[] = [$user, 0];
+                    $match = false;
+                    foreach($user->getAsArray() as $key => $value){
+                        if(in_array($key, ["username", "firstname", "lastname", "email"])){
+                            foreach(explode(" ", $name) as $word){
+                                if(strpos(strtolower($value), strtolower($word)) !== false){
+                                    $match = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if($match){
+                        $usersArray[] = [$user->getAsArray(), 0];
+                        $usersEntities[] = [$user, 0];
+                    }
                 }
             }
 
@@ -95,6 +107,7 @@ class Users
         $name = $options["name"];
 
         $scope = $options["scope"] ?: "all";
+        if($scope !== "group" || $scope !== "workspace") $scope = "group";
         $workspace_id = $options["workspace_id"];
         $group_id = $options["group_id"];
         

@@ -176,9 +176,11 @@ class User
               $thumbnail = new File();
               $thumbnail->setPublicLink($picture);
               $user->setThumbnail($thumbnail);
+              $user->setPicture($thumbnail->getPublicURL(2));
               $this->em->persist($thumbnail);
             }else{
               $user->setThumbnail(null);
+              $user->setPicture("");
             }
         }
 
@@ -538,7 +540,7 @@ class User
 
         if(!$auto_validate_mail){
 
-          $magic_link = "/login?verifyMail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+          $magic_link = "/login?verifyMail&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
           if (!defined("TESTENV")) {
               error_log("sign in code: " . $magic_link);
@@ -1023,6 +1025,7 @@ class User
             $user->setLastName($lastName);
             if ($thumbnail == 'false' || $thumbnail == 'null') {
                 $user->setThumbnail(null);
+                $user->setPicture("");
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
                     if ($uploader) {
@@ -1033,6 +1036,7 @@ class User
                     $this->em->remove($user->getThumbnail());
                 }
                 $user->setThumbnail($thumbnail);
+                $user->setPicture($thumbnail->getPublicURL(2));
             }
             $this->em->persist($user);
             $this->em->flush();

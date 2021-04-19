@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}, {"group_id":"ASC", "id":"ASC"}}})
+ * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}, {"group_id":"ASC", "id":"ASC"}, {"group_id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
@@ -64,7 +64,7 @@ class Workspace extends SearchableObject
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      * @ORM\JoinColumn(name="logo_id")
      */
-    private $logoFile;
+    private $logofile;
 
     /**
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
@@ -197,7 +197,7 @@ class Workspace extends SearchableObject
      */
     public function getLogoFile()
     {
-        return $this->logoFile;
+        return $this->logofile;
     }
 
     /**
@@ -206,7 +206,7 @@ class Workspace extends SearchableObject
     public function getLogo()
     {
         if(!$this->logo){
-            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+            $this->setLogo($this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "");
         }
         return $this->logo ?: "";
     }

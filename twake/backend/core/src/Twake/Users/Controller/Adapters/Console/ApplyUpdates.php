@@ -17,10 +17,14 @@ class ApplyUpdates
     /** @var App */
     protected $app = null;
 
+    /** @var String */
+    protected $endpoint = null;
+
     public function __construct(App $app)
     {
         $this->app = $app;
         $this->em = $app->getServices()->get("app.twake_doctrine");
+        $this->endpoint = $app->getContainer()->getParameter("defaults.auth.console.provider");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
         $this->user_service = $app->getServices()->get("app.user");
     }
@@ -55,6 +59,13 @@ class ApplyUpdates
         $company->setIdentityProvider("console");
         $company->setIdentityProviderId($companyConsoleCode);
 
+        $avatar = $userDTO["company"]["details"]["avatar"];
+        $picture = $companyDTO["value"] ?: "";
+        if($avatar["type"] && $avatar["type"] !== "url"){
+            $picture = rtrim($this->endpoint, "/") . "/avatars/" . $avatar["value"];
+        }
+        $company->setLogo($picture);
+
         // Format is {name: "string", limits: {}}
         $company->setPlan($companyDTO["company"]["plan"]);
 
@@ -70,8 +81,6 @@ class ApplyUpdates
         $this->em->flush();
 
         $this->app->getServices()->get("app.groups")->init($company);
-
-        //TODO: realtime update
 
         return $company;
 
@@ -163,33 +172,25 @@ class ApplyUpdates
         // Update user names
         $user->setEmail($email);
         $user->setPhone("");
-        $user->setFirstName($userDTO["firstName"] ?: ($userDTO["fullName"] ?: ""));
+        $user->setFirstName($userDTO["firstName"] ?: ($userDTO["name"] ?: ""));
         $user->setLastName($userDTO["lastName"] ?: "");
         $user->setMailVerified(!!$userDTO["isVerified"]);
+        $user->setIdentityProvider("console");
+        $user->setIdentityProviderId($userConsoleId);
 
-        $user->setLanguage(@$userDTO["preferences"]["locale"] ?: "en");
-        $user->setTimezone(@$userDTO["preferences"]["timezone"] ?: "");
+        $user->setLanguage(@$userDTO["preference"]["locale"] ?: "en");
+        $user->setTimezone(@$userDTO["preference"]["timeZone"] ?: "");
 
         // Update user picture
-        $picture = $userDTO["picture"];
-        if (($picture && (!$user->getThumbnail() || $user->getThumbnail()->getPublicLink() != $picture)) || ($user->getThumbnail() && !$picture)) {
-            if ($user->getThumbnail()) {
-                $this->em->remove($user->getThumbnail());
-            }
-            if($picture){
-              $thumbnail = new File();
-              $thumbnail->setPublicLink($picture);
-              $user->setThumbnail($thumbnail);
-              $this->em->persist($thumbnail);
-            }else{
-              $user->setThumbnail(null);
-            }
+        $avatar = $userDTO["avatar"];
+        $picture = $avatar["value"] ?: "";
+        if($avatar["type"] && $avatar["type"] !== "url"){
+            $picture = rtrim($this->endpoint, "/") . "/avatars/" . $avatar["value"];
         }
+        $user->setPicture($picture);
 
         $this->em->persist($user);
         $this->em->flush();
-
-        //TODO websocket update
 
         foreach($roles as $role){
             $companyConsoleCode = $role["targetCode"];

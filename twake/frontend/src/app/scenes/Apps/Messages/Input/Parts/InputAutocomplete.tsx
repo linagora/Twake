@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
@@ -28,7 +28,7 @@ type Props = {
   threadId: string;
 };
 
-export default (props: Props) => {
+export default forwardRef((props: Props, ref) => {
   const [content, setContent] = useState('');
   const messageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
@@ -52,6 +52,12 @@ export default (props: Props) => {
     setContent(text);
     if (props.onChange) props.onChange(text);
   };
+
+  useImperativeHandle(ref, () => ({
+    change(v: string) {
+      change(v);
+    },
+  }));
 
   const focus = () => {
     autocomplete.focus();
@@ -79,9 +85,7 @@ export default (props: Props) => {
       if (!evt.shiftKey) {
         evt.stopPropagation();
         evt.preventDefault();
-        if (props.onSend && props.onSend(content)) {
-          change('');
-        }
+        props.onSend && props.onSend(content);
       } else {
         var target = evt.target;
         var result = PseudoMarkdownCompiler.autoCompleteBulletList(target, true);
@@ -209,4 +213,4 @@ export default (props: Props) => {
       }}
     />
   );
-};
+});

@@ -88,8 +88,9 @@ export default class CreateWorkspacePage extends Component {
         return (
           <AddUserFromTwakeConsole
             inline
-            onChange={members => {
-              this.setState({ members: members });
+            onChange={(members) => {
+              this.state.members = members;
+              this.setState({});
             }}
             previous={() => this.previous()}
             finish={() => this.next()}

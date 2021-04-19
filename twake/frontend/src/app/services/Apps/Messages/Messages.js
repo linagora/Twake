@@ -13,7 +13,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
-import MessagesListServerUtilsManager from './MessagesListServerUtils';
+import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import Globals from 'services/Globals.js';
 import MessageEditors from './MessageEditors';
 import { ChannelResource } from 'app/models/Channel';
@@ -518,5 +518,4 @@ class Messages extends Observable {
   }
 }
 
-const service = new Messages();
-export default service;
+export default new Messages();

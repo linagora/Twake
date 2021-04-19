@@ -56,7 +56,12 @@ class User extends SearchableObject
     /**
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      */
-    protected $thumbnail;
+    protected $thumbnail; //Old format depreciated (now with console)
+
+    /**
+     * @ORM\Column(name="picture", type="twake_text")
+     */
+    protected $picture;
 
     /**
      * @ORM\Column(name="workspaces", type="twake_text")
@@ -344,6 +349,25 @@ class User extends SearchableObject
         $this->thumbnail = $thumbnail;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPicture()
+    {
+        if(!$this->picture){
+            $this->setPicture($this->getThumbnail() ? $this->getThumbnail()->getPublicURL(2) : "");
+        }
+        return $this->picture ?: "";
+    }
+
+    /**
+     * @param mixed $logo
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
+    }
+
     public function isActive()
     {
         $this->lastactivity = date("U");
@@ -534,7 +558,7 @@ class User extends SearchableObject
             "username" => $this->getUsername(),
             "firstname" => $this->getFirstName(),
             "lastname" => $this->getLastName(),
-            "thumbnail" => (($this->getThumbnail() == null) ? null : $this->getThumbnail()->getPublicURL(2)) . "",
+            "thumbnail" => $this->getPicture(),
             "identity_provider" => $this->getIdentityProvider(),
             "connected" => $this->isConnected(),
             "language" => $this->getLanguage(),
@@ -558,12 +582,12 @@ class User extends SearchableObject
 
         $return["email"] = $return["email"];
         $return["is_verified"] = $this->getMailVerified();
-        $return["picture"] = $return["thumbnail"];
+        $return["picture"] = $this->getPicture();
         $return["first_name"] = $return["firstname"];
         $return["last_name"] = $return["lastname"];
         $return["created_at"] = ($this->getCreationDate() ? ($this->getCreationDate()->format('U') * 1000) : null);
 
-        $return["preferences"] = [
+        $return["preference"] = [
             "locale" => $this->getLanguage(),
             "timezone" => $this->timezone,
         ];

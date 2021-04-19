@@ -44,4 +44,19 @@
       transform: translateX(-50%) translateY(-50%);
     }
   }
+
+  @media only screen and (max-width: 600px) {
+    .header {
+      .close {
+        right: auto;
+        left: 16px;
+      }
+    }
+    .main .content {
+      margin-left: 0px !important;
+    }
+    .main .sideBar {
+      display: none;
+    }
+  }
 }

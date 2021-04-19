@@ -828,6 +828,8 @@ export default class Drive extends Component {
                   data={files}
                   view_mode={DriveService.view_mode}
                 />
+
+                <div style={{ marginTop: 64 }} />
               </div>
             )}
           </DriveMultiSelector>

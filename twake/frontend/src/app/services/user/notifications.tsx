@@ -15,6 +15,7 @@ import ChannelsService from 'services/channels/channels.js';
 import emojione from 'emojione';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import UserService from 'services/user/user.js';
+import NotificationPreferences from './notificationParameters';
 
 type DesktopNotification = {
   channel_id: string;
@@ -49,7 +50,7 @@ const openNotification = (n: any, newNotification: DesktopNotification | null, c
 
 class Notifications extends Observable {
   private newNotificationAudio: any;
-  private subscribedCompanies: { [companyId: string]: boolean } = {};
+  private started: boolean = false;
 
   constructor() {
     super();
@@ -61,12 +62,33 @@ class Notifications extends Observable {
   }
 
   start() {
+    if (this.started) {
+      return;
+    }
+    this.started = true;
+
     if ('Notification' in window && window.Notification.requestPermission) {
       var request = window.Notification.requestPermission();
       if (request && request.then) {
         request.then(function (result) {});
       }
     }
+
+    const notificationsCollection = Collection.get(
+      '/notifications/v1/badges/',
+      NotificationResource,
+    );
+
+    notificationsCollection.getTransport().start();
+    notificationsCollection.addEventListener(
+      'notification:desktop',
+      this.triggerUnreadMessagesPushNotification,
+    );
+
+    //Listen websockets
+    notificationsCollection.addWatcher(() => {
+      this.getNotifications();
+    }, {});
   }
 
   //This method is called each time we change our current company
@@ -82,22 +104,6 @@ class Notifications extends Observable {
         all_companies: true,
       },
     });
-
-    notificationsCollection.getTransport().start();
-    notificationsCollection.removeEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-    notificationsCollection.addEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-
-    //Listen websockets
-    notificationsCollection.addWatcher(() => {
-      this.getNotifications();
-    }, {});
-
     notificationsCollection.find({}, { limit: 1000, refresh: true });
   }
 
@@ -156,6 +162,7 @@ class Notifications extends Observable {
       }
     }
     this.updateAppBadge(badgeCount);
+    NotificationPreferences.init();
     this.notify();
   }
 

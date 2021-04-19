@@ -29,6 +29,7 @@ export class NewChannelActivityProcessor
     try {
       this.service.updateLastActivity(
         {
+          date: message.date,
           channel: {
             id: message.channel_id,
             workspace_id: message.workspace_id,
@@ -37,8 +38,9 @@ export class NewChannelActivityProcessor
           message: {
             date: message.date,
             sender: message.sender,
+            sender_name: message.sender_name,
             title: message.title,
-            text: message.text,
+            text: message.body,
           },
         },
         {

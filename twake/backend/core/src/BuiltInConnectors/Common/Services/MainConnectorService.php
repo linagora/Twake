@@ -139,10 +139,19 @@ class MainConnectorService {
         return false;
       }
       $document = new BuiltInConnectorsEntity($cred["api_id"], $id);
-      $document->setValue($content);
-      $this->doctrine->persist($document);
+      if($content === null){
+        $this->doctrine->remove($document);
+      }else{
+        $document->setValue($content);
+        $this->doctrine->persist($document);
+      }
       $this->doctrine->flush();
       return true;
+    }
+
+    /** Remove connector document from db */
+    public function removeDocument($id){
+      return $this->saveDocument($id, null);
     }
 
     /** Get connector document from db */

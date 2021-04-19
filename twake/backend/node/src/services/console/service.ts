@@ -1,3 +1,4 @@
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import UserServiceAPI from "../user/api";
 import { ConsoleServiceAPI } from "./api";
 import { MergeProcess } from "./processing/merge";
@@ -6,7 +7,7 @@ import { MergeProgress } from "./types";
 class ConsoleService implements ConsoleServiceAPI {
   version: "1";
 
-  constructor(private userService: UserServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private userService: UserServiceAPI) {}
 
   merge(
     baseUrl: string,
@@ -17,7 +18,7 @@ class ConsoleService implements ConsoleServiceAPI {
     client: string,
     secret: string,
   ): MergeProgress {
-    return new MergeProcess(this.userService, dryRun, console, link, {
+    return new MergeProcess(this.database, this.userService, dryRun, console, link, {
       client,
       secret,
       url: baseUrl,
@@ -25,6 +26,9 @@ class ConsoleService implements ConsoleServiceAPI {
   }
 }
 
-export function getService(userService: UserServiceAPI): ConsoleServiceAPI {
-  return new ConsoleService(userService);
+export function getService(
+  database: DatabaseServiceAPI,
+  userService: UserServiceAPI,
+): ConsoleServiceAPI {
+  return new ConsoleService(database, userService);
 }

@@ -12,12 +12,12 @@ import './AddUser.scss';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 
 type Props = {
-  standalone: boolean;
-  inline: boolean;
-  onChange: (members: any) => any;
-  previous: () => void;
-  finish: () => void;
-  loading: boolean;
+  standalone?: boolean;
+  inline?: boolean;
+  onChange?: (members: any) => any;
+  previous?: () => void;
+  finish?: () => void;
+  loading?: boolean;
 };
 
 type State = {
@@ -167,7 +167,6 @@ export default class AddUser extends Component<Props, State> {
       <div className={this.props.inline ? '' : 'addUserView'}>
         <div className="subtitle bottom-margin">
           {this.state.i18n.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
-          <Emojione type=":upside_down:" />
         </div>
 
         {this.state.multi && (

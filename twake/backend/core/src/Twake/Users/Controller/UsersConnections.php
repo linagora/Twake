@@ -49,7 +49,7 @@ class UsersConnections extends BaseController
 
         $response = new Response();
         $logged = $this->getUser() && !is_string($this->getUser());
-        if(!$logged){
+        if(!$logged || ($usernameOrMail && $password)){
             $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
         }
 
@@ -106,7 +106,7 @@ class UsersConnections extends BaseController
             $forename = $request->query->get("forename", "");
             $mail = $request->query->get("mail", "");
             $username = $request->query->get("username", "");
-            $url = "https://app.twakeapp.com/login?subscribe=1&origin=" . $origin;
+            $url = "https://app.twakeapp.com/login?subscribe&origin=" . $origin;
             if ($username && $username != "") {
                 $url = $url . "&username=" . $username;
             }
