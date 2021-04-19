@@ -7,9 +7,11 @@ describe("The Websocket authentication", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeEach(async () => {
+  beforeEach(async ends => {
     platform = await init({
       services: [
+        "pubsub",
+        "user",
         "websocket",
         "webserver",
         "auth",
@@ -20,13 +22,16 @@ describe("The Websocket authentication", () => {
     });
 
     socket = io.connect("http://localhost:3000", { path: "/socket" });
+
+    ends();
   });
 
-  afterEach(async () => {
+  afterEach(async ends => {
     platform && (await platform.tearDown());
     platform = null;
     socket && socket.close();
     socket = null;
+    ends();
   });
 
   describe("JWT-based Authentication", () => {

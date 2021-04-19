@@ -6,6 +6,7 @@ import WebServerAPI from "../../../src/core/platform/services/webserver/provider
 import { DatabaseServiceAPI } from "../../../src/core/platform/services/database/api";
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/services/types";
+import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
 
 type TokenPayload = {
   sub: string;
@@ -32,6 +33,7 @@ export interface TestPlatform {
   workspace: Workspace;
   app: FastifyInstance;
   database: DatabaseServiceAPI;
+  pubsub: PubsubServiceAPI;
   auth: {
     getJWTToken(payload?: TokenPayload): Promise<string>;
   };
@@ -42,7 +44,17 @@ export interface TestPlatformConfiguration {
   services: string[];
 }
 
+let testPlatform: TestPlatform = null;
+
 export async function init(config: TestPlatformConfiguration): Promise<TestPlatform> {
+  if (testPlatform) {
+    testPlatform.app.server.close();
+    await testPlatform.pubsub.processor.stop();
+    testPlatform.app.server.listen(3000);
+    await testPlatform.pubsub.processor.start();
+    return testPlatform;
+  }
+
   const configuration: TwakePlatformConfiguration = {
     services: config.services,
     servicesPath: path.resolve(__dirname, "../../../src/services/"),
@@ -54,6 +66,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
 
   const app = platform.getProvider<WebServerAPI>("webserver").getServer();
   const database = platform.getProvider<DatabaseServiceAPI>("database");
+  const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");
   const auth = platform.getProvider<AuthServiceAPI>("auth");
   const currentUser: User = { id: uuidv4() };
   const workspace: Workspace = {
@@ -79,8 +92,10 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   }
 
   async function tearDown(): Promise<void> {
-    await platform.stop();
-    await dropDatabase();
+    if (testPlatform) {
+      testPlatform.app.server.close();
+      await testPlatform.pubsub.processor.stop();
+    }
   }
 
   async function dropDatabase(): Promise<void> {
@@ -91,9 +106,10 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
     await database.getConnector().drop();
   }
 
-  return {
+  testPlatform = {
     platform,
     app,
+    pubsub,
     database,
     workspace,
     currentUser,
@@ -102,4 +118,6 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
     },
     tearDown,
   };
+
+  return testPlatform;
 }

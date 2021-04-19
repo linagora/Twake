@@ -1,19 +1,24 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { logger } from "../../src/core/platform/framework";
 import { TestPlatform, init } from "./setup";
 
 describe.skip("The /users API", () => {
   const url = "/api/users";
   let platform: TestPlatform;
 
-  beforeEach(async () => {
+  beforeEach(async fn => {
     platform = await init({
-      services: ["websocket", "webserver", "user", "auth"],
+      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
     });
+    fn();
   });
 
-  afterEach(async () => {
-    await platform.tearDown();
-    platform = null;
+  afterEach(async fn => {
+    //await platform.tearDown();
+    //platform = null;
+
+    console.log("HEEEEERE 2 Ended");
+    fn();
   });
 
   describe("The GET /users/:id route", () => {

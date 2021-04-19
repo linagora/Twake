@@ -6,9 +6,10 @@ describe("The Realtime API", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeEach(async () => {
+  beforeEach(async ends => {
     platform = await init({
       services: [
+        "pubsub",
         "webserver",
         "user",
         "auth",
@@ -20,13 +21,17 @@ describe("The Realtime API", () => {
     });
 
     socket = io.connect("http://localhost:3000", { path: "/socket" });
+
+    ends();
   });
 
-  afterEach(async () => {
+  afterEach(async ends => {
     await platform.tearDown();
     platform = null;
     socket && socket.close();
     socket = null;
+
+    ends();
   });
 
   describe("Joining rooms", () => {
