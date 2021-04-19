@@ -1915,7 +1915,7 @@ export default {
   'general.re_send': 'Re-send',
   'general.verify': 'Verify',
   'components.unverified_account.typography_text_danger':
-    'You are left $1 day(s) of trial period. After $2 days access to trial account will be blocked and after 1 month will be permanently deleted',
+    'You have $1 day(s) left in your trial period. Trial account will be blocked after 7 days and deleted permanently after 1 month of registration. You can verify your account by clicking "Verify my account" button in the verification email that we sent you.',
   'components.unverified_account.verification_details': 'We’ve sent verification details to',
   'components.account_verification_status_sentence': 'Your account status is: $1',
   'components.account_verication_status_unverified': 'Unverified',
