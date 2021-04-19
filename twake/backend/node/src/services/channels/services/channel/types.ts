@@ -9,6 +9,10 @@ export class ChannelObject extends Channel {
   }
 
   static mapTo(channel: Channel, channelLikeObject: Partial<ChannelObject> = {}): ChannelObject {
+    if (!channel) {
+      return null;
+    }
+    
     return merge(new ChannelObject(), {
       ...{ last_activity: 0 },
       ...channel,
