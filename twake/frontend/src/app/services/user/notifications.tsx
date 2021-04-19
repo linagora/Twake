@@ -50,7 +50,7 @@ const openNotification = (n: any, newNotification: DesktopNotification | null, c
 
 class Notifications extends Observable {
   private newNotificationAudio: any;
-  private subscribedCompanies: { [companyId: string]: boolean } = {};
+  private started: boolean = false;
 
   constructor() {
     super();
@@ -62,6 +62,11 @@ class Notifications extends Observable {
   }
 
   start() {
+    if (this.started) {
+      return;
+    }
+    this.started = true;
+
     if ('Notification' in window && window.Notification.requestPermission) {
       var request = window.Notification.requestPermission();
       if (request && request.then) {
