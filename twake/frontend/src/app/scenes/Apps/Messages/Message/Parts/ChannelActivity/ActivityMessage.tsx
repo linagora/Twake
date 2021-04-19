@@ -1,7 +1,6 @@
-import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import React from 'react';
-import Languages from 'services/languages/languages.js';
 import { Row, Typography } from 'antd';
+import Languages from 'services/languages/languages.js';
 import Emojione from 'app/components/Emojione/Emojione';
 import User from 'app/components/Twacode/blocks/User';
 import { ChannelMemberType, ChannelType } from 'app/models/Channel';
@@ -58,7 +57,7 @@ const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
   let list: any[] = [];
   replacements.forEach((replacement, i) => {
     let split = temp.split(`{${i}}`);
-    list.push(<Typography.Text type="secondary">{split[0]}</Typography.Text>);
+    list.push(<Typography.Text key={i} type="secondary">{split[0]}</Typography.Text>);
     list.push(replacement);
     temp = split[1];
   });

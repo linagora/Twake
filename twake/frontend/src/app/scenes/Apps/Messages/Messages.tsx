@@ -3,13 +3,14 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import ChannelsService from 'services/channels/channels.js';
-import MessagesList from './MessagesList';
-import './Messages.scss';
+import MessageList from './MessageList';
 import NewThread from './Input/NewThread';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
-import MessagesListServerServicesManager from 'app/services/Apps/Messages/MessagesListServerUtils';
-import Collections from 'app/services/Collections/Collections';
 import { ChannelResource } from 'app/models/Channel';
+import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
+import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
+import RouterServices from 'app/services/RouterService';
+import './Messages.scss';
 
 type Props = {
   channel: ChannelResource;
@@ -17,11 +18,28 @@ type Props = {
   options: any;
 };
 
-export default class MainView extends Component<Props> {
+type State = {
+  /**
+   * True when everything is ready to be displayed
+   */
+  ready: boolean;
+};
+
+export default class MainView extends Component<Props, State> {
   options: any = {};
-  threadId: string = ''; //Non-empty = thread view
-  collectionKey: string = ''; //For a specific collection (aka channel)
+
+  /**
+   * Display a thread view when non empty
+   */
+  threadId = '';
+
+  /**
+   * Start at the given message id. Does not work when threadId is defined.
+   */
+  startAtOffset = '';
+  collectionKey: string;
   upload_zone: any;
+  messageService: MessageListService;
 
   constructor(props: Props) {
     super(props);
@@ -32,36 +50,45 @@ export default class MainView extends Component<Props> {
     this.options = props.options || {};
     this.options.context = props.options.context || {};
     this.threadId = this.options.context.threadId || '';
-    this.collectionKey = 'messages_' + this.props.channel.id + '_' + this.threadId;
+    this.collectionKey = `messages@channel:${this.props.channel.id}/thread:${this.threadId}`;
+    this.messageService = MessageListServiceFactory.get(this.collectionKey, this.props.channel);
+    this.state = {
+      ready: false,
+    };
   }
+
+  componentDidMount(): void {
+    this.startAtOffset = RouterServices.getStateFromRoute().messageId || '';
+    if (this.startAtOffset) {
+      // this is something quite weird but there are no way to do it another way...
+      RouterServices.history.replace({ search: '' });
+    }
+    this.setState({ ready: true});
+  }
+
   componentWillUnmount() {
     Languages.removeListener(this);
     ChannelsService.removeListener(this);
     MessagesService.removeListener(this);
+    this.setState({ ready: false });
   }
 
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
-    return (
+
+    return this.state.ready
+      ? (
       <div
         className="messages-view"
-        onClick={() => {
-          //Mark channel as read
-          const messagesListServerService = MessagesListServerServicesManager.get(
-            this.props.channel.data.company_id || '',
-            this.props.channel.data.workspace_id || '',
-            this.props.channel.id,
-            this.threadId,
-            this.collectionKey,
-          );
-          messagesListServerService.readChannelOrThread();
-        }}
+        onClick={() => this.messageService.markChannelAsRead()}
       >
-        <MessagesList
+        <MessageList
+          startAt={this.startAtOffset}
           threadId={this.threadId}
-          channel={this.props.channel.data}
+          channel={this.props.channel}
           collectionKey={this.collectionKey}
           unreadAfter={unreadAfter}
+          scrollDirection={this.threadId ? 'down' : 'up'}
         />
         <DroppableZone
           className="bottom_input"
@@ -76,6 +103,7 @@ export default class MainView extends Component<Props> {
           />
         </DroppableZone>
       </div>
-    );
+    )
+    : (<></>);
   }
 }

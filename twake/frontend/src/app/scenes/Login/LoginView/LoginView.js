@@ -66,7 +66,7 @@ export default class LoginView extends Component {
           )}
 
           {Object.keys((InitService.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
-            <div class="external-login" style={{ marginBottom: 16 }}>
+            <div className="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
                 type="button"
@@ -81,7 +81,7 @@ export default class LoginView extends Component {
           )}
 
           {Object.keys((InitService.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
-            <div class="external-login" style={{ marginBottom: 16 }}>
+            <div className="external-login" style={{ marginBottom: 16 }}>
               <Button
                 id="login_btn"
                 type="button"
@@ -103,7 +103,7 @@ export default class LoginView extends Component {
 
           {(Object.keys((InitService.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
             ((InitService.server_infos || {}).auth || []).length == 0) && (
-            <div class="internal-login">
+            <div className="internal-login">
               <Input
                 id="username"
                 type="text"

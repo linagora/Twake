@@ -1,11 +1,11 @@
 import React from 'react';
-import MessagesListServerUtilsManager from 'services/Apps/Messages/MessagesListServerUtils';
+import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import Emojione from 'components/Emojione/Emojione';
-import './FirstMessage.scss';
 import { ChannelResource } from 'app/models/Channel';
 import DirectChannelFirstMessage from './DirectChannelFirstMessage';
+import './FirstMessage.scss';
 
 type Props = {
   channelId: string;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const context = MessagesListServerUtilsManager.channelsContextById[props.channelId];
+  const context = MessageLoaderFactory.channelsContextById[props.channelId];
   const companyId = context.companyId;
   const workspaceId = context.workspaceId;
   const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
