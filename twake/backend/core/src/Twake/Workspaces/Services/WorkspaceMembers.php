@@ -18,7 +18,6 @@ class WorkspaceMembers
     private $app;
     private $wls;
     private $string_cleaner;
-    private $twake_mailer;
     private $doctrine;
     private $pusher;
     private $calendar;
@@ -30,7 +29,6 @@ class WorkspaceMembers
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->wls = $app->getServices()->get("app.workspace_levels");
         $this->string_cleaner = $app->getServices()->get("app.string_cleaner");
-        $this->twake_mailer = $app->getServices()->get("app.twake_mailer");
         $this->pusher = $app->getServices()->get("app.pusher");
         $this->calendar = $app->getServices()->get("app.calendar.calendar");
         $this->workspacesActivities = $app->getServices()->get("app.workspaces_activities");
@@ -171,33 +169,7 @@ class WorkspaceMembers
                 "workspace_id" => $workspaceId,
                 "user_id" => $userId
             ], ["exchange_type" => "fanout"]);
-
-            /*            $datatopush = Array(
-                            "type" => "CHANGE_MEMBERS",
-                            "data" => Array(
-                                "id" => $userId,
-                                "workspaceId" => $workspace->getId(),
-                            )
-                        );
-                        $this->pusher->push($datatopush, "group/" . $workspace->getId());
-
-                        $datatopush = Array(
-                            "type" => "GROUP",
-                            "action" => "addWorkspace",
-                            "data" => Array(
-                                "workspaceId" => $workspace->getId(),
-                            )
-                        );
-                        $this->pusher->push($datatopush, "notifications/" . $user->getId());*/
-
-            if ($workspace->getGroup() != null && $userId != $currentUserId) {
-                $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
-            }
-
-
-//            $this->workspacesActivities->recordActivity($workspace, $user->getId(), "workspace", "workspace.activity.workspace.add_member");
-//            $this->messages->addWorkspaceMember($workspace, $user);
-//            $this->calendar->addWorkspaceMember($workspace, $user);
+            
             $this->updateChannelAfterAddWorkspaceMember($workspace, $user);
 
             $this->updateUser($user);
@@ -461,10 +433,6 @@ class WorkspaceMembers
             }
             $this->doctrine->flush();
 
-            $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
-
-            /* $this->messages->delWorkspaceMember($workspace, $user);
-             $this->calendar->delWorkspaceMember($workspace, $user);*/
             $this->delWorkspaceMember_temp($workspace, $user);
 
             $this->updateUser($user);
