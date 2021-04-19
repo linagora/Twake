@@ -108,7 +108,7 @@ export class AmqpClient {
       }
     }
   }
-  x;
+
   _registerNewConsumerTag(
     callback: AmqpCallbackType,
     consumerTag: string,

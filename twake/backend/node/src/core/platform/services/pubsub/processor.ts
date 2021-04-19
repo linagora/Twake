@@ -28,7 +28,7 @@ export class Processor {
   async stop(): Promise<void> {
     await Promise.all(
       Array.from(this.registry.processors.keys()).map(async name => {
-        await this.registry.processors.get(name)?.stop();
+        this.removeHandler(name);
       }),
     );
   }
