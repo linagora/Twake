@@ -78,6 +78,7 @@ export class MongoConnector extends AbstractConnector<
 
     return true;
   }
+
   async upsert(
     entities: any[],
     options: UpsertOptions = {}
@@ -169,6 +170,8 @@ export class MongoConnector extends AbstractConnector<
       instance
     );
 
+    console.log(entityDefinition, filters);
+
     const pk = unwrapPrimarykey(entityDefinition);
     if (Object.keys(filters).some((key) => pk.indexOf(key) < 0)) {
       //Filter not in primary key
@@ -202,7 +205,7 @@ export class MongoConnector extends AbstractConnector<
       .toArray();
 
     const entities: Table[] = [];
-    results.forEach((row) => {
+    results.forEach((row: any) => {
       const entity = new (entityType as any)();
       Object.keys(row).forEach((key) => {
         entity[columnsDefinition[key].nodename] = transformValueToDbString(
