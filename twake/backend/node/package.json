@@ -100,6 +100,7 @@
     "fastify-jwt": "^2.2.0",
     "fastify-plugin": "^2.3.4",
     "fastify-sensible": "^3.0.1",
+    "fastify-swagger": "^4.6.0",
     "fastify-websocket": "^2.0.11",
     "generate-password": "^1.6.0",
     "lodash": "^4.17.21",
