@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
-import { getEntityDefinition } from "../../utils";
+import { getEntityDefinition, secureOperators } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
 
 export function buildSelectQuery<Entity>(
@@ -52,7 +52,7 @@ export function buildSelectQuery<Entity>(
     })
     .filter(Boolean);
 
-  secureOperators(findOptions, entityType, options);
+  secureOperators(transformValueToDbString, findOptions, entityType, options);
 
   const whereClause = `${[
     ...where,
@@ -66,43 +66,6 @@ export function buildSelectQuery<Entity>(
   }`
     .trimEnd()
     .concat(";");
-}
-
-export function secureOperators<Entity>(
-  findOptions: FindOptions = {},
-  entityType: ObjectType<Entity>,
-  options: {
-    secret?: string;
-    keyspace: string;
-  } = {
-    secret: "",
-    keyspace: "twake",
-  },
-): FindOptions {
-  const instance = new (entityType as any)();
-  const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
-
-  Object.keys(findOptions).forEach(key => {
-    if (
-      key == "$in" ||
-      key == "$lte" ||
-      key == "$lt" ||
-      key == "$gte" ||
-      key == "$gt" ||
-      key == "$like"
-    ) {
-      findOptions[key].forEach(element => {
-        element[1] = element[1].map((e: any) =>
-          transformValueToDbString(e, columnsDefinition[element[0]].type, {
-            columns: columnsDefinition[element[0]].options,
-            secret: options.secret || "",
-          }),
-        );
-      });
-    }
-  });
-
-  return findOptions;
 }
 
 export function buildComparison(options: FindOptions = {}): string[] {

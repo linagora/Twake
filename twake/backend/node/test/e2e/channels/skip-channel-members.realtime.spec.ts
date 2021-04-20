@@ -62,23 +62,17 @@ describe.skip("The Channels Members Realtime feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
 
-      console.log("Will auth from websockets");
-
       connect();
       socket.on("connect", () => {
         socket
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
-            console.log("Did auth from websockets");
-
             socket.emit("realtime:join", {
               name: getPublicRoomName(createdChannel.entity),
               token: roomToken,
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              console.log("Join channel for user:", platform.currentUser.id, createdChannel.entity);
-
               const response = await platform.app.inject({
                 method: "POST",
                 url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${createdChannel.entity.id}/members`,
@@ -176,8 +170,6 @@ describe.skip("The Channels Members Realtime feature", () => {
                   authorization: `Bearer ${jwtToken}`,
                 },
               });
-
-              console.log("RESPONSE", response.body);
             });
           })
           .on("unauthorized", () => {

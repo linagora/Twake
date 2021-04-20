@@ -170,8 +170,6 @@ export class MongoConnector extends AbstractConnector<
       instance
     );
 
-    console.log(entityDefinition, filters);
-
     const pk = unwrapPrimarykey(entityDefinition);
     if (Object.keys(filters).some((key) => pk.indexOf(key) < 0)) {
       //Filter not in primary key
