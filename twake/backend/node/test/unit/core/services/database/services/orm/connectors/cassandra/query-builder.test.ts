@@ -176,16 +176,6 @@ describe("The QueryBuilder module", () => {
           $in: [["id", ["1", "2", "3"]]],
         }),
       ).toContain("id IN (1,2,3)");
-
-      const result = buildComparison({
-        $in: [
-          ["id", ["1", "2", "3"]],
-          ["user", ["a", "b"]],
-        ],
-      });
-
-      expect(result).toContain("id IN (1,2,3)");
-      expect(result).toContain("user IN (a,b)");
     });
   });
 });
