@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests run node npm run test:unit
-      #- name: e2e-mongo-test
-      #  run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e DB_DRIVER=mongodb node npm run test:e2e
+      - name: e2e-mongo-test
+        run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e DB_DRIVER=mongodb node npm run test:e2e
       - name: e2e-cassandra-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests up -d scylladb && sleep 60 && docker-compose -f docker-compose.yml.dist.tests run -e DB_DRIVER=cassandra node npm run test:e2e
   build:
