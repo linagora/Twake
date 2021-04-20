@@ -8,7 +8,7 @@ export function buildSelectQuery<Entity>(
   filters: any,
   findOptions: FindOptions,
   options: {
-    secret: string;
+    secret?: string;
     keyspace: string;
   } = {
     secret: "",
@@ -35,7 +35,7 @@ export function buildSelectQuery<Entity>(
           value =>
             `${transformValueToDbString(value, columnsDefinition[key].type, {
               columns: columnsDefinition[key].options,
-              secret: options.secret,
+              secret: options.secret || "",
             })}`,
         );
 
@@ -43,7 +43,7 @@ export function buildSelectQuery<Entity>(
       } else {
         result = `${key} = ${transformValueToDbString(filter, columnsDefinition[key].type, {
           columns: columnsDefinition[key].options,
-          secret: options.secret,
+          secret: options.secret || "",
         })}`;
       }
 

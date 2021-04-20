@@ -69,7 +69,7 @@ describe("The PubsubServiceProcessor class", () => {
 
       await processor.init();
       expect(subscribe).toHaveBeenCalledTimes(1);
-      expect(subscribe).toHaveBeenCalledWith(topic, expect.any(Function));
+      expect(subscribe).toHaveBeenCalledWith(topic, expect.any(Function), expect.any(Function));
     });
   });
 
