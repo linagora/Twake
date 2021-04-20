@@ -1,0 +1,71 @@
+import yargs from "yargs";
+import ora from "ora";
+import twake from "../../../twake";
+import UserServiceAPI from "../../../services/user/api";
+import { getInstance as getUserInstance } from "../../../services/user/entities/user";
+import Table from "cli-table";
+
+/**
+ * Merge command parameters. Check the builder definition below for more details.
+ */
+type ListParams = {
+  id: string;
+};
+
+const services = ["user", "database", "webserver"];
+
+const command: yargs.CommandModule<ListParams, ListParams> = {
+  command: "remove",
+  describe: "command that allow you to remove one user",
+  builder: {
+    id: {
+      default: "",
+      type: "string",
+      description: "User ID",
+    },
+  },
+  handler: async ({ id }) => {
+    const tableBefore = new Table({
+      head: ["User ID", "Username", "Deleted"],
+      colWidths: [40, 40, 10],
+    });
+    const tableAfter = new Table({
+      head: ["User ID", "Username", "Deleted"],
+      colWidths: [40, 40, 10],
+    });
+    const spinner = ora({ text: "Retrieving user" }).start();
+
+    const platform = await twake.run(services);
+    const userService = platform.getProvider<UserServiceAPI>("user");
+
+    // rechercher md5 pour l'id
+    const user = await userService.users.get(getUserInstance({ id }));
+
+    if (!user) {
+      console.error("Error: You need to provide User ID");
+      return spinner.stop();
+    }
+
+    if (user) {
+      // Table before
+      tableBefore.push([user.id, user.username_canonical, user.deleted]);
+
+      user.username_canonical = `deleted-user-${user.id}`;
+
+      await userService.users.save(user);
+
+      const finalUser = await userService.users.get(getUserInstance({ id }));
+
+      // Table after
+      tableAfter.push([finalUser.id, finalUser.username_canonical, finalUser.deleted]);
+
+      spinner.stop();
+      console.log("table before");
+      console.log(tableBefore.toString());
+      console.log("table after");
+      console.log(tableAfter.toString());
+    }
+  },
+};
+
+export default command;
