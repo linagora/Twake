@@ -6,19 +6,16 @@ describe.skip("The /users API", () => {
   const url = "/api/users";
   let platform: TestPlatform;
 
-  beforeEach(async fn => {
+  beforeEach(async ends => {
     platform = await init({
       services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
     });
-    fn();
+    ends();
   });
 
-  afterEach(async fn => {
-    //await platform.tearDown();
-    //platform = null;
-
-    console.log("HEEEEERE 2 Ended");
-    fn();
+  afterEach(async () => {
+    await platform.tearDown();
+    platform = null;
   });
 
   describe("The GET /users/:id route", () => {
