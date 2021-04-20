@@ -1,6 +1,7 @@
+import _ from "lodash";
 import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
-import { getEntityDefinition } from "../../utils";
+import { getEntityDefinition, secureOperators } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
 
 export function buildSelectQuery<Entity>(
@@ -8,8 +9,10 @@ export function buildSelectQuery<Entity>(
   filters: any,
   findOptions: FindOptions,
   options: {
+    secret?: string;
     keyspace: string;
   } = {
+    secret: "",
     keyspace: "twake",
   },
 ): string {
@@ -33,7 +36,7 @@ export function buildSelectQuery<Entity>(
           value =>
             `${transformValueToDbString(value, columnsDefinition[key].type, {
               columns: columnsDefinition[key].options,
-              secret: this.secret,
+              secret: options.secret || "",
             })}`,
         );
 
@@ -41,13 +44,15 @@ export function buildSelectQuery<Entity>(
       } else {
         result = `${key} = ${transformValueToDbString(filter, columnsDefinition[key].type, {
           columns: columnsDefinition[key].options,
-          secret: this.secret,
+          secret: options.secret || "",
         })}`;
       }
 
       return result;
     })
     .filter(Boolean);
+
+  secureOperators(transformValueToDbString, findOptions, entityType, options);
 
   const whereClause = `${[
     ...where,
@@ -56,7 +61,11 @@ export function buildSelectQuery<Entity>(
     ...(buildLike(findOptions) || []),
   ].join(" AND ")}`.trimEnd();
 
-  return `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${whereClause.trim().length ? ("WHERE " + whereClause) : ""}`.trimEnd().concat(";");
+  return `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${
+    whereClause.trim().length ? "WHERE " + whereClause : ""
+  }`
+    .trimEnd()
+    .concat(";");
 }
 
 export function buildComparison(options: FindOptions = {}): string[] {

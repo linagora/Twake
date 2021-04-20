@@ -412,6 +412,7 @@ export class CassandraConnector extends AbstractConnector<
       options,
       {
         keyspace: this.options.keyspace,
+        secret: this.secret,
       },
     );
 

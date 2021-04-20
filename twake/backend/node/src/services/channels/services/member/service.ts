@@ -139,7 +139,7 @@ export class Service implements MemberService {
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest(`Nothing to update for member ${member.user_id}`);
+        return new SaveResult<ChannelMember>("channel_member", member, mode);
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);

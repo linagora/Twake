@@ -25,6 +25,14 @@ export class Processor {
     );
   }
 
+  async stop(): Promise<void> {
+    await Promise.all(
+      Array.from(this.registry.processors.keys()).map(async name => {
+        this.removeHandler(name);
+      }),
+    );
+  }
+
   addHandler<In, Out>(handler: PubsubHandler<In, Out>): void {
     // TODO: Start the handler if added when service is already started
     if (!handler) {

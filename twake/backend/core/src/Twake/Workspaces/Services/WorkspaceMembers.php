@@ -54,6 +54,11 @@ class WorkspaceMembers
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             $member->setLevelId($level->getId());
+            if($level->getIsAdmin()){
+                $member->setRole("admin");
+            }else{
+                $member->setRole("member");
+            }
 
             $this->doctrine->persist($member);
             $this->doctrine->flush();
@@ -678,6 +683,11 @@ class WorkspaceMembers
                     if($level->getId() === $workspaceMember->getLevelId() && $level->getIsAdmin()){
                         $isAdmin = true;
                     }
+                }
+
+                if($isAdmin){
+                    $workspaceMember->setRole("admin");
+                    $this->doctrine->persist($workspaceMember);
                 }
 
                 $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
