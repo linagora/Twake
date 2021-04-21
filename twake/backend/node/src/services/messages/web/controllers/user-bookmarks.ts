@@ -26,7 +26,12 @@ export class UserBookmarksController
     request: FastifyRequest<{
       Params: {
         company_id: string;
-        name: string;
+        id: string;
+      };
+      Body: {
+        resource: {
+          name: string;
+        };
       };
     }>,
     reply: FastifyReply,
@@ -37,7 +42,8 @@ export class UserBookmarksController
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
-          name: request.params.name,
+          name: request.body.resource.name,
+          id: request.params.id || undefined,
         },
         {},
         context,
@@ -54,7 +60,7 @@ export class UserBookmarksController
     request: FastifyRequest<{
       Params: {
         company_id: string;
-        name: string;
+        id: string;
       };
     }>,
     reply: FastifyReply,
@@ -65,7 +71,7 @@ export class UserBookmarksController
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
-          name: request.params.name,
+          id: request.params.id,
         },
         context,
       );

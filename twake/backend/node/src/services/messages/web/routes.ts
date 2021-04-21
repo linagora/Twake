@@ -74,14 +74,21 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
 
   fastify.route({
     method: "POST",
-    url: "/companies/:company_id/preferences/bookmarks/:name",
+    url: "/companies/:company_id/preferences/bookmarks/:id",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.save.bind(userBookmarksController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/preferences/bookmarks",
     preValidation: [fastify.authenticate],
     handler: userBookmarksController.save.bind(userBookmarksController),
   });
 
   fastify.route({
     method: "DELETE",
-    url: "/companies/:company_id/preferences/bookmarks/:name",
+    url: "/companies/:company_id/preferences/bookmarks/:id",
     preValidation: [fastify.authenticate],
     handler: userBookmarksController.delete.bind(userBookmarksController),
   });

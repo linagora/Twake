@@ -38,15 +38,37 @@ describe("The Bookmarks Realtime feature", () => {
     it("should notify the client", async done => {
       const service = platform.platform.getProvider<MessageServiceAPI>("messages");
 
-      //TODO: Realtime connect
+      const jwtToken = await platform.auth.getJWTToken();
+      const roomToken = "twake";
 
-      await service.userBookmarks.save({
-        company_id: platform.workspace.company_id,
-        user_id: platform.currentUser.id,
-        name: "mybookmark",
+      connect();
+      socket.on("connect", () => {
+        socket
+          .emit("authenticate", { token: jwtToken })
+          .on("authenticated", () => {
+            socket.emit("realtime:join", {
+              name: "TODO",
+              token: roomToken,
+            });
+            socket.on("realtime:join:error", () => done(new Error("Should not occur")));
+            socket.on("realtime:join:success", async () => {
+              await service.userBookmarks.save({
+                company_id: platform.workspace.company_id,
+                user_id: platform.currentUser.id,
+                name: "mybookmark",
+              });
+            });
+            socket.on("realtime:resource", event => {
+              expect(event.type).toEqual("user_message_bookmark");
+              //expect(event.action).toEqual("saved");
+              //expect(event.resource.name).toEqual(channelName);
+              done();
+            });
+          })
+          .on("unauthorized", () => {
+            done(new Error("Should not occur"));
+          });
       });
-
-      done();
     });
   });
 
@@ -60,15 +82,37 @@ describe("The Bookmarks Realtime feature", () => {
         name: "mybookmark",
       });
 
-      //TODO: Realtime connect
+      const jwtToken = await platform.auth.getJWTToken();
+      const roomToken = "twake";
 
-      await service.userBookmarks.delete({
-        company_id: platform.workspace.company_id,
-        user_id: platform.currentUser.id,
-        name: "mybookmark",
+      connect();
+      socket.on("connect", () => {
+        socket
+          .emit("authenticate", { token: jwtToken })
+          .on("authenticated", () => {
+            socket.emit("realtime:join", {
+              name: "TODO",
+              token: roomToken,
+            });
+            socket.on("realtime:join:error", () => done(new Error("Should not occur")));
+            socket.on("realtime:join:success", async () => {
+              await service.userBookmarks.delete({
+                company_id: platform.workspace.company_id,
+                user_id: platform.currentUser.id,
+                name: "mybookmark",
+              });
+            });
+            socket.on("realtime:resource", event => {
+              expect(event.type).toEqual("user_message_bookmark");
+              //expect(event.action).toEqual("saved");
+              //expect(event.resource.name).toEqual(channelName);
+              done();
+            });
+          })
+          .on("unauthorized", () => {
+            done(new Error("Should not occur"));
+          });
       });
-
-      done();
     });
   });
 });

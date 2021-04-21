@@ -32,26 +32,49 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
   }
 
   get(
-    pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "name">,
+    pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "id">,
     context?: CompanyExecutionContext,
   ): Promise<UserMessageBookmark> {
     return this.repository.findOne(pk);
   }
+
   async save<SaveOptions>(
-    item: UserMessageBookmark,
+    item: Pick<UserMessageBookmark, "name" | "id">,
     options?: SaveOptions,
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<UserMessageBookmark>> {
-    await this.repository.save(getInstance(item));
-    return new SaveResult<UserMessageBookmark>("user_message_bookmark", item, OperationType.CREATE);
+    //Disallow duplicates
+    const entities = (await this.list(null, {}, context)).getEntities();
+    for (const entity of entities) {
+      if (item.name === entity.name) {
+        return new SaveResult<UserMessageBookmark>(
+          "user_message_bookmark",
+          entity,
+          OperationType.EXISTS,
+        );
+      }
+    }
+
+    const instance = getInstance({
+      company_id: context.company.id,
+      user_id: context.user.id,
+      ...item,
+    });
+    await this.repository.save(instance);
+    return new SaveResult<UserMessageBookmark>(
+      "user_message_bookmark",
+      instance,
+      item.id ? OperationType.UPDATE : OperationType.CREATE,
+    );
   }
 
   async delete(
-    pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "name">,
+    pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "id">,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<UserMessageBookmark>> {
-    await this.repository.remove(getInstance(pk));
-    return new DeleteResult<UserMessageBookmark>("user_message_bookmark", pk, true);
+    const instance = await this.repository.findOne(pk);
+    if (instance) await this.repository.remove(instance);
+    return new DeleteResult<UserMessageBookmark>("user_message_bookmark", instance, !!instance);
   }
 
   async list<ListOption>(

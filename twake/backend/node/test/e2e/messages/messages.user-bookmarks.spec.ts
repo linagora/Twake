@@ -9,6 +9,7 @@ import {
 } from "../../../src/services/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
+import { v4 as uuidv4 } from "uuid";
 
 describe("The Messages User Bookmarks feature", () => {
   const url = "/internal/services/messages/v1";
@@ -40,11 +41,14 @@ describe("The Messages User Bookmarks feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${
-          platform.workspace.company_id
-        }/preferences/bookmarks/${"mybookmark"}`,
+        url: `${url}/companies/${platform.workspace.company_id}/preferences/bookmarks/`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource: {
+            name: "mybookmark",
+          },
         },
       });
 
@@ -65,11 +69,44 @@ describe("The Messages User Bookmarks feature", () => {
       done();
     });
 
-    it("should remove bookmark", async done => {
+    it("should prevent duplicated bookmark", async done => {
       const service = platform.platform.getProvider<MessageServiceAPI>("messages");
 
-      await service.userBookmarks.save({
-        company_id: platform.workspace.company_id,
+      const uuid = uuidv4();
+
+      await service.userBookmarks.save(
+        {
+          id: uuid,
+          company_id: platform.workspace.company_id,
+          user_id: platform.currentUser.id,
+          name: "mybookmark",
+        },
+        {},
+        getContext(platform),
+      );
+
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/preferences/bookmarks/`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource: {
+            name: "mybookmark",
+          },
+        },
+      });
+
+      const result: ResourceUpdateResponse<UserMessageBookmark> = deserialize(
+        ResourceUpdateResponse,
+        response.body,
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resource).toMatchObject({
+        id: uuid,
         user_id: platform.currentUser.id,
         name: "mybookmark",
       });
@@ -77,12 +114,32 @@ describe("The Messages User Bookmarks feature", () => {
       let list = await service.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
+      done();
+    });
+
+    it("should remove bookmark", async done => {
+      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+
+      const id = uuidv4();
+
+      await service.userBookmarks.save(
+        {
+          id,
+          company_id: platform.workspace.company_id,
+          user_id: platform.currentUser.id,
+          name: "mybookmark",
+        },
+        {},
+        getContext(platform),
+      );
+
+      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      expect(list.getEntities().length).toBe(1);
+
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${
-          platform.workspace.company_id
-        }/preferences/bookmarks/${"mybookmark"}`,
+        url: `${url}/companies/${platform.workspace.company_id}/preferences/bookmarks/${id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -99,11 +156,16 @@ describe("The Messages User Bookmarks feature", () => {
     it("should list bookmarks", async done => {
       const service = platform.platform.getProvider<MessageServiceAPI>("messages");
 
-      await service.userBookmarks.save({
-        company_id: platform.workspace.company_id,
-        user_id: platform.currentUser.id,
-        name: "mybookmark",
-      });
+      await service.userBookmarks.save(
+        {
+          id: uuidv4(),
+          company_id: platform.workspace.company_id,
+          user_id: platform.currentUser.id,
+          name: "mybookmark",
+        },
+        {},
+        getContext(platform),
+      );
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({

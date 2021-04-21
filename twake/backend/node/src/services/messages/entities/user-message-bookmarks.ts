@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "user_message_bookmarks";
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "user_id", "name"],
+  primaryKey: [["company_id"], "user_id", "id"],
   type: TYPE,
 })
 export class UserMessageBookmark {
@@ -17,15 +17,21 @@ export class UserMessageBookmark {
   user_id: string;
 
   @Type(() => String)
+  @Column("id", "uuid", { generator: "uuid" })
+  id: string;
+
+  @Type(() => String)
   @Column("name", "encoded_string")
-  name: string;
+  name: string = "";
 }
 
 export type UserMessageBookmarkPrimaryKey = Pick<
   UserMessageBookmark,
-  "company_id" | "user_id" | "name"
+  "company_id" | "user_id" | "id"
 >;
 
-export function getInstance(bookmark: UserMessageBookmark): UserMessageBookmark {
+export function getInstance(
+  bookmark: Pick<UserMessageBookmark, "company_id" | "user_id" | "name">,
+): UserMessageBookmark {
   return merge(new UserMessageBookmark(), bookmark);
 }
