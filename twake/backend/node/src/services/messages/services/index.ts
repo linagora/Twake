@@ -6,6 +6,7 @@ import {
   MessageThreadsServiceAPI,
   MessageThreadMessagesServiceAPI,
   MessageViewsServiceAPI,
+  MessageServiceAPI,
 } from "../api";
 
 import { getService as getMessageUserBookmarksServiceAPI } from "./user-bookmarks";
@@ -25,7 +26,7 @@ function getServiceInstance(
   return new Service(databaseService, pubsub);
 }
 
-export default class Service {
+export default class Service implements MessageServiceAPI {
   version: "1";
 
   userBookmarks: MessageUserBookmarksServiceAPI;

@@ -10,7 +10,7 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageUserBookmarksServiceAPI } from "../../api";
 import { Thread } from "../../entities/threads";
-import { UserMessageBookmark } from "../../entities/user-message-bookmarks";
+import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { CompanyExecutionContext } from "../../types";
 
 type UserMessageBookmarkListOptions = {
@@ -42,7 +42,7 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     options?: SaveOptions,
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<UserMessageBookmark>> {
-    await this.repository.save(item);
+    await this.repository.save(getInstance(item));
     return new SaveResult<UserMessageBookmark>("user_message_bookmark", item, OperationType.CREATE);
   }
 
@@ -50,7 +50,7 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "name">,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<UserMessageBookmark>> {
-    await this.repository.remove(pk);
+    await this.repository.remove(getInstance(pk));
     return new DeleteResult<UserMessageBookmark>("user_message_bookmark", pk, true);
   }
 

@@ -8,6 +8,7 @@ import {
   ResourceUpdateResponse,
 } from "../../../src/services/types";
 import { deserialize } from "class-transformer";
+import { MessageServiceAPI } from "../../../src/services/messages/api";
 
 describe("The Messages User Bookmarks feature", () => {
   const url = "/internal/services/messages/v1";
@@ -34,6 +35,8 @@ describe("The Messages User Bookmarks feature", () => {
 
   describe("On user manage bookmmarks", () => {
     it("should create new bookmark", async done => {
+      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -56,11 +59,23 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
+      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      expect(list.getEntities().length).toBe(1);
+
       done();
     });
 
     it("should remove bookmark", async done => {
-      //TODO create bookmark
+      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+
+      await service.userBookmarks.save({
+        company_id: platform.workspace.company_id,
+        user_id: platform.currentUser.id,
+        name: "mybookmark",
+      });
+
+      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -74,11 +89,21 @@ describe("The Messages User Bookmarks feature", () => {
       });
 
       expect(response.statusCode).toBe(200);
+
+      list = await service.userBookmarks.list({}, {}, getContext(platform));
+      expect(list.getEntities().length).toBe(0);
+
       done();
     });
 
     it("should list bookmarks", async done => {
-      //TODO create bookmarks
+      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+
+      await service.userBookmarks.save({
+        company_id: platform.workspace.company_id,
+        user_id: platform.currentUser.id,
+        name: "mybookmark",
+      });
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -94,10 +119,17 @@ describe("The Messages User Bookmarks feature", () => {
         response.body,
       );
 
-      console.log(result);
-
       expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toBe(1);
+      expect(result.resources[0].name).toBe("mybookmark");
       done();
     });
   });
 });
+
+function getContext(platform) {
+  return {
+    company: { id: platform.workspace.company_id },
+    user: { id: platform.currentUser.id },
+  };
+}

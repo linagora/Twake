@@ -34,11 +34,11 @@ export class UserBookmarksController
     const context = getCompanyExecutionContext(request);
     try {
       const result = await this.service.userBookmarks.save(
-        getInstance({
+        {
           user_id: context.user.id,
           company_id: request.params.company_id,
           name: request.params.name,
-        }),
+        },
         {},
         context,
       );
