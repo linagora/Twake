@@ -39,7 +39,7 @@ export default class Service {
     this.threads = getMessageThreadsServiceAPI(databaseService);
     this.messages = getMessageThreadMessagesServiceAPI(databaseService);
     this.views = getMessageViewsServiceAPI(databaseService);
-    this.engine = new MessagesEngine(databaseService, pubsub);
+    this.engine = new MessagesEngine(this, pubsub);
   }
 
   async init(context: TwakeContext): Promise<this> {
