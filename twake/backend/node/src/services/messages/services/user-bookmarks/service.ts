@@ -12,6 +12,7 @@ import { MessageUserBookmarksServiceAPI } from "../../api";
 import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { CompanyExecutionContext } from "../../types";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import { getUserBookmarksWebsocketRoom } from "../../web/realtime";
 
 export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
   version: "1";
@@ -36,8 +37,8 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
 
   @RealtimeSaved<UserMessageBookmark>((bookmark, context) => [
     {
-      room: ResourcePath.get(getWebsocketRoom(context as CompanyExecutionContext)),
-      path: getWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
+      room: ResourcePath.get(getUserBookmarksWebsocketRoom(context as CompanyExecutionContext)),
+      path: getUserBookmarksWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
     },
   ])
   async save<SaveOptions>(
@@ -72,8 +73,8 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
 
   @RealtimeDeleted<UserMessageBookmark>((bookmark, context) => [
     {
-      room: ResourcePath.get(getWebsocketRoom(context as CompanyExecutionContext)),
-      path: getWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
+      room: ResourcePath.get(getUserBookmarksWebsocketRoom(context as CompanyExecutionContext)),
+      path: getUserBookmarksWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
     },
   ])
   async delete(
@@ -96,8 +97,4 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     );
     return list;
   }
-}
-
-function getWebsocketRoom(context: CompanyExecutionContext): string {
-  return "/companies/" + context.company.id + "/messages/bookmarks";
 }

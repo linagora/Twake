@@ -12,6 +12,7 @@ import { getInstance, UserMessageBookmark } from "../../entities/user-message-bo
 import { ExecutionContext, SaveResult } from "../../../../core/platform/framework/api/crud-service";
 import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
+import { getUserBookmarksWebsocketRoom } from "../realtime";
 
 export class UserBookmarksController
   implements
@@ -103,7 +104,7 @@ export class UserBookmarksController
         context,
       );
       return {
-        websockets: [getWebsocketRoom(context)],
+        websockets: [{ room: getUserBookmarksWebsocketRoom(context) }],
         resources: list.getEntities(),
         ...(list.page_token && {
           next_page_token: list.page_token,
@@ -113,12 +114,6 @@ export class UserBookmarksController
       handleError(reply, err);
     }
   }
-}
-
-function getWebsocketRoom(context: CompanyExecutionContext): ResourceWebsocket {
-  return {
-    room: "/companies/" + context.company.id + "/messages/bookmarks",
-  };
 }
 
 function getCompanyExecutionContext(

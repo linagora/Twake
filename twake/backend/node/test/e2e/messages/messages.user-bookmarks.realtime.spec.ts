@@ -52,12 +52,11 @@ describe("The Bookmarks Realtime feature", () => {
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              console.log("DID join room");
               await service.userBookmarks.save(
                 {
                   company_id: platform.workspace.company_id,
                   user_id: platform.currentUser.id,
-                  name: "mybookmark",
+                  name: "mybookmarksaved",
                   id: undefined,
                 },
                 {},
@@ -65,11 +64,9 @@ describe("The Bookmarks Realtime feature", () => {
               );
             });
             socket.on("realtime:resource", event => {
-              console.log("DID realtime resource", event);
-
               expect(event.type).toEqual("user_message_bookmark");
-              //expect(event.action).toEqual("saved");
-              //expect(event.resource.name).toEqual(channelName);
+              expect(event.action).toEqual("saved");
+              expect(event.resource.name).toEqual("mybookmarksaved");
               done();
             });
           })
@@ -120,8 +117,7 @@ describe("The Bookmarks Realtime feature", () => {
             });
             socket.on("realtime:resource", event => {
               expect(event.type).toEqual("user_message_bookmark");
-              //expect(event.action).toEqual("saved");
-              //expect(event.resource.name).toEqual(channelName);
+              expect(event.action).toEqual("deleted");
               done();
             });
           })
