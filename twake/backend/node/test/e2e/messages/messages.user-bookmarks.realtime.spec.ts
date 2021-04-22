@@ -47,18 +47,26 @@ describe("The Bookmarks Realtime feature", () => {
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
             socket.emit("realtime:join", {
-              name: "TODO",
+              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
               token: roomToken,
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await service.userBookmarks.save({
-                company_id: platform.workspace.company_id,
-                user_id: platform.currentUser.id,
-                name: "mybookmark",
-              });
+              console.log("DID join room");
+              await service.userBookmarks.save(
+                {
+                  company_id: platform.workspace.company_id,
+                  user_id: platform.currentUser.id,
+                  name: "mybookmark",
+                  id: undefined,
+                },
+                {},
+                getContext(platform),
+              );
             });
             socket.on("realtime:resource", event => {
+              console.log("DID realtime resource", event);
+
               expect(event.type).toEqual("user_message_bookmark");
               //expect(event.action).toEqual("saved");
               //expect(event.resource.name).toEqual(channelName);
@@ -76,11 +84,16 @@ describe("The Bookmarks Realtime feature", () => {
     it("should notify the client", async done => {
       const service = platform.platform.getProvider<MessageServiceAPI>("messages");
 
-      await service.userBookmarks.save({
-        company_id: platform.workspace.company_id,
-        user_id: platform.currentUser.id,
-        name: "mybookmark",
-      });
+      const instance = await service.userBookmarks.save(
+        {
+          company_id: platform.workspace.company_id,
+          user_id: platform.currentUser.id,
+          name: "mybookmark",
+          id: undefined,
+        },
+        {},
+        getContext(platform),
+      );
 
       const jwtToken = await platform.auth.getJWTToken();
       const roomToken = "twake";
@@ -91,16 +104,19 @@ describe("The Bookmarks Realtime feature", () => {
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
             socket.emit("realtime:join", {
-              name: "TODO",
+              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
               token: roomToken,
             });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await service.userBookmarks.delete({
-                company_id: platform.workspace.company_id,
-                user_id: platform.currentUser.id,
-                name: "mybookmark",
-              });
+              await service.userBookmarks.delete(
+                {
+                  company_id: platform.workspace.company_id,
+                  user_id: platform.currentUser.id,
+                  id: instance.entity.id,
+                },
+                getContext(platform),
+              );
             });
             socket.on("realtime:resource", event => {
               expect(event.type).toEqual("user_message_bookmark");
@@ -116,3 +132,10 @@ describe("The Bookmarks Realtime feature", () => {
     });
   });
 });
+
+function getContext(platform) {
+  return {
+    company: { id: platform.workspace.company_id },
+    user: { id: platform.currentUser.id },
+  };
+}

@@ -5,18 +5,14 @@ import {
   OperationType,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../../core/platform/framework";
+import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageUserBookmarksServiceAPI } from "../../api";
-import { Thread } from "../../entities/threads";
 import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { CompanyExecutionContext } from "../../types";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 
-type UserMessageBookmarkListOptions = {
-  user_id: string;
-  company_id: string;
-};
 export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
   version: "1";
   repository: Repository<UserMessageBookmark>;
@@ -38,6 +34,12 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     return this.repository.findOne(pk);
   }
 
+  @RealtimeSaved<UserMessageBookmark>((bookmark, context) => [
+    {
+      room: ResourcePath.get(getWebsocketRoom(context as CompanyExecutionContext)),
+      path: getWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
+    },
+  ])
   async save<SaveOptions>(
     item: Pick<UserMessageBookmark, "name" | "id">,
     options?: SaveOptions,
@@ -68,6 +70,12 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     );
   }
 
+  @RealtimeDeleted<UserMessageBookmark>((bookmark, context) => [
+    {
+      room: ResourcePath.get(getWebsocketRoom(context as CompanyExecutionContext)),
+      path: getWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
+    },
+  ])
   async delete(
     pk: Pick<UserMessageBookmark, "company_id" | "user_id" | "id">,
     context?: CompanyExecutionContext,
@@ -88,4 +96,8 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     );
     return list;
   }
+}
+
+function getWebsocketRoom(context: CompanyExecutionContext): string {
+  return "/companies/" + context.company.id + "/messages/bookmarks";
 }

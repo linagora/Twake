@@ -6,6 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
+  ResourceWebsocket,
 } from "../../../../services/types";
 import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { ExecutionContext, SaveResult } from "../../../../core/platform/framework/api/crud-service";
@@ -102,7 +103,7 @@ export class UserBookmarksController
         context,
       );
       return {
-        websockets: [],
+        websockets: [getWebsocketRoom(context)],
         resources: list.getEntities(),
         ...(list.page_token && {
           next_page_token: list.page_token,
@@ -112,6 +113,12 @@ export class UserBookmarksController
       handleError(reply, err);
     }
   }
+}
+
+function getWebsocketRoom(context: CompanyExecutionContext): ResourceWebsocket {
+  return {
+    room: "/companies/" + context.company.id + "/messages/bookmarks",
+  };
 }
 
 function getCompanyExecutionContext(
