@@ -4,7 +4,6 @@ import ThreadSection from '../Parts/ThreadSection';
 import { PlusCircle } from 'react-feather';
 import Input from './Input';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
-import DriveService from 'services/Apps/Drive/Drive.js';
 import './Input.scss';
 
 type Props = {
