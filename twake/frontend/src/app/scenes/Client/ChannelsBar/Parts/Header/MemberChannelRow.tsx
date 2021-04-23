@@ -47,11 +47,11 @@ export default (props: Props) => {
     return setIsMember(true);
   };
 
-  const leaveChannel = async () => {
+  const leaveChannel = async (channelId: string, userId: string) => {
     //Fixme, this is not pretty, we should find a way to do this in one line
     const channelMemberResource = new ChannelMemberResource({
-      user_id: props.userId,
-      channel_id: props.channelId,
+      user_id: userId,
+      channel_id: channelId,
       type: 'member', // "member" | "guest" | "bot",
     });
     channelMemberResource.setPersisted();
@@ -93,7 +93,7 @@ export default (props: Props) => {
           </div>
         ),
         icon: <Trash size={16} color="var(--red)" />,
-        onClick: leaveChannel,
+        onClick: () => leaveChannel(props.channelId, props.userId),
       },
     ];
     userEvents = (

@@ -151,7 +151,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     });
   }
 
-  async remove(resource: G, options: any): Promise<Resource<any> | string | null> {
+  async remove(resource: G, options?: any): Promise<Resource<any> | string | null> {
     return new Promise((resolve, reject) => {
       this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
@@ -159,19 +159,15 @@ export default class CollectionTransport<G extends Resource<any>> {
         logger.error('remove: Id key not found for resource', resource);
       }
 
-      if (resource.state.persisted) {
-        this.buffer.push({
-          action: 'delete',
-          resourceId: resource.data[resource.getIdKey()],
-          options: options || {},
-          resolve: resolve,
-          reject: reject,
-        });
+      this.buffer.push({
+        action: 'delete',
+        resourceId: resource.data[resource.getIdKey()],
+        options: options || {},
+        resolve: resolve,
+        reject: reject,
+      });
 
-        this.flushBuffer();
-      } else {
-        resolve(null);
-      }
+      this.flushBuffer();
     });
   }
 

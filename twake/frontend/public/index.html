@@ -32,13 +32,69 @@
 
       #app_loader {
         pointer-events: none;
-        opacity: 0;
+        opacity: 1;
         transition: 0.2s;
       }
       #app_loader.load {
         opacity: 1;
         transition: 0.8s;
       }
+
+
+      .circular{
+        animation: rotate 2s linear infinite;
+        height: 50px;
+        left: calc(50% - 25px);
+        position: absolute;
+        top: calc(50% - 25px);
+        width: 50px; 
+      }
+
+
+      .path {
+        stroke-dasharray: 1,200;
+        stroke-dashoffset: 0;
+        animation: 
+        dash 1.5s ease-in-out infinite,
+        color 6s ease-in-out infinite
+        ;
+        stroke-linecap: round;
+        stroke: #3840f7;
+      }
+
+      @keyframes rotate{
+        100%{
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes dash{
+        0%{
+          stroke-dasharray: 1,200;
+          stroke-dashoffset: 0;
+        }
+        50%{
+          stroke-dasharray: 89,200;
+          stroke-dashoffset: -35;
+        }
+        100%{
+          stroke-dasharray: 89,200;
+          stroke-dashoffset: -124;
+        }
+      }
+
+      #beta_tag {
+        background-image: url("./public/img/beta.png");
+        width: 48px;
+        height: 48px;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 100;
+        background-position: center;
+        background-size: cover;
+        pointer-events: none;
+      }
+
     </style>
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="/public/font/tt_norms/stylesheet.css" />
@@ -47,21 +103,11 @@
   <body id="body" style="margin: 0; padding: 0;">
     <div id="fyfk-widget"></div>
     <div id="root"></div>
-    <img
-      id="app_loader"
-      style="
-        z-index: 1;
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 48px;
-        height: 48px;
-      "
-      src="/public/img/load_app.png"
-    />
+
+    <svg id="app_loader" class="circular" height="50" width="50">
+      <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+    </svg>
+    <div id="beta_tag"></div>
 
     <script type="text/javascript">
       window.electron_config = {};
