@@ -14,6 +14,7 @@ import FindCompletion from './Transport/CollectionFindCompletion';
 export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
+  force: boolean;
   query: any;
   callback: Function;
 } & any;
@@ -173,13 +174,13 @@ export default class Collection<R extends Resource<any>> {
       filter = filter.data || filter;
     }
     if (filter) {
-      const resource = this.findOne(filter);
+      let resource = this.findOne(filter) || new this.type(filter);
       if (resource) {
         const storage = this.getStorage();
         storage.remove(this.getTypeName(), this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
-        if (!options?.withoutBackend && resource.state.persisted) {
+        if ((resource && !options?.withoutBackend && resource.state.persisted) || options.force) {
           this.transport.remove(resource, options?.query);
         }
       }
