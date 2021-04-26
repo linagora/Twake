@@ -91,8 +91,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     
     // if already initialized, send back the whole messages
     if (this.didInit) {
-      // We do not know if there are new messages since the last nextPage call so we reset the top/bottom flags
-      this.topHasBeenReached = false;
+      // We do not know if there are new messages since the last nextPage call so we reset the bottom flags
+      // the top flag stays like it was, we can not add new messages before the initial one
       this.bottomHasBeenReached = false;
       return this.buildResponse(this.getItems(), true, params);
     }
