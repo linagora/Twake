@@ -181,62 +181,62 @@ describe("The Messages Threads feature", () => {
 
       done();
     });
-  });
 
-  it("should update thread participants when remove participant", async done => {
-    const service = platform.platform.getProvider<MessageServiceAPI>("messages");
+    it("should update thread participants when remove participant", async done => {
+      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
 
-    //Create thread
-    const thread = await service.threads.save(
-      {
-        id: undefined,
-        company_id: platform.workspace.company_id,
-        participants: [
-          {
-            type: "user",
-            id: platform.currentUser.id,
-          },
-          {
-            type: "channel",
-            id: uuidv4(),
-          },
-        ],
-      },
-      {},
-      getContext(platform),
-    );
+      //Create thread
+      const thread = await service.threads.save(
+        {
+          id: undefined,
+          company_id: platform.workspace.company_id,
+          participants: [
+            {
+              type: "user",
+              id: platform.currentUser.id,
+            },
+            {
+              type: "channel",
+              id: uuidv4(),
+            },
+          ],
+        },
+        {},
+        getContext(platform),
+      );
 
-    const jwtToken = await platform.auth.getJWTToken();
-    const response = await platform.app.inject({
-      method: "POST",
-      url: `${url}/companies/${platform.workspace.company_id}/threads/${thread.entity.id}`,
-      headers: {
-        authorization: `Bearer ${jwtToken}`,
-      },
-      payload: {
-        resource: {},
-        options: {
-          participants: {
-            add: [
-              {
-                type: "user",
-                id: platform.currentUser.id,
-              },
-            ],
+      const jwtToken = await platform.auth.getJWTToken();
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/threads/${thread.entity.id}`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        payload: {
+          resource: {},
+          options: {
+            participants: {
+              remove: [
+                {
+                  type: "user",
+                  id: platform.currentUser.id,
+                },
+              ],
+            },
           },
         },
-      },
+      });
+
+      const result: ResourceUpdateResponse<Thread> = deserialize(
+        ResourceUpdateResponse,
+        response.body,
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resource.participants.length).toBe(1);
+
+      done();
     });
-
-    const result: ResourceUpdateResponse<Thread> = deserialize(
-      ResourceUpdateResponse,
-      response.body,
-    );
-
-    expect(response.statusCode).toBe(200);
-    expect(result.resource.participants.length).toBe(1);
-
-    done();
   });
 });
 

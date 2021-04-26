@@ -46,10 +46,6 @@ describe("The Bookmarks Realtime feature", () => {
         socket
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
-            socket.emit("realtime:join", {
-              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
-              token: roomToken,
-            });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
               await service.userBookmarks.save(
@@ -68,6 +64,10 @@ describe("The Bookmarks Realtime feature", () => {
               expect(event.action).toEqual("saved");
               expect(event.resource.name).toEqual("mybookmarksaved");
               done();
+            });
+            socket.emit("realtime:join", {
+              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
+              token: roomToken,
             });
           })
           .on("unauthorized", () => {
@@ -100,10 +100,6 @@ describe("The Bookmarks Realtime feature", () => {
         socket
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
-            socket.emit("realtime:join", {
-              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
-              token: roomToken,
-            });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
               await service.userBookmarks.delete(
@@ -119,6 +115,10 @@ describe("The Bookmarks Realtime feature", () => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("deleted");
               done();
+            });
+            socket.emit("realtime:join", {
+              name: `/companies/${platform.workspace.company_id}/messages/bookmarks`,
+              token: roomToken,
             });
           })
           .on("unauthorized", () => {

@@ -45,7 +45,7 @@ export class ThreadsService
       const thread = await this.repository.findOne({ company_id: context.company.id, id: item.id });
 
       // Add the created_by information
-      participantsOperation.add = participantsOperation.add.map(p => {
+      participantsOperation.add = (participantsOperation.add || []).map(p => {
         return {
           created_by: context.user.id,
           created_at: new Date().getTime(),
@@ -56,7 +56,7 @@ export class ThreadsService
       thread.participants = _.uniqBy(
         _.differenceBy(
           [...thread.participants, ...participantsOperation.add],
-          participantsOperation.remove,
+          participantsOperation.remove || [],
           p => p.id,
         ),
         p => p.id,
