@@ -86,10 +86,10 @@ abstract class BaseBundle
 
                     $controller = $that->loadController($controller);
                     if (!$controller) {
-                        return new Response("No controller " . $controller . " found", 500);
+                        return new Response("No controller " . $handler . " found", 500);
                     }
                     if (!method_exists($controller, $handler)) {
-                        return new Response("No controller handler " . $controller . "->" . $handler . " found", 500);
+                        return new Response("No controller handler " . $handler . "->" . $handler . " found", 500);
                     }
                     return $controller->$handler($request ?: new Request());
                 });

@@ -36,9 +36,14 @@ class WorkspaceUser
     private $user_id;
 
     /**
+     * @ORM\Column(name="role", type="string")
+     */
+    private $role = "member"; // "member" | "admin"
+
+    /**
      * @ORM\Column(name="level_id", type="twake_timeuuid")
      */
-    private $level_id;
+    private $level_id; //Depreciated
 
     /**
      * @ORM\Column(type="twake_datetime")
@@ -120,6 +125,22 @@ class WorkspaceUser
     public function getUserId()
     {
         return $this->user_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRole()
+    {
+        return $this->role ?: "member";
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
     }
 
     /**
@@ -250,6 +271,7 @@ class WorkspaceUser
             "user_id" => $this->getUserId(),
             "workspace_id" => $this->getWorkspaceId(),
             "workspace" => $this->getWorkspace($em),
+            "role" => $this->getRole(),
             "level_id" => $this->getLevelId(),
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),

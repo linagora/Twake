@@ -1,14 +1,16 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { logger } from "../../src/core/platform/framework";
 import { TestPlatform, init } from "./setup";
 
 describe.skip("The /users API", () => {
   const url = "/api/users";
   let platform: TestPlatform;
 
-  beforeEach(async () => {
+  beforeEach(async ends => {
     platform = await init({
-      services: ["websocket", "webserver", "user", "auth"],
+      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
     });
+    ends();
   });
 
   afterEach(async () => {

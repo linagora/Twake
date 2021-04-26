@@ -71,7 +71,7 @@ export function get(platform: TestPlatform): ChannelUtils {
     channel.company_id = platform.workspace.company_id;
     channel.workspace_id = platform.workspace.workspace_id;
     channel.is_default = false;
-    channel.visibility = ChannelVisibility.PRIVATE;
+    channel.visibility = ChannelVisibility.PUBLIC;
     channel.archived = false;
     channel.owner = owner;
 

@@ -81,19 +81,18 @@ export default (props: Props): JSX.Element => {
   };
 
   const leaveChannel = async () => {
-    if (props.channel.data.user_member) {
-      const channelMember = new ChannelMemberResource({
-        ...props.channel.data.user_member,
-      });
-
-      try {
-        //Fixme, this is not pretty, we should find a way to do this in one line
-        channelMember.setPersisted();
-        await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
-        await channelMembersCollection.remove(channelMember).then(redirectToWorkspace);
-      } catch (err) {
-        console.log('Error in ChannelMenu.tsx', err);
-      }
+    try {
+      channelMembersCollection
+        .remove(
+          {
+            user_id: UserService.getCurrentUserId(),
+            channel_id: props.channel.id,
+          },
+          { force: true },
+        )
+        .then(redirectToWorkspace);
+    } catch (err) {
+      console.log('Error in ChannelMenu.tsx', err);
     }
   };
 

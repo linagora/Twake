@@ -11,6 +11,9 @@ export default class Workspace {
   @Column("id", "timeuuid")
   id: string;
 
+  @Column("group_id", "timeuuid")
+  group_id: string;
+
   @Column("name", "encoded_string")
   name: string;
 

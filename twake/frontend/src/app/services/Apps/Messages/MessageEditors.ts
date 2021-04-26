@@ -1,6 +1,5 @@
 import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'services/localStorage.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
 
 class MessageEditorsManager {
   services: { [key: string]: MessageEditors } = {};

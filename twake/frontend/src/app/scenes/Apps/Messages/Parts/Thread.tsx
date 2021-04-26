@@ -3,15 +3,15 @@ import './Threads.scss';
 import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
-import { threadId } from 'worker_threads';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import { Message } from 'app/services/Apps/Messages/Message';
 
 type Props = {
   collectionKey?: string;
   channelId?: string;
   threadId?: string;
   threadMain?: boolean;
-  message?: any;
+  message?: Message;
   loading?: boolean;
   highlighted?: boolean;
   children?: any | any[];
@@ -19,7 +19,6 @@ type Props = {
   withBlock?: boolean;
   className?: string;
   onClick?: (event: any) => void;
-  refDom?: (node: any) => void;
   canDrag?: boolean;
   allowUpload?: boolean;
 };
@@ -34,7 +33,6 @@ export default (props: Props) => (
       (props.className ? props.className + ' ' : '')
     }
     onClick={props.onClick}
-    ref={props.refDom}
   >
     {!!props.loading && (
       <div className="thread-section">
@@ -58,7 +56,7 @@ export default (props: Props) => (
         ref={node => {
           MessageEditorsManager.get(
             props.message?.channel_id || props.channelId || '',
-          ).setUploadZone(props.message?.id, node);
+          ).setUploadZone(props.message?.id || '', node);
         }}
         disableClick
         parent={''}
@@ -67,7 +65,7 @@ export default (props: Props) => (
         onUploaded={(file: any) => {
           MessageEditorsManager.get(
             props.message?.channel_id || props.channelId || '',
-          ).onAddAttachment(props.message?.id, file);
+          ).onAddAttachment(props.message?.id || '', file);
         }}
         onDragEnter={() =>
           MessageEditorsManager.get(props.message?.channel_id || props.channelId || '').openEditor(

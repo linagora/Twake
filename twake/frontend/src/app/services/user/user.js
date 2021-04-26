@@ -87,13 +87,10 @@ class User {
         ) {
           let in_scope = true;
           if (scope === 'workspace') {
-            in_scope =
-              (user.workspaces_id || []).indexOf(options.workspace_id) >= 0 ||
-              !user.workspaces_id?.length;
+            in_scope = (user.workspaces_id || []).indexOf(options.workspace_id) >= 0;
           }
           if (scope === 'group') {
-            in_scope =
-              (user.groups_id || []).indexOf(options.group_id) >= 0 || !user.groups_id?.length;
+            in_scope = (user.groups_id || []).indexOf(options.group_id) >= 0;
           }
           if (in_scope) {
             res.push(user);
@@ -159,7 +156,11 @@ class User {
   nextUsersGetBulk = [];
 
   asyncGet(id, callback = undefined) {
-    if (this.users_repository.known_objects_by_id[id]) {
+    if (
+      this.users_repository.known_objects_by_id[id] &&
+      new Date(this.users_repository.known_objects_by_id[id]?._last_modified || 0).getTime() >
+        new Date().getTime() - 1000 * 60 * 60
+    ) {
       return;
     }
 

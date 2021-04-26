@@ -1,4 +1,5 @@
 import { uuid } from "../types";
+import { MessageFileMetadata } from "./entities/message-files";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 

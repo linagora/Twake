@@ -9,17 +9,13 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
-import MessagesListServiceManager, {
-  MessagesListUtils as MessagesListService,
-} from 'app/services/Apps/Messages/MessagesListUtils';
-import MessagesListServerServicesManager, {
-  MessagesListServerUtils,
-  Message,
-} from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/listen_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import RouterServices from 'app/services/RouterService';
+import { Message } from 'app/services/Apps/Messages/Message';
+import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
+import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 
 type Props = {
   message: Message;
@@ -32,8 +28,7 @@ type State = {
 };
 
 export default class MessageHeader extends Component<Props, State> {
-  messagesListService: MessagesListService | null = null;
-  messagesListServerService: MessagesListServerUtils | null = null;
+  private messageService: MessageListService | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -41,22 +36,11 @@ export default class MessageHeader extends Component<Props, State> {
       messageLink: '',
     };
 
-    this.messagesListServerService =
-      MessagesListServerServicesManager.getByChannelId(
-        this.props.message?.channel_id || '',
-        '',
-        this.props.collectionKey,
-      ) || null;
-    if (this.messagesListServerService) {
-      this.messagesListService = MessagesListServiceManager.get(
-        this.props.collectionKey,
-        this.messagesListServerService,
-      );
-    }
+    this.messageService = MessageListServiceFactory.get(this.props.collectionKey);
   }
 
   componentWillUnmount() {
-    let senderData: any = getSender(this.props.message);
+    const senderData = getSender(this.props.message);
     if (senderData.type === 'user') {
       ListenUsers.cancelListenUser(senderData.id);
     }
@@ -66,21 +50,17 @@ export default class MessageHeader extends Component<Props, State> {
   render() {
     let user_name_node: any = null;
 
-    if (this.messagesListService === null) {
+    if (!this.messageService) {
       return <></>;
     }
 
     const scrollToMessage = () => {
-      const messageId = this.props.message.parent_message_id || '';
-      const found = (this.messagesListService as MessagesListService).scrollToMessage({
-        id: messageId,
-      });
-      if (!found) {
-        (this.messagesListServerService as MessagesListServerUtils).init(messageId).then(() => {
-          (this.messagesListService as MessagesListService).scrollToMessage({ id: messageId });
-          (this.messagesListServerService as MessagesListServerUtils).notify();
-          (this.messagesListServerService as MessagesListServerUtils).loadMore();
-        });
+      if (!this.messageService) {
+        return;
+      }
+
+      if (this.props.message.parent_message_id) {
+        this.messageService.scrollTo({ id: this.props.message.parent_message_id });
       }
     };
 
