@@ -3,7 +3,6 @@ import {
   SaveResult,
   DeleteResult,
   ListResult,
-  Paginable,
   CreateResult,
   ExecutionContext,
   UpdateResult,
@@ -46,7 +45,7 @@ export class UserService implements UsersServiceAPI {
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<User>> {
-    this.repository.save(item);
+    await this.repository.save(item);
 
     return new SaveResult("user", item, OperationType.UPDATE);
   }

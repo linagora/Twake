@@ -8,13 +8,13 @@ import Table from "cli-table";
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
-type ListParams = {
+type CLIArgs = {
   id: string;
 };
 
 const services = ["user", "database", "webserver"];
 
-const command: yargs.CommandModule<ListParams, ListParams> = {
+const command: yargs.CommandModule<unknown, CLIArgs> = {
   command: "remove",
   describe: "command that allow you to remove one user",
   builder: {
@@ -24,7 +24,7 @@ const command: yargs.CommandModule<ListParams, ListParams> = {
       description: "User ID",
     },
   },
-  handler: async ({ id }) => {
+  handler: async argv => {
     const tableBefore = new Table({
       head: ["User ID", "Username", "Deleted"],
       colWidths: [40, 40, 10],
@@ -39,7 +39,7 @@ const command: yargs.CommandModule<ListParams, ListParams> = {
     const userService = platform.getProvider<UserServiceAPI>("user");
 
     // rechercher md5 pour l'id
-    const user = await userService.users.get(getUserInstance({ id }));
+    const user = await userService.users.get({ id: argv.id });
 
     if (!user) {
       console.error("Error: You need to provide User ID");
@@ -54,7 +54,7 @@ const command: yargs.CommandModule<ListParams, ListParams> = {
 
       await userService.users.save(user);
 
-      const finalUser = await userService.users.get(getUserInstance({ id }));
+      const finalUser = await userService.users.get(getUserInstance({ id: argv.id }));
 
       // Table after
       tableAfter.push([finalUser.id, finalUser.username_canonical, finalUser.deleted]);
