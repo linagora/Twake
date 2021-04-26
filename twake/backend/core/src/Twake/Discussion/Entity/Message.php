@@ -497,6 +497,24 @@ class Message extends FrontObject
         }
     }
 
+    public function getNewApiObjectReactions($messageEntity) {
+        $reactions = Array();
+
+        if($messageEntity->getReactions() == null) return $reactions;
+
+        $orignal_reactions_array = $messageEntity->getReactions();
+        
+        foreach($orignal_reactions_array as $key => $value){
+            $new_reaction_object= Array(
+                "name" => $key
+            );
+
+            array_push($reactions, array_merge($new_reaction_object, $value));
+        }
+
+        return $reactions;
+    }
+
     /**
      * Set files for new api object
      */
@@ -576,7 +594,7 @@ class Message extends FrontObject
                 "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
                 "pinned_at" => 0,
             ),
-            "reactions" => $messageEntity->getReactions(), // TODO Change Reactions format 
+            "reactions" => $messageEntity->getNewApiObjectReactions($messageEntity),
         );
 
         return $array = array_merge($api_object, $message_type_object);
