@@ -478,14 +478,22 @@ class Message extends FrontObject
         $this->increment_at_time = $increment_at_time;
     }
 
-    public function getStringMessageType() {
-        //0 from user, 1 from application, 2 from system
+    public function getMessageTypeObject() {
         switch($this->getMessageType()) {
-            case 0: return "message";
-            case 1: return "thread";
-            case 2: return "event";
+            case 1: return Array(
+                "type" => "message",
+                "subtype" => "application",
+            );
+            case 2: return Array(
+                "type" => "message",
+                "subtype" => "system",
+            );
+            case 0:
             default:
-                return "message";
+                return Array(
+                    "type" => "message",
+                    "subtype" => null,
+                );
         }
     }
 
@@ -546,13 +554,12 @@ class Message extends FrontObject
      */
     public function generateNewApiObject($messageEntity, $array) {
     
-        return $array = Array(
+        $message_type_object = $messageEntity->getMessageTypeObject();
+        $api_object = Array(
             "id" => $messageEntity->getId(),
             "channel_id" => $messageEntity->getChannelId(),
             "thread_id" => $messageEntity->getParentMessageId(),
             "created_at" => ($messageEntity->getCreationDate() ? $messageEntity->getCreationDate()->getTimestamp() : null),
-            "type" => $messageEntity->getStringMessageType(),
-            "subtype" => null, // TODO
             "application_id" => $messageEntity->getApplicationId(),
             "user_id" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
             "edited" => $messageEntity->getEdited(),
@@ -566,11 +573,13 @@ class Message extends FrontObject
                 "answers" => $messageEntity->getResponsesCount()
             ),
             "pinned_info" => Array(
-                "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null), // TODO
+                "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
                 "pinned_at" => 0,
             ),
             "reactions" => $messageEntity->getReactions(), // TODO Change Reactions format 
         );
+
+        return $array = array_merge($api_object, $message_type_object);
     }
 
     
@@ -578,7 +587,7 @@ class Message extends FrontObject
     {    
         $api_object = $this->generateNewApiObject($this, $api_object);
 
-        return Array(
+        $old_message_object = Array(
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
             "channel_id" => $this->getChannelId(),
@@ -596,8 +605,9 @@ class Message extends FrontObject
             "content" => $this->getContent(),
             "user_specific_content" => $this->getUserSpecificContent(),
             "increment_at_time" => $this->getIncrementAtTime(),
-            "api_object" => $api_object,
         );
+
+        return array_merge($old_message_object, $api_object);
     }
 
 }
