@@ -11,7 +11,8 @@
     "realtime",
     "phpnode",
     "tracker",
-    "files"
+    "files",
+    "storage"
   ],
   "sentry": {
     "dsn": ""
@@ -75,5 +76,18 @@
   },
   "pubsub": {
     "urls": ["amqp://guest:guest@localhost:5672"]
+  },
+  "storage": {
+    "secret": "tp63bb3e90c0271c9a1c06651a7c0967eab8851a7a897769",
+    "type": "S3", 
+    "S3": {
+
+    },
+    "local": {
+
+    },
+    "swift": {
+
+    }
   }
 }
