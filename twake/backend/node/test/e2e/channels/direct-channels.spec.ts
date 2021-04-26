@@ -12,7 +12,7 @@ import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
 import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 
-describe("The direct channels API", () => {
+describe.only("The direct channels API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
@@ -205,7 +205,7 @@ describe("The direct channels API", () => {
       done();
     });
 
-    it.only("should not return direct channels in workspace list with mine parameter", async done => {
+    it("should not return direct channels in workspace list with mine parameter", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const channel2 = channelUtils.getChannel();
