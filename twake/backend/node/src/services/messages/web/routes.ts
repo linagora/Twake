@@ -18,6 +18,54 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   const viewsController = new ViewsController(options.service);
 
   /**
+   * User bookmarks collection
+   */
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/preferences/bookmarks",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.list.bind(userBookmarksController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/preferences/bookmarks/:id",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.save.bind(userBookmarksController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/preferences/bookmarks",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.save.bind(userBookmarksController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: "/companies/:company_id/preferences/bookmarks/:id",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.delete.bind(userBookmarksController),
+  });
+
+  /**
+   * Threads creation route
+   */
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads",
+    preValidation: [fastify.authenticate],
+    handler: threadsController.save.bind(threadsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id",
+    preValidation: [fastify.authenticate],
+    handler: threadsController.save.bind(threadsController),
+  });
+
+  /**
    * In threads message collection
    */
   fastify.route({
@@ -60,47 +108,6 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id/pin",
     preValidation: [fastify.authenticate],
     handler: messagesController.pin.bind(messagesController),
-  });
-
-  /**
-   * User bookmarks collection
-   */
-  fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/preferences/bookmarks",
-    preValidation: [fastify.authenticate],
-    handler: userBookmarksController.list.bind(userBookmarksController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/preferences/bookmarks/:id",
-    preValidation: [fastify.authenticate],
-    handler: userBookmarksController.save.bind(userBookmarksController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/preferences/bookmarks",
-    preValidation: [fastify.authenticate],
-    handler: userBookmarksController.save.bind(userBookmarksController),
-  });
-
-  fastify.route({
-    method: "DELETE",
-    url: "/companies/:company_id/preferences/bookmarks/:id",
-    preValidation: [fastify.authenticate],
-    handler: userBookmarksController.delete.bind(userBookmarksController),
-  });
-
-  /**
-   * Threads creation route
-   */
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads",
-    preValidation: [fastify.authenticate],
-    handler: threadsController.save.bind(threadsController),
   });
 
   /**

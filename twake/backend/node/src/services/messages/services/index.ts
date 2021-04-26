@@ -37,9 +37,9 @@ export default class Service implements MessageServiceAPI {
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
-    this.threads = getMessageThreadsServiceAPI(databaseService);
-    this.messages = getMessageThreadMessagesServiceAPI(databaseService);
-    this.views = getMessageViewsServiceAPI(databaseService);
+    this.messages = getMessageThreadMessagesServiceAPI(databaseService, this);
+    this.threads = getMessageThreadsServiceAPI(databaseService, this);
+    this.views = getMessageViewsServiceAPI(databaseService, this);
     this.engine = new MessagesEngine(this, pubsub);
   }
 
