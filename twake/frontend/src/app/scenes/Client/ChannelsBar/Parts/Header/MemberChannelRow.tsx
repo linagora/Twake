@@ -56,7 +56,7 @@ export default (props: Props) => {
     return setIsMember(true);
   };
 
-  const leaveChannel = async (channelId: string, userId: string) => {
+  const leaveChannel = async (channelId: string, userId?: string) => {
     //Fixme, this is not pretty, we should find a way to do this in one line
     const channelMemberResource = new ChannelMemberResource({
       user_id: userId,
