@@ -478,8 +478,106 @@ class Message extends FrontObject
         $this->increment_at_time = $increment_at_time;
     }
 
+    public function getStringMessageType() {
+        //0 from user, 1 from application, 2 from system
+        switch($this->getMessageType()) {
+            case 0: return "message";
+            case 1: return "thread";
+            case 2: return "event";
+            default:
+                return "message";
+        }
+    }
+
+    /**
+     * Set files for new api object
+     */
+    public function setFiles($messageEntity) {
+        $files = Array();
+
+        if(!isset($messageEntity->getContent()['files'])) return $files;
+        
+        $orignal_files = $messageEntity->getContent()['files'];
+
+        foreach($orignal_files as $file){
+            if($file["type"] == "file") {
+                $new_file_format = Array(
+                    "company_id" => "",
+                    "message_id" => $messageEntity->getId(),
+                    "id" => $file["content"],
+                    "metadata" => Array(
+                        "source" => "drive",
+                        "external_id" => $file["content"]
+                    ),
+                );
+                array_push($files, $new_file_format);
+            }
+        }
+
+        return $files;
+    }
+    
+    /**
+     * Set blocks for new api object
+     */
+    public function setBlocks($messageEntity) {
+        $blocks = Array();
+        $content = $messageEntity->getContent();
+
+        if(!isset($content)) return $blocks;
+
+        $markdown_element = Array(
+            "type" => "mrkdwn",
+            "text" => isset($content['original_str']) ? $content['original_str'] : ""
+        );
+
+        $new_block_format = Array(
+            "type" => "section",
+            "text" => $markdown_element
+        );
+
+        array_push($blocks, $new_block_format);
+
+        return $blocks;
+    }
+
+    /**
+     * Generate new api object
+     */
+    public function generateNewApiObject($messageEntity, $array) {
+    
+        return $array = Array(
+            "id" => $messageEntity->getId(),
+            "channel_id" => $messageEntity->getChannelId(),
+            "thread_id" => $messageEntity->getParentMessageId(),
+            "created_at" => ($messageEntity->getCreationDate() ? $messageEntity->getCreationDate()->getTimestamp() : null),
+            "type" => $messageEntity->getStringMessageType(),
+            "subtype" => null, // TODO
+            "application_id" => $messageEntity->getApplicationId(),
+            "user_id" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
+            "edited" => $messageEntity->getEdited(),
+            "text" => isset($messageEntity->getContent()['original_str']) ? $messageEntity->getContent()['original_str'] : "", 
+            "blocks" => $messageEntity->setBlocks($messageEntity),
+            "files" => $messageEntity->setFiles($messageEntity),
+            "context" => $messageEntity->getHiddenData(),
+            "title" => $messageEntity->getHiddenData()['custom_title'] ?: null,
+            "picture" => $messageEntity->getHiddenData()['custom_icon'] ?: null,
+            "stats" => Array(
+                "answers" => $messageEntity->getResponsesCount()
+            ),
+            "pinned_info" => Array(
+                "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null), // TODO
+                "pinned_at" => 0,
+            ),
+            "reactions" => $messageEntity->getReactions(), // TODO Change Reactions format 
+        );
+    }
+
+    
     public function getAsArray()
-    {
+    {    
+        $api_object = $this->generateNewApiObject($this, $api_object);
+
         return Array(
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
@@ -498,6 +596,7 @@ class Message extends FrontObject
             "content" => $this->getContent(),
             "user_specific_content" => $this->getUserSpecificContent(),
             "increment_at_time" => $this->getIncrementAtTime(),
+            "api_object" => $api_object,
         );
     }
 
