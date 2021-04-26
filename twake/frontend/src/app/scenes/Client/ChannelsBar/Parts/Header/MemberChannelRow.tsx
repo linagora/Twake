@@ -128,7 +128,10 @@ export default (props: Props) => {
           </div>
         ),
         icon: <Trash size={16} color="var(--red)" />,
-        onClick: props.userType !== 'pending-email' ? () => leaveChannel(props.channelId, props.userId) : removePendingEmail,
+        onClick:
+          props.userType !== 'pending-email'
+            ? () => leaveChannel(props.channelId, props.userId || '')
+            : removePendingEmail,
       },
     ];
     userEvents = (
