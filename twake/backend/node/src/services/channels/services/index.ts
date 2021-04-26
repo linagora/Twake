@@ -1,6 +1,11 @@
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import ChannelServiceAPI, { MemberService, ChannelService, TabService } from "../provider";
+import ChannelServiceAPI, {
+  MemberService,
+  ChannelService,
+  TabService,
+  ChannelPendingEmailService,
+} from "../provider";
 import { getService as getChannelService } from "./channel";
 import { getService as getMemberService } from "./member";
 import { getService as getTabService } from "./tab";
@@ -8,6 +13,7 @@ import { PubsubListener } from "./pubsub";
 import Activities from "./channel/activities/service";
 import { getService as getActivitiesService } from "./channel/activities";
 import UserServiceAPI from "../../user/api";
+import ChannelPendingEmailsService from "./channel/pending-emails/service";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -31,6 +37,7 @@ class Service implements ChannelServiceAPI {
   tabs: TabService;
   activities: Activities;
   pubsubListener: PubsubListener;
+  pendingEmails: ChannelPendingEmailService;
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, user: UserServiceAPI) {
     this.members = getMemberService(databaseService, this);
@@ -38,6 +45,7 @@ class Service implements ChannelServiceAPI {
     this.tabs = getTabService(databaseService);
     this.activities = getActivitiesService(pubsub);
     this.pubsubListener = new PubsubListener(this, pubsub);
+    this.pendingEmails = new ChannelPendingEmailsService(databaseService, user, this);
   }
 
   async init(): Promise<this> {
@@ -48,6 +56,7 @@ class Service implements ChannelServiceAPI {
         this.members.init(),
         this.tabs.init(),
         this.pubsubListener.init(),
+        this.pendingEmails.init(),
       ]);
     } catch (err) {
       console.error("Error while initializing channel", err);

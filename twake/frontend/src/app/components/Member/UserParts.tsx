@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, Badge } from 'antd';
+import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
-
+import Languages from 'services/languages/languages.js';
+import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User';
 import UserService from 'services/user/user.js';
 import UserListenerService from 'services/user/listen_users';
@@ -10,32 +11,45 @@ import OldCollections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/user.js';
 import { isArray } from 'lodash';
 
+type UserPartsType = {
+  avatar: JSX.Element;
+  name: string;
+  users: UserType[];
+  companyRole: JSX.Element;
+};
+
+type PropsType = {
+  usersIds: string[];
+  keepMyself?: boolean;
+  max?: number;
+  size?: number;
+};
+
 export const useUsersListener = (usersIds: string[]) => {
-  const channelMembers = (isArray(usersIds) ? usersIds : []).filter(
+  const users = (isArray(usersIds) ? usersIds : []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
   );
-  OldCollections.get('users').useListener(useState, channelMembers);
+  OldCollections.get('users').useListener(useState, users);
 
   useEffect(() => {
-    channelMembers?.map(userId => {
+    users?.map(userId => {
       UserListenerService.listenUser(userId);
       UserService.asyncGet(userId);
     });
 
     return () => {
-      channelMembers?.map(userId => {
+      users?.map(userId => {
         UserListenerService.cancelListenUser(userId);
       });
     };
   }, []);
+
+  return users;
 };
 
-export const getUserParts = (props: {
-  usersIds: string[];
-  keepMyself?: boolean;
-  max?: number;
-  size?: number;
-}): { avatar: JSX.Element; name: string; users: UserType[] } => {
+export const getUserParts = (props: PropsType): UserPartsType => {
+  const { companyId } = RouterServices.getStateFromRoute();
+
   let channelMembers = (props.usersIds || []).filter(
     e =>
       props.keepMyself ||
@@ -98,5 +112,41 @@ export const getUserParts = (props: {
     );
   }
 
-  return { avatar, name: channelName.join(', '), users };
+  const roleOriginalString = UserService.getUserRole(users[0], companyId);
+  const companyRoleObject = getCurrentCompanyRoleObject(roleOriginalString);
+  const companyRole =
+    companyRoleObject.name !== 'unknown' ? (
+      <Tag color={companyRoleObject.color}>{companyRoleObject.name}</Tag>
+    ) : (
+      <></>
+    );
+  const name = channelName.join(', ');
+  return {
+    avatar,
+    name,
+    users,
+    companyRole,
+  };
+};
+
+const getCurrentCompanyRoleObject = (role: string) => {
+  switch (role) {
+    case 'admin':
+      return {
+        color: 'var(--red)',
+        name: Languages.t('general.user.role.company.admin'),
+      };
+    case 'member':
+      return {
+        color: 'var(--primary)',
+        name: Languages.t('general.user.role.company.member'),
+      };
+    case 'guest':
+      return {
+        color: 'var(--grey-dark)',
+        name: Languages.t('general.user.role.company.guest'),
+      };
+    default:
+      return { name: 'unknown' };
+  }
 };

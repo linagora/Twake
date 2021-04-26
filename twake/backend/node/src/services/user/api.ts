@@ -84,6 +84,13 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
     companyId: CompanyUserPrimaryKey,
     pagination?: Paginable,
   ): Promise<ListResult<CompanyUser>>;
+
+  /**
+   *  Get company user
+   * @param company
+   * @param user
+   */
+  getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
 }
 
 export interface WorkspaceServiceAPI

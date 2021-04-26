@@ -12,3 +12,25 @@
     color: var(--black);
   }
 }
+
+.pending-email {
+  border-radius: var(--border-radius-base);
+  line-height: 44px;
+
+  &.add-pending-email {
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: rgba(56, 64, 247, 0.2);
+  }
+
+  &.selected {
+    background-color: var(--primary);
+
+    &,
+    .pending-email-text {
+      color: var(--white) !important;
+    }
+  }
+}

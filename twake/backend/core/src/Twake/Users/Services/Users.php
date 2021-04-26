@@ -225,6 +225,32 @@ class Users
         return $this->list_users ?: null;
     }
 
+    public function completeUserWithCompanies($user, $requester = null)
+    {
+        if(is_string($requester)){
+            return $user;
+        }
+        
+        $membersRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
+        $companies = $membersRepository->findBy(Array("user" => $user["id"]));
+        $user["companies"] = [];
+
+        foreach($companies as $companyMember){
+            if($requester && !$membersRepository->findBy(Array("user" => $requester, "group" => $companyMember->getGroup())) ){
+                continue;
+            }
+            $user["companies"][] = [
+                "role" => $companyMember->getRole() === null ? "member" : $companyMember->getRole(),
+                "status" => "active",
+                "company" => [
+                    "id" => $companyMember->getGroup()->getId()
+                ]
+            ];
+        }
+
+        return $user;
+    }
+
     public function getById($id, $entity = false)
     {
         $userRepository = $this->em->getRepository("Twake\Users:User");
