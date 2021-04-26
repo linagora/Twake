@@ -425,7 +425,12 @@ class MessageSystem
         if (isset($object["_user_reaction"]) && $user && $message->getId()) {
             $message_reaction_repo = $this->em->getRepository("Twake\Discussion:MessageReaction");
             $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $user->getId(), "message_id" => $message->getId()));
-            $current_reactions = $message->getReactions();
+            $current_reactions = [];
+
+            foreach($message->getAsArray()["reactions"] as $key => $reaction){
+                $current_reactions[$reaction["name"] ?: $key] = $reaction;
+            }
+
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 

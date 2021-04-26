@@ -506,7 +506,7 @@ class Message extends FrontObject
         
         foreach($orignal_reactions_array as $key => $value){
             $new_reaction_object= Array(
-                "name" => $key
+                "name" => $value["name"] ?: $key
             );
 
             array_push($reactions, array_merge($new_reaction_object, $value));
