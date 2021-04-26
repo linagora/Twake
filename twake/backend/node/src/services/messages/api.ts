@@ -14,7 +14,7 @@ import {
 import { MessagesEngine } from "./services/engine";
 import { CompanyExecutionContext } from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
-import { Message } from "./entities/messages";
+import { Message, MessagePrimaryKey } from "./entities/messages";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -48,6 +48,9 @@ export interface MessageThreadsServiceAPI
   ): Promise<SaveResult<Thread>>;
 }
 
-export interface MessageThreadMessagesServiceAPI extends TwakeServiceProvider, Initializable {}
+export interface MessageThreadMessagesServiceAPI
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<Message, MessagePrimaryKey, ExecutionContext> {}
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {}

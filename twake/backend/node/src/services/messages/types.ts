@@ -26,3 +26,7 @@ export type MessageNotification = {
 export interface CompanyExecutionContext extends ExecutionContext {
   company: { id: string };
 }
+
+export interface ThreadExecutionContext extends ExecutionContext {
+  thread: { id: string; company_id: string };
+}
