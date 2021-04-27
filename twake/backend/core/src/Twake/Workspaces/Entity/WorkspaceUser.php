@@ -38,7 +38,7 @@ class WorkspaceUser
     /**
      * @ORM\Column(name="role", type="string")
      */
-    private $role = "member"; // "member" | "admin"
+    private $role = "member"; // "member" | "moderator"
 
     /**
      * @ORM\Column(name="level_id", type="twake_timeuuid")

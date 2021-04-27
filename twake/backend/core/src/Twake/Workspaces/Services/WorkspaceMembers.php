@@ -55,7 +55,7 @@ class WorkspaceMembers
 
             $member->setLevelId($level->getId());
             if($level->getIsAdmin()){
-                $member->setRole("admin");
+                $member->setRole("moderator");
             }else{
                 $member->setRole("member");
             }
@@ -686,7 +686,7 @@ class WorkspaceMembers
                 }
 
                 if($isAdmin){
-                    $workspaceMember->setRole("admin");
+                    $workspaceMember->setRole("moderator");
                     $this->doctrine->persist($workspaceMember);
                 }
 
