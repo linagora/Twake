@@ -4,6 +4,9 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
+  CreateResult,
+  ExecutionContext,
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import {
@@ -33,19 +36,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this;
   }
 
-  get(
-    pk: Pick<Message, "company_id" | "thread_id" | "id">,
-    context?: ThreadExecutionContext,
-  ): Promise<Message> {
-    return this.repository.findOne(pk);
-  }
-
-  @RealtimeSaved<Message>((message, context) => [
-    {
-      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
-    },
-  ])
   async save<SaveOptions>(
     item: Message,
     options?: SaveOptions,
@@ -123,11 +113,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     await this.repository.save(message);
 
-    localEventBus.publish<MessageLocalEvent>("message:saved", {
-      resource: message,
-      context: context,
-      created: !item.id,
-    });
+    this.onSaved(message, { created: !item.id }, context);
 
     return new SaveResult<Message>(
       "message",
@@ -136,16 +122,37 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     );
   }
 
-  @RealtimeDeleted<Message>((message, context) => [
-    {
-      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
-    },
-  ])
+  async pin(
+    item: { id: string; pin: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    throw new Error("Method not implemented.");
+  }
+  async reaction(
+    item: { id: string; reactions: string[] },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    throw new Error("Method not implemented.");
+  }
+  async bookmark(
+    item: { id: string; bookmark_id: string; active: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    throw new Error("Method not implemented.");
+  }
+
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
-    const instance = await this.repository.findOne(pk);
-    if (instance) await this.repository.remove(instance);
-    return new DeleteResult<Message>("message", instance, !!instance);
+    return new DeleteResult<Message>("message", null, false);
+  }
+
+  async get(
+    pk: Pick<Message, "company_id" | "thread_id" | "id">,
+    context?: ThreadExecutionContext,
+  ): Promise<Message> {
+    return this.repository.findOne(pk);
   }
 
   async list<ListOption>(
@@ -158,6 +165,26 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       { pagination },
     );
     return list;
+  }
+
+  @RealtimeSaved<Message>((message, context) => [
+    {
+      room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
+      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
+    },
+  ])
+  async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
+    localEventBus.publish<MessageLocalEvent>("message:saved", {
+      resource: message,
+      context: context,
+      created: options.created,
+    });
+
+    return new SaveResult<Message>(
+      "message",
+      message,
+      options.created ? OperationType.CREATE : OperationType.UPDATE,
+    );
   }
 }
 

@@ -53,6 +53,24 @@ export interface MessageThreadsServiceAPI
 export interface MessageThreadMessagesServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<Message, MessagePrimaryKey, ExecutionContext> {}
+    CRUDService<Message, MessagePrimaryKey, ExecutionContext> {
+  pin(
+    item: { id: string; pin: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+
+  reaction(
+    item: { id: string; reactions: string[] },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+
+  bookmark(
+    item: { id: string; bookmark_id: string; active: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+}
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {}

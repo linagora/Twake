@@ -84,6 +84,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
 
   fastify.route({
     method: "GET",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.get.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "GET",
     url: "/companies/:company_id/threads/:thread_id/messages",
     preValidation: [fastify.authenticate],
     handler: messagesController.list.bind(messagesController),
@@ -108,6 +115,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id/pin",
     preValidation: [fastify.authenticate],
     handler: messagesController.pin.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/delete",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.delete.bind(messagesController),
   });
 
   /**
