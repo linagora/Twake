@@ -13,6 +13,10 @@ export default () => {
     InitService.init();
   }, []);
 
+  try {
+    (window as any).document.getElementById('app_loader').remove();
+  } catch (err) {}
+
   return (
     <Integration>
       <Router history={RouterServices.history}>

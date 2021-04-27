@@ -100,12 +100,14 @@ export default forwardRef((props: Props, ref) => {
 
   const searchCommand = (text: any, cb: any) => {
     let commands: any[] = [];
-    const apps = WorkspacesApps.getApps().map(app => {
-      var _commands = ((app.display || {}).messages_module || {}).commands || [];
-      _commands = _commands.map((co: any) => {
-        return { command: '/' + app.simple_name + ' ' + co.command, description: co.description };
-      });
-      commands = commands.concat(_commands);
+    WorkspacesApps.getApps().map(app => {
+      if (app) {
+        var _commands = ((app.display || {}).messages_module || {}).commands || [];
+        _commands = _commands.map((co: any) => {
+          return { command: '/' + app.simple_name + ' ' + co.command, description: co.description };
+        });
+        commands = commands.concat(_commands);
+      }
     });
     var res = commands.filter(co => co.command.startsWith('/' + text));
     cb(res);
