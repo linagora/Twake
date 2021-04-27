@@ -12,7 +12,7 @@ import { MessageServiceAPI } from "../../../src/services/messages/api";
 import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 
-describe("The Messages feature", () => {
+describe.skip("The Messages feature", () => {
   const url = "/internal/services/messages/v1";
   let platform: TestPlatform;
 
