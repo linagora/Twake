@@ -7,7 +7,7 @@ import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 
 type Props = {
   inputValue: string;

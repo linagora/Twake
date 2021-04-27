@@ -12,10 +12,9 @@ import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import Globals from 'services/Globals.js';
-import MessageEditors from './MessageEditors';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 
@@ -161,7 +160,7 @@ class Messages extends Observable {
       var message = DepreciatedCollections.get('messages').edit();
       var val = PseudoMarkdownCompiler.compileToJSON(value);
 
-      const editorManager = MessageEditorsManager.get(options.channel_id);
+      const editorManager = MessageEditorManager.get(options.channel_id);
       let filesAttachements =
         editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
 
@@ -231,7 +230,7 @@ class Messages extends Observable {
           reactElement: () => (
             <FilePicker
               mode={'select_file'}
-              onChoose={file => MessageEditors.get(channelId).onAddAttachment(threadId, file)}
+              onChoose={file => MessageEditorManager.get(channelId).onAddAttachment(threadId, file)}
             />
           ),
         });
@@ -270,7 +269,7 @@ class Messages extends Observable {
       last_message &&
       new Date().getTime() / 1000 - last_message.creation_date < 60 * 60 * 24 * 7
     ) {
-      MessageEditors.get(last_message.channel_id).openEditor(
+      MessageEditorManager.get(last_message.channel_id).openEditor(
         last_message.parent_message_id,
         last_message.id,
         'edition',
@@ -372,7 +371,7 @@ class Messages extends Observable {
       message.front_id,
     );
     DepreciatedCollections.get('messages').save(message, messagesCollectionKey);
-    MessageEditors.get(message.channel_id).closeEditor();
+    MessageEditorManager.get(message.channel_id).closeEditor();
   }
 
   pinMessage(message, value, messagesCollectionKey) {
