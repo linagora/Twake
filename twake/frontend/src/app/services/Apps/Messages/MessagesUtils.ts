@@ -30,7 +30,7 @@ export const getSender = (message: Message | undefined) => {
         senderData = {
           type: 'app',
           application: app,
-          username: 'app#' + app.simple_name,
+          username: 'app#' + app?.simple_name,
           firstname: app.name,
           lastname: '',
           thumbnail: WorkspacesApps.getAppIcon(app),

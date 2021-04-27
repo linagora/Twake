@@ -12,10 +12,6 @@ export default () => {
     return <div />;
   }
 
-  try {
-    (window as any).document.getElementById('app_loader').remove();
-  } catch (err) {}
-
   let publicAccess = false;
   const viewParameter = WindowService.findGetParameter('view') || '';
   if (

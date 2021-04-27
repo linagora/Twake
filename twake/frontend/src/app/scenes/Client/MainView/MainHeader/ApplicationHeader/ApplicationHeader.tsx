@@ -14,6 +14,11 @@ export default (): JSX.Element => {
 
   const appChannel = DepreciatedCollections.get('channels').find(channelId);
   const application = DepreciatedCollections.get('applications').find(appChannel?.app_id);
+
+  if (!application) {
+    return <></>;
+  }
+
   const channel = new ChannelResource({
     name: Languages.t('app.name.' + application.simple_name, [], application.name),
   });
