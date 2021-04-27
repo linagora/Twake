@@ -13,20 +13,20 @@ class Users extends BaseController
     public function search(Request $request)
     {
 
-        $scroll_id = $request->request->get("scroll_id");
-        $repository = "Twake\Users:User";
         $options = $request->request->get("query", $request->request->get("options", Array()));
 
         if (is_string($options)) {
             $options = Array("name" => $options);
         }
 
-        if (isset($scroll_id) && isset($repository)) {
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
-        } else {
-            $globalresult = $this->get("app.users")->search($options);
+        $globalresult = $this->get("app.users")->search($options);
+        
+        $users = [];
+        foreach($globalresult["users"] as $obj){
+            $users[] = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
         }
-
+        $globalresult["users"] = $users;
+        
         $data = Array("data" => $globalresult);
 
         return new Response($data);
@@ -47,7 +47,9 @@ class Users extends BaseController
         }else{
             $user = [];
             foreach($id as $singleId){
-                $user[] = $this->get("app.users")->getById($singleId);
+                $obj = $this->get("app.users")->getById($singleId);
+                $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
+                $user[] = $obj;
             }
         }
 

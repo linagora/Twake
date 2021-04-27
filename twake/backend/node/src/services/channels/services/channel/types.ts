@@ -1,6 +1,12 @@
 import { merge } from "lodash";
 import { Channel } from "../../entities/channel";
 
+export type NewUserInWorkspaceNotification = {
+  user_id: string;
+  company_id: string;
+  workspace_id: string;
+};
+
 export class ChannelObject extends Channel {
   last_activity: number;
 

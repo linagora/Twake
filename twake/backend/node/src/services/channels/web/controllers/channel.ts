@@ -1,14 +1,27 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { CreateResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Channel, ChannelMember, UserChannel } from "../../entities";
-import { ChannelService, ChannelPrimaryKey, MemberService } from "../../provider";
+import {
+  Channel,
+  ChannelMember,
+  ChannelPendingEmails,
+  ChannelPendingEmailsPrimaryKey,
+  UserChannel,
+  getChannelPendingEmailsInstance,
+} from "../../entities";
+import {
+  ChannelService,
+  ChannelPrimaryKey,
+  MemberService,
+  ChannelPendingEmailService,
+} from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
   ChannelListQueryParameters,
   ChannelParameters,
+  ChannelPendingEmailsDeleteQueryParameters,
   ChannelSaveOptions,
   CreateChannelBody,
   ReadChannelBody,
@@ -36,7 +49,11 @@ export class ChannelCrudController
       ResourceListResponse<Channel>,
       ResourceDeleteResponse
     > {
-  constructor(protected service: ChannelService, protected membersService: MemberService) {}
+  constructor(
+    protected service: ChannelService,
+    protected membersService: MemberService,
+    protected pendingEmails: ChannelPendingEmailService,
+  ) {}
 
   getPrimaryKey(request: FastifyRequest<{ Params: ChannelParameters }>): ChannelPrimaryKey {
     return {
@@ -244,6 +261,68 @@ export class ChannelCrudController
       handleError(reply, err);
     }
   }
+
+  async findPendingEmails(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    request: FastifyRequest<{
+      Querystring: ChannelListQueryParameters;
+      Params: ChannelPendingEmailsPrimaryKey;
+    }>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<ChannelPendingEmails>> {
+    const list = await this.pendingEmails.list(
+      new Pagination(request.query.page_token, request.query.limit),
+      { ...request.query },
+      getChannelPendingEmailsExecutionContext(request),
+    );
+
+    return {
+      resources: list.getEntities(),
+      ...(request.query.websockets && {
+        websockets: getWorkspaceRooms(request.params, request.currentUser),
+      }),
+      ...(list.page_token && {
+        next_page_token: list.page_token,
+      }),
+    };
+  }
+
+  async savePendingEmails(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    request: FastifyRequest<{
+      Body: { resource: ChannelPendingEmails };
+      Params: ChannelPendingEmailsPrimaryKey;
+    }>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    reply: FastifyReply,
+  ): Promise<ResourceCreateResponse<CreateResult<ChannelPendingEmails>>> {
+    const pendingEmail = await this.pendingEmails.create(
+      getChannelPendingEmailsInstance(request.body.resource),
+      getChannelPendingEmailsExecutionContext(request),
+    );
+    logger.debug("reqId: %s - save - PendingEmails input %o", request.id, pendingEmail.entity);
+    return { resource: pendingEmail };
+  }
+
+  async deletePendingEmails(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    request: FastifyRequest<{ Params: ChannelPendingEmailsDeleteQueryParameters }>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    reply: FastifyReply,
+  ): Promise<ResourceDeleteResponse> {
+    const pendingEmail = await this.pendingEmails.delete(
+      getChannelPendingEmailsInstance({
+        channel_id: request.params.channel_id,
+        company_id: request.params.company_id,
+        workspace_id: request.params.workspace_id,
+        email: request.params.email,
+      }),
+      getChannelPendingEmailsExecutionContext(request),
+    );
+
+    return { status: pendingEmail.deleted ? "success" : "error" };
+  }
 }
 
 function getExecutionContext(
@@ -276,6 +355,25 @@ function getChannelExecutionContext(
       id: channel.id,
       company_id: channel.company_id,
       workspace_id: channel.workspace_id,
+    },
+  };
+}
+
+function getChannelPendingEmailsExecutionContext(
+  request: FastifyRequest<{
+    Params: ChannelPendingEmailsPrimaryKey | ChannelPendingEmailsDeleteQueryParameters;
+  }>,
+): ChannelExecutionContext {
+  return {
+    user: request.currentUser,
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
+    channel: {
+      id: request.params.channel_id,
+      company_id: request.params.company_id,
+      workspace_id: request.params.workspace_id,
     },
   };
 }

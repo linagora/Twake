@@ -43,7 +43,12 @@ class ConsoleService {
     return onVerification;
   }
 
-  public addMailsInWorkspace(data: { workspace_id: string; company_id: string; emails: string[] }) {
+  public addMailsInWorkspace(data: {
+    workspace_id: string;
+    company_id: string;
+    emails: string[];
+    role?: 'admin' | 'member' | 'guest';
+  }) {
     const onVerification = new Promise(async resolve => {
       const response = await Api.post('users/console/api/invite', data, (res: any) => {
         if (res) {

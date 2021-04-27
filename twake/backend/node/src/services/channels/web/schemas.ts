@@ -243,3 +243,49 @@ export const updateChannelTabSchema = {
     },
   },
 };
+
+const channelPendingEmailsSchema = {
+  type: "object",
+  properties: {
+    company_id: { type: "string" },
+    workspace_id: { type: "string" },
+    channel_id: { type: "string" },
+    email: { type: "string" },
+  },
+};
+
+export const getChannelPendingEmailsSchema = {
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        websocket: webSocketSchema,
+        resource: channelPendingEmailsSchema,
+      },
+      required: ["resource"],
+    },
+  },
+};
+
+export const createChannelPendingEmailsSchema = {
+  body: {
+    type: "object",
+    properties: {
+      resource: {
+        type: "object",
+        properties: {},
+      },
+    },
+    required: ["resource"],
+  },
+  response: {
+    201: {
+      type: "object",
+      properties: {
+        websocket: webSocketSchema,
+        resource: channelPendingEmailsSchema,
+      },
+      required: ["resource"],
+    },
+  },
+};
