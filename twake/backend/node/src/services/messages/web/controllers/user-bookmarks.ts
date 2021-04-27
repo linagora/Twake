@@ -128,5 +128,6 @@ function getCompanyExecutionContext(
     method: request.routerMethod,
     reqId: request.id,
     transport: "http",
+    serverRequest: false,
   };
 }

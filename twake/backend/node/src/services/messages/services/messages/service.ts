@@ -6,13 +6,21 @@ import {
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
-import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
+import {
+  logger,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeContext,
+} from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
 import { getInstance, Message } from "../../entities/messages";
-import { ThreadExecutionContext } from "../../types";
+import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
 import { getThreadMessageWebsocketRoom } from "../../web/realtime";
+import _ from "lodash";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -32,10 +40,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this.repository.findOne(pk);
   }
 
-  @RealtimeSaved<Message>((bookmark, context) => [
+  @RealtimeSaved<Message>((message, context) => [
     {
       room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + bookmark.id,
+      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
   async save<SaveOptions>(
@@ -43,13 +51,95 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options?: SaveOptions,
     context?: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    return new SaveResult<Message>("message", null, OperationType.CREATE);
+    if (!context.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+      logger.error(`Unable to write in thread ${context.thread.id}`);
+      throw Error("Can't write this message.");
+    }
+
+    let message = getInstance({
+      id: undefined,
+      company_id: context.thread.company_id,
+      thread_id: context.thread.id,
+      type: context.serverRequest && item.type === "event" ? "event" : "message",
+      subtype: getSubtype(item, context),
+      created_at: new Date().getTime(),
+      user_id: context.user.id,
+      application_id: context.app.id || null,
+      text: item.text || "",
+      blocks: item.blocks || [],
+      files: item.files || null,
+      context: item.context || null,
+      edited: null, //Message cannot be created with edition status
+      pinned_info: item.pinned_info
+        ? {
+            pinned_at: new Date().getTime(),
+            pinned_by: context.user.id,
+          }
+        : null,
+      reactions: null, // Reactions cannot be set on creation
+      override:
+        (context.app?.id || context.serverRequest) && item.override
+          ? {
+              title: item.override.title,
+              picture: item.override.picture,
+            }
+          : null, // Only apps and server can set an override on a message
+    });
+
+    if (item.id) {
+      //We try to update an existing message
+      const messageToUpdate = await this.repository.findOne({
+        company_id: context.thread.company_id,
+        id: item.id,
+        thread_id: context.thread.id,
+      });
+
+      //Test if we can update this message. Can edit only:
+      // - Server itself
+      // - Message owner
+      // - Application owner
+      // Deleted messages cannot be edited
+      if (
+        (!context.serverRequest &&
+          context.app?.id !== messageToUpdate.application_id &&
+          context.user.id !== messageToUpdate.user_id) ||
+        messageToUpdate.subtype === "deleted"
+      ) {
+        logger.error(`Unable to edit message in thread ${message.thread_id}`);
+        throw Error("Can't edit this message.");
+      }
+
+      messageToUpdate.edited = {
+        edited_at: new Date().getTime(),
+      };
+
+      message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
+      if (context.app?.id || context.serverRequest) {
+        message = _.assign(message, _.pick(message, "override"));
+      }
+    }
+
+    logger.info(`Saved message in thread ${message.thread_id}`);
+
+    await this.repository.save(message);
+
+    localEventBus.publish<MessageLocalEvent>("message:saved", {
+      resource: message,
+      context: context,
+      created: !item.id,
+    });
+
+    return new SaveResult<Message>(
+      "message",
+      message,
+      item.id ? OperationType.UPDATE : OperationType.CREATE,
+    );
   }
 
-  @RealtimeDeleted<Message>((bookmark, context) => [
+  @RealtimeDeleted<Message>((message, context) => [
     {
       room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + bookmark.id,
+      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
@@ -69,4 +159,21 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     );
     return list;
   }
+}
+
+function getSubtype(
+  item: Message,
+  context?: ThreadExecutionContext,
+): null | "application" | "deleted" | "system" {
+  //Application request
+  if (context.app.id) {
+    return item.subtype === "application" ? "application" : null;
+  }
+  //System request
+  else if (context.serverRequest) {
+    return item.subtype;
+  }
+
+  //User cannot set a subtype itself
+  return null;
 }

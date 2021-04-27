@@ -1,4 +1,4 @@
-import { User } from "../../../../services/types/index";
+import { App, User } from "../../../../services/types/index";
 
 export class ContextualizedTarget {
   context?: ExecutionContext;
@@ -119,10 +119,12 @@ export declare type EntityOperationResult<Entity> =
 
 export interface ExecutionContext {
   user: User;
+  app?: App; //Used if request comes from an app / connector
   reqId?: string;
   url?: string;
   method?: string;
   transport?: "http" | "ws";
+  serverRequest?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
 }
 
 export class CrudExeption extends Error {

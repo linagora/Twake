@@ -12,7 +12,7 @@ import {
   UserMessageBookmarkPrimaryKey,
 } from "./entities/user-message-bookmarks";
 import { MessagesEngine } from "./services/engine";
-import { CompanyExecutionContext } from "./types";
+import { CompanyExecutionContext, ThreadExecutionContext } from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
 
@@ -46,6 +46,8 @@ export interface MessageThreadsServiceAPI
     options?: { participants?: any; message?: Message },
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>>;
+
+  checkAccessToThread(context: ThreadExecutionContext): Promise<boolean>;
 }
 
 export interface MessageThreadMessagesServiceAPI

@@ -7,12 +7,12 @@ import {
   Paginable,
   SaveResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../../core/platform/framework";
+import { logger, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadsServiceAPI } from "../../api";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "../../entities/threads";
-import { CompanyExecutionContext } from "../../types";
+import { CompanyExecutionContext, ThreadExecutionContext } from "../../types";
 import { Message } from "../../entities/messages";
 import _ from "lodash";
 
@@ -101,20 +101,55 @@ export class ThreadsService
   }
 
   get(pk: Pick<Thread, "company_id" | "id">, context?: ExecutionContext): Promise<Thread> {
-    throw new Error("Method not implemented.");
+    throw new Error("CRUD method not used.");
   }
   delete(
     pk: Pick<Thread, "company_id" | "id">,
     context?: ExecutionContext,
   ): Promise<DeleteResult<Thread>> {
-    throw new Error("Method not implemented.");
+    throw new Error("CRUD method not used.");
   }
   list<ListOptions>(
     pagination: Paginable,
     options?: ListOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Thread>> {
-    throw new Error("Method not implemented.");
+    throw new Error("CRUD method not used.");
+  }
+
+  async checkAccessToThread(context: ThreadExecutionContext): Promise<boolean> {
+    if (context.serverRequest) {
+      return true;
+    }
+
+    logger.info(
+      `Check access to thread ${context.thread.id} in company ${context.thread.company_id} for user ${context.user.id} and app ${context.app?.id}`,
+    );
+
+    const thread = await this.repository.findOne({
+      company_id: context.thread.company_id,
+      id: context.thread.id,
+    });
+
+    if (!thread) {
+      logger.info(`No such thread`);
+      return false;
+    }
+
+    //User is participant of the thread directly
+    if (thread.participants.some(p => p.type === "user" && p.id === context.user.id)) {
+      return true;
+    }
+
+    //Check user is in one of the participant channels
+    for (const channel of thread.participants.filter(p => p.type === "channel")) {
+      if (true) {
+        //TODO get the channel_member from channel micro_service
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 
