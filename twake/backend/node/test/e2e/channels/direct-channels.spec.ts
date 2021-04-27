@@ -12,7 +12,7 @@ import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
 import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 
-describe.only("The direct channels API", () => {
+describe("The direct channels API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
