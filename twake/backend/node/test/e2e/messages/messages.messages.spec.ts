@@ -35,7 +35,9 @@ describe.skip("The Messages feature", () => {
     await platform.tearDown();
   });
 
-  describe("On user use messages in a thread", () => {});
+  describe("On user use messages in a thread", () => {
+    it.skip("should create a message in a thread", () => {});
+  });
 });
 
 function getContext(platform) {
