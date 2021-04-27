@@ -18,8 +18,8 @@ export class Message {
   thread_id: string;
 
   @Type(() => String)
-  @Column("message_id", "timeuuid", { generator: "timeuuid" })
-  message_id: string;
+  @Column("id", "timeuuid", { generator: "timeuuid" })
+  id: string;
 
   @Type(() => String)
   @Column("type", "encoded_string")
@@ -79,7 +79,7 @@ export type MessagePinnedInfo = { pinned_at: number; pinned_by: string };
 
 export type MessageEdited = { edited_at: number };
 
-export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "message_id">;
+export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "id">;
 
 export function getInstance(message: Message): Message {
   return merge(new Message(), message);

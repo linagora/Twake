@@ -120,6 +120,13 @@
           window.electron.remote.BrowserWindow.getAllWindows()[0]
         ) {
           window.electron_config = window.electron.remote.BrowserWindow.getAllWindows()[0];
+
+          const sw = electron.screen.getPrimaryDisplay().size.width;
+          const sh = electron.screen.getPrimaryDisplay().size.height;
+          const w = Math.min(Math.ceil(sw * 0.8), 1792);
+          const h = Math.min(Math.min(Math.ceil(sh * 0.8), 1120), w);
+          electron.remote.getCurrentWindow().setBounds({ x: Math.ceil((sw - w) / 2), y: Math.ceil((sh - h) / 2), width: w, height: h });
+          electron.remote.getCurrentWindow().center();
         }
         document.getElementById('body').className = 'electron';
       }

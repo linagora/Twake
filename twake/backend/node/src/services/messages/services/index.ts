@@ -6,6 +6,7 @@ import {
   MessageThreadsServiceAPI,
   MessageThreadMessagesServiceAPI,
   MessageViewsServiceAPI,
+  MessageServiceAPI,
 } from "../api";
 
 import { getService as getMessageUserBookmarksServiceAPI } from "./user-bookmarks";
@@ -25,7 +26,7 @@ function getServiceInstance(
   return new Service(databaseService, pubsub);
 }
 
-export default class Service {
+export default class Service implements MessageServiceAPI {
   version: "1";
 
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -36,10 +37,10 @@ export default class Service {
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
-    this.threads = getMessageThreadsServiceAPI(databaseService);
-    this.messages = getMessageThreadMessagesServiceAPI(databaseService);
-    this.views = getMessageViewsServiceAPI(databaseService);
-    this.engine = new MessagesEngine(databaseService, pubsub);
+    this.messages = getMessageThreadMessagesServiceAPI(databaseService, this);
+    this.threads = getMessageThreadsServiceAPI(databaseService, this);
+    this.views = getMessageViewsServiceAPI(databaseService, this);
+    this.engine = new MessagesEngine(this, pubsub);
   }
 
   async init(context: TwakeContext): Promise<this> {

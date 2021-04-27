@@ -205,7 +205,7 @@ describe("The direct channels API", () => {
       done();
     });
 
-    it.only("should not return direct channels in workspace list with mine parameter", async done => {
+    it("should not return direct channels in workspace list with mine parameter", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const channel2 = channelUtils.getChannel();

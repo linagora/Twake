@@ -1,7 +1,10 @@
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import { MessageThreadsServiceAPI } from "../../api";
+import { MessageServiceAPI, MessageThreadsServiceAPI } from "../../api";
 import { ThreadsService } from "./service";
 
-export function getService(databaseService: DatabaseServiceAPI): MessageThreadsServiceAPI {
-  return new ThreadsService(databaseService);
+export function getService(
+  databaseService: DatabaseServiceAPI,
+  service: MessageServiceAPI,
+): MessageThreadsServiceAPI {
+  return new ThreadsService(databaseService, service);
 }

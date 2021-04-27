@@ -17,8 +17,8 @@ export class MessageUserMarkedRef {
   user_id: string;
 
   @Type(() => String)
-  @Column("bookmark", "string")
-  bookmark: string;
+  @Column("bookmark_id", "string")
+  bookmark_id: string;
 
   @Type(() => Number)
   @Column("id", "timeuuid", { generator: "timeuuid" })
@@ -43,7 +43,7 @@ export class MessageUserMarkedRef {
 
 export type MessageUserMarkedRefPrimaryKey = Pick<
   MessageUserMarkedRef,
-  "company_id" | "user_id" | "bookmark" | "id"
+  "company_id" | "user_id" | "bookmark_id" | "id"
 >;
 
 export function getInstance(ref: MessageUserMarkedRef): MessageUserMarkedRef {

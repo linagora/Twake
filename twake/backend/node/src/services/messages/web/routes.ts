@@ -18,72 +18,34 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   const viewsController = new ViewsController(options.service);
 
   /**
-   * In threads message collection
-   */
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads/:thread_id/messages",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.save.bind(messagesController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.save.bind(messagesController),
-  });
-
-  fastify.route({
-    method: "GET",
-    url: "/companies/:company_id/threads/:thread_id/messages",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.list.bind(messagesController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/reaction",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.reaction.bind(messagesController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/bookmark",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.bookmark.bind(messagesController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/pin",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: messagesController.pin.bind(messagesController),
-  });
-
-  /**
    * User bookmarks collection
    */
   fastify.route({
     method: "GET",
-    url: "/preferences/bookmarks",
-    preValidation: true ? [] : [fastify.authenticate],
+    url: "/companies/:company_id/preferences/bookmarks",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.list.bind(userBookmarksController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/preferences/bookmarks/:id",
+    preValidation: [fastify.authenticate],
     handler: userBookmarksController.save.bind(userBookmarksController),
   });
 
   fastify.route({
     method: "POST",
-    url: "/preferences/bookmarks",
-    preValidation: true ? [] : [fastify.authenticate],
+    url: "/companies/:company_id/preferences/bookmarks",
+    preValidation: [fastify.authenticate],
     handler: userBookmarksController.save.bind(userBookmarksController),
   });
 
   fastify.route({
     method: "DELETE",
-    url: "/preferences/bookmarks/:name",
-    preValidation: true ? [] : [fastify.authenticate],
-    handler: userBookmarksController.save.bind(userBookmarksController),
+    url: "/companies/:company_id/preferences/bookmarks/:id",
+    preValidation: [fastify.authenticate],
+    handler: userBookmarksController.delete.bind(userBookmarksController),
   });
 
   /**
@@ -92,8 +54,60 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   fastify.route({
     method: "POST",
     url: "/companies/:company_id/threads",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: threadsController.save.bind(threadsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id",
+    preValidation: [fastify.authenticate],
+    handler: threadsController.save.bind(threadsController),
+  });
+
+  /**
+   * In threads message collection
+   */
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.save.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.save.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/threads/:thread_id/messages",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.list.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/reaction",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.reaction.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/bookmark",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.bookmark.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/pin",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.pin.bind(messagesController),
   });
 
   /**
@@ -102,35 +116,35 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/feed",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: viewsController.list.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/filtered/:filter",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: viewsController.list.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/files",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: viewsController.listFiles.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/bookmarks",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: viewsController.list.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/inbox",
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: viewsController.list.bind(viewsController),
   });
 
