@@ -1954,4 +1954,5 @@ export default {
   'general.user.role.company.admin': 'Company administrator',
   'general.user.role.company.member': 'Member',
   'general.user.role.company.guest': 'Guest',
+  'general.user.deleted': 'Deleted Account',
 };

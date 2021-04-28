@@ -2027,4 +2027,5 @@ export default {
   'general.user.role.company.admin': "Administrateur de l'entreprise",
   'general.user.role.company.member': 'Membre',
   'general.user.role.company.guest': 'Invité',
+  'general.user.deleted': 'Compte supprimé',
 };
