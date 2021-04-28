@@ -34,7 +34,7 @@ export default React.memo((props: Props) => {
     ) && message?.sender !== CurrentUser.get().id;
   const creation_date = Math.min(new Date().getTime() / 1000, message?.creation_date || 0);
   return (
-    <div>
+    <div className="time_separator">
       {isNewMessage && (
         <div className="message_timeline new_messages">
           <div className="time_container">
