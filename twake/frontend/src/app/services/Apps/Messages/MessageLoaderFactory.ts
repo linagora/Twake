@@ -6,7 +6,7 @@ class MessageLoaderFactory {
   channelsContextById: { [channelId: string]: { companyId?: string; workspaceId?: string | null | undefined } } = {};
 
   get(collectionKey: string, channel: ChannelResource, threadId?: string): MessageLoader {
-    const key = this.getKey(channel, collectionKey, threadId);
+    const key = MessageLoader.getKey(channel, collectionKey, threadId);
     let loader = this.loaders.get(key);
 
     if (loader) {
@@ -22,13 +22,13 @@ class MessageLoaderFactory {
 
     loader = new MessageLoader(collectionKey, channel, threadId);
 
-    this.loaders.set(key, loader);
+    this.loaders.set(loader.key, loader);
 
     return loader;
   }
 
-  private getKey(channel: ChannelResource, collectionKey: string, threadId?: string): string {
-    return `channel:${channel.data.id}/collection:${collectionKey}/thread:${threadId}`;
+  remove(loader: MessageLoader): void {
+    this.loaders.delete(loader.key);
   }
 }
 

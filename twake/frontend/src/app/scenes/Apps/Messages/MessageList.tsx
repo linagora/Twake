@@ -170,8 +170,6 @@ export default class MessagesList extends React.Component<Props, State> {
   private cleanup(): void {
     this.loader.destroy();
     this.loader.removeListener(this.onNewCollectionEvent);
-    // TODO: Do we really need this here?
-    //MessageListServiceFactory.destroy(this.service);
   }
 
   private initLoader(params: { startFrom: string, direction: ScrollDirection }): Promise<FeedResponse<MessageModel>> {
@@ -461,7 +459,7 @@ export default class MessagesList extends React.Component<Props, State> {
               startReached={() => this.nextPage("up")}
               endReached={() => this.nextPage("down")}
               isScrolling={(value) => this.isScrolling(value)}
-              followOutput={true}
+              followOutput={"smooth"}
               rangeChanged={(range) => this.onVisibleItemsChanged(range)}
               itemContent={(index: number, message: MessageModel) => {
                 const highlight = !!this.service.hightlight && !!message.id && (this.service.hightlight === message.id);
