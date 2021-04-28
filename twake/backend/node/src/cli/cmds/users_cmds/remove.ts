@@ -50,7 +50,17 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       // Table before
       tableBefore.push([user.id, user.username_canonical, user.deleted]);
 
-      user.username_canonical = `deleted-user-${user.id}`;
+      const partialId = user.id.toString().split("-")[0];
+
+      user.username_canonical = `deleted-user-${partialId}`;
+      user.email_canonical = `${partialId}@twake.removed`;
+      user.first_name = "";
+      user.last_name = "";
+      user.phone = "";
+      user.picture = "";
+      user.thumbnail_id = null;
+      user.status_icon = null;
+      user.deleted = true;
 
       await userService.users.save(user);
 
