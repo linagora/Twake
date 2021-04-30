@@ -22,6 +22,9 @@ export class Message {
   id: string;
 
   @Type(() => String)
+  ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
+
+  @Type(() => String)
   @Column("type", "encoded_string")
   type:
     | "message" // Classic message
@@ -78,6 +81,13 @@ export type MessageOverride = { title?: string; picture?: string };
 export type MessagePinnedInfo = { pinned_at: number; pinned_by: string };
 
 export type MessageEdited = { edited_at: number };
+
+export type EphemeralMessage = {
+  id: string; //Identifier of the ephemeral message
+  version: string; //Version of ephemeral message (to update the view)
+  recipient: string; //User that will see this ephemeral message
+  recipient_context_id: string; //Recipient current view/tab/window to send the message to
+};
 
 export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "id">;
 

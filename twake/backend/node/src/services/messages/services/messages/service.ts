@@ -18,7 +18,7 @@ import {
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { getInstance, Message } from "../../entities/messages";
+import { getInstance, Message, MessageReaction } from "../../entities/messages";
 import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
 import { getThreadMessageWebsocketRoom } from "../../web/realtime";
 import _ from "lodash";
@@ -48,6 +48,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let message = getInstance({
       id: undefined,
+      ephemeral:
+        (context.app?.id || context.serverRequest) && item.ephemeral ? item.ephemeral : null,
       company_id: context.thread.company_id,
       thread_id: context.thread.id,
       type: context.serverRequest && item.type === "event" ? "event" : "message",
@@ -90,6 +92,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       // - Application owner
       // Deleted messages cannot be edited
       if (
+        !messageToUpdate ||
         (!context.serverRequest &&
           context.app?.id !== messageToUpdate.application_id &&
           context.user.id !== messageToUpdate.user_id) ||
@@ -111,7 +114,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     logger.info(`Saved message in thread ${message.thread_id}`);
 
-    await this.repository.save(message);
+    if (!message.ephemeral) {
+      await this.repository.save(message);
+    }
 
     this.onSaved(message, { created: !item.id }, context);
 
@@ -123,29 +128,134 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async pin(
-    item: { id: string; pin: boolean },
+    operation: { id: string; pin: boolean },
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    throw new Error("Method not implemented.");
+    if (!context.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+      logger.error(`Unable to write in thread ${context.thread.id}`);
+      throw Error("Can't edit this message.");
+    }
+
+    const message = await this.repository.findOne({
+      company_id: context.thread.company_id,
+      thread_id: context.thread.id,
+      id: operation.id,
+    });
+
+    if (!message) {
+      logger.error(`This message doesn't exists`);
+      throw Error("Can't edit this message.");
+    }
+
+    message.pinned_info = operation.pin
+      ? {
+          pinned_by: context.user.id,
+          pinned_at: new Date().getTime(),
+        }
+      : null;
+
+    logger.info(
+      `Updated message ${operation.id} pin to ${JSON.stringify(message.pinned_info)} thread ${
+        message.thread_id
+      }`,
+    );
+    await this.repository.save(message);
+    this.onSaved(message, { created: false }, context);
+    return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
+
   async reaction(
-    item: { id: string; reactions: string[] },
+    operation: { id: string; reactions: string[] },
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    throw new Error("Method not implemented.");
+    if (!context.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+      logger.error(`Unable to write in thread ${context.thread.id}`);
+      throw Error("Can't edit this message.");
+    }
+
+    const message = await this.repository.findOne({
+      company_id: context.thread.company_id,
+      thread_id: context.thread.id,
+      id: operation.id,
+    });
+
+    if (!message) {
+      logger.error(`This message doesn't exists`);
+      throw Error("Can't edit this message.");
+    }
+
+    //Update message reactions
+    updateMessageReactions(message, operation.reactions, context.user.id);
+
+    logger.info(
+      `Updated message ${operation.id} reactions to ${JSON.stringify(message.reactions)} thread ${
+        message.thread_id
+      }`,
+    );
+    await this.repository.save(message);
+    this.onSaved(message, { created: false }, context);
+    return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
   async bookmark(
-    item: { id: string; bookmark_id: string; active: boolean },
+    operation: { id: string; bookmark_id: string; active: boolean },
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    throw new Error("Method not implemented.");
+    const message = await this.repository.findOne({
+      company_id: context.thread.company_id,
+      thread_id: context.thread.id,
+      id: operation.id,
+    });
+
+    if (!message) {
+      logger.error(`This message doesn't exists`);
+      throw Error("Can't edit this message.");
+    }
+
+    //TODO add message to user bookmarks
+
+    return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
 
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
-    return new DeleteResult<Message>("message", null, false);
+    if (!context.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+      logger.error(`Unable to write in thread ${context.thread.id}`);
+      throw Error("Can't edit this message.");
+    }
+
+    const message = await this.repository.findOne({
+      company_id: context.thread.company_id,
+      thread_id: context.thread.id,
+      id: pk.id,
+    });
+
+    if (!message) {
+      logger.error(`This message doesn't exists`);
+      throw Error("Can't delete this message.");
+    }
+
+    if (
+      !context.serverRequest &&
+      message.user_id !== context.user.id &&
+      message.application_id !== context.app.id
+    ) {
+      logger.error(`You have no right to delete this message`);
+      throw Error("Can't delete this message.");
+    }
+
+    message.subtype = "deleted";
+    message.blocks = [];
+    message.reactions = [];
+    message.text = "Deleted message";
+    message.files = [];
+
+    logger.info(`Deleted message ${pk.id} from thread ${message.thread_id}`);
+    await this.repository.save(message);
+    this.onSaved(message, { created: false }, context);
+
+    return new DeleteResult<Message>("message", message, true);
   }
 
   async get(
@@ -161,7 +271,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context?: ThreadExecutionContext,
   ): Promise<ListResult<Message>> {
     const list = await this.repository.find(
-      { user_id: context.user.id, company_id: context.thread.company_id },
+      { thread_id: context.thread.id, company_id: context.thread.company_id },
       { pagination },
     );
     return list;
@@ -203,4 +313,24 @@ function getSubtype(
 
   //User cannot set a subtype itself
   return null;
+}
+
+function updateMessageReactions(message: Message, selectedReactions: string[], userId: string) {
+  let reactions: { [key: string]: MessageReaction } = {};
+  for (const reaction of message.reactions) {
+    reactions[reaction.name] = reaction;
+  }
+  for (const reaction of selectedReactions) {
+    reactions[reaction] = reactions[reaction] || { name: reaction, count: 0, users: [] };
+  }
+  for (const key in reactions) {
+    if (reactions[key].users.includes(userId)) {
+      reactions[key].count--;
+      reactions[key].users = reactions[key].users.filter(u => u != userId);
+    }
+    if (selectedReactions.includes(key)) {
+      reactions[key].count++;
+      reactions[key].users.push(userId);
+    }
+  }
 }
