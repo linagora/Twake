@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "message_user_inbox_threads";
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "user_id", "thread_id", "last_activity"],
+  primaryKey: [["company_id"], "user_id", "thread_id"],
   type: TYPE,
 })
 export class MessageUserInboxThread {
@@ -27,7 +27,7 @@ export class MessageUserInboxThread {
 
 export type MessageUserInboxThreadPrimaryKey = Pick<
   MessageUserInboxThread,
-  "company_id" | "user_id" | "thread_id" | "last_activity"
+  "company_id" | "user_id" | "thread_id"
 >;
 
 export function getInstance(ref: MessageUserInboxThread): MessageUserInboxThread {
