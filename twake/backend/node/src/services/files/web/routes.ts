@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { FileController } from "./controllers/files";
 
-const filesUrl = "/files";
+const filesUrl = "/companies/:company_id/files";
 
 const routes: FastifyPluginCallback<{ service: any }> = (
   fastify: FastifyInstance,
@@ -12,9 +12,16 @@ const routes: FastifyPluginCallback<{ service: any }> = (
 
   fastify.route({
     method: "POST",
-    url: `${filesUrl}/:upload`,
+    url: filesUrl,
     preValidation: true ? [] : [fastify.authenticate],
     handler: fileController.save.bind(fileController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${filesUrl}/:id/download`,
+    preValidation: true ? [] : [fastify.authenticate],
+    handler: fileController.get.bind(fileController),
   });
 
   fastify.route({

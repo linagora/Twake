@@ -1,4 +1,4 @@
-import { Stream } from "stream";
+import { Stream, Readable } from "stream";
 import { Consumes, TwakeService } from "../../framework";
 import S3ConnectorService from "./connectors/S3/service";
 
@@ -21,7 +21,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return this.getConnector().write(path, stream);
   }
 
-  read(path: string): Stream {
+  read(path: string): Promise<Readable> {
     return this.getConnector().read(path);
   }
 

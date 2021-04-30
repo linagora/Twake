@@ -1,6 +1,8 @@
-import { Stream } from "stream";
+import { Stream, Readable } from "stream";
 import { StorageConnectorAPI } from "../../provider";
 import * as Minio from "minio";
+import * as fs from "fs";
+import { chunk } from "lodash";
 
 export default class S3ConnectorService implements StorageConnectorAPI {
   client: Minio.Client;
@@ -13,22 +15,22 @@ export default class S3ConnectorService implements StorageConnectorAPI {
     stream.data.file;
     const folder_Name = stream.data.filename;
     ///twake/files/{company_id}/{user_id}/{file_identifier}/chunk.1
-    const company_id = "company_id";
+    const company_id = stream.company_id;
     const user_id = "user_id";
     //const file_identifier = path["resumableFileIdentifier"];
     const chunk_number = path["resumableChunkNumber"];
 
     stream.data.filename = "chunk" + chunk_number;
     this.client.putObject(
-      "audio",
+      "twake",
       `/twake/files/${company_id}/${user_id}/${folder_Name}/` + stream.data.filename,
       stream.data.file,
     );
-    //return `https://play.minio.io:9000/audio/${stream.filename}`;
+    //`https://play.minio.io:9000/twake/${stream.filename}`;
     return false;
   }
 
-  read(path: string): Stream {
-    return null;
+  async read(path: string): Promise<Readable> {
+    return this.client.getObject("twake", path);
   }
 }

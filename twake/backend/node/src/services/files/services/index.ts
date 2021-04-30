@@ -3,6 +3,7 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { FileServiceAPI } from "../api";
 import StorageAPI from "../../../core/platform/services/storage/provider";
+import { Readable } from "stream";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -43,5 +44,9 @@ class Service implements FileServiceAPI {
 
   save(stream: any) {
     this.storage.write(stream.fields, stream);
+  }
+
+  download(path: any): Promise<Readable> {
+    return this.storage.read(path);
   }
 }
