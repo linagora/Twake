@@ -7,7 +7,8 @@ import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import UserService from 'services/user/user.js';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import TimeSeparator from './TimeSeparator';
 import Input from '../Input/Input';
@@ -34,7 +35,7 @@ type Props = {
 };
 
 export default class MessageComponent extends Component<Props> {
-  messageEditorService: MessageEditors;
+  messageEditorService: MessageEditorService;
   allowUpdates: boolean = false;
   message: Message;
 

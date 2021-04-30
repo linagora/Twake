@@ -39,6 +39,12 @@ export class MessageListService {
     this.loader = MessageLoaderFactory.get(this.key, channel);
   }
 
+  destroy(): void {
+    // TODO: Destroy all the loaders from threads
+    this.loader.destroy(true);
+    MessageLoaderFactory.remove(this.loader);
+  }
+
   /**
    * @param threadId
    * @returns 

@@ -11354,10 +11354,10 @@ react-virtualized@^9.22.2:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
 
-react-virtuoso@^1.5.14:
-  version "1.5.14"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.5.14.tgz#8d9da2e9e83c1a2cd3f626d881198e9bb291a952"
-  integrity sha512-S0cpFmGKSkPEXLccgJ4AsUKCssGTjPDK8kPz320nZoAgIfm3Yham2kvVbFD8o9irxvd6iku2cEEkQ8Y7HDZwcg==
+react-virtuoso@1.8.6:
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.8.6.tgz#dc7d79ee9e309c13700296ff65b04f6ebecdcbaa"
+  integrity sha512-WFSI4YzdyAFrr3CuZnQ8cmubGMJjgmgyuhx/OpWLls1uK9O43s+6DMr9oBXHAgvCDjS3Nd3vkIJAhsJBJzS1nQ==
   dependencies:
     "@virtuoso.dev/react-urx" "^0.2.5"
     "@virtuoso.dev/urx" "^0.2.5"

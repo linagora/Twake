@@ -1,27 +1,10 @@
 import Observable from 'app/services/Depreciated/observable';
-import LocalStorage from 'services/localStorage.js';
-
-class MessageEditorsManager {
-  services: { [key: string]: MessageEditors } = {};
-  constructor() {
-    //@ts-ignore
-    window.MessageEditors = this;
-  }
-  get(channelId: string): MessageEditors {
-    if (this.services[channelId]) {
-      return this.services[channelId];
-    }
-    this.services[channelId] = new MessageEditors(channelId);
-    return this.services[channelId];
-  }
-}
-
-export default new MessageEditorsManager();
+import LocalStorage from 'services/localStorage';
 
 /*
   This class will manage editor states (opened editor and state)
 */
-export class MessageEditors extends Observable {
+export class MessageEditorService extends Observable {
   constructor(channelId: string) {
     super();
     this.channelId = channelId;

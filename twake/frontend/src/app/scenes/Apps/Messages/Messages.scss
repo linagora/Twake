@@ -138,15 +138,22 @@
   .thread .message_timeline {
     text-align: left;
     background: var(--white);
-    margin-left: 0px;
-    margin-top: -12px;
+    margin: 0;
     width: 100%;
     .time_container {
       margin-left: 32px;
+      top: -12px;
     }
     &::before {
-      margin-top: 21px;
+      display: none;
     }
+  }
+
+  .time_separator {
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    align-items: baseline;
   }
 
   .message_timeline {
@@ -155,9 +162,9 @@
     font-size: 12px;
     position: relative;
     height: 22px;
-    margin: 0 auto;
-    margin-bottom: 12px;
-    margin-top: 20px;
+    margin: 0;
+    padding-bottom: 0px;
+    padding-top: 0px;
     min-width: 0;
     max-width: 1000px;
     width: calc(100% - 32px);
@@ -169,7 +176,7 @@
       border-bottom: 1px solid var(--grey-background);
       position: relative;
       left: 0;
-      margin-top: 11px;
+      margin: 0;
       display: inline-block;
     }
 
