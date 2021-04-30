@@ -400,7 +400,7 @@ export class Service implements ChannelService {
 
       if (!channels.isEmpty()) {
         const activities = await this.activityRepository.find(findFilters, {
-          $in: [["channel_id", channels.getEntities().map(channel => `'${channel.id}'`)]],
+          $in: [["channel_id", channels.getEntities().map(channel => channel.id)]],
         });
 
         activityPerChannel = new Map<string, ChannelActivity>(
