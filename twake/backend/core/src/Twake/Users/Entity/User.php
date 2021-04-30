@@ -234,6 +234,10 @@ class User extends SearchableObject
      */
     protected $roles;
 
+    /**
+     * @ORM\Column(name="deleted", type="twake_boolean")
+     */
+    protected $deleted = false;
 
     public function __construct()
     {
@@ -572,7 +576,8 @@ class User extends SearchableObject
             "mail_verification_override" => $this->getMailVerified() ? null : $this->getMailVerificationOverride(),
             "mail_verification_override_mail" => $this->getMailVerified() ? null : $this->getEmail(),
             "groups_id" => $this->getGroups(),
-            "workspaces_id" => $this->getWorkspaces()
+            "workspaces_id" => $this->getWorkspaces(),
+            "deleted" => $this->getDeleted(),
         );
 
         //Start - Compatibility with new model
@@ -594,6 +599,7 @@ class User extends SearchableObject
 
         $return["status"] = trim(join(" ", $return["status_icon"]));
         $return["last_activity"] = $this->getLastActivity() * 1000;
+        $return["deleted"] = $return["deleted"];
         //End - Compatibility with new model
                     
         return $return;
@@ -1233,5 +1239,12 @@ class User extends SearchableObject
         $this->remember_me_secret = $remember_me_secret;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
 
 }
