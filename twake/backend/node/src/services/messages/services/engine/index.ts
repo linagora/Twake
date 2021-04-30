@@ -1,16 +1,20 @@
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { Initializable } from "../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { MessageServiceAPI } from "../../api";
-
-/**
- * The notification engine is in charge of processing data and delivering user notifications on the right place
- */
+import { MessageLocalEvent } from "../../types";
+import { ChannelViewProcessor } from "./processors/channel-view";
+import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 export class MessagesEngine implements Initializable {
-  constructor(private service: MessageServiceAPI, private pubsub: PubsubServiceAPI) {}
+  private channelViewProcessor: ChannelViewProcessor;
+
+  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
+    this.channelViewProcessor = new ChannelViewProcessor(this.database, this.service);
+  }
 
   async init(): Promise<this> {
-    //    this.pubsub.processor.addHandler(new UpdateChannelMemberMessageProcessor(this.service));
-
+    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
+      this.channelViewProcessor.process(e),
+    );
     return this;
   }
 }
