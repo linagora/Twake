@@ -89,6 +89,8 @@ export class UserInboxViewProcessor {
         }
 
         //Publish message in realtime
+
+        //TODO send a thread object instead of a message object
         const room = `/companies/${channelParticipant.company_id}/users/${userParticipant.id}/inbox`;
         const type = "message";
         const entity = message.resource;

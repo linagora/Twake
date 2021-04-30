@@ -22,7 +22,7 @@ export class MessageChannelMarkedRef {
 
   @Type(() => String)
   @Column("type", "string")
-  type: "pinned";
+  type: "pinned" | "thread";
 
   @Type(() => String)
   @Column("thread_id", "string")
