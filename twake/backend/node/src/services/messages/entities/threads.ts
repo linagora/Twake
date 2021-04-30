@@ -41,6 +41,8 @@ export type ParticipantObject = {
   created_at: number;
   created_by: string;
   id: string;
+  workspace_id?: string;
+  company_id?: string;
 };
 
 export type ThreadPrimaryKey = Pick<Thread, "company_id" | "id">;

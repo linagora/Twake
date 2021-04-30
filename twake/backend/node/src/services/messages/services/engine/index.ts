@@ -8,6 +8,8 @@ import { ChannelMarkedViewProcessor } from "./processors/channel-marked";
 import { UserMarkedViewProcessor } from "./processors/user-marked";
 import { UserInboxViewProcessor } from "./processors/user-inbox";
 import { FilesViewProcessor } from "./processors/files";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import { Thread } from "../../entities/threads";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -15,6 +17,8 @@ export class MessagesEngine implements Initializable {
   private userMarkedViewProcessor: UserMarkedViewProcessor;
   private userInboxViewProcessor: UserInboxViewProcessor;
   private filesViewProcessor: FilesViewProcessor;
+
+  private threadRepository: Repository<Thread>;
 
   constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
     this.channelViewProcessor = new ChannelViewProcessor(this.database, this.service);
@@ -25,21 +29,26 @@ export class MessagesEngine implements Initializable {
   }
 
   async init(): Promise<this> {
-    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
-      this.channelViewProcessor.process(e),
-    );
-    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
-      this.channelMarkedViewProcessor.process(e),
-    );
-    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
-      this.userInboxViewProcessor.process(e),
-    );
-    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
-      this.userMarkedViewProcessor.process(e),
-    );
-    localEventBus.subscribe("message:saved", (e: MessageLocalEvent) =>
-      this.filesViewProcessor.process(e),
-    );
+    this.threadRepository = await this.database.getRepository<Thread>("threads", Thread);
+
+    await this.channelViewProcessor.init();
+    await this.channelMarkedViewProcessor.init();
+    await this.userInboxViewProcessor.init();
+    await this.userMarkedViewProcessor.init();
+    await this.filesViewProcessor.init();
+
+    localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
+      const thread = await this.threadRepository.findOne({
+        company_id: e.resource.company_id,
+        id: e.resource.thread_id,
+      });
+      this.channelViewProcessor.process(thread, e);
+      this.channelMarkedViewProcessor.process(thread, e);
+      this.userInboxViewProcessor.process(thread, e);
+      this.userMarkedViewProcessor.process(thread, e);
+      this.filesViewProcessor.process(thread, e);
+    });
+
     return this;
   }
 }

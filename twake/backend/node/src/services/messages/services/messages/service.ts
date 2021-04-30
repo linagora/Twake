@@ -20,7 +20,7 @@ import Repository from "../../../../core/platform/services/database/services/orm
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
 import { getInstance, Message, MessageReaction } from "../../entities/messages";
 import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
-import { getThreadMessageWebsocketRoom } from "../../web/realtime";
+import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
 import _ from "lodash";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../types";
@@ -300,7 +300,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   @RealtimeSaved<Message>((message, context) => [
     {
       room: ResourcePath.get(getThreadMessageWebsocketRoom(context as ThreadExecutionContext)),
-      path: getThreadMessageWebsocketRoom(context as ThreadExecutionContext) + "/" + message.id,
+      path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
   async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
