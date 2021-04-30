@@ -69,6 +69,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           }
         : null,
       reactions: null, // Reactions cannot be set on creation
+      bookmarks: null,
       override:
         (context.app?.id || context.serverRequest) && item.override
           ? {
@@ -78,8 +79,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           : null, // Only apps and server can set an override on a message
     });
 
+    //We try to update an existing message
     if (item.id) {
-      //We try to update an existing message
       const messageToUpdate = await this.repository.findOne({
         company_id: context.thread.company_id,
         id: item.id,
@@ -198,6 +199,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     this.onSaved(message, { created: false }, context);
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
+
   async bookmark(
     operation: { id: string; bookmark_id: string; active: boolean },
     options: {},
@@ -215,6 +217,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //TODO add message to user bookmarks
+    message.bookmarks = message.bookmarks.filter(
+      b => !(b.user_id === context.user.id && b.bookmark_id === operation.bookmark_id),
+    );
+    if (operation.active) {
+      message.bookmarks.push({
+        user_id: context.user.id,
+        bookmark_id: operation.bookmark_id,
+        created_at: new Date().getTime(),
+      });
+    }
+
+    logger.info(
+      `Added bookmark to message ${operation.id} => ${JSON.stringify(
+        message.bookmarks,
+      )} to thread ${message.thread_id}`,
+    );
+    await this.repository.save(message);
+    this.onSaved(message, { created: false }, context);
 
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }

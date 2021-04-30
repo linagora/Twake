@@ -21,7 +21,7 @@ export class Message {
   @Column("id", "timeuuid", { generator: "timeuuid" })
   id: string;
 
-  @Type(() => String)
+  @Type(() => String) //Not in database (obviously because it is ephemeral)
   ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
 
   @Type(() => String)
@@ -70,6 +70,9 @@ export class Message {
   @Column("reactions", "encoded_json")
   reactions: null | MessageReaction[];
 
+  @Column("bookmarks", "encoded_json")
+  bookmarks: null | MessageBookmarks[];
+
   @Column("override", "encoded_json")
   override: null | MessageOverride;
 }
@@ -87,6 +90,12 @@ export type EphemeralMessage = {
   version: string; //Version of ephemeral message (to update the view)
   recipient: string; //User that will see this ephemeral message
   recipient_context_id: string; //Recipient current view/tab/window to send the message to
+};
+
+export type MessageBookmarks = {
+  user_id: string;
+  bookmark_id: string;
+  created_at: number;
 };
 
 export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "id">;
