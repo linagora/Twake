@@ -97,8 +97,8 @@ class Api extends BaseController
         }
         else {
             $data = [
-                "firstName" => "",
-                "lastName" => "",
+                "firstName" => $emails[0],
+                "lastName" => "-",
                 "email" => $emails[0],
                 "password" => base64_encode(random_bytes(6)),
                 "role" => $role
