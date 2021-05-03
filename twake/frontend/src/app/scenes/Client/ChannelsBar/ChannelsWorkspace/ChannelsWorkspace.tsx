@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { ChannelType } from 'app/models/Channel';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
@@ -41,7 +40,7 @@ export default () => {
     { observedFields: ['id', 'user_member.favorite'] },
   );
 
-  ChannelsBarService.wait(companyId || '', workspaceId || '', channelsCollection);
+  ChannelsBarService.wait(companyId, workspaceId, channelsCollection);
 
   channels
     .concat(directChannels)
