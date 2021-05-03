@@ -57,7 +57,10 @@ export default class ChannelsApps extends Component {
     }
 
     if (
-      !Collections.get('channels').did_load_first_time['channels_' + Workspaces.currentWorkspaceId]
+      !Collections.get('channels').did_load_first_time[
+        'channels_' + Workspaces.currentWorkspaceId
+      ] ||
+      AccessRightsService.getCompanyLevel(Workspaces.currentGroupId) === 'guest'
     ) {
       return <div />;
     }
