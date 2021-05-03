@@ -1258,6 +1258,7 @@ export default {
   'scenes.app.channelsbar.invated_access_right':
     'Vous pouvez inviter des utilisateurs externes à votre espace de travail.',
   'scenes.app.channelsbar.modify_channel_menu': 'Modifier la chaîne',
+  'scenes.app.channelsbar.guest_management': 'Gestion des invités',
   'scenes.app.channelsbar.modify_channel_title_private': 'Modifier la chaîne privée',
   'scenes.app.channelsbar.modify_channel_title_public': 'Modifier la chaîne publique',
   'scenes.app.channelsbar.mute': 'Sourdine',

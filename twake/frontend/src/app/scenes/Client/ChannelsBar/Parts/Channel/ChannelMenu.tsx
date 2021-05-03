@@ -224,8 +224,7 @@ export default (props: Props): JSX.Element => {
       },
       {
         type: 'menu',
-        // TODO Translation
-        text: Languages.t('Guest management'),
+        text: Languages.t('scenes.app.channelsbar.guest_management'),
         onClick: () => displayGuestManagement(),
       },
     );
