@@ -10,7 +10,6 @@ import NewDirectMessagesPopup from 'app/scenes/Client/ChannelsBar/Modals/NewDire
 import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
-import { NotificationResource } from 'app/models/Notification';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 
 export default () => {
@@ -33,7 +32,7 @@ export default () => {
     )
     .filter(c => c.data.visibility === 'direct' && c.data.user_member?.user_id);
 
-  ChannelsBarService.wait(companyId || '', 'direct', channelsCollection);
+  ChannelsBarService.wait(companyId, 'direct', channelsCollection);
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
