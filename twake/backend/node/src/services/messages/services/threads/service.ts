@@ -28,8 +28,15 @@ export class ThreadsService
     return this;
   }
 
+  /**
+   * Create a thread with its first message in it
+   * @param item
+   * @param options
+   * @param context
+   * @returns
+   */
   async save(
-    item: Pick<Thread, "company_id" | "id"> & {
+    item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type">[];
     },
     options?: { participants?: ParticipantOperation; message?: Message },
@@ -42,7 +49,7 @@ export class ThreadsService
         remove: [],
       };
 
-      const thread = await this.repository.findOne({ company_id: context.company.id, id: item.id });
+      const thread = await this.repository.findOne({ id: item.id });
 
       // Add the created_by information
       participantsOperation.add = (participantsOperation.add || []).map(p => {
@@ -85,49 +92,52 @@ export class ThreadsService
       const message: Message | null = options.message || null;
 
       const thread = new Thread();
-      thread.company_id = context.company.id;
       thread.created_at = new Date().getTime();
       thread.last_activity = thread.created_at;
       thread.answers = 0;
       thread.created_by = context.user.id;
       thread.participants = _.uniqBy(participants, p => p.id);
 
-      this.repository.save(thread);
+      await this.repository.save(thread);
 
-      //TODO create the message
+      if (message) {
+        await this.service.messages.save(
+          message,
+          {},
+          Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
+        );
+      }
 
       return new SaveResult("thread", thread, OperationType.CREATE);
     }
   }
 
-  get(pk: Pick<Thread, "company_id" | "id">, context?: ExecutionContext): Promise<Thread> {
-    throw new Error("CRUD method not used.");
-  }
-  delete(
-    pk: Pick<Thread, "company_id" | "id">,
-    context?: ExecutionContext,
-  ): Promise<DeleteResult<Thread>> {
-    throw new Error("CRUD method not used.");
-  }
-  list<ListOptions>(
-    pagination: Paginable,
-    options?: ListOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<Thread>> {
-    throw new Error("CRUD method not used.");
+  /**
+   * Add reply to thread: increase last_activity time and number of answers
+   * @param threadId
+   */
+  async addReply(threadId: string) {
+    const thread = await this.repository.findOne({ id: threadId });
+    thread.answers++;
+    thread.last_activity = new Date().getTime();
+    await this.repository.save(thread);
   }
 
+  /**
+   * Check context is allowed to accesss a thread
+   * @param context
+   * @returns
+   */
   async checkAccessToThread(context: ThreadExecutionContext): Promise<boolean> {
     if (context.serverRequest) {
       return true;
     }
 
     logger.info(
-      `Check access to thread ${context.thread.id} in company ${context.thread.company_id} for user ${context.user.id} and app ${context.app?.id}`,
+      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context.app?.id}`,
     );
 
     const thread = await this.repository.findOne({
-      company_id: context.thread.company_id,
       id: context.thread.id,
     });
 
@@ -150,6 +160,22 @@ export class ThreadsService
     }
 
     return false;
+  }
+
+  get(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<Thread> {
+    throw new Error("CRUD method not used.");
+  }
+
+  delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
+    throw new Error("CRUD method not used.");
+  }
+
+  list<ListOptions>(
+    pagination: Paginable,
+    options?: ListOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<Thread>> {
+    throw new Error("CRUD method not used.");
   }
 }
 

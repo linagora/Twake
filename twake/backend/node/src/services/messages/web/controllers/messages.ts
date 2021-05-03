@@ -8,8 +8,10 @@ import {
   ResourceListResponse,
 } from "../../../types";
 import { Message } from "../../entities/messages";
-import { ThreadExecutionContext } from "../../types";
+import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { getThreadMessageWebsocketRoom } from "../realtime";
 
 export class MessagesController
   implements
@@ -52,16 +54,89 @@ export class MessagesController
     }
   }
 
-  async delete(request: FastifyRequest<{}>): Promise<ResourceDeleteResponse> {
-    return new ResourceDeleteResponse();
+  async delete(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceDeleteResponse> {
+    const context = getThreadExecutionContext(request);
+    try {
+      await this.service.messages.delete(
+        {
+          thread_id: request.params.thread_id,
+          id: request.params.id,
+        },
+        context,
+      );
+      return {
+        status: "success",
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 
-  async get(request: FastifyRequest<{}>): Promise<ResourceGetResponse<Message>> {
-    return new ResourceGetResponse();
+  async get(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<Message>> {
+    const context = getThreadExecutionContext(request);
+    try {
+      const resource = await this.service.messages.get(
+        {
+          thread_id: request.params.thread_id,
+          id: request.params.id,
+        },
+        context,
+      );
+      return {
+        resource: resource,
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 
-  async list(request: FastifyRequest<{}>): Promise<ResourceListResponse<Message>> {
-    return new ResourceListResponse();
+  async list(
+    request: FastifyRequest<{
+      Querystring: MessageListQueryParameters;
+      Params: {
+        company_id: string;
+        thread_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<Message>> {
+    const context = getThreadExecutionContext(request);
+    try {
+      const resources = await this.service.messages.list(
+        new Pagination(request.query.page_token, request.query.limit),
+        { ...request.query },
+        context,
+      );
+      return {
+        resources: resources.getEntities(),
+        ...(request.query.websockets && {
+          websockets: [{ room: getThreadMessageWebsocketRoom(context) }],
+        }),
+        ...(resources.page_token && {
+          next_page_token: resources.page_token,
+        }),
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
   }
 
   async reaction(
@@ -167,7 +242,8 @@ function getThreadExecutionContext(
 ): ThreadExecutionContext {
   return {
     user: request.currentUser,
-    thread: { company_id: request.params.company_id, id: request.params.thread_id },
+    thread: { id: request.params.thread_id },
+    company: { id: request.params.company_id },
     url: request.url,
     method: request.routerMethod,
     reqId: request.id,

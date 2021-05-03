@@ -39,7 +39,6 @@ export class MessagesEngine implements Initializable {
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
       const thread = await this.threadRepository.findOne({
-        company_id: e.resource.company_id,
         id: e.resource.thread_id,
       });
       this.channelViewProcessor.process(thread, e);

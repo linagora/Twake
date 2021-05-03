@@ -50,7 +50,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       id: undefined,
       ephemeral:
         (context.app?.id || context.serverRequest) && item.ephemeral ? item.ephemeral : null,
-      company_id: context.thread.company_id,
       thread_id: context.thread.id,
       type: context.serverRequest && item.type === "event" ? "event" : "message",
       subtype: getSubtype(item, context),
@@ -82,7 +81,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     //We try to update an existing message
     if (item.id) {
       const messageToUpdate = await this.repository.findOne({
-        company_id: context.thread.company_id,
+        company_id: context.company.id,
         id: item.id,
         thread_id: context.thread.id,
       });
@@ -139,7 +138,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.thread.company_id,
+      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -177,7 +176,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.thread.company_id,
+      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -206,7 +205,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     const message = await this.repository.findOne({
-      company_id: context.thread.company_id,
+      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -246,7 +245,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.thread.company_id,
+      company_id: context.company.id,
       thread_id: context.thread.id,
       id: pk.id,
     });
@@ -279,7 +278,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async get(
-    pk: Pick<Message, "company_id" | "thread_id" | "id">,
+    pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
   ): Promise<Message> {
     return this.repository.findOne(pk);
@@ -291,7 +290,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context?: ThreadExecutionContext,
   ): Promise<ListResult<Message>> {
     const list = await this.repository.find(
-      { thread_id: context.thread.id, company_id: context.thread.company_id },
+      { thread_id: context.thread.id, company_id: context.company.id },
       { pagination },
     );
     return list;
@@ -304,6 +303,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     },
   ])
   async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
+    if (options.created) {
+      await this.service.threads.addReply(message.thread_id);
+    }
+
     localEventBus.publish<MessageLocalEvent>("message:saved", {
       resource: message,
       context: context,

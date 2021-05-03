@@ -5,14 +5,10 @@ import { Block } from "../blocks-types";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
-  primaryKey: [["company_id", "thread_id"], "message_id"],
+  primaryKey: [["thread_id"], "message_id"],
   type: TYPE,
 })
 export class Message {
-  @Type(() => String)
-  @Column("company_id", "uuid")
-  company_id: string;
-
   @Type(() => String)
   @Column("thread_id", "timeuuid")
   thread_id: string;
@@ -98,7 +94,7 @@ export type MessageBookmarks = {
   created_at: number;
 };
 
-export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "id">;
+export type MessagePrimaryKey = Pick<Message, "thread_id" | "id">;
 
 export function getInstance(message: Message): Message {
   return merge(new Message(), message);

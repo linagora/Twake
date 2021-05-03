@@ -1,4 +1,4 @@
-import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
+import { MessageLocalEvent } from "../../../../types";
 import { MessageServiceAPI } from "../../../../api";
 import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
@@ -7,18 +7,6 @@ import {
   MessageChannelMarkedRef,
   getInstance,
 } from "../../../../entities/message-channel-marked-refs";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import {
-  RealtimeEntityActionType,
-  RealtimeLocalBusEvent,
-  ResourcePath,
-} from "../../../../../../core/platform/services/realtime/types";
-import { Message } from "../../../../entities/messages";
-import {
-  CreateResult,
-  UpdateResult,
-} from "../../../../../../core/platform/framework/api/crud-service";
-import { getThreadMessagePath } from "../../../../web/realtime";
 
 export class ChannelMarkedViewProcessor {
   repository: Repository<MessageChannelMarkedRef>;

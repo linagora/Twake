@@ -2,6 +2,7 @@ import { ExecutionContext } from "../../core/platform/framework/api/crud-service
 import { uuid } from "../types";
 import { MessageFileMetadata } from "./entities/message-files";
 import { Message } from "./entities/messages";
+import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 
@@ -24,16 +25,33 @@ export type MessageNotification = {
   text: string;
 };
 
+export type ThreadWithLastMessages = Thread & {
+  first_message: Message;
+  last_replies: Message[];
+};
+
 export interface CompanyExecutionContext extends ExecutionContext {
   company: { id: string };
 }
 
 export interface ThreadExecutionContext extends ExecutionContext {
-  thread: { id: string; company_id: string };
+  thread: { id: string };
+  company: { id: string };
 }
 
 export interface MessageLocalEvent {
   resource: Message;
   context: ThreadExecutionContext;
   created: boolean;
+}
+
+export interface PaginationQueryParameters {
+  page_token?: string;
+  limit?: string;
+  websockets?: boolean;
+}
+
+export interface MessageListQueryParameters extends PaginationQueryParameters {
+  search_query?: string;
+  mine?: boolean;
 }
