@@ -80,8 +80,9 @@ export default class Collection<R extends Resource<any>> {
     return this.eventEmitter;
   }
 
-  public setOptions(options: CollectionOptions) {
+  public setOptions(options: CollectionOptions): this {
     this.options = assign(this.options, options);
+    return this;
   }
 
   public getTag() {
