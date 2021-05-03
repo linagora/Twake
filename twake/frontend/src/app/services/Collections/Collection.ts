@@ -29,11 +29,13 @@ export type ActionOptions = {
   onResourceId: string;
 } & GeneralOptions;
 
+type ReloadStrategy = 'ontime' | 'delayed' | 'none';
+
 export type CollectionOptions = {
   tag?: string;
   queryParameters?: any;
   cacheReplaceMode?: 'always' | 'never';
-  reloadStrategy?: 'ontime' | 'delayed' | 'none';
+  reloadStrategy?: ReloadStrategy;
   storageKey?: string;
 };
 
@@ -63,7 +65,7 @@ export default class Collection<R extends Resource<any>> {
     private readonly type: new (data: any) => R,
     options?: CollectionOptions,
   ) {
-    if (options?.tag) this.path = path + '::' + options.tag;
+    if (options?.tag) this.path = `${path}::${options.tag}`;
     this.setOptions(options || {});
     this.storage = getStore(options?.storageKey || '');
     this.emptyInstance = new type({});
@@ -310,7 +312,7 @@ export default class Collection<R extends Resource<any>> {
   /**
    * Reload collection after socket was disconnected
    */
-  public async reload(strategy: string = '') {
+  public async reload(strategy?: ReloadStrategy | 'never') {
     if (new Date().getTime() - this.reloadRegistered < 1000) {
       return;
     }
