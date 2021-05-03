@@ -1,16 +1,14 @@
 import React from 'react';
-
-import './Channel.scss';
-
+import { Tooltip } from 'antd';
+import { Star } from 'react-feather';
 import RouterServices from 'app/services/RouterService';
-import Emojione from 'components/Emojione/Emojione';
-import Icon from 'components/Icon/Icon.js';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
-import { Tooltip } from 'antd';
-import { Star } from 'react-feather';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
+import Emojione from 'components/Emojione/Emojione';
+import Icon from 'components/Icon/Icon';
+import './Channel.scss';
 
 type Props = {
   collection: Collection<ChannelResource>;
@@ -31,15 +29,14 @@ type Props = {
 
 export default (props: Props) => {
   const { channelId } = RouterServices.getStateFromRoute();
-
   const selected = channelId === props.id;
 
-  if (selected && props.id && MainViewService.getId() != props.id) {
+  if (selected && props.id && MainViewService.getId() !== props.id) {
     MainViewService.select(props.id, {
       collection: props.collection,
       app: props.app || 'messages',
       context: null,
-      hasTabs: props.visibility != 'direct' && !props.app,
+      hasTabs: props.visibility !== 'direct' && !props.app,
     });
   }
 
@@ -55,7 +52,7 @@ export default (props: Props) => {
             collection: props.collection,
             app: props.app || 'messages',
             context: null,
-            hasTabs: props.visibility != 'direct' && !props.app,
+            hasTabs: props.visibility !== 'direct' && !props.app,
           })
         }
       >

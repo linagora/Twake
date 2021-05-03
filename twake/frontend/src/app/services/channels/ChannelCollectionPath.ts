@@ -1,5 +1,5 @@
 const prefix = "/channels/v1/companies";
-type WorkspaceId = string | "direct";
+type WorkspaceId = string | "direct" | null;
 
 /**
  * All channels path
@@ -9,6 +9,26 @@ type WorkspaceId = string | "direct";
  * @returns 
  */
 export const getChannels = (companyId: string = "", workspaceId: WorkspaceId = "direct"): string => (`${prefix}/${companyId}/workspaces/${workspaceId}/channels`);
+
+/**
+ * Get channel path
+ * 
+ * @param companyId 
+ * @param workspaceId 
+ * @param channelId 
+ * @returns 
+ */
+export const getChannel = (companyId: string = "", workspaceId: WorkspaceId = "direct", channelId: string = ""): string => (`${getChannels(companyId, workspaceId)}/${channelId}`);
+
+/**
+ * Get channel members path
+ * 
+ * @param companyId 
+ * @param workspaceId 
+ * @param channelId 
+ * @returns 
+ */
+export const getChannelMembers = (companyId: string = "", workspaceId: WorkspaceId = "direct", channelId: string = ""): string => (`${getChannel(companyId, workspaceId, channelId)}/members`);
 
 /**
  * Get direct channels path for given company
