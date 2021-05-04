@@ -21,6 +21,7 @@
     "start": "npm run serve",
     "test": "jest --forceExit --coverage --verbose --detectOpenHandles --maxWorkers=1 | pino-pretty",
     "test:watch": "npm run test -- --watchAll | pino-pretty",
+    "test:e2e:romaric": "jest test/e2e/messages --watchAll --forceExit --coverage --verbose --detectOpenHandles --maxWorkers=1 --testTimeout=20000",
     "test:e2e": "jest test/e2e --forceExit --coverage --verbose --detectOpenHandles --maxWorkers=1 --testTimeout=20000",
     "test:unit": "jest test/unit --forceExit --coverage --verbose --detectOpenHandles --maxWorkers=1",
     "test:unit:watch": "npm run test:unit -- --watchAll | pino-pretty",

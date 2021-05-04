@@ -5,7 +5,7 @@ import { Block } from "../blocks-types";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
-  primaryKey: [["thread_id"], "message_id"],
+  primaryKey: [["thread_id"], "id"],
   type: TYPE,
 })
 export class Message {
@@ -17,7 +17,7 @@ export class Message {
   @Column("id", "timeuuid", { generator: "timeuuid" })
   id: string;
 
-  @Type(() => String) //Not in database (obviously because it is ephemeral)
+  @Type(() => String) //Not in database (obviousl y because it is ephemeral)
   ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
 
   @Type(() => String)
@@ -96,6 +96,16 @@ export type MessageBookmarks = {
 
 export type MessagePrimaryKey = Pick<Message, "thread_id" | "id">;
 
-export function getInstance(message: Message): Message {
-  return merge(new Message(), message);
+export function getInstance(message: Partial<Message>): Message {
+  return merge(new Message(), {
+    id: undefined,
+    ephemeral: null,
+    type: "message",
+    created_at: new Date().getTime(),
+    application_id: null,
+    text: "",
+    blocks: [],
+
+    ...message,
+  });
 }

@@ -71,7 +71,7 @@ export class ThreadsService
 
       this.repository.save(thread);
 
-      //TODO ensure the thread is in all participants (and removed from deleted participants)
+      //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
       return new SaveResult("thread", thread, OperationType.UPDATE);
     } else {

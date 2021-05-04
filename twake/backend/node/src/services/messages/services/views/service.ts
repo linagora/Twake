@@ -16,6 +16,7 @@ import {
   MessageWithReplies,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
+import _ from "lodash";
 
 export class ViewsService implements MessageViewsServiceAPI {
   version: "1";
@@ -71,17 +72,22 @@ export class ViewsService implements MessageViewsServiceAPI {
       { pagination },
     );
 
-    const threads = await this.repositoryThreads.find(
-      {},
-      {
-        $in: [["id", threadsRefs.getEntities().map(ref => ref.thread_id)]],
-      },
-    );
+    const threads = _.uniqBy(
+      (
+        await this.repositoryThreads.find(
+          {},
+          {
+            $in: [["id", threadsRefs.getEntities().map(ref => ref.thread_id)]],
+          },
+        )
+      ).getEntities(),
+      thread => thread.id,
+    ).sort((a, b) => b.last_activity - a.last_activity);
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
     await Promise.all(
-      threads.getEntities().map(async (thread: Thread) => {
+      threads.map(async (thread: Thread) => {
         const last_replies = (
           await this.repository.find(
             {
