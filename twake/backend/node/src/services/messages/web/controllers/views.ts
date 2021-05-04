@@ -52,7 +52,11 @@ export class ViewsController
       return {
         resources: resources.getEntities(),
         ...(request.query.websockets && {
-          websockets: [], //TODO
+          websockets: [
+            {
+              room: `/companies/${context.channel.company_id}/workspaces/${context.channel.workspace_id}/channels/${context.channel.id}/feed`,
+            },
+          ],
         }),
         ...(resources.page_token && {
           next_page_token: resources.page_token,
