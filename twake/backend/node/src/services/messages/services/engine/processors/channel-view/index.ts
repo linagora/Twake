@@ -4,6 +4,10 @@ import { DatabaseServiceAPI } from "../../../../../../core/platform/services/dat
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
+import {
+  getInstance as getInstanceReversed,
+  MessageChannelRefReversed,
+} from "../../../../entities/message-channel-refs-reversed";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
 import {
   RealtimeEntityActionType,
@@ -19,6 +23,7 @@ import { getThreadMessagePath } from "../../../../web/realtime";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
+  repositoryReversed: Repository<MessageChannelRefReversed>;
 
   constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
 
@@ -27,12 +32,23 @@ export class ChannelViewProcessor {
       "message_channel_refs",
       MessageChannelRef,
     );
+    this.repositoryReversed = await this.database.getRepository<MessageChannelRefReversed>(
+      "message_channel_refs_reversed",
+      MessageChannelRefReversed,
+    );
   }
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
       //Publish message in corresponding channel
       if (message.created) {
+        const reversed = await this.repositoryReversed.findOne({
+          company_id: participant.company_id,
+          workspace_id: participant.workspace_id,
+          channel_id: participant.id,
+          thread_id: thread.id,
+        });
+
         const ref = getInstance({
           company_id: participant.company_id,
           workspace_id: participant.workspace_id,
@@ -40,7 +56,20 @@ export class ChannelViewProcessor {
           thread_id: thread.id,
           message_id: message.resource.id,
         });
+
         await this.repository.save(ref);
+
+        if (reversed) {
+          const existingThreadRef = await this.repository.findOne({
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+            channel_id: participant.id,
+            message_id: reversed.message_id,
+          });
+          reversed.message_id = message.resource.id;
+          await this.repository.save(reversed);
+          await this.repository.remove(existingThreadRef);
+        }
       }
 
       //Publish message in realtime

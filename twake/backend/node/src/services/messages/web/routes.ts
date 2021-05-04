@@ -136,16 +136,9 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
 
   fastify.route({
     method: "GET",
-    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/filtered/:filter",
-    preValidation: [fastify.authenticate],
-    handler: viewsController.list.bind(viewsController),
-  });
-
-  fastify.route({
-    method: "GET",
     url: "/companies/:company_id/files",
     preValidation: [fastify.authenticate],
-    handler: viewsController.listFiles.bind(viewsController),
+    handler: viewsController.list.bind(viewsController),
   });
 
   fastify.route({

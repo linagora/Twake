@@ -12,7 +12,13 @@ import {
   UserMessageBookmarkPrimaryKey,
 } from "./entities/user-message-bookmarks";
 import { MessagesEngine } from "./services/engine";
-import { CompanyExecutionContext, ThreadExecutionContext } from "./types";
+import {
+  ChannelViewExecutionContext,
+  CompanyExecutionContext,
+  MessageViewListOptions,
+  ThreadExecutionContext,
+  ThreadWithLastMessages,
+} from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
 
@@ -74,4 +80,10 @@ export interface MessageThreadMessagesServiceAPI
   ): Promise<SaveResult<Message>>;
 }
 
-export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {}
+export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
+  listChannel(
+    pagination: Paginable,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<ThreadWithLastMessages>>;
+}

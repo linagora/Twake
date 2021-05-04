@@ -38,7 +38,13 @@ export interface ThreadExecutionContext extends ExecutionContext {
   thread: { id: string };
   company: { id: string };
 }
-
+export interface ChannelViewExecutionContext extends ExecutionContext {
+  channel: {
+    company_id: string;
+    workspace_id: string;
+    id: string;
+  };
+}
 export interface MessageLocalEvent {
   resource: Message;
   context: ThreadExecutionContext;
@@ -49,9 +55,11 @@ export interface PaginationQueryParameters {
   page_token?: string;
   limit?: string;
   websockets?: boolean;
+  direction?: "history" | "future";
+}
+export interface MessageViewListOptions {
+  replies_per_thread: number;
+  emojis: boolean;
 }
 
-export interface MessageListQueryParameters extends PaginationQueryParameters {
-  search_query?: string;
-  mine?: boolean;
-}
+export interface MessageListQueryParameters extends PaginationQueryParameters {}

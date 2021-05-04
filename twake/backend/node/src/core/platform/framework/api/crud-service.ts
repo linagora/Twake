@@ -145,10 +145,14 @@ export class CrudExeption extends Error {
 export interface Paginable {
   page_token?: string;
   limitStr?: string;
+  reversed?: boolean;
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token?: string, readonly limitStr = "100") {}
+  reversed?: boolean;
+  constructor(readonly page_token?: string, readonly limitStr = "100", reversed = false) {
+    this.reversed = reversed;
+  }
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {

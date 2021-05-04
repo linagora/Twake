@@ -8,9 +8,9 @@ import {
   getInstance as getInboxRefInstance,
 } from "../../../../entities/message-user-inbox-refs";
 import {
-  MessageUserInboxThread,
+  MessageUserInboxRefReversed,
   getInstance as getInboxThreadInstance,
-} from "../../../../entities/message-user-inbox-threads";
+} from "../../../../entities/message-user-inbox-refs-reversed";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
 import {
   RealtimeEntityActionType,
@@ -27,7 +27,7 @@ import { pairs } from "rxjs";
 
 export class UserInboxViewProcessor {
   repositoryRef: Repository<MessageUserInboxRef>;
-  repositoryThread: Repository<MessageUserInboxThread>;
+  repositoryReversed: Repository<MessageUserInboxRefReversed>;
 
   constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
 
@@ -36,9 +36,9 @@ export class UserInboxViewProcessor {
       "message_user_inbox_refs",
       MessageUserInboxRef,
     );
-    this.repositoryThread = await this.database.getRepository<MessageUserInboxThread>(
-      "message_user_inbox_threads",
-      MessageUserInboxThread,
+    this.repositoryReversed = await this.database.getRepository<MessageUserInboxRefReversed>(
+      "message_user_inbox_refs_reversed",
+      MessageUserInboxRefReversed,
     );
   }
 
@@ -48,11 +48,13 @@ export class UserInboxViewProcessor {
         //Publish message in corresponding channel
 
         if (message.created) {
-          let threadActivityReversed: MessageUserInboxThread = await this.repositoryThread.findOne({
-            company_id: channelParticipant.company_id,
-            user_id: userParticipant.id,
-            thread_id: thread.id,
-          });
+          let threadActivityReversed: MessageUserInboxRefReversed = await this.repositoryReversed.findOne(
+            {
+              company_id: channelParticipant.company_id,
+              user_id: userParticipant.id,
+              thread_id: thread.id,
+            },
+          );
 
           let currentRef: MessageUserInboxRef = null;
           if (threadActivityReversed) {
@@ -81,11 +83,11 @@ export class UserInboxViewProcessor {
           });
 
           if (currentRef) {
-            await this.repositoryThread.remove(currentRef);
+            await this.repositoryReversed.remove(currentRef);
           }
           await this.repositoryRef.save(ref);
           threadActivityReversed.last_activity = message.resource.created_at;
-          await this.repositoryThread.save(threadActivityReversed);
+          await this.repositoryReversed.save(threadActivityReversed);
         }
 
         //Publish message in realtime
