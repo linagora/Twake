@@ -14,15 +14,15 @@ import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
   PaginationQueryParameters,
-  ThreadWithLastMessages,
+  MessageWithReplies,
 } from "../../types";
 
 export class ViewsController
   implements
     CrudController<
-      ResourceGetResponse<ThreadWithLastMessages>,
-      ResourceCreateResponse<ThreadWithLastMessages>,
-      ResourceListResponse<ThreadWithLastMessages>,
+      ResourceGetResponse<MessageWithReplies>,
+      ResourceCreateResponse<MessageWithReplies>,
+      ResourceListResponse<MessageWithReplies>,
       ResourceDeleteResponse
     > {
   constructor(protected service: MessageServiceAPI) {}
@@ -37,7 +37,7 @@ export class ViewsController
       };
     }>,
     reply: FastifyReply,
-  ): Promise<ResourceListResponse<ThreadWithLastMessages>> {
+  ): Promise<ResourceListResponse<MessageWithReplies>> {
     const context = getChannelViewExecutionContext(request);
     try {
       const resources = await this.service.views.listChannel(

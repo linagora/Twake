@@ -13,7 +13,7 @@ import {
   ChannelViewExecutionContext,
   CompanyExecutionContext,
   MessageViewListOptions,
-  ThreadWithLastMessages,
+  MessageWithReplies,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
 
@@ -61,7 +61,7 @@ export class ViewsService implements MessageViewsServiceAPI {
     pagination: Pagination,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<ThreadWithLastMessages>> {
+  ): Promise<ListResult<MessageWithReplies>> {
     const threadsRefs = await this.repositoryChannelRefs.find(
       {
         company_id: context.channel.company_id,
@@ -79,9 +79,9 @@ export class ViewsService implements MessageViewsServiceAPI {
     );
 
     //Get first message for each thread and add last replies for each thread
-    let threadWithLastMessages: ThreadWithLastMessages[] = [];
+    let threadWithLastMessages: MessageWithReplies[] = [];
     await Promise.all(
-      threads.getEntities().map(async (thread: ThreadWithLastMessages) => {
+      threads.getEntities().map(async (thread: Thread) => {
         const last_replies = (
           await this.repository.find(
             {
@@ -103,9 +103,11 @@ export class ViewsService implements MessageViewsServiceAPI {
         );
 
         threadWithLastMessages.push({
-          first_message: first_message,
+          stats: {
+            replies: thread.answers,
+          },
           last_replies: last_replies,
-          ...thread,
+          ...first_message,
         });
       }),
     );

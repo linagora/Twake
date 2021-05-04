@@ -17,7 +17,7 @@ import {
   CompanyExecutionContext,
   MessageViewListOptions,
   ThreadExecutionContext,
-  ThreadWithLastMessages,
+  MessageWithReplies,
 } from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
@@ -85,5 +85,5 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<ThreadWithLastMessages>>;
+  ): Promise<ListResult<MessageWithReplies>>;
 }

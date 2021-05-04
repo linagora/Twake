@@ -25,9 +25,11 @@ export type MessageNotification = {
   text: string;
 };
 
-export type ThreadWithLastMessages = Thread & {
-  first_message: Message;
+export type MessageWithReplies = Message & {
   last_replies: Message[];
+  stats: {
+    replies: number;
+  };
 };
 
 export interface CompanyExecutionContext extends ExecutionContext {
