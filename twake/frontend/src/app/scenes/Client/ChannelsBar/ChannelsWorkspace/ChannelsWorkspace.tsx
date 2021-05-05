@@ -6,6 +6,7 @@ import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages.js';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import { getDirectChannels, getMine } from 'app/services/channels/ChannelCollectionPath';
 
 type channelCategoryType = {
   favorite: ChannelResource[];
@@ -15,22 +16,15 @@ type channelCategoryType = {
 };
 
 export default () => {
-  let channelCategory: channelCategoryType = {
+  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  const channelCategory: channelCategoryType = {
     favorite: [],
     workspace: [],
     inGroup: [],
     direct: [],
   };
-
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
-
-  const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelsCollection = Collection.get(url, ChannelResource);
-  channelsCollection.setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
-  const directUrl: string = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
-  const directChannelsCollection = Collection.get(directUrl, ChannelResource);
-  directChannelsCollection.setOptions({ reloadStrategy: 'delayed' });
-
+  const channelsCollection = Collection.get(getMine(companyId, workspaceId), ChannelResource).setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
+  const directChannelsCollection = Collection.get(getDirectChannels(companyId), ChannelResource).setOptions({ reloadStrategy: 'delayed' });
   const channels = channelsCollection.useWatcher(
     {},
     { observedFields: ['id', 'channel_group', 'user_member.favorite'], query: { mine: true } },
@@ -62,9 +56,9 @@ export default () => {
       }
     });
 
-  let groupsName: string[] = [];
-  let groups: { name: string; channels: ChannelResource[] }[] = [];
-  let hasNonGroupWorkspaceChannels = !(
+  const groupsName: string[] = [];
+  const groups: { name: string; channels: ChannelResource[] }[] = [];
+  const hasNonGroupWorkspaceChannels = !(
     channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
   );
 

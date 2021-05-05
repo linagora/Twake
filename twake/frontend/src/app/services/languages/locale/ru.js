@@ -1247,6 +1247,7 @@ export default {
   'scenes.app.channelsbar.invated_access_right':
     'Вы можете приглашать гостей в ваше рабочее пространство.',
   'scenes.app.channelsbar.modify_channel_menu': 'Редактировать канал',
+  'scenes.app.channelsbar.guest_management': 'Управление гостями',
   'scenes.app.channelsbar.modify_channel_title_private': 'Редактировать частный канал',
   'scenes.app.channelsbar.modify_channel_title_public': 'Редактировать публичный канал',
   'scenes.app.channelsbar.mute': 'Беззвучный',
