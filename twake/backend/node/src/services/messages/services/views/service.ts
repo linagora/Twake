@@ -82,7 +82,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         )
       ).getEntities(),
       thread => thread.id,
-    ).sort((a, b) => b.last_activity - a.last_activity);
+    ).sort((a, b) => a.last_activity - b.last_activity);
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
@@ -113,7 +113,7 @@ export class ViewsService implements MessageViewsServiceAPI {
           stats: {
             replies: thread.answers,
           },
-          last_replies: last_replies.sort((a, b) => b.created_at - a.created_at),
+          last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
         });
       }),
     );

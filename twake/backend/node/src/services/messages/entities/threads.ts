@@ -28,7 +28,7 @@ export class Thread {
   @Column("answers", "number")
   answers: number;
 
-  @Column("answers", "encoded_json")
+  @Column("participants", "encoded_json")
   participants: ParticipantObject[];
 }
 

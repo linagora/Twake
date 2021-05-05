@@ -78,7 +78,11 @@ describe("The Messages feature", () => {
         createMessage({ text: "Initial thread 2 message" }),
       );
 
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 3" }));
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       await e2e_createThread(
         platform,
@@ -94,6 +98,8 @@ describe("The Messages feature", () => {
         createMessage({ text: "Initial thread 3 message" }),
       );
 
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
@@ -108,10 +114,6 @@ describe("The Messages feature", () => {
         listResponse.body,
       );
 
-      console.log(listResult.resources);
-
-      console.log("replies: ", listResult.resources[0].last_replies);
-
       expect(listResponse.statusCode).toBe(200);
       expect(listResult.resources.length).toBe(3);
 
@@ -119,7 +121,9 @@ describe("The Messages feature", () => {
       expect(listResult.resources[1].text).toBe("Initial thread 1 message");
       expect(listResult.resources[2].text).toBe("Initial thread 3 message");
 
-      expect(listResult.resources[1].stats.replies).toBe(3);
+      expect(listResult.resources[0].stats.replies).toBe(1);
+      expect(listResult.resources[1].stats.replies).toBe(4);
+      expect(listResult.resources[2].stats.replies).toBe(1);
       expect(listResult.resources[1].last_replies.length).toBe(3);
     });
   });
