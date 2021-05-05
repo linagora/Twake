@@ -47,7 +47,13 @@ class GuestManagementService {
       .filter(member => member.type === 'guest')
       .map((member: ChannelMemberResource) => {
         const user = this.getUser(member);
+        // opt 1
+        // list des membres du channel( )
+        // recupérer user avec le user_id
+        // liste des users du workspace
 
+        // opt 2
+        //
         return {
           type: 'guest',
           filterString: UserServices.getFullName(user),

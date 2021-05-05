@@ -107,17 +107,6 @@ export default (props: Props) => {
     );
   } else {
     let menu: any = [
-      // Not implemented yet
-      // props.userType === 'pending-email' && {
-      //   text: (
-      //     <div>
-      //       {Languages.t(
-      //         'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation',
-      //       )}
-      //     </div>
-      //   ),
-      //   onClick: () => console.log('clicked'),
-      // },
       {
         text: (
           <div style={{ color: 'var(--red)' }}>

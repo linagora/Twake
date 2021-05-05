@@ -303,7 +303,6 @@ export class Service implements MemberService {
       },
       { pagination },
     );
-    // Ajouter traduction guest management
 
     const companyUsers = await this.userService.companies.getUsers(
       {
@@ -313,8 +312,6 @@ export class Service implements MemberService {
       { userIds: result.getEntities().map(member => member.user_id) },
     );
 
-    console.log(companyUsers);
-
     if (options.company_role) {
       companyUsers.filterEntities(entity => entity.role === options.company_role);
     }
@@ -322,8 +319,6 @@ export class Service implements MemberService {
     const companyUserIds = companyUsers.getEntities().map(entity => entity.user_id);
 
     result.filterEntities(cm => companyUserIds.includes(cm.user_id));
-
-    console.log(companyUsers);
 
     return new ListResult<ChannelMember>(
       "channel_member",
