@@ -22,7 +22,7 @@ class GuestManagementService {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
     const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/members/`;
     const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
-    const channelMembers = channelMembersCollection.find({});
+    const channelMembers = channelMembersCollection.find({}, { query: { company_role: 'guest' } });
 
     const route = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/pending_emails/`;
     const pendingEmailsCollection = Collections.get(route, PendingEmailResource);
@@ -43,24 +43,16 @@ class GuestManagementService {
   }
 
   setGuests(members: ChannelMemberResource[]): GenericMember[] {
-    return (this.guests = members
-      .filter(member => member.type === 'guest')
-      .map((member: ChannelMemberResource) => {
-        const user = this.getUser(member);
-        // opt 1
-        // list des membres du channel( )
-        // recupérer user avec le user_id
-        // liste des users du workspace
+    return (this.guests = members.map((member: ChannelMemberResource) => {
+      const user = this.getUser(member);
 
-        // opt 2
-        //
-        return {
-          type: 'guest',
-          filterString: UserServices.getFullName(user),
-          resource: member,
-          key: member.data.id || '',
-        };
-      }));
+      return {
+        type: 'guest',
+        filterString: UserServices.getFullName(user),
+        resource: member,
+        key: member.data.id || '',
+      };
+    }));
   }
 
   private getUser(member: ChannelMemberResource): Promise<UserType> {
