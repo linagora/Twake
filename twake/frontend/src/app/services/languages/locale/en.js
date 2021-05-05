@@ -1201,6 +1201,7 @@ export default {
   'scenes.app.channelsbar.extern_members_title': 'External members',
   'scenes.app.channelsbar.invated_access_right': 'You can invite external users to your workspace.',
   'scenes.app.channelsbar.modify_channel_menu': 'Edit channel',
+  'scenes.app.channelsbar.guest_management': 'Guest management',
   'scenes.app.channelsbar.modify_channel_title_private': 'Edit private channel',
   'scenes.app.channelsbar.modify_channel_title_public': 'Edit public channel',
   'scenes.app.channelsbar.mute': 'Mute',

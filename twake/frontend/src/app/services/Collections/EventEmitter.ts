@@ -14,12 +14,8 @@ export default class EventEmitter<G extends Resource<any>> {
   }
 
   startListeningEvents() {
-    this.attachedEventEmitter?.on('watcher:exists', () => {
-      this.collection.getTransport().start();
-    });
-    this.attachedEventEmitter?.on('watcher:none', () => {
-      this.collection.getTransport().stop();
-    });
+    this.attachedEventEmitter?.on('watcher:exists', () => this.collection.getTransport().start());
+    this.attachedEventEmitter?.on('watcher:none', () => this.collection.getTransport().stop());
   }
 
   public emit(action: string, body: any) {
@@ -27,8 +23,6 @@ export default class EventEmitter<G extends Resource<any>> {
   }
 
   public notify() {
-    if (this.attachedEventEmitter) {
-      this.attachedEventEmitter.notify();
-    }
+    this.attachedEventEmitter?.notify();
   }
 }

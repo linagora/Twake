@@ -4,16 +4,18 @@ import Transport from './Transport';
 
 const logger = Logger.getLogger('Collections/Transport/HTTP');
 
+type HTTPMethod = 'post' | 'delete' | 'get' | 'put';
+
 export default class TransportHTTP {
   constructor(private readonly transport: Transport) {}
 
-  private async request(method: 'post' | 'delete' | 'get' | 'put', route: string, options: any) {
+  private async request(method: HTTPMethod, route: string, options: any) {
     logger.debug(`${method.toUpperCase()} ${route}`);
     const prefix = Collections.getOptions().transport?.rest?.url;
     if (!prefix) {
       return { offline: true };
     }
-    route = prefix + route;
+    route = `${prefix}${route}`;
 
     const headers = {
       ...Collections.getOptions().transport?.rest?.headers,
