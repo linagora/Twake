@@ -196,10 +196,18 @@ export default (props: Props) => {
   }
 
   return (
-    <Row key={`key_${props.userId}`} align="middle" gutter={[0, 16]}>
-      <Col className="small-right-margin">{avatar}</Col>
+    <Row
+      key={`key_${props.userId}`}
+      align="middle"
+      gutter={[0, 16]}
+      className={`pending-email ${selected ? 'selected' : ''}`}
+    >
+      <Col className="small-x-margin">{avatar}</Col>
       <Col flex={4}>
-        <Text strong>{name}</Text> @{users[0]?.username}{' '}
+        <Text strong className="pending-email-text">
+          {name}
+        </Text>{' '}
+        @{users[0]?.username}
       </Col>
       <Col>
         {props.userId === currentUserId && (
@@ -209,7 +217,9 @@ export default (props: Props) => {
         )}
       </Col>
       {UserService.getUserRole(users[0], companyId) === 'guest' && <Col>{companyRole}</Col>}
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+      <Col className="small-right-margin">
+        {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+      </Col>
     </Row>
   );
 };
