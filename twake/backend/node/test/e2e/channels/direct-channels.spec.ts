@@ -26,7 +26,6 @@ describe("The direct channels API", () => {
 
   afterEach(async () => {
     await platform.tearDown();
-    platform = null;
   });
 
   function getContext(user?: User): WorkspaceExecutionContext {

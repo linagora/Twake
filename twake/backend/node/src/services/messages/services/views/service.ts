@@ -94,7 +94,7 @@ export class ViewsService implements MessageViewsServiceAPI {
               thread_id: thread.id,
             },
             {
-              pagination: new Pagination("", `${options?.replies_per_thread || 3}`, false),
+              pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
             },
           )
         ).getEntities();
@@ -104,16 +104,16 @@ export class ViewsService implements MessageViewsServiceAPI {
             thread_id: thread.id,
           },
           {
-            pagination: new Pagination("", `1`, true),
+            pagination: new Pagination("", `1`, false),
           },
         );
 
         threadWithLastMessages.push({
+          ...first_message,
           stats: {
             replies: thread.answers,
           },
-          last_replies: last_replies,
-          ...first_message,
+          last_replies: last_replies.sort((a, b) => b.created_at - a.created_at),
         });
       }),
     );

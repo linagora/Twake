@@ -62,8 +62,6 @@ describe("The Messages feature", () => {
         },
       });
 
-      console.log(listResponse.body);
-
       const listResult: ResourceListResponse<Thread> = deserialize(
         ResourceListResponse,
         listResponse.body,
@@ -74,10 +72,3 @@ describe("The Messages feature", () => {
     });
   });
 });
-
-function getContext(platform) {
-  return {
-    company: { id: platform.workspace.company_id },
-    user: { id: platform.currentUser.id },
-  };
-}
