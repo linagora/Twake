@@ -81,7 +81,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     //We try to update an existing message
     if (item.id) {
       const messageToUpdate = await this.repository.findOne({
-        company_id: context.company.id,
         id: item.id,
         thread_id: context.thread.id,
       });
@@ -138,7 +137,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -176,7 +174,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -205,7 +202,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     const message = await this.repository.findOne({
-      company_id: context.company.id,
       thread_id: context.thread.id,
       id: operation.id,
     });
@@ -245,7 +241,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     const message = await this.repository.findOne({
-      company_id: context.company.id,
       thread_id: context.thread.id,
       id: pk.id,
     });
@@ -289,10 +284,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options?: ListOption,
     context?: ThreadExecutionContext,
   ): Promise<ListResult<Message>> {
-    const list = await this.repository.find(
-      { thread_id: context.thread.id, company_id: context.company.id },
-      { pagination },
-    );
+    const list = await this.repository.find({ thread_id: context.thread.id }, { pagination });
     return list;
   }
 

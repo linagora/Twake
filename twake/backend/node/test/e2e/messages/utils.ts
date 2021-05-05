@@ -39,7 +39,23 @@ export const e2e_createThread = async (
   });
 };
 
-export const e2e_createMessage = async (threadId: string, message: Message) => {};
+export const e2e_createMessage = async (
+  platform: TestPlatform,
+  threadId: string,
+  message: Message,
+) => {
+  const jwtToken = await platform.auth.getJWTToken();
+  return await platform.app.inject({
+    method: "POST",
+    url: `${url}/companies/${platform.workspace.company_id}/threads/${threadId}/messages`,
+    headers: {
+      authorization: `Bearer ${jwtToken}`,
+    },
+    payload: {
+      resource: message,
+    },
+  });
+};
 
 export const createMessage = (message: Partial<Message>, platform?: TestPlatform): Message => {
   return getMessageInstance({
