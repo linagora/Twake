@@ -218,6 +218,7 @@ export default (props: Props): JSX.Element => {
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.guest_management'),
+        hide: AccessRightsService.getCompanyLevel(companyId || '') === 'guest',
         onClick: () => displayGuestManagement(),
       },
     );

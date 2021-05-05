@@ -2029,4 +2029,5 @@ export default {
   'general.user.role.company.member': 'Membre',
   'general.user.role.company.guest': 'Invité',
   'general.user.deleted': 'Compte supprimé',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Gestion des invités',
 };

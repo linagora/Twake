@@ -133,7 +133,10 @@ export class Service implements ChannelService {
         icon: true,
         channel_group: true,
         is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
-        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
+        visibility:
+          (isWorkspaceAdmin || isChannelOwner) &&
+          !isDirectChannel &&
+          (!isPrivateChannel || isWorkspaceAdmin),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
