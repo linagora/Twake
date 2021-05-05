@@ -3,5 +3,5 @@ import { TwakeServiceProvider, Initializable } from "../../core/platform/framewo
 
 export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
   save(stream: any): any;
-  download(path: any): Promise<Readable>;
+  download(company_id: string, id: string): Promise<Readable>;
 }

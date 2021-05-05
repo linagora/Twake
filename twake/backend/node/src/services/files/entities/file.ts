@@ -7,21 +7,29 @@ import { Entity, Column } from "../../../core/platform/services/database/service
 })
 export class File {
   @Type(() => String)
-  @Column("company_id", "uuid", { generator: "uuid" })
+  @Column("company_id", "uuid")
   company_id: string;
 
   @Type(() => String)
   @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
+  @Column("owner_type", "encoded_string")
+  owner_type: "user" | "application";
+
+  @Column("owner_id", "uuid")
+  owner_id: string;
+
+  @Column("cipher", "encoded_string")
+  cipher: string;
+
   @Column("metadata", "encoded_json")
   metadata: {
-    owner: string; //User creating the resource
     name: string;
-    size: number;
+    extension: string;
+    thumbmail: "";
     width?: number;
     height?: number;
-    extension: "string";
     type:
       | "link"
       | "code"
@@ -34,5 +42,11 @@ export class File {
       | "video"
       | "archive"
       | "other";
+  };
+
+  @Column("upload_data", "encoded_json")
+  upload_data: {
+    size: number;
+    chunks: number;
   };
 }
