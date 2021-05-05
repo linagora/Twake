@@ -222,13 +222,12 @@ export default (props: Props): JSX.Element => {
         text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
         onClick: () => displayMembers(),
       },
-      (AccessRightsService.getCompanyLevel(companyId || '') !== 'guest' && {
+      {
         type: 'menu',
-        // TODO Translation
+        hide: AccessRightsService.getCompanyLevel(companyId || '') === 'guest',
         text: Languages.t('scenes.app.channelsbar.channel_menu.guest_management'),
         onClick: () => displayGuestManagement(),
-      }) ||
-        {},
+      },
     );
   }
 
