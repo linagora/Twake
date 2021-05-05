@@ -1955,4 +1955,5 @@ export default {
   'general.user.role.company.member': 'Member',
   'general.user.role.company.guest': 'Guest',
   'general.user.deleted': 'Deleted Account',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Guest management',
 };

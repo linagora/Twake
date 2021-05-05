@@ -224,8 +224,8 @@ export default (props: Props): JSX.Element => {
       },
       {
         type: 'menu',
-        // TODO Translation
-        text: Languages.t('Guest management'),
+        hide: AccessRightsService.getCompanyLevel(companyId || '') === 'guest',
+        text: Languages.t('scenes.app.channelsbar.channel_menu.guest_management'),
         onClick: () => displayGuestManagement(),
       },
     );
