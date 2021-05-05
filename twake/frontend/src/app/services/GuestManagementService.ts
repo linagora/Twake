@@ -5,6 +5,7 @@ import RouterServices from 'services/RouterService';
 import UserServices from 'services/user/user.js';
 import { UserType } from 'app/models/User';
 import ConsoleService from './ConsoleService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 
 export type GenericMember = {
   key: string;
@@ -20,7 +21,7 @@ class GuestManagementService {
 
   bind({ search, channel_id }: { search: string; channel_id: string }): void {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/members/`;
+    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/members/::guests`;
     const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
     const channelMembers = channelMembersCollection.find({}, { query: { company_role: 'guest' } });
 
@@ -44,7 +45,7 @@ class GuestManagementService {
 
   setGuests(members: ChannelMemberResource[]): GenericMember[] {
     return (this.guests = members.map((member: ChannelMemberResource) => {
-      const user = this.getUser(member);
+      const user = DepreciatedCollections.get('users').find(member.data.user_id || '');
 
       return {
         type: 'guest',
@@ -53,17 +54,6 @@ class GuestManagementService {
         key: member.data.id || '',
       };
     }));
-  }
-
-  private getUser(member: ChannelMemberResource): Promise<UserType> {
-    const result = new Promise<UserType>((resolve, reject) => {
-      UserServices.asyncGet(member.data.user_id, (user: UserType) => {
-        if (user) return resolve(user);
-        else return reject('error while trying to get User in GuestManagementService');
-      });
-    });
-
-    return result;
   }
 
   setPendingEmails(pendingEmails: PendingEmailResource[]): GenericMember[] {
