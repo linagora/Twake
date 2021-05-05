@@ -1,7 +1,9 @@
 import { v1 as uuid } from "uuid";
 import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository, {
+  FindOptions,
+} from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
 import UserServiceAPI, { CompaniesServiceAPI } from "../../api";
 import Company, {
@@ -12,6 +14,7 @@ import CompanyUser, {
   CompanyUserPrimaryKey,
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
+import { ListUserOptions } from "../users/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -70,7 +73,16 @@ export class CompanyService implements CompaniesServiceAPI {
   async getUsers(
     companyId: CompanyUserPrimaryKey,
     pagination?: Pagination,
+    options?: ListUserOptions,
   ): Promise<ListResult<CompanyUser>> {
-    return this.companyUserRepository.find({ group_id: companyId.group_id }, { pagination });
+    const findOptions: FindOptions = {
+      pagination,
+    };
+
+    if (options?.userIds) {
+      findOptions.$in = [["user_id", options.userIds]];
+    }
+
+    return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions);
   }
 }

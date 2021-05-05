@@ -49,6 +49,7 @@ export type ChannelSaveOptions = ChannelCreateOptions & {
 export class ChannelListOptions {
   channels?: string[];
   mine?: boolean;
+  company_role?: string;
 }
 
 export class UpdateChannelBody {

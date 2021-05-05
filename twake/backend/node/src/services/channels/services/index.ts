@@ -40,7 +40,7 @@ class Service implements ChannelServiceAPI {
   pendingEmails: ChannelPendingEmailService;
 
   constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI, user: UserServiceAPI) {
-    this.members = getMemberService(databaseService, this);
+    this.members = getMemberService(databaseService, this, user);
     this.channels = getChannelService(databaseService, this, user);
     this.tabs = getTabService(databaseService);
     this.activities = getActivitiesService(pubsub);
