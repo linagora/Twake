@@ -32,9 +32,9 @@ export default class Observable {
       this.onFirstListener();
     }
     if (this.observableListenersList.indexOf(listener) < 0) {
-      this.observableListenersOnlyList.push(shouldNotifyOnlyFor);
-      this.observableListenersShouldNotifyList.push(shouldNotify);
       this.observableListenersList.push(listener);
+      this.observableListenersShouldNotifyList.push(shouldNotify);
+      this.observableListenersOnlyList.push(shouldNotifyOnlyFor);
     }
 
     return listener;
@@ -44,6 +44,7 @@ export default class Observable {
     if (index > -1) {
       this.observableListenersList.splice(index, 1);
       this.observableListenersShouldNotifyList.splice(index, 1);
+      this.observableListenersOnlyList.splice(index, 1);
     }
     if (this.observableListenersList.length == 0 && this.onLastListener) {
       this.onLastListener();
