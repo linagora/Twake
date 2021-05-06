@@ -32,6 +32,7 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
       props.finish();
       return;
     }
+    
     setLoading(true);
     setDisabled(true);
 
