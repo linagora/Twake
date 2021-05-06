@@ -122,9 +122,12 @@ describe("The Messages feature", () => {
       expect(listResult.resources[2].text).toBe("Initial thread 3 message");
 
       expect(listResult.resources[0].stats.replies).toBe(1);
-      expect(listResult.resources[1].stats.replies).toBe(3);
+      expect(listResult.resources[1].stats.replies).toBe(4); //Thread initial message + 3 replies
       expect(listResult.resources[2].stats.replies).toBe(1);
-      expect(listResult.resources[1].last_replies.length).toBe(3);
+
+      expect(listResult.resources[1].last_replies.length).toBe(3); //We requested 3 replies per posts
+      expect(listResult.resources[1].last_replies[0].text).toBe("Reply 1"); //Check order is OK
+      expect(listResult.resources[1].last_replies[2].text).toBe("Reply 3");
     });
   });
 });
