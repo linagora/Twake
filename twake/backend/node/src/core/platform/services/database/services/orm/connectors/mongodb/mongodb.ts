@@ -176,6 +176,13 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       options,
     );
 
+    query["$orderby"] = {};
+    for (const key of entityDefinition.options.primaryKey.slice(1)) {
+      const defaultOrder =
+        (columnsDefinition[key as string].options.order || "ASC") === "ASC" ? 1 : -1;
+      query["$orderby"][key as string] = (options?.pagination?.reversed ? -1 : 1) * defaultOrder;
+    }
+
     logger.debug(`services.database.orm.mongodb.find - Query: ${JSON.stringify(query)}`);
 
     const cursor = await collection

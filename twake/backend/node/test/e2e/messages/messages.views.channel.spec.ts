@@ -103,7 +103,7 @@ describe("The Messages feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -122,7 +122,7 @@ describe("The Messages feature", () => {
       expect(listResult.resources[2].text).toBe("Initial thread 3 message");
 
       expect(listResult.resources[0].stats.replies).toBe(1);
-      expect(listResult.resources[1].stats.replies).toBe(4);
+      expect(listResult.resources[1].stats.replies).toBe(3);
       expect(listResult.resources[2].stats.replies).toBe(1);
       expect(listResult.resources[1].last_replies.length).toBe(3);
     });
