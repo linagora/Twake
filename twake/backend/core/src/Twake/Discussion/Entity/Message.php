@@ -505,11 +505,13 @@ class Message extends FrontObject
         $orignal_reactions_array = $messageEntity->getReactions();
         
         foreach($orignal_reactions_array as $key => $value){
-            $new_reaction_object= Array(
+            $new_reaction_object = Array(
                 "name" => $value["name"] ?: $key
             );
+            $new_reaction_object = array_merge($new_reaction_object, $value);
+            $new_reaction_object["users"] = array_values($new_reaction_object["users"]);
 
-            array_push($reactions, array_merge($new_reaction_object, $value));
+            array_push($reactions, $new_reaction_object);
         }
 
         return $reactions;
@@ -617,7 +619,7 @@ class Message extends FrontObject
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "hidden_data" => $this->getHiddenData(),
-            "reactions" => $this->getReactions(),
+            "_reactions" => $this->getReactions(),
             "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
             "content" => $this->getContent(),
