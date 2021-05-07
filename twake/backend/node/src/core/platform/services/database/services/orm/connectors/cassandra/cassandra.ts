@@ -47,6 +47,7 @@ export class CassandraConnector extends AbstractConnector<
   cassandra.Client
 > {
   private client: cassandra.Client;
+  private keyspaceExists: boolean = false;
 
   getClient(): cassandra.Client {
     return this.client;
@@ -79,6 +80,10 @@ export class CassandraConnector extends AbstractConnector<
   async isKeyspaceCreated(): Promise<boolean> {
     let result;
 
+    if (this.keyspaceExists) {
+      return true;
+    }
+
     try {
       result = await this.client.execute(
         `SELECT * FROM system_schema.keyspaces where keyspace_name = '${this.options.keyspace}'`,
@@ -92,6 +97,8 @@ export class CassandraConnector extends AbstractConnector<
     }
 
     if (result) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.keyspaceExists = true;
       logger.info(`Keyspace '${this.options.keyspace}' found.`);
     }
 
@@ -187,8 +194,6 @@ export class CassandraConnector extends AbstractConnector<
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean> {
     await this.waitForKeyspace(this.options.delay, this.options.retries);
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
 
     let result = true;
 
