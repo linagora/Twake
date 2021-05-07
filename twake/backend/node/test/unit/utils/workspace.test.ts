@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import * as workspaceUtils from "../../../src/utils/workspace";
 
-describe.only("The workspace utils", () => {
+describe("The workspace utils", () => {
   describe("The isWorkspaceAdmin function", () => {
     it("should return false if user is undefined", () => {
       const result = workspaceUtils.isWorkspaceAdmin();

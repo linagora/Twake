@@ -1,12 +1,7 @@
 import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import ChannelServiceAPI from "../../../provider";
-
-type NewUserInWorkspaceNotification = {
-  user_id: string;
-  company_id: string;
-  workspace_id: string;
-};
+import { NewUserInWorkspaceNotification } from "../../channel/types";
 
 const NAME = "Channel::NewUserInWorkspaceJoinDefaultChannelsProcessor";
 const logger = getLogger("channel.pubsub.new-user-in-workspace-join-default-channels-processor");
@@ -21,6 +16,12 @@ export class NewUserInWorkspaceJoinDefaultChannelsProcessor
 
   readonly topics = {
     in: "workspace:member:added",
+  };
+
+  readonly options = {
+    unique: true,
+    ack: true,
+    queue: "workspace:user:added:consumer_default_channels",
   };
 
   readonly name = NAME;

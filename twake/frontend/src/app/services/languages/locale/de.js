@@ -1626,6 +1626,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': 'schreibt...',
   'scenes.apps.messages.messageslist.get_writing_users': 'schreiben...',
   'scenes.apps.messages.messageslist.go_last_message_button': 'Gehe zum letzten Beitrag',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'Neue Nachrichten',
   'scenes.apps.messages.messageslist.load_after_button': 'Laden nach',
   'scenes.apps.messages.messageslist.load_before_button': 'Vorher laden',
   'scenes.apps.messages.messageslist.max_id': 'Maximale Kennung:',

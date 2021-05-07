@@ -216,7 +216,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 
@@ -251,7 +251,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 

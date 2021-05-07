@@ -1,4 +1,6 @@
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../types";
+import { MessageFileMetadata } from "./entities/message-files";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 
@@ -20,3 +22,11 @@ export type MessageNotification = {
   title: string;
   text: string;
 };
+
+export interface CompanyExecutionContext extends ExecutionContext {
+  company: { id: string };
+}
+
+export interface ThreadExecutionContext extends ExecutionContext {
+  thread: { id: string; company_id: string };
+}

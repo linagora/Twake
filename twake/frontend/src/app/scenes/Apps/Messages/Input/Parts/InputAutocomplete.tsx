@@ -7,7 +7,7 @@ import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';

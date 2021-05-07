@@ -1394,7 +1394,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
-  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Administrator',
+  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Workspace administrator',
   'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing':
     'You can not leave the workspace, because you are the last administrator. You can define a new administrator or delete/archive this workspace.',
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'All applications',
@@ -1595,6 +1595,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': 'is writing...',
   'scenes.apps.messages.messageslist.get_writing_users': 'are writing...',
   'scenes.apps.messages.messageslist.go_last_message_button': 'Go to last message',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'New messages',
   'scenes.apps.messages.messageslist.load_after_button': 'Load the following messages',
   'scenes.apps.messages.messageslist.load_before_button': 'Load previous messages',
   'scenes.apps.messages.messageslist.max_id': 'Maximum identifier:',
@@ -1673,6 +1674,7 @@ export default {
   'scenes.apps.drive.trash': 'Trash',
   'scenes.apps.drive.top_menu_more': 'More',
   'scenes.apps.drive.top_menu_no_items': '$1 items',
+  'scenes.apps.messages.new_thread': 'Start a new discussion',
   'scenes.apps.messages.from_camera': 'From camera',
   'scenes.apps.messages.from_device': 'From device',
   'scenes.apps.messages.input.message_to': 'Message to #$1',
@@ -1941,4 +1943,17 @@ export default {
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
   'services.console_services.toaster.success_invite_emails': 'Successfully added $1 user(s)',
+  'scenes.client.channels_bar.modals.guest_management.title': 'Manage guests in $1',
+  'scenes.client.channels_bar.modals.guest_management.input_placeholder':
+    'Search guests or pending emails',
+  'scenes.client.channels_bar.modals.guest_management.tips':
+    'Start adding or searching email by using the input above',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
+    'Re-send invitation',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail sent',
+  'general.user.role.company.admin': 'Company administrator',
+  'general.user.role.company.member': 'Member',
+  'general.user.role.company.guest': 'Guest',
+  'general.user.deleted': 'Deleted Account',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Guest management',
 };

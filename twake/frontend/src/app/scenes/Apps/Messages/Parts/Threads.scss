@@ -47,6 +47,9 @@
     opacity: 0.2;
   }
 
+  padding-top: 8px;
+  padding-bottom: 8px;
+
   &.highlighted {
     background-color: var(--primary-background);
     box-shadow: 0 0 0 8px var(--primary-background);
@@ -75,7 +78,10 @@
       border: 1px solid var(--grey-background);
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
       border-radius: var(--border-radius-base);
-      margin-bottom: 16px;
+      // in infinite list, margin are bad to compute render size because they are hard to measure
+      // using padding solves this issue anbd allow to scroll correctly
+      // cf https://virtuoso.dev/troubleshooting#list-does-not-scroll-to-the-bottom--items-jump-around
+      margin-bottom: 0px;
       background: var(--white);
 
       .message {

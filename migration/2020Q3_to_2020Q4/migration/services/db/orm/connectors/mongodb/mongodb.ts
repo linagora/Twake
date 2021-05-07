@@ -78,6 +78,7 @@ export class MongoConnector extends AbstractConnector<
 
     return true;
   }
+
   async upsert(
     entities: any[],
     options: UpsertOptions = {}
@@ -202,7 +203,7 @@ export class MongoConnector extends AbstractConnector<
       .toArray();
 
     const entities: Table[] = [];
-    results.forEach((row) => {
+    results.forEach((row: any) => {
       const entity = new (entityType as any)();
       Object.keys(row).forEach((key) => {
         entity[columnsDefinition[key].nodename] = transformValueToDbString(

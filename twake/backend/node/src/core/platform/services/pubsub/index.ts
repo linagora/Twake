@@ -36,7 +36,7 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
     await this.service.init();
 
     eventBus.subscribe(message => {
-      logger.info(`${LOG_PREFIX} - Event bus bublishing message to ${message.topic}`);
+      logger.info(`${LOG_PREFIX} - Event bus publishing message to ${message.topic}`);
       this.service.publish(message.topic, { data: message.data });
     });
 

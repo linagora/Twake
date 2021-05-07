@@ -478,9 +478,136 @@ class Message extends FrontObject
         $this->increment_at_time = $increment_at_time;
     }
 
+    public function getMessageTypeObject() {
+        switch($this->getMessageType()) {
+            case 1: return Array(
+                "type" => "message",
+                "subtype" => "application",
+            );
+            case 2: return Array(
+                "type" => "message",
+                "subtype" => "system",
+            );
+            case 0:
+            default:
+                return Array(
+                    "type" => "message",
+                    "subtype" => null,
+                );
+        }
+    }
+
+    public function getNewApiObjectReactions($messageEntity) {
+        $reactions = Array();
+
+        if($messageEntity->getReactions() == null) return $reactions;
+
+        $orignal_reactions_array = $messageEntity->getReactions();
+        
+        foreach($orignal_reactions_array as $key => $value){
+            $new_reaction_object = Array(
+                "name" => $value["name"] ?: $key
+            );
+            $new_reaction_object = array_merge($new_reaction_object, $value);
+            $new_reaction_object["users"] = array_values($new_reaction_object["users"]);
+
+            array_push($reactions, $new_reaction_object);
+        }
+
+        return $reactions;
+    }
+
+    /**
+     * Set files for new api object
+     */
+    public function setFiles($messageEntity) {
+        $files = Array();
+
+        if(!isset($messageEntity->getContent()['files'])) return $files;
+        
+        $orignal_files = $messageEntity->getContent()['files'];
+
+        foreach($orignal_files as $file){
+            if($file["type"] == "file") {
+                $new_file_format = Array(
+                    "company_id" => "",
+                    "message_id" => $messageEntity->getId(),
+                    "id" => $file["content"],
+                    "metadata" => Array(
+                        "source" => "drive",
+                        "external_id" => $file["content"]
+                    ),
+                );
+                array_push($files, $new_file_format);
+            }
+        }
+
+        return $files;
+    }
+    
+    /**
+     * Set blocks for new api object
+     */
+    public function setBlocks($messageEntity) {
+        $blocks = Array();
+        $content = $messageEntity->getContent();
+
+        if(!isset($content)) return $blocks;
+
+        $markdown_element = Array(
+            "type" => "mrkdwn",
+            "text" => isset($content['original_str']) ? $content['original_str'] : ""
+        );
+
+        $new_block_format = Array(
+            "type" => "section",
+            "text" => $markdown_element
+        );
+
+        array_push($blocks, $new_block_format);
+
+        return $blocks;
+    }
+
+    /**
+     * Generate new api object
+     */
+    public function generateNewApiObject($messageEntity, $array) {
+    
+        $message_type_object = $messageEntity->getMessageTypeObject();
+        $api_object = Array(
+            "id" => $messageEntity->getId(),
+            "channel_id" => $messageEntity->getChannelId(),
+            "thread_id" => $messageEntity->getParentMessageId(),
+            "created_at" => ($messageEntity->getCreationDate() ? $messageEntity->getCreationDate()->getTimestamp() : null),
+            "application_id" => $messageEntity->getApplicationId(),
+            "user_id" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
+            "edited" => $messageEntity->getEdited(),
+            "text" => isset($messageEntity->getContent()['original_str']) ? $messageEntity->getContent()['original_str'] : "", 
+            "blocks" => $messageEntity->setBlocks($messageEntity),
+            "files" => $messageEntity->setFiles($messageEntity),
+            "context" => $messageEntity->getHiddenData(),
+            "title" => $messageEntity->getHiddenData()['custom_title'] ?: null,
+            "picture" => $messageEntity->getHiddenData()['custom_icon'] ?: null,
+            "stats" => Array(
+                "answers" => $messageEntity->getResponsesCount()
+            ),
+            "pinned_info" => Array(
+                "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
+                "pinned_at" => 0,
+            ),
+            "reactions" => $messageEntity->getNewApiObjectReactions($messageEntity),
+        );
+
+        return $array = array_merge($api_object, $message_type_object);
+    }
+
+    
     public function getAsArray()
-    {
-        return Array(
+    {    
+        $api_object = $this->generateNewApiObject($this, $api_object);
+
+        $old_message_object = Array(
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
             "channel_id" => $this->getChannelId(),
@@ -492,13 +619,15 @@ class Message extends FrontObject
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "hidden_data" => $this->getHiddenData(),
-            "reactions" => $this->getReactions(),
+            "_reactions" => $this->getReactions(),
             "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
             "content" => $this->getContent(),
             "user_specific_content" => $this->getUserSpecificContent(),
             "increment_at_time" => $this->getIncrementAtTime(),
         );
+
+        return array_merge($old_message_object, $api_object);
     }
 
 }

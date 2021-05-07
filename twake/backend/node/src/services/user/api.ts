@@ -13,6 +13,7 @@ import ExternalGroup from "./entities/external_company";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "./entities/workspace_user";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { Observable } from "rxjs";
+import { ListUserOptions } from "./services/users/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -83,7 +84,15 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   getUsers(
     companyId: CompanyUserPrimaryKey,
     pagination?: Paginable,
+    options?: ListUserOptions,
   ): Promise<ListResult<CompanyUser>>;
+
+  /**
+   *  Get company user
+   * @param company
+   * @param user
+   */
+  getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
 }
 
 export interface WorkspaceServiceAPI

@@ -77,7 +77,7 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
       ChannelMemberNotificationPreferencePrimaryKey,
       "channel_id" | "company_id"
     >,
-    users: string[] = [],
+    users: string[] | null = null,
     lastRead: {
       lessThan: number;
     },
@@ -87,7 +87,10 @@ export class ChannelMemberPreferencesService implements ChannelMemberPreferences
         users,
       )} with lastRead < ${lastRead?.lessThan}`,
     );
-    const result = await this.repository.find({ ...channelAndCompany, ...{ user_id: users } }, {});
+    const result = await this.repository.find(
+      users ? { ...channelAndCompany, ...{ user_id: users } } : channelAndCompany,
+      {},
+    );
 
     if (result.getEntities().length > 0 && lastRead && lastRead.lessThan) {
       result.filterEntities(entity => entity.last_read < lastRead.lessThan);

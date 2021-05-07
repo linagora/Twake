@@ -60,6 +60,15 @@ export default class User {
   @Column("password", "string")
   password: string;
 
+  @Column("deleted", "twake_boolean")
+  deleted: boolean;
+
+  @Column("phone", "string")
+  phone: string;
+
+  @Column("thumbnail_id", "timeuuid")
+  thumbnail_id: string;
+
   constructor(id?: string) {
     this.id = id;
   }

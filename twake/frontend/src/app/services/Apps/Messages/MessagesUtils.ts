@@ -1,7 +1,7 @@
-import { Message } from './MessagesListServerUtils';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import User from 'services/user/user.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { Message } from './Message';
 
 export const getSender = (message: Message | undefined) => {
   var senderData: any = {

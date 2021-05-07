@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import 'moment-timezone';
 import Twacode from 'components/Twacode/Twacode';
 import MessagesService from 'services/Apps/Messages/Messages.js';
-import 'moment-timezone';
-import { Message } from 'app/services/Apps/Messages/MessagesListServerUtils';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import { Message } from 'app/services/Apps/Messages/Message';
 
 type Props = {
   message: Message;

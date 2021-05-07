@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import './Message.scss';
+import React, { useState } from 'react';
 import moment from 'moment';
+import Moment from 'react-moment';
 import 'moment-timezone';
+
 import Languages from 'services/languages/languages.js';
 import CurrentUser from 'services/user/current_user.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import './Message.scss';
 
 type Props = {
   messageId: string;
@@ -32,7 +34,7 @@ export default React.memo((props: Props) => {
     ) && message?.sender !== CurrentUser.get().id;
   const creation_date = Math.min(new Date().getTime() / 1000, message?.creation_date || 0);
   return (
-    <div>
+    <div className="time_separator">
       {isNewMessage && (
         <div className="message_timeline new_messages">
           <div className="time_container">
@@ -51,8 +53,9 @@ export default React.memo((props: Props) => {
             <div className="time_container">
               <div className="time">
                 {(new Date().getTime() / 1000 - (message?.creation_date || 0) > 24 * 60 * 60
-                  ? moment((creation_date || 0) * 1000).format('LL')
-                  : moment((creation_date || 0) * 1000).fromNow()) || '-'}
+                  ? <Moment date={(creation_date || 0) * 1000} format='LL'></Moment>
+                  : <Moment date={(creation_date || 0) * 1000} fromNow></Moment>
+                )}
               </div>
             </div>
           </div>

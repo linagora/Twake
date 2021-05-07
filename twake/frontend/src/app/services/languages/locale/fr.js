@@ -1456,7 +1456,8 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.enter': 'Entrer ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Accédez à vos applications et connecteurs',
-  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Administrateur',
+  'scenes.app.popup.workspaceparameter.pages.administrater_status':
+    "Administrateur de l'espace de travail",
   'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing':
     "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'Toutes les applications',
@@ -1665,6 +1666,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': "est en train d'écrire...",
   'scenes.apps.messages.messageslist.get_writing_users': "sont en train d'écrire...",
   'scenes.apps.messages.messageslist.go_last_message_button': 'Aller au dernier message',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'Nouveaux messages',
   'scenes.apps.messages.messageslist.load_after_button': 'Charger les messages suivants',
   'scenes.apps.messages.messageslist.load_before_button': 'Charger les messages précédents',
   'scenes.apps.messages.messageslist.max_id': 'Identifiant maximum : ',
@@ -1742,6 +1744,7 @@ export default {
   'scenes.apps.drive.trash': 'Corbeille',
   'scenes.apps.drive.top_menu_more': 'Plus',
   'scenes.apps.drive.top_menu_no_items': '$1 éléments',
+  'scenes.apps.messages.new_thread': 'Commencer une nouvelle discussion',
   'scenes.apps.messages.from_camera': 'Depuis la caméra',
   'scenes.apps.messages.from_device': "Depuis l'appareil",
   'scenes.apps.messages.input.message_to': 'Message à $1',
@@ -2013,4 +2016,17 @@ export default {
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
   'services.console_services.toaster.success_invite_emails':
     '$1 utilisateur(s) ajouté(s) avec succès',
+  'scenes.client.channels_bar.modals.guest_management.title': 'Gérez les invités dans $1',
+  'scenes.client.channels_bar.modals.guest_management.input_placeholder':
+    'Rechercher des invités ou e-mails en attente',
+  'scenes.client.channels_bar.modals.guest_management.tips':
+    'Commencez à ajouter ou à rechercher des e-mails',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
+    "Renvoyer l'invitation",
+  'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail envoyé',
+  'general.user.role.company.admin': "Administrateur de l'entreprise",
+  'general.user.role.company.member': 'Membre',
+  'general.user.role.company.guest': 'Invité',
+  'general.user.deleted': 'Compte supprimé',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Gestion des invités',
 };

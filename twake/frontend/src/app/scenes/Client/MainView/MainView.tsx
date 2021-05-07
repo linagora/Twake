@@ -20,15 +20,15 @@ const MainView: FC = () => {
 
   const loaded = useWatcher(ChannelsBarService, () => {
     return (
-      ChannelsBarService.ready[companyId + '+' + workspaceId] &&
-      ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
-      ChannelsBarService.ready[companyId + '+direct']
+      ChannelsBarService.isReady(companyId, workspaceId) &&
+      ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
+      ChannelsBarService.isReady(companyId, 'direct')
     );
   });
   const ready = loaded && !!companyId && !!workspaceId;
 
   if (ready && !channelId) {
-    ChannelsBarService.autoSelectChannel(companyId || '', workspaceId || '');
+    ChannelsBarService.autoSelectChannel(companyId, workspaceId);
   }
 
   return (

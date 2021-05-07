@@ -47,6 +47,7 @@ import {
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import UserServiceAPI from "../../../user/api";
+import _ from "lodash";
 
 const logger = getLogger("channel.service");
 
@@ -132,7 +133,10 @@ export class Service implements ChannelService {
         icon: true,
         channel_group: true,
         is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
-        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
+        visibility:
+          (isWorkspaceAdmin || isChannelOwner) &&
+          !isDirectChannel &&
+          (!isPrivateChannel || isWorkspaceAdmin),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
@@ -324,7 +328,9 @@ export class Service implements ChannelService {
   ): Promise<UpdateResult<ChannelActivity>> {
     const channelPK = payload.channel;
     const channelActivityMessage = payload.message;
-    const channel = await this.channelRepository.findOne(channelPK);
+    const channel = await this.channelRepository.findOne(
+      _.pick(channelPK, "company_id", "workspace_id", "id"),
+    );
     const entity = new ChannelActivity();
     entity.channel_id = channelPK.id;
     entity.company_id = channelPK.company_id;
@@ -397,7 +403,7 @@ export class Service implements ChannelService {
 
       if (!channels.isEmpty()) {
         const activities = await this.activityRepository.find(findFilters, {
-          $in: [["channel_id", channels.getEntities().map(channel => `'${channel.id}'`)]],
+          $in: [["channel_id", channels.getEntities().map(channel => channel.id)]],
         });
 
         activityPerChannel = new Map<string, ChannelActivity>(

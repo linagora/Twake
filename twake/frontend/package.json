@@ -188,6 +188,7 @@
     "react-touch": "^0.4.4",
     "react-transition-group": "^4.4.1",
     "react-virtualized": "^9.22.2",
+    "react-virtuoso": "1.8.6",
     "redux": "^4.0.5",
     "resize-observer-polyfill": "^1.5.1",
     "resolve": "1.19.0",

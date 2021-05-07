@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import File from 'components/Drive/File.js';
 import '../Input.scss';
 

@@ -22,7 +22,7 @@ type Props = {
 };
 
 const { Link } = Typography;
-const defaultLimit = 100;
+const defaultLimit = 20;
 
 const ChannelMembersList: FC<Props> = props => {
   const { company_id, workspace_id, id } = props.channel.data;
@@ -155,18 +155,18 @@ const ChannelMembersList: FC<Props> = props => {
         {!searchedUsers.length &&
           limit < searchedUsers.length + defaultLimit &&
           setLimit(searchedUsers.length + defaultLimit)}
+        {channelMembers.length >= limit && (
+          <Row align="middle" justify="center" gutter={[0, 16]}>
+            <Link
+              className="small-y-margin"
+              style={{ color: 'var(--grey-dark)' }}
+              onClick={() => setLimit(channelMembers.length + defaultLimit)}
+            >
+              {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
+            </Link>
+          </Row>
+        )}
       </PerfectScrollbar>
-      {channelMembers.length >= limit && (
-        <Row align="middle" justify="center" gutter={[0, 16]}>
-          <Link
-            className="small-y-margin"
-            style={{ color: 'var(--grey-dark)' }}
-            onClick={() => setLimit(channelMembers.length + defaultLimit)}
-          >
-            {Languages.t('scenes.client.channelbar.channelmemberslist.loader')}
-          </Link>
-        </Row>
-      )}
     </ObjectModal>
   );
 };

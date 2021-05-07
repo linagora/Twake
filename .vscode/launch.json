@@ -1,22 +1,30 @@
 {
   "version": "0.2.0",
   "configurations": [
-  {
-    "name": "Debug Node Backend",
-    "request": "launch",
-    "cwd": "${workspaceFolder}/twake/backend/node/",
-    "runtimeArgs": [
-      "run",
-      "dev:debug"
-    ],
-    "runtimeExecutable": "npm",
-    "port": 9229,
-    "outputCapture": "std",
-    "skipFiles": [
-      "<node_internals>/**"
-    ],
-    "type": "node"
-  },
+    {
+      "name": "Launch & Debug on Chrome",
+      "port": 9222,
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/twake/frontend/src"
+    },
+    {
+      "name": "Debug Node Backend",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/twake/backend/node/",
+      "runtimeArgs": [
+        "run",
+        "dev:debug"
+      ],
+      "runtimeExecutable": "npm",
+      "port": 9229,
+      "outputCapture": "std",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
     {
       "name": "Debug Node Backend in Docker",
       "port": 9229,
