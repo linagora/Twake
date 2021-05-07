@@ -77,7 +77,7 @@ export function buildSelectQuery<Entity>(
     whereClause.trim().length ? "WHERE " + whereClause : ""
   } ${orderByClause.trim().length ? "ORDER BY " + orderByClause : ""} ${
     findOptions?.pagination?.limitStr?.trim()
-      ? "LIMIT " + parseInt(findOptions.pagination.limitStr)
+      ? "LIMIT " + (parseInt(findOptions.pagination.limitStr) || 100)
       : ""
   }`
     .trimEnd()
