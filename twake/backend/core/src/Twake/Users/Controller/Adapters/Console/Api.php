@@ -91,7 +91,11 @@ class Api extends BaseController
 
         if($role === "member") {
             $data = [
-                "emails" => $emails
+                "emails" => $emails,
+                "inviter" => [
+                    "name" => $this->getUser()->getFullName(),
+                    "email" => $this->getUser()->getEmail()
+                ]
             ];
             $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
         }
