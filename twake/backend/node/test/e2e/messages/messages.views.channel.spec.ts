@@ -60,7 +60,11 @@ describe("The Messages feature", () => {
       );
       const threadId = result.resource.id;
 
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 1" }));
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 2" }));
 
