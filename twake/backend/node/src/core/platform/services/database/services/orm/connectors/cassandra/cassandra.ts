@@ -71,9 +71,9 @@ export class CassandraConnector extends AbstractConnector<
   }
 
   createKeyspace(): Promise<cassandra.types.ResultSet> {
-    return this.client.execute(
-      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`,
-    );
+    const query = `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`;
+    logger.info(query);
+    return this.client.execute(query);
   }
 
   async isKeyspaceCreated(): Promise<boolean> {
@@ -89,6 +89,10 @@ export class CassandraConnector extends AbstractConnector<
       }
     } catch (err) {
       throw new Error("Keyspace query error");
+    }
+
+    if (result) {
+      logger.info(`Keyspace '${this.options.keyspace}' found.`);
     }
 
     return result ? Promise.resolve(true) : Promise.reject(new Error("Keyspace not found"));
