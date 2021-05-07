@@ -20,10 +20,9 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
         traits: {
           email: data.user.email || "",
           company: {
-            id:
-              Object.keys(data.user.org).length === 1 ? Object.keys(data.user.org)[0] : "multiple",
+            id: data.company.id,
           },
-          companies: Object.keys(data.user.org),
+          companies: [data.company.id],
         },
       });
       this.track(

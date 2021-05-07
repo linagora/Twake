@@ -40,10 +40,7 @@ export interface UserNotificationBadgeServiceAPI
    * @param companies
    * @param user
    */
-  listForUserPerCompanies(
-    companies_ids: string[],
-    user_id: string,
-  ): Promise<ListResult<UserNotificationBadge>>;
+  listForUserPerCompanies(user_id: string): Promise<ListResult<UserNotificationBadge>>;
 
   /**
    * List badges for user in a company. The filter allows to get the badges per workspace/channel/thread when they are defined

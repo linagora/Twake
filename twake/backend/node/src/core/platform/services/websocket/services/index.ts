@@ -63,7 +63,6 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
       id: socket.decoded_token.sub,
       identity_provider_id: socket.decoded_token.provider_id,
       email: socket.decoded_token.email,
-      org: socket.decoded_token.org,
       token: socket.decoded_token,
     };
   }

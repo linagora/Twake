@@ -73,7 +73,7 @@ class UsersConnections extends BaseController
                 $workspaces[] = $value;
             }
 
-            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
 
             $data["data"]["status"] = "connected";
 
@@ -206,7 +206,7 @@ class UsersConnections extends BaseController
                 );
             }
 
-            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
 
             $data["data"]["workspaces"] = $workspaces;
 

@@ -27,19 +27,6 @@ export const webSocketSchema = {
  *
  * {
  *    id: "uuid",
- *    org: {
- *      "company-uuid": {
- *        role: "something",
- *        wks: {
- *          "workspace-id1": {
- *            adm: true
- *          },
- *          "workspace-id2": {
- *            adm: false
- *          }
- *        }
- *      }
- *    }
  * }
  */
 export interface User {
@@ -49,17 +36,10 @@ export interface User {
   identity_provider_id?: uuid;
   // user email
   email?: string;
-  // Organisation properties
-  org?: {
-    [companyId: string]: {
-      role: string; //Not implemented
-      wks: {
-        [workspaceId: string]: {
-          adm: boolean;
-        };
-      };
-    };
-  };
+}
+export interface App {
+  // unique app id
+  id: uuid;
 }
 export interface App {
   // unique app id
@@ -130,4 +110,5 @@ export interface ResourceEventsPayload {
   resourcesBefore?: (User | ChannelEntity | ChannelTab)[];
   resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
   tab?: ChannelTab;
+  company?: { id: string };
 }
