@@ -176,10 +176,18 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       options,
     );
 
+    let sort: any = {};
+    for (const key of entityDefinition.options.primaryKey.slice(1)) {
+      const defaultOrder =
+        (columnsDefinition[key as string].options.order || "ASC") === "ASC" ? 1 : -1;
+      sort[key as string] = (options?.pagination?.reversed ? -1 : 1) * defaultOrder;
+    }
+
     logger.debug(`services.database.orm.mongodb.find - Query: ${JSON.stringify(query)}`);
 
-    const cursor = await collection
+    const cursor = collection
       .find(query)
+      .sort(sort)
       .skip(parseInt(options.pagination.page_token))
       .limit(parseInt(options.pagination.limitStr));
 

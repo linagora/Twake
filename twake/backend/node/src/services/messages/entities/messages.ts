@@ -5,14 +5,10 @@ import { Block } from "../blocks-types";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
-  primaryKey: [["company_id", "thread_id"], "message_id"],
+  primaryKey: [["thread_id"], "id"],
   type: TYPE,
 })
 export class Message {
-  @Type(() => String)
-  @Column("company_id", "uuid")
-  company_id: string;
-
   @Type(() => String)
   @Column("thread_id", "timeuuid")
   thread_id: string;
@@ -20,6 +16,9 @@ export class Message {
   @Type(() => String)
   @Column("id", "timeuuid", { generator: "timeuuid" })
   id: string;
+
+  @Type(() => String) //Not in database (obviousl y because it is ephemeral)
+  ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
 
   @Type(() => String)
   @Column("type", "encoded_string")
@@ -67,6 +66,9 @@ export class Message {
   @Column("reactions", "encoded_json")
   reactions: null | MessageReaction[];
 
+  @Column("bookmarks", "encoded_json")
+  bookmarks: null | MessageBookmarks[];
+
   @Column("override", "encoded_json")
   override: null | MessageOverride;
 }
@@ -79,8 +81,31 @@ export type MessagePinnedInfo = { pinned_at: number; pinned_by: string };
 
 export type MessageEdited = { edited_at: number };
 
-export type MessagePrimaryKey = Pick<Message, "company_id" | "thread_id" | "id">;
+export type EphemeralMessage = {
+  id: string; //Identifier of the ephemeral message
+  version: string; //Version of ephemeral message (to update the view)
+  recipient: string; //User that will see this ephemeral message
+  recipient_context_id: string; //Recipient current view/tab/window to send the message to
+};
 
-export function getInstance(message: Message): Message {
-  return merge(new Message(), message);
+export type MessageBookmarks = {
+  user_id: string;
+  bookmark_id: string;
+  created_at: number;
+};
+
+export type MessagePrimaryKey = Pick<Message, "thread_id" | "id">;
+
+export function getInstance(message: Partial<Message>): Message {
+  return merge(new Message(), {
+    id: undefined,
+    ephemeral: null,
+    type: "message",
+    created_at: new Date().getTime(),
+    application_id: null,
+    text: "",
+    blocks: [],
+
+    ...message,
+  });
 }

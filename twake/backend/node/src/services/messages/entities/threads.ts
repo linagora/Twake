@@ -4,14 +4,10 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "threads";
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "id"],
+  primaryKey: [["id"]],
   type: TYPE,
 })
 export class Thread {
-  @Type(() => String)
-  @Column("company_id", "uuid")
-  company_id: string;
-
   @Type(() => String)
   @Column("id", "timeuuid")
   id: string;
@@ -32,7 +28,7 @@ export class Thread {
   @Column("answers", "number")
   answers: number;
 
-  @Column("answers", "encoded_json")
+  @Column("participants", "encoded_json")
   participants: ParticipantObject[];
 }
 
@@ -41,9 +37,11 @@ export type ParticipantObject = {
   created_at: number;
   created_by: string;
   id: string;
+  company_id: string;
+  workspace_id?: string;
 };
 
-export type ThreadPrimaryKey = Pick<Thread, "company_id" | "id">;
+export type ThreadPrimaryKey = Pick<Thread, "id">;
 
 export function getInstance(thread: Thread): Thread {
   return merge(new Thread(), thread);

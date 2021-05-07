@@ -13,11 +13,6 @@ type TokenPayload = {
   org?: {
     [companyId: string]: {
       role: string;
-      wks: {
-        [workspaceId: string]: {
-          adm: boolean;
-        };
-      };
     };
   };
 };
@@ -101,10 +96,6 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
       payload.org = {};
       payload.org[testPlatform.workspace.company_id] = {
         role: "",
-        wks: {},
-      };
-      payload.org[testPlatform.workspace.company_id].wks[testPlatform.workspace.workspace_id] = {
-        adm: true,
       };
     }
 

@@ -12,7 +12,13 @@ import {
   UserMessageBookmarkPrimaryKey,
 } from "./entities/user-message-bookmarks";
 import { MessagesEngine } from "./services/engine";
-import { CompanyExecutionContext } from "./types";
+import {
+  ChannelViewExecutionContext,
+  CompanyExecutionContext,
+  MessageViewListOptions,
+  ThreadExecutionContext,
+  MessageWithReplies,
+} from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
 
@@ -39,18 +45,45 @@ export interface MessageThreadsServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
+  addReply(thread_id: string): Promise<void>;
   save(
-    item: Pick<Thread, "company_id" | "id"> & {
+    item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type">[];
     },
     options?: { participants?: any; message?: Message },
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>>;
+
+  checkAccessToThread(context: ThreadExecutionContext): Promise<boolean>;
 }
 
 export interface MessageThreadMessagesServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<Message, MessagePrimaryKey, ExecutionContext> {}
+    CRUDService<Message, MessagePrimaryKey, ExecutionContext> {
+  pin(
+    item: { id: string; pin: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
 
-export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {}
+  reaction(
+    item: { id: string; reactions: string[] },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+
+  bookmark(
+    item: { id: string; bookmark_id: string; active: boolean },
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+}
+
+export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
+  listChannel(
+    pagination: Paginable,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>>;
+}

@@ -31,6 +31,8 @@ export default (props: Props) => {
         .map((reaction: { name: string; count: number; users: string[] }, index: number) => {
           const value = reaction.count || 0;
           const members: string[] = reaction.users || [];
+          console.log(members, props.message?._user_reaction);
+
           if (value <= 0) {
             return '';
           }
@@ -54,7 +56,11 @@ export default (props: Props) => {
             >
               <div
                 className={
-                  'reaction ' + (props.message?._user_reaction == reaction ? 'is_selected ' : '')
+                  'reaction ' +
+                  (props.message?._user_reaction == reaction.name ||
+                  members.includes(User.getCurrentUserId())
+                    ? 'is_selected '
+                    : '')
                 }
                 onClick={() => {
                   MessagesService.react(props.message, reaction.name, props.collectionKey);

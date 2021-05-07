@@ -1,4 +1,4 @@
-import { User } from "../../../../services/types/index";
+import { App, User } from "../../../../services/types/index";
 
 export class ContextualizedTarget {
   context?: ExecutionContext;
@@ -119,10 +119,12 @@ export declare type EntityOperationResult<Entity> =
 
 export interface ExecutionContext {
   user: User;
+  app?: App; //Used if request comes from an app / connector
   reqId?: string;
   url?: string;
   method?: string;
   transport?: "http" | "ws";
+  serverRequest?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
 }
 
 export class CrudExeption extends Error {
@@ -143,10 +145,14 @@ export class CrudExeption extends Error {
 export interface Paginable {
   page_token?: string;
   limitStr?: string;
+  reversed?: boolean;
 }
 
 export class Pagination implements Paginable {
-  constructor(readonly page_token?: string, readonly limitStr = "100") {}
+  reversed?: boolean;
+  constructor(readonly page_token?: string, readonly limitStr = "100", reversed = false) {
+    this.reversed = reversed;
+  }
 }
 
 export interface CRUDService<Entity, PrimaryKey, Context extends ExecutionContext> {
