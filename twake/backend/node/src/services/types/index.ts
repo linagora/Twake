@@ -41,6 +41,10 @@ export interface App {
   // unique app id
   id: uuid;
 }
+export interface App {
+  // unique app id
+  id: uuid;
+}
 
 export interface Workspace {
   company_id: string;
