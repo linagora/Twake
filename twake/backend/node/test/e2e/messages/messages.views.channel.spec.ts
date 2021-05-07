@@ -60,11 +60,7 @@ describe("The Messages feature", () => {
       );
       const threadId = result.resource.id;
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 1" }));
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 2" }));
 
@@ -82,11 +78,7 @@ describe("The Messages feature", () => {
         createMessage({ text: "Initial thread 2 message" }),
       );
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 3" }));
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       await e2e_createThread(
         platform,
@@ -101,8 +93,6 @@ describe("The Messages feature", () => {
         ],
         createMessage({ text: "Initial thread 3 message" }),
       );
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({

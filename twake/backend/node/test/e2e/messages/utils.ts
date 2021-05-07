@@ -1,3 +1,4 @@
+import { result } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { Channel } from "../../../src/services/channels/entities/channel";
@@ -22,7 +23,7 @@ export const e2e_createThread = async (
   message: Message,
 ) => {
   const jwtToken = await platform.auth.getJWTToken();
-  return await platform.app.inject({
+  const res = await platform.app.inject({
     method: "POST",
     url: `${url}/companies/${platform.workspace.company_id}/threads`,
     headers: {
@@ -37,6 +38,8 @@ export const e2e_createThread = async (
       },
     },
   });
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return res;
 };
 
 export const e2e_createMessage = async (
@@ -45,7 +48,7 @@ export const e2e_createMessage = async (
   message: Message,
 ) => {
   const jwtToken = await platform.auth.getJWTToken();
-  return await platform.app.inject({
+  const res = await platform.app.inject({
     method: "POST",
     url: `${url}/companies/${platform.workspace.company_id}/threads/${threadId}/messages`,
     headers: {
@@ -55,6 +58,8 @@ export const e2e_createMessage = async (
       resource: message,
     },
   });
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return res;
 };
 
 export const createMessage = (message: Partial<Message>, platform?: TestPlatform): Message => {
