@@ -188,6 +188,8 @@ export class CassandraConnector extends AbstractConnector<
   ): Promise<boolean> {
     await this.waitForKeyspace(this.options.delay, this.options.retries);
 
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     let result = true;
 
     // --- Generate column and key definition --- //
