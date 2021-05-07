@@ -1,3 +1,10 @@
+# Twake 2021.Q2.505
+
+### Messages
+
+- Performance improvement and bug fixing
+- Ability to invite external users as guest directly in channel
+
 # Twake 2021.Q2.481
 
 ### Messages
