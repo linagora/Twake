@@ -5,5 +5,9 @@ export const getUserBookmarksWebsocketRoom = (context: CompanyExecutionContext):
 };
 
 export const getThreadMessageWebsocketRoom = (context: ThreadExecutionContext): string => {
-  return "/companies/" + context.thread.company_id + "/threads/" + context.thread.id;
+  return "/companies/" + context.company.id + "/threads/" + context.thread.id;
+};
+
+export const getThreadMessagePath = (context: ThreadExecutionContext): string => {
+  return "/companies/" + context.company.id + "/threads/" + context.thread.id;
 };

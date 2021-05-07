@@ -11,6 +11,7 @@ import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
 import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
+import { createMessage, createParticipant, e2e_createThread } from "./utils";
 
 describe("The Messages Threads feature", () => {
   const url = "/internal/services/messages/v1";
@@ -37,31 +38,24 @@ describe("The Messages Threads feature", () => {
 
   describe("On user manage threads", () => {
     it("should create new thread", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
-      const jwtToken = await platform.auth.getJWTToken();
-      const response = await platform.app.inject({
-        method: "POST",
-        url: `${url}/companies/${platform.workspace.company_id}/threads`,
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
-        payload: {
-          resource: {
-            participants: [
-              {
-                type: "user",
-                id: platform.currentUser.id,
-              },
-            ],
-          },
-          options: {
-            message: {
-              todo: "todo", //TODO
+      const response = await e2e_createThread(
+        platform,
+        [
+          createParticipant(
+            {
+              type: "user",
+              id: platform.currentUser.id,
             },
+            platform,
+          ),
+        ],
+        createMessage(
+          {
+            text: "Hello!",
           },
-        },
-      });
+          platform,
+        ),
+      );
 
       const result: ResourceUpdateResponse<Thread> = deserialize(
         ResourceUpdateResponse,
@@ -84,31 +78,24 @@ describe("The Messages Threads feature", () => {
     });
 
     it("should enforce requester in thread participants", async done => {
-      const service = platform.platform.getProvider<MessageServiceAPI>("messages");
-
-      const jwtToken = await platform.auth.getJWTToken();
-      const response = await platform.app.inject({
-        method: "POST",
-        url: `${url}/companies/${platform.workspace.company_id}/threads`,
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
-        payload: {
-          resource: {
-            participants: [
-              {
-                type: "user",
-                id: uuidv4(),
-              },
-            ],
-          },
-          options: {
-            message: {
-              todo: "todo", //TODO
+      const response = await e2e_createThread(
+        platform,
+        [
+          createParticipant(
+            {
+              type: "user",
+              id: uuidv4(),
             },
+            platform,
+          ),
+        ],
+        createMessage(
+          {
+            text: "Hello!",
           },
-        },
-      });
+          platform,
+        ),
+      );
 
       const result: ResourceUpdateResponse<Thread> = deserialize(
         ResourceUpdateResponse,
@@ -137,7 +124,6 @@ describe("The Messages Threads feature", () => {
       const thread = await service.threads.save(
         {
           id: undefined,
-          company_id: platform.workspace.company_id,
           participants: [
             {
               type: "user",
@@ -189,7 +175,6 @@ describe("The Messages Threads feature", () => {
       const thread = await service.threads.save(
         {
           id: undefined,
-          company_id: platform.workspace.company_id,
           participants: [
             {
               type: "user",
