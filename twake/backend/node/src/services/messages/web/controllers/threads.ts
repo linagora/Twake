@@ -43,7 +43,6 @@ export class ThreadsController
     try {
       const result = await this.service.threads.save(
         {
-          company_id: request.params.company_id,
           id: request.params.thread_id || undefined,
           participants: request.body.resource.participants || undefined,
         },

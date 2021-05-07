@@ -17,7 +17,7 @@ export class MessageUserInboxRef {
   user_id: string;
 
   @Type(() => Number)
-  @Column("user_id", "number")
+  @Column("last_activity", "number")
   last_activity: number;
 
   @Type(() => String)
