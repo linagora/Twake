@@ -186,6 +186,8 @@ export class CassandraConnector extends AbstractConnector<
     entity: EntityDefinition,
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean> {
+    await this.waitForKeyspace(this.options.delay, this.options.retries);
+
     let result = true;
 
     // --- Generate column and key definition --- //
