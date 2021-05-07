@@ -68,6 +68,13 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   getCompanies(pagination?: Paginable): Promise<ListResult<Company>>;
 
   /**
+   * Get all companies for a user
+   * @param company
+   * @param user
+   */
+  getAllForUser(user: Pick<CompanyUser, "user_id">): Promise<ListResult<CompanyUser>>;
+
+  /**
    * Add a user in a company
    *
    * @param company
@@ -109,6 +116,16 @@ export interface WorkspaceServiceAPI
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>>;
+
+  /**
+   * Get workspace user in the given workspace
+   *
+   * @param workspaceId
+   * @param userId
+   */
+  getUser(
+    workspaceUser: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
+  ): Promise<WorkspaceUser>;
 
   /**
    * Get all the workspace for a user

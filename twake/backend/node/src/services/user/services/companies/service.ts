@@ -53,6 +53,10 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyUserRepository.findOne({ group_id: company.id, user_id: user.id });
   }
 
+  getAllForUser(user: Pick<CompanyUser, "user_id">): Promise<ListResult<CompanyUser>> {
+    return this.companyUserRepository.find({ user_id: user.user_id });
+  }
+
   getCompanies(pagination?: Pagination): Promise<ListResult<Company>> {
     return this.companyRepository.find({}, { pagination });
   }

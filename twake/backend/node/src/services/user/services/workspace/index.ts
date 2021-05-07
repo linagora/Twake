@@ -88,6 +88,15 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     );
   }
 
+  getUser(
+    workspaceUser: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
+  ): Promise<WorkspaceUser> {
+    return this.workspaceUserRepository.findOne({
+      workspace_id: workspaceUser.workspaceId,
+      user_id: workspaceUser.userId,
+    });
+  }
+
   getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     pagination?: Paginable,

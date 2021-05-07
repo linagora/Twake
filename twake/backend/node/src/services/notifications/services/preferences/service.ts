@@ -14,12 +14,13 @@ import {
 } from "../../entities";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { pick, assign } from "lodash";
+import UserServiceAPI from "../../../../services/user/api";
 
 export class NotificationPreferencesService implements UserNotificationPreferencesAPI {
   version: "1";
   repository: Repository<UserNotificationPreferences>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private userService: UserServiceAPI) {}
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository<UserNotificationPreferences>(

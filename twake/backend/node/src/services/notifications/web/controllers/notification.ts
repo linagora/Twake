@@ -31,11 +31,7 @@ export class NotificationController
 
     //Get one badge per company if requested
     if (request.query.all_companies) {
-      const list = await this.service.badges.listForUserPerCompanies(
-        //We remove all badge from current company as next block will create dupicates
-        Object.keys(request.currentUser.org).filter(id => id !== request.query.company_id),
-        request.currentUser.id,
-      );
+      const list = await this.service.badges.listForUserPerCompanies(request.currentUser.id);
       resources = resources.concat(list.getEntities());
     }
 

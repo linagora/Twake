@@ -13,7 +13,6 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
     try {
       const jwt: JwtType = await request.jwtVerify();
       request.currentUser = {
-        ...{ org: jwt.org },
         ...{ email: jwt.email },
         ...{ id: jwt.sub },
         ...{ identity_provider_id: jwt.provider_id },
