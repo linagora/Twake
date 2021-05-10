@@ -14,38 +14,31 @@ export class File {
   @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
-  @Column("owner_type", "encoded_string")
-  owner_type: "user" | "application";
+  @Type(() => String)
+  @Column("user_id", "encoded_string")
+  user_id: string;
 
-  @Column("owner_id", "uuid")
-  owner_id: string;
+  @Column("application_id", "encoded_string")
+  application_id: null | string;
 
-  @Column("cipher", "encoded_string")
-  cipher: string;
+  @Column("encryption_key", "encoded_string")
+  encryption_key: string;
 
   @Column("metadata", "encoded_json")
-  metadata: {
+  metadata: null | {
     name: string;
-    extension: string;
-    thumbmail: "";
-    width?: number;
-    height?: number;
-    type:
-      | "link"
-      | "code"
-      | "document"
-      | "image"
-      | "pdf"
-      | "slides"
-      | "sound"
-      | "spreadsheet"
-      | "video"
-      | "archive"
-      | "other";
+    mime: string;
+  };
+
+  @Column("thumbmail", "encoded_json")
+  thumbmail: null | {
+    thumbmail: string;
+    width: number;
+    height: number;
   };
 
   @Column("upload_data", "encoded_json")
-  upload_data: {
+  upload_data: null | {
     size: number;
     chunks: number;
   };

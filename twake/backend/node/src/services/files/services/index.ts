@@ -7,6 +7,8 @@ import { Readable, Stream } from "stream";
 import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import Multistream from "multistream";
+import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
+import { CompanyExecutionContext } from "../web/types";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -28,69 +30,108 @@ class Service implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
 
-  //file: FileServiceAPI;
-
   constructor(
     readonly database: DatabaseServiceAPI,
     readonly pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
-  ) {
-    //this.file = getFileService(this.database);
-  }
+  ) {}
 
   async init(context: TwakeContext): Promise<this> {
     try {
       this.repository = await this.database.getRepository<File>("files", File);
-      //await Promise.all([this.file.init(context)]);
     } catch (err) {
       console.error("Error while initializing notification service", err);
     }
     return this;
   }
 
-  async save(stream: any) {
-    const entity = new File();
-    entity.company_id = stream.company_id;
-    entity.metadata = {
-      name: stream.fields["resumableFilename"],
-      extension: stream.fields["resumableFilename"].split(".").pop(),
-      thumbmail: "",
-      type: stream.fields["resumableType"],
-    };
-    entity.cipher = "";
-    entity.owner_id = "9f939ec3-6a5b-4bba-893b-3b4481758a11";
-    entity.owner_type = "user";
-    console.log("fields", stream.fields["resumableTotalSize"]);
-    console.log("entity", entity.metadata);
+  async save(stream: any, context: CompanyExecutionContext) {
+    const iv = "7b88ac42e1214474"; // ?
+    const secret_key = "d04e7073dbbd609de83e8ba46a07b5d3"; // ?
+    const userId = /*context.user.id ||*/ "9f939ec3-6a5b-4bba-893b-3b4481758a11";
+    console.log("stream.id: ", stream.file_id);
+    let entity = null;
+    if (stream.file_id) {
+      entity = await this.repository.findOne({
+        company_id: stream.company_id,
+        id: stream.file_id,
+      });
+      if (!entity) {
+        throw "This file id does not exist";
+      }
+    }
 
-    entity.upload_data = {
-      size: stream.fields["resumableTotalSize"],
-      chunks: stream.fields["resumableTotalChunks"],
-    };
+    if (!entity) {
+      entity = new File();
+      entity.company_id = stream.company_id;
+      entity.metadata = null;
+      entity.thumbmail = null;
 
-    console.log("entity", entity);
+      // generer secret key ici
+      entity.encryption_key = `${secret_key}.${iv}`;
 
-    await this.repository.save(entity);
-    this.storage.write(stream.fields, stream);
+      //recupérer user_id dans le context
+      entity.user_id = "user_id";
+      entity.application_id = null;
+      entity.upload_data = null;
+
+      this.repository.save(entity);
+    }
+    if (stream.data) {
+      if (entity.upload_data?.size !== stream.fields["resumableTotalSize"]) {
+        entity.metadata = {
+          name: stream.fields["resumableFilename"],
+          mime: stream.fields["resumableType"],
+        };
+
+        entity.upload_data = {
+          size: stream.fields["resumableTotalSize"],
+          chunks: stream.fields["resumableTotalChunks"],
+        };
+        this.repository.save(entity);
+      }
+
+      var cipher = createCipheriv(
+        "aes-256-cbc",
+        entity.encryption_key.split(".")[0],
+        entity.encryption_key.split(".")[1],
+      );
+
+      //var decipher = createDecipheriv("aes-256-cbc", secret_key, iv);
+      const newReadStream = stream.data.file.pipe(cipher);
+      const bucket = "twake"; //récuperer bucket dans config coté storage
+      const chunk_number = stream.fields["resumableChunkNumber"];
+      const path = `/${bucket}/files/${entity.company_id}/${entity.user_id}/${stream.data.filename}/chunk${chunk_number}`;
+
+      this.storage.write(path, newReadStream);
+    }
+    return entity;
   }
 
-  async download(company_id: string, id: string): Promise<Readable> {
+  async download(
+    company_id: string,
+    id: string,
+    context: CompanyExecutionContext,
+  ): Promise<Readable> {
     const entity = await this.repository.findOne({ company_id: company_id, id: id });
-    console.log("entity", entity);
+
     const chunks = entity.upload_data.chunks;
-    console.log("number of chunks", chunks);
     var count = 1;
     let stream;
     const self = this;
 
     async function factory(callback: (err?: Error, stream?: Stream) => {}) {
       if (count > chunks) return callback();
+      var decipher = createDecipheriv(
+        "aes-256-cbc",
+        entity.encryption_key.split(".")[0],
+        entity.encryption_key.split(".")[1],
+      );
 
       const chunk = `twake/files/${company_id}/user_id/${entity.metadata.name}/chunk${count}`;
       count++;
       try {
-        //console.log("chunk", chunk);
-        stream = await self.storage.read(chunk);
+        stream = (await self.storage.read(chunk)).pipe(decipher);
       } catch (err) {
         callback(new Error(`No such chunk ${chunk}`));
         return;
@@ -102,6 +143,3 @@ class Service implements FileServiceAPI {
     return new Multistream(factory);
   }
 }
-// pre process
-//route actuelle en pre process
-//upload dans le ficheir de pre process
