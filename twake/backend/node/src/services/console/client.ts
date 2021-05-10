@@ -32,6 +32,9 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
       };
     }
 
+    console.log(company);
+    console.log(user);
+
     return this.client
       .post(`/api/companies/${company.code}/users`, user, {
         auth: {
