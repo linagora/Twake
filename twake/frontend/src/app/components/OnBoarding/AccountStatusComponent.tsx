@@ -11,13 +11,13 @@ import InitService from 'app/services/InitService';
 
 const AccountStatusComponent = (): JSX.Element => {
   const user = UserService.getCurrentUser();
-  const maxUnverifiedDays = 7;
+  const maxUnverifiedDays = InitService.server_infos.auth?.console?.max_unverified_days || 7;
   const oneDay = 1000 * 60 * 60 * 24;
   const periodLimit = (user.created_at || 0) + maxUnverifiedDays * oneDay;
   const daysLeft = Math.ceil((periodLimit - Date.now()) / oneDay);
 
   if (InitService.server_infos.auth?.console?.use !== true) {
-    return <></>
+    return <></>;
   }
 
   const showBlockedModal = () => {
