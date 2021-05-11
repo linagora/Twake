@@ -8,6 +8,7 @@
     "webserver",
     "websocket",
     "database",
+    "search",
     "pubsub",
     "realtime",
     "phpnode",
@@ -55,6 +56,16 @@
   "auth": {
     "jwt": {
       "secret": "supersecret"
+    }
+  },
+  "search": {
+    "type": "elasticsearch",
+    "elasticsearch": {
+      "endpoints": ["es:9200"]
+    },
+    "mongodb": {
+      "uri": "mongodb://localhost:27017",
+      "database": "twake"
     }
   },
   "database": {
