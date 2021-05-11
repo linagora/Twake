@@ -79,6 +79,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
         $schema = $connection->getSchema();
         $keyspace = $schema->keyspace(strtolower($connection->getKeyspace()));
+        $is_cassandra = $this->getApp()->getContainer()->getParameter("db.is_cassandra", false);
 
         $ignored_cols = 0;
         $viable_indexes = [];
@@ -313,6 +314,10 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                                 $index_name .= "_composite";
                             }
 
+                            if($is_cassandra){
+                                $index_name = "index_".md5($index_name);
+                            }
+
                             $command = "CREATE MATERIALIZED VIEW IF NOT EXISTS " . strtolower($connection->getKeyspace()) . ".\"";
                             $command .= $index_name . "\" AS ";
                             $command .= " SELECT " . $key;
@@ -326,6 +331,10 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                                 $index_name = $custom_keys_names[$i] . "_custom_index";
                             } else {
                                 $index_name .= "_simple";
+                            }
+
+                            if($is_cassandra){
+                                $index_name = "index_".md5($index_name);
                             }
 
                             $command = "CREATE INDEX IF NOT EXISTS \"";
