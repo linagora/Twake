@@ -54,12 +54,12 @@ export default (): JSX.Element => {
   }
 
   if (!channel.data.user_member?.user_id) {
-    ChannelsBarService.updateCurrentChannelId(companyId || '', workspaceId || '', '');
+    ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, '');
     redirectToWorkspace();
     return <Col></Col>;
   }
 
-  ChannelsBarService.updateCurrentChannelId(companyId || '', workspaceId || '', channelId || '');
+  ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, channelId);
 
   return (
     <Row align="middle" style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}>

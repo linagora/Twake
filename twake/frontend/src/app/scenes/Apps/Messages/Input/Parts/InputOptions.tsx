@@ -7,7 +7,7 @@ import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 
 type Props = {
   inputValue: string;
@@ -31,36 +31,38 @@ export default (props: Props) => {
   if (props.triggerApp) {
     if (apps.length > 0) {
       apps.map(app => {
-        var icon = WorkspacesApps.getAppIcon(app);
-        var emoji = '';
-        if ((icon || '').indexOf('http') === 0) {
-          emoji = icon;
-          icon = '';
-        }
-        const menu_item = {
-          type: 'menu',
-          emoji: emoji,
-          icon: icon,
-          text: app.name,
-          onClick: (evt: any) => {
-            props.triggerApp && props.triggerApp(app, undefined, evt);
-          },
-        };
+        if (app) {
+          var icon = WorkspacesApps.getAppIcon(app);
+          var emoji = '';
+          if ((icon || '').indexOf('http') === 0) {
+            emoji = icon;
+            icon = '';
+          }
+          const menu_item = {
+            type: 'menu',
+            emoji: emoji,
+            icon: icon,
+            text: app.name,
+            onClick: (evt: any) => {
+              props.triggerApp && props.triggerApp(app, undefined, evt);
+            },
+          };
 
-        if (
-          app.simple_name === 'twake_drive' ||
-          app.display?.messages_module?.right_icon?.type === 'file'
-        ) {
-          addon_files.push(menu_item);
-        } else if (
-          app.simple_name === 'jitsi' ||
-          app.display?.messages_module?.right_icon?.type === 'call'
-        ) {
-          addon_calls.push(menu_item);
-        } else if (app.display?.messages_module?.right_icon) {
-          addon_right_icon.push(app);
-        } else {
-          addon_menu.push(menu_item);
+          if (
+            app.simple_name === 'twake_drive' ||
+            app.display?.messages_module?.right_icon?.type === 'file'
+          ) {
+            addon_files.push(menu_item);
+          } else if (
+            app.simple_name === 'jitsi' ||
+            app.display?.messages_module?.right_icon?.type === 'call'
+          ) {
+            addon_calls.push(menu_item);
+          } else if (app.display?.messages_module?.right_icon) {
+            addon_right_icon.push(app);
+          } else {
+            addon_menu.push(menu_item);
+          }
         }
       });
     }

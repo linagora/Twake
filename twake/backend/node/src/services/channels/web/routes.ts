@@ -20,6 +20,7 @@ import { FastifyRequest } from "fastify/types/request";
 const channelsUrl = "/companies/:company_id/workspaces/:workspace_id/channels";
 const membersUrl = `${channelsUrl}/:id/members`;
 const tabsUrl = `${channelsUrl}/:id/tabs`;
+const pendingEmailsUrl = `${channelsUrl}/:channel_id/pending_emails`;
 
 const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   fastify: FastifyInstance,
@@ -29,6 +30,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   const channelsController = new ChannelCrudController(
     options.service.channels,
     options.service.members,
+    options.service.pendingEmails,
   );
   const membersController = new ChannelMemberCrudController(options.service.members);
   const tabsController = new ChannelTabCrudController(options.service.tabs);
@@ -139,6 +141,34 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
     handler: membersController.delete.bind(membersController),
+  });
+
+  // pending_emails
+
+  fastify.route({
+    method: "GET",
+    url: pendingEmailsUrl,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    //schema: getChannelPendingEmailsSchema,
+    handler: channelsController.findPendingEmails.bind(channelsController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: pendingEmailsUrl,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    //schema: createChannelPendingEmailsSchema,
+    handler: channelsController.savePendingEmails.bind(channelsController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: `${pendingEmailsUrl}/:email`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    handler: channelsController.deletePendingEmails.bind(channelsController),
   });
 
   // tabs

@@ -425,7 +425,12 @@ class MessageSystem
         if (isset($object["_user_reaction"]) && $user && $message->getId()) {
             $message_reaction_repo = $this->em->getRepository("Twake\Discussion:MessageReaction");
             $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $user->getId(), "message_id" => $message->getId()));
-            $current_reactions = $message->getReactions();
+            $current_reactions = [];
+
+            foreach($message->getAsArray()["reactions"] as $key => $reaction){
+                $current_reactions[$reaction["name"] ?: $key] = $reaction;
+            }
+
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
@@ -580,6 +585,7 @@ class MessageSystem
 
         $title = "";
         $text = $this->buildShortText($message);
+        $body = $text; // we need original body just in case text gets updated further on
         if ($channel->getData()["is_direct"]) {
             $title = $senderName . " in " . $channel->getData()["company_name"];
         }else{
@@ -622,8 +628,10 @@ class MessageSystem
                 "channel_id" => $messageArray["channel_id"],
                 "date" => $messageArray["creation_date"] * 1000,
                 "sender" => $messageArray["sender"],
-                "title" => $title,
-                "text" => $text
+                "sender_name" => $senderName, // username, because it's not convenient to make request to find out username by id
+                "title" => $title, 
+                "text" => $text,
+                "body" => $body // original body of the message without sender
             ];
 
             if($messageArray["message_type"] != 2){ //Ignore system messages

@@ -3,7 +3,7 @@
   "webserver": {
     "port": 3000,
     "logger": {
-      "level": "info"
+      "level": "warn"
     }
   },
   "websocket": {

@@ -2,8 +2,8 @@ import React from 'react';
 import Login from 'services/login/login.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
-
 import Globals from 'services/Globals.js';
+import Languages from 'services/languages/languages.js';
 
 class User {
   constructor() {
@@ -28,6 +28,11 @@ class User {
   getFullName(user) {
     user = user || {};
     var name = user.username;
+
+    if (user.deleted) {
+      name = Languages.t('general.user.deleted');
+    }
+
     if (user.firstname && user.firstname != '') {
       name = user.firstname;
     }
@@ -55,6 +60,11 @@ class User {
     } else {
       thumbnail = Globals.window.addApiUrlIfNeeded(user.thumbnail);
     }
+
+    if (user.deleted) {
+      thumbnail = '';
+    }
+
     return thumbnail;
   }
 
@@ -88,13 +98,10 @@ class User {
         ) {
           let in_scope = true;
           if (scope === 'workspace') {
-            in_scope =
-              (user.workspaces_id || []).indexOf(options.workspace_id) >= 0 ||
-              !user.workspaces_id?.length;
+            in_scope = (user.workspaces_id || []).indexOf(options.workspace_id) >= 0;
           }
           if (scope === 'group') {
-            in_scope =
-              (user.groups_id || []).indexOf(options.group_id) >= 0 || !user.groups_id?.length;
+            in_scope = (user.groups_id || []).indexOf(options.group_id) >= 0;
           }
           if (in_scope) {
             res.push(user);
@@ -160,7 +167,11 @@ class User {
   nextUsersGetBulk = [];
 
   asyncGet(id, callback = undefined) {
-    if (this.users_repository.known_objects_by_id[id]) {
+    if (
+      this.users_repository.known_objects_by_id[id] &&
+      new Date(this.users_repository.known_objects_by_id[id]?._last_modified || 0).getTime() >
+        new Date().getTime() - 1000 * 60 * 60
+    ) {
       return;
     }
 
@@ -177,6 +188,7 @@ class User {
               if (!user) {
                 this.stop_async_get[ids[index]] = true;
               } else {
+                callback && callback(user);
                 this.users_repository.updateObject(user);
                 callbacks[user.id] && callbacks[user.id]();
               }
@@ -189,6 +201,15 @@ class User {
     if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0 && !this.stop_async_get[id]) {
       this.nextUsersGetBulk.push({ id, callback });
     }
+  }
+
+  // member - guest - admin - unknown
+  getUserRole(user, company_id) {
+    const currentUserCompany = (user?.companies || []).filter(
+      item => item.company.id === company_id,
+    )[0];
+
+    return currentUserCompany?.role || 'unknown';
   }
 }
 

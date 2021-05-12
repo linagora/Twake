@@ -1,6 +1,7 @@
+import _ from "lodash";
 import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
-import { getEntityDefinition } from "../../utils";
+import { getEntityDefinition, secureOperators, unwrapPrimarykey } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
 
 export function buildSelectQuery<Entity>(
@@ -8,13 +9,16 @@ export function buildSelectQuery<Entity>(
   filters: any,
   findOptions: FindOptions,
   options: {
+    secret?: string;
     keyspace: string;
   } = {
+    secret: "",
     keyspace: "twake",
   },
 ): string {
   const instance = new (entityType as any)();
   const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+  const primaryKey = unwrapPrimarykey(entityDefinition);
 
   const where = Object.keys(filters)
     .map(key => {
@@ -33,7 +37,7 @@ export function buildSelectQuery<Entity>(
           value =>
             `${transformValueToDbString(value, columnsDefinition[key].type, {
               columns: columnsDefinition[key].options,
-              secret: this.secret,
+              secret: options.secret || "",
             })}`,
         );
 
@@ -41,13 +45,15 @@ export function buildSelectQuery<Entity>(
       } else {
         result = `${key} = ${transformValueToDbString(filter, columnsDefinition[key].type, {
           columns: columnsDefinition[key].options,
-          secret: this.secret,
+          secret: options.secret || "",
         })}`;
       }
 
       return result;
     })
     .filter(Boolean);
+
+  secureOperators(transformValueToDbString, findOptions, entityType, options);
 
   const whereClause = `${[
     ...where,
@@ -56,7 +62,28 @@ export function buildSelectQuery<Entity>(
     ...(buildLike(findOptions) || []),
   ].join(" AND ")}`.trimEnd();
 
-  return `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${whereClause.trim().length ? ("WHERE " + whereClause) : ""}`.trimEnd().concat(";");
+  let orderByClause = "";
+  if (findOptions.pagination?.reversed) {
+    orderByClause = `${entityDefinition.options.primaryKey
+      .slice(1)
+      .map(
+        (key: string) =>
+          `${key} ${(columnsDefinition[key].options.order || "ASC") === "ASC" ? "DESC" : "ASC"}`,
+      )
+      .join(", ")}`;
+  }
+
+  const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${
+    whereClause.trim().length ? "WHERE " + whereClause : ""
+  } ${orderByClause.trim().length ? "ORDER BY " + orderByClause : ""} ${
+    findOptions?.pagination?.limitStr?.trim()
+      ? "LIMIT " + (parseInt(findOptions.pagination.limitStr) || 100)
+      : ""
+  }`
+    .trimEnd()
+    .concat(";");
+
+  return query;
 }
 
 export function buildComparison(options: FindOptions = {}): string[] {

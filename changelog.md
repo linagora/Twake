@@ -1,3 +1,71 @@
+# Twake 2021.Q2.505
+
+### Messages
+
+- Performance improvement and bug fixing
+- Ability to invite external users as guest directly in channel
+
+# Twake 2021.Q2.481
+
+### Messages
+
+- Fix a bug making too many desktop notifications at the same time.
+- Fix a bug when sending a message using the send button, message now disapear as expected.
+- Fix the "hidden notification" button that can be stuck on top or bottom of the channel list.
+
+### Console
+
+- Now if you change your language on Console it will affect Twake accordingly.
+- Better onboarding of new users: automatic channel selection, add collaborators button, invite collaborators from Twake using console management app and more.
+- Polishing console migration script, previous Twake users will soon uses the Console.
+
+# Twake 2021.Q1.434
+
+### Messages
+
+- Default channels now available 🌟 You can set a channel as default, new users invited in workspace will be automatically added to this channel.
+
+### General
+
+- Console onboarding update (soon open source!)
+- Multiple bug fixes
+
+# Twake 2021.Q1.401
+
+### General
+
+- First elements of Twake new design, welcome to blue #3840f7
+- Cmd+K / Ctrl+K now working on all channels types (direct and workspace channels)
+- Multiple bug fixes
+
+# Twake 2021.Q1.385
+
+### General
+
+- Twake is on OVH! OVH is a french infrastructure provider, it is a big step for us. Good bye Amazon 👋
+- Started migration to NodeJS from PHP (30%) for faster and lighter server, compatibility with MongoDB and more!
+- Move to socket.io from socketcluster for more robust websockets.
+- We are now compatible with the Twake Console. Twake account and group management will be soon fully replaced by the Console.
+- Big performances upgrades, we fixed a lot of memory leaks in the last weeks.
+
+### Channels
+
+- Ability to join and leave channels.
+- Channel activity messages.
+- Access and rights for channel creation updated (now everyone can create channels).
+- Favorite direct channels, now you can put your direct channels in favorites too.
+- Channel groups are back! Yes, you can again create groups of channels to organize your workspace.
+- Channel members list: see who is in a channel and manage members
+
+### Notifications
+
+- Now you only receive badge notification for threads you follow and when you are mentionned.
+- Other messages in channel will update the channel text to bold.
+
+### Drive
+
+- Ability to preview coding files and markdown files
+
 # Twake 2020.Q4.137
 
 ### General

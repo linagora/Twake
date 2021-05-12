@@ -1,4 +1,8 @@
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../types";
+import { MessageFileMetadata } from "./entities/message-files";
+import { Message } from "./entities/messages";
+import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 
@@ -20,3 +24,44 @@ export type MessageNotification = {
   title: string;
   text: string;
 };
+
+export type MessageWithReplies = Message & {
+  last_replies: Message[];
+  stats: {
+    replies: number;
+  };
+};
+
+export interface CompanyExecutionContext extends ExecutionContext {
+  company: { id: string };
+}
+
+export interface ThreadExecutionContext extends ExecutionContext {
+  thread: { id: string };
+  company: { id: string };
+}
+export interface ChannelViewExecutionContext extends ExecutionContext {
+  channel: {
+    company_id: string;
+    workspace_id: string;
+    id: string;
+  };
+}
+export interface MessageLocalEvent {
+  resource: Message;
+  context: ThreadExecutionContext;
+  created: boolean;
+}
+
+export interface PaginationQueryParameters {
+  page_token?: string;
+  limit?: string;
+  websockets?: boolean;
+  direction?: "history" | "future";
+}
+export interface MessageViewListOptions {
+  replies_per_thread: number;
+  emojis: boolean;
+}
+
+export interface MessageListQueryParameters extends PaginationQueryParameters {}

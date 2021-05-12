@@ -2,6 +2,7 @@ import { logger } from "../../../framework/logger";
 import { constants as CONSTANTS } from "./constants";
 import { AmqpClient, AmqpCallbackType, PublishOptions, SubscribeOptions } from "./client";
 import { Options } from "amqplib";
+import _ from "lodash";
 
 const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
 
@@ -10,13 +11,15 @@ const LOG_PREFIX = "service.pubsub.amqp.AmqpPubsubClient -";
  */
 export class AmqpPubsubClient extends AmqpClient {
   publish(topic: string, data: unknown, options?: PublishOptions): Promise<boolean> {
+    data = _.cloneDeep(data);
+
     let publishOptions: Options.Publish;
 
     logger.debug(`${LOG_PREFIX} Publishing message to topic "${topic}" with options %o`, options);
 
     if (options?.ttl) {
       publishOptions = {
-        expiration: options.ttl
+        expiration: options.ttl,
       };
     }
 
@@ -28,13 +31,11 @@ export class AmqpPubsubClient extends AmqpClient {
   subscribe(topic: string, options: SubscribeOptions, callback: AmqpCallbackType): Promise<void> {
     const queueOptions: Options.AssertQueue = {
       ...CONSTANTS.SUBSCRIBER.queueOptions,
-      ... options?.ttl ? { messageTtl: options.ttl } : {},
+      ...(options?.ttl ? { messageTtl: options.ttl } : {}),
     };
 
     return this.assertExchange(topic, CONSTANTS.PUBSUB_EXCHANGE.type)
-      .then(() =>
-        this.assertQueue(CONSTANTS.SUBSCRIBER.queueName, queueOptions),
-      )
+      .then(() => this.assertQueue(CONSTANTS.SUBSCRIBER.queueName, queueOptions))
       .then(res => this.assertBinding(res.queue, topic).then(() => res))
       .then(res => this.consume(res.queue, CONSTANTS.SUBSCRIBER.consumeOptions, callback));
   }
@@ -57,11 +58,14 @@ export class AmqpPubsubClient extends AmqpClient {
   ): Promise<void> {
     const durableQueueOptions: Options.AssertQueue = {
       ...CONSTANTS.SUBSCRIBER.durableQueueOptions,
-      ...options?.ttl ? { messageTtl: options.ttl } : {}
+      ...(options?.ttl ? { messageTtl: options.ttl } : {}),
     };
 
-    logger.debug(`${LOG_PREFIX} Subscribing to durable queue ${queueName} with options %o`, durableQueueOptions);
-    
+    logger.debug(
+      `${LOG_PREFIX} Subscribing to durable queue ${queueName} with options %o`,
+      durableQueueOptions,
+    );
+
     return this.assertExchange(exchangeName, CONSTANTS.PUBSUB_EXCHANGE.type)
       .then(() => this.assertQueue(queueName, durableQueueOptions))
       .then(() => this.assertBinding(queueName, exchangeName))

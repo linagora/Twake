@@ -26,6 +26,7 @@ describe("The notification for user mentions", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "user",
         "websocket",
         "webserver",
         "channels",
@@ -97,12 +98,16 @@ describe("The notification for user mentions", () => {
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
+    const member3 = await joinChannel(uuidv4(), channel);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      expect(message.data.mentions.users).toContain(member.user_id);
-      expect(message.data.mentions.users).toContain(member2.user_id);
-      expect(message.data.mentions.users).not.toContain(unknownUser);
-      done();
+      if (message.data.message_id === messageId) {
+        expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+        expect(message.data.mentions.users).toContain(member2.user_id);
+        expect(message.data.mentions.users).toContain(member3.user_id);
+        expect(message.data.mentions.users).not.toContain(unknownUser);
+        done();
+      }
     });
 
     pushMessage({
@@ -114,8 +119,10 @@ describe("The notification for user mentions", () => {
       thread_id: threadId,
       workspace_id: channel.workspace_id,
       mentions: {
-        users: [member.user_id, member2.user_id, unknownUser],
+        users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
       },
+      title: "",
+      text: "",
     });
   });
 
@@ -126,13 +133,17 @@ describe("The notification for user mentions", () => {
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
+    const member3 = await joinChannel(uuidv4(), channel);
 
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.NONE);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      expect(message.data.mentions.users).toContain(member.user_id);
-      expect(message.data.mentions.users).not.toContain(member2.user_id);
-      done();
+      if (message.data.message_id === messageId) {
+        expect(message.data.mentions.users).not.toContain(member.user_id);
+        expect(message.data.mentions.users).toContain(member3.user_id);
+        expect(message.data.mentions.users).not.toContain(member2.user_id);
+        done();
+      }
     });
 
     pushMessage({
@@ -144,8 +155,10 @@ describe("The notification for user mentions", () => {
       thread_id: threadId,
       workspace_id: channel.workspace_id,
       mentions: {
-        users: [member.user_id, member2.user_id, unknownUser],
+        users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
       },
+      title: "",
+      text: "",
     });
   });
 
@@ -155,13 +168,18 @@ describe("The notification for user mentions", () => {
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
+    const member3 = await joinChannel(uuidv4(), channel);
 
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      expect(message.data.mentions.users).toContain(member.user_id);
-      expect(message.data.mentions.users).toContain(member2.user_id);
-      done();
+      if (message.data.message_id === messageId) {
+        expect(message.data.mentions.users).not.toContain(member.user_id);
+        expect(message.data.mentions.users).toContain(member2.user_id);
+        expect(message.data.mentions.users).not.toContain(member3.user_id);
+        done();
+      }
     });
 
     pushMessage({
@@ -176,6 +194,8 @@ describe("The notification for user mentions", () => {
         users: [],
         specials: ["all"],
       },
+      title: "",
+      text: "",
     });
   });
 
@@ -185,13 +205,18 @@ describe("The notification for user mentions", () => {
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
+    const member3 = await joinChannel(uuidv4(), channel);
 
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      expect(message.data.mentions.users).toContain(member.user_id);
-      expect(message.data.mentions.users).toContain(member2.user_id);
-      done();
+      if (message.data.message_id === messageId) {
+        expect(message.data.mentions.users).not.toContain(member.user_id);
+        expect(message.data.mentions.users).toContain(member2.user_id);
+        expect(message.data.mentions.users).not.toContain(member3.user_id);
+        done();
+      }
     });
 
     pushMessage({
@@ -206,6 +231,43 @@ describe("The notification for user mentions", () => {
         users: [],
         specials: ["here"],
       },
+      title: "",
+      text: "",
+    });
+  });
+
+  it("should mention user when notification level is set to ME", async done => {
+    const threadId = uuidv4();
+    const messageId = uuidv4();
+    const channel = await createChannel();
+    const member = await joinChannel(platform.currentUser.id, channel);
+    const member2 = await joinChannel(uuidv4(), channel);
+    const member3 = await joinChannel(uuidv4(), channel);
+
+    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
+
+    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+      if (message.data.message_id === messageId) {
+        expect(message.data.mentions.users).not.toContain(member.user_id);
+        expect(message.data.mentions.users).not.toContain(member3.user_id);
+        expect(message.data.mentions.users).toContain(member2.user_id);
+        done();
+      }
+    });
+
+    pushMessage({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      creation_date: Date.now(),
+      id: messageId,
+      sender: platform.currentUser.id,
+      thread_id: threadId,
+      workspace_id: channel.workspace_id,
+      mentions: {
+        users: [member2.user_id],
+      },
+      title: "",
+      text: "",
     });
   });
 });

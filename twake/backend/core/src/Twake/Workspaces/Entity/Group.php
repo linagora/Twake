@@ -64,7 +64,7 @@ class Group extends SearchableObject
      * @ORM\ManyToOne(targetEntity="Twake\Upload\Entity\File")
      * @ORM\JoinColumn(name="logo_id")
      */
-    protected $logoFile;
+    protected $logofile;
 
     /**
      * @ORM\Column(name="display_name", type="twake_text")
@@ -229,7 +229,7 @@ class Group extends SearchableObject
      */
     public function getLogoFile()
     {
-        return $this->logoFile;
+        return $this->logofile;
     }
 
     /**
@@ -238,7 +238,7 @@ class Group extends SearchableObject
     public function getLogo()
     {
         if(!$this->logo){
-            return $this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "";
+            $this->setLogo($this->getLogoFile() ? $this->getLogoFile()->getPublicURL(2) : "");
         }
         return $this->logo ?: "";
     }
@@ -399,6 +399,8 @@ class Group extends SearchableObject
             "logo" => $this->getLogo(),
             "plan" => $this->getPlan(),
             "stats" => $this->getStats(),
+            "identity_provider" => $this->getIdentityProvider(),
+            "identity_provider_id" => $this->getIdentityProviderId(),
         );
     }
 

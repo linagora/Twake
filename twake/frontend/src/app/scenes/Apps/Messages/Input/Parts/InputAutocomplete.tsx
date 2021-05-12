@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import EmojiService from 'services/emojis/emojis.js';
 import UsersService from 'services/user/user.js';
@@ -7,7 +7,7 @@ import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import User from 'components/User/User.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';
@@ -28,7 +28,7 @@ type Props = {
   threadId: string;
 };
 
-export default (props: Props) => {
+export default forwardRef((props: Props, ref) => {
   const [content, setContent] = useState('');
   const messageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
@@ -52,6 +52,12 @@ export default (props: Props) => {
     setContent(text);
     if (props.onChange) props.onChange(text);
   };
+
+  useImperativeHandle(ref, () => ({
+    change(v: string) {
+      change(v);
+    },
+  }));
 
   const focus = () => {
     autocomplete.focus();
@@ -79,9 +85,7 @@ export default (props: Props) => {
       if (!evt.shiftKey) {
         evt.stopPropagation();
         evt.preventDefault();
-        if (props.onSend && props.onSend(content)) {
-          change('');
-        }
+        props.onSend && props.onSend(content);
       } else {
         var target = evt.target;
         var result = PseudoMarkdownCompiler.autoCompleteBulletList(target, true);
@@ -96,12 +100,14 @@ export default (props: Props) => {
 
   const searchCommand = (text: any, cb: any) => {
     let commands: any[] = [];
-    const apps = WorkspacesApps.getApps().map(app => {
-      var _commands = ((app.display || {}).messages_module || {}).commands || [];
-      _commands = _commands.map((co: any) => {
-        return { command: '/' + app.simple_name + ' ' + co.command, description: co.description };
-      });
-      commands = commands.concat(_commands);
+    WorkspacesApps.getApps().map(app => {
+      if (app) {
+        var _commands = ((app.display || {}).messages_module || {}).commands || [];
+        _commands = _commands.map((co: any) => {
+          return { command: '/' + app.simple_name + ' ' + co.command, description: co.description };
+        });
+        commands = commands.concat(_commands);
+      }
     });
     var res = commands.filter(co => co.command.startsWith('/' + text));
     cb(res);
@@ -209,4 +215,4 @@ export default (props: Props) => {
       }}
     />
   );
-};
+});

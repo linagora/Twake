@@ -662,6 +662,7 @@ export default {
   'scenes.apps.account.notifications.mail_option_ever': 'Send me all the notification emails',
   'scenes.apps.account.notifications.mail_option_daily': 'Just send me a daily report',
   'scenes.apps.account.notifications.mail_option_never': 'Never send e-mail notifications',
+  'scenes.apps.account.notifications.sound': 'Sound notification',
   'scenes.apps.account.workspaces.workspace_name': 'Workspace name',
   'scenes.apps.account.workspaces.members_number': 'Number of members',
   'scenes.apps.account.workspaces.favorite_workspace': 'Favorite workspaces',
@@ -1085,7 +1086,7 @@ export default {
     'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add collaborators to your company.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Twake is better in team.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team members.',
   'scenes.app.workspaces.create_company.title': 'Create my company',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Add a secondary email',
   'scenes.app.workspaces.welcome_page.added_to_company': 'You have been invited to ',
@@ -1200,6 +1201,7 @@ export default {
   'scenes.app.channelsbar.extern_members_title': 'External members',
   'scenes.app.channelsbar.invated_access_right': 'You can invite external users to your workspace.',
   'scenes.app.channelsbar.modify_channel_menu': 'Edit channel',
+  'scenes.app.channelsbar.guest_management': 'Guest management',
   'scenes.app.channelsbar.modify_channel_title_private': 'Edit private channel',
   'scenes.app.channelsbar.modify_channel_title_public': 'Edit public channel',
   'scenes.app.channelsbar.mute': 'Mute',
@@ -1359,17 +1361,20 @@ export default {
     'An error occurred while updating the application.',
   'scenes.app.popup.appsparameters.pages.remove_app_button': 'Delete application',
   'scenes.app.popup.appsparameters.pages.update_button': 'Update',
-  'scenes.app.popup.createworkspacepage.add_subtitle':
-    'Need more space? Create a new workspace and it will be perfect!',
+  'scenes.app.popup.createworkspacepage.add_subtitle': 'Need more space?',
   'scenes.app.popup.createworkspacepage.create_new_workspace': 'Create a new workspace',
   'scenes.app.popup.createworkspacepage.placeholder_name': 'Name of the workspace',
   'scenes.app.popup.userparameter.pages.frequency_notif_configuration_description':
     'Set the frequency of mobile notifications.',
   'scenes.app.popup.userparameter.pages.frequency_notif_subtitle': 'Frenquency of notifications',
   'scenes.app.popup.userparameter.pages.keywords_notif_description':
-    'Receive only notifications that match certain keywords.',
+    'Highlight the following keywords:',
   'scenes.app.popup.userparameter.pages.mail_frequency_notif_configuration_description':
     'Set the frequency of email notifications.',
+  'scenes.app.popup.userparameter.pages.private_message_content.show':
+    'Show private messages content',
+  'scenes.app.popup.userparameter.pages.private_message_content.hide':
+    'Hide private messages content',
   'scenes.app.popup.userparameter.pages.no_disturbing_notif_period_description':
     'Choose a period during which you do not receive notifications.',
   'scenes.app.popup.userparameter.pages.no_night_disturbing_label': 'Do not disturb at night',
@@ -1381,16 +1386,16 @@ export default {
   'scenes.app.popup.userparameter.personnal_workspaces_title': 'Your workspaces',
   'scenes.app.popup.workspaceparameter.admin_current_status': 'You are an Administrator.',
   'scenes.app.popup.workspaceparameter.admin_manager_current_status':
-    'You are a Director and Manager of the company.',
-  'scenes.app.popup.workspaceparameter.manager_current_status':
-    'You are the manager of the company.',
+    'You are a workspace administrator.',
+  'scenes.app.popup.workspaceparameter.manager_current_status': 'You are a company administrator.',
   'scenes.app.popup.workspaceparameter.membership_information': '',
   'scenes.app.popup.workspaceparameter.pages.deleteworkspace': 'Delete workspace',
-  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description': 'Delete this workspace',
+  'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description':
+    'To confirm you want to delete this workspace, please type the name below and hit delete',
   'scenes.app.popup.workspaceparameter.pages.enter': 'Enter ',
   'scenes.app.popup.workspaceparameter.pages.access_apps':
     'Access your applications and connectors',
-  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Administrator',
+  'scenes.app.popup.workspaceparameter.pages.administrater_status': 'Workspace administrator',
   'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing':
     'You can not leave the workspace, because you are the last administrator. You can define a new administrator or delete/archive this workspace.',
   'scenes.app.popup.workspaceparameter.pages.all_apps_small_text': 'All applications',
@@ -1406,15 +1411,15 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.back_to_search_button': 'Return to the search',
   'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button':
     'Cancel the invitation by e-mail.',
-  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add collaborators',
+  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add colleagues',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text':
     'Collaborators in this workspace $1',
   'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'Collaborators',
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     'Applications developed by the company',
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': 'Identity of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Manager of the company',
-  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Manager of the company',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_label': 'Company Admin',
+  'scenes.app.popup.workspaceparameter.pages.company_manager_status': 'Company Admin',
   'scenes.app.popup.workspaceparameter.pages.company_name_description':
     'Change the name of this company',
   'scenes.app.popup.workspaceparameter.pages.company_name_label': 'Name of the company',
@@ -1591,6 +1596,7 @@ export default {
   'scenes.apps.messages.messageslist.get_writing_user': 'is writing...',
   'scenes.apps.messages.messageslist.get_writing_users': 'are writing...',
   'scenes.apps.messages.messageslist.go_last_message_button': 'Go to last message',
+  'scenes.apps.messages.messageslist.go_last_message_button.new_messages': 'New messages',
   'scenes.apps.messages.messageslist.load_after_button': 'Load the following messages',
   'scenes.apps.messages.messageslist.load_before_button': 'Load previous messages',
   'scenes.apps.messages.messageslist.max_id': 'Maximum identifier:',
@@ -1669,6 +1675,7 @@ export default {
   'scenes.apps.drive.trash': 'Trash',
   'scenes.apps.drive.top_menu_more': 'More',
   'scenes.apps.drive.top_menu_no_items': '$1 items',
+  'scenes.apps.messages.new_thread': 'Start a new discussion',
   'scenes.apps.messages.from_camera': 'From camera',
   'scenes.apps.messages.from_device': 'From device',
   'scenes.apps.messages.input.message_to': 'Message to #$1',
@@ -1911,7 +1918,7 @@ export default {
   'general.re_send': 'Re-send',
   'general.verify': 'Verify',
   'components.unverified_account.typography_text_danger':
-    'You are left $1 day(s) of trial period. After $2 days access to trial account will be blocked and after 1 month will be permanently deleted',
+    'You have $1 day(s) left in your trial period. Trial account will be blocked after 7 days and deleted permanently after 1 month of registration. You can verify your account by clicking "Verify my account" button in the verification email that we sent you.',
   'components.unverified_account.verification_details': 'We’ve sent verification details to',
   'components.account_verification_status_sentence': 'Your account status is: $1',
   'components.account_verication_status_unverified': 'Unverified',
@@ -1936,5 +1943,18 @@ export default {
   'services.console_services.toaster.success_verify_email':
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
-  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 email(s)',
+  'services.console_services.toaster.success_invite_emails': 'Successfully added $1 user(s)',
+  'scenes.client.channels_bar.modals.guest_management.title': 'Manage guests in $1',
+  'scenes.client.channels_bar.modals.guest_management.input_placeholder':
+    'Search guests or pending emails',
+  'scenes.client.channels_bar.modals.guest_management.tips':
+    'Start adding or searching email by using the input above',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation':
+    'Re-send invitation',
+  'scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email': 'Mail sent',
+  'general.user.role.company.admin': 'Company administrator',
+  'general.user.role.company.member': 'Member',
+  'general.user.role.company.guest': 'Guest',
+  'general.user.deleted': 'Deleted Account',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Guest management',
 };

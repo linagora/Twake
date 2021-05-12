@@ -38,6 +38,10 @@ export const transformValueToDbString = (
     return `${parseInt(v)}`;
   }
   if (type === "uuid" || type === "timeuuid") {
+    if (isNull(v)) {
+      return "null";
+    }
+
     v = (v || "").toString().replace(/[^a-zA-Z0-9-]/g, "");
     return `${v}`;
   }
@@ -69,7 +73,7 @@ export const transformValueToDbString = (
     return "''"; //Not implemented yet
   }
   if (type === "string" || type === "json") {
-    if (type === "json") {
+    if (type === "json" && v !== null) {
       try {
         v = JSON.stringify(v);
       } catch (err) {

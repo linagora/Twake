@@ -31,6 +31,10 @@ export class RealtimeEntityEvent<Entity> {
   // the action result which fired this event
   result: EntityOperationResult<Entity> | null;
 }
+export class RealtimeLocalBusEvent<Entity> {
+  event: RealtimeEntityEvent<Entity>;
+  topic: string;
+}
 
 export class JoinRoomEvent {
   name: string;

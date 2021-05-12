@@ -25,7 +25,7 @@ export type SubscribeOptions = {
    * This value is used (if supported) by the underlying layer to not deliver message to the local subscriber if message expired.
    */
   ttl?: number | null;
-}
+};
 
 /**
  * Low level AMQP client using AMQP channel the right way.
@@ -79,17 +79,19 @@ export class AmqpClient {
       return result;
     });
   }
-  
+
   assertBinding(queue: string, exchange: string, routingPattern?: string): Promise<Replies.Empty> {
-    logger.debug(`${LOG_PREFIX} Bind queue ${queue} on exchange ${exchange} with pattern ${routingPattern}`);
+    logger.debug(
+      `${LOG_PREFIX} Bind queue ${queue} on exchange ${exchange} with pattern ${routingPattern}`,
+    );
     return this.channel.bindQueue(queue, exchange, routingPattern);
   }
-  
+
   send(exchange: string, data: unknown, routingKey = "", options?: Options.Publish): boolean {
     logger.debug(`${LOG_PREFIX} Publish message to exchange ${exchange} with options %o`, options);
     return this.channel.publish(exchange, routingKey, dataAsBuffer(data), options);
   }
-  
+
   consume(queue: string, options: Options.Consume, callback: AmqpCallbackType): Promise<void> {
     logger.debug(`${LOG_PREFIX} Consume queue ${queue} with options %o`, options);
     return this.channel

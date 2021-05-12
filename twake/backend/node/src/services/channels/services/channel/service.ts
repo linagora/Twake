@@ -47,6 +47,7 @@ import {
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import UserServiceAPI from "../../../user/api";
+import _ from "lodash";
 
 const logger = getLogger("channel.service");
 
@@ -107,8 +108,10 @@ export class Service implements ChannelService {
     let channelToUpdate: Channel;
     let channelToSave: Channel;
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
-    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
     const isDirectChannel = Channel.isDirectChannel(channel);
+    const isWorkspaceAdmin =
+      !isDirectChannel &&
+      (await userIsWorkspaceAdmin(this.userService, context.user, context.workspace));
     const isPrivateChannel = Channel.isPrivateChannel(channel);
     const isDefaultChannel = Channel.isDefaultChannel(channel);
 
@@ -132,7 +135,10 @@ export class Service implements ChannelService {
         icon: true,
         channel_group: true,
         is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
-        visibility: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
+        visibility:
+          (isWorkspaceAdmin || isChannelOwner) &&
+          !isDirectChannel &&
+          (!isPrivateChannel || isWorkspaceAdmin),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
@@ -275,11 +281,15 @@ export class Service implements ChannelService {
       throw new CrudExeption("Channel not found", 404);
     }
 
-    if (isDirectChannel(channelToDelete)) {
+    const directChannel = isDirectChannel(channelToDelete);
+
+    if (directChannel) {
       throw new CrudExeption("Direct channel can not be deleted", 400);
     }
 
-    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
+    const isWorkspaceAdmin =
+      !directChannel &&
+      (await userIsWorkspaceAdmin(this.userService, context.user, context.workspace));
     const isChannelOwner = this.isChannelOwner(channelToDelete, context.user);
 
     if (!isWorkspaceAdmin && !isChannelOwner) {
@@ -316,25 +326,31 @@ export class Service implements ChannelService {
   })
   async updateLastActivity(
     payload: {
+      date: number;
       channel: ChannelPrimaryKey;
-      message: ChannelActivityMessage;
+      message: ChannelActivityMessage | null;
     },
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>> {
     const channelPK = payload.channel;
     const channelActivityMessage = payload.message;
-    const channel = await this.channelRepository.findOne(channelPK);
+    const channel = await this.channelRepository.findOne(
+      _.pick(channelPK, "company_id", "workspace_id", "id"),
+    );
     const entity = new ChannelActivity();
     entity.channel_id = channelPK.id;
     entity.company_id = channelPK.company_id;
     entity.workspace_id = channelPK.workspace_id;
-    entity.last_activity = channelActivityMessage.date;
-    entity.last_message = {
-      date: channelActivityMessage.date,
-      sender: channelActivityMessage.sender,
-      title: channelActivityMessage.title,
-      text: channelActivityMessage.text,
-    };
+    entity.last_activity = payload.date;
+    entity.last_message = channelActivityMessage
+      ? {
+          date: channelActivityMessage.date,
+          sender: channelActivityMessage.sender,
+          sender_name: channelActivityMessage.sender_name,
+          title: channelActivityMessage.title,
+          text: channelActivityMessage.text,
+        }
+      : null;
 
     entity.channel = channel;
 
@@ -373,7 +389,8 @@ export class Service implements ChannelService {
     let channels: ListResult<Channel | UserChannel>;
     let activityPerChannel: Map<string, ChannelActivity>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
-    const isWorkspaceAdmin = userIsWorkspaceAdmin(context.user, context.workspace);
+    const isWorkspaceAdmin =
+      !isDirectWorkspace && userIsWorkspaceAdmin(this.userService, context.user, context.workspace);
     const findFilters: FindFilter = {
       company_id: context.workspace.company_id,
       workspace_id: context.workspace.workspace_id,
@@ -393,7 +410,7 @@ export class Service implements ChannelService {
 
       if (!channels.isEmpty()) {
         const activities = await this.activityRepository.find(findFilters, {
-          $in: [["channel_id", channels.getEntities().map(channel => `'${channel.id}'`)]],
+          $in: [["channel_id", channels.getEntities().map(channel => channel.id)]],
         });
 
         activityPerChannel = new Map<string, ChannelActivity>(
@@ -429,6 +446,9 @@ export class Service implements ChannelService {
 
       localEventBus.publish<ResourceEventsPayload>("channel:list", {
         user: context.user,
+        company: {
+          id: context.workspace.company_id,
+        },
       });
 
       return channels;
@@ -606,6 +626,15 @@ export class Service implements ChannelService {
           }
         }
       }
+
+      this.updateLastActivity(
+        {
+          date: new Date().getTime(),
+          channel: channel,
+          message: null,
+        },
+        context,
+      );
 
       localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
     }

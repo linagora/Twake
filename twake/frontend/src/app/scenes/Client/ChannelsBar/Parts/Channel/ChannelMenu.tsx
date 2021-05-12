@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
 
 import {
-  ChannelType,
   ChannelMemberType,
   ChannelResource,
   ChannelMemberResource,
 } from 'app/models/Channel';
-
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
-
-import Icon from 'components/Icon/Icon.js';
-import Menu from 'components/Menus/Menu.js';
-
+import Icon from 'components/Icon/Icon';
+import Menu from 'components/Menus/Menu';
 import { Collection } from 'services/CollectionsReact/Collections';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'services/CollectionsReact/Collections';
 import AlertManager from 'services/AlertManager/AlertManager';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/user';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelWorkspaceEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'services/user/notifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { NotificationResource } from 'app/models/Notification';
 import RouterServices from 'app/services/RouterService';
+import GuestManagement from 'app/scenes/Client/ChannelsBar/Modals/GuestManagement';
+import { getChannelMembers, getMine } from 'app/services/channels/ChannelCollectionPath';
 
 type Props = {
   channel: ChannelResource;
@@ -35,12 +33,8 @@ export default (props: Props): JSX.Element => {
   const companyId = props.channel.data.company_id;
   const channelWorkspaceId = props.channel.data.workspace_id;
   const { workspaceId } = RouterServices.getStateFromRoute();
-
-  const channelPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/::mine`;
-  const channelMembersPath = `/channels/v1/companies/${companyId}/workspaces/${channelWorkspaceId}/channels/${props.channel.data.id}/members/`;
-  const channelMembersCollection = Collections.get(channelMembersPath, ChannelMemberResource);
-  const channelsCollection = Collection.get(channelPath, ChannelResource);
-
+  const channelMembersCollection = Collections.get(getChannelMembers(companyId, channelWorkspaceId, props.channel.data.id), ChannelMemberResource);
+  const channelsCollection = Collection.get(getMine(companyId, channelWorkspaceId), ChannelResource);
   const isDirectChannel = props.channel.data.visibility === 'direct';
 
   Languages.useListener(useState);
@@ -72,20 +66,26 @@ export default (props: Props): JSX.Element => {
     });
   };
 
-  const leaveChannel = async () => {
-    if (props.channel.data.user_member) {
-      const channelMember = new ChannelMemberResource({
-        ...props.channel.data.user_member,
-      });
+  const displayGuestManagement = () => {
+    return ModalManager.open(<GuestManagement channel={props.channel} />, {
+      position: 'center',
+      size: { width: '600px', minHeight: '329px' },
+    });
+  };
 
-      try {
-        //Fixme, this is not pretty, we should find a way to do this in one line
-        channelMember.setPersisted();
-        await channelMembersCollection.upsert(channelMember, { withoutBackend: true });
-        await channelMembersCollection.remove(channelMember).then(redirectToWorkspace);
-      } catch (err) {
-        console.log('Error in ChannelMenu.tsx', err);
-      }
+  const leaveChannel = async () => {
+    try {
+      channelMembersCollection
+        .remove(
+          {
+            user_id: UserService.getCurrentUserId(),
+            channel_id: props.channel.id,
+          },
+          { force: true },
+        )
+        .then(redirectToWorkspace);
+    } catch (err) {
+      console.log('Error in ChannelMenu.tsx', err);
     }
   };
 
@@ -208,16 +208,18 @@ export default (props: Props): JSX.Element => {
         type: 'menu',
         hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
-        onClick: () => {
-          editChannel();
-        },
+        onClick: () => editChannel(),
       },
       {
         type: 'menu',
         text: Languages.t('scenes.apps.parameters.workspace_sections.members'),
-        onClick: () => {
-          displayMembers();
-        },
+        onClick: () => displayMembers(),
+      },
+      {
+        type: 'menu',
+        text: Languages.t('scenes.app.channelsbar.guest_management'),
+        hide: AccessRightsService.getCompanyLevel(companyId || '') === 'guest',
+        onClick: () => displayGuestManagement(),
       },
     );
   }

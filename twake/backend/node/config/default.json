@@ -4,6 +4,7 @@
     "user",
     "channels",
     "notifications",
+    "messages",
     "webserver",
     "websocket",
     "database",

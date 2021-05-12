@@ -120,6 +120,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
         const channelsController = new ChannelCrudController(
           this.channels.channels,
           this.channels.members,
+          this.channels.pendingEmails,
         );
         channelsController.getForPHP(request, reply);
       },
@@ -142,6 +143,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
         const channelsController = new ChannelCrudController(
           this.channels.channels,
           this.channels.members,
+          this.channels.pendingEmails,
         );
         request.currentUser = {
           id: (request.body as any).user_id,

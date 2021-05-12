@@ -13,6 +13,7 @@ import ExternalGroup from "./entities/external_company";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "./entities/workspace_user";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { Observable } from "rxjs";
+import { ListUserOptions } from "./services/users/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -67,6 +68,13 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   getCompanies(pagination?: Paginable): Promise<ListResult<Company>>;
 
   /**
+   * Get all companies for a user
+   * @param company
+   * @param user
+   */
+  getAllForUser(user: Pick<CompanyUser, "user_id">): Promise<ListResult<CompanyUser>>;
+
+  /**
    * Add a user in a company
    *
    * @param company
@@ -83,7 +91,15 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   getUsers(
     companyId: CompanyUserPrimaryKey,
     pagination?: Paginable,
+    options?: ListUserOptions,
   ): Promise<ListResult<CompanyUser>>;
+
+  /**
+   *  Get company user
+   * @param company
+   * @param user
+   */
+  getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
 }
 
 export interface WorkspaceServiceAPI
@@ -99,6 +115,25 @@ export interface WorkspaceServiceAPI
   getUsers(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
+  ): Promise<ListResult<WorkspaceUser>>;
+
+  /**
+   * Get workspace user in the given workspace
+   *
+   * @param workspaceId
+   * @param userId
+   */
+  getUser(
+    workspaceUser: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
+  ): Promise<WorkspaceUser>;
+
+  /**
+   * Get all the workspace for a user
+   *
+   * @param userId
+   */
+  getAllForUser(
+    userId: Pick<WorkspaceUserPrimaryKey, "userId">,
   ): Promise<ListResult<WorkspaceUser>>;
 
   /**

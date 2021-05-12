@@ -112,6 +112,9 @@ becomes
 
 ```
 "storage" => [
+    "drive_previews_tmp_folder" => "/tmp/",
+    "drive_tmp_folder" => "/tmp/",
+    "drive_salt" => "SecretPassword",
     "providers" => [
         [
         "label" => "someawss3",

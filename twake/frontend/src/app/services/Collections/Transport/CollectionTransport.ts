@@ -55,14 +55,14 @@ export default class CollectionTransport<G extends Resource<any>> {
         if (buffer[i].action === 'create' || buffer[i].action === 'update') {
           const resource = this.collection.findOne(buffer[i].resourceId);
           if (resource) {
-            const [httpResult, resourceSaved] = await this.callUpsert(resource, buffer[i].options);
+            const [, resourceSaved] = await this.callUpsert(resource, buffer[i].options);
             buffer[i].resolve(resourceSaved);
           } else {
             buffer[i].resolve(null);
           }
         }
         if (buffer[i].action === 'delete') {
-          const [httpResult, resourceId] = await this.callRemove(
+          const [, resourceId] = await this.callRemove(
             buffer[i].resourceId,
             buffer[i].options,
           );
@@ -107,11 +107,11 @@ export default class CollectionTransport<G extends Resource<any>> {
         return k + '=' + encodeURIComponent(options[k]);
       });
 
-      const getOneSuffix = filter?.id ? '/' + filter?.id : '';
+      const getOneSuffix = filter?.id ? `/${filter?.id}` : '';
       const path = this.collection.getRestPath().replace(/\/$/, '');
       const result = await Collections.getTransport()
         .getHttp()
-        .get(path + getOneSuffix + '?websockets=1&' + queryParameters.join('&'));
+        .get(`${path}${getOneSuffix}?websockets=1&${queryParameters.join('&')}`);
       this.unlockHttp();
 
       if (result?.websockets) {
@@ -151,7 +151,7 @@ export default class CollectionTransport<G extends Resource<any>> {
     });
   }
 
-  async remove(resource: G, options: any): Promise<Resource<any> | string | null> {
+  async remove(resource: G, options?: any): Promise<Resource<any> | string | null> {
     return new Promise((resolve, reject) => {
       this.buffer = this.buffer.filter(item => item.resourceId !== resource.id);
 
@@ -159,19 +159,15 @@ export default class CollectionTransport<G extends Resource<any>> {
         logger.error('remove: Id key not found for resource', resource);
       }
 
-      if (resource.state.persisted) {
-        this.buffer.push({
-          action: 'delete',
-          resourceId: resource.data[resource.getIdKey()],
-          options: options || {},
-          resolve: resolve,
-          reject: reject,
-        });
+      this.buffer.push({
+        action: 'delete',
+        resourceId: resource.data[resource.getIdKey()],
+        options: options || {},
+        resolve: resolve,
+        reject: reject,
+      });
 
-        this.flushBuffer();
-      } else {
-        resolve(null);
-      }
+      this.flushBuffer();
     });
   }
 
@@ -232,9 +228,9 @@ export default class CollectionTransport<G extends Resource<any>> {
     try {
       let url = this.collection.getRestPath();
       if (options.onResourceId) {
-        url = url + options.onResourceId + '/';
+        url = `${url}${options.onResourceId}/`;
       }
-      url = url + actionName;
+      url = `${url}${actionName}`;
       const result = await Collections.getTransport().getHttp().post(url, object);
       return result;
     } catch (err) {

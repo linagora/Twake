@@ -16,15 +16,15 @@
   .emoji-container {
     display: inline-block;
     vertical-align: middle;
+    height: 1em;
     .emoji-mart-emoji {
       vertical-align: top;
-      transform: translateY(20%);
     }
   }
 
   .inline-files {
     display: inline-block;
-    margin-top: 8px;
+    padding-top: 8px;
 
     .file {
       margin-right: 8px;

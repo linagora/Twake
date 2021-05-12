@@ -1,20 +1,17 @@
 {
   "database": {
+    "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
     "mongodb": {
       "uri": "mongodb://mongo:27017"
     },
     "cassandra": {
-      "contactPoints": [
-        "scylladb:9042"
-      ],
+      "contactPoints": ["scylladb:9042"],
       "wait": true,
-      "retries": 10,
-      "delay": 200
+      "retries": 50,
+      "delay": 500
     }
   },
   "pubsub": {
-    "urls": [
-      "amqp://admin:admin@rabbitmq:5672"
-    ]
+    "urls": ["amqp://admin:admin@rabbitmq:5672"]
   }
 }

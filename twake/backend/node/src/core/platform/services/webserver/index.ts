@@ -8,7 +8,9 @@ import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
+import swaggerPlugin from "fastify-swagger";
 import { SkipCLI } from "../../framework/decorators/skip";
+import { throws } from "assert";
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
   version = "1";
@@ -33,6 +35,34 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     serverErrorHandler(this.server);
     // DIRTY HACK: THis needs to be registered here to avoid circular dep between auth and user.
     // will have to create a core service for this, or another service which must be started first...
+    this.server.register(swaggerPlugin, {
+      routePrefix: "/internal/docs",
+      swagger: {
+        info: {
+          title: "Twake Swagger",
+          description: "Automatically generate Twake Swagger API",
+          version: "0.1.0",
+        },
+        externalDocs: {
+          url: "http://doc.twake.app/",
+          description: "Find more info here",
+        },
+        host: "localhost",
+        schemes: ["http"],
+        consumes: ["application/json"],
+        produces: ["application/json"],
+        tags: [],
+        definitions: {},
+        securityDefinitions: {},
+      },
+      uiConfig: {
+        docExpansion: "full",
+        deepLinking: false,
+      },
+      staticCSP: true,
+      transformStaticCSP: header => header,
+      exposeRoute: true,
+    });
     this.server.register(jwtPlugin);
     this.server.register(sensible);
     this.server.register(multipart);
@@ -46,6 +76,11 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   async doStart(): Promise<this> {
     try {
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
+
+      this.server.ready(err => {
+        if (err) throw err;
+        this.server.swagger();
+      });
 
       return this;
     } catch (err) {

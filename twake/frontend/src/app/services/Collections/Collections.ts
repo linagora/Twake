@@ -26,7 +26,7 @@ type Options = {
 const logger = Logger.getLogger('Collections');
 
 class Collections {
-  private collections: { [key: string]: Collection<Resource<any>> } = {};
+  private collections = new Map<string, Collection<Resource<any>>>();
   private options: Options = { transport: {}, storageKey: 'none' };
   protected transport: Transport = new Transport();
   private started: boolean = false;
@@ -71,24 +71,28 @@ class Collections {
     path = parts[0];
     options.tag = parts[1] || options?.tag || '';
 
-    let formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
+    const formattedPath = `/${path}/`.replace(new RegExp('//', 'g'), '/').toLocaleLowerCase();
+    const key = `${formattedPath}::${options.tag}`;
     if (formattedPath !== path) {
       logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
-    const key = formattedPath + '::' + options.tag;
 
     options.storageKey = this.options.storageKey || '';
 
-    if (!this.collections[key]) {
+    if (!this.collections.has(key)) {
       logger.debug(`Create collection ${path}`);
-      this.collections[key] = existingCollectionCreator
-        ? existingCollectionCreator()
-        : new Collection(formattedPath, type || Resource, options);
-      this.collections[key].setOptions(options);
+      const collection = (
+        existingCollectionCreator
+          ? existingCollectionCreator()
+          : new Collection(formattedPath, type || Resource, options)
+        )
+        .setOptions(options);
+
+      this.collections.set(key, collection);
     }
 
-    return this.collections[key] as Collection<R>;
+    return this.collections.get(key) as Collection<R>;
   }
 }
 

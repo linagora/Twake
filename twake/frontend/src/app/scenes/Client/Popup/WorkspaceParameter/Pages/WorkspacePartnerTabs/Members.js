@@ -10,9 +10,13 @@ import workspaceUserRightsService from 'services/workspaces/workspace_user_right
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 import InitService from 'app/services/InitService';
+import { Tag } from 'antd';
+import RouterServices from 'services/RouterService';
+import { getUserParts } from 'app/components/Member/UserParts';
 
 export default class Members extends React.Component {
   render() {
+    const { companyId } = RouterServices.getStateFromRoute();
     const adminLevel = workspacesUsers.getAdminLevel().id;
     return (
       <div>
@@ -70,28 +74,20 @@ export default class Members extends React.Component {
               dataIndex: 'name',
               render: col => {
                 var tags = [];
+                const { users, companyRole } = getUserParts({ usersIds: [col.user.id] });
+
                 if (col.level === adminLevel) {
                   tags.push(
-                    <div className="tag blue">
+                    <Tag color="var(--warning)">
                       {Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.administrater_status',
                         [],
                         'Administrateur',
                       )}
-                    </div>,
+                    </Tag>,
                   );
                 }
-                if (col.groupLevel > 0 && col.groupLevel !== null) {
-                  tags.push(
-                    <div className="tag orange">
-                      {Languages.t(
-                        'scenes.app.popup.workspaceparameter.pages.company_manager_status',
-                        [],
-                        "Gérant d'entreprise",
-                      )}
-                    </div>,
-                  );
-                }
+                UserService.getUserRole(users[0], companyId) !== 'member' && tags.push(companyRole);
 
                 return (
                   <div
@@ -99,7 +95,7 @@ export default class Members extends React.Component {
                     style={{ paddingRight: 8, boxSizing: 'border-box' }}
                   >
                     <div
-                      class="user_image"
+                      className="user_image"
                       style={{
                         backgroundImage: 'url(' + UserService.getThumbnail(col.user) + ')',
                       }}
@@ -108,7 +104,7 @@ export default class Members extends React.Component {
                       {UserService.getFullName(col.user)} {col.user.email}
                     </div>
 
-                    <div className="fix_text_padding_medium">{tags}</div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>{tags}</div>
                   </div>
                 );
               },

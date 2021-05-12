@@ -2,7 +2,12 @@
  * Common types for business services
  */
 
-import { ChannelMember, Channel as ChannelEntity, ChannelTab } from "../channels/entities";
+import {
+  ChannelMember,
+  Channel as ChannelEntity,
+  ChannelTab,
+  ChannelPendingEmails,
+} from "../channels/entities";
 import { ChannelParameters, PaginationQueryParameters } from "../channels/web/types";
 import { MessageNotification } from "../messages/types";
 
@@ -22,19 +27,6 @@ export const webSocketSchema = {
  *
  * {
  *    id: "uuid",
- *    org: {
- *      "company-uuid": {
- *        role: "something",
- *        wks: {
- *          "workspace-id1": {
- *            adm: true
- *          },
- *          "workspace-id2": {
- *            adm: false
- *          }
- *        }
- *      }
- *    }
  * }
  */
 export interface User {
@@ -44,17 +36,14 @@ export interface User {
   identity_provider_id?: uuid;
   // user email
   email?: string;
-  // Organisation properties
-  org?: {
-    [companyId: string]: {
-      role: string; //Not implemented
-      wks: {
-        [workspaceId: string]: {
-          adm: boolean;
-        };
-      };
-    };
-  };
+}
+export interface App {
+  // unique app id
+  id: uuid;
+}
+export interface App {
+  // unique app id
+  id: uuid;
 }
 
 export interface Workspace {
@@ -114,10 +103,12 @@ export interface ResourceEventsPayload {
   user?: User;
   channel?: ChannelEntity;
   channelParameters?: ChannelParameters;
+  guest?: ChannelPendingEmails;
   member?: ChannelMember;
   message?: MessageNotification;
   actor?: User;
   resourcesBefore?: (User | ChannelEntity | ChannelTab)[];
   resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
   tab?: ChannelTab;
+  company?: { id: string };
 }

@@ -58,16 +58,9 @@ export default ({
       }}
     >
       {WorkspacesApps.getAppIconComponent(tabResource.data, { size: 14 })}
-      <Typography.Paragraph
-        ellipsis={{
-          rows: 1,
-          expandable: false,
-        }}
-        style={{ maxWidth: '108px', marginBottom: 0 }}
-        className="tab-name small-right-margin"
-      >
+      <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
         {capitalize(tabResource.data.name)}
-      </Typography.Paragraph>
+      </span>
       {tabResource.data.id === tabId && AccessRightsService.hasLevel(workspaceId || '', 'member') && (
         <Menu
           style={{ lineHeight: 0 }}

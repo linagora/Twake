@@ -23,12 +23,13 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { pick } from "lodash";
 import _ from "lodash";
+import UserServiceAPI from "../../../../services/user/api";
 
 export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
   repository: Repository<UserNotificationBadge>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private userService: UserServiceAPI) {}
 
   async init(context: TwakeContext): Promise<this> {
     this.repository = await this.database.getRepository<UserNotificationBadge>(
@@ -80,10 +81,12 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     throw new Error("Not implemented");
   }
 
-  async listForUserPerCompanies(
-    companies_ids: string[],
-    user_id: string,
-  ): Promise<ListResult<UserNotificationBadge>> {
+  async listForUserPerCompanies(user_id: string): Promise<ListResult<UserNotificationBadge>> {
+    //We remove all badge from current company as next block will create dupicates
+    const companies_ids = (await this.userService.companies.getAllForUser({ user_id }))
+      .getEntities()
+      .map(gu => gu.group_id);
+
     let result: UserNotificationBadge[] = [];
     let type = "";
     for (const company_id of companies_ids) {

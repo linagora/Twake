@@ -175,6 +175,21 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     }
 
     try {
+      const companyUser = await this.userService.companies.getCompanyUser(
+        { id: workspace.company_id },
+        user,
+      );
+
+      // Do not add guest in default channels
+      if (companyUser.role === "guest") {
+        logger.debug(
+          "CompanyUser role is %s, not added in workspace %s",
+          companyUser.role,
+          workspace.workspace_id,
+        );
+        return [];
+      }
+
       const channels = await this.getDefaultChannels({
         company_id: workspace.company_id,
         workspace_id: workspace.workspace_id,

@@ -106,8 +106,7 @@ class Users
 
         $name = $options["name"];
 
-        $scope = $options["scope"] ?: "all";
-        if($scope !== "group" || $scope !== "workspace") $scope = "group";
+        $scope = $options["scope"] === "workspace" ? "workspace" : "group";
         $workspace_id = $options["workspace_id"];
         $group_id = $options["group_id"];
         
@@ -155,24 +154,15 @@ class Users
             );
         }
 
-        $match = null;
-
-        if($scope == "workspace"){
-            $match = Array(
-                "workspaces_id" => $workspace_id
-            );
-        }
-
-        if($scope == "group"){
-            $match = Array(
-                "groups_id" => $group_id
-            );
-        }
+        $match = Array(
+            "groups_id" => $group_id
+        );
 
         $search_bool = Array(
             "should" => $should,
             "minimum_should_match" => 1
         );
+        
         if($match){
             $search_bool["filter"] = [
                 "match" => $match
@@ -216,6 +206,15 @@ class Users
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user) {
+
+            if($scope == "workspace"){
+                $repo = $this->em->getRepository("Twake\Workspaces:WorkspaceUser");
+                $link = $repo->findOneBy(["workspace_id" => $workspace_id, "user_id" => $user[0]->getId()]);
+                if(!$link){
+                    continue;
+                }
+            }
+
             if($user[0]){
                 $this->list_users["users"][] = Array($entity ? $user[0] : $user[0]->getAsArray(), $user[1][0]);
             }
@@ -224,6 +223,32 @@ class Users
         $this->list_users["scroll_id"] = $scroll_id;
 
         return $this->list_users ?: null;
+    }
+
+    public function completeUserWithCompanies($user, $requester = null)
+    {
+        if(is_string($requester)){
+            return $user;
+        }
+        
+        $membersRepository = $this->em->getRepository("Twake\Workspaces:GroupUser");
+        $companies = $membersRepository->findBy(Array("user" => $user["id"]));
+        $user["companies"] = [];
+
+        foreach($companies as $companyMember){
+            if($requester && !$membersRepository->findBy(Array("user" => $requester, "group" => $companyMember->getGroup())) ){
+                continue;
+            }
+            $user["companies"][] = [
+                "role" => $companyMember->getRole() === null ? "member" : $companyMember->getRole(),
+                "status" => "active",
+                "company" => [
+                    "id" => $companyMember->getGroup()->getId()
+                ]
+            ];
+        }
+
+        return $user;
     }
 
     public function getById($id, $entity = false)

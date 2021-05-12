@@ -1,23 +1,61 @@
+import UserServiceAPI from "../services/user/api";
 import { Workspace, User } from "../services/types";
+import Company from "../services/user/entities/company";
+import CompanyUser from "../services/user/entities/company_user";
+import WorkspaceUser from "../services/user/entities/workspace_user";
 
-export function isWorkspaceAdmin(user?: User, workspace?: Workspace): boolean {
+export async function isWorkspaceAdmin(
+  userService: UserServiceAPI,
+  user?: User,
+  workspace?: Workspace,
+): Promise<boolean> {
   if (!user || !workspace) {
     return false;
   }
 
-  if (!user.org) {
+  const workspaceUser = await getWorkspaceUser(userService, user, workspace);
+
+  if (!workspaceUser) {
     return false;
   }
 
-  if (!user.org[workspace.company_id]) {
-    return false;
+  return workspaceUser.role === "admin";
+}
+
+export async function getWorkspaceUser(
+  userService: UserServiceAPI,
+  user?: User,
+  workspace?: Workspace,
+): Promise<WorkspaceUser> {
+  if (!user || !workspace) {
+    return null;
   }
 
-  const company = user.org[workspace.company_id];
+  const workspaceUser = await userService.workspaces.getUser({
+    workspaceId: workspace.workspace_id,
+    userId: user.id,
+  });
 
-  if (!company.wks[workspace.workspace_id]) {
-    return false;
+  return workspaceUser;
+}
+
+export async function getCompanyUser(
+  userService: UserServiceAPI,
+  user?: User,
+  company?: Company,
+): Promise<CompanyUser> {
+  if (!user || !company) {
+    return null;
   }
 
-  return company.wks[workspace.workspace_id].adm;
+  const companyUser = await userService.companies.getCompanyUser(
+    {
+      id: company.id,
+    },
+    {
+      id: user.id,
+    },
+  );
+
+  return companyUser;
 }

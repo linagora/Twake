@@ -3,11 +3,11 @@ import {
   SaveResult,
   DeleteResult,
   ListResult,
-  Paginable,
   CreateResult,
   ExecutionContext,
   UpdateResult,
   Pagination,
+  OperationType,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
@@ -40,12 +40,14 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  save<SaveOptions>(
+  async save<SaveOptions>(
     item: User,
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<User>> {
-    throw new Error("Method not implemented.");
+    await this.repository.save(item);
+
+    return new SaveResult("user", item, OperationType.UPDATE);
   }
 
   delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {

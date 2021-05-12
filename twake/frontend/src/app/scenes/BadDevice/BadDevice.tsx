@@ -3,8 +3,6 @@ import Languages from 'services/languages/languages.js';
 
 export default (props: { force?: boolean; children: React.ReactNode }): JSX.Element => {
   if (!props.force && ((window as any).screen.width < 300 || (window as any).screen.height < 400)) {
-    (window as any).document.getElementById('app_loader').classList.remove('load');
-
     var valid_browser = false;
     if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
       valid_browser = true;

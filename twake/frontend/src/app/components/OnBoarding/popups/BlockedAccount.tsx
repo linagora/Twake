@@ -2,13 +2,20 @@ import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
+import ConsoleService from 'app/services/ConsoleService';
+import LoginService from 'services/login/login';
 
 type PropsType = {
   email: string;
 };
 
 const BlockedAccount = ({ email }: PropsType): JSX.Element => {
-  const onClickButton = () => console.log('clicked');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onClickButton = () => {
+    setLoading(true);
+    return ConsoleService.verifyMail().finally(() => setLoading(false));
+  };
 
   return (
     <ObjectModal
@@ -21,9 +28,17 @@ const BlockedAccount = ({ email }: PropsType): JSX.Element => {
       hideFooterDivider
       footerAlign="center"
       footer={
-        <Button type="ghost" size="small" onClick={onClickButton}>
-          {Languages.t('general.re_send')}
-        </Button>
+        <>
+          <Button type="ghost" size="small" onClick={onClickButton} loading={loading}>
+            {Languages.t('general.re_send')}
+          </Button>
+
+          <Row justify="center" style={{ marginTop: 16 }}>
+            <a className="blue_link" onClick={() => LoginService.logout()}>
+              {Languages.t('scenes.apps.account.account.logout')}
+            </a>
+          </Row>
+        </>
       }
     >
       <Row justify="center" style={{ marginTop: 36 }}>

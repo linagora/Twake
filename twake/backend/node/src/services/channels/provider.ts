@@ -14,12 +14,16 @@ import {
   ChannelMemberPrimaryKey,
   DefaultChannel,
   DefaultChannelPrimaryKey,
+  ChannelPendingEmails,
+  ChannelPendingEmailsPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import { User } from "../types";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
+import { ChannelPendingEmailsListQueryParameters } from "./web/types";
+import { NewUserInWorkspaceNotification } from "./services/channel/types";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -30,6 +34,7 @@ export type ChannelPrimaryKey = {
 export type ChannelActivityMessage = {
   date: number;
   sender: string;
+  sender_name: string;
   title: string;
   text: string;
 };
@@ -97,6 +102,7 @@ export interface ChannelService
    */
   updateLastActivity(
     payload: {
+      date: number;
       channel: ChannelPrimaryKey;
       message: ChannelActivityMessage;
     },
@@ -173,6 +179,7 @@ export interface TabService
 
 export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
   channels: ChannelService;
+  pendingEmails: ChannelPendingEmailService;
   members: MemberService;
   tabs: TabService;
 }
@@ -213,4 +220,18 @@ export interface DefaultChannelService
     user: User,
     workspace: Required<Pick<DefaultChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
+}
+
+export interface ChannelPendingEmailService
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<ChannelPendingEmails, ChannelPendingEmailsPrimaryKey, ChannelExecutionContext> {
+  findPendingEmails(
+    pk: ChannelPendingEmailsListQueryParameters,
+  ): Promise<ListResult<ChannelPendingEmails>>;
+
+  proccessPendingEmails(
+    user: NewUserInWorkspaceNotification,
+    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
+  ): Promise<unknown>;
 }

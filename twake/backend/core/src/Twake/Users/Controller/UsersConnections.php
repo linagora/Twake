@@ -49,7 +49,7 @@ class UsersConnections extends BaseController
 
         $response = new Response();
         $logged = $this->getUser() && !is_string($this->getUser());
-        if(!$logged){
+        if(!$logged || ($usernameOrMail && $password)){
             $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
         }
 
@@ -73,7 +73,7 @@ class UsersConnections extends BaseController
                 $workspaces[] = $value;
             }
 
-            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
 
             $data["data"]["status"] = "connected";
 
@@ -206,7 +206,7 @@ class UsersConnections extends BaseController
                 );
             }
 
-            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser(), $workspaces);
+            $data["access_token"] = $this->get("app.user")->generateJWT($this->getUser());
 
             $data["data"]["workspaces"] = $workspaces;
 

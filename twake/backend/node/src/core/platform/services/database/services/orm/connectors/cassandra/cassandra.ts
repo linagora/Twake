@@ -47,6 +47,7 @@ export class CassandraConnector extends AbstractConnector<
   cassandra.Client
 > {
   private client: cassandra.Client;
+  private keyspaceExists: boolean = false;
 
   getClient(): cassandra.Client {
     return this.client;
@@ -71,13 +72,17 @@ export class CassandraConnector extends AbstractConnector<
   }
 
   createKeyspace(): Promise<cassandra.types.ResultSet> {
-    return this.client.execute(
-      `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`,
-    );
+    const query = `CREATE KEYSPACE IF NOT EXISTS ${this.options.keyspace} WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1': '2'} AND durable_writes = true;`;
+    logger.info(query);
+    return this.client.execute(query);
   }
 
   async isKeyspaceCreated(): Promise<boolean> {
     let result;
+
+    if (this.keyspaceExists) {
+      return true;
+    }
 
     try {
       result = await this.client.execute(
@@ -89,6 +94,12 @@ export class CassandraConnector extends AbstractConnector<
       }
     } catch (err) {
       throw new Error("Keyspace query error");
+    }
+
+    if (result) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.keyspaceExists = true;
+      logger.info(`Keyspace '${this.options.keyspace}' found.`);
     }
 
     return result ? Promise.resolve(true) : Promise.reject(new Error("Keyspace not found"));
@@ -182,6 +193,8 @@ export class CassandraConnector extends AbstractConnector<
     entity: EntityDefinition,
     columns: { [name: string]: ColumnDefinition },
   ): Promise<boolean> {
+    await this.waitForKeyspace(this.options.delay, this.options.retries);
+
     let result = true;
 
     // --- Generate column and key definition --- //
@@ -412,6 +425,7 @@ export class CassandraConnector extends AbstractConnector<
       options,
       {
         keyspace: this.options.keyspace,
+        secret: this.secret,
       },
     );
 

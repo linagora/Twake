@@ -14,7 +14,9 @@ import FindCompletion from './Transport/CollectionFindCompletion';
 export type GeneralOptions = {
   alwaysNotify: boolean;
   withoutBackend: boolean;
+  force: boolean;
   query: any;
+  callback: Function;
 } & any;
 
 export type ServerRequestOptions = {
@@ -27,14 +29,19 @@ export type ActionOptions = {
   onResourceId: string;
 } & GeneralOptions;
 
+type ReloadStrategy = 'ontime' | 'delayed' | 'none';
+
 export type CollectionOptions = {
   tag?: string;
   queryParameters?: any;
   cacheReplaceMode?: 'always' | 'never';
-  reloadStrategy?: 'ontime' | 'delayed' | 'none';
+  reloadStrategy?: ReloadStrategy;
   storageKey?: string;
 };
 
+/**
+ * A generic collection of resources. 
+ */
 export default class Collection<R extends Resource<any>> {
   private options: CollectionOptions = {
     cacheReplaceMode: 'always',
@@ -48,18 +55,20 @@ export default class Collection<R extends Resource<any>> {
 
   //App state
   private reloadRegistered = 0;
-  private resources: { [id: string]: R } = {};
+  private resources = new Map<string, R>();
   private storage: CollectionStore;
   private completeTimeout: any = null;
+  private readonly emptyInstance: R;
 
   constructor(
     private readonly path: string = '',
     private readonly type: new (data: any) => R,
     options?: CollectionOptions,
   ) {
-    if (options?.tag) this.path = path + '::' + options.tag;
+    if (options?.tag) this.path = `${path}::${options.tag}`;
     this.setOptions(options || {});
     this.storage = getStore(options?.storageKey || '');
+    this.emptyInstance = new type({});
   }
 
   public getPath() {
@@ -78,8 +87,9 @@ export default class Collection<R extends Resource<any>> {
     return this.eventEmitter;
   }
 
-  public setOptions(options: CollectionOptions) {
+  public setOptions(options: CollectionOptions): this {
     this.options = assign(this.options, options);
+    return this;
   }
 
   public getTag() {
@@ -99,7 +109,7 @@ export default class Collection<R extends Resource<any>> {
   }
 
   public getTypeName(): string {
-    return new this.type({}).type;
+    return this.emptyInstance.type;
   }
 
   /**
@@ -135,30 +145,37 @@ export default class Collection<R extends Resource<any>> {
     }
 
     const storage = this.getStorage();
-    const mongoItem = storage.upsert(
-      new this.type({}).type,
+    const storageItem = storage.upsert(
+      this.getTypeName(),
       this.getPath(),
       item.getDataForStorage(),
     );
-    this.updateLocalResource(mongoItem, item);
+    this.updateLocalResource(storageItem, item);
     this.eventEmitter.notify();
+
+    const resource = this.resources.get(storageItem.id);
+    if (!resource) {
+      return item;
+    }
 
     if (!options?.withoutBackend) {
       if (options?.waitServerReply) {
         const resourceSaved = await this.transport.upsert(
-          this.resources[mongoItem.id],
+          resource,
           options?.query,
         );
+
         if (!resourceSaved) {
           this.remove(item, { withoutBackend: true });
         }
+
         return resourceSaved as R;
       } else {
-        this.transport.upsert(this.resources[mongoItem.id], options?.query);
+        this.transport.upsert(resource, options?.query);
       }
     }
 
-    return item ? this.resources[mongoItem.id] : item;
+    return item && this.resources.has(storageItem.id) ? this.resources.get(storageItem.id)! : item;
   }
 
   /**
@@ -172,13 +189,13 @@ export default class Collection<R extends Resource<any>> {
       filter = filter.data || filter;
     }
     if (filter) {
-      const resource = this.findOne(filter);
+      let resource = this.findOne(filter) || new this.type(filter);
       if (resource) {
         const storage = this.getStorage();
         storage.remove(this.getTypeName(), this.getPath(), filter);
         this.removeLocalResource(filter.id);
         this.eventEmitter.notify();
-        if (!options?.withoutBackend && resource.state.persisted) {
+        if ((resource && !options?.withoutBackend && resource.state.persisted) || options?.force) {
           this.transport.remove(resource, options?.query);
         }
       }
@@ -189,6 +206,25 @@ export default class Collection<R extends Resource<any>> {
     return;
   }
 
+  public async get(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<R[]> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.find(filter, {
+          refresh: true,
+          callback: (items: R[]) => {
+            resolve(items);
+          },
+          ...options,
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   /**
    * Find documents according to a filter and some option (sorting etc)
    * This will call backend if we ask for more items than existing in frontend.
@@ -196,33 +232,42 @@ export default class Collection<R extends Resource<any>> {
   public find(filter?: any, options: GeneralOptions & ServerRequestOptions = {}): R[] {
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     const storage = this.getStorage();
-    let mongoItems = storage.find(this.getTypeName(), this.getPath(), filter, options);
+    const storageItems = storage.find(this.getTypeName(), this.getPath(), filter, options);
 
     if (typeof filter === 'string' || filter?.id) {
       return [this.findOne(filter, options)];
     }
 
-    if (!this.completion.isLocked && !options?.withoutBackend) {
-      this.completion.completeFind(mongoItems, filter, options).then(async mongoItems => {
-        if (mongoItems.length > 0) {
-          mongoItems.forEach(mongoItem => {
-            this.updateLocalResource(mongoItem);
+    if (!options?.withoutBackend) {
+      if (!this.completion.isLocked || options?.refresh) {
+        this.completion
+          .completeFind(storageItems, filter, options)
+          .then(async storageItems => {
+            if (storageItems.length > 0) {
+              storageItems.forEach(storageItem => {
+                this.updateLocalResource(storageItem);
+              });
+              this.eventEmitter.notify();
+            }
+
+            if (options?.callback) {
+              options?.callback(storageItems.map(storageItem => this.resources.get(storageItem.id)));
+            }
+          })
+          .catch(err => {
+            throw err;
           });
-          this.eventEmitter.notify();
-        }
-      });
-    } else {
-      this.completeTimeout && clearTimeout(this.completeTimeout);
-      this.completeTimeout = setTimeout(() => {
-        this.find(filter, options);
-      }, 1000);
+      } else {
+        this.completeTimeout && clearTimeout(this.completeTimeout);
+        this.completeTimeout = setTimeout(() => {
+          this.find(filter, options);
+        }, 1000);
+      }
     }
 
-    mongoItems.forEach(mongoItem => {
-      this.updateLocalResource(mongoItem);
-    });
+    storageItems.forEach(storageItem => this.updateLocalResource(storageItem));
 
-    return mongoItems.map(mongoItem => this.resources[mongoItem.id]);
+    return storageItems.map(storageItem => (this.resources.get(storageItem.id) as R)).filter(Boolean);
   }
 
   /**
@@ -238,15 +283,15 @@ export default class Collection<R extends Resource<any>> {
 
     options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
     const storage = this.getStorage();
-    let mongoItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
+    let storageItem = storage.findOne(this.getTypeName(), this.getPath(), filter, options);
 
     if (
-      (!mongoItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) ||
+      (!storageItem && (filter.id || '').indexOf('tmp:') < 0 && !options?.withoutBackend) ||
       options?.refresh
     ) {
       if (!this.completion.isLocked) {
-        this.completion.completeFindOne(filter, options).then(async mongoItem => {
-          if (mongoItem) {
+        this.completion.completeFindOne(filter, options).then(async storageItem => {
+          if (storageItem) {
             this.eventEmitter.notify();
           }
         });
@@ -258,16 +303,16 @@ export default class Collection<R extends Resource<any>> {
       }
     }
 
-    if (mongoItem) {
-      this.updateLocalResource(mongoItem);
+    if (storageItem) {
+      this.updateLocalResource(storageItem);
     }
-    return mongoItem ? this.resources[mongoItem.id] : mongoItem;
+    return storageItem ? this.resources.get(storageItem.id) : storageItem;
   }
 
   /**
    * Reload collection after socket was disconnected
    */
-  public async reload(strategy: string = '') {
+  public async reload(strategy?: ReloadStrategy | 'never') {
     if (new Date().getTime() - this.reloadRegistered < 1000) {
       return;
     }
@@ -282,26 +327,29 @@ export default class Collection<R extends Resource<any>> {
     }
   }
 
-  private updateLocalResource(mongoItem: any, item?: R) {
-    if (mongoItem) {
-      if (!item) {
-        if (this.resources[mongoItem.id]) {
-          item = this.resources[mongoItem.id];
-        } else {
-          item = new this.type(mongoItem);
-          item.state = mongoItem._state;
-          item.setUpToDate(false);
-        }
+  private updateLocalResource(storageItem: any, item?: R): void {
+    if (!storageItem) {
+      return;
+    }
+
+    if (!item) {
+      if (this.resources.has(storageItem.id)) {
+        item = this.resources.get(storageItem.id);
+      } else {
+        item = new this.type(storageItem);
+        item.state = storageItem._state;
+        item.setUpToDate(false);
       }
+    }
+
+    if (item) {
       item.setCollection(this);
-      item.data = assign(mongoItem, item.data);
-      this.resources[mongoItem.id] = item;
+      item.data = assign(storageItem, item!.data);
+      this.resources.set(storageItem.id, item!);
     }
   }
 
   private removeLocalResource(id: string) {
-    if (id) {
-      delete this.resources[id];
-    }
+    this.resources.delete(id);
   }
 }

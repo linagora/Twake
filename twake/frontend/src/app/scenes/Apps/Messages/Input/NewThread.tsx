@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { PlusCircle } from 'react-feather';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
-import { PlusCircle } from 'react-feather';
 import Input from './Input';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import Languages from 'services/languages/languages.js';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import './Input.scss';
 
 type Props = {
@@ -35,11 +35,9 @@ export default (props: Props) => {
       >
         <ThreadSection
           noSenderSpace
-          onClick={() => {
-            messageEditorService.openEditor(props.threadId, '', 'main');
-          }}
+          onClick={ () => messageEditorService.openEditor(props.threadId, '', 'main') }
         >
-          <PlusCircle size={16} className="plus-icon" /> Start a new discussion
+          <PlusCircle size={16} className="plus-icon" /> { Languages.t('scenes.apps.messages.new_thread', [], "Start a new discussion") }
         </ThreadSection>
       </Thread>
     );

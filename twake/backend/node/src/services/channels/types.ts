@@ -50,4 +50,6 @@ export type ChannelActivityNotification = {
   sender: string;
   title: string;
   text: string;
+  sender_name: string;
+  body: string;
 };

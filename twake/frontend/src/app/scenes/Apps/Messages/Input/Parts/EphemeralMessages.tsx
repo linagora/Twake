@@ -50,24 +50,21 @@ export default (props: Props) => {
     return <div />;
   }
   props.onHasEphemeralMessage();
+
   return (
     <div className="ephemerals" key={lastEphemeral?.front_id + lastEphemeral?.content?.last_change}>
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
-      {[lastEphemeral].map((message: any) => {
-        if (!message) {
-          return '';
-        }
-        return (
-          <MessageComponent
-            noBlock
-            noReplies
-            collectionKey={props.collectionKey}
-            messageId={message.id || message.front_id}
-          />
-        );
-      })}
+      {lastEphemeral && (
+        <MessageComponent
+          noBlock
+          noReplies
+          key={lastEphemeral.id + lastEphemeral.modification_date}
+          collectionKey={props.collectionKey}
+          messageId={lastEphemeral.id || lastEphemeral.front_id}
+        />
+      )}
     </div>
   );
 };

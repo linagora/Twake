@@ -176,9 +176,11 @@ class User
               $thumbnail = new File();
               $thumbnail->setPublicLink($picture);
               $user->setThumbnail($thumbnail);
+              $user->setPicture($thumbnail->getPublicURL(2));
               $this->em->persist($thumbnail);
             }else{
               $user->setThumbnail(null);
+              $user->setPicture("");
             }
         }
 
@@ -214,7 +216,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 
@@ -249,7 +251,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 
@@ -293,26 +295,10 @@ class User
 
     }
 
-    public function generateJWT($user, $workspaces = []){
+    public function generateJWT($user){
 
         $key = $this->app->getContainer()->getParameter("jwt.secret");
 
-        $orgs = [];
-        if($workspaces){
-            foreach($workspaces as $workspace){
-                $gid = $workspace["group"]["id"];
-                $wid = $workspace["id"];
-                if(!isset($orgs[$gid])){
-                    $orgs[$gid] = [
-                        "role" => $workspace["_user_is_organization_administrator"] ? "organization_administrator" : ($workspace["_user_is_guest"] ? "guest" : "member"),
-                        "wks" => []
-                    ];
-                }
-                $orgs[$gid]["wks"][$wid] = [
-                    "adm" => $workspace["_user_is_admin"]
-                ];
-            }
-        }
         $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
         $payload = [
             "exp" => $expiration,
@@ -321,7 +307,6 @@ class User
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
             "email" => $user->getEmail(),
-            "org" => $orgs,
         ];
         $jwt = JWT::encode($payload, $key);
 
@@ -1023,6 +1008,7 @@ class User
             $user->setLastName($lastName);
             if ($thumbnail == 'false' || $thumbnail == 'null') {
                 $user->setThumbnail(null);
+                $user->setPicture("");
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
                     if ($uploader) {
@@ -1033,6 +1019,7 @@ class User
                     $this->em->remove($user->getThumbnail());
                 }
                 $user->setThumbnail($thumbnail);
+                $user->setPicture($thumbnail->getPublicURL(2));
             }
             $this->em->persist($user);
             $this->em->flush();

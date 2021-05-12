@@ -2,10 +2,12 @@ import * as mongo from "mongodb";
 import { UpsertOptions } from "..";
 import { ListResult, Paginable, Pagination } from "../../../../../../framework/api/crud-service";
 import { FindOptions } from "../../repository/repository";
-import { ColumnDefinition, EntityDefinition } from "../../types";
+import { ColumnDefinition, EntityDefinition, ObjectType } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
+import { buildSelectQuery } from "./query-builder";
 import { transformValueFromDbString, transformValueToDbString } from "./typeTransforms";
+import { logger } from "../../../../../../framework";
 
 export { MongoPagination } from "./pagination";
 
@@ -165,25 +167,33 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       );
     }
 
-    //Set primary key
-    const where: any = {};
-    Object.keys(filters).forEach(key => {
-      where[key] = transformValueToDbString(filters[key], columnsDefinition[key].type, {
-        columns: columnsDefinition[key].options,
-        secret: this.secret,
-      });
-    });
-
     const db = await this.getDatabase();
     const collection = db.collection(`${entityDefinition.name}`);
 
-    const results = await collection
-      .find(where)
+    const query = buildSelectQuery<Table>(
+      (entityType as unknown) as ObjectType<Table>,
+      filters,
+      options,
+    );
+
+    let sort: any = {};
+    for (const key of entityDefinition.options.primaryKey.slice(1)) {
+      const defaultOrder =
+        (columnsDefinition[key as string].options.order || "ASC") === "ASC" ? 1 : -1;
+      sort[key as string] = (options?.pagination?.reversed ? -1 : 1) * defaultOrder;
+    }
+
+    logger.debug(`services.database.orm.mongodb.find - Query: ${JSON.stringify(query)}`);
+
+    const cursor = collection
+      .find(query)
+      .sort(sort)
       .skip(parseInt(options.pagination.page_token))
       .limit(parseInt(options.pagination.limitStr));
 
     const entities: Table[] = [];
-    results.forEach(row => {
+    while (await cursor.hasNext()) {
+      let row = await cursor.next();
       row = { ...row.set, ...row };
       const entity = new (entityType as any)();
       Object.keys(row)
@@ -196,7 +206,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           );
         });
       entities.push(entity);
-    });
+    }
 
     const nextToken =
       entities.length === parseInt(options.pagination.limitStr) &&

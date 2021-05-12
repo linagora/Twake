@@ -12,21 +12,20 @@ import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
 import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 
-describe.only("The direct channels API", () => {
+describe("The direct channels API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
 
   beforeEach(async () => {
     platform = await init({
-      services: ["websocket", "webserver", "channels", "auth", "database"],
+      services: ["pubsub", "user", "websocket", "webserver", "channels", "auth", "database"],
     });
     channelUtils = getChannelUtils(platform);
   });
 
   afterEach(async () => {
     await platform.tearDown();
-    platform = null;
   });
 
   function getContext(user?: User): WorkspaceExecutionContext {
@@ -37,7 +36,7 @@ describe.only("The direct channels API", () => {
   }
 
   describe("Channel List - GET /channels", () => {
-    it.only("should return empty list of direct channels", async done => {
+    it("should return empty list of direct channels", async done => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -81,9 +80,9 @@ describe.only("The direct channels API", () => {
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
-            members: [uuidv4(), uuidv4(), uuidv4()],
+            members: [uuidv4(), uuidv4()],
           },
-          { ...getContext(), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -103,14 +102,17 @@ describe.only("The direct channels API", () => {
 
       expect(directResponse.statusCode).toBe(200);
       expect(directResult.resources.length).toEqual(1);
+
       expect(directResult.resources[0]).toMatchObject({
         id: creationResult[1].entity.id,
         workspace_id: ChannelVisibility.DIRECT,
         user_member: {
           user_id: platform.currentUser.id,
         },
-        direct_channel_members: members,
       });
+
+      expect(directResult.resources[0].members).toContain(members[0]);
+      expect(directResult.resources[0].members).toContain(members[1]);
 
       const response = await platform.app.inject({
         method: "GET",
@@ -138,6 +140,7 @@ describe.only("The direct channels API", () => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
+      const directChannelIn2 = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
       const members = [platform.currentUser.id, uuidv4()];
       const directWorkspace: Workspace = {
@@ -146,20 +149,34 @@ describe.only("The direct channels API", () => {
       };
 
       const creationResult = await Promise.all([
+        //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save(channel, {}, getContext()),
+
+        //It will contain the currentUser
         channelService.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
             members,
           },
+          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+        ),
+
+        //This channel will automatically contains the requester because it is added automatically in it
+        channelService.channels.save<ChannelSaveOptions>(
+          directChannelIn2,
+          {
+            members: [uuidv4(), uuidv4()],
+          },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
+
+        //This channel will not contain the currentUser
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
-            members: [uuidv4(), uuidv4(), uuidv4()],
+            members: [uuidv4(), uuidv4()],
           },
-          { ...getContext(), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -190,6 +207,7 @@ describe.only("The direct channels API", () => {
     it("should not return direct channels in workspace list with mine parameter", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
+      const channel2 = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
       const members = [platform.currentUser.id, uuidv4()];
@@ -199,7 +217,13 @@ describe.only("The direct channels API", () => {
       };
 
       await Promise.all([
+        //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save(channel, {}, getContext()),
+
+        //This channel will not contain currentUser
+        channelService.channels.save(channel2, {}, getContext({ id: uuidv4() })),
+
+        //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
@@ -207,6 +231,7 @@ describe.only("The direct channels API", () => {
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
+
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
@@ -234,7 +259,7 @@ describe.only("The direct channels API", () => {
       );
 
       expect(response.statusCode).toBe(200);
-      expect(result.resources.length).toEqual(0);
+      expect(result.resources.length).toEqual(1);
 
       done();
     });

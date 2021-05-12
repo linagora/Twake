@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import Icon from 'components/Icon/Icon.js';
-
+import Icon from 'components/Icon/Icon';
 import './Channel.scss';
 
 type PropsType = {

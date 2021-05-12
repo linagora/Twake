@@ -35,6 +35,7 @@ import {
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { plainToClass } from "class-transformer";
+import UserServiceAPI from "../../../user/api";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -65,7 +66,11 @@ export class Service implements MemberService {
   userChannelsRepository: Repository<ChannelMember>;
   channelMembersRepository: Repository<MemberOfChannel>;
 
-  constructor(private database: DatabaseServiceAPI, private channelService: ChannelServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private channelService: ChannelServiceAPI,
+    protected userService: UserServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     try {
@@ -139,7 +144,7 @@ export class Service implements MemberService {
       const fields = Object.keys(memberDiff) as Array<Partial<keyof ChannelMember>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest(`Nothing to update for member ${member.user_id}`);
+        return new SaveResult<ChannelMember>("channel_member", member, mode);
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
@@ -298,6 +303,22 @@ export class Service implements MemberService {
       },
       { pagination },
     );
+
+    const companyUsers = await this.userService.companies.getUsers(
+      {
+        group_id: context.channel.company_id,
+      },
+      {},
+      { userIds: result.getEntities().map(member => member.user_id) },
+    );
+
+    if (options.company_role) {
+      companyUsers.filterEntities(entity => entity.role === options.company_role);
+    }
+
+    const companyUserIds = companyUsers.getEntities().map(entity => entity.user_id);
+
+    result.filterEntities(cm => companyUserIds.includes(cm.user_id));
 
     return new ListResult<ChannelMember>(
       "channel_member",

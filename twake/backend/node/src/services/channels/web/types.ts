@@ -1,4 +1,4 @@
-import { Channel, ChannelMember, ChannelTab } from "../entities";
+import { Channel, ChannelMember, ChannelPendingEmails, ChannelTab } from "../entities";
 
 export declare type DirectChannel = "direct";
 
@@ -49,6 +49,7 @@ export type ChannelSaveOptions = ChannelCreateOptions & {
 export class ChannelListOptions {
   channels?: string[];
   mine?: boolean;
+  company_role?: string;
 }
 
 export class UpdateChannelBody {
@@ -92,3 +93,15 @@ export class UpdateChannelTabBody {
 export type ChannelTabSaveOptions = {
   resource: ChannelTab;
 };
+
+export interface ChannelPendingEmailsParameters extends BaseChannelsParameters {
+  channel_id: string;
+}
+
+export interface ChannelPendingEmailsDeleteQueryParameters extends ChannelPendingEmailsParameters {
+  email: ChannelPendingEmails["email"];
+}
+
+export interface ChannelPendingEmailsListQueryParameters extends BaseChannelsParameters {
+  channel_id: string;
+}
