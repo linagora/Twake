@@ -17,8 +17,8 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return new S3ConnectorService(this.configuration.get<any>("S3"));
   }
 
-  write(path: string, stream: Stream): boolean {
-    return this.getConnector().write(path, stream);
+  write(path: string, stream: Stream) {
+    this.getConnector().write(path, stream);
   }
 
   read(path: string): Promise<Readable> {

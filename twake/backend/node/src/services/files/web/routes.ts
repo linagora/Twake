@@ -19,7 +19,7 @@ const routes: FastifyPluginCallback<{ service: any }> = (
 
   fastify.route({
     method: "POST",
-    url: filesUrl + "/:file_id",
+    url: filesUrl + "/:id",
     preValidation: true ? [] : [fastify.authenticate],
     handler: fileController.save.bind(fileController),
   });
@@ -27,6 +27,13 @@ const routes: FastifyPluginCallback<{ service: any }> = (
   fastify.route({
     method: "GET",
     url: `${filesUrl}/:id/download`,
+    preValidation: true ? [] : [fastify.authenticate],
+    handler: fileController.download.bind(fileController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${filesUrl}/:id`,
     preValidation: true ? [] : [fastify.authenticate],
     handler: fileController.get.bind(fileController),
   });

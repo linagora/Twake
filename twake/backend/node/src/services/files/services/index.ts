@@ -1,7 +1,7 @@
 import { TwakeContext } from "../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
-import { FileServiceAPI } from "../api";
+import { FileServiceAPI, UploadOptions } from "../api";
 import StorageAPI from "../../../core/platform/services/storage/provider";
 import { Readable, Stream } from "stream";
 import { File } from "../entities/file";
@@ -9,6 +9,7 @@ import Repository from "../../../../src/core/platform/services/database/services
 import Multistream from "multistream";
 import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
 import { CompanyExecutionContext } from "../web/types";
+import { Multipart } from "fastify-multipart";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -45,16 +46,20 @@ class Service implements FileServiceAPI {
     return this;
   }
 
-  async save(stream: any, context: CompanyExecutionContext) {
-    const iv = "7b88ac42e1214474"; // ?
-    const secret_key = "d04e7073dbbd609de83e8ba46a07b5d3"; // ?
-    const userId = /*context.user.id ||*/ "9f939ec3-6a5b-4bba-893b-3b4481758a11";
-    console.log("stream.id: ", stream.file_id);
+  async save(
+    id: string,
+    file: Multipart,
+    options: UploadOptions,
+    context: CompanyExecutionContext,
+  ) {
+    const userId = context.user?.id;
+    const applicationId: string | null = null; //TODO get it from context
+
     let entity = null;
-    if (stream.file_id) {
+    if (id) {
       entity = await this.repository.findOne({
-        company_id: stream.company_id,
-        id: stream.file_id,
+        company_id: context.company.id,
+        id: id,
       });
       if (!entity) {
         throw "This file id does not exist";
@@ -63,32 +68,40 @@ class Service implements FileServiceAPI {
 
     if (!entity) {
       entity = new File();
-      entity.company_id = stream.company_id;
+      entity.company_id = `${context.company.id}`;
       entity.metadata = null;
       entity.thumbmail = null;
 
-      // generer secret key ici
+      const iv = randomBytes(8).toString("hex");
+      const secret_key = randomBytes(16).toString("hex");
       entity.encryption_key = `${secret_key}.${iv}`;
 
-      //recupérer user_id dans le context
-      entity.user_id = "user_id";
-      entity.application_id = null;
+      entity.user_id = userId;
+      entity.application_id = applicationId;
       entity.upload_data = null;
 
       this.repository.save(entity);
     }
-    if (stream.data) {
-      if (entity.upload_data?.size !== stream.fields["resumableTotalSize"]) {
-        entity.metadata = {
-          name: stream.fields["resumableFilename"],
-          mime: stream.fields["resumableType"],
-        };
 
-        entity.upload_data = {
-          size: stream.fields["resumableTotalSize"],
-          chunks: stream.fields["resumableTotalChunks"],
-        };
-        this.repository.save(entity);
+    if (file) {
+      //Detect a new file upload
+      // Only applications car overwrite a file.
+      // Users alone can only write an empty file.
+      if (applicationId || !entity.upload_data?.size) {
+        if (
+          entity.upload_data?.size !== options.totalSize ||
+          entity.metadata?.name !== options.filename
+        ) {
+          entity.metadata = {
+            name: options.filename,
+            mime: options.type,
+          };
+          entity.upload_data = {
+            size: options.totalSize,
+            chunks: options.totalChunks,
+          };
+          this.repository.save(entity);
+        }
       }
 
       var cipher = createCipheriv(
@@ -97,11 +110,9 @@ class Service implements FileServiceAPI {
         entity.encryption_key.split(".")[1],
       );
 
-      //var decipher = createDecipheriv("aes-256-cbc", secret_key, iv);
-      const newReadStream = stream.data.file.pipe(cipher);
-      const bucket = "twake"; //récuperer bucket dans config coté storage
-      const chunk_number = stream.fields["resumableChunkNumber"];
-      const path = `/${bucket}/files/${entity.company_id}/${entity.user_id}/${stream.data.filename}/chunk${chunk_number}`;
+      const newReadStream = file.file.pipe(cipher);
+      const chunk_number = options.chunkNumber;
+      const path = `${getFilePath(entity)}/chunk${chunk_number}`;
 
       this.storage.write(path, newReadStream);
     }
@@ -109,11 +120,10 @@ class Service implements FileServiceAPI {
   }
 
   async download(
-    company_id: string,
     id: string,
     context: CompanyExecutionContext,
-  ): Promise<Readable> {
-    const entity = await this.repository.findOne({ company_id: company_id, id: id });
+  ): Promise<{ file: Readable; name: string; mime: string; size: number }> {
+    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
 
     const chunks = entity.upload_data.chunks;
     var count = 1;
@@ -128,7 +138,7 @@ class Service implements FileServiceAPI {
         entity.encryption_key.split(".")[1],
       );
 
-      const chunk = `twake/files/${company_id}/user_id/${entity.metadata.name}/chunk${count}`;
+      const chunk = `${getFilePath(entity)}/chunk${count}`;
       count++;
       try {
         stream = (await self.storage.read(chunk)).pipe(decipher);
@@ -140,6 +150,20 @@ class Service implements FileServiceAPI {
       return;
     }
 
-    return new Multistream(factory);
+    return {
+      file: new Multistream(factory),
+      name: entity.metadata.name,
+      mime: entity.metadata.mime,
+      size: entity.upload_data.size,
+    };
   }
+
+  async get(id: string, context: CompanyExecutionContext): Promise<File> {
+    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    return entity;
+  }
+}
+
+function getFilePath(entity: File): string {
+  return `/twake/files/${entity.company_id}/${entity.user_id}/${entity.id}`;
 }

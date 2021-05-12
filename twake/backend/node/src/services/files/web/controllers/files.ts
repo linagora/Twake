@@ -2,46 +2,65 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { Multipart } from "fastify-multipart";
 import { ResourceDeleteResponse } from "../../../../services/types";
 import { CompanyExecutionContext } from "../types";
-import { FileServiceAPI } from "../../api";
+import { FileServiceAPI, UploadOptions } from "../../api";
 
 export class FileController {
   constructor(protected service: FileServiceAPI) {}
 
   async save(
-    request: FastifyRequest<{ Params: { company_id: string; file_id: string } }>,
+    request: FastifyRequest<{
+      Params: { company_id: string; id: string };
+      Querystring: any;
+    }>,
     response: FastifyReply,
   ) {
     const context = getCompanyExecutionContext(request);
-    let data: null | Multipart = null;
+
+    let file: null | Multipart = null;
     if (request.isMultipart()) {
-      data = await request.file();
+      file = await request.file();
     }
-    const fields: any = request.query;
-    const file_id = request.params.file_id;
-    const company_id = request.params.company_id;
-    const result = await this.service.save({ data, fields, file_id, company_id }, context);
+    const q = request.query;
+    let options: UploadOptions = {
+      totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 0,
+      totalSize: parseInt(q.resumableTotalSize || q.total_size) || 0,
+      chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 0,
+      filename: q.resumableFilename || q.filename || file?.filename || undefined,
+      type: q.resumableType || q.type || file?.mimetype || undefined,
+    };
+
+    const id = request.params.id;
+    const result = await this.service.save(id, file, options, context);
 
     response.send({
       resource: result,
     });
   }
 
-  async get(
+  async download(
     request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
     response: FastifyReply,
   ) {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
-    const stream = await this.service.download(params.company_id, params.id, context);
+    const data = await this.service.download(params.id, context);
+    const filename = data.name.replace(/[^a-zA-Z0-9 ]/g, "");
 
-    //TO-DO: récuprer infos bd dont mime et nom du ficher
-    response.header("Content-disposition", "attachment; filename=");
-    response.type("image/png");
-    response.send(stream);
+    response.header("Content-disposition", `attachment; filename="${filename}"`);
+    response.header("Content-Length", data.size);
+    response.type(data.mime);
+    response.send(data.file);
+  }
+
+  async get(request: FastifyRequest<{ Params: { company_id: string; id: string } }>) {
+    const context = getCompanyExecutionContext(request);
+    const params = request.params;
+    const data = await this.service.get(params.id, context);
+    return { resource: data };
   }
 
   async delete(request: FastifyRequest<{}>): Promise<ResourceDeleteResponse> {
-    return new ResourceDeleteResponse();
+    throw "Not implemented";
   }
 }
 
@@ -59,6 +78,3 @@ function getCompanyExecutionContext(
     transport: "http",
   };
 }
-
-//url for DL
-//http://localhost:3000/internal/services/files/v1/companies/1f739ac3-6a5b-4bba-893b-3b4481758a11/files/80bf5348-1120-4cbb-8a9d-1075726b2c9b/download
