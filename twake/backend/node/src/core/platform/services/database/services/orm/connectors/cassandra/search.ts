@@ -4,6 +4,7 @@ import { EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { Stream } from "stream";
 import { logger } from "../../../../../../framework";
+import _ from "lodash";
 
 type Operation = {
   index: string;
@@ -11,6 +12,7 @@ type Operation = {
   action: "remove" | "upsert";
   body?: any;
 };
+
 export default class Search {
   private client: Client;
   private buffer = new Stream.Readable();
@@ -39,14 +41,15 @@ export default class Search {
   public async upsert(entities: any[]) {
     entities.forEach(entity => {
       const { entityDefinition } = getEntityDefinition(entity);
-      const primaryKey = unwrapPrimarykey(entityDefinition);
-      const index = entity.options.search.index || entity.name;
-      const id = primaryKey.map(k => entity[k]).join(".");
-      const body = entityDefinition.options.search.source(entity);
+      const pkColumns = unwrapPrimarykey(entityDefinition);
+      const body = {
+        ..._.pick(entity, ...pkColumns),
+        ...entityDefinition.options.search.source(entity),
+      };
 
       const record: Operation = {
-        index,
-        id,
+        index: entity.options.search.index || entity.name,
+        id: JSON.stringify(pkColumns.map(c => entity[c])),
         action: "upsert",
         body,
       };
@@ -58,13 +61,11 @@ export default class Search {
   public async remove(entities: any[]) {
     entities.forEach(entity => {
       const { entityDefinition } = getEntityDefinition(entity);
-      const primaryKey = unwrapPrimarykey(entityDefinition);
-      const index = entity.options.search.index || entity.name;
-      const id = primaryKey.map(k => entity[k]).join(".");
+      const pkColumns = unwrapPrimarykey(entityDefinition);
 
       const record: Operation = {
-        index,
-        id,
+        index: entity.options.search.index || entity.name,
+        id: JSON.stringify(pkColumns.map(c => entity[c])),
         action: "remove",
       };
 
