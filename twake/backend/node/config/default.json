@@ -58,16 +58,6 @@
       "secret": "supersecret"
     }
   },
-  "search": {
-    "type": "elasticsearch",
-    "elasticsearch": {
-      "endpoints": ["es:9200"]
-    },
-    "mongodb": {
-      "uri": "mongodb://localhost:27017",
-      "database": "twake"
-    }
-  },
   "database": {
     "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
     "type": "cassandra",
@@ -81,7 +71,11 @@
       "keyspace": "twake",
       "wait": false,
       "retries": 10,
-      "delay": 200
+      "delay": 200,
+
+      "elasticsearch": {
+        "endpoint": "es:9200"
+      }
     }
   },
   "pubsub": {

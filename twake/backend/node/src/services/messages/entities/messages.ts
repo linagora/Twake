@@ -7,6 +7,19 @@ export const TYPE = "messages";
 @Entity(TYPE, {
   primaryKey: [["thread_id"], "id"],
   type: TYPE,
+  search: {
+    index: "messages",
+    mapping: {
+      properties: {
+        text: { type: "text" },
+      },
+    },
+    source: (entity: Message) => {
+      return {
+        text: entity.text,
+      };
+    },
+  },
 })
 export class Message {
   @Type(() => String)
