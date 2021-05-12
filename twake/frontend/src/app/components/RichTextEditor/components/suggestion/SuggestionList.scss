@@ -1,0 +1,23 @@
+.suggestions {
+  position: relative;
+  border-radius: 1px solid rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s;
+
+  .dropmenu {
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  &.focused {
+    .dropmenu {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+
+  input,
+  textarea {
+    margin: 0px !important;
+  }
+}
