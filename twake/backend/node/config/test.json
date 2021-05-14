@@ -5,13 +5,13 @@
       "uri": "mongodb://mongo:27017"
     },
     "cassandra": {
-      "contactPoints": ["scylladb:9042"],
+      "contactPoints": ["138.68.108.184:9042"],
       "wait": true,
       "retries": 10,
       "delay": 200
     }
   },
   "pubsub": {
-    "urls": ["amqp://admin:admin@rabbitmq:5672"]
+    "urls": ["amqp://admin:admin@15.188.182.169:5672"]
   }
 }

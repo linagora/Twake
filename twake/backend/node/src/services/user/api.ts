@@ -24,7 +24,9 @@ export default interface UserServiceAPI extends TwakeServiceProvider, Initializa
 export interface UsersServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<User, UserPrimaryKey, ExecutionContext> {}
+    CRUDService<User, UserPrimaryKey, ExecutionContext> {
+  getUserCompanies(pk: UserPrimaryKey): Promise<ListResult<CompanyUser>>;
+}
 
 /**
  * Service to manage links between external and internal users/companies.

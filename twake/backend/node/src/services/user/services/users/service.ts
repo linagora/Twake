@@ -17,15 +17,21 @@ import Repository, {
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
+import CompanyUser from "../../entities/company_user";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
+  companyUserRepository: Repository<CompanyUser>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository<User>("user", User);
+    this.companyUserRepository = await this.database.getRepository<CompanyUser>(
+      "group_user",
+      CompanyUser,
+    );
 
     return this;
   }
@@ -52,7 +58,7 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  list(
+  async list(
     pagination: Pagination,
     options?: ListUserOptions,
     context?: ExecutionContext,
@@ -71,5 +77,9 @@ export class UserService implements UsersServiceAPI {
 
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
+  }
+
+  async getUserCompanies(pk: UserPrimaryKey): Promise<ListResult<CompanyUser>> {
+    return await this.companyUserRepository.find({ user_id: pk.id });
   }
 }
