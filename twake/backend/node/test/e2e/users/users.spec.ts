@@ -1,13 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
-import { init, TestPlatform } from "./setup";
-
-const myId = "9ba49092-af64-11eb-90a9-0242ac150004";
-const anotherUserId = "f4a5cc9e-ae77-11eb-b120-0242ac120005";
+import { beforeAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+import { TestUsers } from "./utils";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1/users";
   let platform: TestPlatform;
   jest.setTimeout(30000);
+
+  let testUsers: TestUsers;
 
   beforeEach(async ends => {
     platform = await init({
@@ -15,10 +15,24 @@ describe("The /users API", () => {
     });
     ends();
   });
-
-  afterEach(async () => {
+  afterEach(async ends => {
     await platform.tearDown();
     platform = null;
+    ends();
+  });
+
+  beforeAll(async ends => {
+    const platform = await init({
+      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
+    });
+    testUsers = new TestUsers(platform);
+    await testUsers.createCompanyAndUsers();
+    ends();
+  });
+
+  afterAll(async ends => {
+    await testUsers.deleteAll();
+    ends();
   });
 
   describe("The GET /users/:id route", () => {
@@ -34,7 +48,7 @@ describe("The /users API", () => {
 
     it("should 404 when user does not exists", async done => {
       const id = "11111111-1111-1111-1111-111111111111";
-      const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/${id}`,
@@ -53,11 +67,11 @@ describe("The /users API", () => {
     });
 
     it("should 200 and big response for myself", async done => {
-      const id = "9ba49092-af64-11eb-90a9-0242ac150004";
-      const jwtToken = await platform.auth.getJWTToken({ sub: id });
+      const myId = testUsers.users[0].id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${id}`,
+        url: `${url}/${myId}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -68,7 +82,7 @@ describe("The /users API", () => {
       const resource = response.json()["resource"];
 
       expect(resource).toMatchObject({
-        id: id,
+        id: myId,
         provider: expect.any(String),
         provider_id: expect.any(String),
         email: expect.any(String),
@@ -107,6 +121,9 @@ describe("The /users API", () => {
     });
 
     it("should 200 and short response for another user", async done => {
+      const myId = testUsers.users[0].id;
+      const anotherUserId = testUsers.users[1].id;
+
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
@@ -145,7 +162,7 @@ describe("The /users API", () => {
     });
   });
 
-  describe.only("The GET /users route", () => {
+  describe("The GET /users route", () => {
     it("should 401 when user is not authenticated", async done => {
       const response = await platform.app.inject({
         method: "GET",
@@ -156,9 +173,10 @@ describe("The /users API", () => {
       done();
     });
 
-    it.only("should 200 with array of users", /**
-     *
-     */ async done => {
+    it("should 200 with array of users", async done => {
+      const myId = testUsers.users[0].id;
+      const anotherUserId = testUsers.users[1].id;
+
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",

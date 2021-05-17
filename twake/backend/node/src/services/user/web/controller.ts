@@ -90,7 +90,10 @@ export class UsersCrudController
       return;
     }
 
-    return { resource: await this.formatUser(user, context.user.id === request.params.id) };
+    return {
+      resource: await this.formatUser(user, context.user.id === request.params.id),
+      websocket: undefined, // empty for now
+    };
   }
 
   async list(
@@ -115,7 +118,10 @@ export class UsersCrudController
     );
 
     // return users;
-    return { resources: resUsers };
+    return {
+      resources: resUsers,
+      websockets: [], // empty for now
+    };
   }
 }
 function getExecutionContext(request: FastifyRequest): ExecutionContext {

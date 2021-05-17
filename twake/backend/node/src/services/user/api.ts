@@ -1,5 +1,6 @@
 import {
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
@@ -82,7 +83,15 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  addUserInCompany(company: Company, user: User): Promise<CompanyUser>;
+  addUserInCompany(companyId: CompanyPrimaryKey, userId: UserPrimaryKey): Promise<CompanyUser>;
+
+  /**
+   * Add a user in a company
+   *
+   * @param company
+   * @param user
+   */
+  removeUserFromCompany(companyId: CompanyPrimaryKey, user: UserPrimaryKey): Promise<void>;
 
   /**
    * Get user ids in the given company
@@ -102,6 +111,14 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param user
    */
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
+
+  delete(pk: Partial<Company>, context?: ExecutionContext): Promise<DeleteResult<Company>>;
+
+  setUserRole(
+    companyPk: CompanyPrimaryKey,
+    userPk: UserPrimaryKey,
+    role: "guest" | "admin" | "member",
+  ): Promise<void>;
 }
 
 export interface WorkspaceServiceAPI

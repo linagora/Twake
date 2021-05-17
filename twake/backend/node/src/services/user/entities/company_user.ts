@@ -33,12 +33,6 @@ export default class CompanyUser {
   @Column("last_update_day", "number")
   lastUpdateDay: number;
 
-  @Column("nb_connections_period", "number")
-  nbConnectionsPeriod: number; //Depreciated
-
-  @Column("app_used_period", "number")
-  appUsedPeriod: number; //Depreciated
-
   /**
    * 0: member,
    * 1, 2, 3: admin,

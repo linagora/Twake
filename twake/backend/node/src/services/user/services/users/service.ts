@@ -56,8 +56,10 @@ export class UserService implements UsersServiceAPI {
     return new SaveResult("user", item, OperationType.UPDATE);
   }
 
-  delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
-    throw new Error("Method not implemented.");
+  async delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
+    const instance = await this.repository.findOne(pk);
+    if (instance) await this.repository.remove(instance);
+    return new DeleteResult<User>("user", instance, !!instance);
   }
 
   async list(
