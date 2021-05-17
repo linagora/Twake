@@ -37,6 +37,7 @@ class Version extends BaseController
         if ($this->getParameter("defaults.auth.console.use")) {
             $auth["console"] = [
               "use" => true,
+              "max_unverified_days" => intval($this->getParameter("defaults.auth.console.configuration.max_unverified_days", "7")),
               "account_management_url" => $this->getParameter("defaults.auth.console.redirections.account_management_url"),
               "company_management_url" => $this->getParameter("defaults.auth.console.redirections.company_management_url"),
               "collaborators_management_url" => $this->getParameter("defaults.auth.console.redirections.collaborators_management_url"),
