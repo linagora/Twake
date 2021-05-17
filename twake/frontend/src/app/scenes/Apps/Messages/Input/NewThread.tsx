@@ -4,7 +4,7 @@ import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import Input from './Input';
 import Languages from 'services/languages/languages.js';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import './Input.scss';
 
 type Props = {

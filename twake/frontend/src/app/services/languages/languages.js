@@ -1,15 +1,15 @@
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/services/Depreciated/observable';
 import Api from 'services/Api';
-import locale_en from './locale/en.js';
-import locale_fr from './locale/fr.js';
-import locale_de from './locale/de.js';
-import locale_es from './locale/es.js';
-import locale_ja from './locale/ja.js';
-import locale_ru from './locale/ru.js';
-import WindowState from 'services/utils/window.js';
-import LocalStorage from 'services/localStorage.js';
-import DateTime from 'services/utils/datetime.js';
-import Globals from 'services/Globals.js';
+import locale_en from './locale/en';
+import locale_fr from './locale/fr';
+import locale_de from './locale/de';
+import locale_es from './locale/es';
+import locale_ja from './locale/ja';
+import locale_ru from './locale/ru';
+import WindowState from 'services/utils/window';
+import LocalStorage from 'services/localStorage';
+import DateTime from 'services/utils/datetime';
+import Globals from 'services/Globals';
 
 class Languages extends Observable {
   constructor() {
@@ -115,7 +115,7 @@ class Languages extends Observable {
     var translation = this.data[route] || this.default_data[route] || fallback || route;
 
     if (translation == route) {
-      console.log(route + ' : not translated');
+      console.warn('Not translated:', route);
     }
 
     for (var i = 1; i <= parameters.length; i++) {

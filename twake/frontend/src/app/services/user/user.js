@@ -3,6 +3,7 @@ import Login from 'services/login/login.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
 import Globals from 'services/Globals.js';
+import Languages from 'services/languages/languages.js';
 
 class User {
   constructor() {
@@ -27,6 +28,11 @@ class User {
   getFullName(user) {
     user = user || {};
     var name = user.username;
+
+    if (user.deleted) {
+      name = Languages.t('general.user.deleted');
+    }
+
     if (user.firstname && user.firstname != '') {
       name = user.firstname;
     }
@@ -54,6 +60,11 @@ class User {
     } else {
       thumbnail = Globals.window.addApiUrlIfNeeded(user.thumbnail);
     }
+
+    if (user.deleted) {
+      thumbnail = '';
+    }
+
     return thumbnail;
   }
 

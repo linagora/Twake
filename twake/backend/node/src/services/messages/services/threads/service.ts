@@ -7,12 +7,12 @@ import {
   Paginable,
   SaveResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../../core/platform/framework";
+import { logger, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadsServiceAPI } from "../../api";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "../../entities/threads";
-import { CompanyExecutionContext } from "../../types";
+import { CompanyExecutionContext, ThreadExecutionContext } from "../../types";
 import { Message } from "../../entities/messages";
 import _ from "lodash";
 
@@ -28,8 +28,15 @@ export class ThreadsService
     return this;
   }
 
+  /**
+   * Create a thread with its first message in it
+   * @param item
+   * @param options
+   * @param context
+   * @returns
+   */
   async save(
-    item: Pick<Thread, "company_id" | "id"> & {
+    item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type">[];
     },
     options?: { participants?: ParticipantOperation; message?: Message },
@@ -42,7 +49,7 @@ export class ThreadsService
         remove: [],
       };
 
-      const thread = await this.repository.findOne({ company_id: context.company.id, id: item.id });
+      const thread = await this.repository.findOne({ id: item.id });
 
       // Add the created_by information
       participantsOperation.add = (participantsOperation.add || []).map(p => {
@@ -64,7 +71,7 @@ export class ThreadsService
 
       this.repository.save(thread);
 
-      //TODO ensure the thread is in all participants (and removed from deleted participants)
+      //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
       return new SaveResult("thread", thread, OperationType.UPDATE);
     } else {
@@ -85,36 +92,90 @@ export class ThreadsService
       const message: Message | null = options.message || null;
 
       const thread = new Thread();
-      thread.company_id = context.company.id;
       thread.created_at = new Date().getTime();
       thread.last_activity = thread.created_at;
       thread.answers = 0;
       thread.created_by = context.user.id;
       thread.participants = _.uniqBy(participants, p => p.id);
 
-      this.repository.save(thread);
+      await this.repository.save(thread);
 
-      //TODO create the message
+      if (message) {
+        await this.service.messages.save(
+          message,
+          {},
+          Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
+        );
+      }
 
       return new SaveResult("thread", thread, OperationType.CREATE);
     }
   }
 
-  get(pk: Pick<Thread, "company_id" | "id">, context?: ExecutionContext): Promise<Thread> {
-    throw new Error("Method not implemented.");
+  /**
+   * Add reply to thread: increase last_activity time and number of answers
+   * @param threadId
+   */
+  async addReply(threadId: string) {
+    const thread = await this.repository.findOne({ id: threadId });
+    thread.answers++;
+    thread.last_activity = new Date().getTime();
+    await this.repository.save(thread);
   }
-  delete(
-    pk: Pick<Thread, "company_id" | "id">,
-    context?: ExecutionContext,
-  ): Promise<DeleteResult<Thread>> {
-    throw new Error("Method not implemented.");
+
+  /**
+   * Check context is allowed to accesss a thread
+   * @param context
+   * @returns
+   */
+  async checkAccessToThread(context: ThreadExecutionContext): Promise<boolean> {
+    if (context.serverRequest) {
+      return true;
+    }
+
+    logger.info(
+      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context.app?.id}`,
+    );
+
+    const thread = await this.repository.findOne({
+      id: context.thread.id,
+    });
+
+    if (!thread) {
+      logger.info(`No such thread`);
+      return false;
+    }
+
+    //User is participant of the thread directly
+    if (thread.participants.some(p => p.type === "user" && p.id === context.user.id)) {
+      return true;
+    }
+
+    //Check user is in one of the participant channels
+    for (const channel of thread.participants.filter(p => p.type === "channel")) {
+      if (true) {
+        //TODO get the channel_member from channel micro_service
+        return true;
+      }
+    }
+
+    return false;
   }
+
+  get(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<Thread> {
+    throw new Error("CRUD method not used.");
+  }
+
+  delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
+    throw new Error("CRUD method not used.");
+  }
+
   list<ListOptions>(
     pagination: Paginable,
     options?: ListOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Thread>> {
-    throw new Error("Method not implemented.");
+    throw new Error("CRUD method not used.");
   }
 }
 

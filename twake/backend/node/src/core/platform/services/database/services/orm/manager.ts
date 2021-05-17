@@ -26,6 +26,10 @@ export default class EntityManager<EntityType extends Record<string, any>> {
       if (entity[pk] === undefined) {
         const definition = columnsDefinition[pk];
 
+        if (!definition) {
+          throw Error(`There is no definition for primary key ${pk}`);
+        }
+
         //Create default value
         switch (definition.options.generator || definition.type) {
           case "uuid":

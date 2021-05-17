@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import 'moment-timezone';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import Input from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';

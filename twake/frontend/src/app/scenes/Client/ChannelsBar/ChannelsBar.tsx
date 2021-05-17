@@ -23,9 +23,9 @@ export default () => {
 
   const ready = ChannelsBarService.useWatcher(() => {
     return (
-      ChannelsBarService.ready[companyId + '+' + workspaceId] &&
-      ChannelsBarService.ready[companyId + '+' + workspaceId + '+applications'] &&
-      ChannelsBarService.ready[companyId + '+direct']
+      ChannelsBarService.isReady(companyId, workspaceId) &&
+      ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
+      ChannelsBarService.isReady(companyId, 'direct')
     );
   });
 

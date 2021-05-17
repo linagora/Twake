@@ -10,11 +10,14 @@ import Observable from '../Observable/Observable';
 export { Resource } from '../Collections/Collections';
 
 class ObservableAdapter extends Observable {
-  static observables: { [key: string]: ObservableAdapter } = {};
-  static getObservableForKey(key: string) {
-    ObservableAdapter.observables[key] =
-      ObservableAdapter.observables[key] || new ObservableAdapter();
-    return ObservableAdapter.observables[key];
+  static observables = new Map<string, ObservableAdapter>();
+
+  static get(key: string): ObservableAdapter {
+    if (!ObservableAdapter.observables.has(key)) {
+      this.observables.set(key, new ObservableAdapter());
+    }
+
+    return this.observables.get(key)!;
   }
 }
 
@@ -67,7 +70,7 @@ export class Collection<G extends OriginalResource<any>> extends OriginalCollect
 
   constructor(path: string = '', type: new (data: any) => G, options?: CollectionOptions) {
     super(path, type, options);
-    this.observable = ObservableAdapter.getObservableForKey(path);
+    this.observable = ObservableAdapter.get(path);
     this.eventEmitter = new CollectionsEventEmitter(this, this.observable);
 
     this.useWatcher = (filter?: any, options?: any): G[] =>

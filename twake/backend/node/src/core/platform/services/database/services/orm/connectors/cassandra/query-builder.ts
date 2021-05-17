@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { FindOptions } from "../../repository/repository";
 import { ObjectType } from "../../types";
-import { getEntityDefinition, secureOperators } from "../../utils";
+import { getEntityDefinition, secureOperators, unwrapPrimarykey } from "../../utils";
 import { transformValueToDbString } from "./typeTransforms";
 
 export function buildSelectQuery<Entity>(
@@ -18,6 +18,7 @@ export function buildSelectQuery<Entity>(
 ): string {
   const instance = new (entityType as any)();
   const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
+  const primaryKey = unwrapPrimarykey(entityDefinition);
 
   const where = Object.keys(filters)
     .map(key => {
@@ -61,11 +62,28 @@ export function buildSelectQuery<Entity>(
     ...(buildLike(findOptions) || []),
   ].join(" AND ")}`.trimEnd();
 
-  return `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${
+  let orderByClause = "";
+  if (findOptions.pagination?.reversed) {
+    orderByClause = `${entityDefinition.options.primaryKey
+      .slice(1)
+      .map(
+        (key: string) =>
+          `${key} ${(columnsDefinition[key].options.order || "ASC") === "ASC" ? "DESC" : "ASC"}`,
+      )
+      .join(", ")}`;
+  }
+
+  const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${
     whereClause.trim().length ? "WHERE " + whereClause : ""
+  } ${orderByClause.trim().length ? "ORDER BY " + orderByClause : ""} ${
+    findOptions?.pagination?.limitStr?.trim()
+      ? "LIMIT " + (parseInt(findOptions.pagination.limitStr) || 100)
+      : ""
   }`
     .trimEnd()
     .concat(";");
+
+  return query;
 }
 
 export function buildComparison(options: FindOptions = {}): string[] {

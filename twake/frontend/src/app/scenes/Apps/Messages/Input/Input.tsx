@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import InputOptions from './Parts/InputOptions';
 import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import AttachedFiles from './Parts/AttachedFiles';
 import './Input.scss';
@@ -28,7 +29,7 @@ export default (props: Props) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const refInput = useRef<any>(null);
-  const messageEditorService: MessageEditors = MessageEditorsManager.get(props.channelId);
+  const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
 
   let autocomplete: any = null;

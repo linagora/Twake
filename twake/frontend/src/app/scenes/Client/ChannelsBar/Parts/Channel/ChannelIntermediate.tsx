@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
-
-import { ChannelResource, ChannelType, ChannelMemberResource } from 'app/models/Channel';
-
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
 import { NotificationResource } from 'app/models/Notification';
@@ -41,9 +39,7 @@ export default (props: Props): JSX.Element => {
 
   useUsersListener(props.channel.members || []);
 
-  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
-  const notifications = notificationsCollection.useWatcher({ channel_id: props.channel.id });
-
+  const notifications = Collection.get('/notifications/v1/badges/', NotificationResource).useWatcher({ channel_id: props.channel.id });
   const { avatar, name } = isDirectChannel
     ? getUserParts({
         usersIds: props.channel.members || [],
@@ -66,7 +62,7 @@ export default (props: Props): JSX.Element => {
       icon={channelIcon}
       muted={channel.data.user_member?.notification_level === 'none'}
       favorite={channel.data.user_member?.favorite || false}
-      unreadMessages={unreadMessages && channel.data.user_member.notification_level != 'none'}
+      unreadMessages={unreadMessages && channel.data.user_member.notification_level !== 'none'}
       visibility={channel.data.visibility || 'public'}
       notifications={notifications.length || 0}
       menu={menu(channel)}

@@ -37,6 +37,7 @@ class Version extends BaseController
         if ($this->getParameter("defaults.auth.console.use")) {
             $auth["console"] = [
               "use" => true,
+              "max_unverified_days" => intval($this->getParameter("defaults.auth.console.configuration.max_unverified_days", "7")),
               "account_management_url" => $this->getParameter("defaults.auth.console.redirections.account_management_url"),
               "company_management_url" => $this->getParameter("defaults.auth.console.redirections.company_management_url"),
               "collaborators_management_url" => $this->getParameter("defaults.auth.console.redirections.collaborators_management_url"),
@@ -48,7 +49,7 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "version" => [
-                "current" => /* @VERSION_DETAIL */ "2021.Q2.481",
+                "current" => /* @VERSION_DETAIL */ "2021.Q2.505",
                 "minimal" => [
                     "web" => /* @MIN_VERSION_WEB */ "2021.Q1.481",
                     "mobile" => /* @MIN_VERSION_MOBILE */ "2021.Q1.385",

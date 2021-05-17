@@ -161,13 +161,13 @@ export class ChannelMemberCrudController
    */
   async list(
     request: FastifyRequest<{
-      Querystring: PaginationQueryParameters;
+      Querystring: PaginationQueryParameters & { company_role?: string };
       Params: ChannelParameters;
     }>,
   ): Promise<ResourceListResponse<ChannelMember>> {
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
-      {},
+      { company_role: request.query.company_role },
       getExecutionContext(request),
     );
 

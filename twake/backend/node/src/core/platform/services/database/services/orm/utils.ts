@@ -18,10 +18,11 @@ export function getEntityDefinition(
 }
 
 export function unwrapPrimarykey(entityDefinition: EntityDefinition): string[] {
-  const partitionKey = entityDefinition.options.primaryKey.shift();
+  const initial = [...entityDefinition.options.primaryKey];
+  const partitionKey = initial.shift();
   const primaryKey: string[] = [
     ...(typeof partitionKey === "string" ? [partitionKey] : partitionKey),
-    ...(entityDefinition.options.primaryKey as string[]),
+    ...(initial as string[]),
   ];
   return primaryKey;
 }

@@ -81,8 +81,14 @@ export default class User {
   @Column("deleted", "twake_boolean")
   deleted: boolean;
 
-  @Column("main_verified", "twake_boolean")
+  @Column("mail_verified", "twake_boolean")
   mail_verified: boolean;
+
+  @Column("phone", "string")
+  phone: string;
+
+  @Column("thumbnail_id", "timeuuid")
+  thumbnail_id: string;
 
   constructor(id?: string) {
     this.id = id;

@@ -1,7 +1,8 @@
 import React from 'react';
 import 'moment-timezone';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
+import MessagesService from 'services/Apps/Messages/Messages.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -12,9 +13,8 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import User from 'services/user/user.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import ChannelsService from 'services/channels/channels.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
-import MessageEditorsManager, { MessageEditors } from 'app/services/Apps/Messages/MessageEditors';
+import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/services/Apps/Messages/Message';
 

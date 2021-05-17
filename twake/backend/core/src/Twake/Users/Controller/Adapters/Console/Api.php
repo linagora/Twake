@@ -91,17 +91,23 @@ class Api extends BaseController
 
         if($role === "member") {
             $data = [
-                "emails" => $emails
+                "emails" => $emails,
+                "inviter" => [
+                    "name" => $this->getUser()->getFullName(),
+                    "email" => $this->getUser()->getEmail()
+                ]
             ];
             $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/invitation", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
         }
         else {
             $data = [
+                "firstName" => $emails[0],
+                "lastName" => "-",
                 "email" => $emails[0],
                 "password" => base64_encode(random_bytes(6)),
                 "role" => $role
             ];
-            $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users/", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
+            $response = $this->api->post(rtrim($this->endpoint, "/") . "/companies/" . $companyCode . "/users", json_encode($data), array(CURLOPT_HTTPHEADER => [$header, "Content-Type: application/json"]));
         }
 
         $result = json_decode($response->getContent(), 1);

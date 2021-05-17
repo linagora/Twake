@@ -1258,6 +1258,7 @@ export default {
   'scenes.app.channelsbar.invated_access_right':
     'Vous pouvez inviter des utilisateurs externes à votre espace de travail.',
   'scenes.app.channelsbar.modify_channel_menu': 'Modifier la chaîne',
+  'scenes.app.channelsbar.guest_management': 'Gestion des invités',
   'scenes.app.channelsbar.modify_channel_title_private': 'Modifier la chaîne privée',
   'scenes.app.channelsbar.modify_channel_title_public': 'Modifier la chaîne publique',
   'scenes.app.channelsbar.mute': 'Sourdine',
@@ -2027,4 +2028,6 @@ export default {
   'general.user.role.company.admin': "Administrateur de l'entreprise",
   'general.user.role.company.member': 'Membre',
   'general.user.role.company.guest': 'Invité',
+  'general.user.deleted': 'Compte supprimé',
+  'scenes.app.channelsbar.channel_menu.guest_management': 'Gestion des invités',
 };

@@ -15,7 +15,7 @@ export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
-    in: "workspace:user:added",
+    in: "workspace:member:added",
   };
 
   readonly options = {

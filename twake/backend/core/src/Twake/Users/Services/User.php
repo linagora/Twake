@@ -216,7 +216,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 
@@ -251,7 +251,7 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        return ["token" => $token, "username" => $user->getUsername()];
+        return ["token" => $token, "username" => $user->getEmail()];
 
     }
 
@@ -295,26 +295,10 @@ class User
 
     }
 
-    public function generateJWT($user, $workspaces = []){
+    public function generateJWT($user){
 
         $key = $this->app->getContainer()->getParameter("jwt.secret");
 
-        $orgs = [];
-        if($workspaces){
-            foreach($workspaces as $workspace){
-                $gid = $workspace["group"]["id"];
-                $wid = $workspace["id"];
-                if(!isset($orgs[$gid])){
-                    $orgs[$gid] = [
-                        "role" => $workspace["_user_is_organization_administrator"] ? "organization_administrator" : ($workspace["_user_is_guest"] ? "guest" : "member"),
-                        "wks" => []
-                    ];
-                }
-                $orgs[$gid]["wks"][$wid] = [
-                    "adm" => $workspace["_user_is_admin"]
-                ];
-            }
-        }
         $expiration = date("U") + $this->app->getContainer()->getParameter("jwt.expiration");
         $payload = [
             "exp" => $expiration,
@@ -323,7 +307,6 @@ class User
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
             "email" => $user->getEmail(),
-            "org" => $orgs,
         ];
         $jwt = JWT::encode($payload, $key);
 

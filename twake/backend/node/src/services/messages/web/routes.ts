@@ -84,6 +84,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
 
   fastify.route({
     method: "GET",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.get.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "GET",
     url: "/companies/:company_id/threads/:thread_id/messages",
     preValidation: [fastify.authenticate],
     handler: messagesController.list.bind(messagesController),
@@ -110,6 +117,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
     handler: messagesController.pin.bind(messagesController),
   });
 
+  fastify.route({
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/delete",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.delete.bind(messagesController),
+  });
+
   /**
    * Views routes
    */
@@ -122,16 +136,9 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
 
   fastify.route({
     method: "GET",
-    url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/filtered/:filter",
-    preValidation: [fastify.authenticate],
-    handler: viewsController.list.bind(viewsController),
-  });
-
-  fastify.route({
-    method: "GET",
     url: "/companies/:company_id/files",
     preValidation: [fastify.authenticate],
-    handler: viewsController.listFiles.bind(viewsController),
+    handler: viewsController.list.bind(viewsController),
   });
 
   fastify.route({
