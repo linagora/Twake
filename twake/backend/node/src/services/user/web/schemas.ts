@@ -79,7 +79,7 @@ export const getUsersSchema = {
   type: "object",
   properties: {
     user_ids: { type: "string" },
-    company_ids: { type: "string" },
+    include_companies: { type: "boolean" },
   },
   response: {
     "2xx": {

@@ -25,11 +25,7 @@ export class UsersCrudController
     assert(companyService, "companyService is not inited");
   }
 
-  private async formatUser(
-    user: User,
-    includeCompanies: boolean,
-    filterCompanies?: string[],
-  ): Promise<UserResponse> {
+  private async formatUser(user: User, includeCompanies: boolean): Promise<UserResponse> {
     let resUser = {
       id: user.id,
       provider: user.identity_provider,
@@ -46,11 +42,7 @@ export class UsersCrudController
     } as UserResponse;
 
     if (includeCompanies) {
-      let userCompanies = (await this.service.getUserCompanies({ id: user.id })).getEntities();
-
-      if (filterCompanies) {
-        userCompanies = userCompanies.filter(a => filterCompanies.includes(a.group_id));
-      }
+      const userCompanies = (await this.service.getUserCompanies({ id: user.id })).getEntities();
 
       const companiesCache = {} as { [key: string]: any };
 
@@ -119,10 +111,10 @@ export class UsersCrudController
       context,
     );
 
-    const companyIds = request.query.company_ids ? request.query.company_ids.split(",") : null;
+    // const companyIds = request.query.company_ids ? request.query.company_ids.split(",") : null;
 
     const resUsers = await Promise.all(
-      users.getEntities().map(user => this.formatUser(user, true, companyIds)),
+      users.getEntities().map(user => this.formatUser(user, request.query.include_companies)),
     );
 
     // return users;

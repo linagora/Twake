@@ -14,7 +14,7 @@ export interface PaginationQueryParameters {
 }
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
-  company_ids?: string;
+  include_companies?: boolean;
 }
 
 export interface UserParameters {
