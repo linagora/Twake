@@ -81,6 +81,7 @@ export class UsersCrudController
     request: FastifyRequest<{ Params: UserParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<UserResponse>> {
+    const context = getExecutionContext(request);
     const user = await this.service.get({ id: request.params.id }, getExecutionContext(request));
 
     if (!user) {
@@ -89,11 +90,7 @@ export class UsersCrudController
       return;
     }
 
-    // FIXME: get id from request right
-    // const currentUserId = request.user.sub;
-    const currentUserId = request.params.id;
-
-    return { resource: await this.formatUser(user, currentUserId === request.params.id) };
+    return { resource: await this.formatUser(user, context.user.id === request.params.id) };
   }
 
   async list(
