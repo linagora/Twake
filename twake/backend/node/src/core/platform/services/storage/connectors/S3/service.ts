@@ -2,7 +2,7 @@ import { Readable } from "stream";
 import { StorageConnectorAPI } from "../../provider";
 import * as Minio from "minio";
 
-type S3Configuration = Minio.ClientOptions & { bucket: string };
+export type S3Configuration = Minio.ClientOptions & { bucket: string };
 
 export default class S3ConnectorService implements StorageConnectorAPI {
   client: Minio.Client;

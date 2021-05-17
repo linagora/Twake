@@ -80,15 +80,16 @@
   },
   "storage": {
     "secret": "tp63bb3e90c0271c9a1c06651a7c0967eab8851a7a897769",
-    "type": "S3", 
+    "type": "local",
     "S3": {
-
+      "endPoint": "play.min.io",
+      "port": 9000,
+      "useSSL": false,
+      "accessKey": "ABCD",
+      "secretKey": "x1yz"
     },
     "local": {
-
-    },
-    "swift": {
-
+      "path": "/storage/"
     }
   }
 }

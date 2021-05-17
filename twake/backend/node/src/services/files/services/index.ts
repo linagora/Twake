@@ -37,7 +37,7 @@ class Service implements FileServiceAPI {
     readonly storage: StorageAPI,
   ) {}
 
-  async init(context: TwakeContext): Promise<this> {
+  async init(): Promise<this> {
     try {
       this.repository = await this.database.getRepository<File>("files", File);
     } catch (err) {
@@ -53,7 +53,7 @@ class Service implements FileServiceAPI {
     context: CompanyExecutionContext,
   ) {
     const userId = context.user?.id;
-    const applicationId: string | null = null; //TODO get it from context
+    const applicationId: string | null = context.app?.id || null;
 
     let entity = null;
     if (id) {
@@ -87,7 +87,7 @@ class Service implements FileServiceAPI {
       //Detect a new file upload
       // Only applications car overwrite a file.
       // Users alone can only write an empty file.
-      if (applicationId || !entity.upload_data?.size) {
+      if (applicationId || !entity.upload_data?.size || context.serverRequest) {
         if (
           entity.upload_data?.size !== options.totalSize ||
           entity.metadata?.name !== options.filename

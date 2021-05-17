@@ -71,6 +71,7 @@ function getCompanyExecutionContext(
 ): CompanyExecutionContext {
   return {
     user: request.currentUser,
+
     company: { id: request.params.company_id },
     url: request.url,
     method: request.routerMethod,

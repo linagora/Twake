@@ -1,6 +1,7 @@
 import { Stream, Readable } from "stream";
-import { Consumes, TwakeService } from "../../framework";
-import S3ConnectorService from "./connectors/S3/service";
+import { Consumes, logger, TwakeService } from "../../framework";
+import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
+import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
 
 import StorageAPI, { StorageConnectorAPI } from "./provider";
 
@@ -14,7 +15,16 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
   }
 
   getConnector(): StorageConnectorAPI {
-    return new S3ConnectorService(this.configuration.get<any>("S3"));
+    const type = this.configuration.get<string>("type");
+    if (type === "S3") {
+      logger.info("Using 'S3' connector for storage.");
+      return new S3ConnectorService(this.configuration.get<S3Configuration>("S3"));
+    }
+    logger.info(
+      "Using 'local' connector for storage (no other connector recognized from configuration type: '%s').",
+      type,
+    );
+    return new LocalConnectorService(this.configuration.get<LocalConfiguration>("local"));
   }
 
   write(path: string, stream: Stream) {
