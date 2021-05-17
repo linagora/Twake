@@ -1,3 +1,5 @@
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { isBuffer } from "lodash";
 import { Stream, Readable } from "stream";
 import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
@@ -9,6 +11,8 @@ import StorageAPI, { StorageConnectorAPI } from "./provider";
 export default class StorageService extends TwakeService<StorageAPI> implements StorageAPI {
   name = "storage";
   version = "1";
+
+  globalEncryption: { secret: string | null; iv: string | null } = { secret: null, iv: null };
 
   api(): StorageAPI {
     return this;
@@ -28,11 +32,36 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
   }
 
   write(path: string, stream: Stream) {
+    if (this.globalEncryption.secret) {
+      try {
+        const cipher = createCipheriv(
+          "aes-256-cbc",
+          this.globalEncryption.secret,
+          this.globalEncryption.iv,
+        );
+        stream = stream.pipe(cipher);
+      } catch (err) {
+        logger.error("Unable to createDecipheriv: %s", err);
+      }
+    }
     this.getConnector().write(path, stream);
   }
 
-  read(path: string): Promise<Readable> {
-    return this.getConnector().read(path);
+  async read(path: string): Promise<Readable> {
+    let stream = await this.getConnector().read(path);
+    if (this.globalEncryption.secret) {
+      try {
+        const decipher = createDecipheriv(
+          "aes-256-cbc",
+          this.globalEncryption.secret,
+          this.globalEncryption.iv,
+        );
+        stream = stream.pipe(decipher);
+      } catch (err) {
+        logger.error("Unable to createDecipheriv: %s", err);
+      }
+    }
+    return stream;
   }
 
   async doStart(): Promise<this> {
@@ -41,7 +70,9 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
   }
 
   async doInit(): Promise<this> {
-    //When service is initialized
+    this.globalEncryption.secret = this.configuration.get<string | null>("secret", null);
+    this.globalEncryption.iv = this.configuration.get<string>("iv", "0123456789abcdef");
+
     return this;
   }
 }

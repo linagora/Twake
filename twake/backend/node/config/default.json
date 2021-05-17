@@ -79,7 +79,7 @@
     "urls": ["amqp://guest:guest@localhost:5672"]
   },
   "storage": {
-    "secret": "tp63bb3e90c0271c9a1c06651a7c0967eab8851a7a897769",
+    "secret": "0ea28a329df23220fa814e005bfb671c",
     "type": "local",
     "S3": {
       "endPoint": "play.min.io",
