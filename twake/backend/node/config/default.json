@@ -74,7 +74,7 @@
       "delay": 200,
 
       "elasticsearch": {
-        "endpoint": "es:9200"
+        "endpoint": "elasticsearch:9200"
       }
     }
   },
