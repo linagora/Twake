@@ -8,6 +8,7 @@ export type ConfigurationType = {
       use?: boolean;
     };
     console?: {
+      max_unverified_days: number;
       account_management_url: string;
       collaborators_management_url: string;
       company_management_url: string;

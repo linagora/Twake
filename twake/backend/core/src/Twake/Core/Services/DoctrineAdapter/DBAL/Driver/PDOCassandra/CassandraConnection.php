@@ -402,11 +402,14 @@ class CassandraConnection
     public function query($cql = null, $pdoStatement = null)
     {
         if ($this->app) $this->app->getCounter()->startTimer("cql_time");
-
+        if ($this->app) $is_cassandra = $this->app->getContainer()->getParameter("db.is_cassandra", false);
 
         $view_to_use = false;
         if ($this->view_to_use) {
             $view_to_use = $this->view_to_use . "_custom_index";
+            if($is_cassandra){
+                $view_to_use = "index_".md5($view_to_use);
+            }
         }
         $this->view_to_use = null;
 

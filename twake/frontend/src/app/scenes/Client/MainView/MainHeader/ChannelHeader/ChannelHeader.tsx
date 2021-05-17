@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/Emojione/Emojione';
-import { startCase } from 'lodash';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
@@ -82,7 +81,7 @@ export default (): JSX.Element => {
               <Emojione type={channel.data.icon || ''} />
             </div>
             <Typography.Text className="small-right-margin" strong>
-              {startCase(channel.data.name)}
+              {channel.data.name}
             </Typography.Text>
             {channel.data.visibility === 'private' && (
               <Lock size={16} className="small-right-margin" />
