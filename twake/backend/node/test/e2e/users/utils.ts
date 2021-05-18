@@ -1,14 +1,11 @@
-import { platform } from "os";
 import { TestPlatform } from "../setup";
-import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import UserServiceAPI from "../../../src/services/user/api";
 import User from "../../../src/services/user/entities/user";
 import { v1 as uuid } from "uuid";
 import Company, {
   getInstance as getCompanyInstance,
 } from "../../../src/services/user/entities/company";
-import assert = require("assert");
-import CompanyUser from "../../../src/services/user/entities/company_user";
+
 export class TestUsers {
   private company: Company;
   public users: User[];
@@ -30,7 +27,6 @@ export class TestUsers {
   }
 
   async createUser(): Promise<User> {
-    assert(this.company);
     const rand = Math.floor(Math.random() * 100000);
     const user = new User();
     user.username_canonical = `test${rand}`;
