@@ -8,7 +8,6 @@
     "webserver",
     "websocket",
     "database",
-    "search",
     "pubsub",
     "realtime",
     "phpnode",
@@ -74,7 +73,7 @@
       "delay": 200,
 
       "elasticsearch": {
-        "endpoint": "elasticsearch:9200"
+        "endpoint": "http://elasticsearch:9200"
       }
     }
   },

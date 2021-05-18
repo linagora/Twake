@@ -64,10 +64,6 @@ export class CassandraConnector extends AbstractConnector<
 
   async init(): Promise<this> {
     if (!this.client) {
-      if (this.options.elasticsearch) {
-        this.searchClient = new Search(this.options.elasticsearch);
-        this.searchClient.connect();
-      }
       await this.connect();
     }
 
@@ -162,6 +158,11 @@ export class CassandraConnector extends AbstractConnector<
   async connect(): Promise<this> {
     if (this.client) {
       return this;
+    }
+
+    if (this.options.elasticsearch) {
+      this.searchClient = new Search(this.options.elasticsearch);
+      this.searchClient.connect();
     }
 
     // Environment variable format is comma separated string

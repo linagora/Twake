@@ -38,7 +38,7 @@ export const e2e_createThread = async (
       },
     },
   });
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 200));
   return res;
 };
 
@@ -58,7 +58,7 @@ export const e2e_createMessage = async (
       resource: message,
     },
   });
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 200));
   return res;
 };
 

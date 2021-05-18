@@ -2,9 +2,10 @@ import { CassandraConnectionOptions } from "..";
 import { Client } from "@elastic/elasticsearch";
 import { EntityDefinition } from "../../types";
 import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
-import { Stream } from "stream";
+import { Readable } from "stream";
 import { logger } from "../../../../../../framework";
 import _ from "lodash";
+import streamToIterator from "stream-to-iterator";
 
 type Operation = {
   index: string;
@@ -15,7 +16,7 @@ type Operation = {
 
 export default class Search {
   private client: Client;
-  private buffer = new Stream.Readable();
+  private buffer: Readable;
 
   constructor(readonly configuration: CassandraConnectionOptions["elasticsearch"]) {}
 
@@ -27,11 +28,18 @@ export default class Search {
   }
 
   public async createIndex(entity: EntityDefinition) {
+    if (!entity.options?.search) {
+      return;
+    }
+
+    const name = entity.options?.search?.index || entity.name;
+    const mapping = entity.options?.search?.mapping;
+    logger.info(`Create index ${name} with mapping %o`, mapping);
     await this.client.indices.create(
       {
-        index: entity.options.search.index || entity.name,
+        index: name,
         body: {
-          mappings: { ...entity.options.search.mapping, _source: { enabled: false } },
+          mappings: { ...mapping, _source: { enabled: false } },
         },
       },
       { ignore: [400] },
@@ -42,20 +50,34 @@ export default class Search {
     entities.forEach(entity => {
       const { entityDefinition } = getEntityDefinition(entity);
       const pkColumns = unwrapPrimarykey(entityDefinition);
+
+      if (!entityDefinition.options?.search) {
+        return;
+      }
+
+      if (!entityDefinition.options?.search?.source) {
+        logger.info(`Unable to do operation upsert to elasticsearch for doc ${entity}`);
+        return;
+      }
+
       const body = {
         ..._.pick(entity, ...pkColumns),
         ...entityDefinition.options.search.source(entity),
       };
 
       const record: Operation = {
-        index: entity.options.search.index || entity.name,
+        index: entityDefinition.options?.search?.index || entityDefinition.name,
         id: JSON.stringify(pkColumns.map(c => entity[c])),
         action: "upsert",
         body,
       };
 
+      logger.info(`Add operation upsert to elasticsearch for doc ${record.id}`);
+
       this.buffer.push(record);
     });
+
+    this.flush();
   }
 
   public async remove(entities: any[]) {
@@ -63,19 +85,36 @@ export default class Search {
       const { entityDefinition } = getEntityDefinition(entity);
       const pkColumns = unwrapPrimarykey(entityDefinition);
 
+      if (!entityDefinition.options?.search) {
+        return;
+      }
+
       const record: Operation = {
-        index: entity.options.search.index || entity.name,
+        index: entityDefinition.options?.search?.index || entityDefinition.name,
         id: JSON.stringify(pkColumns.map(c => entity[c])),
         action: "remove",
       };
 
+      logger.info(`Add operation remove from elasticsearch for doc ${record.id}`);
+
       this.buffer.push(record);
     });
+
+    this.flush();
+  }
+
+  private flush() {
+    this.startBulkReader();
   }
 
   private startBulkReader() {
+    logger.info(`Elasticsearch bulk flushed.`);
+
+    if (this.buffer) this.buffer.push(null);
+    this.buffer = new Readable({ objectMode: true, read: () => {} });
+
     this.client.helpers.bulk({
-      datasource: this.buffer,
+      datasource: streamToIterator(this.buffer),
       onDocument: (doc: Operation) => {
         logger.info(
           `Operation ${doc.action} pushed to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,

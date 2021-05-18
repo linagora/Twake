@@ -108,6 +108,8 @@ describe("The Messages feature", () => {
         listResponse.body,
       );
 
+      console.log(listResult.resources);
+
       expect(listResponse.statusCode).toBe(200);
       expect(listResult.resources.length).toBe(3);
 
