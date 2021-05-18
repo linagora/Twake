@@ -47,6 +47,7 @@ export interface CassandraConnectionOptions {
    */
   elasticsearch: {
     endpoint: string;
+    flushInterval?: number;
   };
 }
 
@@ -446,7 +447,7 @@ export class CassandraConnector extends AbstractConnector<
     }
 
     const query = buildSelectQuery<Table>(
-      entityType as unknown as ObjectType<Table>,
+      (entityType as unknown) as ObjectType<Table>,
       filters,
       options,
       {

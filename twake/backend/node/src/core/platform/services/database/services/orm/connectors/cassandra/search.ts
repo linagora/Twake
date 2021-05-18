@@ -76,8 +76,6 @@ export default class Search {
 
       this.buffer.push(record);
     });
-
-    this.flush();
   }
 
   public async remove(entities: any[]) {
@@ -99,8 +97,6 @@ export default class Search {
 
       this.buffer.push(record);
     });
-
-    this.flush();
   }
 
   private flush() {
@@ -114,6 +110,7 @@ export default class Search {
     this.buffer = new Readable({ objectMode: true, read: () => {} });
 
     this.client.helpers.bulk({
+      flushInterval: this.configuration.flushInterval || 30000,
       datasource: streamToIterator(this.buffer),
       onDocument: (doc: Operation) => {
         logger.info(
