@@ -93,23 +93,27 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       // - Application owner
       // Deleted messages cannot be edited
       if (
-        !messageToUpdate ||
-        (!context?.user?.server_request &&
-          context?.user?.application_id !== messageToUpdate.application_id &&
-          context.user.id !== messageToUpdate.user_id) ||
-        messageToUpdate.subtype === "deleted"
+        !context?.user?.server_request &&
+        (!messageToUpdate ||
+          (context?.user?.application_id !== messageToUpdate.application_id &&
+            context.user.id !== messageToUpdate.user_id) ||
+          messageToUpdate.subtype === "deleted")
       ) {
         logger.error(`Unable to edit message in thread ${message.thread_id}`);
         throw Error("Can't edit this message.");
       }
 
-      messageToUpdate.edited = {
-        edited_at: new Date().getTime(),
-      };
+      if (messageToUpdate) {
+        messageToUpdate.edited = {
+          edited_at: new Date().getTime(),
+        };
 
-      message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-      if (context?.user?.application_id || context?.user?.server_request) {
-        message = _.assign(message, _.pick(message, "override"));
+        message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
+        if (context?.user?.application_id || context?.user?.server_request) {
+          message = _.assign(message, _.pick(message, "override"));
+        }
+      } else if (context?.user?.server_request) {
+        message.id = item.id;
       }
     }
 
@@ -319,6 +323,8 @@ function getSubtype(
   item: Message,
   context?: ThreadExecutionContext,
 ): null | "application" | "deleted" | "system" {
+  console.log(context.user);
+
   //Application request
   if (context?.user?.application_id) {
     return item.subtype === "application" ? "application" : null;

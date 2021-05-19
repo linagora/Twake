@@ -39,7 +39,7 @@ export interface User {
   // server request
   server_request?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
   // application call
-  application_id: string;
+  application_id?: string;
 }
 
 export interface Workspace {

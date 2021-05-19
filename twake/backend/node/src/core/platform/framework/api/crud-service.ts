@@ -1,4 +1,4 @@
-import { App, User } from "../../../../services/types/index";
+import { User } from "../../../../services/types/index";
 
 export class ContextualizedTarget {
   context?: ExecutionContext;

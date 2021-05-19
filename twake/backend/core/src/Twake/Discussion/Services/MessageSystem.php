@@ -5,6 +5,7 @@ namespace Twake\Discussion\Services;
 
 use App\App;
 use Twake\Discussion\Entity\Message;
+use \Firebase\JWT\JWT;
 
 class MessageSystem
 {
@@ -29,12 +30,16 @@ class MessageSystem
 
     public function get($options, $current_user)
     {
+        $offset = isset($options["offset"]) ? $options["offset"] : null;
+        $limit = isset($options["limit"]) ? $options["limit"] : 60;
+        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
+
         $channel = $this->getInfosFromChannel($options["channel_id"]);   
         if(!$channel){
             return;
         }
 
-        $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=3");
+        $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=3", [], $current_user);
 
         error_log(json_encode($response));
 
@@ -43,6 +48,18 @@ class MessageSystem
             $messages[] = $this->convertFromNode($message, $channel);
         }
 
+        if(count($messages) === 0
+            && !$options["id"]
+            && !$options["id"]
+            && !$offset
+            && $limit > 0
+            && !$parent_message_id ){
+            $init_message = Array(
+                "channel_id" => $options["channel_id"],
+                "hidden_data" => Array("type" => "init_channel")
+            );
+            return [$this->save($init_message, Array())];
+        }
 
         return $messages;
     }
@@ -51,20 +68,31 @@ class MessageSystem
     {
         return $this->depreciated->remove($object, $options, $current_user);
     }
-    
-    public function save($object, $options, $user = null, $application = null)
+
+    public function save($object, $options, $current_user = null, $application = null)
     {
         $channel = $this->getInfosFromChannel($object["channel_id"]);   
         if(!$channel){
             return;
         }
+
+        $newMessage = !$object["id"];
         
         $message = $this->convertToNode($object);
+        if(!$current_user){
+            $message["subtype"] = "system";
+        }
+        if($application){
+            $message["subtype"] = "application";
+        }
+
+        error_log(json_encode($current_user));
+        error_log(json_encode($application));
 
         $response = null;
         
         //New thread
-        if(!$object["parent_message_id"] && !$object["id"]){
+        if(!$object["parent_message_id"] && $newMessage){
 
             $data = [
                 "resource" => [
@@ -80,30 +108,34 @@ class MessageSystem
                 "options" => []
             ];
 
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads", $data);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads", $data, $current_user, $application ? $application->getId() : null);
             error_log(json_encode($response));
             $object["parent_message_id"] = $response["resource"]["id"];
+            $message["thread_id"] = $response["resource"]["id"];
+            $message["id"] = $response["resource"]["id"];
         }
+
+        error_log("message to save: ". json_encode($message));
         
         //New message in thread (also called for new threads because we set the parent_message_id automatically)
-        if($object["parent_message_id"] && !$object["id"]){
+        if($object["parent_message_id"] && $newMessage){
 
             $data = [
                 "resource" => $message
             ];
 
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages", $data);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages", $data, $current_user, $application ? $application->getId() : null);
 
         }else
 
         //Edited message
-        if($object["id"]){
+        if(!$newMessage){
 
             $data = [
                 "resource" => $message
             ];
 
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages/".$object["id"], $data);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages/".$object["id"], $data, $current_user, $application ? $application->getId() : null);
 
         }else {
 
@@ -122,7 +154,7 @@ class MessageSystem
 
         $blocks = [[
             "type" => "twacode",
-            "content" => $object["content"]["formatted"] ?: $object["content"]["prepared"]
+            "content" => $object["content"]["formatted"] ?: $object["content"]["prepared"] ?: $object["content"]
         ]];
 
         $files = [];
@@ -147,6 +179,10 @@ class MessageSystem
     }
 
     private function convertFromNode($message, $channel){
+
+        if($message["last_replies"] || $message["thread_id"] === $message["id"]){
+            $message["thread_id"] = "";
+        }
 
         $phpMessage = new Message($channel["channel_id"], $message["thread_id"]);
 
@@ -177,13 +213,29 @@ class MessageSystem
         return null;
     }
 
-    private function forwardToNode($method, $route, $data = []){
+    private function forwardToNode($method, $route, $data = [], $user = null, $applicationId = null){
+
         $uri = str_replace("/private", "/internal/services/messages/v1", $this->app->getContainer()->getParameter("node.api")) . 
             ltrim($route, "/");
+       
+        error_log($user);
+
+        $key = $this->app->getContainer()->getParameter("jwt.secret");
+        $payload = [
+            "exp" => date("U") + 60,
+            "type" => "access",
+            "iat" => intval(date("U")) - 60*10,
+            "nbf" => intval(date("U")) - 60*10,
+            "sub" => $user ? $user->getId() : null,
+            "email" => $user ? $user->getEmail() : null,
+            "application_id" => $applicationId,
+            "server_request" => true
+        ];
+        $jwt = JWT::encode($payload, $key);
 
         $opt = [
             CURLOPT_HTTPHEADER => Array(
-                "Authorization: " . getallheaders()["Authorization"],
+                "Authorization: Bearer " . $jwt,
                 "Content-Type: application/json"
             ),
             CURLOPT_CONNECTTIMEOUT => 1,
