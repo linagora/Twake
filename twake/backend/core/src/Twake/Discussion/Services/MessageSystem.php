@@ -41,12 +41,16 @@ class MessageSystem
 
         $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=3", [], $current_user);
 
-        error_log(json_encode($response));
+        error_log(count($response["resources"]));
 
         $messages = [];
         foreach($response["resources"] as $message){
             $messages[] = $this->convertFromNode($message, $channel);
+            foreach($message["last_replies"] as $reply){
+                $messages[] = $this->convertFromNode($reply, $channel);
+            }
         }
+
 
         if(count($messages) === 0
             && !$options["id"]
@@ -85,9 +89,7 @@ class MessageSystem
         if($application){
             $message["subtype"] = "application";
         }
-
-        error_log(json_encode($current_user));
-        error_log(json_encode($application));
+        $message["context"]["_front_id"] = $object["front_id"];
 
         $response = null;
         
@@ -187,13 +189,15 @@ class MessageSystem
         $phpMessage = new Message($channel["channel_id"], $message["thread_id"]);
 
         $phpMessage->setId($message["id"]);
-        $phpMessage->setFrontId($message["id"]);
+        $phpMessage->setFrontId($message["context"]["_front_id"] ?: $message["id"]);
         $phpMessage->setSender($message["user_id"]);
         $phpMessage->setApplicationId($message["application_id"]);
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
         $phpMessage->setHiddenData($message["context"]);
         $phpMessage->setPinned(!!$message["pinned"]);
         $phpMessage->setEdited(!!$message["edited"]);
+        $phpMessage->setCreationDate(new \DateTime("@" . intval(($message["last_activity"] ?: $message["created_at"]) / 1000)));
+        $phpMessage->setModificationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],

@@ -46,6 +46,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't write this message.");
     }
 
+    let created = !item.id;
+
     let message = getInstance({
       id: undefined,
       ephemeral:
@@ -103,6 +105,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         throw Error("Can't edit this message.");
       }
 
+      if (!messageToUpdate) {
+        created = true;
+      }
+
       if (messageToUpdate) {
         messageToUpdate.edited = {
           edited_at: new Date().getTime(),
@@ -123,7 +129,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.repository.save(message);
     }
 
-    this.onSaved(message, { created: !item.id }, context);
+    this.onSaved(message, { created }, context);
 
     return new SaveResult<Message>(
       "message",
