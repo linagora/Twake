@@ -588,7 +588,8 @@ class Message extends FrontObject
             "title" => $messageEntity->getHiddenData()['custom_title'] ?: null,
             "picture" => $messageEntity->getHiddenData()['custom_icon'] ?: null,
             "stats" => Array(
-                "answers" => $messageEntity->getResponsesCount()
+                "last_activity" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
+                "replies" => $messageEntity->getResponsesCount()
             ),
             "pinned_info" => Array(
                 "pinned_by" => is_string($messageEntity->getSender()) ? $messageEntity->getSender() :  ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),

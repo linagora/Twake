@@ -31,7 +31,7 @@ class MessageSystem
     public function get($options, $current_user)
     {
         $offset = isset($options["offset"]) ? $options["offset"] : null;
-        $limit = isset($options["limit"]) ? $options["limit"] : 60;
+        $limit = isset($options["limit"]) ? $options["limit"] : 20;
         $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
 
         $channel = $this->getInfosFromChannel($options["channel_id"]);   
@@ -39,7 +39,7 @@ class MessageSystem
             return;
         }
 
-        $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=3", [], $current_user);
+        $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future"), [], $current_user);
 
         error_log(count($response["resources"]));
 
@@ -47,10 +47,10 @@ class MessageSystem
         foreach($response["resources"] as $message){
             $messages[] = $this->convertFromNode($message, $channel);
             foreach($message["last_replies"] as $reply){
-                $messages[] = $this->convertFromNode($reply, $channel);
+                if($reply["id"] !== $message["id"])
+                    $messages[] = $this->convertFromNode($reply, $channel);
             }
         }
-
 
         if(count($messages) === 0
             && !$options["id"]
@@ -196,8 +196,11 @@ class MessageSystem
         $phpMessage->setHiddenData($message["context"]);
         $phpMessage->setPinned(!!$message["pinned"]);
         $phpMessage->setEdited(!!$message["edited"]);
-        $phpMessage->setCreationDate(new \DateTime("@" . intval(($message["last_activity"] ?: $message["created_at"]) / 1000)));
-        $phpMessage->setModificationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
+
+        $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
+        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
+
+        $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],

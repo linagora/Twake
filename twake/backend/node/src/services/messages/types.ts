@@ -28,6 +28,7 @@ export type MessageNotification = {
 export type MessageWithReplies = Message & {
   last_replies: Message[];
   stats: {
+    last_activity: number;
     replies: number;
   };
 };

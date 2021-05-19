@@ -112,6 +112,7 @@ export class ViewsService implements MessageViewsServiceAPI {
           ...first_message,
           stats: {
             replies: thread.answers,
+            last_activity: thread.last_activity,
           },
           last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
         });
