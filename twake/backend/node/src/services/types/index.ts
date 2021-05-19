@@ -36,14 +36,10 @@ export interface User {
   identity_provider_id?: uuid;
   // user email
   email?: string;
-}
-export interface App {
-  // unique app id
-  id: uuid;
-}
-export interface App {
-  // unique app id
-  id: uuid;
+  // server request
+  server_request?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
+  // application call
+  application_id: string;
 }
 
 export interface Workspace {

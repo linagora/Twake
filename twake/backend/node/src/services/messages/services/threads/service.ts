@@ -129,12 +129,12 @@ export class ThreadsService
    * @returns
    */
   async checkAccessToThread(context: ThreadExecutionContext): Promise<boolean> {
-    if (context.serverRequest) {
+    if (context?.user?.server_request) {
       return true;
     }
 
     logger.info(
-      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context.app?.id}`,
+      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context?.user?.application_id}`,
     );
 
     const thread = await this.repository.findOne({
