@@ -42,7 +42,6 @@ class MessageSystem
         $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
         $response = $this->forwardToNode("GET", $uri, [], $current_user);
 
-        error_log($uri);
 
         $messages = [];
         foreach($response["resources"] as $message){

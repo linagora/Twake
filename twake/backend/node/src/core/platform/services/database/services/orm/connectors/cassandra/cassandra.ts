@@ -459,7 +459,7 @@ export class CassandraConnector extends AbstractConnector<
     logger.debug(`services.database.orm.cassandra.find - Query: ${query}`);
 
     const results = await this.getClient().execute(query, [], {
-      fetchSize: parseInt(options.pagination.limitStr),
+      fetchSize: parseInt(options.pagination.limitStr) || 100,
       pageState: options.pagination.page_token || undefined,
       prepare: false,
     });

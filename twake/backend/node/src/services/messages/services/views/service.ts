@@ -69,7 +69,13 @@ export class ViewsService implements MessageViewsServiceAPI {
         workspace_id: context.channel.workspace_id,
         channel_id: context.channel.id,
       },
-      { pagination },
+      {
+        pagination: { ...pagination, page_token: null },
+        ...(!!pagination.page_token &&
+          pagination.reversed && { $lte: [["message_id", pagination.page_token]] }),
+        ...(!!pagination.page_token &&
+          !pagination.reversed && { $gte: [["message_id", pagination.page_token]] }),
+      },
     );
 
     const threads = _.uniqBy(
