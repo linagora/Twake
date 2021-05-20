@@ -211,10 +211,10 @@ class MessageSystem
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
         $phpMessage->setHiddenData($message["context"]);
 
-        error_log(json_encode($message["pinned_info"]));
+        error_log(json_encode(!!$message["edited"]));
 
         $phpMessage->setPinned(!!$message["pinned_info"]);
-        $phpMessage->setEdited(!!$message["edited"]);
+        $phpMessage->setEdited(false); //!!$message["edited"]);
         $phpMessage->setReactions($message["reactions"]);
 
         $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
