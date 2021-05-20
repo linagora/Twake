@@ -39,9 +39,10 @@ class MessageSystem
             return;
         }
 
-        $response = $this->forwardToNode("GET", "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future"), [], $current_user);
+        $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        $response = $this->forwardToNode("GET", $uri, [], $current_user);
 
-        error_log(count($response["resources"]));
+        error_log($uri);
 
         $messages = [];
         foreach($response["resources"] as $message){

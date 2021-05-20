@@ -25,11 +25,11 @@ export class MessageChannelMarkedRef {
   type: "pinned";
 
   @Type(() => String)
-  @Column("thread_id", "string")
+  @Column("thread_id", "timeuuid")
   thread_id: string;
 
   @Type(() => String)
-  @Column("message_id", "string")
+  @Column("message_id", "timeuuid")
   message_id: string;
 
   @Type(() => Number)

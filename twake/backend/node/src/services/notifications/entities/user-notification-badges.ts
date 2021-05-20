@@ -49,11 +49,11 @@ export class UserNotificationBadge {
    * Primary key
    */
   @Type(() => String)
-  @Column("thread_id", "string") //It can be null
+  @Column("thread_id", "timeuuid") //It can be null
   thread_id: string;
 
   @Type(() => String)
-  @Column("message_id", "string") //It can be null
+  @Column("message_id", "timeuuid") //It can be null
   message_id: string;
 
   /**
