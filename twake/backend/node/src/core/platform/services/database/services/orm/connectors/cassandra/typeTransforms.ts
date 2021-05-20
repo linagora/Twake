@@ -17,7 +17,10 @@ export const cassandraType = {
   counter: "COUNTER",
   blob: "BLOB",
   boolean: "BOOLEAN",
+
+  // backward compatibility
   twake_boolean: "TINYINT",
+  twake_int: "INT", //Depreciated
 };
 
 type TransformOptions = {

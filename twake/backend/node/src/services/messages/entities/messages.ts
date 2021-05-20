@@ -88,7 +88,7 @@ export class Message {
 
 export type MessageReaction = { count: number; name: string; users: string[] };
 
-export type MessageOverride = { title?: string; picture?: string };
+export type MessageOverride = { title?: string; picture?: string; type?: string };
 
 export type MessagePinnedInfo = { pinned_at: number; pinned_by: string };
 

@@ -13,7 +13,7 @@ import {
   toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
-import { Paginable } from "../../../core/platform/framework/api/crud-service";
+import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import UserServiceAPI from "../../user/api";
@@ -34,6 +34,7 @@ import CompanyUser from "../../user/entities/company_user";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
+import Workspace from "../../user/entities/workspace";
 
 const logger = getLogger("console.process.merge");
 
@@ -54,7 +55,7 @@ export class MergeProcess {
   ) {
     this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
   }
-
+  //
   merge(concurrent: number = 1): MergeProgress {
     const progress$ = new ReplaySubject<ProcessReport>();
     const { users$, companies$ } = this.getStreams(concurrent);
@@ -232,7 +233,21 @@ export class MergeProcess {
       distinct((company: Company) => company.id),
     );
   }
+  /*
+  private getWorkspaces(paginable?: Paginable): Observable<Workspace> {
+    return from(this.userService.workspaces.getWorkspaces(paginable)).pipe(
+      mergeMap(workspacesResult => {
+        const items$ = from(workspacesResult.getEntities());
+        const next$ = workspacesResult?.nextPage?.page_token
+          ? this.getWorkspaces(workspacesResult.nextPage)
+          : EMPTY;
 
+        return concat(items$, next$);
+      }),
+      distinct((workspace: Workspace) => workspace.id),
+    );
+  }
+*/
   private async createCompany(company: Company): Promise<CompanyCreatedStreamObject> {
     logger.debug("Creating company in the Console %s", company.displayName);
     let createdCompany: CreatedConsoleCompany;

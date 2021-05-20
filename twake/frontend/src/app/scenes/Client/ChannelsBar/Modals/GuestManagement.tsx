@@ -20,7 +20,7 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState<number>(10);
   const [shouldDisplayAdditionRow, setShouldDisplayAdditionRow] = useState<boolean>(false);
-  const { workspaceId, companyId } = RouterService.getStateFromRoute();
+  const { workspaceId, companyId, channelId } = RouterService.getStateFromRoute();
 
   GuestManagementService.bind({ search, channel_id: channel.data.id || '' });
   const { list } = GuestManagementService;
@@ -77,6 +77,9 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
         component="div"
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
+        <button onClick={() => console.log({ companyId, workspaceId, channelId })}>
+          ezaezaeza
+        </button>
         {shouldDisplayAdditionRow && (
           <MemberChannelRow
             channelId={channel.data.id || ''}
