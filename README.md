@@ -7,7 +7,7 @@
 ![backend-build](https://github.com/TwakeApp/Twake/workflows/backend-build/badge.svg?branch=main&style=flat)
 [![docker-build](https://github.com/Twake/Twake/actions/workflows/docker.yml/badge.svg)](https://github.com/Twake/Twake/actions/workflows/docker.yml)
 
-![Docker](https://img.shields.io/docker/pulls/twaketech/twake-php?style=flat)
+![Docker](https://img.shields.io/docker/pulls/twaketech/twake-node?style=flat)
 [![Docs](https://img.shields.io/badge/docs-up--to--date-blueviolet?style=flat)](https://doc.twake.app)
 [![Community](https://img.shields.io/badge/community-awesome-brightgreen?style=flat)](https://community.twake.app)
 [![Twitter](https://img.shields.io/badge/twitter-%40twake-blue?style=flat)](https://twitter.com/twake) [![Join the chat at https://gitter.im/linagora/Twake](https://badges.gitter.im/linagora/Twake.svg)](https://gitter.im/linagora/Twake?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -22,7 +22,7 @@ Twake offers all the features for collaboration :
 - Video call and conferencing
 - Real time document collaboration
 
-<a href="https://twakeapp.com"><img width=800 src="https://twake.app/medias/features/chat.jpg"/></a>
+<a href="https://twakeapp.com"><img width=800 src="https://github.com/linagora/Twake/raw/main/twake.png"/></a>
 
 ## Demo
 
