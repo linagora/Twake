@@ -1,8 +1,4 @@
-import {
-  Paginable,
-  ListResult,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -11,11 +7,11 @@ import { Message } from "../../entities/messages";
 import { Thread } from "../../entities/threads";
 import {
   ChannelViewExecutionContext,
-  CompanyExecutionContext,
   MessageViewListOptions,
   MessageWithReplies,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
+import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
 
 export class ViewsService implements MessageViewsServiceAPI {
@@ -69,13 +65,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         workspace_id: context.channel.workspace_id,
         channel_id: context.channel.id,
       },
-      {
-        pagination: { ...pagination, page_token: null },
-        ...(!!pagination.page_token &&
-          pagination.reversed && { $lte: [["message_id", pagination.page_token]] }),
-        ...(!!pagination.page_token &&
-          !pagination.reversed && { $gte: [["message_id", pagination.page_token]] }),
-      },
+      buildMessageListPagination(pagination, "message_id"),
     );
 
     const threads = _.uniqBy(

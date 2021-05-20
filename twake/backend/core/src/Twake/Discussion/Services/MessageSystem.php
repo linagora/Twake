@@ -39,16 +39,21 @@ class MessageSystem
             return;
         }
 
-        $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        if(!$parent_message_id){
+            $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        }else{
+            $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        }
         $response = $this->forwardToNode("GET", $uri, [], $current_user);
-
 
         $messages = [];
         foreach($response["resources"] as $message){
             $messages[] = $this->convertFromNode($message, $channel);
-            foreach($message["last_replies"] as $reply){
-                if($reply["id"] !== $message["id"])
-                    $messages[] = $this->convertFromNode($reply, $channel);
+            if($message["last_replies"]){
+                foreach($message["last_replies"] as $reply){
+                    if($reply["id"] !== $message["id"])
+                        $messages[] = $this->convertFromNode($reply, $channel);
+                }
             }
         }
 
@@ -70,7 +75,8 @@ class MessageSystem
 
     public function remove($object, $options, $current_user = null)
     {
-        return $this->depreciated->remove($object, $options, $current_user);
+        $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
+        return $this->convertFromNode($response["resource"], $channel);
     }
 
     public function save($object, $options, $current_user = null, $application = null)
@@ -80,79 +86,89 @@ class MessageSystem
             return;
         }
 
-        $newMessage = !$object["id"];
-        
-        $message = $this->convertToNode($object);
-        if(!$current_user){
-            $message["subtype"] = "system";
-        }
-        if($application){
-            $message["subtype"] = "application";
-        }
-        $message["context"]["_front_id"] = $object["front_id"];
-
         $response = null;
-        
-        //New thread
-        if(!$object["parent_message_id"] && $newMessage){
 
-            $data = [
-                "resource" => [
-                    "participants" => [
-                        [
-                            "type" => "channel",
-                            "id" => $channel["channel_id"],
-                            "workspace_id" => $channel["workspace_id"],
-                            "company_id" => $channel["company_id"],
-                        ]
-                    ]
-                ],
-                "options" => []
-            ];
-
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads", $data, $current_user, $application ? $application->getId() : null);
-            error_log(json_encode($response));
-            $object["parent_message_id"] = $response["resource"]["id"];
-            $message["thread_id"] = $response["resource"]["id"];
-            $message["id"] = $response["resource"]["id"];
+        if($object["id"]){
+            //Manage message pin
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => [$object["pinned"]]], $current_user, $application ? $application->getId() : null);
         }
 
-        error_log("message to save: ". json_encode($message));
-        
-        //New message in thread (also called for new threads because we set the parent_message_id automatically)
-        if($object["parent_message_id"] && $newMessage){
+        if($object["_user_reaction"]){
+            //Manage user reaction
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => [$object["_user_reaction"]]], $current_user, $application ? $application->getId() : null);
+        }else{
+            //Manage message edition
 
-            $data = [
-                "resource" => $message
-            ];
+            $newMessage = !$object["id"];
+            
+            $message = $this->convertToNode($object);
+            if(!$current_user){
+                $message["subtype"] = "system";
+            }
+            if($application){
+                $message["subtype"] = "application";
+            }
+            $message["context"]["_front_id"] = $object["front_id"];
+            
+            //New thread
+            if(!$object["parent_message_id"] && $newMessage){
 
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages", $data, $current_user, $application ? $application->getId() : null);
+                $data = [
+                    "resource" => [
+                        "participants" => [
+                            [
+                                "type" => "channel",
+                                "id" => $channel["channel_id"],
+                                "workspace_id" => $channel["workspace_id"],
+                                "company_id" => $channel["company_id"],
+                            ]
+                        ]
+                    ],
+                    "options" => []
+                ];
 
-        }else
+                $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads", $data, $current_user, $application ? $application->getId() : null);
+                $object["parent_message_id"] = $response["resource"]["id"];
+                $message["thread_id"] = $response["resource"]["id"];
+                $message["id"] = $response["resource"]["id"];
+            }
 
-        //Edited message
-        if(!$newMessage){
+            //New message in thread (also called for new threads because we set the parent_message_id automatically)
+            if($object["parent_message_id"] && $newMessage){
 
-            $data = [
-                "resource" => $message
-            ];
+                $data = [
+                    "resource" => $message
+                ];
 
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".$object["parent_message_id"]."/messages/".$object["id"], $data, $current_user, $application ? $application->getId() : null);
+                $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages", $data, $current_user, $application ? $application->getId() : null);
 
-        }else {
+            }else
 
-            error_log("Unknown operation");
+            //Edited message
+            if(!$newMessage){
+
+                $data = [
+                    "resource" => $message
+                ];
+
+                $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"], $data, $current_user, $application ? $application->getId() : null);
+
+            }else {
+
+                error_log("Unknown operation");
+
+            }
 
         }
 
         error_log(json_encode($response));
 
-        //
-
         return $this->convertFromNode($response["resource"], $channel);
     }
 
     private function convertToNode($object){
+
+        //TODO convert to new block if this is user 'simple' message
 
         $blocks = [[
             "type" => "twacode",
@@ -194,13 +210,19 @@ class MessageSystem
         $phpMessage->setApplicationId($message["application_id"]);
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
         $phpMessage->setHiddenData($message["context"]);
-        $phpMessage->setPinned(!!$message["pinned"]);
+
+        error_log(json_encode($message["pinned_info"]));
+
+        $phpMessage->setPinned(!!$message["pinned_info"]);
         $phpMessage->setEdited(!!$message["edited"]);
+        $phpMessage->setReactions($message["reactions"]);
 
         $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
         $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
+
+        //TODO find the twacode block if exists or get the fallback string
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],

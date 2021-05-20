@@ -42,28 +42,28 @@ export class ChannelViewProcessor {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
       //Publish message in corresponding channel
       if (message.created) {
+        const pkPrefix = {
+          company_id: participant.company_id,
+          workspace_id: participant.workspace_id,
+          channel_id: participant.id,
+        };
+
+        await this.repository.save(
+          getInstance({
+            ...pkPrefix,
+            thread_id: thread.id,
+            message_id: message.resource.id,
+          }),
+        );
+
         const reversed = await this.repositoryReversed.findOne({
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-          channel_id: participant.id,
+          ...pkPrefix,
           thread_id: thread.id,
         });
-
-        const ref = getInstance({
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-          channel_id: participant.id,
-          thread_id: thread.id,
-          message_id: message.resource.id,
-        });
-
-        await this.repository.save(ref);
 
         if (reversed) {
           const existingThreadRef = await this.repository.findOne({
-            company_id: participant.company_id,
-            workspace_id: participant.workspace_id,
-            channel_id: participant.id,
+            ...pkPrefix,
             message_id: reversed.message_id,
           });
           reversed.message_id = message.resource.id;
@@ -72,9 +72,7 @@ export class ChannelViewProcessor {
         } else {
           await this.repositoryReversed.save(
             getInstanceReversed({
-              company_id: participant.company_id,
-              workspace_id: participant.workspace_id,
-              channel_id: participant.id,
+              ...pkPrefix,
               thread_id: thread.id,
               message_id: message.resource.id,
             }),

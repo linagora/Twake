@@ -4,26 +4,18 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  CreateResult,
-  ExecutionContext,
-  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
-import {
-  logger,
-  RealtimeDeleted,
-  RealtimeSaved,
-  TwakeContext,
-} from "../../../../core/platform/framework";
+import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
 import { getInstance, Message, MessageReaction } from "../../entities/messages";
 import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
-import _ from "lodash";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../types";
+import { buildMessageListPagination } from "../utils";
+import _ from "lodash";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -148,6 +140,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't edit this message.");
     }
 
+    console.log("In 'pin' method");
+
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
       id: operation.id,
@@ -184,6 +178,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
+
+    console.log("In 'reaction' method");
 
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
@@ -296,7 +292,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options?: ListOption,
     context?: ThreadExecutionContext,
   ): Promise<ListResult<Message>> {
-    const list = await this.repository.find({ thread_id: context.thread.id }, { pagination });
+    const list = await this.repository.find(
+      { thread_id: context.thread.id },
+      buildMessageListPagination(pagination, "id"),
+    );
     return list;
   }
 
@@ -346,7 +345,7 @@ function getSubtype(
 
 function updateMessageReactions(message: Message, selectedReactions: string[], userId: string) {
   let reactions: { [key: string]: MessageReaction } = {};
-  for (const reaction of message.reactions) {
+  for (const reaction of message.reactions || []) {
     reactions[reaction.name] = reaction;
   }
   for (const reaction of selectedReactions) {
@@ -362,4 +361,5 @@ function updateMessageReactions(message: Message, selectedReactions: string[], u
       reactions[key].users.push(userId);
     }
   }
+  message.reactions = Object.values(reactions);
 }

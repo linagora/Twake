@@ -28,7 +28,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id?: string;
+        message_id?: string;
       };
       Body: {
         resource: Message;
@@ -40,7 +40,7 @@ export class MessagesController
     try {
       const result = await this.service.messages.save(
         {
-          id: request.params.id || undefined,
+          id: request.params.message_id || undefined,
           ...request.body.resource,
         },
         {},
@@ -59,7 +59,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id: string;
+        message_id: string;
       };
     }>,
     reply: FastifyReply,
@@ -69,7 +69,7 @@ export class MessagesController
       await this.service.messages.delete(
         {
           thread_id: request.params.thread_id,
-          id: request.params.id,
+          id: request.params.message_id,
         },
         context,
       );
@@ -86,7 +86,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id: string;
+        message_id: string;
       };
     }>,
     reply: FastifyReply,
@@ -96,7 +96,7 @@ export class MessagesController
       const resource = await this.service.messages.get(
         {
           thread_id: request.params.thread_id,
-          id: request.params.id,
+          id: request.params.message_id,
         },
         context,
       );
@@ -144,7 +144,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id: string;
+        message_id: string;
       };
       Body: {
         reactions: string[];
@@ -156,7 +156,7 @@ export class MessagesController
     try {
       const result = await this.service.messages.reaction(
         {
-          id: request.params.id,
+          id: request.params.message_id,
           reactions: request.body.reactions,
         },
         {},
@@ -175,7 +175,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id: string;
+        message_id: string;
       };
       Body: {
         active: boolean;
@@ -188,7 +188,7 @@ export class MessagesController
     try {
       const result = await this.service.messages.bookmark(
         {
-          id: request.params.id,
+          id: request.params.message_id,
           bookmark_id: request.body.bookmark_id,
           active: request.body.active,
         },
@@ -208,7 +208,7 @@ export class MessagesController
       Params: {
         company_id: string;
         thread_id: string;
-        id: string;
+        message_id: string;
       };
       Body: {
         pin: boolean;
@@ -220,7 +220,7 @@ export class MessagesController
     try {
       const result = await this.service.messages.pin(
         {
-          id: request.params.id,
+          id: request.params.message_id,
           pin: request.body.pin,
         },
         {},
