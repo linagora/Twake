@@ -7,7 +7,7 @@ import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelMember } from "../../../src/services/channels/entities/channel-member";
 import { ChannelExecutionContext, ChannelVisibility } from "../../../src/services/channels/types";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { ResourceGetResponse, ResourceListResponse, User } from "../../../src/services/types";
+import { ResourceGetResponse, ResourceListResponse, User } from "../../../src/utils/types";
 
 describe.skip("The ChannelMembers REST API", () => {
   const url = "/internal/services/channels/v1";

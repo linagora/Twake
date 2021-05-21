@@ -4,7 +4,7 @@ import { TestPlatform, init } from "../setup";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelMemberNotificationLevel } from "../../../src/services/channels/types";
-import { User } from "../../../src/services/types";
+import { User } from "../../../src/utils/types";
 import {
   ChannelUtils,
   get as getChannelUtils,
