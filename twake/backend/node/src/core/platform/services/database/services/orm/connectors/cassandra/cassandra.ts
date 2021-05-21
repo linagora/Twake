@@ -161,7 +161,7 @@ export class CassandraConnector extends AbstractConnector<
       return this;
     }
 
-    if (this.options.elasticsearch) {
+    if (this.options.elasticsearch && this.options.elasticsearch.endpoint) {
       this.searchClient = new Search(this.options.elasticsearch);
       this.searchClient.connect();
     }
