@@ -18,5 +18,8 @@
   },
   "pubsub": {
     "urls": ["amqp://admin:admin@rabbitmq:5672"]
+  },
+  "phpnode": {
+    "php_endpoint": false
   }
 }
