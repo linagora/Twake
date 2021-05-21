@@ -16,6 +16,7 @@ import {
 } from "../../../../../../../../src/services/notifications/entities/user-notification-badges";
 import { PushNotificationToUsersMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/push-to-users/index";
 import { MentionNotification } from "../../../../../../../../src/services/notifications/types";
+import { uniqueId } from "lodash";
 
 describe("The PushNotificationToUsersMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
@@ -173,6 +174,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
     });
 
     it("will keep users who did not read the channel yet", async done => {
+      const message = getMessage();
+
       setPreferences([
         {
           channel_id,
@@ -196,6 +199,8 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
           thread_id,
           user_id: "1",
           workspace_id,
+          message_id: message.message_id,
+          id: uniqueId(),
         },
         {
           channel_id,
@@ -203,11 +208,13 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
           thread_id,
           user_id: "3",
           workspace_id,
+          message_id: message.message_id,
+          id: uniqueId(),
         },
       ]);
+
       const lessThan = Date.now();
       const users = ["1", "2", "3", "4"];
-      const message = getMessage();
       const channel = {
         channel_id,
         company_id,
