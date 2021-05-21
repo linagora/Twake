@@ -1,20 +1,4 @@
-export const _userSchema = {
-  type: "object",
-  properties: {
-    id: { type: "string" },
-    connected: { type: "boolean" },
-    creationdate: { type: "string" },
-    firstname: { type: "string" },
-    lastname: { type: "string" },
-    usernamecanonical: { type: "string" },
-    emailcanonical: { type: "string" },
-    phone: { type: "string" },
-    timezone: { type: "string" },
-    groups: { type: "array" },
-  },
-};
-
-export const userSchema = {
+const userObjectSchema = {
   type: "object",
   properties: {
     id: { type: "string" },
@@ -63,12 +47,45 @@ export const userSchema = {
   },
 };
 
+const companyObjectSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    logo: { type: "string" },
+    plan: {
+      type: ["object", "null"],
+      properties: {
+        name: { type: "string" },
+        limits: {
+          type: "object",
+          properties: {
+            members: { type: "number" },
+            guests: { type: "number" },
+            storage: { type: "number" },
+          },
+        },
+      },
+    },
+    stats: {
+      type: ["object", "null"],
+      properties: {
+        created_at: { type: "number" },
+        total_members: { type: "number" },
+        total_guests: { type: "number" },
+      },
+    },
+    role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
+    status: { type: "string", enum: ["owner", "deactivated", "invited"] },
+  },
+};
+
 export const getUserSchema = {
   response: {
     "2xx": {
       type: "object",
       properties: {
-        resource: userSchema,
+        resource: userObjectSchema,
       },
       required: ["resource"],
     },
@@ -85,7 +102,20 @@ export const getUsersSchema = {
     "2xx": {
       type: "object",
       properties: {
-        resources: { type: "array", items: userSchema },
+        resources: { type: "array", items: userObjectSchema },
+      },
+      required: ["resources"],
+    },
+  },
+};
+
+export const getUserCompaniesSchema = {
+  type: "object",
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: { type: "array", items: companyObjectSchema },
       },
       required: ["resources"],
     },

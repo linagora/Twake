@@ -107,7 +107,7 @@ describe("The /users API", () => {
         expect.arrayContaining([
           expect.objectContaining({
             role: expect.stringMatching(/owner|admin|member|guest/),
-            // status: expect.stringMatching(/active|deactivated|invited/),
+            status: expect.stringMatching(/active|deactivated|invited/),
             company: {
               id: expect.any(String),
               name: expect.any(String),
@@ -201,77 +201,82 @@ describe("The /users API", () => {
     });
   });
 
-  describe.skip("The POST /users route", () => {
+  describe.only("The GET /users/:user_id/companies route", () => {
     it("should 401 when not authenticated", async done => {
       const response = await platform.app.inject({
-        method: "POST",
-        url,
+        method: "GET",
+        url: `${url}/1/companies`,
       });
 
       expect(response.statusCode).toBe(401);
       done();
     });
 
-    it("should 400 if body is not defined", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+    it("should 404 when user does not exists", async done => {
+      const id = "11111111-1111-1111-1111-111111111111";
+      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
       const response = await platform.app.inject({
-        method: "POST",
-        url,
+        method: "GET",
+        url: `${url}/${id}/companies`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
       });
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual({
+        error: "Not Found",
+        message: `User ${id} not found`,
+        statusCode: 404,
+      });
       done();
     });
 
-    it("should 400 if body is empty JSON", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
+    it.only("should 200 and on correct request", async done => {
+      const myId = testUsers.users[0].id;
+      const anotherUserId = testUsers.users[1].id;
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
-        method: "POST",
-        url,
-        payload: {},
+        method: "GET",
+        url: `${url}/${anotherUserId}/companies`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
       });
 
-      expect(response.statusCode).toBe(400);
-      done();
-    });
+      expect(response.statusCode).toBe(200);
 
-    it("should 400 if body.email is not defined", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
-      const response = await platform.app.inject({
-        method: "POST",
-        url,
-        payload: {
-          notemail: "test",
-        },
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
-      });
+      const resources = response.json()["resources"];
+      expect(resources.length).toBeGreaterThan(0);
 
-      expect(response.statusCode).toBe(400);
-      done();
-    });
+      for (const resource of resources) {
+        expect(resource).toMatchObject({
+          id: expect.any(String),
+          name: expect.any(String),
+          logo: expect.any(String),
+          role: expect.stringMatching(/owner|admin|member|guest/),
+          status: expect.stringMatching(/active|deactivated|invited/),
+        });
 
-    it("should create the user and send it back", async done => {
-      const jwtToken = await platform.auth.getJWTToken();
-      const response = await platform.app.inject({
-        method: "POST",
-        url,
-        payload: {
-          email: "me@twakeapp.com",
-        },
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
-      });
-
-      expect(response.statusCode).toBe(201);
+        if (resource.plan) {
+          expect(resource.plan).toMatchObject({
+            name: expect.any(String),
+            limits: expect.objectContaining({
+              members: expect.any(Number),
+              guests: expect.any(Number),
+              storage: expect.any(Number),
+            }),
+          });
+        }
+        if (resources.stats) {
+          expect(resource.plan).toMatchObject({
+            created_at: expect.any(Number),
+            total_members: expect.any(Number),
+            total_guests: expect.any(Number),
+          });
+        }
+      }
       done();
     });
   });

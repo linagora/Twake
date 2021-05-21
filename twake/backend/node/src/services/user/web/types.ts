@@ -27,17 +27,25 @@ export interface UsersParameters {
   companies?: string;
 }
 
-export interface UserCompany {
-  role: string; // "owner" | "admin" | "member" | "guest",
-  status: string; // "active" | "deactivated" | "invited",
-  company: {
-    id: string; //Related to console "code"
-    name: string;
-    logo: string;
-  };
+export interface UserCompanyRole {
+  role?: "owner" | "admin" | "member" | "guest";
 }
 
-export interface UserResponse {
+export interface UserCompanyStatus {
+  status?: "active" | "deactivated" | "invited";
+}
+
+export interface CompanyShort {
+  id: string; //Related to console "code"
+  name: string;
+  logo: string;
+}
+
+export interface UserCompanyObject extends UserCompanyRole, UserCompanyStatus {
+  company: CompanyShort;
+}
+
+export interface UserObject {
   id: string;
   provider: string;
   provider_id: string;
@@ -58,5 +66,28 @@ export interface UserResponse {
     timezone: number;
   };
 
-  companies?: UserCompany[];
+  companies?: UserCompanyObject[];
+}
+
+export interface CompanyPlanObject {
+  name: string;
+  limits: {
+    members: number;
+    guests: number;
+    storage: number;
+  };
+}
+
+export interface CompanyStatsObject {
+  created_at: number;
+  total_members: number;
+  total_guests: number;
+}
+
+export interface CompanyObject extends UserCompanyRole, UserCompanyStatus {
+  id: string;
+  name: string;
+  logo: string;
+  plan?: CompanyPlanObject;
+  stats?: CompanyStatsObject;
 }

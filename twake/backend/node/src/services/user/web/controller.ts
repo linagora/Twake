@@ -9,23 +9,66 @@ import { ResourceGetResponse } from "../../../services/types";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../api";
 
 import User from "../entities/user";
-import { UserListQueryParameters, UserParameters, UserResponse } from "./types";
+import {
+  UserCompanyObject,
+  UserListQueryParameters,
+  UserParameters,
+  UserObject,
+  UserCompanyRole,
+  UserCompanyStatus,
+  CompanyShort,
+  CompanyObject,
+  CompanyStatsObject,
+} from "./types";
 import assert from "assert";
+import Company from "../entities/company";
+import CompanyUser from "../entities/company_user";
 
 export class UsersCrudController
   implements
     CrudController<
-      ResourceGetResponse<UserResponse>,
+      ResourceGetResponse<UserObject>,
       ResourceCreateResponse<User>,
-      ResourceListResponse<UserResponse>,
+      ResourceListResponse<UserObject>,
       ResourceDeleteResponse
     > {
   constructor(protected service: UsersServiceAPI, protected companyService: CompaniesServiceAPI) {
     assert(service, "service is not inited");
     assert(companyService, "companyService is not inited");
+    this.companiesCache = {};
   }
 
-  private async formatUser(user: User, includeCompanies: boolean): Promise<UserResponse> {
+  companiesCache = {} as { [key: string]: Company };
+
+  private async getCompany(companyId: string): Promise<Company> {
+    const company: Company =
+      this.companiesCache[companyId] || (await this.companyService.getCompany({ id: companyId }));
+
+    this.companiesCache[companyId] = company;
+    return company;
+  }
+
+  private async getUserCompaniesOut(userId: string): Promise<UserCompanyObject[]> {
+    const userCompanies = (await this.service.getUserCompanies({ id: userId })).getEntities();
+
+    return await Promise.all(
+      userCompanies.map(async uc => {
+        const company = await this.getCompany(uc.group_id);
+
+        return {
+          role: uc.role as UserCompanyRole["role"],
+          status: "active" as UserCompanyStatus["status"], // FIXME: with real status
+          company: {
+            id: uc.group_id,
+            name: company.name,
+            logo: company.logo,
+          } as CompanyShort,
+        } as UserCompanyObject;
+      }),
+    );
+  }
+
+  private async formatUser(user: User, includeCompanies: boolean): Promise<UserObject> {
     let resUser = {
       id: user.id,
       provider: user.identity_provider,
@@ -39,13 +82,9 @@ export class UsersCrudController
       deleted: Boolean(user.deleted),
       status: user.status_icon,
       last_activity: user.last_activity,
-    } as UserResponse;
+    } as UserObject;
 
     if (includeCompanies) {
-      const userCompanies = (await this.service.getUserCompanies({ id: user.id })).getEntities();
-
-      const companiesCache = {} as { [key: string]: any };
-
       resUser = {
         ...resUser,
         preference: {
@@ -53,34 +92,34 @@ export class UsersCrudController
           timezone: user.timezone,
         },
 
-        companies: await Promise.all(
-          userCompanies.map(async uc => {
-            const company =
-              companiesCache[uc.group_id] ||
-              (await this.companyService.getCompany({ id: uc.group_id }));
-            companiesCache[uc.group_id] = company;
-
-            return {
-              role: uc.role,
-              status: "", // "active" | "deactivated" | "invited", // FIXME: unknown source
-              company: {
-                id: uc.group_id,
-                name: company.name,
-                logo: company.logo,
-              },
-            };
-          }),
-        ),
+        companies: await this.getUserCompaniesOut(user.id),
       };
     }
 
     return resUser;
   }
 
+  private formatCompany(company: Company, companyUser?: CompanyUser): CompanyObject {
+    const res: CompanyObject = {
+      id: company.id,
+      name: company.name,
+      logo: company.logo,
+      plan: company.plan,
+      stats: company.stats,
+    };
+
+    if (companyUser) {
+      res.status = "active"; // FIXME: real status
+      res.role = companyUser.role;
+    }
+
+    return res;
+  }
+
   async get(
     request: FastifyRequest<{ Params: UserParameters }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<UserResponse>> {
+  ): Promise<ResourceGetResponse<UserObject>> {
     const context = getExecutionContext(request);
     const user = await this.service.get({ id: request.params.id }, getExecutionContext(request));
 
@@ -98,15 +137,13 @@ export class UsersCrudController
 
   async list(
     request: FastifyRequest<{ Querystring: UserListQueryParameters }>,
-  ): Promise<ResourceListResponse<UserResponse>> {
-    const pagination = new Pagination(request.query.page_token, "10");
+  ): Promise<ResourceListResponse<UserObject>> {
     const context = getExecutionContext(request);
 
     const userIds = request.query.user_ids ? request.query.user_ids.split(",") : [];
 
     const users = await this.service.list(
-      // new Pagination(request.query.page_token, request.query.limit),
-      pagination,
+      new Pagination(request.query.page_token, request.query.limit),
       { userIds },
       context,
     );
@@ -121,6 +158,45 @@ export class UsersCrudController
     return {
       resources: resUsers,
       websockets: [], // empty for now
+    };
+  }
+
+  async getUserCompanies(
+    request: FastifyRequest<{ Params: UserParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<CompanyObject>> {
+    const context = getExecutionContext(request);
+
+    const user = await this.service.get({ id: request.params.id }, getExecutionContext(request));
+
+    if (!user) {
+      reply.notFound(`User ${request.params.id} not found`);
+
+      return;
+    }
+
+    // const getCompaniesIds = (companyId: string) =>
+    //   this.service
+    //     .getUserCompanies({ id: companyId })
+    //     .then(a => a.getEntities().map(a => a.group_id));
+
+    const [currentUserCompanies, requestedUserCompanies] = await Promise.all(
+      [context.user.id, request.params.id].map(id =>
+        this.service.getUserCompanies({ id }).then(a => a.getEntities()),
+      ),
+    );
+
+    const currentUserCompaniesIds = new Set(currentUserCompanies.map(a => a.group_id));
+
+    const combos = (await Promise.all(
+      requestedUserCompanies
+        .filter(a => currentUserCompaniesIds.has(a.group_id))
+        .map((uc: CompanyUser) => this.getCompany(uc.group_id).then((c: Company) => [c, uc])),
+    )) as [Company, CompanyUser][];
+
+    return {
+      resources: combos.map(combo => this.formatCompany(...combo)),
+      websockets: [],
     };
   }
 }

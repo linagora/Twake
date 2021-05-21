@@ -8,7 +8,7 @@ export const TYPE = "group_user";
  * Link between a company and a user
  */
 @Entity(TYPE, {
-  primaryKey: [["group_id"], "user_id", "id"],
+  primaryKey: [["user_id"], "group_id", "id"],
   type: TYPE,
 })
 export default class CompanyUser {
