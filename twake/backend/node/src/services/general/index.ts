@@ -1,6 +1,8 @@
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import { GeneralServiceAPI } from "./api";
+import web from "./web/index";
+import { ServerConfiguration } from "./types";
 
 @Prefix("/internal/services/general/v1")
 @Consumes(["webserver"])
@@ -15,6 +17,15 @@ export default class MessageService extends TwakeService<GeneralServiceAPI> {
 
   public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+
+    const configuration = this.configuration.get<ServerConfiguration["configuration"]>();
+
+    console.log(configuration);
+
+    fastify.register((instance, _opts, next) => {
+      web(instance, { prefix: this.prefix, configuration: configuration });
+      next();
+    });
 
     return this;
   }

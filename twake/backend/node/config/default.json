@@ -1,5 +1,17 @@
 {
-  "general": {},
+  "general": {
+    "help_link": false,
+    "accounts": {
+      "type": "internal",
+      "internal": {
+        "disable_account_creation": false,
+        "disable_email_verification": true
+      }
+    }
+  },
+  "console": {
+    "provider": "https://console.twake.app"
+  },
   "sentry": {
     "dsn": ""
   },
