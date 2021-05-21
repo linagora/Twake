@@ -196,7 +196,7 @@ class MessageSystem
         ];
     }
 
-    private function convertFromNode($message, $channel){
+    public function convertFromNode($message, $channel){
 
         if($message["last_replies"] || $message["thread_id"] === $message["id"]){
             $message["thread_id"] = "";
@@ -210,8 +210,6 @@ class MessageSystem
         $phpMessage->setApplicationId($message["application_id"]);
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
         $phpMessage->setHiddenData($message["context"]);
-
-        error_log(json_encode(!!$message["edited"]));
 
         $phpMessage->setPinned(!!$message["pinned_info"]);
         $phpMessage->setEdited(false); //!!$message["edited"]);

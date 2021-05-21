@@ -1,4 +1,4 @@
-import { webSocketSchema } from "../../types";
+import { webSocketSchema } from "../../../utils/types";
 
 const channelMemberSchema = {
   type: "object",

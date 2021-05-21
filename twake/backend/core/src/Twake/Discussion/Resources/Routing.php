@@ -12,7 +12,8 @@ class Routing extends BaseRouting
     protected $routes = [
         "get" => ["handler" => "Discussion:getAction", "methods" => ["POST"], "security" => ["user_connected_security"]],
         "save" => ["handler" => "Discussion:save", "methods" => ["POST"], "security" => ["user_connected_security"]],
-        "remove" => ["handler" => "Discussion:remove", "methods" => ["POST"], "security" => ["user_connected_security"]]
+        "remove" => ["handler" => "Discussion:remove", "methods" => ["POST"], "security" => ["user_connected_security"]],
+        "noderealtime" => ["handler" => "Discussion:nodeRealTime", "methods" => ["POST"]]
     ];
 
 }

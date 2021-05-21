@@ -1,18 +1,5 @@
 {
-  "services": [
-    "auth",
-    "user",
-    "channels",
-    "notifications",
-    "messages",
-    "webserver",
-    "websocket",
-    "database",
-    "pubsub",
-    "realtime",
-    "phpnode",
-    "tracker"
-  ],
+  "general": {},
   "sentry": {
     "dsn": ""
   },
@@ -35,7 +22,8 @@
     }
   },
   "phpnode": {
-    "secret": "api_supersecret"
+    "secret": "api_supersecret",
+    "php_endpoint": "http://nginx:80"
   },
   "websocket": {
     "path": "/socket/",
@@ -79,5 +67,20 @@
   },
   "pubsub": {
     "urls": ["amqp://guest:guest@localhost:5672"]
-  }
+  },
+  "services": [
+    "auth",
+    "user",
+    "channels",
+    "notifications",
+    "messages",
+    "webserver",
+    "websocket",
+    "database",
+    "pubsub",
+    "realtime",
+    "phpnode",
+    "tracker",
+    "general"
+  ]
 }

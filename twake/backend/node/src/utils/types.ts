@@ -7,20 +7,11 @@ import {
   Channel as ChannelEntity,
   ChannelTab,
   ChannelPendingEmails,
-} from "../channels/entities";
-import { ChannelParameters, PaginationQueryParameters } from "../channels/web/types";
-import { MessageNotification } from "../messages/types";
+} from "../services/channels/entities";
+import { ChannelParameters, PaginationQueryParameters } from "../services/channels/web/types";
+import { MessageNotification } from "../services/messages/types";
 
 export type uuid = string;
-
-export const webSocketSchema = {
-  type: "object",
-  properties: {
-    name: { type: "string" },
-    room: { type: "string" },
-    encryption_key: { type: "string" },
-  },
-};
 
 /**
  * User in platform:
@@ -42,23 +33,32 @@ export interface User {
   application_id?: string;
 }
 
-export interface Workspace {
-  company_id: string;
-  workspace_id: string;
-}
+export const webSocketSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    room: { type: "string" },
+    encryption_key: { type: "string" },
+  },
+};
 
 export interface Channel extends Workspace {
   id: string;
+}
+
+export enum ChannelType {
+  DIRECT = "direct",
+}
+
+export interface Workspace {
+  company_id: string;
+  workspace_id: string;
 }
 
 export interface WebsocketMetadata {
   room: string;
   name?: string;
   encryption_key?: string;
-}
-
-export enum ChannelType {
-  DIRECT = "direct",
 }
 
 export class ResourceListResponse<T> {

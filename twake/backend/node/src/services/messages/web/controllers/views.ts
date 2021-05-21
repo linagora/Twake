@@ -6,7 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";

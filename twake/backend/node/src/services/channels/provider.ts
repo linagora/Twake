@@ -18,7 +18,7 @@ import {
   ChannelPendingEmailsPrimaryKey,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
-import { User } from "../types";
+import { User } from "../../utils/types";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";

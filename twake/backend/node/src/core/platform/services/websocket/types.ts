@@ -3,7 +3,7 @@ import { Server as HttpsServer } from "https";
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import socketIO from "socket.io";
 import SocketIORedis from "socket.io-redis";
-import { User } from "../../../../services/types";
+import { User } from "../../../../utils/types";
 import { JwtType } from "../types";
 
 export interface AdaptersConfiguration {

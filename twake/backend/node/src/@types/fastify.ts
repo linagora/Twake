@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import SocketIO from "socket.io";
-import { User } from "../services/types";
+import { User } from "../utils/types";
 
 export interface authenticateDecorator {
   (request: FastifyRequest): FastifyRequest;

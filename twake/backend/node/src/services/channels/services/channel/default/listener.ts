@@ -1,7 +1,7 @@
 import { Channel, getDefaultChannelInstance } from "../../../entities";
 import { Initializable, getLogger } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../../../services/types";
+import { ResourceEventsPayload } from "../../../../../utils/types";
 import { DefaultChannelService } from "../../../provider";
 
 const logger = getLogger("channel:default:listener");

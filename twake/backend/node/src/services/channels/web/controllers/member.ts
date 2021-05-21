@@ -21,7 +21,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
   User,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 
 export class ChannelMemberCrudController
   implements

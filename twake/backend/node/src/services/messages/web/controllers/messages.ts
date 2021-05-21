@@ -6,7 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../types";
+} from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";

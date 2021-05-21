@@ -7,7 +7,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 

@@ -57,5 +57,66 @@ class Discussion extends BaseController
         return new Response(Array("data" => $objects));
     }
 
+    public function nodeRealTime(Request $request)
+    {
+        $token = explode(" ", getallheaders()["Authorization"])[1];
+        $secret = $this->app->getContainer()->getParameter("node.secret");
+        if($token != $secret){
+            error_log("got node realtime request unauthorized");
+            return new Response(Array("error" => "unauthorized"));
+        }
+
+        $context = $request->request->get("context");
+        $entity = $request->request->get("entity");
+        $participant = $request->request->get("participant");
+
+        $channel_id = $participant["id"];
+        $parent_message_id = $context["thread_id"] === $entity["id"] ? "" : $context["thread_id"];
+        $removed = $entity["subtype"] == "deleted";
+
+        $array = $this->get("app.messages")->convertFromNode($entity, [
+            "channel_id" => $channel_id
+        ]);
+
+        if($removed){
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "message_id" => $entity["id"],
+                "thread_id" => $parent_message_id
+            );
+            $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $channel_id . "/messages/updates");
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $entity["context"]["_front_id"] ?: $entity["id"]
+            );
+            $this->app->getServices()->get("app.websockets")->push("messages/" . $channel_id, $event);
+        
+        } else {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "update",
+                "message_id" => $entity["id"],
+                "thread_id" => $parent_message_id
+            );
+            $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $channel_id . "/messages/updates");
+
+            $event = Array(
+                "client_id" => "bot",
+                "action" => "save",
+                "object_type" => "",
+                "object" => $array
+            );
+            $this->app->getServices()->get("app.websockets")->push("messages/" . $channel_id, $event);
+        }
+
+        return new Response(Array("data" => "ok"));
+    }
+
 
 }

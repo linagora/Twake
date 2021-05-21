@@ -10,7 +10,7 @@ import {
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../../../types";
+import { ResourceEventsPayload } from "../../../../../../utils/types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {

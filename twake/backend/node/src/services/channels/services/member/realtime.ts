@@ -1,4 +1,4 @@
-import { Channel, User, WebsocketMetadata } from "../../../../services/types";
+import { Channel, User, WebsocketMetadata } from "../../../../utils/types";
 import { ChannelMember } from "../../entities";
 import { getChannelPath, getChannelsPath } from "../channel/realtime";
 import { ChannelExecutionContext } from "../../types";

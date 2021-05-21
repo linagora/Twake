@@ -1,5 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
-import { uuid } from "../types";
+import { uuid } from "../../utils/types";
 import { MessageFileMetadata } from "./entities/message-files";
 import { Message } from "./entities/messages";
 import { Thread } from "./entities/threads";

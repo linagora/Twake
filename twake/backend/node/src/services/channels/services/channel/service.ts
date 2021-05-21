@@ -25,7 +25,7 @@ import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entit
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
-import { ResourceEventsPayload, User } from "../../../types";
+import { ResourceEventsPayload, User } from "../../../../utils/types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
 import {

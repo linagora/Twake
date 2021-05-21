@@ -20,7 +20,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
-} from "../../../types";
+} from "../../../../utils/types";
 import { getTabsRealtimeRoom } from "../../services/tab/service";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
