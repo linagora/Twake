@@ -279,7 +279,7 @@ describe("The /users API", () => {
     });
   });
 
-  describe.only("The GET /companies/:company_id route", () => {
+  describe.skip("The GET /companies/:company_id route", () => {
     it("should 404 when company does not exists", async done => {
       const response = await platform.app.inject({
         method: "GET",
@@ -289,7 +289,7 @@ describe("The /users API", () => {
       done();
     });
 
-    it.only("should 200 when company exists", async done => {
+    it("should 200 when company exists", async done => {
       const companyId = testUsers.company.id;
       const response = await platform.app.inject({
         method: "GET",
