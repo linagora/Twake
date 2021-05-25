@@ -10,6 +10,8 @@ import { UserInboxViewProcessor } from "./processors/user-inbox";
 import { FilesViewProcessor } from "./processors/files";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { Thread } from "../../entities/threads";
+import { ChannelSystemActivityMessageProcessor } from "./processors/system-activity-message";
+import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -20,7 +22,11 @@ export class MessagesEngine implements Initializable {
 
   private threadRepository: Repository<Thread>;
 
-  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
+  constructor(
+    private database: DatabaseServiceAPI,
+    private pubsub: PubsubServiceAPI,
+    private service: MessageServiceAPI,
+  ) {
     this.channelViewProcessor = new ChannelViewProcessor(this.database, this.service);
     this.channelMarkedViewProcessor = new ChannelMarkedViewProcessor(this.database, this.service);
     this.userMarkedViewProcessor = new UserMarkedViewProcessor(this.database, this.service);
@@ -36,6 +42,7 @@ export class MessagesEngine implements Initializable {
     await this.userInboxViewProcessor.init();
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
+    this.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor(this.service));
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
       const thread = await this.threadRepository.findOne({
