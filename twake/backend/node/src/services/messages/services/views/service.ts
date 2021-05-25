@@ -78,7 +78,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         )
       ).getEntities(),
       thread => thread.id,
-    ).sort((a, b) => a.last_activity - b.last_activity);
+    );
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
@@ -114,6 +114,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         });
       }),
     );
+    threadWithLastMessages.sort((a, b) => a.stats.last_activity - b.stats.last_activity);
 
     return new ListResult("thread", threadWithLastMessages, threadsRefs.nextPage);
   }

@@ -21,9 +21,13 @@ export default class Search {
   constructor(readonly configuration: CassandraConnectionOptions["elasticsearch"]) {}
 
   public async connect() {
-    this.client = new Client({
-      node: this.configuration.endpoint,
-    });
+    try {
+      this.client = new Client({
+        node: this.configuration.endpoint,
+      });
+    } catch (e) {
+      logger.error(`Unable to connect to ElasticSearch at ${this.configuration.endpoint}`);
+    }
     this.startBulkReader();
   }
 

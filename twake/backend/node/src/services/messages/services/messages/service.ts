@@ -328,8 +328,6 @@ function getSubtype(
   item: Message,
   context?: ThreadExecutionContext,
 ): null | "application" | "deleted" | "system" {
-  console.log(context.user);
-
   //Application request
   if (context?.user?.application_id) {
     return item.subtype === "application" ? "application" : null;

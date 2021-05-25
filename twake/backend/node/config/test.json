@@ -10,10 +10,7 @@
       "retries": 50,
       "delay": 500,
 
-      "elasticsearch": {
-        "endpoint": "http://elasticsearch:9200",
-        "flushInterval": "1"
-      }
+      "elasticsearch": null
     }
   },
   "pubsub": {

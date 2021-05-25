@@ -2,6 +2,7 @@ import crypto, { randomBytes } from "crypto";
 import _ from "lodash";
 import { FindOptions } from "./repository/repository";
 import { ColumnDefinition, EntityDefinition, ObjectType } from "./types";
+import { v1 as uuidv1 } from "uuid";
 
 export function getEntityDefinition(
   instance: any,
@@ -70,4 +71,13 @@ export function secureOperators<Entity>(
   });
 
   return findOptions;
+}
+
+export function mongoUuidv1(timestamp?: number) {
+  return uuidv1({
+    node: [0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+    clockseq: 0,
+    msecs: timestamp || new Date().getTime(),
+    nsecs: 0,
+  });
 }

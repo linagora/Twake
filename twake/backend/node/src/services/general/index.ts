@@ -20,8 +20,6 @@ export default class MessageService extends TwakeService<GeneralServiceAPI> {
 
     const configuration = this.configuration.get<ServerConfiguration["configuration"]>();
 
-    console.log(configuration);
-
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, configuration: configuration });
       next();
