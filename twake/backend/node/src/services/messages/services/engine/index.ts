@@ -12,6 +12,7 @@ import Repository from "../../../../core/platform/services/database/services/orm
 import { Thread } from "../../entities/threads";
 import { ChannelSystemActivityMessageProcessor } from "./processors/system-activity-message";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
+import { MessageToNotificationsProcessor } from "./processors/message-to-notifications";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -19,6 +20,7 @@ export class MessagesEngine implements Initializable {
   private userMarkedViewProcessor: UserMarkedViewProcessor;
   private userInboxViewProcessor: UserInboxViewProcessor;
   private filesViewProcessor: FilesViewProcessor;
+  private messageToNotifications: MessageToNotificationsProcessor;
 
   private threadRepository: Repository<Thread>;
 
@@ -32,6 +34,11 @@ export class MessagesEngine implements Initializable {
     this.userMarkedViewProcessor = new UserMarkedViewProcessor(this.database, this.service);
     this.userInboxViewProcessor = new UserInboxViewProcessor(this.database, this.service);
     this.filesViewProcessor = new FilesViewProcessor(this.database, this.service);
+    this.messageToNotifications = new MessageToNotificationsProcessor(
+      this.database,
+      this.pubsub,
+      this.service,
+    );
   }
 
   async init(): Promise<this> {
@@ -53,6 +60,7 @@ export class MessagesEngine implements Initializable {
       this.userInboxViewProcessor.process(thread, e);
       this.userMarkedViewProcessor.process(thread, e);
       this.filesViewProcessor.process(thread, e);
+      this.messageToNotifications.process(thread, e);
     });
 
     return this;
