@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ListResult,
   Paginable,
+  Pagination,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
@@ -15,6 +16,7 @@ import WorkspaceUser, { WorkspaceUserPrimaryKey } from "./entities/workspace_use
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { Observable } from "rxjs";
 import { ListUserOptions } from "./services/users/types";
+import { UserCompanyRole } from "./web/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -27,7 +29,7 @@ export interface UsersServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
-  getUserCompanies(pk: UserPrimaryKey): Promise<ListResult<CompanyUser>>;
+  getUserCompanies(pk: UserPrimaryKey, pagination?: Pagination): Promise<ListResult<CompanyUser>>;
 }
 
 /**
@@ -112,12 +114,12 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    */
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
 
-  delete(pk: Partial<Company>, context?: ExecutionContext): Promise<DeleteResult<Company>>;
+  delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
 
   setUserRole(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
-    role: "guest" | "admin" | "member",
+    role: UserCompanyRole,
   ): Promise<void>;
 }
 

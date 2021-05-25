@@ -195,13 +195,11 @@ describe("The /users API", () => {
       expect(json).toMatchObject({ resources: expect.any(Array) });
       const resources = json.resources;
 
-      console.log(JSON.stringify(resources, null, 2));
-
       done();
     });
   });
 
-  describe.only("The GET /users/:user_id/companies route", () => {
+  describe("The GET /users/:user_id/companies route", () => {
     it("should 401 when not authenticated", async done => {
       const response = await platform.app.inject({
         method: "GET",
@@ -232,7 +230,7 @@ describe("The /users API", () => {
       done();
     });
 
-    it.only("should 200 and on correct request", async done => {
+    it("should 200 and on correct request", async done => {
       const myId = testUsers.users[0].id;
       const anotherUserId = testUsers.users[1].id;
 
@@ -277,6 +275,27 @@ describe("The /users API", () => {
           });
         }
       }
+      done();
+    });
+  });
+
+  describe.only("The GET /companies/:company_id route", () => {
+    it("should 404 when company does not exists", async done => {
+      const response = await platform.app.inject({
+        method: "GET",
+        url: "/companies/1",
+      });
+      expect(response.statusCode).toBe(404);
+      done();
+    });
+
+    it.only("should 200 when company exists", async done => {
+      const companyId = testUsers.company.id;
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `/companies/${companyId}`,
+      });
+      expect(response.statusCode).toBe(200);
       done();
     });
   });

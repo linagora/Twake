@@ -22,18 +22,18 @@ export interface UserParameters {
   id: string;
 }
 
+export interface CompanyParameters {
+  /* company id */
+  id: string;
+}
+
 export interface UsersParameters {
   ids?: string;
   companies?: string;
 }
 
-export interface UserCompanyRole {
-  role?: "owner" | "admin" | "member" | "guest";
-}
-
-export interface UserCompanyStatus {
-  status?: "active" | "deactivated" | "invited";
-}
+export type UserCompanyRole = "owner" | "admin" | "member" | "guest";
+export type UserCompanyStatus = "active" | "deactivated" | "invited";
 
 export interface CompanyShort {
   id: string; //Related to console "code"
@@ -41,8 +41,10 @@ export interface CompanyShort {
   logo: string;
 }
 
-export interface UserCompanyObject extends UserCompanyRole, UserCompanyStatus {
+export interface UserCompanyObject {
   company: CompanyShort;
+  role: UserCompanyRole;
+  status: UserCompanyStatus;
 }
 
 export interface UserObject {
@@ -84,10 +86,12 @@ export interface CompanyStatsObject {
   total_guests: number;
 }
 
-export interface CompanyObject extends UserCompanyRole, UserCompanyStatus {
+export interface CompanyObject {
   id: string;
   name: string;
   logo: string;
   plan?: CompanyPlanObject;
   stats?: CompanyStatsObject;
+  role?: UserCompanyRole;
+  status?: UserCompanyStatus;
 }

@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { UserCompanyRole } from "../web/types";
 
 // backward compatibility with PHP where companies used to be `group`
 export const TYPE = "group_user";
@@ -22,7 +23,7 @@ export default class CompanyUser {
   id: string;
 
   @Column("role", "string")
-  role: "guest" | "admin" | "member";
+  role: UserCompanyRole;
 
   @Column("nb_workspace", "number")
   nbWorkspaces: number;

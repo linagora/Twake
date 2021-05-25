@@ -1,12 +1,7 @@
-import {
-  FastifyInstance,
-  FastifyPluginCallback,
-  FastifyRequest,
-  RouteShorthandOptions,
-} from "fastify";
+import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { UsersCrudController } from "./controller";
-import UserServiceAPI, { CompaniesServiceAPI } from "../api";
-import { getUserCompaniesSchema, getUserSchema, getUsersSchema } from "./schemas";
+import UserServiceAPI from "../api";
+import { getCompanySchema, getUserCompaniesSchema, getUserSchema, getUsersSchema } from "./schemas";
 
 const usersUrl = "/users";
 
@@ -49,6 +44,16 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: getUserCompaniesSchema,
     handler: usersController.getUserCompanies.bind(usersController),
+  });
+
+  //Get a company by id and public information (this route is public and doesn't need to be authenticated)
+  fastify.route({
+    method: "GET",
+    url: "/companies/:id",
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getCompanySchema,
+    handler: usersController.getCompany.bind(usersController),
   });
 
   next();

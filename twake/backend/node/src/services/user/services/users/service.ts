@@ -83,7 +83,11 @@ export class UserService implements UsersServiceAPI {
     return await this.repository.findOne(pk);
   }
 
-  async getUserCompanies(pk: UserPrimaryKey): Promise<ListResult<CompanyUser>> {
-    return await this.companyUserRepository.find({ user_id: pk.id });
+  async getUserCompanies(
+    pk: UserPrimaryKey,
+    pagination?: Pagination,
+  ): Promise<ListResult<CompanyUser>> {
+    const findOptions: FindOptions = pagination ? { pagination } : {};
+    return await this.companyUserRepository.find({ user_id: pk.id }, findOptions);
   }
 }

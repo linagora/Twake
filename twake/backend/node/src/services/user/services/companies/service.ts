@@ -20,6 +20,7 @@ import CompanyUser, {
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
 import { ListUserOptions } from "../users/types";
+import { UserCompanyRole } from "../../web/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -108,7 +109,7 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions);
   }
 
-  async delete(pk: Partial<Company>, context?: ExecutionContext): Promise<DeleteResult<Company>> {
+  async delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>> {
     const instance = await this.companyRepository.findOne(pk);
     if (instance) await this.companyRepository.remove(instance);
     return new DeleteResult<Company>("company", instance, !!instance);
@@ -117,13 +118,9 @@ export class CompanyService implements CompaniesServiceAPI {
   async setUserRole(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
-    role: "guest" | "admin" | "member",
+    role: UserCompanyRole,
   ): Promise<void> {
     const entity = await this.companyUserRepository.findOne({
-      group_id: companyPk.id,
-      user_id: userPk.id,
-    });
-    console.log({
       group_id: companyPk.id,
       user_id: userPk.id,
     });

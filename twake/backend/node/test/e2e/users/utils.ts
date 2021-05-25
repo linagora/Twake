@@ -7,7 +7,7 @@ import Company, {
 } from "../../../src/services/user/entities/company";
 
 export class TestUsers {
-  private company: Company;
+  public company: Company;
   public users: User[];
   private userService;
 

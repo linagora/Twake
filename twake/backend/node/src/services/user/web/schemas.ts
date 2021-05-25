@@ -121,3 +121,16 @@ export const getUserCompaniesSchema = {
     },
   },
 };
+
+export const getCompanySchema = {
+  type: "object",
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: { type: "array", items: companyObjectSchema },
+      },
+      required: ["resources"],
+    },
+  },
+};
