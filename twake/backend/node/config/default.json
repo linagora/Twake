@@ -78,6 +78,15 @@
   "pubsub": {
     "urls": ["amqp://guest:guest@localhost:5672"]
   },
+  "notifications": {
+    "push": {
+      "type": "fcm",
+      "fcm": {
+        "endpoint": "https://fcm.googleapis.com/fcm/send",
+        "key": ""
+      }
+    }
+  },
   "services": [
     "auth",
     "user",
