@@ -85,6 +85,8 @@ export class UsersCrudController
     } as UserObject;
 
     if (includeCompanies) {
+      const companies = await this.retrieveUserCompanies(user.id);
+
       resUser = {
         ...resUser,
         preference: {
@@ -92,7 +94,7 @@ export class UsersCrudController
           timezone: user.timezone,
         },
 
-        companies: await this.retrieveUserCompanies(user.id),
+        companies,
       };
     }
 
