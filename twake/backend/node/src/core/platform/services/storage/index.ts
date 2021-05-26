@@ -1,18 +1,21 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
-import { isBuffer } from "lodash";
+import { createCipheriv, createDecipheriv } from "crypto";
 import { Stream, Readable } from "stream";
 import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
 import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
-
 import StorageAPI, { StorageConnectorAPI } from "./provider";
 
+type EncryptionConfiguration = {
+  secret: string | null;
+  iv: string | null;
+};
 @Consumes([])
 export default class StorageService extends TwakeService<StorageAPI> implements StorageAPI {
   name = "storage";
   version = "1";
 
-  globalEncryption: { secret: string | null; iv: string | null } = { secret: null, iv: null };
+  private encryptionOptions: EncryptionConfiguration;
+  private algorithm = "aes-256-cbc";
 
   api(): StorageAPI {
     return this;
@@ -31,13 +34,13 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return new LocalConnectorService(this.configuration.get<LocalConfiguration>("local"));
   }
 
-  write(path: string, stream: Stream) {
-    if (this.globalEncryption.secret) {
+  write(path: string, stream: Stream): void {
+    if (this.encryptionOptions.secret) {
       try {
         const cipher = createCipheriv(
-          "aes-256-cbc",
-          this.globalEncryption.secret,
-          this.globalEncryption.iv,
+          this.algorithm,
+          this.encryptionOptions.secret,
+          this.encryptionOptions.iv,
         );
         stream = stream.pipe(cipher);
       } catch (err) {
@@ -49,12 +52,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
 
   async read(path: string): Promise<Readable> {
     let stream = await this.getConnector().read(path);
-    if (this.globalEncryption.secret) {
+    if (this.encryptionOptions.secret) {
       try {
         const decipher = createDecipheriv(
-          "aes-256-cbc",
-          this.globalEncryption.secret,
-          this.globalEncryption.iv,
+          this.algorithm,
+          this.encryptionOptions.secret,
+          this.encryptionOptions.iv,
         );
         stream = stream.pipe(decipher);
       } catch (err) {
@@ -64,14 +67,11 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return stream;
   }
 
-  async doStart(): Promise<this> {
-    //When the service starts
-    return this;
-  }
-
   async doInit(): Promise<this> {
-    this.globalEncryption.secret = this.configuration.get<string | null>("secret", null);
-    this.globalEncryption.iv = this.configuration.get<string>("iv", "0123456789abcdef");
+    this.encryptionOptions = {
+      secret: this.configuration.get<string>("secret", null),
+      iv: this.configuration.get<string>("iv", null),
+    };
 
     return this;
   }

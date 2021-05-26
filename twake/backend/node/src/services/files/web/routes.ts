@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
+import { FileServiceAPI } from "../api";
 import { FileController } from "./controllers/files";
 
 const filesUrl = "/companies/:company_id/files";
 
-const routes: FastifyPluginCallback<{ service: any }> = (
+const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
   fastify: FastifyInstance,
   options,
   next,
@@ -13,13 +14,13 @@ const routes: FastifyPluginCallback<{ service: any }> = (
   fastify.route({
     method: "POST",
     url: filesUrl,
-    preValidation: true ? [] : [fastify.authenticate],
+    preValidation: [fastify.authenticate],
     handler: fileController.save.bind(fileController),
   });
 
   fastify.route({
     method: "POST",
-    url: filesUrl + "/:id",
+    url: `${filesUrl}/:id`,
     preValidation: [fastify.authenticate],
     handler: fileController.save.bind(fileController),
   });

@@ -1,6 +1,6 @@
+import * as Minio from "minio";
 import { Readable } from "stream";
 import { StorageConnectorAPI } from "../../provider";
-import * as Minio from "minio";
 
 export type S3Configuration = Minio.ClientOptions & { bucket: string };
 
@@ -13,7 +13,7 @@ export default class S3ConnectorService implements StorageConnectorAPI {
     this.minioConfiguration = S3Configuration;
   }
 
-  write(path: string, stream: Readable) {
+  write(path: string, stream: Readable): void {
     this.client.putObject(this.minioConfiguration.bucket, path, stream);
   }
 

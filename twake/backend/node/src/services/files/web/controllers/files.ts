@@ -3,6 +3,7 @@ import { Multipart } from "fastify-multipart";
 import { ResourceDeleteResponse } from "../../../../services/types";
 import { CompanyExecutionContext } from "../types";
 import { FileServiceAPI, UploadOptions } from "../../api";
+import { File } from "../../entities/file";
 
 export class FileController {
   constructor(protected service: FileServiceAPI) {}
@@ -10,10 +11,11 @@ export class FileController {
   async save(
     request: FastifyRequest<{
       Params: { company_id: string; id: string };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Querystring: any;
     }>,
     response: FastifyReply,
-  ) {
+  ): Promise<void> {
     const context = getCompanyExecutionContext(request);
 
     let file: null | Multipart = null;
@@ -21,7 +23,7 @@ export class FileController {
       file = await request.file();
     }
     const q = request.query;
-    let options: UploadOptions = {
+    const options: UploadOptions = {
       totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 0,
       totalSize: parseInt(q.resumableTotalSize || q.total_size) || 0,
       chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 0,
@@ -40,7 +42,7 @@ export class FileController {
   async download(
     request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
     response: FastifyReply,
-  ) {
+  ): Promise<void> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
     const data = await this.service.download(params.id, context);
@@ -52,15 +54,18 @@ export class FileController {
     response.send(data.file);
   }
 
-  async get(request: FastifyRequest<{ Params: { company_id: string; id: string } }>) {
+  async get(
+    request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
+  ): Promise<{ resource: File }> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
-    const data = await this.service.get(params.id, context);
-    return { resource: data };
+    const resource = await this.service.get(params.id, context);
+
+    return { resource };
   }
 
-  async delete(request: FastifyRequest<{}>): Promise<ResourceDeleteResponse> {
-    throw "Not implemented";
+  async delete(): Promise<ResourceDeleteResponse> {
+    throw new Error("Not implemented");
   }
 }
 

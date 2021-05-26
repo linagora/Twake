@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRegisterOptions } from "fastify";
 import { FileServiceAPI } from "../api";
-
 import routes from "./routes";
 
 export default (

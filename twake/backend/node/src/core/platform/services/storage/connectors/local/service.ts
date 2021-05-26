@@ -1,8 +1,10 @@
 import { Readable } from "stream";
+import { createWriteStream, createReadStream } from "fs";
 import { StorageConnectorAPI } from "../../provider";
-import fs from "fs";
 
-export type LocalConfiguration = { path: string };
+export type LocalConfiguration = {
+  path: string;
+};
 
 export default class LocalConnectorService implements StorageConnectorAPI {
   configuration: LocalConfiguration;
@@ -11,18 +13,15 @@ export default class LocalConnectorService implements StorageConnectorAPI {
     this.configuration = localConfiguration;
   }
 
-  write(path: string, stream: Readable) {
-    const fullPath = this.getFullPath(path);
-    const writeStream = fs.createWriteStream(fullPath);
-    writeStream.write(stream);
+  write(path: string, stream: Readable): void {
+    createWriteStream(this.getFullPath(path)).write(stream);
   }
 
   async read(path: string): Promise<Readable> {
-    const fullPath = this.getFullPath(path);
-    return fs.createReadStream(fullPath);
+    return createReadStream(this.getFullPath(path));
   }
 
-  getFullPath(path: string) {
+  private getFullPath(path: string): string {
     return `${this.configuration.path}/${path}`.replace(/\/{2,}/g, "/");
   }
 }

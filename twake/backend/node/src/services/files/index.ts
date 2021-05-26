@@ -1,11 +1,11 @@
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
+import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
+import StorageAPI from "../../core/platform/services/storage/provider";
 import { FileServiceAPI } from "./api";
 import { getService } from "./services/index";
 import web from "./web/index";
-import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
-import StorageAPI from "../../../src/core/platform/services/storage/provider";
 
 @Prefix("/internal/services/files/v1")
 @Consumes(["webserver", "database", "storage", "pubsub"])

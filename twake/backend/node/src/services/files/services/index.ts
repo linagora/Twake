@@ -1,15 +1,15 @@
-import { TwakeContext } from "../../../core/platform/framework";
+import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
+import { Readable, Stream } from "stream";
+import Multistream from "multistream";
+import { Multipart } from "fastify-multipart";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { FileServiceAPI, UploadOptions } from "../api";
 import StorageAPI from "../../../core/platform/services/storage/provider";
-import { Readable, Stream } from "stream";
 import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
-import Multistream from "multistream";
-import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
 import { CompanyExecutionContext } from "../web/types";
-import { Multipart } from "fastify-multipart";
+import { logger } from "../../../core/platform/framework";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -30,6 +30,7 @@ function getServiceInstance(
 class Service implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
+  private algorithm = "aes-256-cbc";
 
   constructor(
     readonly database: DatabaseServiceAPI,
@@ -41,7 +42,7 @@ class Service implements FileServiceAPI {
     try {
       this.repository = await this.database.getRepository<File>("files", File);
     } catch (err) {
-      console.error("Error while initializing notification service", err);
+      logger.error("Error while initializing files service", err);
     }
     return this;
   }
@@ -51,7 +52,7 @@ class Service implements FileServiceAPI {
     file: Multipart,
     options: UploadOptions,
     context: CompanyExecutionContext,
-  ) {
+  ): Promise<File> {
     const userId = context.user?.id;
     const applicationId: string | null = context.app?.id || null;
 
@@ -62,7 +63,7 @@ class Service implements FileServiceAPI {
         id: id,
       });
       if (!entity) {
-        throw "This file id does not exist";
+        throw new Error(`This file ${id} does not exist`);
       }
     }
 
@@ -84,7 +85,7 @@ class Service implements FileServiceAPI {
     }
 
     if (file) {
-      //Detect a new file upload
+      // Detect a new file upload
       // Only applications car overwrite a file.
       // Users alone can only write an empty file.
       if (applicationId || !entity.upload_data?.size || context.serverRequest) {
@@ -104,12 +105,8 @@ class Service implements FileServiceAPI {
         }
       }
 
-      var cipher = createCipheriv(
-        "aes-256-cbc",
-        entity.encryption_key.split(".")[0],
-        entity.encryption_key.split(".")[1],
-      );
-
+      const [key, iv] = entity.encryption_key.split(".");
+      const cipher = createCipheriv(this.algorithm, key, iv);
       const newReadStream = file.file.pipe(cipher);
       const chunk_number = options.chunkNumber;
       const path = `${getFilePath(entity)}/chunk${chunk_number}`;
@@ -123,23 +120,22 @@ class Service implements FileServiceAPI {
     id: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; name: string; mime: string; size: number }> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
-
-    const chunks = entity.upload_data.chunks;
-    var count = 1;
-    let stream;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
+    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    const [key, iv] = entity.encryption_key.split(".");
+    const decipher = createDecipheriv(this.algorithm, key, iv);
+    const chunks = entity.upload_data.chunks;
+    let count = 1;
+    let stream;
 
-    async function factory(callback: (err?: Error, stream?: Stream) => {}) {
-      if (count > chunks) return callback();
-      var decipher = createDecipheriv(
-        "aes-256-cbc",
-        entity.encryption_key.split(".")[0],
-        entity.encryption_key.split(".")[1],
-      );
+    async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
+      if (count > chunks) {
+        callback();
+        return;
+      }
+      const chunk = `${getFilePath(entity)}/chunk${count++}`;
 
-      const chunk = `${getFilePath(entity)}/chunk${count}`;
-      count++;
       try {
         stream = (await self.storage.read(chunk)).pipe(decipher);
       } catch (err) {
@@ -159,8 +155,7 @@ class Service implements FileServiceAPI {
   }
 
   async get(id: string, context: CompanyExecutionContext): Promise<File> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
-    return entity;
+    return this.repository.findOne({ company_id: context.company.id, id });
   }
 }
 
