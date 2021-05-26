@@ -45,10 +45,8 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
       await this.doInit();
       this.state.next(TwakeServiceState.Initialized);
       logger.info("Service %s is initialized", this.name);
-
       delete pendingServices[this.name];
       logger.info("Pending services: %s", JSON.stringify(Object.keys(pendingServices)));
-
       return this;
     } catch (err) {
       logger.error("Error while initializing service %s", this.name);
