@@ -1,5 +1,10 @@
 import { v1 as uuid } from "uuid";
-import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  DeleteResult,
+  ExecutionContext,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindOptions,
@@ -15,6 +20,7 @@ import CompanyUser, {
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
 import { ListUserOptions } from "../users/types";
+import { UserCompanyRole } from "../../web/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -61,10 +67,13 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyRepository.find({}, { pagination });
   }
 
-  async addUserInCompany(company: Company, user: User): Promise<CompanyUser> {
+  async addUserInCompany(
+    companyPk: CompanyPrimaryKey,
+    userPk: UserPrimaryKey,
+  ): Promise<CompanyUser> {
     const userInCompany = getCompanyUserInstance({
-      group_id: company.id,
-      user_id: user.id,
+      group_id: companyPk.id,
+      user_id: userPk.id,
       id: uuid(),
       dateAdded: Date.now(),
     });
@@ -72,6 +81,16 @@ export class CompanyService implements CompaniesServiceAPI {
     await this.companyUserRepository.save(userInCompany);
 
     return userInCompany;
+  }
+
+  async removeUserFromCompany(companyPk: CompanyPrimaryKey, userPk: UserPrimaryKey): Promise<void> {
+    const entity = await this.companyUserRepository.findOne({
+      group_id: companyPk.id,
+      user_id: userPk.id,
+    });
+    if (entity) {
+      await this.companyUserRepository.remove(entity);
+    }
   }
 
   async getUsers(
@@ -88,5 +107,26 @@ export class CompanyService implements CompaniesServiceAPI {
     }
 
     return this.companyUserRepository.find({ group_id: companyId.group_id }, findOptions);
+  }
+
+  async delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>> {
+    const instance = await this.companyRepository.findOne(pk);
+    if (instance) await this.companyRepository.remove(instance);
+    return new DeleteResult<Company>("company", instance, !!instance);
+  }
+
+  async setUserRole(
+    companyPk: CompanyPrimaryKey,
+    userPk: UserPrimaryKey,
+    role: UserCompanyRole,
+  ): Promise<void> {
+    const entity = await this.companyUserRepository.findOne({
+      group_id: companyPk.id,
+      user_id: userPk.id,
+    });
+    if (entity) {
+      entity.role = role;
+      await this.companyUserRepository.save(entity);
+    }
   }
 }

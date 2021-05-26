@@ -20,9 +20,27 @@ export default class User {
   @Column("picture", "string")
   picture: string;
 
-  // FIXME: Looks like this is an array stringified, need to check DB
-  @Column("status_icon", "json")
-  status_icon: string; // = '["", ""]';
+  @Column("status_icon", "string")
+  private _status_icon: string; // = '["", ""]';
+
+  public get status_icon(): string {
+    if (this._status_icon && this._status_icon.startsWith("[\\")) {
+      try {
+        const parsed = JSON.parse(this._status_icon
+            .replace(/\\"/g, "\"")
+            .replace(/\\\\/g, "\\")
+        );
+        return `${parsed[0]} ${parsed[1]}`;
+      } catch (e) {
+        return "";
+      }
+    }
+    return this._status_icon;
+  }
+
+  public set status_icon(status: string) {
+    this._status_icon = status;
+  }
 
   @Column("last_activity", "number")
   last_activity: number;
@@ -54,14 +72,17 @@ export default class User {
   @Column("email_canonical", "string")
   email_canonical: string;
 
-  @Column("timezone", "string")
-  timezone: string;
+  @Column("timezone", "number")
+  timezone: number;
 
   @Column("password", "string")
   password: string;
 
   @Column("deleted", "twake_boolean")
   deleted: boolean;
+
+  @Column("mail_verified", "twake_boolean")
+  mail_verified: boolean;
 
   @Column("phone", "string")
   phone: string;
