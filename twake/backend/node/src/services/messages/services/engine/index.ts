@@ -14,6 +14,8 @@ import { ChannelSystemActivityMessageProcessor } from "./processors/system-activ
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { MessageToNotificationsProcessor } from "./processors/message-to-notifications";
 import { ResourceEventsPayload } from "../../../../utils/types";
+import UserServiceAPI from "../../../user/api";
+import ChannelServiceAPI from "../../../channels/provider";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -28,6 +30,8 @@ export class MessagesEngine implements Initializable {
   constructor(
     private database: DatabaseServiceAPI,
     private pubsub: PubsubServiceAPI,
+    private user: UserServiceAPI,
+    private channel: ChannelServiceAPI,
     private service: MessageServiceAPI,
   ) {
     this.channelViewProcessor = new ChannelViewProcessor(this.database, this.service);
@@ -38,6 +42,8 @@ export class MessagesEngine implements Initializable {
     this.messageToNotifications = new MessageToNotificationsProcessor(
       this.database,
       this.pubsub,
+      this.user,
+      this.channel,
       this.service,
     );
   }
