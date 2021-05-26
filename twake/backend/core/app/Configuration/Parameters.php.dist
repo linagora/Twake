@@ -37,7 +37,8 @@ class Parameters extends \Common\Configuration
                 "user" => "root",
                 "password" => "root",
                 "encryption_key" => "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
-                "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}"
+                "replication" => "{'class': 'SimpleStrategy', 'replication_factor': '1'}",
+                "is_cassandra" => false
             ],
             "es" => [
               "host" => "elasticsearch:9200"

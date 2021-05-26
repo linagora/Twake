@@ -8,7 +8,7 @@ import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
 import swaggerPlugin from "fastify-swagger";
 import { SkipCLI } from "../../framework/decorators/skip";
-import { throws } from "assert";
+// import { throws } from "assert";
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
   version = "1";
@@ -57,7 +57,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
         docExpansion: "full",
         deepLinking: false,
       },
-      staticCSP: true,
+      staticCSP: false,
       transformStaticCSP: header => header,
       exposeRoute: true,
     });
