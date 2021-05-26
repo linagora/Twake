@@ -17,15 +17,21 @@ import Repository, {
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
+import CompanyUser from "../../entities/company_user";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
+  companyUserRepository: Repository<CompanyUser>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
     this.repository = await this.database.getRepository<User>("user", User);
+    this.companyUserRepository = await this.database.getRepository<CompanyUser>(
+      "group_user",
+      CompanyUser,
+    );
 
     return this;
   }
@@ -50,11 +56,13 @@ export class UserService implements UsersServiceAPI {
     return new SaveResult("user", item, OperationType.UPDATE);
   }
 
-  delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
-    throw new Error("Method not implemented.");
+  async delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
+    const instance = await this.repository.findOne(pk);
+    if (instance) await this.repository.remove(instance);
+    return new DeleteResult<User>("user", instance, !!instance);
   }
 
-  list(
+  async list(
     pagination: Pagination,
     options?: ListUserOptions,
     context?: ExecutionContext,
@@ -73,5 +81,13 @@ export class UserService implements UsersServiceAPI {
 
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
+  }
+
+  async getUserCompanies(
+    pk: UserPrimaryKey,
+    pagination?: Pagination,
+  ): Promise<ListResult<CompanyUser>> {
+    const findOptions: FindOptions = pagination ? { pagination } : {};
+    return await this.companyUserRepository.find({ user_id: pk.id }, findOptions);
   }
 }

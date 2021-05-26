@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { UserCompanyRole } from "../web/types";
 
 // backward compatibility with PHP where companies used to be `group`
 export const TYPE = "group_user";
@@ -8,7 +9,7 @@ export const TYPE = "group_user";
  * Link between a company and a user
  */
 @Entity(TYPE, {
-  primaryKey: [["group_id"], "user_id", "id"],
+  primaryKey: [["user_id"], "group_id", "id"],
   type: TYPE,
 })
 export default class CompanyUser {
@@ -22,7 +23,7 @@ export default class CompanyUser {
   id: string;
 
   @Column("role", "string")
-  role: "guest" | "admin" | "member";
+  role: UserCompanyRole;
 
   @Column("nb_workspace", "number")
   nbWorkspaces: number;
@@ -32,12 +33,6 @@ export default class CompanyUser {
 
   @Column("last_update_day", "number")
   lastUpdateDay: number;
-
-  @Column("nb_connections_period", "number")
-  nbConnectionsPeriod: number; //Depreciated
-
-  @Column("app_used_period", "number")
-  appUsedPeriod: number; //Depreciated
 
   /**
    * 0: member,

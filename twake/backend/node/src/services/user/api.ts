@@ -1,8 +1,10 @@
 import {
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
+  Pagination,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
@@ -14,6 +16,7 @@ import WorkspaceUser, { WorkspaceUserPrimaryKey } from "./entities/workspace_use
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { Observable } from "rxjs";
 import { ListUserOptions } from "./services/users/types";
+import { UserCompanyRole } from "./web/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -25,7 +28,9 @@ export default interface UserServiceAPI extends TwakeServiceProvider, Initializa
 export interface UsersServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<User, UserPrimaryKey, ExecutionContext> {}
+    CRUDService<User, UserPrimaryKey, ExecutionContext> {
+  getUserCompanies(pk: UserPrimaryKey, pagination?: Pagination): Promise<ListResult<CompanyUser>>;
+}
 
 /**
  * Service to manage links between external and internal users/companies.
@@ -80,7 +85,15 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  addUserInCompany(company: Company, user: User): Promise<CompanyUser>;
+  addUserInCompany(companyId: CompanyPrimaryKey, userId: UserPrimaryKey): Promise<CompanyUser>;
+
+  /**
+   * Add a user in a company
+   *
+   * @param company
+   * @param user
+   */
+  removeUserFromCompany(companyId: CompanyPrimaryKey, user: UserPrimaryKey): Promise<void>;
 
   /**
    * Get user ids in the given company
@@ -100,6 +113,14 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param user
    */
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser>;
+
+  delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
+
+  setUserRole(
+    companyPk: CompanyPrimaryKey,
+    userPk: UserPrimaryKey,
+    role: UserCompanyRole,
+  ): Promise<void>;
 }
 
 export interface WorkspaceServiceAPI
