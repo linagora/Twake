@@ -23,6 +23,7 @@ services:
       - NODE_ENV=production
     volumes:
       - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
+      - ./docker-data/documents/:/storage/
     depends_on:
       - scylladb
       - rabbitmq

@@ -29,6 +29,7 @@ services:
       dockerfile: ../../docker/twake-node/Dockerfile.dev
     volumes:
       - ./backend/node:/usr/src/app
+      - ./docker-data/documents/:/storage/
     #      - /usr/src/app/node_modules
     depends_on:
       - scylladb
