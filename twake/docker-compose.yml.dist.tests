@@ -84,8 +84,6 @@ services:
       - 8000:80
     links:
       - php
-    volumes_from:
-      - php
     volumes:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/

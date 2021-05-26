@@ -24,7 +24,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {}
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>("message", Message);
+    this.repository = await this.database.getRepository<Message>("messages", Message);
     return this;
   }
 
