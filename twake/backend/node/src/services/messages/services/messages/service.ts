@@ -16,6 +16,7 @@ import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/r
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
+import { ResourceEventsPayload } from "../../../../utils/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";

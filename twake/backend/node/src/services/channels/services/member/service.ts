@@ -523,6 +523,7 @@ export class Service implements MemberService {
       actor: user,
       resourcesBefore: [member],
       channel: channel,
+      user,
     });
   }
 

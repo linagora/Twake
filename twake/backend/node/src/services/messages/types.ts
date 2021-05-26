@@ -20,7 +20,11 @@ export type MessageNotification = {
     specials?: specialMention[];
   };
 
-  //Temp fix, should not be used like this by node except for push notification
+  sender_name: string;
+  channel_name: string;
+  company_name: string;
+  workspace_name: string;
+
   title: string;
   text: string;
 };

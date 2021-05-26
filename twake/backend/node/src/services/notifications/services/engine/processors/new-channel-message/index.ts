@@ -56,8 +56,6 @@ export class NewChannelMessageProcessor
         } : ['${usersToNotify.join("', '")}']`,
       );
 
-      localEventBus.publish<ResourceEventsPayload>("channel:message_sent", { message });
-
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,

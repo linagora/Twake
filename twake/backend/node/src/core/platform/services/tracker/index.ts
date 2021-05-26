@@ -27,7 +27,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       });
       this.track(
         {
-          userId: data.user.id,
+          userId: data.user.identity_provider_id || data.user.id,
           event: "open_client",
         },
         (err: Error) =>
@@ -42,7 +42,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${messageSentEvent} event`);
       this.track(
         {
-          userId: data.message.sender,
+          userId: data.user.identity_provider_id || data.message.sender,
           event: messageSentEvent,
           properties: {
             is_direct: data.message.workspace_id === "direct" ? true : false,
@@ -59,7 +59,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${channelCreatedEvent} event`);
       this.track(
         {
-          userId: data.channel.owner,
+          userId: data.user.identity_provider_id || data.channel.owner,
           event: channelCreatedEvent,
           properties: this.getVisibilityObject(data.channel.visibility),
         },
@@ -75,7 +75,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${channelMemberCreatedEvent} event`);
       this.track(
         {
-          userId: data.member.user_id,
+          userId: data.user.identity_provider_id || data.member.user_id,
           event: data.user.id !== data.member.user_id ? "channel:invite" : "channel:join",
           properties: this.getVisibilityObject(data.channel.visibility),
         },

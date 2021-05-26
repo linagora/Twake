@@ -13,6 +13,7 @@ import { Thread } from "../../entities/threads";
 import { ChannelSystemActivityMessageProcessor } from "./processors/system-activity-message";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { MessageToNotificationsProcessor } from "./processors/message-to-notifications";
+import { ResourceEventsPayload } from "src/utils/types";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -61,6 +62,19 @@ export class MessagesEngine implements Initializable {
       this.userMarkedViewProcessor.process(thread, e);
       this.filesViewProcessor.process(thread, e);
       this.messageToNotifications.process(thread, e);
+
+      for (const participant of thread.participants) {
+        if (e.created) {
+          localEventBus.publish<ResourceEventsPayload>("channel:message_sent", {
+            message: {
+              thread_id: e.resource.thread_id,
+              sender: e.resource.user_id,
+              workspace_id: participant.workspace_id,
+            },
+            user: e.context.user,
+          });
+        }
+      }
     });
 
     return this;

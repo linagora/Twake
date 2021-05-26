@@ -96,12 +96,12 @@ export interface ResourceWebsocket {
 }
 
 export interface ResourceEventsPayload {
-  user?: User;
+  user: User;
   channel?: ChannelEntity;
   channelParameters?: ChannelParameters;
   guest?: ChannelPendingEmails;
   member?: ChannelMember;
-  message?: MessageNotification;
+  message?: Pick<MessageNotification, "sender" | "workspace_id" | "thread_id">;
   actor?: User;
   resourcesBefore?: (User | ChannelEntity | ChannelTab)[];
   resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
