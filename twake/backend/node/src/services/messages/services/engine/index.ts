@@ -13,7 +13,7 @@ import { Thread } from "../../entities/threads";
 import { ChannelSystemActivityMessageProcessor } from "./processors/system-activity-message";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { MessageToNotificationsProcessor } from "./processors/message-to-notifications";
-import { ResourceEventsPayload } from "src/utils/types";
+import { ResourceEventsPayload } from "../../../../utils/types";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
