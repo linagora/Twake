@@ -26,7 +26,16 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["user", "websocket", "webserver", "channels", "auth", "database", "pubsub"],
+      services: [
+        "user",
+        "websocket",
+        "webserver",
+        "channels",
+        "auth",
+        "database",
+        "search",
+        "pubsub",
+      ],
     });
     channelUtils = getChannelUtils(platform);
   });

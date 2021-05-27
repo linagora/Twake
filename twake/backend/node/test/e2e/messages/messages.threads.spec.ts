@@ -27,6 +27,7 @@ describe("The Messages Threads feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
         "channels",
       ],

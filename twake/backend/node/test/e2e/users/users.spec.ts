@@ -10,7 +10,7 @@ describe("The /users API", () => {
 
   beforeEach(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
     ends();
   });
@@ -22,7 +22,7 @@ describe("The /users API", () => {
 
   beforeAll(async ends => {
     const platform = await init({
-      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
     testUsers = new TestUsers(platform);
     await testUsers.createCompanyAndUsers();

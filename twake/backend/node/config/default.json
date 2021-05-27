@@ -70,21 +70,23 @@
       "keyspace": "twake",
       "wait": false,
       "retries": 10,
-      "delay": 200,
-
-      "elasticsearch": null
+      "delay": 200
     }
   },
   "pubsub": {
     "urls": ["amqp://guest:guest@localhost:5672"]
   },
-  "notifications": {
-    "push": {
-      "type": "fcm",
-      "fcm": {
-        "endpoint": "https://fcm.googleapis.com/fcm/send",
-        "key": ""
-      }
+  "search": {
+    "type": false,
+    "elasticsearch": {
+      "endpoint": "http://elasticsearch:9200"
+    }
+  },
+  "push": {
+    "type": false,
+    "fcm": {
+      "endpoint": "https://fcm.googleapis.com/fcm/send",
+      "key": ""
     }
   },
   "storage": {
@@ -103,19 +105,20 @@
   },
   "services": [
     "auth",
-    "user",
-    "channels",
-    "notifications",
-    "messages",
+    "storage",
     "webserver",
     "websocket",
     "database",
+    "search",
     "pubsub",
     "realtime",
     "phpnode",
     "tracker",
     "general",
-    "files",
-    "storage"
+    "user",
+    "channels",
+    "notifications",
+    "messages",
+    "files"
   ]
 }

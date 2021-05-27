@@ -28,6 +28,7 @@ describe("The Messages feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
         "channels",
       ],

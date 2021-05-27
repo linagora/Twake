@@ -19,6 +19,7 @@ describe("The Bookmarks Realtime feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
         "channels",
       ],
