@@ -9,7 +9,7 @@ import UserServiceAPI from "../user/api";
 import ChannelServiceAPI from "../channels/provider";
 
 @Prefix("/internal/services/messages/v1")
-@Consumes(["webserver", "database", "pubsub", "user", "channels"])
+@Consumes(["webserver", "database", "pubsub", "channels", "user"])
 export default class MessageService extends TwakeService<MessageServiceAPI> {
   version = "1";
   name = "messages";

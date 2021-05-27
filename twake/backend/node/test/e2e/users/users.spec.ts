@@ -1,11 +1,10 @@
-import { beforeAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestUsers } from "./utils";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1/users";
   let platform: TestPlatform;
-  jest.setTimeout(30000);
 
   let testUsers: TestUsers;
 

@@ -73,11 +73,32 @@ export function secureOperators<Entity>(
   return findOptions;
 }
 
-export function mongoUuidv1(timestamp?: number) {
-  return uuidv1({
-    node: [0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
-    clockseq: 0,
-    msecs: timestamp || new Date().getTime(),
-    nsecs: 0,
-  });
+let microCounter = 0; //We do not really use nanotime, our goal is to ensure unicity first.
+
+/**
+ * Build uuid from nanotime
+ * @param orderable
+ * @returns
+ */
+export function fromMongoDbOrderable(orderable: string) {
+  if (!orderable) {
+    return null;
+  }
+  let uuid_arr = orderable.split("-");
+  let timeuuid = [uuid_arr[2], uuid_arr[1], uuid_arr[0], uuid_arr[3], uuid_arr[4]].join("-");
+  return timeuuid;
+}
+
+/**
+ * Returns orderable string
+ * @param timeuuid
+ * @returns
+ */
+export function toMongoDbOrderable(timeuuid?: string): string {
+  if (!timeuuid) {
+    return null;
+  }
+  let uuid_arr = timeuuid.split("-");
+  let time_str = [uuid_arr[2], uuid_arr[1], uuid_arr[0], uuid_arr[3], uuid_arr[4]].join("-");
+  return time_str;
 }

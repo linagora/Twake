@@ -213,7 +213,7 @@ describe("The PushNotificationToUsersMessageProcessor class", () => {
         },
       ]);
 
-      const lessThan = Date.now();
+      const lessThan = message.creation_date;
       const users = ["1", "2", "3", "4"];
       const channel = {
         channel_id,

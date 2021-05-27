@@ -67,6 +67,7 @@ class Service implements NotificationServiceAPI {
         this.channelThreads.init(context),
         this.engine.init(),
         this.notificationPreferences.init(),
+        this.mobilePush.init(),
       ]);
     } catch (err) {
       console.error("Error while initializing notification service", err);

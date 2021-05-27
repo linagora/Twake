@@ -1,16 +1,15 @@
 import { ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import _, { isNull } from "lodash";
-import uuidTime from "uuid-time";
-import { mongoUuidv1 } from "../../utils";
+import { fromMongoDbOrderable, toMongoDbOrderable } from "../../utils";
 
 export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): any => {
   if (type === "timeuuid") {
-    if (isNull(v)) {
+    if (isNull(v) || !v) {
       return null;
     }
     //Convert to orderable number on mongodb
-    return uuidTime.v1(v);
+    return toMongoDbOrderable(v);
   }
   if (type === "encoded_string" || type === "encoded_json") {
     if (type === "encoded_json") {
@@ -43,7 +42,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
 
 export const transformValueFromDbString = (v: any, type: string, options: any = {}): any => {
   if (type === "timeuuid") {
-    return mongoUuidv1(v);
+    return fromMongoDbOrderable(v);
   }
   if (v !== null && (type === "encoded_string" || type === "encoded_json")) {
     try {

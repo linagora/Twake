@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { Connector } from "./connectors";
-import { getEntityDefinition, mongoUuidv1, unwrapPrimarykey } from "./utils";
+import { getEntityDefinition, fromMongoDbOrderable, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { logger } from "../../../../framework";
 
@@ -36,7 +36,7 @@ export default class EntityManager<EntityType extends Record<string, any>> {
             entity[pk] = uuidv4();
             break;
           case "timeuuid":
-            entity[pk] = this.connector.getType() === "cassandra" ? uuidv1() : mongoUuidv1();
+            entity[pk] = uuidv1();
             break;
           case "number":
             entity[pk] = 0;

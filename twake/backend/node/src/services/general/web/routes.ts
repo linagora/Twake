@@ -1,7 +1,8 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import _ from "lodash";
-import { languages, version } from "../constants";
+import { languages } from "../languages";
 import { Languages, ServerConfiguration } from "../types";
+import version from "../../../version";
 
 const routes: FastifyPluginCallback<{ configuration: ServerConfiguration["configuration"] }> = (
   fastify: FastifyInstance,
