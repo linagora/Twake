@@ -11,7 +11,7 @@ export class MobilePushService {
 
   constructor(
     private database: DatabaseServiceAPI,
-    private pushConfiguration: NotificationConfiguration["push"],
+    private pushConfiguration: NotificationConfiguration["push"] | null,
   ) {}
 
   async init(): Promise<this> {
@@ -21,7 +21,7 @@ export class MobilePushService {
 
   //Fixme: add a bulk system to group requests to fcm
   async push(message: PushNotificationMessage): Promise<void> {
-    if (this.pushConfiguration.type !== "fcm") {
+    if (this.pushConfiguration?.type !== "fcm") {
       logger.info(`${this.name} - Push configuration not set to fcm`);
       return;
     }

@@ -5,7 +5,7 @@ import { NotificationConfiguration } from "../../types";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
-  pushConfiguration: NotificationConfiguration["push"],
+  pushConfiguration: NotificationConfiguration["push"] | null,
 ): MobilePushService {
   return new MobilePushService(databaseService, pushConfiguration);
 }
