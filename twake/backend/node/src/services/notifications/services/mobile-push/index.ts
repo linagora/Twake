@@ -1,11 +1,10 @@
-import UserServiceAPI from "../../../../services/user/api";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { MobilePushService } from "./service";
-import { NotificationConfiguration } from "../../types";
+import { PushServiceAPI } from "../../../../core/platform/services/push/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
-  pushConfiguration: NotificationConfiguration["push"] | null,
+  push: PushServiceAPI,
 ): MobilePushService {
-  return new MobilePushService(databaseService, pushConfiguration);
+  return new MobilePushService(databaseService, push);
 }
