@@ -1,10 +1,10 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { TestPlatform, init } from "../setup";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelMemberNotificationLevel } from "../../../src/services/channels/types";
-import { User } from "../../../src/services/types";
+import { User } from "../../../src/utils/types";
 import {
   ChannelUtils,
   get as getChannelUtils,
@@ -32,6 +32,7 @@ describe("The notification for user mentions", () => {
         "channels",
         "auth",
         "database",
+        "search",
         "pubsub",
         "notifications",
       ],
@@ -92,8 +93,8 @@ describe("The notification for user mentions", () => {
   }
 
   it("should mention all users when preferences are default ones", async done => {
-    const threadId = uuidv4();
-    const messageId = uuidv4();
+    const threadId = uuidv1();
+    const messageId = uuidv1();
     const unknownUser = uuidv4();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
@@ -127,8 +128,8 @@ describe("The notification for user mentions", () => {
   });
 
   it("should not mention user when notification level is set to NONE", async done => {
-    const threadId = uuidv4();
-    const messageId = uuidv4();
+    const threadId = uuidv1();
+    const messageId = uuidv1();
     const unknownUser = uuidv4();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
@@ -163,8 +164,8 @@ describe("The notification for user mentions", () => {
   });
 
   it("should mention user when notification level is set to channel mention and notification is for @all", async done => {
-    const threadId = uuidv4();
-    const messageId = uuidv4();
+    const threadId = uuidv1();
+    const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
@@ -200,8 +201,8 @@ describe("The notification for user mentions", () => {
   });
 
   it("should mention user when notification level is set to channel mention and notification is for @here", async done => {
-    const threadId = uuidv4();
-    const messageId = uuidv4();
+    const threadId = uuidv1();
+    const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);
@@ -237,8 +238,8 @@ describe("The notification for user mentions", () => {
   });
 
   it("should mention user when notification level is set to ME", async done => {
-    const threadId = uuidv4();
-    const messageId = uuidv4();
+    const threadId = uuidv1();
+    const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv4(), channel);

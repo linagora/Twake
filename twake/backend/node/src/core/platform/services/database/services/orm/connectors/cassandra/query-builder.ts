@@ -75,11 +75,7 @@ export function buildSelectQuery<Entity>(
 
   const query = `SELECT * FROM ${options.keyspace}.${entityDefinition.name} ${
     whereClause.trim().length ? "WHERE " + whereClause : ""
-  } ${orderByClause.trim().length ? "ORDER BY " + orderByClause : ""} ${
-    findOptions?.pagination?.limitStr?.trim()
-      ? "LIMIT " + (parseInt(findOptions.pagination.limitStr) || 100)
-      : ""
-  }`
+  } ${orderByClause.trim().length ? "ORDER BY " + orderByClause : ""}`
     .trimEnd()
     .concat(";");
 

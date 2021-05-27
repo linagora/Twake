@@ -2,10 +2,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
-import { ResourceListResponse } from "../../../services/types";
-import { ResourceDeleteResponse } from "../../../services/types";
-import { ResourceCreateResponse } from "../../../services/types";
-import { ResourceGetResponse } from "../../../services/types";
+import { ResourceListResponse } from "../../../utils/types";
+import { ResourceDeleteResponse } from "../../../utils/types";
+import { ResourceCreateResponse } from "../../../utils/types";
+import { ResourceGetResponse } from "../../../utils/types";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../api";
 
 import User from "../entities/user";

@@ -20,7 +20,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
-} from "../../../types";
+} from "../../../../utils/types";
 import { getTabsRealtimeRoom } from "../../services/tab/service";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
@@ -77,7 +77,8 @@ export class ChannelTabCrudController
     });
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const context = getExecutionContext(request);
+      const result = await this.service.save(entity, {}, context);
 
       if (result.entity) {
         localEventBus.publish<ResourceEventsPayload>("channel:tab:created", {
@@ -85,6 +86,7 @@ export class ChannelTabCrudController
           actor: getExecutionContext(request).user,
           resourcesAfter: [result.entity],
           channelParameters: request.params,
+          user: context.user,
         });
         reply.code(201);
       }
@@ -126,10 +128,8 @@ export class ChannelTabCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      const deleteResult = await this.service.delete(
-        this.getPrimaryKey(request),
-        getExecutionContext(request),
-      );
+      const context = getExecutionContext(request);
+      const deleteResult = await this.service.delete(this.getPrimaryKey(request), context);
 
       if (deleteResult.deleted) {
         localEventBus.publish<ResourceEventsPayload>("channel:tab:deleted", {
@@ -137,6 +137,7 @@ export class ChannelTabCrudController
           actor: getExecutionContext(request).user,
           resourcesAfter: [deleteResult.entity],
           channelParameters: request.params,
+          user: context.user,
         });
         reply.code(204);
 

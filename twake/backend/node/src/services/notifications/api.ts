@@ -18,6 +18,7 @@ import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 import { NotificationEngine } from "./services/engine";
 import { NotificationPreferencesService } from "./services/preferences/service";
+import { MobilePushService } from "./services/mobile-push/service";
 
 export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
   badges: UserNotificationBadgeServiceAPI;
@@ -25,6 +26,7 @@ export interface NotificationServiceAPI extends TwakeServiceProvider, Initializa
   channelThreads: ChannelThreadUsersServiceAPI;
   engine: NotificationEngine;
   notificationPreferences: NotificationPreferencesService;
+  mobilePush: MobilePushService;
 }
 
 export interface UserNotificationBadgeServiceAPI

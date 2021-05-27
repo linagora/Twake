@@ -1,7 +1,7 @@
 import { getLogger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { Channel as ChannelEntity } from "../../../entities/";
-import { ResourceEventsPayload } from "../../../../types";
+import { ResourceEventsPayload } from "../../../../../utils/types";
 import { ActivityObjectType, ActivityPublishedType } from "./types";
 import _, { sortBy } from "lodash";
 import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";

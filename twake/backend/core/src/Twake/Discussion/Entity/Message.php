@@ -579,7 +579,7 @@ class Message extends FrontObject
             "thread_id" => $messageEntity->getParentMessageId(),
             "created_at" => ($messageEntity->getCreationDate() ? $messageEntity->getCreationDate()->getTimestamp() : null),
             "application_id" => $messageEntity->getApplicationId(),
-            "user_id" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
+            "user_id" => is_string($messageEntity->getSender()) ? $messageEntity->getSender() : ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
             "edited" => $messageEntity->getEdited(),
             "text" => isset($messageEntity->getContent()['original_str']) ? $messageEntity->getContent()['original_str'] : "", 
             "blocks" => $messageEntity->setBlocks($messageEntity),
@@ -588,10 +588,11 @@ class Message extends FrontObject
             "title" => $messageEntity->getHiddenData()['custom_title'] ?: null,
             "picture" => $messageEntity->getHiddenData()['custom_icon'] ?: null,
             "stats" => Array(
-                "answers" => $messageEntity->getResponsesCount()
+                "last_activity" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
+                "replies" => $messageEntity->getResponsesCount()
             ),
             "pinned_info" => Array(
-                "pinned_by" => ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
+                "pinned_by" => is_string($messageEntity->getSender()) ? $messageEntity->getSender() :  ($messageEntity->getSender() ? $messageEntity->getSender()->getId() : null),
                 "pinned_at" => 0,
             ),
             "reactions" => $messageEntity->getNewApiObjectReactions($messageEntity),
@@ -612,7 +613,7 @@ class Message extends FrontObject
             "parent_message_id" => $this->getParentMessageId(),
             "responses_count" => $this->getResponsesCount(),
             "message_type" => $this->getMessageType(),
-            "sender" => ($this->getSender() ? $this->getSender()->getId() : null),
+            "sender" => is_string($this->getSender()) ? $this->getSender() : ($this->getSender() ? $this->getSender()->getId() : null),
             "application_id" => $this->getApplicationId(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),

@@ -65,7 +65,7 @@ class TwakeRestClient
         return $this->request("DELETE", $url, [], $curl_options);
     }
 
-    private function request($method, $url, $data, $curl_options = [])
+    public function request($method, $url, $data, $curl_options = [])
     {
 
         if ($this->app) $this->app->getCounter()->startTimer("external_requests");

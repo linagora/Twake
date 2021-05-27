@@ -16,6 +16,7 @@ describe("The Realtime API", () => {
         "websocket",
         "realtime",
         "database",
+        "search",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
       ],
     });

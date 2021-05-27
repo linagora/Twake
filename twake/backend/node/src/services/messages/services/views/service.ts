@@ -1,8 +1,4 @@
-import {
-  Paginable,
-  ListResult,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -11,11 +7,11 @@ import { Message } from "../../entities/messages";
 import { Thread } from "../../entities/threads";
 import {
   ChannelViewExecutionContext,
-  CompanyExecutionContext,
   MessageViewListOptions,
   MessageWithReplies,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
+import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
 
 export class ViewsService implements MessageViewsServiceAPI {
@@ -69,7 +65,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         workspace_id: context.channel.workspace_id,
         channel_id: context.channel.id,
       },
-      { pagination },
+      buildMessageListPagination(pagination, "message_id"),
     );
 
     const threads = _.uniqBy(
@@ -82,7 +78,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         )
       ).getEntities(),
       thread => thread.id,
-    ).sort((a, b) => a.last_activity - b.last_activity);
+    );
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
@@ -112,11 +108,13 @@ export class ViewsService implements MessageViewsServiceAPI {
           ...first_message,
           stats: {
             replies: thread.answers,
+            last_activity: thread.last_activity,
           },
           last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
         });
       }),
     );
+    threadWithLastMessages.sort((a, b) => a.stats.last_activity - b.stats.last_activity);
 
     return new ListResult("thread", threadWithLastMessages, threadsRefs.nextPage);
   }

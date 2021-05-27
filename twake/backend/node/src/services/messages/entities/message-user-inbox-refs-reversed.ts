@@ -17,7 +17,7 @@ export class MessageUserInboxRefReversed {
   user_id: string;
 
   @Type(() => String)
-  @Column("thread_id", "string")
+  @Column("thread_id", "timeuuid")
   thread_id: string;
 
   @Type(() => Number)

@@ -4,6 +4,7 @@ import { NotificationServiceAPI } from "../../api";
 import { MarkChannelAsReadMessageProcessor } from "./processors/mark-channel-as-read";
 import { MarkChannelAsUnreadMessageProcessor } from "./processors/mark-channel-as-unread";
 import { NewChannelMessageProcessor } from "./processors/new-channel-message";
+import { PushNotificationMessageProcessor } from "./processors/mobile-push-notifications";
 import { PushNotificationToUsersMessageProcessor } from "./processors/push-to-users";
 import { LeaveChannelMessageProcessor } from "./processors/channel-member-deleted";
 import { JoinChannelMessageProcessor } from "./processors/channel-member-created";
@@ -22,6 +23,7 @@ export class NotificationEngine implements Initializable {
     this.pubsub.processor.addHandler(new MarkChannelAsReadMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new MarkChannelAsUnreadMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new NewChannelMessageProcessor(this.service));
+    this.pubsub.processor.addHandler(new PushNotificationMessageProcessor(this.service));
     this.pubsub.processor.addHandler(
       new PushNotificationToUsersMessageProcessor(this.service, this.pubsub),
     );

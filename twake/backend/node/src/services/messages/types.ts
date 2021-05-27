@@ -1,5 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
-import { uuid } from "../types";
+import { uuid } from "../../utils/types";
 import { MessageFileMetadata } from "./entities/message-files";
 import { Message } from "./entities/messages";
 import { Thread } from "./entities/threads";
@@ -20,7 +20,11 @@ export type MessageNotification = {
     specials?: specialMention[];
   };
 
-  //Temp fix, should not be used like this by node except for push notification
+  sender_name?: string;
+  channel_name?: string;
+  company_name?: string;
+  workspace_name?: string;
+
   title: string;
   text: string;
 };
@@ -28,6 +32,7 @@ export type MessageNotification = {
 export type MessageWithReplies = Message & {
   last_replies: Message[];
   stats: {
+    last_activity: number;
     replies: number;
   };
 };

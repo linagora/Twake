@@ -4,26 +4,19 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  CreateResult,
-  ExecutionContext,
-  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
-import {
-  logger,
-  RealtimeDeleted,
-  RealtimeSaved,
-  TwakeContext,
-} from "../../../../core/platform/framework";
+import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
 import { getInstance, Message, MessageReaction } from "../../entities/messages";
 import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
-import _ from "lodash";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../types";
+import { buildMessageListPagination } from "../utils";
+import _ from "lodash";
+import { ResourceEventsPayload } from "../../../../utils/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -32,7 +25,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {}
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>("message", Message);
+    this.repository = await this.database.getRepository<Message>("messages", Message);
     return this;
   }
 
@@ -41,21 +34,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options?: SaveOptions,
     context?: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
     }
 
+    let created = !item.id;
+
     let message = getInstance({
       id: undefined,
       ephemeral:
-        (context?.app?.id || context?.serverRequest) && item.ephemeral ? item.ephemeral : null,
+        (context?.user?.application_id || context?.user?.server_request) && item.ephemeral
+          ? item.ephemeral
+          : null,
       thread_id: context.thread.id,
-      type: context?.serverRequest && item.type === "event" ? "event" : "message",
+      type: context?.user?.server_request && item.type === "event" ? "event" : "message",
       subtype: getSubtype(item, context),
       created_at: new Date().getTime(),
       user_id: context.user.id,
-      application_id: context?.app?.id || null,
+      application_id: context?.user?.application_id || null,
       text: item.text || "",
       blocks: item.blocks || [],
       files: item.files || null,
@@ -70,7 +67,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       reactions: null, // Reactions cannot be set on creation
       bookmarks: null,
       override:
-        (context?.app?.id || context?.serverRequest) && item.override
+        (context?.user?.application_id || context?.user?.server_request) && item.override
           ? {
               title: item.override.title,
               picture: item.override.picture,
@@ -91,24 +88,37 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       // - Application owner
       // Deleted messages cannot be edited
       if (
-        !messageToUpdate ||
-        (!context?.serverRequest &&
-          context?.app?.id !== messageToUpdate.application_id &&
-          context.user.id !== messageToUpdate.user_id) ||
-        messageToUpdate.subtype === "deleted"
+        !context?.user?.server_request &&
+        (!messageToUpdate ||
+          (context?.user?.application_id !== messageToUpdate.application_id &&
+            context.user.id !== messageToUpdate.user_id) ||
+          messageToUpdate.subtype === "deleted")
       ) {
         logger.error(`Unable to edit message in thread ${message.thread_id}`);
         throw Error("Can't edit this message.");
       }
 
-      messageToUpdate.edited = {
-        edited_at: new Date().getTime(),
-      };
-
-      message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-      if (context?.app?.id || context?.serverRequest) {
-        message = _.assign(message, _.pick(message, "override"));
+      if (!messageToUpdate) {
+        created = true;
       }
+
+      if (messageToUpdate) {
+        messageToUpdate.edited = {
+          edited_at: new Date().getTime(),
+        };
+
+        message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
+        if (context?.user?.application_id || context?.user?.server_request) {
+          message = _.assign(message, _.pick(message, "override"));
+        }
+      } else if (context?.user?.server_request) {
+        message.id = item.id;
+      }
+    }
+
+    //Server request can edit more fields
+    if (context?.user?.server_request) {
+      message.created_at = item.created_at || message.created_at;
     }
 
     logger.info(`Saved message in thread ${message.thread_id}`);
@@ -117,7 +127,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.repository.save(message);
     }
 
-    this.onSaved(message, { created: !item.id }, context);
+    this.onSaved(message, { created }, context);
 
     return new SaveResult<Message>(
       "message",
@@ -131,10 +141,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
+
+    console.log("In 'pin' method");
 
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
@@ -168,10 +180,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
+
+    console.log("In 'reaction' method");
 
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
@@ -235,7 +249,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
-    if (!context?.serverRequest && !this.service.threads.checkAccessToThread(context)) {
+    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
@@ -251,9 +265,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (
-      !context?.serverRequest &&
+      !context?.user?.server_request &&
       message.user_id !== context.user.id &&
-      message.application_id !== context?.app?.id
+      message.application_id !== context?.user?.application_id
     ) {
       logger.error(`You have no right to delete this message`);
       throw Error("Can't delete this message.");
@@ -284,7 +298,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options?: ListOption,
     context?: ThreadExecutionContext,
   ): Promise<ListResult<Message>> {
-    const list = await this.repository.find({ thread_id: context.thread.id }, { pagination });
+    const list = await this.repository.find(
+      { thread_id: context.thread.id },
+      buildMessageListPagination(pagination, "id"),
+    );
     return list;
   }
 
@@ -318,11 +335,11 @@ function getSubtype(
   context?: ThreadExecutionContext,
 ): null | "application" | "deleted" | "system" {
   //Application request
-  if (context?.app?.id) {
+  if (context?.user?.application_id) {
     return item.subtype === "application" ? "application" : null;
   }
   //System request
-  else if (context?.serverRequest) {
+  else if (context?.user?.server_request) {
     return item.subtype;
   }
 
@@ -332,7 +349,7 @@ function getSubtype(
 
 function updateMessageReactions(message: Message, selectedReactions: string[], userId: string) {
   let reactions: { [key: string]: MessageReaction } = {};
-  for (const reaction of message.reactions) {
+  for (const reaction of message.reactions || []) {
     reactions[reaction.name] = reaction;
   }
   for (const reaction of selectedReactions) {
@@ -348,4 +365,5 @@ function updateMessageReactions(message: Message, selectedReactions: string[], u
       reactions[key].users.push(userId);
     }
   }
+  message.reactions = Object.values(reactions);
 }

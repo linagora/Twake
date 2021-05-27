@@ -9,7 +9,7 @@ import {
   WebsocketUserEvent,
 } from "../types";
 import { EventEmitter } from "events";
-import { User } from "../../../../../services/types";
+import { User } from "../../../../../utils/types";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";

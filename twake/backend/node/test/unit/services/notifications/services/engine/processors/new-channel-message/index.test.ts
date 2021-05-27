@@ -12,7 +12,7 @@ import {
   ChannelThreadUsers,
 } from "../../../../../../../../src/services/notifications/entities";
 import { NewChannelMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/new-channel-message/index";
-import { ChannelType } from "../../../../../../../../src/services/types";
+import { ChannelType } from "../../../../../../../../src/utils/types";
 
 describe("The NewChannelMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
@@ -37,7 +37,7 @@ describe("The NewChannelMessageProcessor class", () => {
         bulkSave: jest
           .fn()
           .mockResolvedValue(
-            new SaveResult<ChannelThreadUsers[]>("thread", [], OperationType.CREATE),
+            new SaveResult<ChannelThreadUsers[]>("thread", [], OperationType.CREATE) as never,
           ),
         getUsersInThread,
       },

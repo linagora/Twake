@@ -1,20 +1,17 @@
 {
-  "services": [
-    "auth",
-    "user",
-    "channels",
-    "notifications",
-    "messages",
-    "webserver",
-    "websocket",
-    "database",
-    "pubsub",
-    "realtime",
-    "phpnode",
-    "tracker",
-    "files",
-    "storage"
-  ],
+  "general": {
+    "help_link": false,
+    "accounts": {
+      "type": "internal",
+      "internal": {
+        "disable_account_creation": false,
+        "disable_email_verification": true
+      }
+    }
+  },
+  "console": {
+    "provider": "https://console.twake.app"
+  },
   "sentry": {
     "dsn": ""
   },
@@ -37,7 +34,8 @@
     }
   },
   "phpnode": {
-    "secret": "api_supersecret"
+    "secret": "api_supersecret",
+    "php_endpoint": "http://nginx:80"
   },
   "websocket": {
     "path": "/socket/",
@@ -78,6 +76,19 @@
   "pubsub": {
     "urls": ["amqp://guest:guest@localhost:5672"]
   },
+  "search": {
+    "type": false,
+    "elasticsearch": {
+      "endpoint": "http://elasticsearch:9200"
+    }
+  },
+  "push": {
+    "type": false,
+    "fcm": {
+      "endpoint": "https://fcm.googleapis.com/fcm/send",
+      "key": ""
+    }
+  },
   "storage": {
     "secret": "0ea28a329df23220fa814e005bfb671c",
     "type": "local",
@@ -91,5 +102,23 @@
     "local": {
       "path": "/storage/"
     }
-  }
+  },
+  "services": [
+    "auth",
+    "storage",
+    "webserver",
+    "websocket",
+    "database",
+    "search",
+    "pubsub",
+    "realtime",
+    "phpnode",
+    "tracker",
+    "general",
+    "user",
+    "channels",
+    "notifications",
+    "messages",
+    "files"
+  ]
 }

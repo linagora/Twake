@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { Connector } from "./connectors";
-import { getEntityDefinition, unwrapPrimarykey } from "./utils";
+import { getEntityDefinition, fromMongoDbOrderable, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { logger } from "../../../../framework";
 

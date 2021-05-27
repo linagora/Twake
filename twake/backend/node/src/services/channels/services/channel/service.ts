@@ -25,7 +25,7 @@ import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entit
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
-import { ResourceEventsPayload, User } from "../../../types";
+import { ResourceEventsPayload, User } from "../../../../utils/types";
 import { pick } from "../../../../utils/pick";
 import { ChannelService } from "../../provider";
 import {
@@ -169,6 +169,7 @@ export class Service implements ChannelService {
         resourcesBefore: [channelToUpdate],
         resourcesAfter: [channel],
         channel: channel,
+        user: context.user,
       });
     }
 
@@ -300,6 +301,11 @@ export class Service implements ChannelService {
     const result = new DeleteResult("channel", ChannelObject.mapTo(pk as Channel), true);
 
     this.onDeleted(channelToDelete, result);
+
+    localEventBus.publish<ResourceEventsPayload>("channel:deleted", {
+      channel: channelToDelete,
+      user: context.user,
+    });
 
     return result;
   }
@@ -636,7 +642,10 @@ export class Service implements ChannelService {
         context,
       );
 
-      localEventBus.publish<ResourceEventsPayload>("channel:created", { channel });
+      localEventBus.publish<ResourceEventsPayload>("channel:created", {
+        channel,
+        user: context.user,
+      });
     }
   }
 
@@ -649,7 +658,6 @@ export class Service implements ChannelService {
   onDeleted(channel: Channel, result: DeleteResult<Channel>): void {
     if (result.deleted) {
       logger.debug("Channel %s has been deleted", channel.id);
-      localEventBus.publish<ResourceEventsPayload>("channel:deleted", { channel });
     }
   }
 

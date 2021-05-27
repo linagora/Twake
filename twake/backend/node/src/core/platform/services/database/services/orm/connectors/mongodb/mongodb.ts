@@ -8,7 +8,6 @@ import { AbstractConnector } from "../abstract-connector";
 import { buildSelectQuery } from "./query-builder";
 import { transformValueFromDbString, transformValueToDbString } from "./typeTransforms";
 import { logger } from "../../../../../../framework";
-
 export { MongoPagination } from "./pagination";
 
 export interface MongoConnectionOptions {
@@ -28,11 +27,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
 
   async connect(): Promise<this> {
-    if (this.client && this.client.isConnected()) {
+    if (this.client && this.client.topology.isConnected()) {
       return this;
     }
 
-    this.client = await mongo.connect(this.options.uri);
+    this.client = new mongo.MongoClient(this.options.uri);
+    await this.client.connect();
 
     return this;
   }
@@ -76,7 +76,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
   async upsert(entities: any[], options: UpsertOptions = {}): Promise<boolean[]> {
     return new Promise(async resolve => {
-      const promises: Promise<mongo.UpdateWriteOpResult>[] = [];
+      const promises: Promise<mongo.UpdateResult>[] = [];
 
       const db = await this.getDatabase();
 
@@ -108,18 +108,24 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         });
 
         const collection = db.collection(`${entityDefinition.name}`);
-        promises.push(collection.updateOne(where, { $set: { set } }, { upsert: true }));
+        promises.push(
+          collection.updateOne(
+            where,
+            { $set: { ...where, ...set } },
+            { upsert: true },
+          ) as Promise<mongo.UpdateResult>,
+        );
       });
 
       Promise.all(promises).then(results => {
-        resolve(results.map(result => result.result.ok === 1));
+        resolve(results.map(result => result.acknowledged));
       });
     });
   }
 
   async remove(entities: any[]): Promise<boolean[]> {
     return new Promise(async resolve => {
-      const promises: Promise<mongo.DeleteWriteOpResultObject>[] = [];
+      const promises: Promise<mongo.DeleteResult>[] = [];
       const db = await this.getDatabase();
 
       entities.forEach(entity => {
@@ -141,7 +147,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       });
 
       Promise.all(promises).then(results => {
-        resolve(results.map(result => result.result.ok === 1));
+        resolve(results.map(result => result.acknowledged));
       });
     });
   }
@@ -188,8 +194,8 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const cursor = collection
       .find(query)
       .sort(sort)
-      .skip(parseInt(options.pagination.page_token))
-      .limit(parseInt(options.pagination.limitStr));
+      .skip(Math.max(0, parseInt(options.pagination.page_token || "0")))
+      .limit(Math.max(0, parseInt(options.pagination.limitStr || "100")));
 
     const entities: Table[] = [];
     while (await cursor.hasNext()) {

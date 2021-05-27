@@ -1,15 +1,8 @@
 import "reflect-metadata";
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
-import { UserMessageBookmark } from "../../../src/services/messages/entities/user-message-bookmarks";
-import {
-  ResourceDeleteResponse,
-  ResourceListResponse,
-  ResourceUpdateResponse,
-} from "../../../src/services/types";
+import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
-import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 import { createMessage, e2e_createMessage, e2e_createThread } from "./utils";
 
@@ -27,7 +20,9 @@ describe("The Messages feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
+        "channels",
       ],
     });
   });

@@ -28,6 +28,7 @@ describe("The Channels Realtime feature", () => {
         "channels",
         "auth",
         "database",
+        "search",
         "realtime",
       ],
     });

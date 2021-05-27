@@ -1,4 +1,4 @@
-import { User, WebsocketMetadata } from "../../../services/types";
+import { User, WebsocketMetadata } from "../../../utils/types";
 
 export function getWebsocketInformation(user: User): WebsocketMetadata {
   return {

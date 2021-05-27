@@ -3,7 +3,17 @@ import { Channel, ChannelMember } from "../channels/entities";
 import { UserNotificationPreferences } from "./entities";
 import { PaginationQueryParameters } from "../channels/web/types";
 import { specialMention } from "../messages/types";
-import { uuid } from "../types";
+import { uuid } from "../../utils/types";
+
+export type NotificationConfiguration = {
+  push: {
+    type: "fcm";
+    fcm: {
+      endpoint: string;
+      key: string;
+    };
+  };
+};
 
 export type NotificationExecutionContext = ExecutionContext;
 
@@ -38,6 +48,7 @@ export type PushNotificationMessage = {
   title: string;
   text: string;
 };
+export type PushNotificationMessageResult = PushNotificationMessage;
 
 export class CreateNotificationPreferencesBody {
   resource: Pick<UserNotificationPreferences, "user_id">;

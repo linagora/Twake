@@ -82,9 +82,6 @@ services:
     depends_on:
       - php
       - node
-    volumes_from:
-      - php
-      - node
     volumes:
       - ./docker-data/logs/nginx/:/var/log/nginx
       - ./docker-data/letsencrypt/:/etc/letsencrypt/

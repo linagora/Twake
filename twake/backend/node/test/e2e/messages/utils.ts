@@ -12,7 +12,7 @@ import {
   Message,
 } from "../../../src/services/messages/entities/messages";
 import { ParticipantObject } from "../../../src/services/messages/entities/threads";
-import { User } from "../../../src/services/types";
+import { User } from "../../../src/utils/types";
 import { TestPlatform } from "../setup";
 
 const url = "/internal/services/messages/v1";
@@ -38,7 +38,7 @@ export const e2e_createThread = async (
       },
     },
   });
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 200));
   return res;
 };
 
@@ -58,7 +58,7 @@ export const e2e_createMessage = async (
       resource: message,
     },
   });
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 200));
   return res;
 };
 

@@ -6,7 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
-} from "../../../src/services/types";
+} from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +25,9 @@ describe("The Messages User Bookmarks feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
+        "channels",
       ],
     });
   });

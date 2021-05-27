@@ -31,7 +31,6 @@ export default (props: Props) => {
         .map((reaction: { name: string; count: number; users: string[] }, index: number) => {
           const value = reaction.count || 0;
           const members: string[] = reaction.users || [];
-          console.log(members, props.message?._user_reaction);
 
           if (value <= 0) {
             return '';

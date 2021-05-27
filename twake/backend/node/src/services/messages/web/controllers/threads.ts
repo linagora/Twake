@@ -6,7 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { ParticipantObject, Thread } from "../../entities/threads";

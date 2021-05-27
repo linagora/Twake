@@ -1,6 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
-import { Workspace, Channel } from "../types";
-import { uuid } from "../types";
+import { Workspace, Channel, uuid } from "../../utils/types";
 
 export interface WorkspaceExecutionContext extends ExecutionContext {
   workspace: Workspace;
@@ -15,13 +14,13 @@ export interface ChannelSystemExecutionContext {
   channel?: Channel;
 }
 
-export enum ChannelType {
-  DIRECT = "direct",
-}
-
 export enum ChannelVisibility {
   PRIVATE = "private",
   PUBLIC = "public",
+  DIRECT = "direct",
+}
+
+export enum ChannelType {
   DIRECT = "direct",
 }
 

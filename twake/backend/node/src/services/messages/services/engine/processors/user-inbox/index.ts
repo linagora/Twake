@@ -23,7 +23,6 @@ import {
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
-import { pairs } from "rxjs";
 
 export class UserInboxViewProcessor {
   repositoryRef: Repository<MessageUserInboxRef>;
@@ -47,38 +46,36 @@ export class UserInboxViewProcessor {
       for (const channelParticipant of thread.participants.filter(p => p.type === "channel")) {
         //Publish message in corresponding channel
 
+        if (!userParticipant.id) {
+          continue;
+        }
+
         if (message.created) {
-          let threadActivityReversed: MessageUserInboxRefReversed = await this.repositoryReversed.findOne(
-            {
-              company_id: channelParticipant.company_id,
-              user_id: userParticipant.id,
-              thread_id: thread.id,
-            },
-          );
+          const commonPk = {
+            company_id: channelParticipant.company_id,
+            user_id: userParticipant.id,
+            thread_id: thread.id,
+          };
+
+          let threadActivityReversed = await this.repositoryReversed.findOne(commonPk);
 
           let currentRef: MessageUserInboxRef = null;
           if (threadActivityReversed) {
             currentRef = await this.repositoryRef.findOne({
-              company_id: channelParticipant.company_id,
-              user_id: userParticipant.id,
-              thread_id: thread.id,
+              ...commonPk,
               last_activity: threadActivityReversed.last_activity,
             });
           } else {
             threadActivityReversed = getInboxThreadInstance({
-              company_id: channelParticipant.company_id,
-              user_id: userParticipant.id,
-              thread_id: thread.id,
+              ...commonPk,
               last_activity: 0,
             });
           }
 
           const ref = getInboxRefInstance({
-            user_id: userParticipant.id,
-            company_id: channelParticipant.company_id,
+            ...commonPk,
             workspace_id: channelParticipant.workspace_id,
             channel_id: channelParticipant.id,
-            thread_id: thread.id,
             last_activity: message.resource.created_at,
           });
 
