@@ -116,6 +116,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     }
 
+    //Server request can edit more fields
+    if (context?.user?.server_request) {
+      message.created_at = item.created_at || message.created_at;
+    }
+
     logger.info(`Saved message in thread ${message.thread_id}`);
 
     if (!message.ephemeral) {
