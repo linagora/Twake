@@ -6,7 +6,7 @@ import { mongoUuidv1 } from "../../utils";
 
 export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): any => {
   if (type === "timeuuid") {
-    if (isNull(v)) {
+    if (isNull(v) || !v) {
       return null;
     }
     //Convert to orderable number on mongodb

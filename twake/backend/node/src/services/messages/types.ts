@@ -20,10 +20,10 @@ export type MessageNotification = {
     specials?: specialMention[];
   };
 
-  sender_name: string;
-  channel_name: string;
-  company_name: string;
-  workspace_name: string;
+  sender_name?: string;
+  channel_name?: string;
+  company_name?: string;
+  workspace_name?: string;
 
   title: string;
   text: string;
