@@ -20,6 +20,7 @@ describe("The Bookmarks Realtime feature", () => {
         "auth",
         "database",
         "realtime",
+        "channels",
       ],
     });
   });

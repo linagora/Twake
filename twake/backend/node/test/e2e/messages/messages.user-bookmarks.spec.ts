@@ -26,6 +26,7 @@ describe("The Messages User Bookmarks feature", () => {
         "auth",
         "database",
         "realtime",
+        "channels",
       ],
     });
   });

@@ -28,6 +28,7 @@ describe("The Messages Threads feature", () => {
         "auth",
         "database",
         "realtime",
+        "channels",
       ],
     });
   });
@@ -128,6 +129,7 @@ describe("The Messages Threads feature", () => {
             {
               type: "user",
               id: platform.currentUser.id,
+              company_id: platform.workspace.company_id,
             },
           ],
         },
@@ -179,10 +181,13 @@ describe("The Messages Threads feature", () => {
             {
               type: "user",
               id: platform.currentUser.id,
+              company_id: platform.workspace.company_id,
             },
             {
               type: "channel",
               id: uuidv4(),
+              workspace_id: platform.workspace.workspace_id,
+              company_id: platform.workspace.company_id,
             },
           ],
         },

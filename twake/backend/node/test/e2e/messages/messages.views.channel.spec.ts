@@ -29,6 +29,7 @@ describe("The Messages feature", () => {
         "auth",
         "database",
         "realtime",
+        "channels",
       ],
     });
   });
